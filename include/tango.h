@@ -127,7 +127,7 @@ namespace Tango {
 	#include <tango/server/device_5.h>
 #include <tango/server/device_6.h>
 	#include <tango/server/command.h>
-	#include <tango/server/attribute.h>
+#include <tango/server/attribute.h>
 	#include <tango/server/pipedesc.h>
 	#include <tango/server/pipe.h>
 	#include <tango/server/w_pipe.h>

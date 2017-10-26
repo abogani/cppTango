@@ -6,9 +6,9 @@ enable_testing()
 set(MAJOR_VERSION "10")
 set(MINOR_VERSION "2")
 set(PATCH_VERSION "2")
-IF(WIN32)
-include(configure/cmake_win_defs.cmake)
-ENDIF(WIN32)
+IF (WIN32)
+  include(configure/cmake_win_defs.cmake)
+ENDIF (WIN32)
 #convenient versions
 set(LIBRARY_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}")
 set(SO_VERSION "${MAJOR_VERSION}")
@@ -28,9 +28,9 @@ add_subdirectory(generated/idl)
 include_directories(include)
 add_subdirectory(src)
 #add_subdirectory(test)
-if(WIN32)
-include(configure/cmake_win.cmake)
-else(WIN32)
+if (WIN32)
+  include(configure/cmake_win.cmake)
+else (WIN32)
 add_library(tango SHARED    $<TARGET_OBJECTS:log4tango_objects>
                             $<TARGET_OBJECTS:client_objects>
                             $<TARGET_OBJECTS:idl_objects>
@@ -54,17 +54,17 @@ configure_file(tango.pc.cmake tango.pc @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tango.pc"
         DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
 
-endif(WIN32)
+endif (WIN32)
 
 
 IF (WIN32)
-include(configure/cpack_win.cmake)
-ELSE()
+  include(configure/cpack_win.cmake)
+ELSE ()
   SET(CPACK_GENERATOR "DEB")
   set(CPACK_DEBIAN_PACKAGE_NAME libtango-dev)
   set(CPACK_DEBIAN_PACKAGE_VERSION ${LIBRARY_VERSION})
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "libcos4-dev, libzmq5-dev | libzmq3-dev")
   set(CPACK_DEBIAN_PACKAGE_CONFLICTS "libtango7-dev, libtango8-dev, libtango9-dev")
   SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "TANGO team <tango@esrf.fr>") #required
-ENDIF(WIN32)
+ENDIF (WIN32)
 include(CPack)

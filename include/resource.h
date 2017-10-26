@@ -20,13 +20,13 @@
 #define ID_DEBUG_LEVEL3                 40006
 #define ID_DEBUG_LEVEL4                 40007
 #define TANGO_APP_ABOUT                 40008
-#define ID_DEV_DEBUG_LEVEL0		40009
-#define ID_DEV_DEBUG_LEVEL1		40010
-#define ID_DEV_DEBUG_LEVEL2		40011
-#define ID_DEV_DEBUG_LEVEL3		40012
-#define ID_DEV_DEBUG_LEVEL4		40013
+#define ID_DEV_DEBUG_LEVEL0        40009
+#define ID_DEV_DEBUG_LEVEL1        40010
+#define ID_DEV_DEBUG_LEVEL2        40011
+#define ID_DEV_DEBUG_LEVEL3        40012
+#define ID_DEV_DEBUG_LEVEL4        40013
 #define ID_DEBUG_LEVEL5                 40014
-#define ID_DEV_DEBUG_LEVEL5		40015
+#define ID_DEV_DEBUG_LEVEL5        40015
 
 // Next default values for new objects
 // 
