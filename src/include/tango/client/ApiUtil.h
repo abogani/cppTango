@@ -136,7 +136,7 @@ public:
 
 /// @privatesection
 
-	CORBA::ORB_ptr get_orb() {return CORBA::ORB::_duplicate(_orb);}
+	CORBA::ORB_var get_orb() {return CORBA::ORB::_duplicate(_orb);}
 	void set_orb(CORBA::ORB_ptr orb_in) {_orb = orb_in;}
 	void create_orb();
     bool is_orb_nil() {return CORBA::is_nil(_orb);}
