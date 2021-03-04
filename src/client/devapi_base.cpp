@@ -97,7 +97,7 @@ Connection::Connection(ORB *orb_in)
 //
 
     ApiUtil *au = ApiUtil::instance();
-    if ((orb_in == NULL) && (CORBA::is_nil(au->get_orb()) == true))
+    if ((orb_in == NULL) && (au->is_orb_nil() == true))
     {
         if (au->in_server() == true)
         {
