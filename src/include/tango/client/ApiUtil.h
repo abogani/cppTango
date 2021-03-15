@@ -136,7 +136,7 @@ public:
 
 /// @privatesection
 
-	CORBA::ORB_var get_orb() {return CORBA::ORB::_duplicate(_orb);}
+	CORBA::ORB_var get_orb() {return _orb;}
 	void set_orb(CORBA::ORB_ptr orb_in) {_orb = orb_in;}
 	void create_orb();
 	bool is_orb_nil() {return CORBA::is_nil(_orb);}
@@ -215,7 +215,7 @@ protected:
 
 	std::vector<Database *>			db_vect;
 	omni_mutex					the_mutex;
-	CORBA::ORB_ptr				_orb;
+	CORBA::ORB_var				_orb;
 	bool						in_serv;
 
 	cb_sub_model				auto_cb;
