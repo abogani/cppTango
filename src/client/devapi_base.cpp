@@ -4668,7 +4668,7 @@ PipeInfoList *DeviceProxy::get_pipe_config(const std::vector<std::string> &pipe_
 // Error if device does not support IDL 5
 //
 
-    if (version > 0 && version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         std::stringstream ss;
         ss << "Device " << device_name << " too old to use get_pipe_config() call. Please upgrade to Tango 9/IDL5";
@@ -4805,7 +4805,7 @@ void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
 // Error if device does not support IDL 5
 //
 
-    if (version > 0 && version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         std::stringstream ss;
         ss << "Device " << device_name << " too old to use set_pipe_config() call. Please upgrade to Tango 9/IDL5";
@@ -4949,7 +4949,7 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
 // Error if device does not support IDL 5
 //
 
-    if (version > 0 && version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         std::stringstream ss;
         ss << "Device " << device_name << " too old to use read_pipe() call. Please upgrade to Tango 9/IDL5";
@@ -5065,7 +5065,7 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 // Error if device does not support IDL 5
 //
 
-    if (version > 0 && version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         std::stringstream ss;
         ss << "Device " << device_name << " too old to use write_pipe() call. Please upgrade to Tango 9/IDL5";
@@ -5198,7 +5198,7 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
 // Error if device does not support IDL 5
 //
 
-    if (version > 0 && version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         std::stringstream ss;
         ss << "Device " << device_name << " too old to use write_read_pipe() call. Please upgrade to Tango 9/IDL5";
@@ -5744,7 +5744,7 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *
     int ctr = 0;
     Tango::DevSource local_source;
 
-    if (version < 4)
+    if (detail::IDLVersionIsTooOld(version, 4))
     {
         std::stringstream ss;
         ss << "Device " << dev_name()
@@ -5802,7 +5802,7 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
     int ctr = 0;
     Tango::DevSource local_source;
 
-    if (version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         std::stringstream ss;
         ss << "Device " << dev_name()
@@ -6607,7 +6607,7 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
 // Check that the device supports IDL V4
 //
 
-    if (version < 4)
+    if (detail::IDLVersionIsTooOld(version, 4))
     {
         TangoSys_OMemStream desc;
         desc << "Failed to write_attribute on device " << device_name;
@@ -7819,7 +7819,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event,
 
 int DeviceProxy::subscribe_event(EventType event, CallBack *callback, bool stateless)
 {
-    if (version < MIN_IDL_DEV_INTR)
+    if (detail::IDLVersionIsTooOld(version, MIN_IDL_DEV_INTR))
     {
         std::stringstream ss;
         ss << "Device " << dev_name() << " does not support device interface change event\n";
@@ -7853,7 +7853,7 @@ int DeviceProxy::subscribe_event(EventType event, CallBack *callback, bool state
 
 int DeviceProxy::subscribe_event(EventType event, int event_queue_size, bool stateless)
 {
-    if (version < MIN_IDL_DEV_INTR)
+    if (detail::IDLVersionIsTooOld(version, MIN_IDL_DEV_INTR))
     {
         std::stringstream ss;
         ss << "Device " << dev_name() << " does not support device interface change event\n";
@@ -8967,7 +8967,7 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
 // This call is available only for Devices implemented IDL V4
 //
 
-    if (version < 4)
+    if (detail::IDLVersionIsTooOld(version, 4))
     {
         TangoSys_OMemStream desc;
         desc << "Device " << device_name;
@@ -9228,7 +9228,7 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
 // This call is available only for Devices implemented IDL V5
 //
 
-    if (version < 5)
+    if (detail::IDLVersionIsTooOld(version, 5))
     {
         TangoSys_OMemStream desc;
         desc << "Device " << device_name;

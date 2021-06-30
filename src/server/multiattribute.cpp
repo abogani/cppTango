@@ -32,6 +32,7 @@
 //-==================================================================================================================
 
 #include <tango/tango.h>
+#include <tango/internal/utils.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/multiattribute.h>
 #include <tango/server/classattribute.h>
@@ -629,7 +630,7 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
 // Check for enumerated attribute
 //
 
-		if (attr_list[i]->get_data_type() == DEV_ENUM && idl_version < 5)
+		if (attr_list[i]->get_data_type() == DEV_ENUM && detail::IDLVersionIsTooOld(idl_version, 5))
 		{
 			try
 			{
@@ -651,7 +652,7 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
 // root attribute registry
 //
 
-		if (attr_list[i]->is_fwd_att() == true && idl_version < 5)
+		if (attr_list[i]->is_fwd_att() == true && detail::IDLVersionIsTooOld(idl_version, 5))
 		{
 			std::vector<DeviceImpl::FwdWrongConf> &fwd_wrong_conf = dev->get_fwd_att_wrong_conf();
 			if (vector_cleared == false)
