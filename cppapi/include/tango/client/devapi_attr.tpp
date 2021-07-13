@@ -72,6 +72,7 @@ void DeviceAttribute::base_val(T _val)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	d_state = {};
 	d_state_filled = false;
 	exceptions_flags.set(failed_flag);
 	exceptions_flags.set(isempty_flag);
@@ -109,6 +110,7 @@ void DeviceAttribute::base_vect(const std::vector<T> &_val)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	d_state = {};
 	d_state_filled = false;
 	exceptions_flags.set(failed_flag);
 	exceptions_flags.set(isempty_flag);
@@ -148,6 +150,7 @@ void DeviceAttribute::base_vect_size(const std::vector<T> &_val)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	d_state = {};
 	d_state_filled = false;
 	exceptions_flags.set(failed_flag);
 	exceptions_flags.set(isempty_flag);
