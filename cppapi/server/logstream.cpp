@@ -275,19 +275,21 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const Attr& a)
   std::vector<AttrProperty> v = (const_cast<Attr&>(a)).get_class_properties();
   unsigned int n = v.size();
   if (n) {
-	  for (unsigned  i = 0; i < n; i++) {
+    for (unsigned  i = 0; i < n; i++) {
       ls << "Attr: "
          << const_cast<Attr&>(a).get_name()
          << " Property: name:"
          << v[i].get_name()
          << " - value:"
          << v[i].get_value();
-      if (i <= (n - 2)) ls << std::endl;
-	  }
+      if (i + 2 <= n) {
+        ls << std::endl;
+      }
+    }
   } else {
     ls << "Attr. " << const_cast<Attr&>(a).get_name() << " has no class properties";
   }
-	return ls;
+  return ls;
 }
 
 //+----------------------------------------------------------------------------
