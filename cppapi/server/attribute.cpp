@@ -52,6 +52,12 @@ auto find_property(std::vector<Tango::AttrProperty> &prop_list, const char *prop
 	                    [&prop_name](Tango::AttrProperty& attr){ return attr.get_name() == prop_name; });
 }
 
+// Helper class to create zero-initialized Tango::AttributeValue_N instances.
+// AttributeValue has user-defined constructor that leaves most of the fields
+// uninitialized. We must value-initialize this wrapper which will first zero-
+// initialize underlying value and then will call its constructor.
+template <typename T>
+struct ZeroInitialize { T value; };
 
 } // anonymous
 
@@ -3938,11 +3944,14 @@ void Attribute::fire_change_event(DevFailed *except)
 		try
 		{
 			if (vers >= 4)
-				send_attr_5 = new Tango::AttributeValue_5;
+				send_attr_5 = new Tango::AttributeValue_5{
+					ZeroInitialize<Tango::AttributeValue_5>().value};
 			else if (vers == 4)
-				send_attr_4 = new Tango::AttributeValue_4;
+				send_attr_4 = new Tango::AttributeValue_4{
+					ZeroInitialize<Tango::AttributeValue_4>().value};
 			else
-				send_attr = new Tango::AttributeValue_3;
+				send_attr = new Tango::AttributeValue_3{
+					ZeroInitialize<Tango::AttributeValue_3>().value};
 		}
 		catch (std::bad_alloc &)
 		{
@@ -4360,11 +4369,14 @@ void Attribute::fire_archive_event(DevFailed *except)
 		try
 		{
 			if (dev->get_dev_idl_version() > 4)
-				send_attr_5 = new Tango::AttributeValue_5;
+				send_attr_5 = new Tango::AttributeValue_5{
+					ZeroInitialize<Tango::AttributeValue_5>().value};
 			else if (dev->get_dev_idl_version() == 4)
-				send_attr_4 = new Tango::AttributeValue_4;
+				send_attr_4 = new Tango::AttributeValue_4{
+					ZeroInitialize<Tango::AttributeValue_4>().value};
 			else
-				send_attr = new Tango::AttributeValue_3;
+				send_attr = new Tango::AttributeValue_3{
+					ZeroInitialize<Tango::AttributeValue_3>().value};
 		}
 		catch (std::bad_alloc &)
 		{
@@ -4746,11 +4758,14 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,const std:
 		try
 		{
 			if (dev->get_dev_idl_version() > 4)
-				send_attr_5 = new Tango::AttributeValue_5;
+				send_attr_5 = new Tango::AttributeValue_5{
+					ZeroInitialize<Tango::AttributeValue_5>{}.value};
 			else if (dev->get_dev_idl_version() == 4)
-				send_attr_4 = new Tango::AttributeValue_4;
+				send_attr_4 = new Tango::AttributeValue_4{
+					ZeroInitialize<Tango::AttributeValue_4>{}.value};
 			else
-				send_attr = new Tango::AttributeValue_3;
+				send_attr = new Tango::AttributeValue_3{
+					ZeroInitialize<Tango::AttributeValue_3>{}.value};
 		}
 		catch (std::bad_alloc &)
 		{
