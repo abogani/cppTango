@@ -1871,12 +1871,10 @@ void ZmqEventConsumer::push_zmq_event(std::string &ev_name,unsigned char endian,
 			if (ds_ctr != 1 && evt_cb.ctr == 0)
 				evt_cb.ctr = ds_ctr - 1;
 
-			DevLong missed_event = ds_ctr - evt_cb.ctr;
-
-			if (missed_event < 0)
-			{
-				missed_event = (UINT_MAX + missed_event) + 1;
-			}
+			// This can be negative after reconnection if server was restarted.
+			DevLong missed_event = (ds_ctr >= evt_cb.ctr)
+				? static_cast<DevLong>(ds_ctr - evt_cb.ctr)
+				: -static_cast<DevLong>(evt_cb.ctr - ds_ctr);
 
 			if (missed_event >= 2)
             {
