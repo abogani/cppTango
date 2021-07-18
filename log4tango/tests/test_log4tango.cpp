@@ -158,6 +158,7 @@ void test_level()
 
   appender_1 = new log4tango::OstreamAppender("appender_1", &std::cout);
   appender_2 = new log4tango::OstreamAppender("appender_2", &std::cout);
+  appender_3 = new log4tango::OstreamAppender("appender_3", &std::cout);
   cat_1.add_appender(appender_1);
   cat_1.add_appender(appender_2);
 
@@ -189,6 +190,7 @@ void test_level()
     std::cout << "`-> appender#" << i << ": " <<  al[i]->get_name() << std::endl;
   }
 
+  // This appender was not attached to the logger, nothing should happen.
   cat_1.remove_appender(appender_3);
 
 } /* end test_level() */
