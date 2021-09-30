@@ -7,4 +7,6 @@ set(COMMON_HEADERS
     tango_const.h
     git_revision.h
 )
-install(FILES ${COMMON_HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/tango/common")
+
+install(FILES ${COMMON_HEADERS} DESTINATION
+    "${CMAKE_INSTALL_INCLUDEDIR}/tango/common")

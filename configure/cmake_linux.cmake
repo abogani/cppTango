@@ -8,9 +8,65 @@ if(BUILD_SHARED_LIBS)
   set_target_properties(tango PROPERTIES
                         VERSION ${LIBRARY_VERSION}
                         SOVERSION ${SO_VERSION})
-  install(TARGETS tango LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-else()
-  install(TARGETS tango ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
+
+# Install Config -----------------------------------
+include(CMakePackageConfigHelpers)
+
+install(
+    TARGETS tango
+    EXPORT tangoTargets
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+set(ConfigPackageLocation "${CMAKE_INSTALL_LIBDIR}/cmake/tango")
+set(Namespace tango::)
+
+# write tango version information
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/tango/tangoConfigVersion.cmake"
+  VERSION ${LIBRARY_VERSION}
+  COMPATIBILITY SameMinorVersion
+)
+
+# export the targets built
+export(EXPORT tangoTargets
+  FILE
+    "${CMAKE_CURRENT_BINARY_DIR}/tango/tangoTargets.cmake"
+  NAMESPACE ${Namespace}
+)
+
+# generate the config file that includes the exports
+configure_package_config_file(configure/tangoConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/tango/tangoConfig.cmake"
+  INSTALL_DESTINATION
+    ${ConfigPackageLocation}
+  NO_SET_AND_CHECK_MACRO
+)
+
+# install the exported targets
+install(EXPORT tangoTargets
+  FILE
+    tangoTargets.cmake
+  NAMESPACE
+    ${Namespace}
+  DESTINATION
+    ${ConfigPackageLocation}
+)
+
+# install the cmake files
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/tango/tangoConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/tango/tangoConfigVersion.cmake"
+  DESTINATION
+    ${ConfigPackageLocation}
+)
+
+
+configure_file(tango.pc.cmake tango.pc @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tango.pc"
+        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
 
 include(configure/cpack_linux.cmake)
