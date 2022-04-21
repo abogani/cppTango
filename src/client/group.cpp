@@ -107,7 +107,7 @@ DeviceNames GroupElementFactory::resolve_local_device_names(const std::string &n
 {
     std::string &name_or_patern_non_const = const_cast<std::string &>(name_or_pattern);
     Database db;
-    DbDatum db_data = db.get_device_exported(name_or_patern_non_const);
+    DbDatum db_data = db.get_device_defined(name_or_patern_non_const);
 
     DeviceNames device_names;
     device_names.reserve(db_data.size());
@@ -122,7 +122,7 @@ DeviceNames GroupElementFactory::resolve_remote_device_names(int db_port,
     ApiUtil &api_util = *ApiUtil::instance();
     const int db_index = api_util.get_db_ind(db_host, db_port);
     Database &db = *(api_util.get_db_vect()[db_index]);
-    DbDatum db_data = db.get_device_exported(name_or_pattern_without_host);
+    DbDatum db_data = db.get_device_defined(name_or_pattern_without_host);
 
     DeviceNames device_names;
     device_names.reserve(db_data.size());
