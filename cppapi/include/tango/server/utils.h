@@ -240,6 +240,13 @@ public:
 	std::string &get_ds_inst_name() {return ds_instance_name;}
 
 /**
+ * Get the device server's unmodified executable name.
+ *
+ * @return The device server's unmodified executable name
+ */
+	const std::string& get_ds_unmodified_exec_name() {return ds_unmodified_exec_name;}
+
+/**
  * Get the device server executable name.
  *
  * @return The device server executable name
@@ -881,6 +888,7 @@ private:
 	PortableServer::POA_var _poa;
 
 	std::string					ds_instance_name;	// The instance name
+	std::string					ds_unmodified_exec_name;		// The server's unmodified exec. name
 	std::string					ds_exec_name;		// The server exec. name
 	std::string					ds_name;			// The server name
 
