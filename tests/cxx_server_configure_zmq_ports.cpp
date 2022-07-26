@@ -167,7 +167,7 @@ public:
         dout >> result;
         std::vector<std::string> endpoints {};
 
-        for (int i = 0;i < result->svalue.length();i++)
+        for (CORBA::ULong i = 0;i < result->svalue.length();i++)
         {
             TEST_LOG << endl << "cxx_server_configure_zmq_ports: info["+std::to_string(i)+"] => "+string(result->svalue[i]) << endl;
             endpoints.push_back(string(result->svalue[i]));
@@ -335,7 +335,6 @@ public:
 
         // connect and ping admin device - this should fail because of bad heartbeat config
         DeviceProxy *dserver;
-        bool res_ping_dserver = true;
         dserver = new DeviceProxy(dserver_name);
         TS_ASSERT_THROWS_ASSERT(
             dserver->ping(),
