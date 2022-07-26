@@ -2093,8 +2093,12 @@ void ZmqEventConsumer::push_zmq_event(std::string &ev_name,unsigned char endian,
 						pipe_event = true;
 						break;
 
+            case ATT_VALUE:
+            // do nothing
+            break;
+
 						default:
-						break;
+                TANGO_THROW_ON_DEFAULT(data_type);
 					}
 
 					try

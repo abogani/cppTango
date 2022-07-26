@@ -467,7 +467,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_var &se
                 break;
 
             default:
-                break;
+                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
     }
 
@@ -618,7 +618,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_3_var &
                 break;
 
             default:
-                break;
+                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
     }
 

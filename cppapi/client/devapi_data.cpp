@@ -306,7 +306,7 @@ int DeviceData::get_type()
                         break;
 
                     default:
-                        break;
+                        TANGO_THROW_ON_DEFAULT(tc_seq->kind());
                 }
                 break;
 
@@ -328,7 +328,7 @@ int DeviceData::get_type()
                                 break;
 
                             default:
-                                break;
+                                TANGO_THROW_ON_DEFAULT(tc_seq->kind());
                         }
                         break;
 
@@ -337,7 +337,7 @@ int DeviceData::get_type()
                         break;
 
                     default:
-                        break;
+                        TANGO_THROW_ON_DEFAULT(tc_al->kind());
                 }
                 break;
 
@@ -346,8 +346,7 @@ int DeviceData::get_type()
                 break;
 
             default:
-                break;
-
+                TANGO_THROW_ON_DEFAULT(tc->kind());
         }
 
         CORBA::release(tc);
@@ -2275,7 +2274,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                         break;
 
                     default:
-                        break;
+                        TANGO_THROW_ON_DEFAULT(tc_seq->kind());
                 }
                 break;
 
@@ -2303,7 +2302,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                                 break;
 
                             default:
-                                break;
+                                TANGO_THROW_ON_DEFAULT(tc_seq->kind());
                         }
                         break;
 
@@ -2325,7 +2324,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                         break;
 
                     default:
-                        break;
+                        TANGO_THROW_ON_DEFAULT(tc_al->kind());
                 }
                 break;
 
@@ -2336,7 +2335,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                 break;
 
             default:
-                break;
+                TANGO_THROW_ON_DEFAULT(tc->kind());
 
         }
 

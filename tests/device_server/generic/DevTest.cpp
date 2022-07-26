@@ -1243,6 +1243,7 @@ void DevTest::write_attr_hardware(std::vector<long> &att_idx)
 	{
 	case 0:
 	default:
+    // do nothing
 		break;
 
 	case 1:

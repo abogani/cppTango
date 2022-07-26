@@ -1308,8 +1308,13 @@ void RootAttRegistry::auto_unsub()
 						delta_t = now - att.get_data_ready_event_sub();
 						break;
 
+            case INTERFACE_CHANGE_EVENT: // fallthrough-by-design
+            case PIPE_EVENT:
+            // do nothing
+            break;
+
 						default:
-						break;
+            TANGO_THROW_ON_DEFAULT(posi->event_type);;
 					}
 				}
 

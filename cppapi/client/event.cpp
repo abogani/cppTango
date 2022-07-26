@@ -737,7 +737,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
 					break;
 
 				default:
-					break;
+          TANGO_THROW_ON_DEFAULT(ty_seq->kind());
 				}
 		}
 	}

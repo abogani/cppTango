@@ -1205,7 +1205,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             default:
-                break;
+                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
         dev_attr->data_type = Tango::DEV_SHORT;
     }
@@ -1429,7 +1429,7 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
             break;
 
         default:
-            break;
+            TANGO_THROW_ON_DEFAULT(aie->memorized);
     }
     att_conf_5->enum_labels.length(aie->enum_labels.size());
     for (size_t j = 0; j < aie->enum_labels.size(); j++)
@@ -1994,8 +1994,11 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
         case Tango::IMAGE :
             o_str << ", max_dim_x = " << p.max_dim_x << ", max_dim_y = " << p.max_dim_y << std::endl;
             break;
-        default:
+        case Tango::SCALAR:
+            // do nothing
             break;
+        default:
+            TANGO_THROW_ON_DEFAULT(p.data_format);
     }
 
     o_str << "Attribute writable type = " << p.writable << std::endl;
@@ -2021,7 +2024,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
                 break;
 
             default:
-                break;
+                TANGO_THROW_ON_DEFAULT(p.data_format);
         }
     }
 

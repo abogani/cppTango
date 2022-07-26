@@ -810,11 +810,11 @@ void WAttribute::_copy_any_data(const T& data)
         case Tango::DEV_STATE :
             _copy_data<Tango::DevState>(data);
             break;
-
-        default:
-            // This should not happen.
-            // TODO error management if it does happen
+        case Tango::DEV_ENCODED:
+            // do nothing
             break;
+        default:
+            TANGO_THROW_ON_DEFAULT(data_type);
     }
 }
 template<class T>
@@ -893,9 +893,7 @@ void WAttribute::_update_any_written_value(const T& any, std::size_t x, std::siz
             break;
         
         default:
-            // This should not happen.
-            // TODO error management if it does happen
-            break;
+            TANGO_THROW_ON_DEFAULT(data_type);
     }
 }
 
