@@ -53,9 +53,11 @@ int main(int argc,char *argv[])
 		std::cout << "Exiting" << std::endl;
 	}
 
-//
-// Destroy the ORB (and properly releases its resources)
-//
-	Tango::Util::instance()->server_cleanup();
+  // Destroy the ORB (and properly release its resources)
+  if(tg)
+  {
+    tg->server_cleanup();
+  }
+
 	return(0);
 }
