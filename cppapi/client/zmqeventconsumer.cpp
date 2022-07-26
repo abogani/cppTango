@@ -3630,7 +3630,7 @@ void ZmqAttrValUnion::operator<<= (TangoCdrMemoryStream& _n)
             break;
 
             default:
-            assert(false);
+                TANGO_THROW_ON_DEFAULT(_pd__d);
         }
     }
 }
