@@ -4,16 +4,7 @@
 #ifndef ServerConfigureEventTestSuite_h
 #define ServerConfigureEventTestSuite_h
 
-#include <cxxtest/TestSuite.h>
-#include <cxxtest/TangoPrinter.h>
-#include <tango.h>
-#include <iostream>
-
-using namespace Tango;
-using namespace std;
-
-#define cout cout << "\t"
-#define    coutv    if (verbose == true) cout
+#include "cxx_common.h"
 
 #undef SUITE_NAME
 #define SUITE_NAME ServerConfigureEventTestSuite
@@ -44,7 +35,6 @@ protected:
     string dserver_name, device1_name, device1_instance_name;
     string event_port, event_port_str, heartbeat_port, heartbeat_port_str;
     string::size_type pos;
-    bool verbose;
 
 public:
     SUITE_NAME():
@@ -58,7 +48,6 @@ public:
         heartbeat_port = "9988";
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         dserver_name = "dserver/" + CxxTest::TangoPrinter::get_param("fulldsname");
-        verbose = CxxTest::TangoPrinter::is_param_defined("verbose");
         CxxTest::TangoPrinter::validate_args();
     }
 
@@ -85,7 +74,7 @@ public:
     // setup: ensure that server is torndown before each test
     void setUp()
     {
-        coutv << endl << "cxx_server_configure_zmq_ports: setup" << endl;
+        TEST_LOG << endl << "cxx_server_configure_zmq_ports: setup" << endl;
         // Stop any previously running server first
         CxxTest::TangoPrinter::kill_server();
     }
@@ -104,14 +93,14 @@ public:
             env = env+" TANGO_ZMQ_HEARTBEAT_PORT="+heartbeat_port+" ";
         }
         // Restart the test server with env vars for the fixed ports
-        coutv << endl << "cxx_server_configure_zmq_ports: relaunching DevTest/test with port specification - " << env + Tango::kStartServerCmd + device1_instance_name << endl;
+        TEST_LOG << endl << "cxx_server_configure_zmq_ports: relaunching DevTest/test with port specification - " << env + Tango::kStartServerCmd + device1_instance_name << endl;
         TS_ASSERT_THROWS_NOTHING(
             system((env + Tango::kStartServerCmd + device1_instance_name).c_str());
         );
         CxxTest::TangoPrinter::restore_set("test/debian8/10 started.");
 
         // wait a bit for the server to properly start
-        Tango_sleep(2);
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
 
@@ -125,7 +114,7 @@ public:
         TS_ASSERT_THROWS_NOTHING(
             res_ping_device1 = device1->ping();
         );
-        coutv << endl << "cxx_server_configure_zmq_ports: pinged device1 - "+device1_name << endl;
+        TEST_LOG << endl << "cxx_server_configure_zmq_ports: pinged device1 - "+device1_name << endl;
         TS_ASSERT(res_ping_device1);
         return device1;
     }
@@ -141,7 +130,7 @@ public:
         TS_ASSERT_THROWS_NOTHING(
             res_ping_dserver = dserver->ping();
         );
-        coutv << endl << "cxx_server_configure_zmq_ports: pinged admin device - "+dserver_name << endl;
+        TEST_LOG << endl << "cxx_server_configure_zmq_ports: pinged admin device - "+dserver_name << endl;
         TS_ASSERT(res_ping_dserver);
         return dserver;
     }
@@ -157,16 +146,16 @@ public:
             attribute_name,
             Tango::USER_EVENT,
             &callback));
-        coutv << endl << "cxx_server_configure_zmq_ports: sending IOPushEvent" << endl;
+        TEST_LOG << endl << "cxx_server_configure_zmq_ports: sending IOPushEvent" << endl;
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        Tango_sleep(2);
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
     // query admin server and return admin server info
     std::vector<std::string> query_admin_device(DeviceProxy* dserver)
     {
         // query the admin device so that we get the zmq port specifications
-        coutv << endl << "cxx_server_configure_zmq_ports: sending ZmqEventSubscriptionChange" << endl << endl;
+        TEST_LOG << endl << "cxx_server_configure_zmq_ports: sending ZmqEventSubscriptionChange" << endl << endl;
         DeviceData din,dout;
         vector<string> din_info;
         din_info.push_back("info");
@@ -180,7 +169,7 @@ public:
 
         for (int i = 0;i < result->svalue.length();i++)
         {
-            coutv << endl << "cxx_server_configure_zmq_ports: info["+std::to_string(i)+"] => "+string(result->svalue[i]) << endl;
+            TEST_LOG << endl << "cxx_server_configure_zmq_ports: info["+std::to_string(i)+"] => "+string(result->svalue[i]) << endl;
             endpoints.push_back(string(result->svalue[i]));
         }
         return endpoints;
@@ -205,7 +194,7 @@ public:
         DeviceProxy *device1 = create_and_check_device1_proxy();
         DeviceProxy *dserver = create_and_check_admin_device_proxy();
 
-        coutv << endl << "test_device_server_zmq_event_port_ephemeral: new DeviceProxy(" << device1->name() +"[" + device1_name +"]" << ") returned" << endl;
+        TEST_LOG << endl << "test_device_server_zmq_event_port_ephemeral: new DeviceProxy(" << device1->name() +"[" + device1_name +"]" << ") returned" << endl;
 
         // setup a subscription so that the event port is woken up
         exercise_subscription_event(device1);
@@ -213,9 +202,9 @@ public:
         TS_ASSERT(result.size() > 1);
         std::string heartbeat_endpoint = result[0];
         std::string event_endpoint = result[1];
-        coutv << endl << "test_device_server_zmq_event_port_ephemeral: finished" << endl << endl;
-        coutv << "Heartbeat endpoint: " << heartbeat_endpoint << endl;
-        coutv << "Event endpoint: " << event_endpoint << endl;
+        TEST_LOG << endl << "test_device_server_zmq_event_port_ephemeral: finished" << endl << endl;
+        TEST_LOG << "Heartbeat endpoint: " << heartbeat_endpoint << endl;
+        TEST_LOG << "Event endpoint: " << event_endpoint << endl;
 
         // Check that the ports are not equal to the fixed ones ie. ephemeral
         // and that they are in the ephemeral range - default 32768 to 60999
@@ -248,7 +237,7 @@ public:
         DeviceProxy *device1 = create_and_check_device1_proxy();
         DeviceProxy *dserver = create_and_check_admin_device_proxy();
 
-        coutv << endl << "test_device_server_zmq_event_port_configured: new DeviceProxy(" << device1->name() +"[" + device1_name +"]" << ") returned" << endl;
+        TEST_LOG << endl << "test_device_server_zmq_event_port_configured: new DeviceProxy(" << device1->name() +"[" + device1_name +"]" << ") returned" << endl;
 
         // setup a subscription so that the event port is woken up
         exercise_subscription_event(device1);
@@ -256,9 +245,9 @@ public:
         TS_ASSERT(result.size() > 1);
         std::string heartbeat_endpoint = result[0];
         std::string event_endpoint = result[1];
-        coutv << endl << "test_device_server_zmq_event_port_configured: finished" << endl << endl;
-        coutv << "Heartbeat endpoint: " << heartbeat_endpoint << endl;
-        coutv << "Event endpoint: " << event_endpoint << endl;
+        TEST_LOG << endl << "test_device_server_zmq_event_port_configured: finished" << endl << endl;
+        TEST_LOG << "Heartbeat endpoint: " << heartbeat_endpoint << endl;
+        TEST_LOG << "Event endpoint: " << event_endpoint << endl;
 
         pos = heartbeat_endpoint.rfind(':');
         heartbeat_port_str = heartbeat_endpoint.substr(pos + 1);
@@ -288,7 +277,7 @@ public:
         DeviceProxy *dserver = create_and_check_admin_device_proxy();
 
         // setup a subscription so that the event port is woken up - check it that it fails
-        coutv << endl << "test_device_server_zmq_event_invalid_port_configured: new DeviceProxy(" << device1->name() +"[" + device1_name +"]" << ") returned" << endl;
+        TEST_LOG << endl << "test_device_server_zmq_event_invalid_port_configured: new DeviceProxy(" << device1->name() +"[" + device1_name +"]" << ") returned" << endl;
 
         EventCallback<Tango::EventData> callback{};
         std::string attribute_name = "event_change_tst";
@@ -309,8 +298,8 @@ public:
         TS_ASSERT(result.size() > 1);
         std::string heartbeat_endpoint = result[0];
         std::string event_endpoint = result[1];
-        coutv << "Heartbeat endpoint: " << heartbeat_endpoint << endl;
-        coutv << "Event endpoint: " << event_endpoint << endl;
+        TEST_LOG << "Heartbeat endpoint: " << heartbeat_endpoint << endl;
+        TEST_LOG << "Event endpoint: " << event_endpoint << endl;
         pos = heartbeat_endpoint.rfind(':');
         heartbeat_port_str = heartbeat_endpoint.substr(pos + 1);
         TS_ASSERT_EQUALS(heartbeat_port, heartbeat_port_str);
@@ -374,5 +363,4 @@ public:
     }
 };
 
-#undef cout
 #endif // ServerConfigureEventTestSuite_h
