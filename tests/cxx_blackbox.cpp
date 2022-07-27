@@ -153,7 +153,7 @@ public:
 			version_str = "_4";
 			break;
 		default:
-			version_str = "";
+      TS_FAIL("Unexpected default");
 		}
 
 #ifdef _TG_WINDOWS_
