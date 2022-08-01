@@ -1,13 +1,18 @@
+#include "common.h"
+
+#ifdef _TG_WINDOWS_
+#include <sys/types.h>
+#include <ws2tcpip.h>
+#else
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
-#include "common.h"
 
 void set_user_device_right(DeviceProxy *,const char *,const char *,const char *);
 void set_user_address(DeviceProxy *,const char *,const char *);
@@ -15,7 +20,7 @@ void remove_user(DeviceProxy *,string &);
 void check_device_access(DeviceProxy *,bool,bool);
 void check_device_access(string &,bool,bool);
 void call_devices_ds_off(DeviceProxy *,DeviceProxy *,bool);
-pid_t start_ds(const char *,const char *,const char *);
+TangoSys_Pid start_ds(const std::string& path, const std::string& name, const std::string& inst);
 
 int main(int argc, char **argv)
 {	
@@ -296,7 +301,7 @@ int main(int argc, char **argv)
 
 	DeviceProxy *dev_dp;
 	DeviceProxy *another_dev_dp;
-	pid_t ds_pid;
+	TangoSys_Pid ds_pid;
 
 	try
 	{
@@ -438,7 +443,7 @@ int main(int argc, char **argv)
 
 //--------------- RE_CONNECTION TO CONTROLLED ACCESS SERVICE TEST--------------------
 
-	pid_t ca_pid;
+	TangoSys_Pid ca_pid;
 	try
 	{		
 		check_device_access(dev_dp,true,false);
@@ -887,10 +892,39 @@ void call_devices_ds_off(DeviceProxy *dev_dp,DeviceProxy *another_dev_dp,bool ki
 	TEST_LOG << "Second Status: OK" << endl;
 }
 
-pid_t start_ds(const char* path,const char *name,const char *inst)
+TangoSys_Pid start_ds(const std::string& path, const std::string& name, const std::string& inst)
 {
+	TangoSys_Pid pi;
+#ifdef _TG_WINDOWS_
+        TS_FAIL("not implemented");
 
-	pid_t pi = fork();
+        std::string cmd_line = path + " " + inst;
+        char* cmdline = new char[cmd_line.length() + 1];
+        strcpy(cmdline, cmd_line.c_str());
+
+        STARTUPINFO si;
+        PROCESS_INFORMATION info;
+
+        if(!CreateProcess(path.c_str(),
+                    cmdline,
+                    NULL,
+                    NULL,
+                    FALSE,
+                    0,
+                    NULL,
+                    NULL,
+                    &si,
+                    &info)
+                )
+        {
+            TEST_LOG << "Error !!!!!!!!!!" << GetLastError() << endl;
+            exit(-1);
+        }
+
+        pi = info.dwProcessId;
+        delete[] cmdline;
+#else
+	pi = fork();
 	if (pi == 0)
 	{
 		if (close(1) ==  -1)
@@ -918,12 +952,12 @@ pid_t start_ds(const char* path,const char *name,const char *inst)
 			exit(-1);
 		}
 	
-		char *args[] = {(char *)name,(char *)inst,(char *)0};
-		execv(path,args);
+		char *args[] = {(char *)name.c_str(),(char *)inst.c_str(),(char *)0};
+		execv(path.c_str(),args);
 		TEST_LOG << "Error !!!!!!!!!!" << endl;
 	}
 	else if (pi < 0)
 		pi = -1;
-
+#endif
 	return pi;
 }
