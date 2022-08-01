@@ -63,7 +63,8 @@ function(CXX_GENERATE_TEST_EXEC name)
                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                        COMMENT "Generate ${name}.cpp")
 
-    add_executable(${name} $<TARGET_OBJECTS:compare_test_object> ${name}.cpp)
+    add_executable(${name} $<TARGET_OBJECTS:compare_test_object> ${name}.cpp
+        common.cpp)
     target_include_directories(${name} PRIVATE cxxtest/include ${CMAKE_CURRENT_BINARY_DIR}/cxxtest/include)
     target_link_libraries(${name} PRIVATE tango ${CMAKE_THREAD_LIBS_INIT})
     target_compile_definitions(${name} PRIVATE ${COMMON_TEST_DEFS})

@@ -929,7 +929,7 @@ public:
 	{
 		const std::string original_tango_host = std::getenv("TANGO_HOST");
 
-		TS_ASSERT_EQUALS(0, unsetenv("TANGO_HOST"));
+		TS_ASSERT_EQUALS(0, unset_env("TANGO_HOST"));
 		ApiUtil::instance()->cleanup();
 
 		Group group("group");
@@ -948,7 +948,7 @@ public:
 		TS_ASSERT_EQUALS(ON, state);
 
 		const bool force_update = true;
-		TS_ASSERT_EQUALS(0, setenv("TANGO_HOST", original_tango_host.c_str(), force_update));
+		TS_ASSERT_EQUALS(0, set_env("TANGO_HOST", original_tango_host, force_update));
 		ApiUtil::instance()->cleanup();
 	}
 
