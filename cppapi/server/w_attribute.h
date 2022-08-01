@@ -522,9 +522,6 @@ public:
 	void get_write_value(const T *&);
 
 	template <typename T>
-	void check_type(T &,const std::string &);
-
-	template <typename T>
 	void set_write_value(T);
         
 	void set_write_value(Tango::DevEncoded *, long x = 1,long y = 0); // Dummy method for compiler
@@ -725,6 +722,10 @@ private:
  */
     template<class T>
     void _copy_any_data(const T& data);
+	
+    template <typename T>
+    void check_type(const std::string &);
+
 
 //
 // The extension class
