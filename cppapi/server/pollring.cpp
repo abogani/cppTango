@@ -35,9 +35,9 @@
 //
 //-============================================================================
 
-#include <tango.h>
-#include <pollring.h>
-#include <pollring.tpp>
+#include <tango/tango.h>
+#include <tango/server/pollring.h>
+#include <tango/server/pollring.tpp>
 
 
 #ifdef _TG_WINDOWS_

@@ -19,9 +19,9 @@
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <ntservice.h>
+#include <tango/windows/ntservice.h>
 
-#include <tango.h>
+#include <tango/tango.h>
 
 namespace Tango
 {

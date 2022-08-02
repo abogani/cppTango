@@ -31,7 +31,7 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
 namespace Tango
@@ -211,7 +211,7 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const Attribut
         ls << "Attribute name: " << conf.name.in() << std::endl;
 	ls << "Attribute data_type: " << (CmdArgType)conf.data_type << std::endl;
 	ls << "Attribute data_format: ";
-	
+
         switch (conf.data_format)
 	{
 	  case Tango::FMT_UNKNOWN:

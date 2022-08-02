@@ -31,9 +31,9 @@
 //
 //-===================================================================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <new>
-#include <dserversignal.h>
+#include <tango/server/dserversignal.h>
 
 #ifndef _TG_WINDOWS_
 #include <errno.h>

@@ -1,4 +1,4 @@
-#include <tango.h>
+#include <tango/tango.h>
 #include "DevTest.h"
 #include <assert.h>
 
@@ -190,4 +190,3 @@ void DevTest::FileDb()
 
 	std::cout << "   Delete device attribute property --> OK" << std::endl;
 }
-

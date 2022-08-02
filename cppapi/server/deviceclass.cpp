@@ -30,20 +30,20 @@
 //
 //-================================================================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <new>
 #include <iterator>
 
-#include <basiccommand.h>
-#include <blackbox.h>
-#include <dserversignal.h>
-#include <classattribute.h>
-#include <classpipe.h>
-#include <eventsupplier.h>
+#include <tango/server/basiccommand.h>
+#include <tango/server/blackbox.h>
+#include <tango/server/dserversignal.h>
+#include <tango/server/classattribute.h>
+#include <tango/server/classpipe.h>
+#include <tango/server/eventsupplier.h>
 
-#include <apiexcept.h>
+#include <tango/client/apiexcept.h>
 
-#include <logging.h>
+#include <tango/server/logging.h>
 
 namespace Tango
 {

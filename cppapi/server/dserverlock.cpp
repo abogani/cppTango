@@ -35,7 +35,7 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
 namespace Tango
@@ -315,4 +315,3 @@ Tango::DevVarLongStringArray *DServer::dev_lock_status(Tango::ConstDevString dev
 
 
 } // End of Tango namespace
-

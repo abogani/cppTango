@@ -43,7 +43,7 @@
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
-#include <tango.h>
+#include <tango/tango.h>
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
@@ -53,9 +53,9 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <device_5.h>
-#include <eventsupplier.h>
-#include <device_3.tpp>
+#include <tango/server/device_5.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/server/device_3.tpp>
 
 
 namespace Tango

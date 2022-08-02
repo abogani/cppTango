@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,16 +16,16 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.hh>
 #ifdef LOG4TANGO_HAVE_IO_H
 #    include <io.h>
 #endif
@@ -36,15 +36,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <log4tango/RollingFileAppender.hh>
-#include <log4tango/Logger.hh>
+#include <tango/common/log4tango/RollingFileAppender.hh>
+#include <tango/common/log4tango/Logger.hh>
 #include <sstream>
 
 namespace log4tango {
 
     RollingFileAppender::RollingFileAppender(const std::string& name,
-                                             const std::string& file_name, 
-                                             size_t max_fs, 
+                                             const std::string& file_name,
+                                             size_t max_fs,
                                              unsigned int max_bi,
                                              bool append,
                                              mode_t mode) :
@@ -53,20 +53,20 @@ namespace log4tango {
         _max_file_size(max_fs) {
     }
 
-    void RollingFileAppender::set_max_backup_index (unsigned int max_bi) { 
-        _max_backup_index = max_bi; 
+    void RollingFileAppender::set_max_backup_index (unsigned int max_bi) {
+        _max_backup_index = max_bi;
     }
-    
-    unsigned int RollingFileAppender::get_max_backup_index() const { 
-        return _max_backup_index; 
+
+    unsigned int RollingFileAppender::get_max_backup_index() const {
+        return _max_backup_index;
     }
 
     void RollingFileAppender::set_maximum_file_size (size_t max_fs) {
         _max_file_size = max_fs;
     }
 
-    size_t RollingFileAppender::get_max_file_size() const { 
-        return _max_file_size; 
+    size_t RollingFileAppender::get_max_file_size() const {
+        return _max_file_size;
     }
 
 #if defined(_MSC_VER)

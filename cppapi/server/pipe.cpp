@@ -30,9 +30,9 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <eventsupplier.h>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/server/tango_clock.h>
 
 namespace Tango
 {

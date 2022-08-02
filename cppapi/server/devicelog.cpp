@@ -96,10 +96,10 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
-#include <logging.h>
+#include <tango/server/logging.h>
 
 namespace Tango
 {

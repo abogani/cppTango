@@ -31,10 +31,10 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <basiccommand.h>
-#include <devintr.h>
-#include <eventsupplier.h>
+#include <tango/tango.h>
+#include <tango/server/basiccommand.h>
+#include <tango/server/devintr.h>
+#include <tango/server/eventsupplier.h>
 
 namespace Tango
 {

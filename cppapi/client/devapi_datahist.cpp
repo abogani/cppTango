@@ -29,7 +29,7 @@
 //
 //
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <iomanip>
 
 using namespace CORBA;

@@ -1,7 +1,7 @@
 #ifndef AttrMiscTestSuite_h
 #define AttrMiscTestSuite_h
 
-#include <tango_current_function.h>
+#include <tango/server/tango_current_function.h>
 
 #include "cxx_common.h"
 

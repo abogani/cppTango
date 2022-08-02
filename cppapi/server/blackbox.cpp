@@ -32,9 +32,9 @@
 //
 //-===================================================================================================================
 
-#include <tango.h>
-#include <blackbox.h>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/server/blackbox.h>
+#include <tango/server/tango_clock.h>
 
 #include <stdio.h>
 

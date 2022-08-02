@@ -30,11 +30,11 @@
 //
 //====================================================================================================================
 
-#include <tango.h>
-#include <device_3.h>
-#include <eventsupplier.h>
-#include <device_3.tpp>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/server/device_3.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/server/device_3.tpp>
+#include <tango/server/tango_clock.h>
 #include <new>
 
 namespace Tango

@@ -35,7 +35,7 @@
 //
 //-============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <new>
 
 namespace Tango {

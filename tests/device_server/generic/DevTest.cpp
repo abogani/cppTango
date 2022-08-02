@@ -1,6 +1,6 @@
-#include <tango.h>
+#include <tango/tango.h>
 #include "DevTest.h"
-#include <tango_clock.h>
+#include <tango/server/tango_clock.h>
 
 #ifdef WIN32
 #include <process.h>
@@ -2586,4 +2586,3 @@ void DevTest::cmd_push_state_status_event()
 	set_change_event("State",false,false);
 	set_change_event("Status",false,false);
 }
-

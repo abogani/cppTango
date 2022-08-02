@@ -30,8 +30,8 @@
 //
 //-=================================================================================================================
 
-#include <tango.h>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/server/tango_clock.h>
 
 #include <iomanip>
 
@@ -2064,4 +2064,3 @@ void DServer::check_upd_authorized(DeviceImpl *dev,int upd,PollObjType obj_type,
 }
 
 } // End of Tango namespace
-

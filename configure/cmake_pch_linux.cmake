@@ -4,7 +4,7 @@
 function(tango_target_pch target)
     target_compile_options(${target} PRIVATE
         -Winvalid-pch
-        -include "${CMAKE_BINARY_DIR}/cppapi/server/tango.h")
+        -include "${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h")
     add_dependencies(${target} tango_pch)
 endfunction()
 
@@ -24,7 +24,7 @@ endfunction()
 #
 function(tango_add_pch pch_target ref_target pch_extra_cxx_flags)
 
-    set(tango_h_file "${CMAKE_SOURCE_DIR}/cppapi/server/tango.h")
+    set(tango_h_file "${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h")
     set(tango_pch_file "${CMAKE_CURRENT_BINARY_DIR}/tango.h.gch")
     set(tango_pch_h_file "${CMAKE_CURRENT_BINARY_DIR}/tango.h")
 

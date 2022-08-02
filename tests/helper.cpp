@@ -1,11 +1,11 @@
 #include "common.h"
 
-#include <DeviceProxyHelper.h>
+#include <tango/client/helpers/DeviceProxyHelper.h>
 
 int main(int argc, char **argv)
 {
 	DeviceProxyHelper *dev_helper;
-	
+
 	if (argc != 3)
 	{
 		TEST_LOG << "usage: %s device loop" << endl;
@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 	string device_name = argv[1];
 	long loop = atol(argv[2]);
 
-	try 
+	try
 	{
 		dev_helper = new DeviceProxyHelper(device_name);
 		TEST_LOG << endl << "new DeviceProxy(" << dev_helper->get_device_proxy()->name() << ") returned" << endl << endl;
@@ -31,14 +31,14 @@ int main(int argc, char **argv)
 // test short
 
 		for (int i = 0;i < loop;i++)
-		{		
+		{
 			short in_s = 2;
 			short received_s;
 			dev_helper->command_inout("IOShort",in_s,received_s);
 			assert( received_s == (in_s * 2) );
 		}
 		TEST_LOG << "   Short --> OK" << endl;
-		
+
 // tset long
 
 		for (int i = 0;i < loop;i++)
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 // test double
 
 		for (int i = 0;i < loop;i++)
-		{			
+		{
 			double in_d = 3.1;
 			double received_d;
 			dev_helper->command_inout("IODouble",in_d,received_d);
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 			assert( received_str == "cba" );
 		}
 		TEST_LOG << "   C++ string --> OK" << endl;
-			
+
 // Test C string
 
 		for (int i = 0;i < loop;i++)
@@ -130,31 +130,31 @@ int main(int argc, char **argv)
 			assert( in_vuc[1] == received_vuc[0] );
 		}
 		TEST_LOG << "   vector of unsigned char --> OK" << endl;
-	
+
 // Test DevVarCharArray
 
 		for (int i = 0;i < loop;i++)
 		{
-			const DevVarCharArray *received_dvca;		
+			const DevVarCharArray *received_dvca;
 			DevVarCharArray *in_dvca = new DevVarCharArray(2);
 			in_dvca->length(2);
 			(*in_dvca)[0] = 10;
-			(*in_dvca)[1] = 20;		
+			(*in_dvca)[1] = 20;
 			dev_helper->command_inout("IOCharArray",in_dvca,received_dvca);
 			assert( 10 == (*received_dvca)[1] );
 			assert( 20 == (*received_dvca)[0] );
 
-			const DevVarCharArray *received_dvca2;		
+			const DevVarCharArray *received_dvca2;
 			DevVarCharArray in_dvca2(2);
 			in_dvca2.length(2);
 			in_dvca2[0] = 10;
-			in_dvca2[1] = 20;		
+			in_dvca2[1] = 20;
 			dev_helper->command_inout("IOCharArray",in_dvca2,received_dvca2);
 			assert( in_dvca2[0] == (*received_dvca2)[1] );
-			assert( in_dvca2[1] == (*received_dvca2)[0] );		
+			assert( in_dvca2[1] == (*received_dvca2)[0] );
 		}
 		TEST_LOG << "   DevVarCharArray (by pointer and reference) --> OK" << endl;
-	
+
 // test short array
 
 		for (int i = 0;i < loop;i++)
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 			assert( received_vs[1] == (in_vs[1] * 2) );
 		}
 		TEST_LOG << "   vector of short --> OK" << endl;
-	
+
 // test DevVarShortArray
 
 		for (int i = 0;i < loop;i++)
@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 			assert( (*received_dvsa2)[1] == (in_dvsa2[1] * 2) );
 		}
 		TEST_LOG << "   DevVarShortArray (by pointer and reference) --> OK" << endl;
-	
+
 // test long array
 
 		for (int i = 0;i < loop;i++)
@@ -206,7 +206,7 @@ int main(int argc, char **argv)
 			assert( received_vl[1] == (in_vl[1] * 2) );
 		}
 		TEST_LOG << "   vector of long --> OK" << endl;
-	
+
 // test DevVarLongArray
 
 		for (int i = 0;i < loop;i++)
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 			assert( (*received_dvla2)[1] == (in_dvla2[1] * 2) );
 		}
 		TEST_LOG << "   DevVarLongArray (by pointer and reference) --> OK" << endl;
-					
+
 // test float array
 
 		for (int i = 0;i < loop;i++)
@@ -244,7 +244,7 @@ int main(int argc, char **argv)
 			assert( received_vfl[1] == (in_vfl[1] * 2) );
 		}
 		TEST_LOG << "   vector of float --> OK" << endl;
-	
+
 // test DevVarFloatArray
 
 		for (int i = 0;i < loop;i++)
@@ -268,7 +268,7 @@ int main(int argc, char **argv)
 			assert( (*received_dvfa2)[1] == (in_dvfa2[1] * 2) );
 		}
 		TEST_LOG << "   DevVarFloatArray (by pointer and reference) --> OK" << endl;
-		
+
 // test double array
 
 		for (int i = 0;i < loop;i++)
@@ -320,7 +320,7 @@ int main(int argc, char **argv)
 			assert( received_vus[1] == (in_vus[1] * 2) );
 		}
 		TEST_LOG << "   vector of unsigned short --> OK" << endl;
-	
+
 // test DevVarUShortArray
 
 		for (int i = 0;i < loop;i++)
@@ -344,7 +344,7 @@ int main(int argc, char **argv)
 			assert( (*received_dvusa2)[1] == (in_dvusa2[1] * 2) );
 		}
 		TEST_LOG << "   DevVarUShortArray (by pointer and reference) --> OK" << endl;
-		
+
 // test unsigned long array
 
 		for (int i = 0;i < loop;i++)
@@ -358,7 +358,7 @@ int main(int argc, char **argv)
 			assert( received_vul[1] == (in_vul[1] * 2) );
 		}
 		TEST_LOG << "   vector of unsigned long --> OK" << endl;
-	
+
 // test DevVarULongArray
 
 		for (int i = 0;i < loop;i++)
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 			assert( (*received_dvula2)[1] == (in_dvula2[1] * 2) );
 		}
 		TEST_LOG << "   DevVarULongArray (by pointer and reference) --> OK" << endl;
-		
+
 // test string array
 
 		for (int i = 0;i < loop;i++)
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
 			assert( received_vstr[1] == in_vstr[0] );
 		}
 		TEST_LOG << "   vector of string --> OK" << endl;
-	
+
 // test DevVarStringArray
 
 		for (int i = 0;i < loop;i++)
@@ -411,10 +411,10 @@ int main(int argc, char **argv)
 			assert( !strcmp((*received_dvstra)[1],"abc") );
 		}
 		TEST_LOG << "   DevVarStringArray --> OK" << endl;
-		
 
 
-		
+
+
 		delete dev_helper;
 	}
         catch (CORBA::Exception &e)

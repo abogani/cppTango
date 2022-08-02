@@ -19,9 +19,9 @@
 //
 //-=============================================================================
 
-#include <tango.h>
-#include <dserverclass.h>
-#include <dserversignal.h>
+#include <tango/tango.h>
+#include <tango/server/dserverclass.h>
+#include <tango/server/dserversignal.h>
 
 
 int main(int argc,char *argv[])
@@ -60,4 +60,3 @@ int main(int argc,char *argv[])
 	tg->server_cleanup();
 	return(0);
 }
-

@@ -31,7 +31,7 @@
 //
 //=============================================================================
 
-#include <group.h>
+#include <tango/client/group.h>
 #include <sstream>
 
 //-----------------------------------------------------------------------------
@@ -2280,5 +2280,3 @@ void GroupDeviceElement::set_timeout_millis (int tmo)
 }
 
 } // namespace Tango
-
-

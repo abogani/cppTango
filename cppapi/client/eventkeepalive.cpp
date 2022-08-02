@@ -33,8 +33,8 @@
 //
 //====================================================================================================================
 
-#include <tango.h>
-#include <eventconsumer.h>
+#include <tango/tango.h>
+#include <tango/client/eventconsumer.h>
 
 #include <stdio.h>
 
@@ -2035,4 +2035,3 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
 }
 
 } /* End of Tango namespace */
-

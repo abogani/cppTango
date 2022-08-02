@@ -30,8 +30,8 @@
 //
 //-=================================================================================================================
 
-#include <tango.h>
-#include <lockthread.h>
+#include <tango/tango.h>
+#include <tango/client/lockthread.h>
 
 #include <functional>
 #include <algorithm>

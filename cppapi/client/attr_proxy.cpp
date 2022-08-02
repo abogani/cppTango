@@ -27,8 +27,8 @@
 //
 //
 
-#include <tango.h>
-#include <eventconsumer.h>
+#include <tango/tango.h>
+#include <tango/client/eventconsumer.h>
 
 #include <time.h>
 #include <signal.h>

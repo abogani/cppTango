@@ -37,7 +37,14 @@
 //
 //-===========================================================================
 
-#include <dserver.h>
+#include <tango/server/dserver.h>
+#ifdef __darwin__
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <algorithm>
+#include <regex>
+#endif
 
 namespace Tango
 {

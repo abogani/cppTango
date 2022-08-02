@@ -31,7 +31,7 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
 //-----------------------------------------------------------------------------
@@ -47,9 +47,9 @@
 # include <pwd.h>
 #endif
 
-#include <coutappender.h>
-#include <tangoappender.h>
-#include <tangorollingfileappender.h>
+#include <tango/server/coutappender.h>
+#include <tango/server/tangoappender.h>
+#include <tango/server/tangorollingfileappender.h>
 
 namespace Tango
 {

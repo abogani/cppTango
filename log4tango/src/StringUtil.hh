@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,19 +16,19 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef _LOG4TANGO_STRINGUTIL_H
 #define _LOG4TANGO_STRINGUTIL_H
 
-#include <log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.hh>
 #include <string>
 #include <vector>
 #include <climits>
@@ -36,7 +36,7 @@
 
 namespace log4tango {
 
-class StringUtil 
+class StringUtil
 {
 public:
 
@@ -67,7 +67,7 @@ public:
   character.
   @return The actual number of segments (limited by maxSegments).
   **/
-  static unsigned int split(std::vector<std::string>& v, 
+  static unsigned int split(std::vector<std::string>& v,
 				                    const std::string& s, char delimiter,
 				                    unsigned int maxSegments = INT_MAX);
 
@@ -81,10 +81,10 @@ public:
   @param maxSegments The maximum number of segments.
   @return The actual number of segments (limited by maxSegments).
   **/
-  template<typename T> 
+  template<typename T>
   static unsigned int split(T& output,
                             const std::string& s, char delimiter,
-                            unsigned int maxSegments = INT_MAX) 
+                            unsigned int maxSegments = INT_MAX)
   {
     std::string::size_type left = 0;
     unsigned int i;
@@ -104,4 +104,3 @@ public:
 } // namespace log4tango
 
 #endif // _LOG4TANGO_STRINGUTIL_HH
-

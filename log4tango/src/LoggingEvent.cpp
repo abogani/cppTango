@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,24 +16,24 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <chrono>
 
-#include <log4tango/Portability.hh>
-#include <log4tango/LoggingEvent.hh>
+#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/LoggingEvent.hh>
 
 namespace log4tango {
-   
 
-LoggingEvent::LoggingEvent (const std::string& _logger_name, 
+
+LoggingEvent::LoggingEvent (const std::string& _logger_name,
                             const std::string& _message,
                             Level::Value _level,
                             const std::string& _file_path,
@@ -51,4 +51,4 @@ LoggingEvent::LoggingEvent (const std::string& _logger_name,
 
 LoggingEvent::LoggingEvent (const LoggingEvent& _src) = default;
 
-} // namespace log4tango 
+} // namespace log4tango

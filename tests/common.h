@@ -2,7 +2,7 @@
 #define Common_H
 
 #include <iostream>
-#include <tango.h>
+#include <tango/tango.h>
 
 #ifndef TS_ASSERT
 #include <assert.h>

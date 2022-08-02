@@ -29,8 +29,8 @@
 //
 //-======================================================================
 
-#include <tango.h>
-#include <accessproxy.h>
+#include <tango/tango.h>
+#include <tango/client/accessproxy.h>
 
 #include <sys/types.h>
 

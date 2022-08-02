@@ -37,8 +37,8 @@
 
 #include <algorithm>
 
-#include <tango.h>
-#include <pollcmds.h>
+#include <tango/tango.h>
+#include <tango/server/pollcmds.h>
 
 namespace Tango
 {

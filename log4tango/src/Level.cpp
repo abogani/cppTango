@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,17 +16,17 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <log4tango/Portability.hh>
-#include <log4tango/Level.hh>
+#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Level.hh>
 
 #include <cstdlib>
 
@@ -38,12 +38,12 @@ namespace log4tango {
 
 /*static const std::string names[NUM_LEVELS] = {
     std::string("OFF"),
-    std::string("FATAL"), 
-    std::string("ERROR"), 
+    std::string("FATAL"),
+    std::string("ERROR"),
     std::string("WARN"),
-    std::string("INFO"), 
+    std::string("INFO"),
     std::string("DEBUG"),
-    std::string("UNKNOWN") 
+    std::string("UNKNOWN")
 };*/
 
 
@@ -62,12 +62,12 @@ namespace log4tango {
 const std::string& Level::get_name (Value level) {
 static const std::string names[NUM_LEVELS] = {
     std::string("OFF"),
-    std::string("FATAL"), 
-    std::string("ERROR"), 
+    std::string("FATAL"),
+    std::string("ERROR"),
     std::string("WARN"),
-    std::string("INFO"), 
+    std::string("INFO"),
     std::string("DEBUG"),
-    std::string("UNKNOWN") 
+    std::string("UNKNOWN")
 };
 
   level /= 100;
@@ -76,17 +76,17 @@ static const std::string names[NUM_LEVELS] = {
   return names[((level < 0) || (level > max)) ? max : level];
 }
 
-Level::Value Level::get_value(const std::string& level_name) 
+Level::Value Level::get_value(const std::string& level_name)
 {
 static const std::string names[NUM_LEVELS] = {
     std::string("OFF"),
-    std::string("FATAL"), 
-    std::string("ERROR"), 
+    std::string("FATAL"),
+    std::string("ERROR"),
     std::string("WARN"),
-    std::string("INFO"), 
+    std::string("INFO"),
     std::string("DEBUG"),
-    std::string("UNKNOWN") 
-};	
+    std::string("UNKNOWN")
+};
 	Level::Value value = -1;
 	for (unsigned int i = 0; i < NUM_LEVELS; i++) {
 	  if (level_name == names[i]) {
@@ -98,7 +98,7 @@ static const std::string names[NUM_LEVELS] = {
 		char* end_pointer;
 		value = std::strtoul(level_name.c_str(), &end_pointer, 10);
 		if (*end_pointer != 0) {
-		  throw std::invalid_argument(std::string("unknown level name: '") 
+		  throw std::invalid_argument(std::string("unknown level name: '")
                                   + level_name + "'");
 		}
 	}

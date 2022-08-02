@@ -35,8 +35,9 @@ static const char *RcsId = "$Id$\n$Name$";
 //
 //-=============================================================================
 
-#include <coutbuf.h>
-#include <resource.h>
+#include <tango/windows/coutbuf.h>
+#include <tango/windows/resource.h>
+
 #include <commctrl.h>
 
 namespace Tango

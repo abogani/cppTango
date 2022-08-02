@@ -29,8 +29,8 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/server/tango_clock.h>
 
 #include <iostream>
 #include <algorithm>

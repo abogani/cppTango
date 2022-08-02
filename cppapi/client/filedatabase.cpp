@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <numeric>
-#include <tango.h>
+#include <tango/tango.h>
 
 // DbInfo                              done
 // DbImportDevice

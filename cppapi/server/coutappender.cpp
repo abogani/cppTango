@@ -68,9 +68,9 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
-#include <coutappender.h>
+#include <tango/server/coutappender.h>
 
 namespace Tango
 {

@@ -26,7 +26,7 @@
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <tango.h>
+#include <tango/tango.h>
 
 #include <iomanip>
 #include <limits>

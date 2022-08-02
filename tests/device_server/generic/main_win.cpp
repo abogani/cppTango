@@ -20,7 +20,7 @@ static const char *RcsId = "$Header$";
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
 int APIENTRY WinMain(HINSTANCE hInstance,
@@ -74,4 +74,3 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
    return msg.wParam;
 }
-

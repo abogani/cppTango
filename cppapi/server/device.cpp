@@ -30,18 +30,18 @@
 //
 //-================================================================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 #include <new>
 
-#include <basiccommand.h>
-#include <blackbox.h>
-#include <dserversignal.h>
-#include <classattribute.h>
-#include <eventsupplier.h>
-#include <apiexcept.h>
-#include <tango_clock.h>
+#include <tango/server/basiccommand.h>
+#include <tango/server/blackbox.h>
+#include <tango/server/dserversignal.h>
+#include <tango/server/classattribute.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/client/apiexcept.h>
+#include <tango/server/tango_clock.h>
 
-#include <logging.h>
+#include <tango/server/logging.h>
 
 namespace Tango
 {
@@ -50,7 +50,7 @@ namespace Tango
     {
         template<class T>
         T& get_any_value(Tango::AttrValUnion&);
-        
+
         template<class T>
         void set_union_value(Tango::AttrValUnion& val, T& arr);
 
@@ -345,9 +345,9 @@ namespace Tango
                             tmp_cst->length(),
                             const_cast<T *>(tmp_cst->get_buffer()),
                             false);
-                } 
+                }
                 (*aid.data_3)[index].value <<= tmp;
-            } 
+            }
         }
 
         template<class T>
@@ -5791,7 +5791,7 @@ void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_t
                 alarm_msg << "\nYou can update it using the Jive tool";
             }
             alarm_msg << "\nError: ";
-            
+
             alarm_msg << fwd_att_wrong_conf[i].fae;
 
             if(fwd_att_wrong_conf[i].fae == FWD_DOUBLE_USED)
