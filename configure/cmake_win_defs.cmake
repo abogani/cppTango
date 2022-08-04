@@ -1,5 +1,5 @@
 #definitions and preprocessor
-option(TANGO_INSTALL_DEPENDENCIES "Install the libraries that tango depends on" ON)
+option(TANGO_INSTALL_DEPENDENCIES "Install the libraries that tango depends on" OFF)
 
 add_definitions(-D_WIN32)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
