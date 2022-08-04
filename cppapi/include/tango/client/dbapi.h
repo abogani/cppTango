@@ -37,10 +37,6 @@
 
 #include <tango/common/tango_const.h>
 
-#ifdef TANGO_USE_USING_NAMESPACE
-  using namespace std;
-#endif
-
 namespace Tango {
 
 ///

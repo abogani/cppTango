@@ -6,7 +6,6 @@ variables: &variables
   STOCK_CPPZMQ: "ON"
   TANGO_USE_PCH: "ON"
   CMAKE_BUILD_TYPE: "Debug"
-  TANGO_USE_USING_NAMESPACE: "ON"
   TANGO_USE_JPEG: "ON"
   BUILD_SHARED_LIBS: "ON"
   TANGO_USE_LIBCPP: "OFF"
@@ -108,7 +107,6 @@ llvm-latest:
     OS_TYPE: llvm-latest
     RUN_TESTS: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
-    TANGO_USE_USING_NAMESPACE: "OFF"
     TANGO_USE_PCH: "OFF"
     STOCK_CPPZMQ: "OFF"
 
@@ -119,7 +117,6 @@ gcc-latest:
     OS_TYPE: gcc-latest
     RUN_TESTS: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
-    TANGO_USE_USING_NAMESPACE: "OFF"
     TANGO_USE_PCH: "OFF"
     STOCK_CPPZMQ: "OFF"
 
@@ -217,7 +214,6 @@ debian11-cross-32bit:
     CMAKE_BUILD_TYPE: "Debug"
     RUN_TESTS: "OFF"
     STOCK_CPPZMQ: "OFF"
-    TANGO_USE_USING_NAMESPACE: "OFF"
     TOOLCHAIN_FILE: "configure/toolchain-i686.cmake"
     TANGO_USE_PCH: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
@@ -282,7 +278,6 @@ clang-analyzer:
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DBUILD_TESTING=OFF
       -DTANGO_USE_PCH=OFF
-      -DTANGO_USE_USING_NAMESPACE=OFF
     - make -C build idl_source
     # scan-build command must be wrapped in quotes because
     # --analyzer-config option cannot contain whitespaces.
@@ -363,7 +358,6 @@ clang-tidy:
       -DCMAKE_UNITY_BUILD_BATCH_SIZE=0
       -DBUILD_TESTING=OFF
       -DTANGO_USE_PCH=OFF
-      -DTANGO_USE_USING_NAMESPACE=OFF
     - make -C build idl_source
     - >
       run-clang-tidy-11
@@ -678,6 +672,5 @@ libcpp:
     RUN_TESTS: "OFF"
     STOCK_CPPZMQ: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
-    TANGO_USE_USING_NAMESPACE: "OFF"
     TANGO_USE_PCH: "OFF"
     TANGO_USE_LIBCPP: "ON"

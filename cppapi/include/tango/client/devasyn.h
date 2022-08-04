@@ -30,10 +30,6 @@
 
 #include <map>
 
-#ifdef TANGO_USE_USING_NAMESPACE
-  using namespace std;
-#endif
-
 namespace Tango {
 
 
