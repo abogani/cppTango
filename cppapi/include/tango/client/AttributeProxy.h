@@ -23,7 +23,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: 1 $
+//
 //
 ///////////////////////////////////////////////////////////////
 
@@ -47,8 +47,8 @@
  * course). The AttributeProxy manages timeouts, stateless connections (new AttributeProxy() nearly always
  * works), and reconnection if the device server is restarted.
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Client

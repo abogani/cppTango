@@ -23,7 +23,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: 20437 $
+//
 //
 ///////////////////////////////////////////////////////////////
 
@@ -47,8 +47,8 @@
  * Base class for Tango device access. This class is pure virtual and can be instantiated
  * as is.
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @ingroup Client
  * @headerfile tango.h

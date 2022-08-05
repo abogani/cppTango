@@ -41,8 +41,8 @@
  * the methods of the Database class therefore the reader is referred to these for the exact calling syntax and
  * examples. The following methods are defined for the DbDevice class :
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup DBase

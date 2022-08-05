@@ -1,6 +1,3 @@
-static const char *RcsId = "$Id$\n$Name$";
-static const char *Vers = "$Revision$";
-
 //+=============================================================================
 //
 // file :               w32win.cpp
@@ -533,7 +530,7 @@ LRESULT CALLBACK AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		SetDlgItemText(hDlg,TANGO_ABOUT_TEXT2,(LPCSTR)str);
 
 		strcpy(str,"TANGO release : ");
-		full_vers = RcsId;
+		full_vers = "Unknown";
 		std::string::size_type pos,pos2;
 		if ((pos = full_vers.rfind(' ')) != std::string::npos)
 		{

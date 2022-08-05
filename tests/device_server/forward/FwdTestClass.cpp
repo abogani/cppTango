@@ -233,9 +233,6 @@ void FwdTestClass::write_class_property()
 		return;
 
 	Tango::DbData	data;
-	std::string	classname = get_name();
-	std::string	header;
-	std::string::size_type	start, end;
 
 	//	Put title
 	Tango::DbDatum	title("ProjectTitle");

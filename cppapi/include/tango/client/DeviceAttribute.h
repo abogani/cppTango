@@ -21,7 +21,7 @@
 // You should have received a copy of the GNU Lesser General Public License along with Tango.
 // If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: 20437 $
+//
 //
 //+==================================================================================================================
 
@@ -62,8 +62,8 @@
  * For extraction into TANGO CORBA sequence types, the extraction method consumes the
  * memory allocated to store the data and it is the caller responsibility to delete this memory.</B>
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Client
