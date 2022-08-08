@@ -197,7 +197,8 @@ public:
 	}
 
 // Test signal handling
-
+// This does not make sense on Windows since there is no SIGALARM signal
+#ifndef _TG_WINDOWS
 	void test_signal_handling(void)
 	{
 		DeviceData din, dout;
@@ -283,7 +284,7 @@ public:
 		TS_ASSERT_THROWS_NOTHING(device2->command_inout("IOUnregSig", din));
 		CxxTest::TangoPrinter::restore_unset("signal_unregistered");
 	}
-
+#endif
 // Test comparing input with output
 
 	void test_comparing_input_with_output(void)
