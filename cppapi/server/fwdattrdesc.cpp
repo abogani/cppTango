@@ -723,7 +723,7 @@ void FwdAttr::remove_useless_prop(std::vector<AttrProperty> &prop_list,const std
 
     for (ite = prop_list.begin();ite != prop_list.end();)
     {
-        if (ite->get_name() == "label" || ite->get_name() == "__root_att")
+        if (ite->get_name() == "label" || ite->get_name() == RootAttrPropName)
         {
             ++ite;
             continue;
