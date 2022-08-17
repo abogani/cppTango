@@ -936,6 +936,40 @@ TEST_LOG << "required time for command SetGetProperties = " << elapsed << endl;
 		TS_ASSERT_EQUALS(string((*str_array)[0].in()), "Init");
 	}
 
+// Test read attribute on initialised read/write type attribute
+
+	void test_read_attribute_on_initialised_read_write_type_attribute(void)
+	{
+		DeviceAttribute state_attr_w;
+		DevVarStateArray *state_array;
+		std::vector<Tango::DevState> state_vector;
+
+		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOInitRWAttr"));
+
+		TS_ASSERT_THROWS_NOTHING(state_attr_w = device1->read_attribute("State_attr_rw"));
+		TS_ASSERT_EQUALS(state_attr_w.get_name(), "State_attr_rw");
+		TS_ASSERT_EQUALS(state_attr_w.get_quality(), Tango::ATTR_VALID);
+		TS_ASSERT_EQUALS(state_attr_w.get_dim_x(), 1);
+		TS_ASSERT_EQUALS(state_attr_w.get_dim_y(), 0);
+		TS_ASSERT_EQUALS(state_attr_w.get_written_dim_x(), 1);
+		TS_ASSERT_EQUALS(state_attr_w.get_written_dim_y(), 0);
+		state_attr_w >> state_array;
+		TS_ASSERT_EQUALS((*state_array)[1], Tango::UNKNOWN);
+		delete state_array;
+
+		// Test the extraction in a vector of States
+		TS_ASSERT_THROWS_NOTHING(state_attr_w = device1->read_attribute("State_attr_rw"));
+		TS_ASSERT_EQUALS(state_attr_w.get_name(), "State_attr_rw");
+		TS_ASSERT_EQUALS(state_attr_w.get_quality(), Tango::ATTR_VALID);
+		TS_ASSERT_EQUALS(state_attr_w.get_dim_x(), 1);
+		TS_ASSERT_EQUALS(state_attr_w.get_dim_y(), 0);
+		TS_ASSERT_EQUALS(state_attr_w.get_written_dim_x(), 1);
+		TS_ASSERT_EQUALS(state_attr_w.get_written_dim_y(), 0);
+		state_attr_w >> state_vector;
+		TS_ASSERT_EQUALS(state_vector[1], Tango::UNKNOWN);
+	}
+
+
 //
 // Test alarm on attribute. An alarm is defined for the Long_attr attribute
 // is < 1000 and > 1500.

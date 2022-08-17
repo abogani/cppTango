@@ -388,6 +388,11 @@ void DevTestClass::command_factory()
 					      Tango::DEV_VOID,
 					      "void",
 					      "void"));
+	command_list.push_back(new IOInitRWAttr("IOInitRWAttr",
+					      Tango::DEV_VOID,
+					      Tango::DEV_VOID,
+					      "void",
+					      "void"));
 	command_list.push_back(new IOAttrThrowEx("IOAttrThrowEx",
 					      Tango::DEVVAR_SHORTARRAY,
 					      Tango::DEV_VOID,
