@@ -208,7 +208,7 @@ namespace Tango
 Util *Util::_instance = NULL;
 int Util::_tracelevel = 0;
 bool Util::_UseDb = true;
-bool Util::_FileDb = false;
+bool Util::_FileDb = false; 
 bool Util::_daemon = false;
 long Util::_sleep_between_connect = 60;
 bool Util::_constructed = false;
@@ -2724,7 +2724,7 @@ long Util::get_tango_lib_release()
 
 void Util::clean_dyn_attr_prop()
 {
-	if (Tango::Util::_UseDb == true)
+	if (_UseDb)
 	{
 		DbData send_data;
 

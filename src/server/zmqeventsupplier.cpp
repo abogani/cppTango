@@ -295,7 +295,7 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
     heartbeat_event_name = fqdn_prefix;
     heartbeat_event_name = heartbeat_event_name + "dserver/";
     heartbeat_event_name += tg->get_ds_name();
-    if (Util::_FileDb == true || Util::_UseDb == false)
+    if (tg->use_file_db() || !tg->use_db())
     {
         bool db_ds = false;
         const std::vector<DeviceClass *> *cl_ptr = tg->get_class_list();
@@ -1584,7 +1584,7 @@ ZmqEventSupplier::create_full_event_name(DeviceImpl *device_impl,
     {
         full_event_name = full_event_name + '/' + obj_name_lower;
     }
-    if (Util::_FileDb == true || Util::_UseDb == false)
+    if (Util::instance()->use_file_db() || !Util::instance()->use_db())
     {
         full_event_name = full_event_name + MODIFIER_DBASE_NO;
     }

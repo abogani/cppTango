@@ -183,7 +183,7 @@ void DeviceImpl::init_logger (void)
         Logging::add_logging_target(the_logger, kLogTargetConsole, 0);
       }
     }
-    if (tg->_UseDb == false) {
+    if (!tg->use_db()) {
       // done if we are not using the database
       if (level_set_from_cmd_line)
         the_logger->set_level(cmd_line_level);

@@ -261,7 +261,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
     }
 
 
-    if (Tango::Util::_UseDb == true)
+    if (Tango::Util::instance()->use_db())
     {
         if (user_defaults && min_alarm_tmp_str == usr_def_val)
         {
@@ -477,7 +477,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
     }
 
 
-    if (Tango::Util::_UseDb == true)
+    if (Tango::Util::instance()->use_db())
     {
         if (user_defaults && max_alarm_tmp_str == usr_def_val)
         {
@@ -695,7 +695,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
     }
 
 
-    if (Tango::Util::_UseDb == true)
+    if (Tango::Util::instance()->use_db())
     {
         if (user_defaults && min_warning_tmp_str == usr_def_val)
         {
@@ -912,7 +912,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
     }
 
 
-    if (Tango::Util::_UseDb == true)
+    if (Tango::Util::instance()->use_db())
     {
         if (user_defaults && max_warning_tmp_str == usr_def_val)
         {

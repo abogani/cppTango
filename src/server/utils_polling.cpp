@@ -729,7 +729,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev,const std::string &name)
 
 void Util::clean_attr_polled_prop()
 {
-	if (Tango::Util::_UseDb == true)
+	if (Tango::Util::instance()->use_db())
 	{
 		DbData send_data;
 		DbDatum db_info("polled_attr");
@@ -776,7 +776,7 @@ void Util::clean_attr_polled_prop()
 
 void Util::clean_cmd_polled_prop()
 {
-	if (Tango::Util::_UseDb == true)
+	if (Tango::Util::instance()->use_db())
 	{
 		DbData send_data;
 		DbDatum db_info("polled_cmd");

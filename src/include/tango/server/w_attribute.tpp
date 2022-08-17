@@ -277,7 +277,7 @@ void WAttribute::set_min_value(const T &new_min_value)
 	}
 
 
-	if (Tango::Util::_UseDb == true)
+	if (Tango::Util::instance()->use_db())
 	{
 		if(user_defaults && min_value_tmp_str == usr_def_val)
 		{
@@ -481,7 +481,7 @@ void WAttribute::set_max_value(const T &new_max_value)
 	}
 
 
-	if (Tango::Util::_UseDb == true)
+	if (Tango::Util::instance()->use_db())
 	{
 		if(user_defaults && max_value_tmp_str == usr_def_val)
 		{

@@ -188,7 +188,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,const CORBA::ORB_va
 // is implemented in the stored procedure
 //
 
-	if (Util::_FileDb == false)
+	if (!tg->use_file_db())
 	{
 		try
 		{
@@ -287,7 +287,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,const CORBA::ORB_va
     	if (event_factory_obj -> _non_existent())
             event_factory_obj = CORBA::Object::_nil();
 #else
-		if (Util::_FileDb == false)
+		if (!tg->use_file_db())
 		{
 			if ((dev_import_list->lvalue)[0] == 0)
 				TANGO_THROW_EXCEPTION("aaa", "bbb");
@@ -321,7 +321,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,const CORBA::ORB_va
 // for this server event channel, clear it.
 //
 
-		if ((Util::_FileDb == false) && (tg->is_svr_starting() == true))
+		if (!tg->use_file_db() && (tg->is_svr_starting() == true))
 		{
 			try
 			{
@@ -353,7 +353,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,const CORBA::ORB_va
 	int channel_exported=-1;
 	std::string channel_ior, channel_host;
 
-	if (Util::_FileDb == false)
+	if (!tg->use_file_db())
 	{
 		try
 		{
@@ -458,7 +458,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,const CORBA::ORB_va
 			char *_ior = _orb->object_to_string(_eventChannel);
 			std::string ior_string(_ior);
 
-			if (Util::_FileDb == false)
+			if (!tg->use_file_db())
 			{
         		Tango::DevVarStringArray *eve_export_list = new Tango::DevVarStringArray;
         		eve_export_list->length(5);
@@ -522,7 +522,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,const CORBA::ORB_va
 	else
 	{
 		TANGO_LOG_DEBUG << "Tango::NotifdEventSupplier::create(): _narrow worked, use this event channel\n";
-		if (Util::_FileDb == true)
+		if (tg->use_file_db())
 			ns.ec_ior = channel_ior;
 	}
 
@@ -763,7 +763,7 @@ void NotifdEventSupplier::reconnect_notifd()
 		Tango::Util *tg = Tango::Util::instance();
 		Database *db = tg->get_database();
 
-		if (Util::_FileDb == true)
+		if (tg->use_file_db())
 			db->reread_filedatabase();
 
 		connect_to_notifd(ns,orb_,tg->get_ds_name(),tg);

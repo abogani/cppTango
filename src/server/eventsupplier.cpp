@@ -98,7 +98,7 @@ EventSupplier::EventSupplier(Util *tg)
     if (fqdn_prefix.empty() == true)
     {
         fqdn_prefix = "tango://";
-        if (Util::_UseDb == false || Util::_FileDb == true)
+        if (!tg->use_db() || tg->use_file_db())
         {
             fqdn_prefix = fqdn_prefix + tg->get_host_name() + ':' + tg->get_svr_port_num() + '/';
         }

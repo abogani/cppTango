@@ -1596,7 +1596,7 @@ void DServerClass::command_factory()
 							"Device name",
 							"Device locking status"));
 
-	if (Util::_FileDb == true)
+	if (Util::instance()->use_file_db())
 	{
 		command_list.push_back(new QueryEventChannelIORCmd("QueryEventChannelIOR",
 							Tango::DEV_VOID,
@@ -1643,7 +1643,7 @@ void DServerClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 // Export device to the outside world
 //
 
-		if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
+		if (tg->use_db() && !tg->use_file_db())
 			export_device(device_list.back());
 		else
 			export_device(device_list.back(),(*devlist_ptr)[i]);
@@ -1656,7 +1656,7 @@ void DServerClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 //
 
 		Database *db = tg->get_database();
-		if ((db != NULL) && (Util::_FileDb == false))
+		if ((db != NULL) && !tg->use_file_db())
 			db->set_timeout_millis(CLNT_TIMEOUT);
 
 	}

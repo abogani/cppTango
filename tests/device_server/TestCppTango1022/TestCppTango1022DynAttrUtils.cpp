@@ -109,7 +109,7 @@ void TestCppTango1022::add_DoubleAttr_dynamic_attribute(std::string attname)
 //--------------------------------------------------------
 void TestCppTango1022::remove_DoubleAttr_dynamic_attribute(std::string attname)
 {
-	remove_attribute(attname, true, Tango::Util::instance()->_UseDb);
+	remove_attribute(attname, true, Tango::Util::instance()->use_db());
 	std::map<std::string,Tango::DevDouble>::iterator ite;
 	if ((ite=DoubleAttr_data.find(attname))!=DoubleAttr_data.end())
 	{

@@ -93,7 +93,7 @@ void Device_3Impl::real_ctor()
 	init_attr_poll_period();
 
     Tango::Util *tg = Tango::Util::instance();
-	if (tg->_UseDb == false)
+	if (!tg->use_db())
 	{
 	    init_poll_no_db();
 	}
@@ -1796,7 +1796,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
 				att.set_written_date();
 		}
 
-		if ((Tango::Util::_UseDb == true) && (att_in_db.empty() == false))
+		if ((Tango::Util::instance()->use_db()) && (att_in_db.empty() == false))
 		{
 			try
 			{
@@ -2395,7 +2395,7 @@ void Device_3Impl::get_attr_props(const char *attr_name,std::vector<AttrProperty
 {
 	Tango::Util *tg = Tango::Util::instance();
 
-	if (tg->_UseDb == true)
+	if (tg->use_db())
 	{
 		Tango::DbData db_list;
 		db_list.push_back(DbDatum(attr_name));

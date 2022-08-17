@@ -368,7 +368,7 @@ void SubDevDiag::store_sub_devices()
 				// In the database server itself or any server
 				// running without a database the database object is
 				// not initialised.
-				if ( Tango::Util::_UseDb == true )
+				if ( Tango::Util::instance()->use_db() )
 				{
 					if ( ipos->first.empty() )
 					{

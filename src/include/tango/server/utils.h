@@ -369,6 +369,16 @@ public:
  * @param val The new event buffer high water mark in number of events
  */
 	void set_ds_event_buffer_hwm(DevLong val) {if (user_pub_hwm == -1)user_pub_hwm = val;}
+/**
+ * Get _UseDb flag.
+ *
+ */
+        bool use_db() const {return _UseDb;}
+/**
+ * Get _FileDb flag.
+ *
+ */
+        bool use_file_db() const {return _FileDb;}
 //@}
 
 /** @name Polling related methods */
@@ -643,7 +653,7 @@ public:
 /**
  * The process trace level
  */
-	TANGO_IMP	static int		_tracelevel;
+	static int		_tracelevel;
 /**
  * The database use flag (Use with extreme care). Implemented for device
  * server started without database usage.
@@ -667,7 +677,7 @@ public:
 
 /// @privatesection
 
-	TANGO_IMP static bool	_FileDb;
+        TANGO_IMP static bool	_FileDb;
 
 /// @publicsection
 
@@ -862,6 +872,7 @@ public:
 
 private:
 	TANGO_IMP static Util	*_instance;
+
 	static bool				_constructed;
 #ifdef _TG_WINDOWS_
 	static bool				_win;
@@ -1164,7 +1175,7 @@ inline CORBA::Any *return_empty_any(const char *cmd)
 
 inline DbDevice *DeviceImpl::get_db_device()
 {
-	if (Tango::Util::_UseDb == false)
+	if (!Tango::Util::instance()->use_db())
 	{
 		TangoSys_OMemStream desc_mess;
 		desc_mess << "Method not available for device ";
