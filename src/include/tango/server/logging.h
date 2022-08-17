@@ -102,7 +102,7 @@ namespace Tango {
 
 class Util;
 
-extern TANGO_IMP log4tango::Logger* _core_logger;
+extern log4tango::Logger* _core_logger;
 
 class Logging
 {
@@ -123,9 +123,7 @@ public:
   /**
    * Returns the core logger substitute
    **/
-  inline static log4tango::Logger* get_core_logger (void) {
-    return _core_logger;
-  }
+  static log4tango::Logger* get_core_logger (void);
 
   /**
    * Implementation of the DServer AddLoggingTarget Tango command

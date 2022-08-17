@@ -235,6 +235,14 @@ void Logging::cleanup (void)
 }
 
 //+----------------------------------------------------------------------------
+// method : Logging::get_core_logger
+//-----------------------------------------------------------------------------
+log4tango::Logger* Logging::get_core_logger (void)
+{
+    return _core_logger;
+}
+
+//+----------------------------------------------------------------------------
 // method : Logging::add_logging_target
 //-----------------------------------------------------------------------------
 void Logging::add_logging_target (const Tango::DevVarStringArray *argin)
