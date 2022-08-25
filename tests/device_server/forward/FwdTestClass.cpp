@@ -46,11 +46,6 @@
  */
 //-------------------------------------------------------------------
 extern "C" {
-#ifdef _TG_WINDOWS_
-
-__declspec(dllexport)
-
-#endif
 
 	Tango::DeviceClass *_create_FwdTest_class(const char *name) {
 		return FwdTest_ns::FwdTestClass::init(name);
