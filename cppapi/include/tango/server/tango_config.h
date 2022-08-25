@@ -100,15 +100,22 @@
 		#else
 			#define TANGO_IMP_EXP	__declspec(dllimport)
 			#define TANGO_IMP	__declspec(dllimport)
-		#endif
+		#endif /* _TANGO_LIB */
 	#else
 		#define TANGO_IMP_EXP
 		#define TANGO_IMP
-	#endif
+	#endif /* TANGO_HAS_DLL */
+
+	#if (defined _TANGO_LIB)
+		#define TANGO_REV_EXP
+	#else
+		#define TANGO_REV_EXP	__declspec(dllexport)
+	#endif /* _TANGO_LIB */
 #else
 	#define TANGO_IMP_EXP
+	#define TANGO_REV_EXP
 	#define TANGO_IMP
-#endif /* _WINDOWS_ */
+#endif /* _TG_WINDOWS_ */
 
 //
 // For gcc 5 new ABI

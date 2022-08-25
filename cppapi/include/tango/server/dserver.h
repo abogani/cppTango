@@ -167,11 +167,7 @@ protected :
 	static ClassFactoryFuncPtr 		class_factory_func_ptr;
 
 private:
-#if ((defined _TG_WINDOWS_) && (defined TANGO_HAS_DLL) && !(defined _TANGO_LIB))
-	__declspec(dllexport) void class_factory();
-#else
-	void class_factory();
-#endif
+	TANGO_REV_EXP void class_factory();
 	void add_class(DeviceClass *);
 	void create_cpp_class(const char *,const char *);
 	void get_dev_prop(Tango::Util *);
