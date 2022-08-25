@@ -68,7 +68,7 @@ DevSigAction;
 class DServerSignal:public TangoMonitor
 {
 public :
-	TANGO_IMP_EXP static DServerSignal *instance();
+	static DServerSignal *instance();
 	~DServerSignal() {}
 
 #ifndef _TG_WINDOWS_
