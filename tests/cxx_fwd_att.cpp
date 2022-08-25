@@ -112,7 +112,7 @@ public:
 			Tango::Database db;
 
 			Tango::DbDatum fwd_att("fwd_short_rw");
-			Tango::DbDatum root_att("__root_att");
+			Tango::DbDatum root_att(RootAttrPropName);
 			fwd_att << (short)1;
 			string r_name = device1_name + "/short_attr_rw";;
 			root_att << r_name;
@@ -179,7 +179,7 @@ public:
 		Tango::Database db;
 
 		Tango::DbDatum fwd_att("fwd_short_rw");
-		Tango::DbDatum root_att("__root_att");
+		Tango::DbDatum root_att(RootAttrPropName);
 		fwd_att << (short)1;
 		root_att << "devtest/10/short_attr_rw";
 		Tango::DbData dd;
