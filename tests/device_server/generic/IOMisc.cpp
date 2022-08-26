@@ -619,6 +619,49 @@ CORBA::Any *IOInitWAttr::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const C
 	return insert();
 }
 
+//+----------------------------------------------------------------------------
+//
+// method : 		IOInitRWAttr::IOInitRWAttr()
+//
+// description : 	constructor for the IOInitRWAttr command of the
+//			DevTest.
+//
+// In : - name : The command name
+//	- in : The input parameter type
+//	- out : The output parameter type
+//	- in_desc : The input parameter description
+//	- out_desc : The output parameter description
+//
+//-----------------------------------------------------------------------------
+
+IOInitRWAttr::IOInitRWAttr(const char *name, Tango::CmdArgType in,
+                         Tango::CmdArgType out, const char *in_desc,
+                         const char *out_desc)
+	: Tango::Command(name, in, out, in_desc, out_desc)
+{
+}
+
+bool IOInitRWAttr::is_allowed(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
+{
+
+//
+// command always allowed
+//
+
+	return(true);
+}
+
+CORBA::Any *IOInitRWAttr::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+// Give some default set value to some Read/Write attribute
+
+	Tango::WAttribute &state_rw_att = device->get_device_attr()->get_w_attr_by_name("State_attr_rw");
+	state_rw_att.set_write_value(Tango::UNKNOWN);
+
+	return insert();
+}
+
+
 
 //+----------------------------------------------------------------------------
 //

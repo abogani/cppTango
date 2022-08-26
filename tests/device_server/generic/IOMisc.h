@@ -119,6 +119,15 @@ public:
 	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
 };
 
+class IOInitRWAttr : public Tango::Command {
+public:
+	IOInitRWAttr(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *);
+	~IOInitRWAttr() {}
+
+	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+};
+
 class IOAttrThrowEx : public Tango::Command {
 public:
 	IOAttrThrowEx(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *);

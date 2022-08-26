@@ -170,7 +170,7 @@ void WAttribute::check_type(T &TANGO_UNUSED(dummy), const std::string &origin)
 // 			- val : Data to be set as written value
 //
 //-----------------------------------------------------------------------------------------------------------------
-template<class T, typename std::enable_if<std::is_enum<T>::value, T>::type*>
+template<class T, typename std::enable_if<std::is_enum<T>::value && !std::is_same<T,Tango::DevState>::value, T>::type*>
 inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 {
     T dum;
@@ -206,7 +206,7 @@ inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
     }
 }
 
-template<class T, typename std::enable_if<!std::is_enum<T>::value, T>::type*>
+template<class T, typename std::enable_if<!std::is_enum<T>::value || std::is_same<T,Tango::DevState>::value, T>::type*>
 inline void WAttribute::set_write_value(T* val, size_t x, size_t y)
 {
     size_t nb_data;
