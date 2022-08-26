@@ -60,8 +60,7 @@ void WAttribute::get_write_value(T &data)
 // First some check on user type
 //
 
-	T dum;
-	check_type(dum,"WAttribute::get_write_value");
+	check_type<T>("WAttribute::get_write_value");
 
 //
 // Then, init user data
@@ -78,8 +77,7 @@ void WAttribute::get_write_value(const T *&ptr)
 // First some check on user type
 //
 
-	T dum;
-	check_type(dum,"WAttribute::get_write_value");
+	check_type<T>("WAttribute::get_write_value");
 
 //
 // Then, init user data
@@ -104,7 +102,7 @@ void WAttribute::get_write_value(const T *&ptr)
 //-----------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-void WAttribute::check_type(T &TANGO_UNUSED(dummy), const std::string &origin)
+void WAttribute::check_type(const std::string &origin)
 {
 	bool short_enum = std::is_same<short,typename std::underlying_type<T>::type>::value;
 	bool uns_int_enum = std::is_same<unsigned int,typename std::underlying_type<T>::type>::value;
@@ -173,8 +171,7 @@ void WAttribute::check_type(T &TANGO_UNUSED(dummy), const std::string &origin)
 template<class T, typename std::enable_if<std::is_enum<T>::value && !std::is_same<T,Tango::DevState>::value, T>::type*>
 inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 {
-    T dum;
-    check_type(dum,"WAttribute::set_write_value");
+    check_type<T>("WAttribute::set_write_value");
 
     size_t nb_data;
 
