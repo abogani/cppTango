@@ -124,6 +124,8 @@ if(PTHREAD_WIN)
     message("Using PTHREAD_WIN=${PTHREAD_WIN}")
     add_definitions(-DHAVE_PTHREAD_NP_H)
     set(PTHREAD_WIN_PKG_INCLUDE_DIRS ${PTHREAD_WIN}/include)
+    link_directories(${PTHREAD_WIN}/lib)
+    link_directories(${PTHREAD_WIN}/bin)
 
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(PTHREAD_WIN_PKG_LIBRARIES_DYN "pthreadVC2d.lib")

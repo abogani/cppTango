@@ -12,7 +12,11 @@ if(NOT Python3_EXECUTABLE)
   message(FATAL_ERROR "Could not find python 3.")
 endif()
 
-set(CMAKE_CXX_FLAGS_RELEASE "-O0 -g")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "/Od /DEBUG")
+else()
+    set(CMAKE_CXX_FLAGS_RELEASE "-O0 -g")
+endif()
 
 #TODO different OS
 set(SERV_NAME "DevTest")
