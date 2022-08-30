@@ -2,7 +2,7 @@ message("Using OMNIIDL_PATH=${OMNIIDL_PATH}")
 message("Using IDL=${IDL_PKG_INCLUDE_DIRS}")
 
 find_program(OMNIIDL NAMES omniidl
-                     PATHS ${OMNIIDL_PATH})
+                     HINTS ${OMNIIDL_PATH})
 
 if(NOT OMNIIDL)
   message(FATAL_ERROR "Could not find omniidl")
