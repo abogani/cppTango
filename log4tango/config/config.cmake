@@ -14,4 +14,4 @@ if(NOT DEFINED Threads_FOUND)
   message(FATAL_ERROR "Could not find a suitable threading library")
 endif()
 
-configure_file(config/config.h.in ${PROJECT_BINARY_DIR}/log4tango/include/log4tango/config.h)
+configure_file(config/config.h.in ${PROJECT_BINARY_DIR}/log4tango/include/tango/common/log4tango/config.h)

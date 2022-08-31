@@ -29,8 +29,8 @@
 //
 //====================================================================================================================
 
-#include <tango.h>
-#include "auto_tango_monitor.h"
+#include <tango/tango.h>
+#include <tango/server/auto_tango_monitor.h>
 
 
 namespace Tango
@@ -134,4 +134,3 @@ namespace Tango
     NoSyncModelTangoMonitor::~NoSyncModelTangoMonitor() {if (mon)mon->rel_monitor();}
 
 } // End of Tango namespace
-

@@ -29,8 +29,8 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <classpipe.h>
+#include <tango/tango.h>
+#include <tango/server/classpipe.h>
 
 namespace Tango
 {

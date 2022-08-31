@@ -30,8 +30,8 @@
 //===================================================================================================================
 
 
-#include <tango.h>
-#include <event.h>
+#include <tango/tango.h>
+#include <tango/client/event.h>
 
 
 namespace Tango

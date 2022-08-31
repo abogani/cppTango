@@ -29,11 +29,11 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <fwdattrdesc.h>
+#include <tango/tango.h>
+#include <tango/server/fwdattrdesc.h>
 
-#include <fwdattribute.tpp>
-#include <fwdattribute_spec.tpp>
+#include <tango/server/fwdattribute.tpp>
+#include <tango/server/fwdattribute_spec.tpp>
 
 namespace Tango
 {

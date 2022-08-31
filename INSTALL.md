@@ -219,6 +219,25 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${TANGO_PKG_LIBRARIES})
 pkg-config --variable=tangodsdir tango
 /usr/bin
 ```
+# Header file location in cppTango 9.4
+
+From cppTango version 9.4.0 on the header files will still be installed in `${prefix}/include/tango`, but they will not be installed in a single directory any more. The new directory structure for the header files follows discussion in issue [!735](https://gitlab.com/tango-controls/cppTango/-/issues/735):
+
+```bash
+CPPTANGO REPO/cppapi/
+  include/
+  include/tango/
+  include/tango/server/
+  include/tango/client/
+  include/tango/common/
+  include/tango/common/log4tango
+  include/tango/common/utils
+```
+
+As can be seen are header files now split into functional groups. The files are also installed following this mapping. New code which is based in cppTango 9.4.0 should follow the guideline to include only relevant header files and specify them with the proper path like `#include <tango/client/DeviceProxy.h` instead of just including `tango/tango.h`.
+
+Old device servers which include just `tango.h` can easily be recompiled after `tango/tango.h` is symlinked to `tango.h`.
+
 # Running the tests
 
 Running the tests requires docker. See

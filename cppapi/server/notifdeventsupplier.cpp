@@ -36,8 +36,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <tango.h>
-#include <eventsupplier.h>
+#include <tango/tango.h>
+#include <tango/server/eventsupplier.h>
 
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>

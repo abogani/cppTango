@@ -31,10 +31,10 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <eventsupplier.h>
-#include <multiattribute.h>
-#include <classattribute.h>
+#include <tango/tango.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/server/multiattribute.h>
+#include <tango/server/classattribute.h>
 
 #include <functional>
 #include <algorithm>

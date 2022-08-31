@@ -86,8 +86,6 @@ install(DIRECTORY "$<TARGET_FILE_DIR:${TANGO_LIBRARY_NAME}>/"
         DESTINATION bin COMPONENT dynamic
         FILES_MATCHING PATTERN "*.pdb")
 
-install(FILES cppapi/server/resource.h DESTINATION include/tango COMPONENT headers)
-
 if (TANGO_INSTALL_DEPENDENCIES)
     install(DIRECTORY ${TANGO_OMNI_BASE}/include/COS DESTINATION include COMPONENT)
     install(DIRECTORY ${TANGO_OMNI_BASE}/include/omniORB4 DESTINATION include COMPONENT headers)

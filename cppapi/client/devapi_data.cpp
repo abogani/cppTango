@@ -27,7 +27,7 @@
 //
 //
 
-#include <tango.h>
+#include <tango/tango.h>
 
 using namespace CORBA;
 

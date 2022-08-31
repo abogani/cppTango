@@ -10,22 +10,22 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 #include <iostream>
-#include <log4tango/Logger.hh>
-#include <log4tango/Appender.hh>
-#include <log4tango/OstreamAppender.hh>
-#include <log4tango/Layout.hh>
-#include <log4tango/Level.hh>
+#include <tango/common/log4tango/Logger.hh>
+#include <tango/common/log4tango/Appender.hh>
+#include <tango/common/log4tango/OstreamAppender.hh>
+#include <tango/common/log4tango/Layout.hh>
+#include <tango/common/log4tango/Level.hh>
 
 int test_get_appender (log4tango::Logger& logger,
                        log4tango::Appender* appender_1,
@@ -66,8 +66,8 @@ void test_level()
   log4tango::Logger cat_1("cat_1");
   cat_1.set_level(log4tango::Level::ERROR);
   cat_1.remove_all_appenders();
-  
-  log4tango::Appender* appender_1 = 
+
+  log4tango::Appender* appender_1 =
       new log4tango::OstreamAppender("appender_1", &std::cout);
   appender_1->set_layout(new log4tango::Layout());
   cat_1.add_appender(appender_1);
@@ -126,12 +126,12 @@ void test_level()
   appender_1->set_layout(new log4tango::Layout());
   cat_1.add_appender(appender_1);
 
-  log4tango::Appender* appender_2 = 
+  log4tango::Appender* appender_2 =
       new log4tango::OstreamAppender("appender_2", &std::cout);
   appender_2->set_layout(new log4tango::Layout());
   cat_1.add_appender(appender_2);
 
-  log4tango::Appender* appender_3 = 
+  log4tango::Appender* appender_3 =
       new log4tango::OstreamAppender("appender_3", &std::cout);
   appender_3->set_layout(new log4tango::Layout());
   cat_1.add_appender(appender_3);
@@ -199,14 +199,14 @@ int main(int /*argc*/, char** /*argv*/) {
   test_level();
 
   log4tango::Logger cat_1("cat_1");
-  log4tango::Appender* appender_1 = 
+  log4tango::Appender* appender_1 =
       new log4tango::OstreamAppender("appender_1", &std::cout);
   appender_1->set_layout(new log4tango::Layout());
   cat_1.add_appender(appender_1);
   cat_1.set_level(log4tango::Level::ERROR);
 
   log4tango::Logger cat_2("cat_2");
-  log4tango::Appender* appender_2 = 
+  log4tango::Appender* appender_2 =
       new log4tango::OstreamAppender("appender_2", &std::cout);
   appender_2->set_layout(new log4tango::Layout());
   cat_2.add_appender(appender_2);
@@ -214,16 +214,16 @@ int main(int /*argc*/, char** /*argv*/) {
 
   std::cout << std::endl;
 
-  std::cout << "cat_1 level: " 
+  std::cout << "cat_1 level: "
             << cat_1.get_level()
             << " - "
-            << log4tango::Level::get_name(cat_1.get_level()) 
+            << log4tango::Level::get_name(cat_1.get_level())
             << std::endl;
 
-  std::cout << "cat_2 level: " 
+  std::cout << "cat_2 level: "
             << cat_2.get_level()
             << " - "
-            << log4tango::Level::get_name(cat_2.get_level()) 
+            << log4tango::Level::get_name(cat_2.get_level())
             << std::endl;
 
   return 0;

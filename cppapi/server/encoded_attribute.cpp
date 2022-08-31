@@ -32,7 +32,7 @@
 //
 //=============================================================================
 
-#include "encoded_attribute.h"
+#include <tango/server/encoded_attribute.h>
 
 #ifdef TANGO_USE_JPEG
 #include <iostream>
@@ -441,19 +441,19 @@ namespace
 
     template<typename JpegCompressDecompressStruct>
     [[noreturn]] void jpeg_throw_exception(const std::string&);
-    
+
     template<>
     [[noreturn]] void jpeg_throw_exception<jpeg_compress_struct>(const std::string& msg)
     {
         TANGO_THROW_EXCEPTION(API_EncodeErr, msg);
     }
-    
+
     template<>
     [[noreturn]] void jpeg_throw_exception<jpeg_decompress_struct>(const std::string& msg)
     {
         TANGO_THROW_EXCEPTION(API_DecodeErr, msg);
     }
-    
+
     template<typename JpegCompressDecompressStruct>
     void jpeg_destroy(JpegCompressDecompressStruct* cinfo_ptr);
 
@@ -473,7 +473,7 @@ namespace
     [[noreturn]] void handle_jpeg_error(j_common_ptr cinfo_ptr)
     {
         assert(cinfo_ptr->err->msg_code <= cinfo_ptr->err->last_jpeg_message);
-        std::string err_msg = 
+        std::string err_msg =
             std::string{"libjpeg error "} +
             std::to_string(cinfo_ptr->err->msg_code) + ": " +
             cinfo_ptr->err->jpeg_message_table[cinfo_ptr->err->msg_code];
@@ -495,7 +495,7 @@ namespace
         /* We set up the normal JPEG error routines, then override error_exit. */
         cinfo.err = jpeg_std_error(&jerr);
         jerr.error_exit = &handle_jpeg_error<jpeg_compress_struct>;
-        
+
         jpeg_create_compress(&cinfo);
 
         unsigned long size;
@@ -543,7 +543,7 @@ namespace
 
         jpeg_finish_compress(&cinfo);
         jpeg_destroy_compress(&cinfo);
-       
+
         // Set it up after the call to jpeg_finish_compress
         // cause this is where it is actually set.
         // Depending on the implementation, if done before it will return 4096 all the time

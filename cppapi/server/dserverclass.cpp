@@ -37,11 +37,11 @@
 
 #include <algorithm>
 
-#include <tango.h>
-#include <dserverclass.h>
-#include <pollcmds.h>
-#include <logcmds.h>
-#include <eventsupplier.h>
+#include <tango/tango.h>
+#include <tango/server/dserverclass.h>
+#include <tango/server/pollcmds.h>
+#include <tango/server/logcmds.h>
+#include <tango/server/eventsupplier.h>
 
 namespace Tango
 {

@@ -31,9 +31,9 @@
 //
 //====================================================================================================================
 
-#include <tango.h>
-#include <fwdattribute.h>
-#include <fwdattribute.tpp>
+#include <tango/tango.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/fwdattribute.tpp>
 
 namespace Tango
 {

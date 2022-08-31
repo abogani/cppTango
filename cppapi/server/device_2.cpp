@@ -36,9 +36,9 @@
 //
 //-============================================================================
 
-#include <tango.h>
-#include <device_2.h>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/server/device_2.h>
+#include <tango/server/tango_clock.h>
 #include <new>
 
 namespace Tango

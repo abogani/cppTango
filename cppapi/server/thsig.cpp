@@ -35,8 +35,8 @@
 //
 //-=============================================================================
 
-#include <tango.h>
-#include <dserversignal.h>
+#include <tango/tango.h>
+#include <tango/server/dserversignal.h>
 
 namespace Tango
 {

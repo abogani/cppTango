@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,24 +16,24 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
- 
-#include <log4tango/Portability.hh>
-#include <log4tango/LogStreambuf.hh>
+
+#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/LogStreambuf.hh>
 
 namespace log4tango {
 
 //+----------------------------------------------------------------------------
 // method : LogStreamBuf::LogStreamBuf
-//----------------------------------------------------------------------------- 
-LogStreamBuf::LogStreamBuf(Logger* logger, 
+//-----------------------------------------------------------------------------
+LogStreamBuf::LogStreamBuf(Logger* logger,
                            Level::Value level,
                            bool filter,
                            size_t bsize)
@@ -54,7 +54,7 @@ LogStreamBuf::LogStreamBuf(Logger* logger,
 
 //+----------------------------------------------------------------------------
 // method : LogStreamBuf::~LogStreamBuf
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 LogStreamBuf::~LogStreamBuf()
 {
 //
@@ -81,23 +81,23 @@ std::streamsize LogStreamBuf::xsputn (const char *_in, std::streamsize _in_size)
   }
 
   std::streamsize _M, _Ns;
-    
+
   for (_Ns = 0; 0 < _in_size;)
-      
+
     if ((_M = (epptr() - pptr())))
     {
       if (_in_size < _M) _M = _in_size;
 
       ::memcpy(pptr(), _in, _M);
-  
-      _in += _M, _Ns += _M, _in_size -= _M, pbump(_M);
-    } 
 
-    else if (flush_buffer() == -1) 
+      _in += _M, _Ns += _M, _in_size -= _M, pbump(_M);
+    }
+
+    else if (flush_buffer() == -1)
 
       break;
 
-    else 
+    else
 
       ++_in, ++_Ns, --_in_size;
 
@@ -162,4 +162,4 @@ int LogStreamBuf::sync (void)
   return 0;
 }
 
-} // namespace log4tango 
+} // namespace log4tango

@@ -30,8 +30,8 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <attrdesc.h>
+#include <tango/tango.h>
+#include <tango/server/attrdesc.h>
 
 namespace Tango
 {

@@ -29,7 +29,7 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -43,9 +43,9 @@
 #endif
 
 #include <stdlib.h>
-#include <dserversignal.h>
-#include <dserverclass.h>
-#include <eventsupplier.h>
+#include <tango/server/dserversignal.h>
+#include <tango/server/dserverclass.h>
+#include <tango/server/eventsupplier.h>
 
 #ifndef _TG_WINDOWS_
 #include <unistd.h>
@@ -54,8 +54,8 @@
 #include <sys/socket.h>
 #else
 #include <process.h>
-#include <coutbuf.h>
-#include <ntservice.h>
+#include <tango/windows/coutbuf.h>
+#include <tango/windows/ntservice.h>
 #include <ws2tcpip.h>
 #endif /* _TG_WINDOWS_ */
 
@@ -3185,7 +3185,7 @@ std::ostream& operator<<(std::ostream& o_str, const AttrDataFormat& format)
         case Tango::IMAGE :
             o_str << "Image";
             break;
-        
+
         default:
             o_str << "Undefined Format " << static_cast<std::underlying_type_t<AttrDataFormat>>(format);
             break;

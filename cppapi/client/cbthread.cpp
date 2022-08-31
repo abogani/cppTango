@@ -35,8 +35,8 @@
 //
 //-============================================================================
 
-#include <tango.h>
-#include <cbthread.h>
+#include <tango/tango.h>
+#include <tango/client/cbthread.h>
 
 namespace Tango
 {

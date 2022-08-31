@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,36 +16,36 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.hh>
 
 #ifdef LOG4TANGO_HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 
-#include <log4tango/Logger.hh>
+#include <tango/common/log4tango/Logger.hh>
 #include "StringUtil.hh"
 
 namespace log4tango {
 
-Logger::Logger(const std::string& name, Level::Value level) 
+Logger::Logger(const std::string& name, Level::Value level)
   : _name(name), _level(level)
 {
   //no-op
 }
 
-Logger::~Logger() 
+Logger::~Logger()
 {
 }
-    
+
 void Logger::set_level (Level::Value level)
 {
   if ((level >= Level::OFF) && (level <= Level::DEBUG)) {
@@ -60,9 +60,9 @@ void Logger::set_level (Level::Value level)
         }
       }
     } //-- End critical section ------------------------------
-  } 
+  }
 }
-       
+
 void Logger::call_appenders (const LoggingEvent& event)
 {
   std::vector<std::string> *bad_appenders = 0;
@@ -117,7 +117,7 @@ void Logger::log_unconditionally(const std::string& file,
 }
 
 void Logger::log (const std::string& file, int line, Level::Value level, const char* format, ...)
-{ 
+{
   if (is_level_enabled(level)) {
     va_list va;
     va_start(va, format);
@@ -125,7 +125,7 @@ void Logger::log (const std::string& file, int line, Level::Value level, const c
     va_end(va);
   }
 }
-    
+
 void Logger::debug (const std::string& file, int line, const char* format, ...) {
   if (is_level_enabled(Level::DEBUG)) {
     va_list va;
@@ -134,7 +134,7 @@ void Logger::debug (const std::string& file, int line, const char* format, ...) 
     va_end(va);
   }
 }
-    
+
 void Logger::info (const std::string& file, int line, const char* format, ...) {
   if (is_level_enabled(Level::INFO)) {
     va_list va;
@@ -172,4 +172,3 @@ void Logger::fatal (const std::string& file, int line, const char* format, ...) 
 }
 
 } // namespace log4tango
-

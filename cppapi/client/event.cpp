@@ -30,10 +30,10 @@
 //
 //====================================================================================================================
 
-#include <tango.h>
-#include <eventconsumer.h>
-#include <event.tpp>
-#include <tango_clock.h>
+#include <tango/tango.h>
+#include <tango/client/eventconsumer.h>
+#include <tango/client/event.tpp>
+#include <tango/server/tango_clock.h>
 
 #include <stdio.h>
 

@@ -69,10 +69,10 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 
-#include <logcmds.h>
+#include <tango/server/logcmds.h>
 
 namespace Tango {
 

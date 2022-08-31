@@ -20,7 +20,7 @@ option(TANGO_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(BUILD_SHARED_LIBS "Build a shared library instead of static" ON)
 option(TANGO_USE_LIBCPP "Build against libc++" OFF)
 
-option(TANGO_USE_PCH "Use precompiled header for server/tango.h" ON)
+option(TANGO_USE_PCH "Use precompiled header for include/tango/tango.h" ON)
 if (TANGO_USE_PCH AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU|MSVC|Clang"))
     message(WARNING "Precompiled headers are not supported for selected compiler.")
     set(TANGO_USE_PCH OFF)
@@ -75,13 +75,12 @@ set(SO_VERSION "${MAJOR_VERSION}${MINOR_VERSION}")
 set(TANGO_HOST $ENV{TANGO_HOST})
 include(configure/CMakeLists.txt)
 
-include_directories(cppapi/client)
-include_directories(cppapi/client/helpers)
-include_directories(cppapi/server)
-include_directories(cppapi/server/idl)
+SET(BUILD_TANGO_LOCAL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cppapi/include)
+message(STATUS "Using ${BUILD_TANGO_LOCAL_INCLUDE_DIR} as build-time include directory")
+include_directories(${BUILD_TANGO_LOCAL_INCLUDE_DIR})
 include_directories(log4tango/include)
-#required for generated config.h
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/cppapi/server)
+#required for generated include/tango/idl/tango.h, include/tango/common/tango_const.h and config.h
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/cppapi/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/log4tango/include)
 
 #source code

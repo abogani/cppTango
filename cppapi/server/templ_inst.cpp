@@ -43,15 +43,15 @@
 // See C++ template book chapter 6
 //
 
-#include <tango.h>
+#include <tango/tango.h>
 
-#include <attribute.tpp>
-#include <pollext.tpp>
-#include <utils.tpp>
-#include <w_attribute.tpp>
-#include <devapi_pipe.tpp>
-#include <pipe.tpp>
-#include <w_pipe.tpp>
+#include <tango/server/attribute.tpp>
+#include <tango/server/pollext.tpp>
+#include <tango/server/utils.tpp>
+#include <tango/server/w_attribute.tpp>
+#include <tango/client/devapi_pipe.tpp>
+#include <tango/server/pipe.tpp>
+#include <tango/server/w_pipe.tpp>
 
 namespace Tango
 {
@@ -1083,4 +1083,3 @@ template std::ostream &operator<<(std::ostream &, const DataElement<DevVarStateA
 
 
 } // End of Tango namespace
-

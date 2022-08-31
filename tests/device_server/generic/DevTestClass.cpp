@@ -1,4 +1,4 @@
-#include <tango.h>
+#include <tango/tango.h>
 
 #include "DevTest.h"
 #include "DevTestClass.h"
@@ -947,10 +947,3 @@ void DevTestClass::pipe_factory()
 	RPipeDEClass	*pRPipeDE = new RPipeDEClass("RPipeDE",Tango::OPERATOR);
 	pipe_list.push_back(pRPipeDE);
 }
-
-
-
-
-
-
-

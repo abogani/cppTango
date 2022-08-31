@@ -29,9 +29,9 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <rootattreg.h>
-#include <eventsupplier.h>
+#include <tango/tango.h>
+#include <tango/server/rootattreg.h>
+#include <tango/server/eventsupplier.h>
 
 namespace Tango
 {

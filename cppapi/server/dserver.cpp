@@ -31,9 +31,9 @@
 //
 //-=================================================================================================================
 
-#include <tango.h>
-#include <eventsupplier.h>
-#include <devintr.h>
+#include <tango/tango.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/server/devintr.h>
 
 #include <new>
 #include <algorithm>

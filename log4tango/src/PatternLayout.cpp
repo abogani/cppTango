@@ -3,8 +3,8 @@
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.   
-//					
+//					Bastiaan Bakker. All rights reserved.
+//
 //					2004,2005,2006,2007,2008,2009,2010,2011,2012
 //					Synchrotron SOLEIL
 //                	L'Orme des Merisiers
@@ -16,19 +16,19 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.hh>
 
-#include <log4tango/PatternLayout.hh>
-#include <log4tango/Level.hh> 
+#include <tango/common/log4tango/PatternLayout.hh>
+#include <tango/common/log4tango/Level.hh>
 
 #include <sstream>
 
@@ -43,10 +43,10 @@ namespace {
 
 namespace log4tango {
 
-  struct StringLiteralComponent : public PatternLayout::PatternComponent 
+  struct StringLiteralComponent : public PatternLayout::PatternComponent
   {
-    StringLiteralComponent(const std::string& literal) 
-      : _literal(literal) 
+    StringLiteralComponent(const std::string& literal)
+      : _literal(literal)
     {
       //no-op
     }
@@ -58,7 +58,7 @@ namespace log4tango {
       std::string _literal;
   };
 
-  struct LoggerNameComponent : public PatternLayout::PatternComponent 
+  struct LoggerNameComponent : public PatternLayout::PatternComponent
   {
     LoggerNameComponent(std::string specifier) {
             if (specifier == "") {
@@ -149,7 +149,7 @@ namespace log4tango {
             std::string::size_type pos = timeFormat.find("%l");
             if (pos == std::string::npos) {
                 _printFraction = false;
-                _timeFormat1 = timeFormat; 
+                _timeFormat1 = timeFormat;
             } else {
                 _printFraction = true;
                 _timeFormat1 = timeFormat.substr(0, pos);
@@ -165,7 +165,7 @@ namespace log4tango {
                 auto fraction = std::chrono::duration_cast<Duration>(
                     event.timestamp.time_since_epoch()) % std::chrono::seconds(1);
                 std::ostringstream formatStream;
-                formatStream << _timeFormat1 
+                formatStream << _timeFormat1
                              << std::setw(precision) << std::setfill('0') << fraction.count()
                              << _timeFormat2;
                 timeFormat = formatStream.str();
@@ -206,7 +206,7 @@ namespace log4tango {
   struct FormatModifierComponent : public PatternLayout::PatternComponent {
     FormatModifierComponent(PatternLayout::PatternComponent* component,
                             int minWidth, int maxWidth) :
-        _component(component) , 
+        _component(component) ,
         _minWidth(minWidth < 0 ? -minWidth : minWidth),
         _maxWidth(maxWidth),
         _alignLeft(minWidth < 0) {
@@ -261,7 +261,7 @@ void PatternLayout::clear_conversion_pattern() {
   _conversionPattern = "";
 }
 
-int PatternLayout::set_conversion_pattern (const std::string& conversionPattern) 
+int PatternLayout::set_conversion_pattern (const std::string& conversionPattern)
 {
     std::istringstream conversionStream(conversionPattern);
     std::string literal;
@@ -281,12 +281,12 @@ int PatternLayout::set_conversion_pattern (const std::string& conversionPattern)
                     conversionStream.putback(ch2);
                     conversionStream >> minWidth;
                     conversionStream.get(ch2);
-                } 
+                }
                 if (ch2 == '.') {
                     conversionStream >> maxWidth;
                 } else {
                     conversionStream.putback(ch2);
-                }                        
+                }
             }
             if (!conversionStream.get(ch)) {
               return -1;

@@ -1,7 +1,7 @@
 #ifndef _DEV_TESTCLASS_H
 #define _DEV_TESTCLASS_H
 
-#include <tango.h>
+#include <tango/tango.h>
 #include "DevTest.h"
 
 //
@@ -1230,9 +1230,3 @@ private:
 };
 
 #endif // _DEV_TESTCLASS_H
-
-
-
-
-
-

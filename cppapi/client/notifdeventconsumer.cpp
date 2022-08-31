@@ -33,8 +33,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <tango.h>
-#include <eventconsumer.h>
+#include <tango/tango.h>
+#include <tango/client/eventconsumer.h>
 
 #include <stdio.h>
 
@@ -1130,4 +1130,3 @@ ReceivedFromAdmin NotifdEventConsumer::initialize_received_from_admin(TANGO_UNUS
 }
 
 } /* End of Tango namespace */
-

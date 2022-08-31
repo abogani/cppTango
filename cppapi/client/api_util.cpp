@@ -27,9 +27,9 @@
 //
 //+==================================================================================================================
 
-#include <tango.h>
-#include <eventconsumer.h>
-#include <api_util.tpp>
+#include <tango/tango.h>
+#include <tango/client/eventconsumer.h>
+#include <tango/client/api_util.tpp>
 #include <thread>
 
 #ifndef _TG_WINDOWS_

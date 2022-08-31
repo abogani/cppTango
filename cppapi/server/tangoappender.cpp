@@ -32,13 +32,13 @@
 //
 //-=============================================================================
 
-#include <tango.h>
+#include <tango/tango.h>
 
 #include <iomanip>
 
 #include <chrono>
 
-#include <tangoappender.h>
+#include <tango/server/tangoappender.h>
 
 #define USE_ASYNC_CALL
 

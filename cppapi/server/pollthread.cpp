@@ -30,9 +30,9 @@
 //
 //-==================================================================================================================
 
-#include <tango.h>
-#include <eventsupplier.h>
-#include <pollthread.tpp>
+#include <tango/tango.h>
+#include <tango/server/eventsupplier.h>
+#include <tango/server/pollthread.tpp>
 
 #include <iomanip>
 
