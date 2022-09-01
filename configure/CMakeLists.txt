@@ -30,11 +30,6 @@ message(STATUS "C Compiler: ${CMAKE_C_COMPILER_ID} with version ${CMAKE_C_COMPIL
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
-if(NOT TANGO_DEVICE_SERVER_PATH)
-    #TODO windows
-    set(TANGO_DEVICE_SERVER_PATH ${CMAKE_INSTALL_FULL_BINDIR})
-endif()
-
 if(TANGO_CPPZMQ_BASE)
     message("Using TANGO_CPPZMQ_BASE=${TANGO_CPPZMQ_BASE}")
     include_directories(SYSTEM ${TANGO_CPPZMQ_BASE}/include)
