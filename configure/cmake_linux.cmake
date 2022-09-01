@@ -24,9 +24,9 @@ if(BUILD_SHARED_LIBS)
   set_target_properties(tango PROPERTIES
                         VERSION ${LIBRARY_VERSION}
                         SOVERSION ${SO_VERSION})
-  install(TARGETS tango LIBRARY DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
+  install(TARGETS tango LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 else()
-  install(TARGETS tango ARCHIVE DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
+  install(TARGETS tango ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 
 include(configure/cpack_linux.cmake)
