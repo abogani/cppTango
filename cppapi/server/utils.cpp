@@ -662,6 +662,11 @@ void Util::check_args(int argc,char *argv[])
 		ds_exec_name = tmp;
 	}
 #else
+    // Keep an unmodified copy of the executable for later use
+    // with realpath from the std C library. realpath resolves
+    // the full path for a given filename.
+    ds_unmodified_exec_name = argv[0];
+
 	if ((tmp = strrchr(argv[0],'/')) == 0)
 		ds_exec_name = argv[0];
 	else
