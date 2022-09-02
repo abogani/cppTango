@@ -987,6 +987,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         }
 
         size_t nb_alt = ev->get_alternate_heartbeat_endpoint().size();
+        assert(nb_alt == ev->get_alternate_event_endpoint().size());
         if (nb_alt != 0)
         {
             ret_data->svalue.length((nb_alt + 1) << 1);
