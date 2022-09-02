@@ -377,7 +377,7 @@ void NTService::main(int argc, char** argv)
 
     	HKEY keyHandle;
 		int	errcode;
-		stringstream	s;
+		std::stringstream	s;
     	if((errcode=::RegOpenKeyEx(regHandle,keyName.c_str(),0,KEY_ALL_ACCESS,
 		                  &keyHandle)) != ERROR_SUCCESS)
     	{
@@ -465,8 +465,8 @@ stopped_(false)
 // Remove the .exe after the executable name
 //
 
-	string::size_type pos;
-	if ((pos = exec_name_.find('.')) != string::npos)
+	std::string::size_type pos;
+	if ((pos = exec_name_.find('.')) != std::string::npos)
 	{
 		exec_name_.erase(pos,exec_name_.size());
 	}
