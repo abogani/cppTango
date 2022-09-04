@@ -523,7 +523,7 @@ LRESULT CALLBACK AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	TCHAR str[160];
 	std::string vers;
 	std::string full_vers;
-	string::size_type nb_char;
+	std::string::size_type nb_char;
 
 	switch (message)
 	{
@@ -534,11 +534,11 @@ LRESULT CALLBACK AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 
 		strcpy(str,"TANGO release : ");
 		full_vers = RcsId;
-		string::size_type pos,pos2;
-		if ((pos = full_vers.rfind(' ')) != string::npos)
+		std::string::size_type pos,pos2;
+		if ((pos = full_vers.rfind(' ')) != std::string::npos)
 		{
 			pos2 = full_vers.rfind(' ',pos - 1);
-			if (pos2 != string::npos)
+			if (pos2 != std::string::npos)
 			{
 				nb_char = pos - pos2;
 				vers = full_vers.substr(pos2,nb_char);
@@ -577,7 +577,7 @@ LRESULT CALLBACK AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 
 void all_dev(Util *tg,LogLevel level)
 {
-	vector<DeviceImpl *> dev_list;
+	std::vector<DeviceImpl *> dev_list;
 
 	dev_list = tg->get_device_list("*");
 	for (unsigned int i = 0;i < dev_list.size();i++)
@@ -597,7 +597,7 @@ void all_dev(Util *tg,LogLevel level)
 
 int get_all_dev_log_level(Util *tg,LogLevel &lev)
 {
-	vector<DeviceImpl *> dev_list;
+	std::vector<DeviceImpl *> dev_list;
 	LogLevel ini_log_level = LOG_WARN;
 	LogLevel log_level;
 	int i,j;
@@ -676,7 +676,7 @@ void add_cout_appender(Util *tg)
 
 void all_dev_add_cout(Util *tg)
 {
-	vector<DeviceImpl *> dev_list;
+	std::vector<DeviceImpl *> dev_list;
 	int j,nb_appenders;
 	Tango::DevVarStringArray *log_target;
 

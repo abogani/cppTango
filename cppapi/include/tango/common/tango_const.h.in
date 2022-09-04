@@ -284,12 +284,6 @@ const size_t kDefaultRollingThreshold      = 20 * 1024;
 const size_t kMaxRollingThreshold          = 1024 * 1024;
 // NOLINTEND(readability-identifier-naming)
 
-
-// Include namespaces in header files (deprecated).
-#ifndef TANGO_USE_USING_NAMESPACE
-#cmakedefine TANGO_USE_USING_NAMESPACE
-#endif
-
 //
 // The optional attribute properties
 //
