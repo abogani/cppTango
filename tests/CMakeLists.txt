@@ -38,7 +38,7 @@ add_subdirectory(environment)
 function(tango_add_test name_tag name command_tag command)
     add_test(
         NAME "${name}"
-        COMMAND "${CMAKE_BINARY_DIR}/tests/environment/run_with_fixture.sh" "${command}"
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${command}"
         ${ARGN})
 endfunction()
 
