@@ -1151,6 +1151,7 @@ void Connection::set_timeout_millis(int millisecs)
                 break;
 
             default:
+                // do nothing
                 break;
         }
     }
@@ -3989,7 +3990,7 @@ AttributeInfoListEx *DeviceProxy::get_attribute_config_ex(const std::vector<std:
                     break;
 
                 default:
-                    break;
+                    TANGO_THROW_ON_DEFAULT(version);
             }
 
             ctr = 2;
@@ -9695,7 +9696,7 @@ int DeviceProxy::get_tango_lib_version()
             break;
 
         default:
-            break;
+            TANGO_THROW_ON_DEFAULT(admin_idl_vers);
     }
 
     delete cmd_list;

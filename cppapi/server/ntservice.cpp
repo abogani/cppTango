@@ -325,10 +325,7 @@ void NTService::control(DWORD ctrlCode)
         break;
 
    	 default:
-//
-// invalid control code
-//
-        	break;
+        TANGO_THROW_ON_DEFAULT(ctrlCode);
     }
 
     statusUpdate(status_.dwCurrentState);

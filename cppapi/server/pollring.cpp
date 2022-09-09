@@ -913,7 +913,7 @@ void PollRing::get_cmd_history(long n,Tango::DevCmdHistory_4 *ptr,Tango::CmdArgT
 					break;
 
 					default:
-					break;
+          TANGO_THROW_ON_DEFAULT(cmd_type);
 				}
 				seq_size = seq_size + data_length;
 			}
@@ -1358,7 +1358,7 @@ void PollRing::get_cmd_history(long n,Tango::DevCmdHistory_4 *ptr,Tango::CmdArgT
 				break;
 
 			default:
-				break;
+        TANGO_THROW_ON_DEFAULT(cmd_type);
 			}
 		}
 
@@ -1456,8 +1456,12 @@ void PollRing::get_cmd_history(long n,Tango::DevCmdHistory_4 *ptr,Tango::CmdArgT
 					ptr->value <<= new_tmp_enc;
 				break;
 
+      case Tango::DEV_VOID:
+        // do nothing
+        break;
+
 			default:
-				break;
+        TANGO_THROW_ON_DEFAULT(cmd_type);
 			}
 		}
 

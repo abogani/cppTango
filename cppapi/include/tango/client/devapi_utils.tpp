@@ -270,7 +270,7 @@ void DeviceProxy::from_hist_2_AttHistory(const T &hist,std::vector<DeviceAttribu
 			break;
 
 			default:
-			break;
+          TANGO_THROW_ON_DEFAULT(ty_seq->kind());
 		}
 	}
 }
