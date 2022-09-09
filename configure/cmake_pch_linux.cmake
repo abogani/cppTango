@@ -4,7 +4,7 @@
 function(tango_target_pch target)
     target_compile_options(${target} PRIVATE
         -Winvalid-pch
-        -include "${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h")
+        -include "${PROJECT_BINARY_DIR}/cppapi/server/tango.h")
     add_dependencies(${target} tango_pch)
 endfunction()
 
@@ -14,7 +14,7 @@ endfunction()
 function(tango_target_test_pch target)
     target_compile_options(${target} PRIVATE
         -Winvalid-pch
-        -include "${CMAKE_BINARY_DIR}/tests/tango.h")
+        -include "${PROJECT_BINARY_DIR}/tango.h")
     add_dependencies(${target} tango_test_pch)
 endfunction()
 
