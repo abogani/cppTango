@@ -119,6 +119,24 @@ make [-j NUMBER_OF_CPUS]
 cmake should output `Target platform: Linux 32-bit`. You can also inspect the
 created library using `file` to check that you built it correctly.
 
+##  Installation with custom prefix
+
+It is possible to have multiple tango installations on one machine. It uses
+`CMAKE_PREFIX_PATH` for that.
+
+```bash
+cmake -B build-XXX -S . -DCMAKE_INSTALL_PREFIX=/usr/local/tango-XXX
+cmake --build build-XXX
+sudo cmake --install build-XXX
+```
+
+Compiling a tango DS against this installation can then be done with
+
+```bash
+PKG_CONFIG_PATH=/usr/local/tango-XXX/lib/pkgconfig cmake -B build-YYY -S .
+cmake --build build-YYY
+```
+
 # Compiling the dependencies
 
 We assume that you have a compiler already and are on a linux based system.
