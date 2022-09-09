@@ -138,8 +138,8 @@ endif()
 
 if(NOT WIN32)
   if(NOT DEFINED TANGO_CPPZMQ_USABLE_VERSION)
-    try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_BINARY_DIR}/test_cppzmq_features
-                SOURCES ${CMAKE_SOURCE_DIR}/configure/test_cppzmq_features.cpp
+    try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_cppzmq_features
+                SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_cppzmq_features.cpp
                 COMPILE_DEFINITIONS "-I ${TANGO_CPPZMQ_BASE}/include -I ${TANGO_ZMQ_BASE}/include"
                 LINK_LIBRARIES "$<$<BOOL:${TANGO_ZMQ_BASE}>:-L ${TANGO_ZMQ_BASE}/lib >${ZMQ_PKG_LIBRARIES}"
                 OUTPUT_VARIABLE CPPZMQ_TRY_COMPILE_OUTPUT)
@@ -158,8 +158,8 @@ if(NOT WIN32)
   set(ZMQ_MIN_VER_PATCH 5)
 
   if(NOT DEFINED TANGO_ZMQ_USABLE_VERSION)
-    try_compile(TANGO_ZMQ_USABLE_VERSION ${CMAKE_BINARY_DIR}/test_zmq_version
-                SOURCES ${CMAKE_SOURCE_DIR}/configure/test_zmq_version.cpp
+    try_compile(TANGO_ZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_zmq_version
+                SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_zmq_version.cpp
                 COMPILE_DEFINITIONS "-I ${TANGO_ZMQ_BASE}/include
                 -DMINIMUM_VERSION_MAJOR=${ZMQ_MIN_VER_MAJOR}
                 -DMINIMUM_VERSION_MINOR=${ZMQ_MIN_VER_MINOR}
