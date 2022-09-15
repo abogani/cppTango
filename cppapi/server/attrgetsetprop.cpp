@@ -987,9 +987,10 @@ void Attribute::set_one_alarm_prop(const char *prop_name,const CORBA::String_mem
 								const std::vector<AttrProperty> &def_class_prop,bool &check_it)
 {
 
-	if (((data_type == Tango::DEV_STRING) ||
-		(data_type == Tango::DEV_BOOLEAN) ||
-		(data_type == Tango::DEV_STATE)) &&
+	if ((data_type == Tango::DEV_STRING ||
+		data_type == Tango::DEV_BOOLEAN ||
+		data_type == Tango::DEV_ENUM ||
+		data_type == Tango::DEV_STATE) &&
         (TG_strcasecmp(conf_val,AlrmValueNotSpec) != 0 &&
          strlen(conf_val) != 0 &&
          TG_strcasecmp(conf_val,NotANumber) != 0))
