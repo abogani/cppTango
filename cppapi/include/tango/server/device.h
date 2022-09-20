@@ -1737,9 +1737,9 @@ private:
 
 // Push event and call the proper firing method in attribute
 // allow for factorization for any type of event
-template<class T, void (Attribute::*fire)(void)>
+template<class T, void (Attribute::*fire)(DevFailed *)>
 void push_event(const std::string &attr_name, T* p_data, long x, long y , bool release);
-template<class T, void (Attribute::*fire)(void)>
+template<class T, void (Attribute::*fire)(DevFailed *)>
 void push_event (const std::string &attr_name, T* p_data,
 			  const TangoTimestamp &t, Tango::AttrQuality qual,
 			  long x,long y ,bool release);
@@ -1756,7 +1756,7 @@ inline void DeviceImpl::set_state(const Tango::DevState &new_state)
         ext->alarm_state_user = 0;
 }
 
-template<class T, void (Attribute::*fire)(void)>
+template<class T, void (Attribute::*fire)(DevFailed *)>
 void DeviceImpl::push_event (const std::string &attr_name, T* p_data,
 			  const TangoTimestamp &t, Tango::AttrQuality qual,
 			  long x,long y ,bool release)
@@ -1771,10 +1771,10 @@ void DeviceImpl::push_event (const std::string &attr_name, T* p_data,
 	// set the attribute value
 	attr.set_value_date_quality (p_data, t, qual, x, y, release);
 	// push the event
-	(attr.*fire)();
+	(attr.*fire)(nullptr);
 }
 
-template<class T, void (Attribute::*fire)(void)>
+template<class T, void (Attribute::*fire)(DevFailed *)>
 inline void DeviceImpl::push_event(const std::string &attr_name, T* p_data, long x, long y , bool release)
 {
 	// get the tango synchronization monitor
@@ -1787,7 +1787,7 @@ inline void DeviceImpl::push_event(const std::string &attr_name, T* p_data, long
 	// set the attribute value
 	attr.set_value (p_data, x, y, release);
 	// push the event
-	(attr.*fire)();
+	(attr.*fire)(nullptr);
 }
 
 template<class T>
