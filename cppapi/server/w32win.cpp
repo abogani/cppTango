@@ -1,6 +1,3 @@
-static const char *RcsId = "$Id$\n$Name$";
-static const char *Vers = "$Revision$";
-
 //+=============================================================================
 //
 // file :               w32win.cpp
@@ -521,9 +518,6 @@ LRESULT CALLBACK AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 {
 	Util *tg = Util::instance();
 	TCHAR str[160];
-	std::string vers;
-	std::string full_vers;
-	std::string::size_type nb_char;
 
 	switch (message)
 	{
@@ -532,27 +526,7 @@ LRESULT CALLBACK AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 		strcat(str,tg->get_ds_name().c_str());
 		SetDlgItemText(hDlg,TANGO_ABOUT_TEXT2,(LPCSTR)str);
 
-		strcpy(str,"TANGO release : ");
-		full_vers = RcsId;
-		std::string::size_type pos,pos2;
-		if ((pos = full_vers.rfind(' ')) != std::string::npos)
-		{
-			pos2 = full_vers.rfind(' ',pos - 1);
-			if (pos2 != std::string::npos)
-			{
-				nb_char = pos - pos2;
-				vers = full_vers.substr(pos2,nb_char);
-				strcat(str,vers.c_str());
-			}
-			else
-			{
-				strcat(str,"x.y");
-			}
-		}
-		else
-		{
-			strcat(str,"x.y");
-		}
+		std::snprintf(str, sizeof(str), "TANGO release : %d.%d.%d.", TANGO_VERSION_MAJOR, TANGO_VERSION_MINOR, TANGO_VERSION_PATCH);
 		SetDlgItemText(hDlg,TANGO_ABOUT_TEXT3,(LPCSTR)str);
 
 		strcpy(str,"TANGO IDL definition release : ");

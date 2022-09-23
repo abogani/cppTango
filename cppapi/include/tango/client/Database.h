@@ -41,8 +41,8 @@
  * This class has methods for all database commands e.g. get_device_property(),
  * device_list(), info(), etc.
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup DBase

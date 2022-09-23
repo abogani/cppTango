@@ -45,8 +45,8 @@
  * stateless connections (new DeviceProxy() nearly always works), and reconnection if the device server is
  * restarted.
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @ingroup Client
  * @headerfile tango.h

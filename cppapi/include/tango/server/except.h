@@ -26,7 +26,7 @@
 // You should have received a copy of the GNU Lesser General Public License along with Tango.
 // If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: 30238 $
+//
 //
 //==================================================================================================================
 
@@ -77,8 +77,8 @@ static inline std::ostream &operator<<(std::ostream &ss, const Tango::DevFailed 
  * Container class for all exception related methods. Most of these methods are
  * static methods
  *
- * $Author: bourtemb $
- * $Revision: 30238 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Server

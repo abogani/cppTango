@@ -30,7 +30,7 @@
 // You should have received a copy of the GNU Lesser General Public License along with Tango.
 // If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: 19431 $
+//
 //
 //==================================================================================================================
 
@@ -54,8 +54,8 @@ namespace Tango
 /**
  * This class represents a Tango attribute property.
  *
- * $Author: trogucki $
- * $Revision: 19431 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Server
@@ -257,8 +257,8 @@ private:
  * This class represents a Tango compound attribute property which consists of
  * two values.
  *
- * $Author: trogucki $
- * $Revision: 19431 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Server
@@ -528,8 +528,8 @@ private:
  * This class represents Tango modifiable attribute properties grouped in
  * one object to facilitate setting and getting attribute properties in one go.
  *
- * $Author: trogucki $
- * $Revision: 19431 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Server

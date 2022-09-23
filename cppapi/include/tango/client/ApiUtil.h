@@ -23,7 +23,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
-// $Revision: 20437 $
+//
 //
 ///////////////////////////////////////////////////////////////
 
@@ -44,8 +44,8 @@
  * This class is a singleton. Therefore, it is not necessary to create it. It will be automatically done. A static
  * method allows a user to retrieve the instance
  *
- * $Author: taurel $
- * $Revision: 1 $
+ *
+ *
  *
  * @headerfile tango.h
  * @ingroup Client
