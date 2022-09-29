@@ -8,7 +8,6 @@ public:
 	int cb_executed;
 	int cb_err;
 	int old_sec,old_usec;
-	int delta_msec;
 	long val;
 	long val_size;
 };
@@ -21,7 +20,7 @@ void EventCallBack::push_event(Tango::EventData* event_data)
 	TEST_LOG << "date : tv_sec = " << now_timeval.tv_sec;
 	TEST_LOG << ", tv_usec = " << now_timeval.tv_usec << std::endl;
 
-	delta_msec = ((now_timeval.tv_sec - old_sec) * 1000) + ((now_timeval.tv_usec - old_usec) / 1000);
+	auto delta_msec = ((now_timeval.tv_sec - old_sec) * 1000) + ((now_timeval.tv_usec - old_usec) / 1000);
 
 	old_sec = now_timeval.tv_sec;
 	old_usec = now_timeval.tv_usec;

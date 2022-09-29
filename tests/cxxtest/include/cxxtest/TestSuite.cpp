@@ -91,7 +91,7 @@ namespace CxxTest
 
         const char *cx = (const char *)x;
         const char *cy = (const char *)y;
-        while ( size -- )
+        while ( size > 0 && size -- )
             if ( *cx++ != *cy++ )
                 return false;
 

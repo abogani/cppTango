@@ -575,6 +575,11 @@ sanitizer:
   parallel:
     matrix:
       - SANITIZER: [ASAN, TSAN, UBSAN]
+  rules:
+    - if: '$CI_JOB_NAME == "sanitizer: [UBSAN]"'
+      allow_failure: false
+      when: on_success
+    - when: on_success
   before_script:
     - ulimit -c unlimited
     - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
@@ -624,7 +629,7 @@ sanitizer:
     - make
     - docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
     - docker pull registry.gitlab.com/tango-controls/docker/tango-db:5.16
-    - ctest -j$(nproc) --output-on-failure
+    - ctest -j$(nproc) -E '(event::per_event|old_tests::ring_depth)' --output-on-failure
 
 build-conda-dev-package:
   stage: test

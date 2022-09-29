@@ -8,7 +8,6 @@ public:
 	int cb_executed;
 	int cb_err;
 	int old_sec,old_usec;
-	int delta_msec;
 	short val;
 	AttrQuality qua;
 };
@@ -21,7 +20,6 @@ public:
 	int cb_executed;
 	int cb_err;
 	int old_sec,old_usec;
-	int delta_msec;
 	double val;
 	AttrQuality qua;
 };
@@ -34,15 +32,8 @@ void SlowCallBack::push_event(Tango::EventData* event_data)
 	TEST_LOG << "date : tv_sec = " << now_timeval.tv_sec;
 	TEST_LOG << ", tv_usec = " << now_timeval.tv_usec << std::endl;
 
-	int delta_s = now_timeval.tv_sec - old_sec;
-	if (delta_s == 0)
-		delta_msec = (now_timeval.tv_usec - old_usec) / 1000;
-	else
-	{
-		delta_msec = (now_timeval.tv_usec + (1000000 - old_usec)) / 1000;
-		if (delta_s > 1)
-			delta_msec = delta_msec + ((delta_s - 1)* 1000);
-	}
+	auto delta_msec = ((now_timeval.tv_sec - old_sec) * 1000) + ((now_timeval.tv_usec - old_usec) / 1000);
+
 	old_sec = now_timeval.tv_sec;
 	old_usec = now_timeval.tv_usec;
 
@@ -81,15 +72,8 @@ void FastCallBack::push_event(Tango::EventData* event_data)
 	TEST_LOG << "date : tv_sec = " << now_timeval.tv_sec;
 	TEST_LOG << ", tv_usec = " << now_timeval.tv_usec << std::endl;
 
-	int delta_s = now_timeval.tv_sec - old_sec;
-	if (delta_s == 0)
-		delta_msec = (now_timeval.tv_usec - old_usec) / 1000;
-	else
-	{
-		delta_msec = (now_timeval.tv_usec + (1000000 - old_usec)) / 1000;
-		if (delta_s > 1)
-			delta_msec = delta_msec + ((delta_s - 1)* 1000);
-	}
+	auto delta_msec = ((now_timeval.tv_sec - old_sec) * 1000) + ((now_timeval.tv_usec - old_usec) / 1000);
+
 	old_sec = now_timeval.tv_sec;
 	old_usec = now_timeval.tv_usec;
 

@@ -1,4 +1,5 @@
 #include "common.h"
+#include <cstdint>
 
 class EventCallBack : public Tango::CallBack
 {
@@ -10,7 +11,7 @@ public:
 	int 					cb_err_out_of_sync;
 	int 					a_cb_err;
 	int 					old_sec,old_usec;
-	int 					delta_msec;
+	std::int_least64_t 		delta_msec;
 	Tango::AttrDataFormat 	d_format;
 };
 

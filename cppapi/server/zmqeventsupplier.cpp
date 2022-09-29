@@ -1210,7 +1210,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,std::string event_type
 // Marshall the event data
 //
 
-		CORBA::Long padding = 0XDEC0DEC0;
+		CORBA::ULong padding = 0XDEC0DEC0UL;
 		data_call_cdr.rewindPtrs();
 
 		padding >>= data_call_cdr;

@@ -42,9 +42,18 @@ class JPEGEncodedTestSuite: public CxxTest::TestSuite
             std::ifstream read_file(file, std::ios::binary);
             assert(read_file.is_open());
 
-            return std::vector<unsigned char>{
+            auto signed_vec = std::vector<char>{
                 std::istreambuf_iterator<char>(read_file),
                 {}};
+
+
+            // workaround UBSAN integer-implicit-sign-change error
+            const size_t length = signed_vec.size();
+
+            std::vector<unsigned char> unsigned_vec(length);
+            memcpy(unsigned_vec.data(), reinterpret_cast<unsigned char*>(signed_vec.data()), length);
+
+            return unsigned_vec;
         }
 
         template <typename T>

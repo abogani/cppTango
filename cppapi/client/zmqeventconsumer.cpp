@@ -1871,12 +1871,10 @@ void ZmqEventConsumer::push_zmq_event(std::string &ev_name,unsigned char endian,
 			if (ds_ctr != 1 && evt_cb.ctr == 0)
 				evt_cb.ctr = ds_ctr - 1;
 
-			DevLong missed_event = ds_ctr - evt_cb.ctr;
-
-			if (missed_event < 0)
-			{
-				missed_event = (UINT_MAX + missed_event) + 1;
-			}
+			// This can be negative after reconnection if server was restarted.
+			DevLong missed_event = (ds_ctr >= evt_cb.ctr)
+				? static_cast<DevLong>(ds_ctr - evt_cb.ctr)
+				: -static_cast<DevLong>(evt_cb.ctr - ds_ctr);
 
 			if (missed_event >= 2)
             {
@@ -3715,6 +3713,12 @@ void Tango::ZmqDevPipeData::operator<<= (TangoCdrMemoryStream &_n)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
+#if defined(__clang__)
+    // UBSAN: downcast of address 0x55daeb87ca40 which does not point to an object of type 'Tango::ZmqDevVarPipeDataEltArray'
+    //        0x55daeb87ca40: note: object is of type 'Tango::DevVarPipeDataEltArray'
+    // TODO: All these downcasts to dummy Zmq... types are UB and eventually should be fixed.
+    [[clang::no_sanitize("vptr")]]
+#endif
 void Tango::ZmqDevPipeBlob::operator<<= (TangoCdrMemoryStream &_n)
 {
 	name = _n.unmarshalString(0);
@@ -3763,6 +3767,10 @@ void Tango::ZmqDevVarPipeDataEltArray::operator<<= (TangoCdrMemoryStream &_n)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
+#if defined(__clang__)
+    // Same problem as in: void Tango::ZmqDevPipeBlob::operator<<= (TangoCdrMemoryStream &_n)
+    [[clang::no_sanitize("vptr")]]
+#endif
 void Tango::ZmqDevPipeDataElt::operator<<= (TangoCdrMemoryStream &_n)
 {
 	name = _n.unmarshalString(0);
