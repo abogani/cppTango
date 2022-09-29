@@ -171,7 +171,7 @@ public:
  * @param CmdShow The display window flag
  * @return The Util object reference
  */
-        TANGO_IMP_EXP static Util *init(HINSTANCE AppInst,int CmdShow);
+  static Util *init(HINSTANCE AppInst,int CmdShow);
 #endif
 
 /**
@@ -183,7 +183,7 @@ public:
  *
  * @return The Util object reference
  */
-	TANGO_IMP_EXP static Util *instance(bool exit = true);
+	static Util *instance(bool exit = true);
 //@}
 
 /**@name Destructor

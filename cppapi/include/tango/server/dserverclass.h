@@ -550,8 +550,8 @@ class DServerClass : public DeviceClass
 {
 public:
 
-	TANGO_IMP_EXP static DServerClass *instance();
-	TANGO_IMP_EXP static DServerClass *init();
+	static DServerClass *instance();
+	static DServerClass *init();
 
 	~DServerClass() {}
 

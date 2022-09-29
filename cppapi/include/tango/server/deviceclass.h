@@ -35,6 +35,8 @@
 #ifndef _DEVICECLASS_H
 #define _DEVICECLASS_H
 
+#include "tango/server/tango_config.h"
+
 namespace Tango
 {
 
@@ -70,13 +72,7 @@ class DServer;
  * @ingroup Server
  */
 
-class
-#ifdef _TG_WINDOWS_
-	#ifndef _TANGO_LIB
-		__declspec(dllexport)
-	#endif
-#endif
-		DeviceClass
+class TANGO_REV_EXP DeviceClass
 {
 	friend class Tango::AutoTangoMonitor;
 public:

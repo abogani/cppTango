@@ -217,7 +217,7 @@ class NotifdEventSupplier : public EventSupplier, public POA_CosNotifyComm::Stru
 {
 public :
 
-	TANGO_IMP_EXP static NotifdEventSupplier *create(CORBA::ORB_var,std::string,Util *);
+	static NotifdEventSupplier *create(CORBA::ORB_var,std::string,Util *);
 	void connect();
 	void disconnect_structured_push_supplier();
 	void disconnect_from_notifd();
@@ -257,7 +257,7 @@ private :
 	std::string 		event_channel_ior;
 
 	void reconnect_notifd();
-	TANGO_IMP_EXP static void connect_to_notifd(NotifService &,const CORBA::ORB_var &,const std::string &,Util *);
+	static void connect_to_notifd(NotifService &,const CORBA::ORB_var &,const std::string &,Util *);
 };
 
 
@@ -274,7 +274,7 @@ private :
 class ZmqEventSupplier : public EventSupplier
 {
 public :
-	TANGO_IMP_EXP static ZmqEventSupplier *create(Util *);
+	static ZmqEventSupplier *create(Util *);
 	virtual ~ZmqEventSupplier();
 
 //------------------ Push event -------------------------------

@@ -517,7 +517,7 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer ,
 {
 public :
 	static NotifdEventConsumer *create();
-    TANGO_IMP_EXP static void cleanup() {if (_instance != NULL){_instance=NULL;}}
+  static void cleanup() {if (_instance != NULL){_instance=NULL;}}
 
 	void push_structured_event(const CosNotification::StructuredEvent&) override;
 	virtual void cleanup_EventChannel_map() override;
@@ -567,7 +567,7 @@ class ZmqEventConsumer : public EventConsumer ,
 {
 public :
 	static ZmqEventConsumer *create();
-  TANGO_IMP_EXP static void cleanup() {if (_instance != NULL){_instance=NULL;}}
+  static void cleanup() {if (_instance != NULL){_instance=NULL;}}
 
   virtual void cleanup_EventChannel_map() override;
   virtual void get_subscription_command_name(std::string &cmd) override {cmd="ZmqEventSubscriptionChange";}

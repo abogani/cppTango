@@ -61,13 +61,13 @@ public:
  *
  * @return The singleton instance
  */
-	TANGO_IMP_EXP static ApiUtil *instance();
+	static ApiUtil *instance();
 /**
  * Destroy the ApiUtil instance
  *
  * Destroy the ApiUtil singleton instance.
  */
-	TANGO_IMP_EXP static inline void cleanup()
+	static inline void cleanup()
 	{if (_instance != NULL){delete _instance;_instance=NULL;}}
 /**
  * Get environment variable
@@ -81,7 +81,7 @@ public:
  * @param [out] value The environment variable value
  * @return Set to -1 if the environment varaibel is not found
  */
-	TANGO_IMP_EXP static int get_env_var(const char *name,std::string &value);
+	static int get_env_var(const char *name,std::string &value);
 /**
  * Get pending asynchronous requets number
  *
@@ -154,7 +154,7 @@ public:
 	bool need_reset_already_flag() {return reset_already_executed_flag;}
 	void need_reset_already_flag(bool in) {reset_already_executed_flag = in;}
 
-	TANGO_IMP_EXP static inline bool _is_instance_null()
+	static inline bool _is_instance_null()
 	{return _instance == NULL;}
 
 //
