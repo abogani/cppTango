@@ -1,227 +1,200 @@
 # Tango C++ library 9.4.0 Release Notes
-UNRELEASED
-
-#498 - DeviceImpl::server_init_hook - device hook when DServer has been exported
-
-# Tango C++ library 9.3.3 Release Notes
-March 29, 2019
+September 30th, 2022
 
 Table of Contents
 =================
-  * [What's new (since version 9.2.5)?](#whats-new-since-version-925)
-  * [Changes which might have an impact on users](#changes-which-might-have-an-impact-on-users)
-  * [Bug fixes](#bug-fixes)
-    * [Event related bug fixes](#event-related-bug-fixes)
-    * [Other bug fixes](#other-bug-fixes)
-  * [Changelog](#changelog)
-  * [Source code comparison with version 9.2.5](#source-code-comparison-with-version-925)
-  * [Feedback](#feedback)
-  * [Contributions](#contributions)
-  * [Acknowledgement](#acknowledgement)
+  * [What's New (Since Version 9.3.5)?](#whats-new-since-version-935)
+  * [9.4.0 - Changes Which Might Have An Impact On Users](#940---changes-which-might-have-an-impact-on-users)
+  * [9.4.0 - Bug Fixes](#940---bug-fixes)
+  * [9.4.0 - Source Code Comparison With Version 9.3.5](#940---source-code-comparison-with-version-935)
+  * [9.4.0 - Feedback](#940---feedback)
+  * [9.4.0 - Contributions](#940---contributions)
+  * [9.4.0 - Acknowledgement](#940---acknowledgement)
 
-## What's new (since version 9.2.5)?
-* cppTango source code repository has been moved from subversion on 
-[Sourceforge.net](https://sourceforge.net/projects/tango-cs/) to git on 
-[GitHub.com](https://github.com/tango-controls/cppTango). 
-The tango-cs subversion repository on SourceForge has been frozen at a temperature near 0 K. 
-The [SourceForge tickets](https://sourceforge.net/p/tango-cs/_list/tickets) have been converted to 
-[GitHub issues](https://github.com/tango-controls/cppTango/issues) so we keep track of all the old problems which have 
-been solved... as well as all the old problems which are still there and that we should fix at some point.
-* cppTango now uses [CMake](https://cmake.org) (version 2.8.12 or more recent) as build system because we think it's 
-cool and much easier to use than the autotools... And we can even use it on Windows! 
-Please refer to [INSTALL.md](https://github.com/tango-controls/cppTango/blob/tango-9-lts/INSTALL.md) file to get more 
-details if you want to build and install from the source code.
-* Integration tests are now public and built automatically using [Travis CI](https://travis-ci.org) for Linux.
-* cppTango is now using [appveyor](https://www.appveyor.com) to automatically build the Tango C++ library on Windows, 
-as well as Windows installers for the Tango C++ library for different Windows compilers 
-(from MSVC9 to MSVC15, 32 bits and 64 bits). 
-Anyone who already tried to compile the Tango C++ library on Windows can understand how this is great news!
-* A map was added in MultiAttribute object to improve performances when searching for an attribute by name. 
-We should have thought about it before, it is much faster to find something with a good map! 
-This should greatly improve the performances in the case where a device has a large number of attributes and should 
-produce less heat on your CPU. A small contribution to reduce the impact on the climate.
-* An error message is now printed with the exception description if the event callback provided by the user 
-(push_event() method) is throwing an exception. Yes, the user code can sometimes throw an exception!
-* Support for NaN and Inf was added in float and double properties.
-So now you can use the keywords _NaN_, _-NaN_, _inf_, _-inf_ and _+inf_ when writing double and float scalar and array 
-properties from jive.
-It is not case sensitive, so _nan_, _-NAN_ , _nAn_, _iNF_, _-Inf_ and _+INF_ are also supported for instance.
-A negative NaN is extracted as NaN.
-* DevVarBooleanArray DeviceData insertion and extraction operators have been added.
-* It is now possible to create dynamic forwarded attributes. This works well when the device server exports only one 
-device per class. Please refer to [#342][pr-342] for more details about the limitations.
-* Development Debian packages for the Tango C++ library are now deployed automatically on 
-[Bintray](https://bintray.com/tango-controls/debian/cppTango) when a git tag is created so you can play with it easily 
-after the creation of a new git tag. But be careful here. 
-This Debian package provides only libtango library and is currently not compatible with the official libtango package 
-provided by Debian.
-* [Codacy](https://www.codacy.com) and [Sonar](https://sonarcloud.io) tools have been integrated. 
-So it is now possible to monitor the tests coverage and to benefit from static analysis and automatic code reviews from 
-these tools to detect potential issues. You can click on the GitHub badges in 
-[cppTango README.md](https://github.com/tango-controls/cppTango/blob/tango-9-lts/README.md) file to get more details. 
-Of course, we will use these results as a good basis to improve the tests coverage and fix the issues reported by these 
-tools, in the next releases.
-* cppTango can now be compiled with [Clang](https://clang.llvm.org) and recent g++ versions
-* A search bar has been added to Doxygen generated documentation, which is now generated and saved in 
-[cppTango-docs](https://github.com/tango-controls/cppTango-docs) repository. 
-The Doxygen documentation is now available directly at this URL: https://tango-controls.github.io/cppTango-docs or 
-indirectly on the 
-[official Tango documentation](https://tango-controls.readthedocs.io/en/latest/development/cpp-api/index.html).
-* The device server reliability has been improved when removing dynamic attributes from _delete_device()_ method.
-* It is now possible to insert a const C string in a DeviceData
+## What's New (Since Version 9.3.5)?
+
+### A fresh cppTango every six months!
+
+We have introduced a [fixed release cycle for cppTango](https://gitlab.com/tango-controls/cppTango/-/issues/897). This means that we will release a new cppTango version every six months on April 2 and October 2 from now on. If severe bug fixes warrant an earlier release, we will issue bug fix releases in between.
+
+We have also established a Milestone-based, i.e. release-oriented development process which you can follow on https://gitlab.com/tango-controls/cppTango/-/boards.
+
+And how will this impact you? cppTango 9.4.0 will come with an unavoidable amount of work if you want to upgrade. With a six month release cycle we believe that after the 9.4.0 release the differences between future cppTango releases will then only have a minimal impact on your system if you continue to upgrade. This will make it much easier for you to stay on top of the cppTango releases.
+
+### Binary incompatibility with cppTango <= 9.3
+
+cppTango 9.4 is binary incompatible with every older version of cppTango, i.e. cppTango <= 9.3. The source code underwent major refactoring to use modern [C++14 features](#c14-requirement) and to make it easier to maintain. With the refactoring have also come a couple of source code incompatibilities. This will mostly affect users who want to use cppTango 9.4.x as a drop-in replacement for cppTango <= 9.3. A simple recompile of their C++ device servers will likely fail. Please read the section [9.4.0 - Changes Which Might Have An Impact On Users](#940---changes-which-might-have-an-impact-on-users) where we explain how to mitigate the immediate issues when upgrading from cppTango <= 9.3.
+
+### No Changelog this time
+
+Further we will not provide a dedicated changelog file for this 9.4.0 release. There simply have been too many Merge Requests and Bug Fixes which since cppTango 9.3. We decided to save our time and not spend our limited manpower on individually listing all of them in a human readable form. Instead please refer to the Issues and Merge Requests on the cppTango repository. The [Milestone 9.4.0](https://gitlab.com/tango-controls/cppTango/-/milestones/7) will be a good starting point for your search.  
+We will assess the situation again for the next release.
+
+### server_init_hook
+
+A new server_init_hook() has been added (in the same spirit as always_executed_hook() method) at device level. This new method is called once the device server admin device is exported.
+This allows for instance for the different devices to subscribe to events at server startup on attributes from other devices of the same device server with stateless parameter set to false. The subscription should now work in this case since the admin device is exported when the server_init_hook() method is called.
+([#498](https://gitlab.com/tango-controls/cppTango/-/issues/498), [!551](https://gitlab.com/tango-controls/cppTango/-/merge_requests/551), [TangoTickets#7](https://gitlab.com/tango-controls/TangoTickets/-/issues/7)).
+
+### Compilation On MacOS
+
+It is now possible to compile cppTango 9.4.0 on MacOS! ([#956](https://gitlab.com/tango-controls/cppTango/-/issues/956), [!978](https://gitlab.com/tango-controls/cppTango/-/merge_requests/978),[#714](https://gitlab.com/tango-controls/cppTango/-/issues/714), [!725](https://gitlab.com/tango-controls/cppTango/-/merge_requests/725)). See https://gitlab.com/tjuerges/build_tango for a set of build scripts for macOS (x86_64 and M1/M2 archs) for cppTango, pyTango, TangoTest and TangoDatabase.
+
+### CMake Improvements
+
+### cppTango Dev Conda Packages
+
+Development cppTango Conda Packages are now automatically created and uploaded by CI when there are new commits to the cppTango main branch ([!875](https://gitlab.com/tango-controls/cppTango/-/merge_requests/875), [!956](https://gitlab.com/tango-controls/cppTango/-/merge_requests/956), [!938](https://gitlab.com/tango-controls/cppTango/-/merge_requests/938), [!921](https://gitlab.com/tango-controls/cppTango/-/merge_requests/921)]).  
+These packages are uploaded to the tango-controls channel with the dev label.  
+They can then be installed using:  
+`conda install -c conda-forge -c tango-controls/label/dev cpptango=9.4.0dev0`
+
+### Warnings Fixes
+
+Many compilation warnings have been fixed (([#962](https://gitlab.com/tango-controls/cppTango/-/issues/962), [!984](https://gitlab.com/tango-controls/cppTango/-/merge_requests/984), ...).
+
+### Code Refactoring And Cleanup
+
+A big part of the code has been rewritten in order to remove some code duplication. For instance, MR [!735](https://gitlab.com/tango-controls/cppTango/-/merge_requests/735) reduced the code size by about 5000 lines of code.
+
+## 9.4.0 - Changes Which Might Have An Impact On Users
+
+### Binary Incompatibility With cppTango 9.3.x Versions
+
+To fix some of the bugs, the cppTango developers had no choice but to break the binary compatibility. So this new version is no longer binary compatible with previous cppTango 9.3.x releases. As a consequence, the user code using cppTango will have to be recompiled to use this new version. The good news is some annoying bugs have been fixed. This was the price to pay to get them fixed.
+
+### C++14 Requirement
+
+To ease the maintenance of cppTango, it has been decided to allow the usage of C++11 and C++14 features in cppTango code.  
+As a consequence, you need to use a C++14 compatible C++ compiler to compile cppTango and your device servers using cppTango 9.4.0.
+You have to use `-std=c++14` or `-std=gnu++14` (or above) option when compiling your device server.  
+If you are using CMake, you can add the following lines to your CMakeLists.txt:
 
 ```
-Tango::DeviceData din;
-din << "My Wonderful C string";
+if (NOT DEFINED CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 14)  # or above
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ```
-* We improved the integration tests by splitting one of our big monolithic tests into several executables, by adding 
-new tests and by making them more reliable. Still we are far from 100% coverage.
-* As python 2.x is reaching EOL soon (PEP 373) and some distributions already switched to use python 3.x as a default 
-python interpreter, we follow PEP 394 and use `python2` command/link instead of `python` when invoking `cxxtestgen`.
-If `python2` is missing, CMake will fall-back to using `python` (if it's on `$PATH`).
 
-## Changes which might have an impact on users
-* log4tango is no longer a separate library. It is now part of libtango library. This means that it is no longer 
-required to link Tango C++ programs with liblog4tango. 
-This also means that programs compiled with a previous Tango 9 release of the Tango C++ library will still require 
-log4tango library at execution time until they are recompiled with the newer cppTango version and until their Makefile 
-is updated to no longer link with log4tango library.
-* zmq.hpp file has been removed. This adds a dependency to [cppzmq](https://github.com/zeromq/cppzmq).
-* tango.h file is now generated during the build process from the tango.idl file. This adds a dependency to 
-[tango-idl](https://github.com/tango-controls/tango-idl) repository. 
-[omniidl](http://omniorb.sourceforge.net/omni42/omniidl.html) is also required to be able to generate tango.h file.
-* The include files are now installed under _<install_prefix>_/include/tango instead of _<install_prefix>_/include. 
-You may have to update your Makefiles in order to match this new include install location.
-* log4tango include files are now installed under _<install_prefix>_/include/tango/log4tango. 
-You may have to update your Makefiles in order to match this new include install location.
-* `DeviceAttribute::get_type()` no longer throws an `API_EmptyDeviceAttribute` exception when the DeviceAttribute is empty.
-  It returns `DATA_TYPE_UNKNOWN` instead.
-   
-  **Warning! This change could lead to Segmentation fault** in code doing something like:
-```  
-    DeviceAttribute da;
-    da = device->read_attribute("AnAttributeWithINVALIDQualityFactor");
-    cout << "Type = " << Tango::CmdArgTypeName[da.get_type()] << endl;
+### Removed `using namespace std;` Directive From tango.h
+
+Since it is considered as a bad practice to put a `using namespace std;` directive in a header file, it has been decided to remove it from `tango.h` file. As a consequence, cppTango code had to be massively updated to add missing `std::` prefixes in all locations where it was required to compile successfully ([#206](https://gitlab.com/tango-controls/cppTango/-/issues/206), [!528](https://gitlab.com/tango-controls/cppTango/-/merge_requests/528), [!981](https://gitlab.com/tango-controls/cppTango/-/merge_requests/981)).  
+Users who are used to the old way can just do
 ```
-   Please refer to [#510][i-510] for more details.
-* 2 consecutive change events having possibly the same attribute value (but different timestamps) might be sent now 
-during the Device Server startup phase. 
-This was necessary to fix a bug where a client would possibly miss some important change events after a device server 
-restart. Please refer to [#359](i-359) and [#503](pr-503) to get more details.
-* We reduced the sleep time during the event subscription phase. 
-This should speed up the startup of some GUI applications which are subscribing to events for a huge number of 
-attributes. Sadly, in some hopefully rare situations (slow network, busy computers), this could lead to a situation 
-where some events might be missed if they occur between the subscribe_event() call and the ZMQ subscription reception 
-(which is asynchronous) on the ZMQ publisher side, potentially leading to situations where a client application might 
-show out of date/incorrect values until the next event is received. 
-It was already the case in the previous versions but reducing the sleep time during the event subscription will increase
-the probability of this situation to happen. We are working on this topic to try to solve this edge case issue. 
-We are sorry for the inconvenience. In any case, we hope this change will provide more comfort than problems.
-* `Tango::string_free()` method has been added. 
-The users are strongly encouraged to use this method together with `Tango::string_dup()` when dealing with 
-`Tango::DevString` variables instead of using `CORBA::string_free()` and `CORBA::string_dup()`.
-* We added -pedantic flag when compiling with g++ or Clang in debug mode. 
-This change can generate build errors with very old compilers (e.g. g++ 3.4.6) when compiling the library debug version.
- Please remove manually -pedantic flag in configure/CMakeLists.txt if you need to compile the debug version on a very 
- old compiler.
+ #include <tango.h>
+ using namespace std;
+```
+wherever `tango.h` is included.
 
-## Bug fixes
-### Event related bug fixes
-* We think we found a way to get rid of heartbeat events problems! 
-You know, when you were subscribing to events and receiving an _API_EventTimeout_ error event every 10 seconds, followed
-by a valid event (which was corresponding to the synchronous read_attribute call occurring during the event reconnection
-mechanism)?
-This problem was occurring because the client and the server were computing different heartbeat event channel names in 
-some situations (for instance when the TANGO_HOST was not exactly the same string on the client side and server side or 
-when the DNS was not well configured. At least not configured as Tango would have expected it). 
-So the client was subscribing to heartbeat events with a name and the device server was sending heartbeat events with 
-another channel name. 
-Since the key for a good relationship in a couple is communication, we managed to make them talk better to each other so
-they now agree on a channel name during the subscription phase.
-The new solution works only between Tango 9 clients using the new version of the C++ library and Tango 9 device servers
-also using this new version of the library. For the older clients and device servers, the behaviour will be as before. 
-This sounds like a good reason to update, isn't it? 
-* A bug in ZMQ 4.2.0 and ZMQ 4.2.1 was preventing clients to receive more than 1000 events. We found a work-around so if
-you use this new Tango C++ library version, you should not be impacted by this ZMQ bug unless you are 
-[tuning the event system high water mark](https://tango-controls.readthedocs.io/en/latest/development/advanced/reference.html#tuning-the-event-system-buffers-hwm)
-with the `CtrlSystem/EventBufferHwm` free property.
-And even in this case, if you restart all your clients after changing the value of this free property, you should be 
-fine until the next time you change the value of this advanced free property, which should not be the case for 
-99.9999999% of our users (estimation which is not 100% accurate).
-* When you push events by code, you would like in some cases to be able to push error events containing an exception so 
-that the clients get notified that something wrong happened. You could do that in the previous version but the Tango 9 
-clients were not receiving the error events because the device server was sending these error events using a wrong 
-channel name. Then the Tango 9 clients were receiving nasty _API_MissedEvents_ errors events afterwards. We fixed that. 
-This problem was on the server side.
-* We also fixed a bug related to heartbeat events which could occur when a device server runs on a host with multiple 
-network interfaces.
-* Tango 9 device servers sometimes didn't like when a Tango 8 client had subscribed to events for one of its attributes 
-and this attribute became invalid (INVALID quality factor). In this case, the device server was expressing its 
-dissatisfaction by stopping activity with a segmentation fault. We managed to reconcile Tango 8 clients and Tango 9 
-device servers in this use case.
-* We fixed a leak in the pipes! There was indeed a memory leak when a pipe event was sent and no client had subscribed 
-to this pipe event.
-* If you are using ZMQ 4.2.3, peer disconnection triggers zmq_disconnect on a ZMQ socket. 
-Further zmq_disconnect calls for such a socket and endpoint will fail with errno set to ENOENT.
-The ZMQ Event consumer now silently ignores ENOENT failures when disconnecting the socket.
-The result is that the user no longer gets useless exceptions related to zmq socket disconnection when the DeviceProxy 
-destructor is invoked for instance. 
-DeviceProxy destructor now also catches all the exceptions which could be thrown from unsubscribe_event().
+Please note that the code generated by Pogo for the C++ device servers will have to be updated or regenerated too if it was generated with an old Pogo version ( < Pogo 9.8.0) because these previous Pogo versions were relying on the fact that `using namespace std;` was present in `tango.h` file.
 
-### Other bug fixes
-* When you specify a polling period for a dynamic attribute from POGO, you expect the polling to start up automatically 
-for these attributes. 
-The device servers used to be lazy in previous versions and didn't start the polling in this specific case. 
-We found the right words to motivate them to do what you expect.
-* DeviceAttribute::get_type() is now returning the correct type when the DeviceAttribute object is initialized with a 
-short or enum value. 
-The bug which was not present in Tango 8 was a side effect of the first implementations of the DevEnum feature.
-* The class list from the Util object was not cleaned up and reassigned with the reconstructed classes during the 
-execution of the RestartServer admin command. Now this is clean.
-* [Device server with a user defined event loop](https://tango-controls.readthedocs.io/en/latest/development/advanced/user-loop.html#device-server-with-user-defined-event-loop)
-now works as well on Windows.
-* A device server had the power to remotely eradicate a client (with a spell producing a client segmentation fault) when
-the client was trying to write asynchronously an attribute on the device server as the first action immediately after 
-the device server restart.
-We decided to reinforce the defensive skills of the client which now manages to survive in this case and it even manages
-to write the remote attribute.
-* We fixed a bug in Attribute::get_att_device_class() method which was generating an exception when a device server was 
-trying to set an attribute property (e.g.: set_max_value) when a memorized attribute was written during the device init 
-phase (write hardware at init feature).
-If you didn't understand anything to this explanation, you were probably not affected by this bug.
-* We fixed a memory leak in get_device_property() which was occurring only on Windows and only when using Visual Studio 
-10 compiler or an older MSVC compiler version.
-* If you are not using DevUShort WRITE only attributes, you can skip to the next item.
-Still reading? So you are really using DevUShort WRITE only attributes?
-The DevUShort WRITE attribute value was not rolled back correctly to the previous valid value in some specific cases 
-(exception thrown in the device server write method associated to this attribute, exception thrown by 
-read_attr_hardware() method or exception thrown because it is not allowed to read this attribute in the current state).
-Now it is!
-* We fixed many compilation warnings and build errors with recent compilers and with Doxygen
+### coutXXX Macros Renamed To TANGO_LOG_XX
 
-## Changelog
-Please refer to [CHANGELOG.md](https://github.com/tango-controls/cppTango/blob/tango-9-lts/CHANGELOG.md) for a detailed 
-list of changes and references to corresponding Github issues and pull requests.
+There was a cout macro defined in cppTango code which was under some configurations redefining cout and redirecting it to the Tango logs. This was causing some compilation errors when using std::cout instead of cout in the cppTango code. To avoid this problem, the cout macro has been renamed TANGO_LOG.  
+cout1 and cout2 macros have been replaced with TANGO_LOG_INFO macro.  
+cout3, cout4 and cout5 macros have been replaced with TANGO_LOG_DEBUG macro.  
+As a consequence, the device servers POGO generated codes, which were using some of these macros will have to be regenerated with a recent POGO version (>= 9.8.0) in order to use the new macros names.  
+More details in [#891](https://gitlab.com/tango-controls/cppTango/-/issues/891), [!934](https://gitlab.com/tango-controls/cppTango/-/merge_requests/934) and [pogo#137](https://gitlab.com/tango-controls/pogo/-/issues/137). Pogo >= 9.8.0 will also generate some code to define these TANGO_LOG macros if an older version of cppTango is used, making the generated code still compatible with older cppTango versions.
 
-## Source code comparison with version 9.2.5
-You can see the source code comparison with Tango 9.2.5, as well as the commits and contributors on this page:
-https://github.com/tango-controls/cppTango/compare/cppapi_Release_9_2_5...9.3.3
+### New Header Files Installation Paths And Default Include Path
 
-## Feedback
-You can report issues on https://github.com/tango-controls/cppTango/issues or 
-https://github.com/tango-controls/TangoTickets/issues for problems which may affect several repositories or when you 
-don't know where to create the issue (well, now, you know!).
+To prevent including the wrong file by accident ([#720](https://gitlab.com/tango-controls/cppTango/-/issues/720)), it has been decided to change the default include path in tango.pc file which is used by pkgconfig ([!952](https://gitlab.com/tango-controls/cppTango/-/merge_requests/952)).   
+The previous include path was `${prefix}/include/tango`. It is now set to `${prefix}/include` instead.  
+`tango.h` file is still installed under `${prefix}/include/tango`.  
+The consequence of this default include path change is that all files currently doing `#include <tango.h>` will have to be modified in order to use `#include <tango/tango.h>` instead.  
+Recent POGO versions (>= 9.8.0) are taking this change into account and are already generating code with `#include <tango/tango.h>`.  
+The header files have been reorganized in cppTango source code and are now located under cppapi/include/tango directory and its subdirectories. They are installed under `${prefix}/include/tango` subdirectories now.  
 
-## Contributions
-Contributions are welcome. Please do not hesitate to 
-[create new Pull requests](https://help.github.com/en/articles/creating-a-pull-request) in 
-[cppTango GitHub repository](https://github.com/tango-controls/cppTango).
+### New Optional Dependency To libjpeg Or libjpeg-turbo
 
-## Acknowledgement
-Many thanks to all the persons who contributed to this release, to the Tango kernel team and to the Tango community for 
-its feedback, bug reports and tests.
+In order to ease the maintenance of the encode and decode jpeg methods provided in EncodedAttribute class, it has been decided to get rid of the custom code and to replace it with an optional dependency to libjpeg or libjpeg-turbo library, which are well known and well maintained jpeg libraries specialized in this domain.  
+If you know that you will never use the EncodedAttribute encode_jpeg_xx/decode_jpeg_xx methods, you can compile cppTango using `-DTANGO_USE_JPEG=OFF` during the cppTango CMake configure compilation step.  
+By default `TANGO_USE_JPEG` is ON and if your libjpeg or libjpeg-turbo dependency is not at a location easily found by pkg-config, you can use `-DTANGO_JPEG_BASE=/your/jpeg/install/path` CMake option to specify the directory where your libjpeg or libjpeg-turbo library is installed.
 
-[pr-342]: https://github.com/tango-controls/cppTango/pull/342
-[i-359]: https://github.com/tango-controls/cppTango/issues/359
-[pr-503]: https://github.com/tango-controls/cppTango/pull/503
-[i-510]: https://github.com/tango-controls/cppTango/issues/510
+### "TANGO_" Prefix Added To CMake Options
+
+All the cppTango specific CMake options are now prefixed with "TANGO_" ([!895](https://gitlab.com/tango-controls/cppTango/-/merge_requests/895)). 
+So if you got used to compile cppTango 9.3 using CMake options like `-DOMNI_BASE=/path/to/my/omniorb`, you will have to use `-DTANGO_OMNI_BASE=/path/to/my/omniorb` instead.
+
+Please refer to [INSTALL.md file](INSTALL.md) to get the detailed list of available CMake variables with their default value and description.
+
+### TANGO_LONG_32 and TANGO_LONG_64 Defines Removed
+
+While fixing an issue on Windows amd64 ([#768](https://gitlab.com/tango-controls/cppTango/-/issues/768), [!792](https://gitlab.com/tango-controls/cppTango/-/merge_requests/792)), it has been decided, after consultation of the Tango-Controls community, to refactor the cppTango code and to remove no longer needed TANGO_LONG_32 and TANGO_LONG_64 definitions from tango_const.h file.  
+If your code is relying on the presence of this definitions, you will have to adapt it. The only device server known to be using these definition was the Tango Database device server. The code of this device server has been updated (See [TangoDatabase!34](https://gitlab.com/tango-controls/TangoDatabase/-/merge_requests/34)).
+
+### Input References Arguments Changed To Const References
+
+The methods input reference arguments have been changed to equivalent const reference arguments when possible ([#622](https://gitlab.com/tango-controls/cppTango/-/issues/622), [!886](https://gitlab.com/tango-controls/cppTango/-/merge_requests/886)).  
+This is a change of the API which will hopefully ease the Tango developer work.  
+Thanks to this change, it is now possible to do: 
+
+```
+ApiUtil.get_db_ind("hostname", 12345);
+```
+
+instead of 
+
+```
+std::string tmp = "hostname";
+ApiUtil.get_db_ind(tmp, 12345);
+```
+
+There might be some side effects compilation errors on your device servers.
+
+### Default Logging Layout Changed
+
+The default logging layout has been changed to get more readable timestamps ([!845](https://gitlab.com/tango-controls/cppTango/-/merge_requests/845)).  
+
+Before 9.4.0, the logs on the console looked like this by default:
+
+```
+1619681907 [140266166015744] DEBUG my/super/device The log message text #1
+1619681907 [140266166015744] DEBUG my/super/device The log message text #2 
+1619681907 [140266157623040] my/super/device The log message text #3
+```
+In 9.4.0, they will look like the following:
+```
+2021-05-04T23:04:41,544490+0200 DEBUG (MySuperDevice.cpp:412) my/super/device The log message text #1
+2021-05-04T23:04:41,544872+0200 DEBUG (MySuperDevice.cpp:1627) my/super/device The log message text #2
+2021-05-04T23:04:41,544987+0200 DEBUG (MySuperDevice.cpp:1632) my/super/device The log message text #3
+```
+
+The timestamps are now in a human readable format, the thread id ([140266166015744] and [140266157623040] in the first example) has been removed. The log message origin (file and line number) is now automatically added to the log ([!742](https://gitlab.com/tango-controls/cppTango/-/merge_requests/742)).
+
+### Function Name And Line Number In Logs And Exceptions
+
+As explained just above, [!742](https://gitlab.com/tango-controls/cppTango/-/merge_requests/742) added file name and line number information in the logs displayed on the console.  
+This Merge Request also provided new macros to throw exceptions without having the need to specify the origin field of the exception.  
+To have exception origin field filled automatically, please use TANGO_THROW_EXCEPTION(reason, desc) macro (there is also TANGO_RETHROW_EXCEPTION and corresponding macros for _API_EXCEPTION).
+When using the new TANGO_THROW_EXCEPTION(reason, desc) macro (there is also TANGO_RETHROW_EXCEPTION and corresponding macros for _API_EXCEPTION), the origin field is no longer required and is automatically deduced and filled with the name of the current method. The file name and line number is also automatically added in the exception origin field.  
+So don't hesitate to use these new macros to avoid the classical copy/paste errors where you end up with an misleading origin field in an exception pointing to a wrong method in the code.  
+Please be aware that your code will no longer be backwards compatible with cppTango 9.3.x versions if you use these new macros, though.
+
+### End Of Support For Notifd Events And Multicast Events
+
+According to surveys with the tango-controls community, nobody seemed to use notifyd and ZMQ Multicast events. Therefore we have removed support for notifd events and ZMQ Multicast events in cppTango 9.4.0.  Only ZMQ Events are supported from cppTango 9.4.0 on.
+
+## 9.4.0 - Bug Fixes
+Many bugs have been fixed in this new version. please refer to the Issues and Merge Requests on the cppTango repository. [Milestone 9.4.0](https://gitlab.com/tango-controls/cppTango/-/milestones/7) is listing some of the many issues which have been fixed in this version.
+
+## 9.4.0 - Source Code Comparison With Version 9.3.5
+
+You can view the source code comparison with Tango 9.3.5, as well as the commits and contributors on this page:
+https://gitlab.com/tango-controls/cppTango/-/compare/9.3.5...9.4.0
+
+Sadly, at the time of writing these release notes, Gitlab imposes a limitation which prevents from displaying more than 100 commits at a time. We hope that this limit will be removed in the future.
+
+## 9.4.0 - Feedback
+
+You can report issues on https://gitlab.com/tango-controls/cppTango/-/issues. If you find a problem which you think could also affect Tango Controls packages other than cppTango, e.g. cppTango and pyTango, or when you don't know where you should create the issue at all - Well, you know now! - then head over to https://gitlab.com/tango-controls/TangoTickets/-/issues.
+
+## 9.4.0 - Contributions
+
+Contributions are always welcome!
+Please do not hesitate to create new Merge Requests in [cppTango Gitlab repository](https://gitlab.com/tango-controls/cppTango). Please refer to [CONTRIBUTING.md](https://gitlab.com/tango-controls/cppTango/-/blob/main/CONTRIBUTING.md) to familiarise yourself with the easiest way to contribute to the cppTango project.
+
+## 9.4.0 - Acknowledgement
+
+Many thanks to all the persons who contributed to this release, to the Tango kernel team and to the Tango community for its ideas, feedback, bug reports and tests.
