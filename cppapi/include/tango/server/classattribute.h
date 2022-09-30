@@ -68,7 +68,7 @@ class AttrProperty
 {
 public:
 	AttrProperty(const std::string &name,const std::string &value);
-	AttrProperty(const std::string &name,const long &value);
+	AttrProperty(const std::string &name,long value);
 	~AttrProperty();
 
 	AttrProperty(const AttrProperty &);

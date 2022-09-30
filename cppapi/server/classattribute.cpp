@@ -76,7 +76,7 @@ AttrProperty::AttrProperty(const std::string &name,const std::string &value):att
 		std::transform(attr_value.begin(),attr_value.end(),attr_value.begin(),::tolower);
 }
 
-AttrProperty::AttrProperty(const std::string &name,const long &value):attr_name(name),attr_lg(value)
+AttrProperty::AttrProperty(const std::string &name,long value):attr_name(name),attr_lg(value)
 {
 }
 
