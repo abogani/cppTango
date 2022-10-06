@@ -1,4 +1,4 @@
-{% set version = "9.4.0" %}
+{% set version = "9.4.1" %}
 
 package:
   name: cpptango
@@ -27,6 +27,7 @@ requirements:
   host:
     - jpeg
     - omniorb
+    - omniorb-libs
     - cppzmq
     - zeromq
     - tango-idl
@@ -54,7 +55,7 @@ outputs:
       - lib/libtango.so.{{ version }}.dbg
     test:
       commands:
-        - test -f "${PREFIX}/lib/libtango${SHLIB_EXT}.9.4.0.dbg"
+        - test -f "${PREFIX}/lib/libtango${SHLIB_EXT}.9.4.1.dbg"
 
 about:
   home: https://www.tango-controls.org
