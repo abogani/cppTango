@@ -30,6 +30,7 @@
 #include <tango/client/eventconsumer.h>
 #include <tango/client/devapi_utils_templ.h>
 #include <tango/internal/net.h>
+#include <tango/internal/utils.h>
 
 #ifdef _TG_WINDOWS_
 #include <process.h>
@@ -81,7 +82,7 @@ Connection::ConnectionExt &Connection::ConnectionExt::operator=(TANGO_UNUSED(con
 Connection::Connection(ORB *orb_in)
     : pasyn_ctr(0), pasyn_cb_ctr(0),
       timeout(CLNT_TIMEOUT),
-      version(0), source(Tango::CACHE_DEV), ext(new ConnectionExt()),
+      version(detail::INVALID_IDL_VERSION), source(Tango::CACHE_DEV), ext(new ConnectionExt()),
       tr_reco(true), prev_failed_t0(),
       user_connect_timeout(-1), tango_host_localhost(false)
 {
@@ -5866,7 +5867,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
 
     Tango::AccessControlType local_act;
 
-    if (version == 0)
+    if (version == detail::INVALID_IDL_VERSION)
     {
         check_and_reconnect(local_act);
     }
@@ -6191,7 +6192,7 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
     AttributeValueList_4 attr_value_list_4;
     Tango::AccessControlType local_act;
 
-    if (version == 0)
+    if (version == detail::INVALID_IDL_VERSION)
     {
         check_and_reconnect(local_act);
     }
@@ -6597,7 +6598,7 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
 
     Tango::AccessControlType local_act;
 
-    if (version == 0)
+    if (version == detail::INVALID_IDL_VERSION)
     {
         check_and_reconnect(local_act);
     }
