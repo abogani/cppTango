@@ -3,6 +3,8 @@ include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -35,12 +37,7 @@ if(TANGO_CPPZMQ_BASE)
     set(CPPZMQ_PKG_INCLUDE_DIRS ${TANGO_CPPZMQ_BASE}/include)
 endif()
 
-if(TANGO_IDL_BASE)
-    message("Using TANGO_IDL_BASE=${TANGO_IDL_BASE}")
-    set(IDL_PKG_INCLUDE_DIRS ${TANGO_IDL_BASE}/include)
-else()
-    pkg_search_module(IDL_PKG REQUIRED tangoidl)
-endif()
+find_package(tangoidl REQUIRED)
 
 if(TANGO_OMNI_BASE)
     message("Using TANGO_OMNI_BASE=${TANGO_OMNI_BASE}")

@@ -1,3 +1,6 @@
+get_target_property(IDL_PKG_INCLUDE_DIRS tangoidl::tangoidl INTERFACE_INCLUDE_DIRECTORIES)
+
+message("Using OMNIIDL_PATH=${OMNIIDL_PATH}")
 message("Using IDL=${IDL_PKG_INCLUDE_DIRS}")
 
 add_custom_command(OUTPUT tango.h tangoSK.cpp tangoDynSK.cpp
