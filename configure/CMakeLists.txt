@@ -32,11 +32,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "cppTango: version ${TANGO_GIT_REVISION}")
 message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
-if(TANGO_CPPZMQ_BASE)
-    message("Using TANGO_CPPZMQ_BASE=${TANGO_CPPZMQ_BASE}")
-    set(CPPZMQ_PKG_INCLUDE_DIRS ${TANGO_CPPZMQ_BASE}/include)
-endif()
-
+find_package(cppzmq REQUIRED)
 find_package(tangoidl REQUIRED)
 
 if(TANGO_OMNI_BASE)
@@ -142,45 +138,6 @@ endif()
 include(configure/check_omniidl.cmake)
 include(configure/clang-format.cmake)
 
-if(TANGO_ZMQ_BASE)
-    message("Using TANGO_ZMQ_BASE=${TANGO_ZMQ_BASE}")
-    set(ZMQ_PKG_INCLUDE_DIRS ${TANGO_ZMQ_BASE}/include)
-    if (WIN32)
-        link_directories(${TANGO_ZMQ_BASE}/lib/Debug)
-        link_directories(${TANGO_ZMQ_BASE}/lib/Release)
-        link_directories(${TANGO_ZMQ_BASE}/bin/Debug)
-        link_directories(${TANGO_ZMQ_BASE}/bin/Release)
-        if(CMAKE_VS_PLATFORM_TOOLSET IN_LIST WINDOWS_SUPPORTED_VS_TOOLSETS)
-            if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-                set(ZMQ_PKG_LIBRARIES_STA "libzmq-v141-mt-sgd-4_0_5.lib")
-                set(ZMQ_PKG_LIBRARIES_DYN "libzmq-v141-mt-gd-4_0_5.lib")
-            else()
-                set(ZMQ_PKG_LIBRARIES_STA "libzmq-v141-mt-s-4_0_5.lib")
-                set(ZMQ_PKG_LIBRARIES_DYN "libzmq-v141-mt-4_0_5.lib")
-            endif()
-        endif()
-    else()
-        set(ZMQ_PKG_LIBRARIES "-lzmq")
-        set(ZMQ_PKG_LIBRARY_DIRS ${TANGO_ZMQ_BASE}/lib)
-        link_directories(${ZMQ_PKG_LIBRARY_DIRS})
-    endif()
-else()
-    pkg_search_module(ZMQ_PKG REQUIRED libzmq)
-
-    # libzmq 4.0.5 does not set ZMQ_PKG_LIBRARY_DIRS only newer versions set
-    # this in addition to ZMQ_PKG_LIBDIR
-    if(ZMQ_PKG_LIBRARY_DIRS STREQUAL "")
-      set(ZMQ_PKG_LIBRARY_DIRS "${ZMQ_PKG_LIBDIR}")
-    endif()
-
-    # fedora 37 only sets ZMQ_PKG_INCLUDEDIR
-    if(ZMQ_PKG_INCLUDE_DIRS STREQUAL "")
-      set(ZMQ_PKG_INCLUDE_DIRS "${ZMQ_PKG_INCLUDEDIR}")
-    endif()
-
-    link_directories(${ZMQ_PKG_LIBRARY_DIRS})
-endif()
-
 # Check for jpeg support
 if(TANGO_USE_JPEG)
     if(TANGO_JPEG_BASE)
@@ -236,9 +193,8 @@ if(NOT WIN32)
   if(NOT DEFINED TANGO_CPPZMQ_USABLE_VERSION)
     try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_cppzmq_features
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_cppzmq_features.cpp
-                CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
-                COMPILE_DEFINITIONS "-I ${CPPZMQ_PKG_INCLUDE_DIRS} -I ${ZMQ_PKG_INCLUDE_DIRS}"
-                LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
+                COMPILE_DEFINITIONS "-I ${cppzmq_INCLUDE_DIR} -I ${ZeroMQ_INCLUDE_DIR}"
+                LINK_LIBRARIES cppzmq::cppzmq
                 OUTPUT_VARIABLE CPPZMQ_TRY_COMPILE_OUTPUT)
   endif()
 
@@ -257,12 +213,10 @@ if(NOT WIN32)
   if(NOT DEFINED TANGO_ZMQ_USABLE_VERSION)
     try_compile(TANGO_ZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_zmq_version
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_zmq_version.cpp
-                COMPILE_DEFINITIONS "-I ${ZMQ_PKG_INCLUDE_DIRS}
-                -DMINIMUM_VERSION_MAJOR=${ZMQ_MIN_VER_MAJOR}
+                COMPILE_DEFINITIONS " -DMINIMUM_VERSION_MAJOR=${ZMQ_MIN_VER_MAJOR}
                 -DMINIMUM_VERSION_MINOR=${ZMQ_MIN_VER_MINOR}
                 -DMINIMUM_VERSION_PATCH=${ZMQ_MIN_VER_PATCH}"
-                CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
-                LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
+                LINK_LIBRARIES cppzmq::cppzmq
                 OUTPUT_VARIABLE ZMQ_TRY_COMPILE_OUTPUT)
   endif()
 
