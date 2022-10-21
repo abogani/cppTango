@@ -1,5 +1,6 @@
 #definitions and preprocessor
 option(TANGO_INSTALL_DEPENDENCIES "Install the libraries that tango depends on" OFF)
+set(JPEG_DEBUG_POSTFIX "" CACHE STRING "Value of CMAKE_DEBUG_POSTFIX turbojpeg was built with")
 
 add_definitions(-D_WIN32)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
