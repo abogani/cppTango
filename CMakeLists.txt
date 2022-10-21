@@ -129,6 +129,31 @@ if(BUILD_TESTING)
   endif()
 endif()
 
+
+add_library(tango $<TARGET_OBJECTS:log4tango_objects>
+                  $<TARGET_OBJECTS:common_objects>
+                  $<TARGET_OBJECTS:client_objects>
+                  $<TARGET_OBJECTS:idl_objects>
+                  $<TARGET_OBJECTS:server_objects>)
+
+target_link_libraries(tango
+    PUBLIC
+        ${CMAKE_DL_LIBS}
+        omniORB4::omniORB4
+        omniORB4::COS4
+        omniORB4::Dynamic4
+        cppzmq::cppzmq
+    )
+
+target_include_directories(tango PUBLIC
+    ${cppzmq_INCLUDE_DIR}
+    ${omniORB4_INCLUDE_DIR}
+)
+
+if(TANGO_USE_JPEG)
+    target_link_libraries(tango PRIVATE ${JPEG_LIBRARIES})
+endif()
+
 if(WIN32)
     include(configure/cmake_win.cmake)
     include(configure/cpack_win.cmake)

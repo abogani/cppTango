@@ -35,50 +35,7 @@ message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 find_package(cppzmq REQUIRED)
 find_package(tangoidl REQUIRED)
 
-if(TANGO_OMNI_BASE)
-    message("Using TANGO_OMNI_BASE=${TANGO_OMNI_BASE}")
-    set(OMNIORB_PKG_INCLUDE_DIRS ${TANGO_OMNI_BASE}/include)
-    if(WIN32)
-        set(OMNIIDL_PATH ${TANGO_OMNI_BASE}/bin/x86_win32/)
-        set(OMNIORB_PKG_LIBRARY_DIRS ${TANGO_OMNI_BASE}/lib/x86_win32)
-        set(OMNIORB_PKG_LIBRARIES_DYN_DEBUG "omniORB4_rtd.lib;omniDynamic4_rtd.lib;omnithread_rtd.lib;COS4_rtd.lib")
-        set(OMNIORB_PKG_LIBRARIES_STA_DEBUG "omniORB4d.lib;omniDynamic4d.lib;omnithreadd.lib;COS4d.lib")
-        set(OMNIORB_PKG_LIBRARIES_DYN_RELEASE "omniORB4_rt.lib;omniDynamic4_rt.lib;omnithread_rt.lib;COS4_rt.lib")
-        set(OMNIORB_PKG_LIBRARIES_STA_RELEASE "omniORB4.lib;omniDynamic4.lib;omnithread.lib;COS4.lib")
-        if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(OMNIORB_PKG_LIBRARIES_DYN ${OMNIORB_PKG_LIBRARIES_DYN_DEBUG})
-            set(OMNIORB_PKG_LIBRARIES_STA ${OMNIORB_PKG_LIBRARIES_STA_DEBUG})
-        else()
-            set(OMNIORB_PKG_LIBRARIES_DYN ${OMNIORB_PKG_LIBRARIES_DYN_RELEASE})
-            set(OMNIORB_PKG_LIBRARIES_STA ${OMNIORB_PKG_LIBRARIES_STA_RELEASE})
-        endif()
-    else()
-        set(OMNIIDL_PATH ${TANGO_OMNI_BASE}/bin/)
-        set(OMNIORB_PKG_LIBRARY_DIRS ${TANGO_OMNI_BASE}/lib)
-        set(OMNIORB_PKG_LIBRARIES "-lomniORB4 -lomnithread -lCOS4 -lomniDynamic4")
-    endif()
-    link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
-
-    find_program(OMNIIDL NAMES omniidl
-                         HINTS ${OMNIIDL_PATH} ${TANGO_OMNIIDL_PATH}
-                         DOC "omniidl executable location"
-                         NO_DEFAULT_PATH)
-    mark_as_advanced(OMNIIDL)
-
-else()
-    #CORBA
-    pkg_search_module(OMNIORB_PKG REQUIRED omniORB4)
-    pkg_get_variable(OMNIIDL omniORB4 omniidl)
-    set(OMNIIDL "${OMNIIDL}" CACHE FILEPATH "omniidl executable location")
-    mark_as_advanced(OMNIIDL)
-
-    #COS
-    pkg_search_module(OMNICOS_PKG REQUIRED omniCOS4)
-    #dynamic CORBA
-    pkg_search_module(OMNIDYN_PKG REQUIRED omniDynamic4)
-
-    link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
-endif()
+find_package(omniORB4 REQUIRED)
 
 if(NOT OMNIIDL)
   message(FATAL_ERROR "Could not find a usable omniidl")
@@ -90,7 +47,7 @@ function(tango_find_omniorb_version)
     else()
         find_file(acconfig
             NAMES omniORB4/acconfig.h
-            PATHS ${OMNIORB_PKG_INCLUDE_DIRS}
+            PATHS ${omniORB4_INCLUDE_DIR}
             NO_DEFAULT_PATH
             )
 

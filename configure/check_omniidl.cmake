@@ -1,5 +1,6 @@
 # Use a function to introduce a scope so that we can set CMAKE_CXX_FLAGS
 function(test_omniidl)
+    message(STATUS "Using OMNIIDL=${OMNIIDL}")
     message(STATUS "Testing omniidl for bug in generated c++ for IDL union")
 
     execute_process(
