@@ -1,4 +1,3 @@
-include(FindPkgConfig)
 include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
