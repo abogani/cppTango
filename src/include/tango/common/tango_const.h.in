@@ -45,6 +45,8 @@ namespace Tango
 #define   TANGO_VERSION_MINOR        @MINOR_VERSION@
 #define   TANGO_VERSION_PATCH        @PATCH_VERSION@
 
+#define   TANGO_GIT_REVISION         "@TANGO_GIT_REVISION@"
+
 #define   TANGO_BASE_CLASS           Tango::Device_5Impl
 
 #define   TBS(s)  	#s
