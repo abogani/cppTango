@@ -1,0 +1,26 @@
+module TestOmniidl
+{
+
+typedef boolean 				DevBoolean;
+typedef short 					DevShort;
+
+typedef sequence<boolean>		DevVarBooleanArray;
+typedef sequence<short> 		DevVarShortArray;
+
+enum AttributeDataType
+{
+	ATT_BOOL,
+	ATT_SHORT
+};
+
+
+union AttrValUnion switch (AttributeDataType)
+{
+case ATT_BOOL:
+	DevVarBooleanArray		bool_att_value;
+case ATT_SHORT:
+	DevVarShortArray		short_att_value;
+};
+
+
+};
