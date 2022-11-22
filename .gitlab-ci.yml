@@ -433,7 +433,7 @@ cmake-with-locations-and-min-versions:
     - cmake -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/cppzmq /cppzmq
     - make install
     # Install omniORB
-    - curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.1/omniORB-4.2.1.tar.bz2/download -o /omniORB.tar.bz2
+    - curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.2/omniORB-4.2.2.tar.bz2/download -o /omniORB.tar.bz2
     - mkdir /omniORB
     - tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB
     - cd /omniORB
