@@ -236,7 +236,7 @@ private:
     };
 
 	TANGO_IMP static ApiUtil 	*_instance;
-	static omni_mutex			inst_mutex;
+	TANGO_IMP static omni_mutex			inst_mutex;
 	bool						exit_lock_installed;
 	bool						reset_already_executed_flag;
 
