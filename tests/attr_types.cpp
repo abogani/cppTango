@@ -479,8 +479,8 @@ int main(int argc, char **argv)
 		assert ( lo == 1246 );
 		assert((*received)[1].get_type() == DEV_LONG);
 		(*received)[2] >> db;
-		assert ( db == 3.2 );	
-		assert((*received)[2].get_type() == DEV_DOUBLE);	
+		assert ( db == 3.2 );
+		assert((*received)[2].get_type() == DEV_DOUBLE);
 		(*received)[3] >> str;
 		assert ( str == "test_string" );
 		assert((*received)[3].get_type() == DEV_STRING);
@@ -868,6 +868,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> sh);
 
 		assert (ret == true);
+		TEST_LOG << "   Short_spec_attr  da.get_type() = " << da.get_type() << endl;
 		assert ( da.get_type() == DEV_SHORT );
 		assert ( (*sh)[0] == 10 );
 		assert ( (*sh)[1] == 20 );
@@ -1230,7 +1231,111 @@ int main(int argc, char **argv)
 	
 	TEST_LOG << "   Exception/Error for unknown attribute data format --> OK" << endl;
 #endif
-			
+
+	// Test DeviceAttribute::get_type() on empty spectrum attribute
+
+	for (i = 0;i < loop;i++)
+	{
+		bool except = false;
+		try
+		{
+			std::vector<std::string> str_vec;
+			Tango::DeviceAttribute da1("String_empty_spec_attr_rw",str_vec);
+			da1.reset_exceptions(Tango::DeviceAttribute::isempty_flag);
+			assert( da1.is_empty() );
+			assert( da1.get_type() == Tango::DEV_STRING );
+			device->write_attribute(da1);
+
+			Tango::DeviceAttribute da = device->read_attribute("String_empty_spec_attr_rw");
+			da.reset_exceptions(Tango::DeviceAttribute::isempty_flag);
+			assert( da.is_empty() );
+			assert( da.get_type() == Tango::DEV_STRING );
+		}
+		catch(const Tango::DevFailed& e)
+		{
+			Tango::Except::print_exception(e);
+			except = true;
+		}
+		assert (except == false);
+	}
+	TEST_LOG << "   Test DeviceAttribute::get_type() on empty spectrum attribute --> OK" << endl;
+
+	// Test DeviceAttribute::get_type() on default DeviceAttribute object
+	for (i = 0;i < loop;i++)
+	{
+		Tango::DeviceAttribute da;
+		assert(da.get_type() == Tango::DATA_TYPE_UNKNOWN);
+	}
+	TEST_LOG << "   Test DeviceAttribute::get_type() on default DeviceAttribute object --> OK" << endl;
+
+	// Test DeviceAttribute::get_type() on attribute throwing an exception
+	TEST_LOG << "   Configuring DevTest to throw an exception when reading Long_Attr attribute..." << endl;
+	try
+	{
+		Tango::DeviceData din;
+		vector<short> short_vec;
+		short_vec.push_back(5);
+		short_vec.push_back(1);
+		din << short_vec;
+		device->command_inout("IOAttrThrowEx",din);
+	}
+	catch(const Tango::DevFailed &e)
+	{
+		Tango::Except::print_exception(e);
+		bool IOAttrThrowEx_except = true;
+		assert(IOAttrThrowEx_except == false);
+	}
+	for (i = 0;i < loop;i++)
+	{
+		Tango::DeviceAttribute da;
+		try
+		{
+			da = device->read_attribute("Long_Attr");
+		}
+		catch(const Tango::DevFailed &e)
+		{
+			Tango::Except::print_exception(e);
+			TEST_LOG << "   Restoring DevTest Long_Attr default behaviour..." << endl;
+			try
+			{
+				Tango::DeviceData din;
+				vector<short> short_vec;
+				short_vec.push_back(5);
+				short_vec.push_back(0);
+				din << short_vec;
+				device->command_inout("IOAttrThrowEx",din);
+			}
+			catch(const Tango::DevFailed &e)
+			{
+				Tango::Except::print_exception(e);
+				bool IOAttrThrowEx_except = true;
+				assert(IOAttrThrowEx_except == false);
+			}
+			bool read_attribute_except = true;
+			assert(read_attribute_except == false);
+		}
+		da.reset_exceptions(Tango::DeviceAttribute::isempty_flag);
+		assert( da.is_empty() );
+		assert(da.get_type() == Tango::DATA_TYPE_UNKNOWN);
+	}
+	TEST_LOG << "   Restoring DevTest Long_Attr default behaviour..." << endl;
+	try
+	{
+		Tango::DeviceData din;
+		vector<short> short_vec;
+		short_vec.push_back(5);
+		short_vec.push_back(0);
+		din << short_vec;
+		device->command_inout("IOAttrThrowEx",din);
+	}
+	catch(const Tango::DevFailed &e)
+	{
+		Tango::Except::print_exception(e);
+		bool IOAttrThrowEx_except = true;
+		assert(IOAttrThrowEx_except == false);
+	}
+	TEST_LOG << "   Test DeviceAttribute::get_type() on attribute throwing an exception --> OK" << endl;
+
 	delete device;
 	
 	return 0;
