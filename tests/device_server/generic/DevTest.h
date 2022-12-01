@@ -113,6 +113,7 @@ public :
 	void read_attr_dq_str(Tango::Attribute &att);
 	void read_Short_spec_attr_rw(Tango::Attribute &att);
 	void read_String_spec_attr_rw(Tango::Attribute &att);
+	void read_String_empty_spec_attr_rw(Tango::Attribute &att);
 	void read_Long_spec_attr_rw(Tango::Attribute &att);
 	void read_Short_ima_attr_rw(Tango::Attribute &att);
 	void read_String_ima_attr_rw(Tango::Attribute &att);
@@ -183,6 +184,7 @@ public :
 	void write_String_ima_attr_w(TANGO_UNUSED(Tango::WAttribute &att)) {}
 	void write_Short_spec_attr_rw(TANGO_UNUSED(Tango::WAttribute &att)) {}
 	void write_String_spec_attr_rw(TANGO_UNUSED(Tango::WAttribute &att)) {}
+	void write_String_empty_spec_attr_rw(TANGO_UNUSED(Tango::WAttribute &att)) {}
 	void write_Long_spec_attr_rw(Tango::WAttribute &att);
 	void write_Short_ima_attr_rw(TANGO_UNUSED(Tango::WAttribute &att)) {}
 	void write_String_ima_attr_rw(TANGO_UNUSED(Tango::WAttribute &att)) {}
@@ -278,6 +280,7 @@ protected :
 	Tango::DevLong 		long_spec_attr[3];
 	Tango::DevShort 	short_ima_attr[4];
 	Tango::ConstDevString  string_spec_attr[2];
+	Tango::ConstDevString  string_empty_spec_attr[1];
 	Tango::ConstDevString  string_ima_attr[2];
 
 	Tango::DevDouble 	attr_dq_double;

@@ -793,6 +793,7 @@ void DevTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 
   att_list.push_back(new Short_spec_attr_rwAttr());
   att_list.push_back(new String_spec_attr_rwAttr());
+  att_list.push_back(new String_empty_spec_attr_rwAttr());
   att_list.push_back(new Long_spec_attr_rwAttr());
   att_list.push_back(new Short_ima_attr_rwAttr());
   att_list.push_back(new String_ima_attr_rwAttr());
