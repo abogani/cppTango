@@ -1462,6 +1462,8 @@ protected:
 
 
 public:
+	Tango::client_addr *get_client_ident();
+
 /// @privatesection
 
 	typedef struct _FwdWrongConf
@@ -1525,7 +1527,6 @@ public:
 	std::vector<long> &get_alarmed_not_read() {return alrmd_not_read;}
 	void poll_lists_2_v5();
 
-	Tango::client_addr *get_client_ident();
 	void lock(client_addr *,int);
 	void relock(client_addr *);
 	Tango::DevLong unlock(bool);
