@@ -3610,7 +3610,7 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
     std::vector<std::string> &poll_attr = get_polled_attr();
     std::vector<std::string>::iterator ite_attr;
 
-    std::string &attr_name_low(attr_name);
+    std::string attr_name_low(attr_name);
     std::transform(attr_name_low.begin(), attr_name_low.end(), attr_name_low.begin(), ::tolower);
 
 //
