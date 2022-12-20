@@ -3562,7 +3562,7 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
 // Check that the class support this attribute
 //
 
-    std::string &attr_name = rem_attr->get_name();
+    const std::string &attr_name = rem_attr->get_name();
 
     try
     {
