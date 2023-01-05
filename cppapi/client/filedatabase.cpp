@@ -514,11 +514,9 @@ vector<string> FileDatabase:: parse_resource_value(ifstream& f)
 {
 	int  lex;
 	vector<string> ret;
-	int       nbr;
 
 	/* Resource value */
 	lex=_TG_COMA;
-	nbr=0;
 
 	while( (lex==_TG_COMA || lex==_TG_ASLASH) && word!="" )
 	{
@@ -535,7 +533,6 @@ vector<string> FileDatabase:: parse_resource_value(ifstream& f)
 		CHECK_LEX(lex,_TG_STRING);
 
 		ret.push_back(word);
-		nbr++;
 
 		word=read_word(f);
 		lex=class_lex(word);
