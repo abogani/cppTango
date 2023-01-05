@@ -101,7 +101,7 @@ int main()
 	ma << fl_move;
 
 	DeviceData mb;
-	mb = move(ma);
+	mb = std::move(ma);
 	float fl_move_out;
 	mb >> fl_move_out;
 
