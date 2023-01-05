@@ -1391,11 +1391,8 @@ CORBA::Any*   FileDatabase :: DbGetDeviceAttributeProperty(CORBA::Any& send)
 			 {
 				if (equalsIgnoreCase((*dev_it)->attribute_properties[j]->attribute_name, (*data_in)[k+1].in()))
 				{
-					int num_attr_find = 0;
-
 					//TANGO_LOG << "Proprieta' " << (*dev_it)->attribute_properties[j]->attribute_name << " trovata." << endl;
 					auto num_prop = (*dev_it)->attribute_properties[j]->properties.size();
-					num_attr_find++;
 
 					(*data_out)[index-1] = to_corba_string(num_prop);
 
