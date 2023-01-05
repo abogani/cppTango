@@ -181,11 +181,8 @@ std::vector<std::string>& makeStringArray(const std::string& input, vector<strin
 
   if( newPos < 0 ) { return results; }
 
-  int numFound = 0;
-
   while( newPos > iPos )
   {
-    numFound++;
     positions.push_back(newPos);
     iPos = newPos;
     newPos = input.find (delimiter, iPos+sizeS2+1);
