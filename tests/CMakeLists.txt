@@ -26,6 +26,9 @@ set(DEV2 "${INST_NAME}/debian8/11")
 set(DEV3 "${INST_NAME}/debian8/12")
 set(DEV20 "${INST_NAME}2/debian8/20")
 set(FWD_DEV "${INST_NAME}/fwd_debian8/10")
+set(TEST_CPPTANGO_1022_DEV1 "${INST_NAME}/cpptango-1022/1")
+set(TEST_CPPTANGO_1022_DEV2 "${INST_NAME}/cpptango-1022/2")
+set(TEST_CPPTANGO_1022_SERV_NAME "TestCppTango1022")
 set(DEV1_ALIAS "debian8_alias")
 set(ATTR_ALIAS "debian8_attr_alias")
 set(COMMON_TEST_DEFS VALGRIND _PTHREADS _REENTRANT)
@@ -45,13 +48,7 @@ endfunction()
 add_subdirectory(device_server)
 add_subdirectory(cxxtest)
 
-function(CXX_GENERATE_TEST name)
-
-    if(${ARGC} EQUAL 2)
-        if(ARGV1)
-            set(SKIP_FIXTURES "--skip-fixtures")
-        endif()
-    endif()
+function(CXX_GENERATE_TEST_EXEC name)
 
     set(INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${name}.cpp")
 
@@ -73,6 +70,17 @@ function(CXX_GENERATE_TEST name)
     if(TANGO_USE_PCH)
         tango_target_test_pch(${name})
     endif()
+endfunction()
+
+function(CXX_GENERATE_TEST name)
+
+    if(${ARGC} EQUAL 2)
+        if(ARGV1)
+            set(SKIP_FIXTURES "--skip-fixtures")
+        endif()
+    endif()
+
+    CXX_GENERATE_TEST_EXEC(${name})
 
     tango_add_test(NAME "CXX::${name}" COMMAND $<TARGET_FILE:${name}>
             ${SKIP_FIXTURES}
@@ -114,6 +122,11 @@ CXX_GENERATE_TEST(cxx_database)
 CXX_GENERATE_TEST(cxx_device_pipe_blob TRUE)
 CXX_GENERATE_TEST(cxx_dserver_cmd)
 CXX_GENERATE_TEST(cxx_dserver_misc)
+CXX_GENERATE_TEST_EXEC(cxx_dynamic_attributes)
+tango_add_test(NAME "CXX::cxx_dynamic_attributes" COMMAND $<TARGET_FILE:cxx_dynamic_attributes>
+            --device1=${TEST_CPPTANGO_1022_DEV1}
+            --loop=1
+            --fulldsname=${TEST_CPPTANGO_1022_SERV_NAME}/${INST_NAME})
 CXX_GENERATE_TEST(cxx_encoded)
 CXX_GENERATE_TEST(cxx_enum_att)
 CXX_GENERATE_TEST(cxx_exception)
