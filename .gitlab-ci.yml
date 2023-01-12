@@ -660,9 +660,9 @@ publish-conda-dev-package:
     # anaconda-client version on pypi is from 2016...
     - pip install https://github.com/Anaconda-Platform/anaconda-client/archive/refs/tags/1.8.0.tar.gz
   script:
-    # Remove previous 9.4.0dev0 version if it exists (we keep only the latest)
-    - anaconda --token $ANACONDA_TOKEN remove -f tango-controls/cpptango/9.4.0dev0 || true
-    - anaconda --token $ANACONDA_TOKEN remove -f tango-controls/cpptango-dbg/9.4.0dev0 || true
+    # Remove previous 9.4.1dev0 version if it exists (we keep only the latest)
+    - anaconda --token $ANACONDA_TOKEN remove -f tango-controls/cpptango/9.4.1dev0 || true
+    - anaconda --token $ANACONDA_TOKEN remove -f tango-controls/cpptango-dbg/9.4.1dev0 || true
     - anaconda --token $ANACONDA_TOKEN upload pkg/*/*.tar.bz2 --label dev
   dependencies:
     - build-conda-dev-package

@@ -59,7 +59,7 @@ endif()
 #need to define the version of the library
 set(MAJOR_VERSION "9")
 set(MINOR_VERSION "4")
-set(PATCH_VERSION "0")
+set(PATCH_VERSION "1")
 
 if(WIN32)
     include(configure/cmake_win_defs.cmake)

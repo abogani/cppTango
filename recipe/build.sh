@@ -16,8 +16,8 @@ make -j $CPU_COUNT
 make install
 
 # Separate debugging symbols
-# Force LIB_VERSION to 9.4.0 (and not PKG_VERSION)
-LIB_VERSION=9.4.0
+# Force LIB_VERSION to 9.4.1 (and not PKG_VERSION)
+LIB_VERSION=9.4.1
 "${OBJCOPY}" --only-keep-debug "${PREFIX}/lib/libtango.so.${LIB_VERSION}" "${PREFIX}/lib/libtango.so.${LIB_VERSION}.dbg"
 chmod 664 "${PREFIX}/lib/libtango.so.${LIB_VERSION}.dbg"
 "${OBJCOPY}" --strip-debug "${PREFIX}/lib/libtango.so.${LIB_VERSION}"
