@@ -61,6 +61,41 @@
 
 #include <omniORB4/omniInterceptors.h>
 
+namespace {
+
+  /// Returns the ip address or hostname of a CORBA URI
+  ///
+  /// Returns `myhost` when given giop:tcp:myhost:12345.
+  std::string parse_host_or_address_from_URI(const std::string& input)
+  {
+      auto invalid_args_assert = [&input] (bool cond)
+      {
+        if(cond)
+          return;
+
+         TangoSys_OMemStream o;
+         o << "Could not parse " << "\"" << input << "\"" << " as CORBA URI" << std::ends;
+
+         TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+      };
+
+      auto start = input.find(':');
+      invalid_args_assert(start != std::string::npos);
+      ++start;
+      start = input.find(':', start);
+      invalid_args_assert(start != std::string::npos);
+      auto stop = input.find(':', start + 1);
+      invalid_args_assert(stop != std::string::npos);
+
+      ++start;
+      std::string ret = input.substr(start, stop - start);
+      invalid_args_assert(!ret.empty());
+
+      return ret;
+  }
+
+} // anonymous namespace
+
 namespace Tango
 {
 
@@ -2774,15 +2809,7 @@ void Util::check_end_point_specified(int argc,char *argv[])
         if (::strcmp("-ORBendPoint",argv[i]) == 0)
         {
             set_endpoint_specified(true);
-
-            std::string endPoint(argv[i + 1]);
-            std::string::size_type start,stop;
-            start = endPoint.find(':');
-            ++start;
-            start = endPoint.find(':',start);
-            stop = endPoint.find(':',start + 1);
-            ++start;
-            std::string ip = endPoint.substr(start,stop - start);
+            auto ip = parse_host_or_address_from_URI(argv[i + 1]);
 
             set_specified_ip(ip);
             break;
@@ -2801,14 +2828,7 @@ void Util::check_end_point_specified(int argc,char *argv[])
         if (d.get_env_var("ORBendPoint",env_var) == 0)
         {
             set_endpoint_specified(true);
-
-            std::string::size_type start,stop;
-            start = env_var.find(':');
-            ++start;
-            start = env_var.find(':',start);
-            stop = env_var.find(':',start + 1);
-            ++start;
-            std::string ip = env_var.substr(start,stop - start);
+            auto ip = parse_host_or_address_from_URI(env_var);
 
             set_specified_ip(ip);
         }
@@ -2883,14 +2903,7 @@ void Util::check_end_point_specified(int argc,char *argv[])
 //
 // Option found in file, extract host ip
 //
-
-                        std::string::size_type start,stop;
-                        start = value.find(':');
-                        ++start;
-                        start = value.find(':',start);
-                        stop = value.find(':',start + 1);
-                        ++start;
-                        std::string ip = value.substr(start,stop - start);
+                        auto ip = parse_host_or_address_from_URI(value);
 
                         set_specified_ip(ip);
                     }
