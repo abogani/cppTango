@@ -49,6 +49,58 @@
 
 using namespace CORBA;
 
+namespace {
+
+  /// Returns the port from `something:port`
+  std::string get_port_from_endpoint(const std::string& endpoint)
+  {
+    auto invalid_args_assert = [&endpoint] (bool cond)
+    {
+      if(cond)
+        return;
+
+       TangoSys_OMemStream o;
+       o << "Could not extract the port from " << "\"" << endpoint << "\"" << std::ends;
+
+       TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+    };
+
+    std::string::size_type pos = endpoint.rfind(':');
+    invalid_args_assert(pos != std::string::npos);
+
+    auto port = endpoint.substr(pos + 1);
+    invalid_args_assert(!port.empty());
+
+    return port;
+  }
+
+  /// Turns the hostname/ip-address `name` and `port` into `tcp://$name:$port`
+  std::string qualify_name(std::string name, const std::string &port)
+  {
+    auto invalid_args_assert = [&name, &port] (bool cond)
+    {
+      if(cond)
+        return;
+
+      TangoSys_OMemStream o;
+      o << "Neither name " << "\"" << name << "\"" << " nor port " << "\" " << port << "\" ";
+      o << "can be empty" << std::ends;
+
+      TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+    };
+
+    invalid_args_assert(!name.empty());
+    invalid_args_assert(!port.empty());
+
+    name.insert(0, "tcp://");
+    name.append(":");
+    name.append(port);
+
+    return name;
+  }
+
+} // anonymous namespace
+
 namespace Tango {
 
 // Environment variables for ZMQ publish ports - Event and Heartbeat
@@ -229,6 +281,8 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
         throw;
     }
 
+    auto port_str = get_port_from_endpoint(heartbeat_endpoint);
+
 //
 // If needed, replace * by host IP address in endpoint string
 //
@@ -244,8 +298,6 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
         if (adrs.size() > 1)
         {
             bool first_set = false;
-            std::string::size_type po = heartbeat_endpoint.rfind(':');
-            std::string port_str = heartbeat_endpoint.substr(po + 1);
 
             for (unsigned int i = 0;i < adrs.size();++i)
             {
@@ -261,9 +313,7 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
                 }
                 else
                 {
-                    std::string str("tcp://");
-                    str = str + adrs[i] + ':' + port_str;
-                    alternate_h_endpoint.push_back(str);
+                    alternate_h_endpoint.push_back(qualify_name(adrs[i], port_str));
                     alt_ip.push_back(adrs[i]);
                 }
             }
@@ -552,20 +602,16 @@ void ZmqEventSupplier::create_event_socket()
 //
 // If needed, replace * by host IP address in endpoint string
 //
+        auto port_str = get_port_from_endpoint(event_endpoint);
 
         if (ip_specified == false)
         {
             event_endpoint.replace(6,1,host_ip);
             if (alt_ip.empty() == false)
             {
-                std::string::size_type pos = event_endpoint.rfind(':');
-                std::string port_str = event_endpoint.substr(pos + 1);
-
                 for (size_t loop = 0;loop < alt_ip.size();loop++)
                 {
-                    std::string tmp("tcp://");
-                    tmp = tmp + alt_ip[loop] + ':' + port_str;
-                    alternate_e_endpoint.push_back(tmp);
+                    alternate_e_endpoint.push_back(qualify_name(alt_ip[loop], port_str));
                 }
             }
         }
