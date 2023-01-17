@@ -2758,7 +2758,7 @@ void Util::tango_host_from_fqan(const std::string &fqan,std::string &host,int &p
 //          - on the command line
 //          - using one env. variable
 //          - in  the omniORB config file (/etc/omniORB.cfg)
-//      If true, extract the IP address from the end point and store it for future use in the ZMQ publiher(s)
+//      If true, extract the IP address from the end point and store it for future use in the ZMQ publisher(s)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
