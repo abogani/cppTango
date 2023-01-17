@@ -745,7 +745,13 @@ protected:
 
 private:
 
-    class UtilExt{};
+    class UtilExt
+    {
+    public:
+      bool endpoint_publish_specified = false; // PublishEndpoint specified on cmd line
+      std::string endpoint_publish;            // PublishEndpoint as gathered from the environment
+    };
+
 
 public:
 /// @privatesection
@@ -824,6 +830,12 @@ public:
 
 	std::string &get_specified_ip() {return specified_ip;}
 	void set_specified_ip(const std::string &val) {specified_ip = val;}
+
+	bool get_endpoint_publish_specified() {return ext->endpoint_publish_specified;}
+	void set_endpoint_publish_specified(bool val) {ext->endpoint_publish_specified = val;}
+
+	std::string &get_endpoint_publish() {return ext->endpoint_publish;}
+	void set_endpoint_publish(const std::string &val) {ext->endpoint_publish = val;}
 
 	DevLong get_user_pub_hwm() {return user_pub_hwm;}
 

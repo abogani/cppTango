@@ -2917,11 +2917,22 @@ void Util::tango_host_from_fqan(const std::string &fqan,std::string &host,int &p
 
 void Util::check_end_point_specified(int argc,char *argv[])
 {
-  const tango_optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
-  if(end_point.has_value())
   {
-    set_endpoint_specified(true);
-    set_specified_ip(*endpoint);
+    const tango_optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
+    if(endpoint.has_value())
+    {
+      set_endpoint_specified(true);
+      set_specified_ip(*endpoint);
+    }
+  }
+
+  {
+    const tango_optional<std::string> endpoint_publish = get_omniorb_variable(argc, argv, "endPointPublish");
+    if(endpoint_publish.has_value())
+    {
+      set_endpoint_publish_specified(true);
+      set_endpoint_publish(*endpoint_publish);
+    }
   }
 }
 
