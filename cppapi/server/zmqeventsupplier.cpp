@@ -332,6 +332,11 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
         heartbeat_endpoint.replace(start,stop - start,specified_addr);
     }
 
+    if(tg->get_endpoint_publish_specified())
+    {
+        alternate_h_endpoint.push_back(qualify_name(tg->get_endpoint_publish(), port_str));
+    }
+
 //
 // Find out the host endianness and create the zmq message used to pass it
 //
@@ -622,6 +627,11 @@ void ZmqEventSupplier::create_event_socket()
             std::string::size_type stop = event_endpoint.rfind(':');
             std::string &specified_addr = tg->get_specified_ip();
             event_endpoint.replace(start,stop - start,specified_addr);
+        }
+
+        if(tg->get_endpoint_publish_specified())
+        {
+            alternate_e_endpoint.push_back(qualify_name(tg->get_endpoint_publish(), port_str));
         }
     }
 }
