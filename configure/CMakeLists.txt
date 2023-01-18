@@ -123,6 +123,9 @@ if(TANGO_USE_JPEG)
     else()
         find_package(JPEG REQUIRED)
     endif()
+    # Set variables for substitution in the pkg-config file
+    set(JPEG_LIB libjpeg)
+    set(JPEG_LIB_FLAG -ljpeg)
 endif()
 
 if(PTHREAD_WIN)
