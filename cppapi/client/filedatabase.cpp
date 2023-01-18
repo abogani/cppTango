@@ -181,11 +181,8 @@ std::vector<std::string>& makeStringArray(const std::string& input, vector<strin
 
   if( newPos < 0 ) { return results; }
 
-  int numFound = 0;
-
   while( newPos > iPos )
   {
-    numFound++;
     positions.push_back(newPos);
     iPos = newPos;
     newPos = input.find (delimiter, iPos+sizeS2+1);
@@ -517,11 +514,9 @@ vector<string> FileDatabase:: parse_resource_value(ifstream& f)
 {
 	int  lex;
 	vector<string> ret;
-	int       nbr;
 
 	/* Resource value */
 	lex=_TG_COMA;
-	nbr=0;
 
 	while( (lex==_TG_COMA || lex==_TG_ASLASH) && word!="" )
 	{
@@ -538,7 +533,6 @@ vector<string> FileDatabase:: parse_resource_value(ifstream& f)
 		CHECK_LEX(lex,_TG_STRING);
 
 		ret.push_back(word);
-		nbr++;
 
 		word=read_word(f);
 		lex=class_lex(word);
@@ -1397,11 +1391,8 @@ CORBA::Any*   FileDatabase :: DbGetDeviceAttributeProperty(CORBA::Any& send)
 			 {
 				if (equalsIgnoreCase((*dev_it)->attribute_properties[j]->attribute_name, (*data_in)[k+1].in()))
 				{
-					int num_attr_find = 0;
-
 					//TANGO_LOG << "Proprieta' " << (*dev_it)->attribute_properties[j]->attribute_name << " trovata." << endl;
 					auto num_prop = (*dev_it)->attribute_properties[j]->properties.size();
-					num_attr_find++;
 
 					(*data_out)[index-1] = to_corba_string(num_prop);
 

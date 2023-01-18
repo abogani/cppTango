@@ -95,7 +95,7 @@ int main()
 	d_ma << fl_move;
 
 	DeviceAttribute d_ma_out;
-	d_ma_out = move(d_ma);
+	d_ma_out = std::move(d_ma);
 
 	float fl_move_out;
 	d_ma_out >> fl_move_out;
