@@ -1,7 +1,7 @@
-prefix = @CMAKE_INSTALL_PREFIX@
-exec_prefix = ${prefix}/bin
-includedir = ${prefix}/include
-libdir = ${prefix}/@CMAKE_INSTALL_LIBDIR@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}/bin
+includedir=${prefix}/include
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 
 Name: @CMAKE_PROJECT_NAME@
 Description: Tango client/server API library
