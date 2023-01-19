@@ -446,7 +446,7 @@ public :
  *
  * @param [in] cmd_name The command name
  * @param [in] depth The required history depth
- * @return The command information std::list: One CommandInfo structure per command
+ * @return The command information list: One CommandInfo structure per command
  * @throws NonSupportedFeature, ConnectionFailed, CommunicationFailed, DevFailed from device
  */
 	virtual std::vector<DeviceDataHistory> *command_history(const std::string &cmd_name,int depth);

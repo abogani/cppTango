@@ -378,7 +378,7 @@ public :
  * @endcode
  *
  * @param [in] service_name The service name
- * @return A service/device std::list matching the input parameter
+ * @return A service/device list matching the input parameter
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
@@ -1091,8 +1091,8 @@ public :
 /**
  * Delete class attribute property from database
  *
- * Delete a std::list of attribute properties for the specified class. The attribute names are specified by the std::vector
- * of DbDatum structures. All properties belonging to the std::listed attributes are deleted. Here is an example of
+ * Delete a list of attribute properties for the specified class. The attribute names are specified by the vector
+ * of DbDatum structures. All properties belonging to the listed attributes are deleted. Here is an example of
  * how to delete the unit property of the velocity attribute of the StepperMotor class from the database using
  * this method :
  * @code
@@ -1112,7 +1112,7 @@ public :
 /**
  * Get class attribute property history from database
  *
- * Get the std::list of the last 10 modifications of the specifed class attribute property. Note that prop_name
+ * Get the list of the last 10 modifications of the specifed class attribute property. Note that prop_name
  * and att_name can contain
  * a wildcard character (eg: "prop*"). An example of usage of a similar function can be found in the
  * documentation of the get_property_history() function.
@@ -1132,10 +1132,10 @@ public :
 /**
  * Get class pipe property value
  *
- * Query the database for a std::list of class pipe properties for the specified object. The pipe names are
- * specified by the std::vector of DbDatum structures. The method returns all the properties for the specified
+ * Query the database for a list of class pipe properties for the specified object. The pipe names are
+ * specified by the vector of DbDatum structures. The method returns all the properties for the specified
  * pipes. The pipe names are returned with the number of properties specified as their value. The
- * first DbDatum element of the returned DbData std::vector contains the first pipe name and the first pipe
+ * first DbDatum element of the returned DbData vector contains the first pipe name and the first pipe
  * property number. The following DbDatum element contains the first pipe property name and property
  * values. To retrieve the properties use the extract operator >>. Here is an example of how to use the DbData
  * type to specify and extract pipe properties :
@@ -1182,8 +1182,8 @@ public :
 /**
  * Put class pipe property value in database
  *
- * Insert or update a std::list of pipe properties for the specified class. The pipe property names and their
- * values are specified by the std::vector of DbDatum structures. Use the insert operator >> to insert the properties
+ * Insert or update a list of pipe properties for the specified class. The pipe property names and their
+ * values are specified by the vector of DbDatum structures. Use the insert operator >> to insert the properties
  * into the DbDatum structures. Here is an example of how to insert/update min, max properties for pipe
  * velocity and min, max properties for pipe acceleration properties belonging to class StepperMotor into
  * the database using this method :
@@ -1220,8 +1220,8 @@ public :
 /**
  * Delete class pipe property from database
  *
- * Delete a std::list of pipe properties for the specified class. The pipe names are specified by the std::vector
- * of DbDatum structures. All properties belonging to the std::listed pipes are deleted. Here is an example of
+ * Delete a list of pipe properties for the specified class. The pipe names are specified by the vector
+ * of DbDatum structures. All properties belonging to the listed pipes are deleted. Here is an example of
  * how to delete the unit property of the velocity pipe of the StepperMotor class from the database using
  * this method :
  * @code
@@ -1241,7 +1241,7 @@ public :
 /**
  * Get class pipe property history from database
  *
- * Get the std::list of the last 10 modifications of the specifed class pipe property. Note that prop_name
+ * Get the list of the last 10 modifications of the specifed class pipe property. Note that prop_name
  * and pipe_name can contain
  * a wildcard character (eg: "prop*"). An example of usage of a similar function can be found in the
  * documentation of the get_property_history() function.
@@ -1395,9 +1395,9 @@ public :
 /**@name Database browsing oriented methods */
 //@{
 /**
- * Get host std::list
+ * Get host list
  *
- * Returns the std::list of all host names registered in the database.
+ * Returns the list of all host names registered in the database.
  * @code
  * DbDatum db_datum = db->get_host_list();
  *
@@ -1405,15 +1405,15 @@ public :
  * db_datum >> host_list;
  * @endcode
  *
- * @return A host name std::list
+ * @return A host name list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_host_list();
 /**
- * Get host std::list with name matching a wildcard
+ * Get host list with name matching a wildcard
  *
- * Returns the std::list of all host names registered in the database which match the specified wildcard (eg: "lc0*")
+ * Returns the list of all host names registered in the database which match the specified wildcard (eg: "lc0*")
  * @code
  * std::string wildcard("l-c0*");
  *
@@ -1424,17 +1424,17 @@ public :
  * @endcode
  *
  * @param [in] wildcard The wildcard
- * @return A host name std::list matching the input
+ * @return A host name list matching the input
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_host_list(const std::string &wildcard);
 /**
- * Get std::list of Tango classes embedded in a device server proess
+ * Get list of Tango classes embedded in a device server proess
  *
- * Query the database for a std::list of classes instancied by the specified server.
+ * Query the database for a list of classes instancied by the specified server.
  * The DServer class exists in all TANGO servers and for this reason this class
- * is removed from the returned std::list.
+ * is removed from the returned list.
  * @code
  * std::string server("Serial/1");
  *
@@ -1445,15 +1445,15 @@ public :
  * @endcode
  *
  * @param [in] ds_name The full device server process name
- * @return The std::list of Tango classes embedded in the specified server process
+ * @return The list of Tango classes embedded in the specified server process
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_server_class_list(const std::string &ds_name);
 /**
- * Get std::list of all Tango device server process
+ * Get list of all Tango device server process
  *
- * Return the std::list of all server names registered in the database.
+ * Return the list of all server names registered in the database.
  * @code
  * DbDatum db_datum = db->get_server_name_list();
  *
@@ -1461,15 +1461,15 @@ public :
  * db_datum >> server_list;
  * @endcode
  *
- * @return The std::list of all server names
+ * @return The list of all server names
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_server_name_list();
 /**
- * Get std::list of instances
+ * Get list of instances
  *
- * Return the std::list of all instance names existing in the database for the specifed server.
+ * Return the list of all instance names existing in the database for the specifed server.
  * @code
  * std::string servername("Serial");
  *
@@ -1480,15 +1480,15 @@ public :
  * @endcode
  *
  * @param [in] ds_name The device server process executable name
- * @return The std::list of all instances for the specified device server process
+ * @return The list of all instances for the specified device server process
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_instance_name_list(const std::string &ds_name);
 /**
- * Get std::list of device server processes
+ * Get list of device server processes
  *
- * Return the std::list of all servers registered in the database.
+ * Return the list of all servers registered in the database.
  * @code
  * DbDatum db_datum = db->get_server_list();
  *
@@ -1496,15 +1496,15 @@ public :
  * db_datum >> server_list;
  * @endcode
  *
- * @return The std::list of all device server processes defined in database
+ * @return The list of all device server processes defined in database
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_server_list();
 /**
- * Get std::list of device server processes with a wildcard
+ * Get list of device server processes with a wildcard
  *
- * Return the std::list of all servers registered in the database which match the specified wildcard (eg: "Serial/l*").
+ * Return the list of all servers registered in the database which match the specified wildcard (eg: "Serial/l*").
  * @code
  * std::string wildcard("Serial/l*");
  *
@@ -1515,15 +1515,15 @@ public :
  * @endcode
  *
  * @param [in] wildcard The wildcard
- * @return The std::list of device server processes defined in database matching the specified wildcard
+ * @return The list of device server processes defined in database matching the specified wildcard
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_server_list(const std::string &wildcard);
 /**
- * Get std::list of device server processes running on a host
+ * Get list of device server processes running on a host
  *
- * Query the database for a std::list of servers registred on the specified host.
+ * Query the database for a list of servers registred on the specified host.
  * @code
  * std::string host("kidiboo");
  *
@@ -1534,77 +1534,77 @@ public :
  * @endcode
  *
  * @param [in] host_name The host name
- * @return The std::list of device server processes
+ * @return The list of device server processes
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_host_server_list(const std::string &host_name);
 /**
- * Get std::list of devices served by a device server process
+ * Get list of devices served by a device server process
  *
- * Query the database for a std::list of devices served by the specified server (1st parameter)
+ * Query the database for a list of devices served by the specified server (1st parameter)
  * and of the specified class (2nd parameter).
  *
  * @param [in] ds_name The device server name (executable/instance)
  * @param [in] class_name The class name
- * @return The std::list of devices
+ * @return The list of devices
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_name(const std::string &ds_name,const std::string &class_name);
 /**
- * Get std::list of exported devices
+ * Get list of exported devices
  *
- * Query the database for a std::list of exported devices whose names satisfy the supplied filter
+ * Query the database for a list of exported devices whose names satisfy the supplied filter
  * (* is wildcard for any character(s)).
  *
  * @param [in] filter The filter
- * @return The std::list of exported devices
+ * @return The list of exported devices
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_exported(const std::string &filter);
 /**
- * Get std::list of device domain names
+ * Get list of device domain names
  *
- * Query the database for a std::list of device domain names which match the wildcard provided.
+ * Query the database for a list of device domain names which match the wildcard provided.
  * Wildcard character * matches any number of characters. Domain names are case insensitive.
  *
  * @param [in] wildcard The wildcard
- * @return The device domain names std::list
+ * @return The device domain names list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_domain(const std::string &wildcard);
 /**
- * Get std::list of device family name
+ * Get list of device family name
  *
- * Query the database for a std::list of device family names which match the wildcard provided.
+ * Query the database for a list of device family names which match the wildcard provided.
  * Wildcard character * matches any number of characters. Family names are case insensitive.
  *
  * @param [in] wildcard The wildcard
- * @return The device family names std::list
+ * @return The device family names list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_family(const std::string &wildcard);
 /**
- * Get std::list of device member name
+ * Get list of device member name
  *
- * Query the database for a std::list of device member names which match the wildcard provided.
+ * Query the database for a list of device member names which match the wildcard provided.
  * Wildcard character * matches any number of characters. Member names are case insensitive.
  *
  * @param [in] wildcard The wildcard
- * @return The device member names std::list
+ * @return The device member names list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_member(const std::string &wildcard);
 /**
- * Get std::list of devices/classes for a specified device server
+ * Get list of devices/classes for a specified device server
  *
- * Query the database for a std::list of devices and classes served by the specified server.
- * Return a std::list with the following structure: {device name,class name,device name,class name,...}
+ * Query the database for a list of devices and classes served by the specified server.
+ * Return a list with the following structure: {device name,class name,device name,class name,...}
  * @code
  * std::string server("Serial/1");
  *
@@ -1615,15 +1615,15 @@ public :
  * @endcode
  *
  * @param [in] ds_name The full device server process name
- * @return The device / class std::list
+ * @return The device / class list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_class_list(const std::string &ds_name);
 /**
- * Get std::list of exported device for a class
+ * Get list of exported device for a class
  *
- * Query database for std::list of exported devices for the specified class.
+ * Query database for list of exported devices for the specified class.
  * @code
  * std::string classname("MyClass");
  *
@@ -1634,15 +1634,15 @@ public :
  * @endcode
  *
  * @param [in] class_name The Tango device class name
- * @return The exported device std::list
+ * @return The exported device list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_exported_for_class(const std::string &class_name);
 /**
- * Get object (free property) std::list
+ * Get object (free property) list
  *
- * Query the database for a std::list of object (free properties) for which properties are defined and which match
+ * Query the database for a list of object (free properties) for which properties are defined and which match
  * the specified wildcard.
  * @code
  * std::string wildcard("Optic*");
@@ -1654,15 +1654,15 @@ public :
  * @endcode
  *
  * @param [in] wildcard The wildcard
- * @return The object (free property) std::list
+ * @return The object (free property) list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_object_list(const std::string &wildcard);
 /**
- * Get object property std::list
+ * Get object property list
  *
- * Query the database for a std::list of properties defined for the specified object and which match the specified wildcard.
+ * Query the database for a list of properties defined for the specified object and which match the specified wildcard.
  * @code
  * std::string objname("OpticID9");
  * std::string wildcard("Delta*");
@@ -1675,15 +1675,15 @@ public :
  *
  * @param [in] obj_name The object (free property) name
  * @param [in] wildcard The wildcard
- * @return The object (free property) property std::list
+ * @return The object (free property) property list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
     DbDatum get_object_property_list(const std::string &obj_name,const std::string &wildcard);
 /**
- * Get Tango class std::list
+ * Get Tango class list
  *
- * Query the database for a std::list of classes which match the specified wildcard.
+ * Query the database for a list of classes which match the specified wildcard.
  * @code
  * std::string wildcard("Motor*");
  *
@@ -1694,15 +1694,15 @@ public :
  * @endcode
  *
  * @param [in] wildcard The wildcard
- * @return The class std::list
+ * @return The class list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_class_list(const std::string &wildcard);
 /**
- * Get class property std::list
+ * Get class property list
  *
- * Query the database for a std::list of properties defined for the specified class.
+ * Query the database for a list of properties defined for the specified class.
  * A wildcard can be specified in a second argument to match against property name. 
  * @code
  * std::string classname("MyClass");
@@ -1715,16 +1715,16 @@ public :
  *
  * @param [in] class_name The class name
  * @param [in] wildcard Optional wildcard to match property name
- * @return The class property std::list
+ * @return The class property list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_class_property_list(const std::string &class_name);
 	DbDatum get_class_property_list(const std::string &class_name, const std::string &wildcard);
 /**
- * Get class attribute std::list
+ * Get class attribute list
  *
- * Query the database for a std::list of attributes defined for the specified class which match the specified wildcard.
+ * Query the database for a list of attributes defined for the specified class which match the specified wildcard.
  * @code
  * std::string classname("MyClass");
  * std::string wildcard("*");
@@ -1737,15 +1737,15 @@ public :
  *
  * @param [in] class_name The class name
  * @param [in] wildcard The wildcard
- * @return The class property std::list
+ * @return The class property list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_class_attribute_list(const std::string &class_name,const std::string &wildcard);
 /**
- * Get class pipe std::list
+ * Get class pipe list
  *
- * Query the database for a std::list of pipes defined for the specified class which match the specified wildcard.
+ * Query the database for a list of pipes defined for the specified class which match the specified wildcard.
  * @code
  * std::string classname("MyClass");
  * std::string wildcard("*");
@@ -1758,15 +1758,15 @@ public :
  *
  * @param [in] class_name The class name
  * @param [in] wildcard The wildcard
- * @return The class pipe std::list
+ * @return The class pipe list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_class_pipe_list(const std::string &class_name,const std::string &wildcard);
 /**
- * Get device alias std::list
+ * Get device alias list
  *
- * Get device alias std::list. The parameter is a std::string to filter the alias std::list returned. Wildcard (*) is supported.
+ * Get device alias list. The parameter is a std::string to filter the alias list returned. Wildcard (*) is supported.
  * For instance, if the std::string passed as the method parameter is initialised with only the * character, all
  * the defined device alias will be returned. The DbDatum returned by this method is initialised with an array
  * of std::strings and must be extracted into a std::vector<std::string>. If there is no alias with the given filter, the returned
@@ -1786,22 +1786,22 @@ public :
  * @endcode
  *
  * @param [in] filter The filter
- * @return The device alias std::list
+ * @return The device alias list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */
 	DbDatum get_device_alias_list(const std::string &filter);
 /**
- * Get attribute alias std::list
+ * Get attribute alias list
  *
- * Get attribute alias std::list. The parameter is a std::string to filter the alias std::list returned. Wildcard (*) is
+ * Get attribute alias list. The parameter is a std::string to filter the alias list returned. Wildcard (*) is
  * supported. For instance, if the std::string passed as the method parameter is initialised with only the
  * * character, all the defined attribute alias will be returned. The DbDatum returned by this method is
  * initialised with an array of std::strings and must be extracted into a std::vector<std::string>. If there is no alias with the
  * given filter, the returned array will have a 0 size.
  *
  * @param [in] filter The filter
- * @return The attribute alias std::list
+ * @return The attribute alias list
  *
  * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
  */

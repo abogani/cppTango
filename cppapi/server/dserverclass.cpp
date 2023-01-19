@@ -1324,7 +1324,7 @@ DServerClass *DServerClass::_instance = NULL;
 //
 // description : 	constructor for the DServerClass class
 //			The constructor add specific class commands to the
-//			command std::list, create a device of the DServer class
+//			command list, create a device of the DServer class
 //			retrieve all classes which must be created within the
 //			server and finally, creates these classes
 //
