@@ -165,8 +165,8 @@ add_library(compare_test_object OBJECT compare_test.cpp compare_test.h cxx_commo
 if(TANGO_USE_PCH)
     tango_target_test_pch(conf_devtest)
     tango_target_test_pch(compare_test_object)
-    target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_CXX_DEFS})
-    target_compile_definitions(compare_test_object PRIVATE ${COMMON_TEST_CXX_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
+    target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_DEFS})
+    target_compile_definitions(compare_test_object PRIVATE ${COMMON_TEST_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
 
     tango_add_pch(tango_test_pch cxx_syntax "${OMNIORB_PKG_CFLAGS_OTHER}")
 endif()
