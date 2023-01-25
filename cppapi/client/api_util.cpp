@@ -919,6 +919,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
 
         if (ty->kind() == CORBA::tk_enum)
         {
+            dev_attr->data_type = Tango::DEV_STATE;
             attr_value_3->value >>= dev_attr->d_state;
             dev_attr->d_state_filled = true;
             return;
@@ -929,6 +930,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
         switch (ty_seq->kind())
         {
             case CORBA::tk_long:
+                dev_attr->data_type = Tango::DEV_LONG;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_lo;
@@ -952,6 +954,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_longlong:
+                dev_attr->data_type = Tango::DEV_LONG64;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_64;
@@ -975,6 +978,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_short:
+                dev_attr->data_type = Tango::DEV_SHORT;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_sh;
@@ -998,6 +1002,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_double:
+                dev_attr->data_type = Tango::DEV_DOUBLE;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_db;
@@ -1021,6 +1026,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_string:
+                dev_attr->data_type = Tango::DEV_STRING;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_str;
@@ -1044,6 +1050,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_float:
+                dev_attr->data_type = Tango::DEV_FLOAT;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_fl;
@@ -1067,6 +1074,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_boolean:
+                dev_attr->data_type = Tango::DEV_BOOLEAN;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_boo;
@@ -1090,6 +1098,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_ushort:
+                dev_attr->data_type = Tango::DEV_USHORT;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_ush;
@@ -1113,6 +1122,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_octet:
+                dev_attr->data_type = Tango::DEV_UCHAR;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_uch;
@@ -1136,6 +1146,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_ulong:
+                dev_attr->data_type = Tango::DEV_ULONG;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_ulo;
@@ -1159,6 +1170,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_ulonglong:
+                dev_attr->data_type = Tango::DEV_ULONG64;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_u64;
@@ -1182,6 +1194,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             case CORBA::tk_enum:
+                dev_attr->data_type = Tango::DEV_STATE;
                 if (vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_state;
@@ -1205,23 +1218,15 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
                 break;
 
             default:
+                dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
                 TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
-        dev_attr->data_type = Tango::DEV_SHORT;
     }
 }
 
 void ApiUtil::attr_to_device(const AttributeValue_4 *attr_value_4, TANGO_UNUSED(long vers), DeviceAttribute *dev_attr)
 {
     attr_to_device_base(attr_value_4, dev_attr);
-
-//
-// Warning: Since Tango 9, data type SHORT is used for both short attribute and enumeration attribute!
-// Therefore, we need to store somewhere which exact type it is. With IDL 5, it is easy, because the data type is
-// transferred on the network (modified IDL), For previous release, we do not have enumerated data type and therefore
-// the data type could be used only for SHORT.
-//
-    dev_attr->data_type = Tango::DEV_SHORT;
 }
 
 void ApiUtil::attr_to_device(const AttributeValue_5 *attr_value_5, TANGO_UNUSED(long vers), DeviceAttribute *dev_attr)

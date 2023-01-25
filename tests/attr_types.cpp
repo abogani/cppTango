@@ -101,7 +101,13 @@ int main(int argc, char **argv)
 		}
 		double db;
 		da >> db;
+		int data_type = da.get_type();
 		assert ( db == 3.2 );
+		assert ( data_type == Tango::DEV_DOUBLE );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar double --> OK" << endl;
 
@@ -121,7 +127,13 @@ int main(int argc, char **argv)
 		}
 		string str;
 		da >> str;
+		int data_type = da.get_type();
 		assert ( str == "test_string" );
+		assert ( data_type == Tango::DEV_STRING );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar C++ string --> OK" << endl;
 
@@ -135,7 +147,13 @@ int main(int argc, char **argv)
 			da = device->read_attribute("Float_attr");
 			float db;
 			da >> db;
+			int data_type = da.get_type();
 			assert ( db == 4.5 );
+			assert ( data_type == Tango::DEV_FLOAT );
+#ifndef COMPAT
+			AttrDataFormat data_format = da.get_data_format();
+			assert ( data_format == Tango::SCALAR );
+#endif
 		}
 		catch (CORBA::Exception &e)
 		{
@@ -162,6 +180,12 @@ int main(int argc, char **argv)
 		bool db;
 		da >> db;
 		assert ( db == true );
+		int data_type = da.get_type();
+		assert ( data_type == Tango::DEV_BOOLEAN );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar boolean --> OK" << endl;
 
@@ -182,6 +206,12 @@ int main(int argc, char **argv)
 		unsigned short db;
 		da >> db;
 		assert ( db == 111 );
+		int data_type = da.get_type();
+		assert ( data_type == Tango::DEV_USHORT );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar unsigned short --> OK" << endl;
 
@@ -202,6 +232,12 @@ int main(int argc, char **argv)
 		unsigned char db;
 		da >> db;
 		assert ( db == 88 );
+		int data_type = da.get_type();
+		assert ( data_type == Tango::DEV_UCHAR );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar unsigned char --> OK" << endl;
 
@@ -251,6 +287,10 @@ int main(int argc, char **argv)
 		int data_type = da.get_type();
 		assert ( lo == 0xC0000000L );
 		assert ( data_type == Tango::DEV_ULONG );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar unsigned long --> OK" << endl;
 	
@@ -273,6 +313,10 @@ int main(int argc, char **argv)
 		int data_type = da.get_type();
 		assert ( lo == 0xC000000000000000LL );
 		assert ( data_type == Tango::DEV_ULONG64 );
+#ifndef COMPAT
+		AttrDataFormat data_format = da.get_data_format();
+		assert ( data_format == Tango::SCALAR );
+#endif
 	}
 	TEST_LOG << "   Scalar unsigned long 64 bits --> OK" << endl;
 	
@@ -430,28 +474,40 @@ int main(int argc, char **argv)
 		
 		(*received)[0] >> sh;
 		assert ( sh == 12 );
+		assert((*received)[0].get_type() == DEV_SHORT);
 		(*received)[1] >> lo;
 		assert ( lo == 1246 );
+		assert((*received)[1].get_type() == DEV_LONG);
 		(*received)[2] >> db;
-		assert ( db == 3.2 );		
+		assert ( db == 3.2 );
+		assert((*received)[2].get_type() == DEV_DOUBLE);
 		(*received)[3] >> str;
 		assert ( str == "test_string" );
+		assert((*received)[3].get_type() == DEV_STRING);
 		(*received)[4] >> fl;
 		assert ( fl == 4.5 );
+		assert((*received)[4].get_type() == DEV_FLOAT);
 		(*received)[5] >> bo;
 		assert ( bo == true );
+		assert((*received)[5].get_type() == DEV_BOOLEAN);
 		(*received)[6] >> ush;
-		assert ( ush == 111 );		
+		assert ( ush == 111 );
+		assert((*received)[6].get_type() == DEV_USHORT);
 		(*received)[7] >> uch;
 		assert ( uch == 88 );
+		assert((*received)[7].get_type() == DEV_UCHAR);
 		(*received)[8] >> lo64;
 		assert ( lo64 == 0x800000000LL );
+		assert((*received)[8].get_type() == DEV_LONG64);
 		(*received)[9] >> ulo;
 		assert ( ulo == 0xC0000000L );
+		assert((*received)[9].get_type() == DEV_ULONG);
 		(*received)[10] >> ulo64;
 		assert ( ulo64 == 0xC000000000000000LL );
+		assert((*received)[10].get_type() == DEV_ULONG64);
 		(*received)[11] >> sta;
 		assert ( sta == Tango::FAULT );
+		assert((*received)[11].get_type() == DEV_STATE);
 #ifndef COMPAT
 		(*received)[12] >> enc;
 		assert ( enc.encoded_data.length() == 4 );
@@ -486,6 +542,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> sh);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_SHORT );
 #ifndef COMPAT
 		AttrDataFormat data_format = da.get_data_format();
 		assert ( data_format == Tango::SPECTRUM);
@@ -515,6 +572,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_LONG );
 #ifndef COMPAT
 		AttrDataFormat data_format = da.get_data_format();
 		assert ( data_format == Tango::SPECTRUM);
@@ -570,6 +628,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> str);
 		
 		assert ( ret == true );
+		assert ( da.get_type() == DEV_STRING );
 		assert ( str[0] == "Hello world" );
 		assert ( str[1] == "Hello universe" );
 	}
@@ -593,6 +652,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> sh);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_FLOAT );
 		assert ( sh[0] == 4.5 );
 		assert ( sh[1] == 8.5 );
 		assert ( sh[2] == 16.5 );
@@ -617,6 +677,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> sh);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_BOOLEAN );
 #ifndef COMPAT
 		AttrDataFormat data_format = da.get_data_format();
 		assert ( data_format == Tango::SPECTRUM );
@@ -647,6 +708,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> sh);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_USHORT );
 		assert ( sh[0] == 333 );
 		assert ( sh[1] == 444 );
 	}
@@ -670,6 +732,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> sh);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_UCHAR );
 		assert ( sh[0] == 28 );
 		assert ( sh[1] == 45 );
 		assert ( sh[2] == 156 );
@@ -697,6 +760,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_LONG64 );
 		assert ( lo[0] == 1000 );
 		assert ( lo[1] == 10000 );
 		assert ( lo[2] == 100000 );
@@ -722,6 +786,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_ULONG );
 		assert ( lo[0] == 2222 );
 		assert ( lo[1] == 22222 );
 		assert ( lo[2] == 222222 );
@@ -747,6 +812,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_ULONG64 );
 		assert ( lo[0] == 8888 );
 		assert ( lo[1] == 88888 );
 		assert ( lo[2] == 888888 );
@@ -772,6 +838,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_STATE );
 		assert ( lo[0] == Tango::ON );
 		assert ( lo[1] == Tango::OFF );
 		assert ( lo[2] == Tango::UNKNOWN );
@@ -798,7 +865,11 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarShortArray *sh;
-		da >> sh;
+		bool ret = (da >> sh);
+
+		assert (ret == true);
+		TEST_LOG << "   Short_spec_attr  da.get_type() = " << da.get_type() << endl;
+		assert ( da.get_type() == DEV_SHORT );
 		assert ( (*sh)[0] == 10 );
 		assert ( (*sh)[1] == 20 );
 		assert ( (*sh)[2] == 30 );
@@ -823,7 +894,9 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarLongArray *lo;
-		da >> lo;
+		bool ret = (da >> lo);
+		assert (ret == true);
+		assert ( da.get_type() == DEV_LONG );
 		assert ( (*lo)[0] == 0 );
 		assert ( (*lo)[3] == 3 );
 		assert ( (*lo)[6] == 6 );
@@ -848,7 +921,9 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarDoubleArray *db;
-		da >> db;
+		bool ret = (da >> db);
+		assert (ret == true);
+		assert ( da.get_type() == DEV_DOUBLE );
 		assert ( (*db)[0] == 1.11 );
 		assert ( (*db)[1] == 2.22 );
 		
@@ -871,7 +946,9 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarStringArray *str;
-		da >> str;
+		bool ret = (da >> str);
+		assert (ret == true);
+		assert ( da.get_type() == DEV_STRING );
 		assert ( !strcmp((*str)[0],"Hello world") );
 		assert ( !strcmp((*str)[1],"Hello universe") );
 		
@@ -894,7 +971,9 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarFloatArray *lo;
-		da >> lo;
+		bool ret = (da >> lo);
+		assert (ret == true);
+		assert ( da.get_type() == DEV_FLOAT );
 		assert ( (*lo)[0] == 4.5 );
 		assert ( (*lo)[1] == 8.5 );
 		assert ( (*lo)[2] == 16.5 );
@@ -919,8 +998,8 @@ int main(int argc, char **argv)
 		}
 		DevVarBooleanArray *lo;
 		int data_type = da.get_type();
-		da >> lo;
-		
+		bool ret = (da >> lo);
+		assert (ret == true);
 		assert ( (*lo)[0] == true );
 		assert ( (*lo)[1] == true );
 		assert ( (*lo)[2] == false );
@@ -947,7 +1026,9 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarUShortArray *lo;
-		da >> lo;
+		bool ret = (da >> lo);
+		assert (ret == true);
+		assert ( da.get_type() == DEV_USHORT );
 		assert ( (*lo)[0] == 333 );
 		assert ( (*lo)[1] == 444 );
 				
@@ -970,7 +1051,9 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 		DevVarCharArray *lo;
-		da >> lo;
+		bool ret = (da >> lo);
+		assert (ret == true);
+		assert ( da.get_type() == DEV_UCHAR );
 		assert ( (*lo)[0] == 28 );
 		assert ( (*lo)[1] == 45 );
 		assert ( (*lo)[2] == 156 );
@@ -1000,6 +1083,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_LONG64 );
 		assert ( (*lo)[0] == 1000 );
 		assert ( (*lo)[1] == 10000 );
 		assert ( (*lo)[2] == 100000 );
@@ -1027,6 +1111,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_ULONG );
 		assert ( (*lo)[0] == 2222 );
 		assert ( (*lo)[1] == 22222 );
 		assert ( (*lo)[2] == 222222 );
@@ -1054,6 +1139,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 		
 		assert (ret == true);
+		assert ( da.get_type() == DEV_ULONG64 );
 		assert ( (*lo)[0] == 8888 );
 		assert ( (*lo)[1] == 88888 );
 		assert ( (*lo)[2] == 888888 );
@@ -1062,33 +1148,6 @@ int main(int argc, char **argv)
 		delete lo;
 	}
 	TEST_LOG << "   Spectrum unsigned long 64 bits (DevVarULong64Array) --> OK" << endl;
-
-//    Test SPECTRUM boolean
-
-    for (i = 0;i < loop;i++)
-    {
-        DeviceAttribute da;
-        try
-        {
-            da = device->read_attribute("ULong64_spec_attr_rw");
-        }
-        catch (CORBA::Exception &e)
-        {
-            Except::print_exception(e);
-            exit(-1);
-        }
-        DevVarULong64Array *lo;
-        bool ret = (da >> lo);
-
-        assert (ret == true);
-        assert ( (*lo)[0] == 8888 );
-        assert ( (*lo)[1] == 88888 );
-        assert ( (*lo)[2] == 888888 );
-        assert ( (*lo)[3] == 0 );
-
-        delete lo;
-    }
-    TEST_LOG << "   Spectrum unsigned long 64 bits (DevVarULong64Array) --> OK" << endl;
 
 // Test SPECTRUM state
 
@@ -1107,6 +1166,7 @@ int main(int argc, char **argv)
 		DevVarStateArray *lo;	
 		bool ret = (da >> lo);
 		assert (ret == true);
+		assert ( da.get_type() == DEV_STATE );
 #ifndef COMPAT
 		AttrDataFormat data_format = da.get_data_format();
 		assert ( data_format == Tango::SPECTRUM );
@@ -1137,6 +1197,7 @@ int main(int argc, char **argv)
 		bool ret = (da >> lo);
 
 		assert (ret == true);
+		assert ( da.get_type() == DEV_SHORT );
 #ifndef COMPAT
 		AttrDataFormat data_format = da.get_data_format();
 		assert ( data_format == Tango::IMAGE );
@@ -1170,7 +1231,111 @@ int main(int argc, char **argv)
 	
 	TEST_LOG << "   Exception/Error for unknown attribute data format --> OK" << endl;
 #endif
-			
+
+	// Test DeviceAttribute::get_type() on empty spectrum attribute
+
+	for (i = 0;i < loop;i++)
+	{
+		bool except = false;
+		try
+		{
+			std::vector<std::string> str_vec;
+			Tango::DeviceAttribute da1("String_empty_spec_attr_rw",str_vec);
+			da1.reset_exceptions(Tango::DeviceAttribute::isempty_flag);
+			assert( da1.is_empty() );
+			assert( da1.get_type() == Tango::DEV_STRING );
+			device->write_attribute(da1);
+
+			Tango::DeviceAttribute da = device->read_attribute("String_empty_spec_attr_rw");
+			da.reset_exceptions(Tango::DeviceAttribute::isempty_flag);
+			assert( da.is_empty() );
+			assert( da.get_type() == Tango::DEV_STRING );
+		}
+		catch(const Tango::DevFailed& e)
+		{
+			Tango::Except::print_exception(e);
+			except = true;
+		}
+		assert (except == false);
+	}
+	TEST_LOG << "   Test DeviceAttribute::get_type() on empty spectrum attribute --> OK" << endl;
+
+	// Test DeviceAttribute::get_type() on default DeviceAttribute object
+	for (i = 0;i < loop;i++)
+	{
+		Tango::DeviceAttribute da;
+		assert(da.get_type() == Tango::DATA_TYPE_UNKNOWN);
+	}
+	TEST_LOG << "   Test DeviceAttribute::get_type() on default DeviceAttribute object --> OK" << endl;
+
+	// Test DeviceAttribute::get_type() on attribute throwing an exception
+	TEST_LOG << "   Configuring DevTest to throw an exception when reading Long_Attr attribute..." << endl;
+	try
+	{
+		Tango::DeviceData din;
+		vector<short> short_vec;
+		short_vec.push_back(5);
+		short_vec.push_back(1);
+		din << short_vec;
+		device->command_inout("IOAttrThrowEx",din);
+	}
+	catch(const Tango::DevFailed &e)
+	{
+		Tango::Except::print_exception(e);
+		bool IOAttrThrowEx_except = true;
+		assert(IOAttrThrowEx_except == false);
+	}
+	for (i = 0;i < loop;i++)
+	{
+		Tango::DeviceAttribute da;
+		try
+		{
+			da = device->read_attribute("Long_Attr");
+		}
+		catch(const Tango::DevFailed &e)
+		{
+			Tango::Except::print_exception(e);
+			TEST_LOG << "   Restoring DevTest Long_Attr default behaviour..." << endl;
+			try
+			{
+				Tango::DeviceData din;
+				vector<short> short_vec;
+				short_vec.push_back(5);
+				short_vec.push_back(0);
+				din << short_vec;
+				device->command_inout("IOAttrThrowEx",din);
+			}
+			catch(const Tango::DevFailed &e)
+			{
+				Tango::Except::print_exception(e);
+				bool IOAttrThrowEx_except = true;
+				assert(IOAttrThrowEx_except == false);
+			}
+			bool read_attribute_except = true;
+			assert(read_attribute_except == false);
+		}
+		da.reset_exceptions(Tango::DeviceAttribute::isempty_flag);
+		assert( da.is_empty() );
+		assert(da.get_type() == Tango::DATA_TYPE_UNKNOWN);
+	}
+	TEST_LOG << "   Restoring DevTest Long_Attr default behaviour..." << endl;
+	try
+	{
+		Tango::DeviceData din;
+		vector<short> short_vec;
+		short_vec.push_back(5);
+		short_vec.push_back(0);
+		din << short_vec;
+		device->command_inout("IOAttrThrowEx",din);
+	}
+	catch(const Tango::DevFailed &e)
+	{
+		Tango::Except::print_exception(e);
+		bool IOAttrThrowEx_except = true;
+		assert(IOAttrThrowEx_except == false);
+	}
+	TEST_LOG << "   Test DeviceAttribute::get_type() on attribute throwing an exception --> OK" << endl;
+
 	delete device;
 	
 	return 0;

@@ -94,6 +94,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq.get_buffer());
 					dev_attr->BooleanSeq = new DevVarBooleanArray(max,len,tmp_boo,false);
 				}
+				dev_attr->data_type = Tango::DEV_BOOLEAN;
 			}
 			break;
 
@@ -112,6 +113,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_sh = const_cast<CORBA::Short *>(tmp_seq.get_buffer());
 					dev_attr->ShortSeq = new DevVarShortArray(max,len,tmp_sh,false);
 				}
+				dev_attr->data_type = Tango::DEV_SHORT;
 			}
 			break;
 
@@ -130,6 +132,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_lo = const_cast<CORBA::Long *>(tmp_seq.get_buffer());
 					dev_attr->LongSeq = new DevVarLongArray(max,len,tmp_lo,false);
 				}
+				dev_attr->data_type = Tango::DEV_LONG;
 			}
 			break;
 
@@ -148,6 +151,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq.get_buffer());
 					dev_attr->Long64Seq = new DevVarLong64Array(max,len,tmp_lolo,false);
 				}
+				dev_attr->data_type = Tango::DEV_LONG64;
 			}
 			break;
 
@@ -166,6 +170,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_fl = const_cast<CORBA::Float *>(tmp_seq.get_buffer());
 					dev_attr->FloatSeq = new DevVarFloatArray(max,len,tmp_fl,false);
 				}
+				dev_attr->data_type = Tango::DEV_FLOAT;
 			}
 			break;
 
@@ -184,6 +189,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_db = const_cast<CORBA::Double *>(tmp_seq.get_buffer());
 					dev_attr->DoubleSeq = new DevVarDoubleArray(max,len,tmp_db,false);
 				}
+				dev_attr->data_type = Tango::DEV_DOUBLE;
 			}
 			break;
 
@@ -202,6 +208,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_uch = const_cast<CORBA::Octet *>(tmp_seq.get_buffer());
 					dev_attr->UCharSeq = new DevVarCharArray(max,len,tmp_uch,false);
 				}
+				dev_attr->data_type = Tango::DEV_UCHAR;
 			}
 			break;
 
@@ -220,6 +227,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_ush = const_cast<CORBA::UShort *>(tmp_seq.get_buffer());
 					dev_attr->UShortSeq = new DevVarUShortArray(max,len,tmp_ush,false);
 				}
+				dev_attr->data_type = Tango::DEV_USHORT;
 			}
 			break;
 
@@ -238,6 +246,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq.get_buffer());
 					dev_attr->ULongSeq = new DevVarULongArray(max,len,tmp_ulo,false);
 				}
+				dev_attr->data_type = Tango::DEV_ULONG;
 			}
 			break;
 
@@ -256,6 +265,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq.get_buffer());
 					dev_attr->ULong64Seq = new DevVarULong64Array(max,len,tmp_ulolo,false);
 				}
+				dev_attr->data_type = Tango::DEV_ULONG64;
 			}
 			break;
 
@@ -274,6 +284,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_str = const_cast<char **>(tmp_seq.get_buffer());
 					dev_attr->StringSeq = new DevVarStringArray(max,len,tmp_str,false);
 				}
+				dev_attr->data_type = Tango::DEV_STRING;
 			}
 			break;
 
@@ -292,6 +303,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_state = const_cast<Tango::DevState *>(tmp_seq.get_buffer());
 					dev_attr->StateSeq = new DevVarStateArray(max,len,tmp_state,false);
 				}
+				dev_attr->data_type = Tango::DEV_STATE;
 			}
 			break;
 
@@ -299,6 +311,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 			{
 				dev_attr->d_state = attr_value->value.dev_state_att();
 				dev_attr->d_state_filled = true;
+				dev_attr->data_type = Tango::DEV_STATE;
 			}
 			break;
 
@@ -317,11 +330,18 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
 					tmp_enc = const_cast<Tango::DevEncoded *>(tmp_seq.get_buffer());
 					dev_attr->EncodedSeq = new DevVarEncodedArray(max,len,tmp_enc,false);
 				}
+				dev_attr->data_type = Tango::DEV_ENCODED;
 			}
 			break;
 
 			case ATT_NO_DATA:
+			{
+				dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+			}
 			break;
+
+			default:
+				dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
 		}
 	}
 }

@@ -5623,6 +5623,7 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
             std::string st = desc.str();
             err_list[nb_except].desc = Tango::string_dup(st.c_str());
             err_list[nb_except].severity = Tango::ERR;
+            dev_attr.data_type=Tango::DATA_TYPE_UNKNOWN;
         }
     }
     else
@@ -5724,6 +5725,7 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
             std::string st = desc.str();
             err_list[nb_except].desc = Tango::string_dup(st.c_str());
             err_list[nb_except].severity = Tango::ERR;
+            dev_attr.data_type=Tango::DATA_TYPE_UNKNOWN;
         }
     }
     else

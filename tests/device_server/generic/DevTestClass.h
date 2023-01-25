@@ -794,6 +794,18 @@ public:
 	{(static_cast<DevTest *>(dev))->write_String_spec_attr_rw(att);}
 };
 
+class String_empty_spec_attr_rwAttr: public Tango::SpectrumAttr
+{
+public:
+	String_empty_spec_attr_rwAttr():SpectrumAttr("String_empty_spec_attr_rw", Tango::DEV_STRING,Tango::READ_WRITE, 2) {}
+	~String_empty_spec_attr_rwAttr() {}
+
+	virtual void read(Tango::DeviceImpl *dev,Tango::Attribute &att)
+	{(static_cast<DevTest *>(dev))->read_String_empty_spec_attr_rw(att);}
+	virtual void write(Tango::DeviceImpl *dev,Tango::WAttribute &att)
+	{(static_cast<DevTest *>(dev))->write_String_empty_spec_attr_rw(att);}
+};
+
 class Long_spec_attr_rwAttr: public Tango::SpectrumAttr
 {
 public:

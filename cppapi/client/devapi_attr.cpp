@@ -457,6 +457,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong datum)
     LongSeq = new(DevVarLongArray);
     LongSeq->length(1);
     LongSeq[0] = datum;
+    data_type = DEV_LONG;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, DevLong datum)
@@ -466,6 +467,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevLong datum)
     LongSeq = new(DevVarLongArray);
     LongSeq->length(1);
     LongSeq[0] = datum;
+    data_type = DEV_LONG;
 }
 
 //-----------------------------------------------------------------------------
@@ -481,6 +483,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong64 datum)
     Long64Seq = new(DevVarLong64Array);
     Long64Seq->length(1);
     Long64Seq[0] = datum;
+    data_type = DEV_LONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, DevLong64 datum)
@@ -490,6 +493,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevLong64 datum)
     Long64Seq = new(DevVarLong64Array);
     Long64Seq->length(1);
     Long64Seq[0] = datum;
+    data_type = DEV_LONG64;
 }
 
 //-----------------------------------------------------------------------------
@@ -505,6 +509,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, double datum)
     DoubleSeq = new(DevVarDoubleArray);
     DoubleSeq->length(1);
     DoubleSeq[0] = datum;
+    data_type = DEV_DOUBLE;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, double datum)
@@ -514,6 +519,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, double datum)
     DoubleSeq = new(DevVarDoubleArray);
     DoubleSeq->length(1);
     DoubleSeq[0] = datum;
+    data_type = DEV_DOUBLE;
 }
 
 //-----------------------------------------------------------------------------
@@ -529,6 +535,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::string 
     StringSeq = new(DevVarStringArray);
     StringSeq->length(1);
     StringSeq[0] = string_dup(datum.c_str());
+    data_type = DEV_STRING;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::string &datum)
@@ -538,6 +545,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::string &datum)
     StringSeq = new(DevVarStringArray);
     StringSeq->length(1);
     StringSeq[0] = string_dup(datum.c_str());
+    data_type = DEV_STRING;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const char *datum)
@@ -547,6 +555,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const char *datum)
     StringSeq = new(DevVarStringArray);
     StringSeq->length(1);
     StringSeq[0] = string_dup(datum);
+    data_type = DEV_STRING;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const char *datum)
@@ -556,6 +565,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const char *datum)
     StringSeq = new(DevVarStringArray);
     StringSeq->length(1);
     StringSeq[0] = string_dup(datum);
+    data_type = DEV_STRING;
 }
 
 //-----------------------------------------------------------------------------
@@ -571,6 +581,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, float datum)
     FloatSeq = new(DevVarFloatArray);
     FloatSeq->length(1);
     FloatSeq[0] = datum;
+    data_type = DEV_FLOAT;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, float datum)
@@ -580,6 +591,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, float datum)
     FloatSeq = new(DevVarFloatArray);
     FloatSeq->length(1);
     FloatSeq[0] = datum;
+    data_type = DEV_FLOAT;
 }
 
 //-----------------------------------------------------------------------------
@@ -595,6 +607,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, bool datum)
     BooleanSeq = new(DevVarBooleanArray);
     BooleanSeq->length(1);
     BooleanSeq[0] = datum;
+    data_type = DEV_BOOLEAN;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, bool datum)
@@ -604,6 +617,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, bool datum)
     BooleanSeq = new(DevVarBooleanArray);
     BooleanSeq->length(1);
     BooleanSeq[0] = datum;
+    data_type = DEV_BOOLEAN;
 }
 
 //-----------------------------------------------------------------------------
@@ -619,6 +633,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned short dat
     UShortSeq = new(DevVarUShortArray);
     UShortSeq->length(1);
     UShortSeq[0] = datum;
+    data_type = DEV_USHORT;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, unsigned short datum)
@@ -628,6 +643,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, unsigned short datum)
     UShortSeq = new(DevVarUShortArray);
     UShortSeq->length(1);
     UShortSeq[0] = datum;
+    data_type = DEV_USHORT;
 }
 
 //-----------------------------------------------------------------------------
@@ -643,6 +659,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned char datu
     UCharSeq = new(DevVarCharArray);
     UCharSeq->length(1);
     UCharSeq[0] = datum;
+    data_type = DEV_UCHAR;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, unsigned char datum)
@@ -652,6 +669,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, unsigned char datum)
     UCharSeq = new(DevVarCharArray);
     UCharSeq->length(1);
     UCharSeq[0] = datum;
+    data_type = DEV_UCHAR;
 }
 
 //-----------------------------------------------------------------------------
@@ -667,6 +685,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong datum)
     ULongSeq = new(DevVarULongArray);
     ULongSeq->length(1);
     ULongSeq[0] = datum;
+    data_type = DEV_ULONG;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, DevULong datum)
@@ -676,6 +695,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevULong datum)
     ULongSeq = new(DevVarULongArray);
     ULongSeq->length(1);
     ULongSeq[0] = datum;
+    data_type = DEV_ULONG;
 }
 
 //-----------------------------------------------------------------------------
@@ -691,6 +711,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong64 datum)
     ULong64Seq = new(DevVarULong64Array);
     ULong64Seq->length(1);
     ULong64Seq[0] = datum;
+    data_type = DEV_ULONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, DevULong64 datum)
@@ -700,6 +721,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevULong64 datum)
     ULong64Seq = new(DevVarULong64Array);
     ULong64Seq->length(1);
     ULong64Seq[0] = datum;
+    data_type = DEV_ULONG64;
 }
 
 //-----------------------------------------------------------------------------
@@ -715,6 +737,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevState datum)
     StateSeq = new(DevVarStateArray);
     StateSeq->length(1);
     StateSeq[0] = datum;
+    data_type = DEV_STATE;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, DevState datum)
@@ -724,6 +747,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevState datum)
     StateSeq = new(DevVarStateArray);
     StateSeq->length(1);
     StateSeq[0] = datum;
+    data_type = DEV_STATE;
 }
 
 //-----------------------------------------------------------------------------
@@ -739,6 +763,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const DevEncoded &
     EncodedSeq = new(DevVarEncodedArray);
     EncodedSeq->length(1);
     EncodedSeq[0] = datum;
+    data_type = DEV_ENCODED;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const DevEncoded &datum)
@@ -748,6 +773,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const DevEncoded &datum)
     EncodedSeq = new(DevVarEncodedArray);
     EncodedSeq->length(1);
     EncodedSeq[0] = datum;
+    data_type = DEV_ENCODED;
 }
 
 //-----------------------------------------------------------------------------
@@ -804,6 +830,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     LongSeq = new(DevVarLongArray);
     LongSeq.inout() << datum;
+    data_type = DEV_LONG;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong> &datum)
@@ -812,6 +839,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
     init_common_class_members(new_name, datum.size());
     LongSeq = new(DevVarLongArray);
     LongSeq.inout() << datum;
+    data_type = DEV_LONG;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong> &datum, int x, int y)
@@ -820,6 +848,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     LongSeq = new(DevVarLongArray);
     LongSeq.inout() << datum;
+    data_type = DEV_LONG;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong> &datum, int x, int y)
@@ -828,6 +857,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
     init_common_class_members(new_name, x, y);
     LongSeq = new(DevVarLongArray);
     LongSeq.inout() << datum;
+    data_type = DEV_LONG;
 }
 
 //-----------------------------------------------------------------------------
@@ -842,6 +872,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     Long64Seq = new(DevVarLong64Array);
     Long64Seq.inout() << datum;
+    data_type = DEV_LONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong64> &datum)
@@ -850,6 +881,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
     init_common_class_members(new_name, datum.size());
     Long64Seq = new(DevVarLong64Array);
     Long64Seq.inout() << datum;
+    data_type = DEV_LONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong64> &datum, int x, int y)
@@ -858,6 +890,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     Long64Seq = new(DevVarLong64Array);
     Long64Seq.inout() << datum;
+    data_type = DEV_LONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong64> &datum, int x, int y)
@@ -866,6 +899,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
     init_common_class_members(new_name, x, y);
     Long64Seq = new(DevVarLong64Array);
     Long64Seq.inout() << datum;
+    data_type = DEV_LONG64;
 }
 
 //-----------------------------------------------------------------------------
@@ -880,6 +914,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     DoubleSeq = new(DevVarDoubleArray);
     DoubleSeq.inout() << datum;
+    data_type = DEV_DOUBLE;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double> &datum)
@@ -888,6 +923,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double>
     init_common_class_members(new_name, datum.size());
     DoubleSeq = new(DevVarDoubleArray);
     DoubleSeq.inout() << datum;
+    data_type = DEV_DOUBLE;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<double> &datum, int x, int y)
@@ -896,6 +932,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     DoubleSeq = new(DevVarDoubleArray);
     DoubleSeq.inout() << datum;
+    data_type = DEV_DOUBLE;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double> &datum, int x, int y)
@@ -904,6 +941,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double>
     init_common_class_members(new_name, x, y);
     DoubleSeq = new(DevVarDoubleArray);
     DoubleSeq.inout() << datum;
+    data_type = DEV_DOUBLE;
 }
 
 //-----------------------------------------------------------------------------
@@ -918,6 +956,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     StringSeq = new(DevVarStringArray);
     StringSeq.inout() << datum;
+    data_type = DEV_STRING;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::string> &datum)
@@ -926,6 +965,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::st
     init_common_class_members(new_name, datum.size());
     StringSeq = new(DevVarStringArray);
     StringSeq.inout() << datum;
+    data_type = DEV_STRING;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<std::string> &datum, int x, int y)
@@ -934,6 +974,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     StringSeq = new(DevVarStringArray);
     StringSeq.inout() << datum;
+    data_type = DEV_STRING;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::string> &datum, int x, int y)
@@ -942,6 +983,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::st
     init_common_class_members(new_name, x, y);
     StringSeq = new(DevVarStringArray);
     StringSeq.inout() << datum;
+    data_type = DEV_STRING;
 }
 
 //-----------------------------------------------------------------------------
@@ -956,6 +998,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     FloatSeq = new(DevVarFloatArray);
     FloatSeq.inout() << datum;
+    data_type = DEV_FLOAT;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> &datum)
@@ -964,6 +1007,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> 
     init_common_class_members(new_name, datum.size());
     FloatSeq = new(DevVarFloatArray);
     FloatSeq.inout() << datum;
+    data_type = DEV_FLOAT;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<float> &datum, int x, int y)
@@ -972,6 +1016,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     FloatSeq = new(DevVarFloatArray);
     FloatSeq.inout() << datum;
+    data_type = DEV_FLOAT;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> &datum, int x, int y)
@@ -980,6 +1025,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> 
     init_common_class_members(new_name, x, y);
     FloatSeq = new(DevVarFloatArray);
     FloatSeq.inout() << datum;
+    data_type = DEV_FLOAT;
 }
 
 //-----------------------------------------------------------------------------
@@ -994,6 +1040,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     BooleanSeq = new(DevVarBooleanArray);
     BooleanSeq.inout() << datum;
+    data_type = DEV_BOOLEAN;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &datum)
@@ -1002,6 +1049,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &
     init_common_class_members(new_name, datum.size());
     BooleanSeq = new(DevVarBooleanArray);
     BooleanSeq.inout() << datum;
+    data_type = DEV_BOOLEAN;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<bool> &datum, int x, int y)
@@ -1010,6 +1058,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     BooleanSeq = new(DevVarBooleanArray);
     BooleanSeq.inout() << datum;
+    data_type = DEV_BOOLEAN;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &datum, int x, int y)
@@ -1018,6 +1067,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &
     init_common_class_members(new_name, x, y);
     BooleanSeq = new(DevVarBooleanArray);
     BooleanSeq.inout() << datum;
+    data_type = DEV_BOOLEAN;
 }
 
 //-----------------------------------------------------------------------------
@@ -1032,6 +1082,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     UShortSeq = new(DevVarUShortArray);
     UShortSeq.inout() << datum;
+    data_type = DEV_USHORT;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned short> &datum)
@@ -1040,6 +1091,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
     init_common_class_members(new_name, datum.size());
     UShortSeq = new(DevVarUShortArray);
     UShortSeq.inout() << datum;
+    data_type = DEV_USHORT;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned short> &datum, int x, int y)
@@ -1048,6 +1100,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     UShortSeq = new(DevVarUShortArray);
     UShortSeq.inout() << datum;
+    data_type = DEV_USHORT;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned short> &datum, int x, int y)
@@ -1056,6 +1109,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
     init_common_class_members(new_name, x, y);
     UShortSeq = new(DevVarUShortArray);
     UShortSeq.inout() << datum;
+    data_type = DEV_USHORT;
 }
 
 //-----------------------------------------------------------------------------
@@ -1070,6 +1124,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     UCharSeq = new(DevVarCharArray);
     UCharSeq.inout() << datum;
+    data_type = DEV_UCHAR;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned char> &datum)
@@ -1078,6 +1133,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
     init_common_class_members(new_name, datum.size());
     UCharSeq = new(DevVarCharArray);
     UCharSeq.inout() << datum;
+    data_type = DEV_UCHAR;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned char> &datum, int x, int y)
@@ -1086,6 +1142,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     UCharSeq = new(DevVarCharArray);
     UCharSeq.inout() << datum;
+    data_type = DEV_UCHAR;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned char> &datum, int x, int y)
@@ -1094,6 +1151,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
     init_common_class_members(new_name, x, y);
     UCharSeq = new(DevVarCharArray);
     UCharSeq.inout() << datum;
+    data_type = DEV_UCHAR;
 }
 
 //-----------------------------------------------------------------------------
@@ -1108,6 +1166,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     ULongSeq = new(DevVarULongArray);
     ULongSeq.inout() << datum;
+    data_type = DEV_ULONG;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong> &datum)
@@ -1116,6 +1175,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
     init_common_class_members(new_name, datum.size());
     ULongSeq = new(DevVarULongArray);
     ULongSeq.inout() << datum;
+    data_type = DEV_ULONG;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong> &datum, int x, int y)
@@ -1124,6 +1184,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     ULongSeq = new(DevVarULongArray);
     ULongSeq.inout() << datum;
+    data_type = DEV_ULONG;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong> &datum, int x, int y)
@@ -1132,6 +1193,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
     init_common_class_members(new_name, x, y);
     ULongSeq = new(DevVarULongArray);
     ULongSeq.inout() << datum;
+    data_type = DEV_ULONG;
 }
 
 //-----------------------------------------------------------------------------
@@ -1146,6 +1208,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     ULong64Seq = new(DevVarULong64Array);
     ULong64Seq.inout() << datum;
+    data_type = DEV_ULONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong64> &datum)
@@ -1154,6 +1217,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
     init_common_class_members(new_name, datum.size());
     ULong64Seq = new(DevVarULong64Array);
     ULong64Seq.inout() << datum;
+    data_type = DEV_ULONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong64> &datum, int x, int y)
@@ -1162,6 +1226,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     ULong64Seq = new(DevVarULong64Array);
     ULong64Seq.inout() << datum;
+    data_type = DEV_ULONG64;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong64> &datum, int x, int y)
@@ -1170,6 +1235,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
     init_common_class_members(new_name, x, y);
     ULong64Seq = new(DevVarULong64Array);
     ULong64Seq.inout() << datum;
+    data_type = DEV_ULONG64;
 }
 
 //-----------------------------------------------------------------------------
@@ -1184,6 +1250,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), datum.size());
     StateSeq = new(DevVarStateArray);
     StateSeq.inout() << datum;
+    data_type = DEV_STATE;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevState> &datum)
@@ -1192,6 +1259,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevStat
     init_common_class_members(new_name, datum.size());
     StateSeq = new(DevVarStateArray);
     StateSeq.inout() << datum;
+    data_type = DEV_STATE;
 }
 
 DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevState> &datum, int x, int y)
@@ -1200,6 +1268,7 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     init_common_class_members(new_name.c_str(), x, y);
     StateSeq = new(DevVarStateArray);
     StateSeq.inout() << datum;
+    data_type = DEV_STATE;
 }
 
 DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevState> &datum, int x, int y)
@@ -1208,6 +1277,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevStat
     init_common_class_members(new_name, x, y);
     StateSeq = new(DevVarStateArray);
     StateSeq.inout() << datum;
+    data_type = DEV_STATE;
 }
 
 //-----------------------------------------------------------------------------
@@ -1328,66 +1398,7 @@ bool DeviceAttribute::is_empty() const
 
 int DeviceAttribute::get_type() const
 {
-    if (is_empty_noexcept())
-    {
-        return DATA_TYPE_UNKNOWN;
-    }
-    else if (LongSeq.operator->() != NULL)
-    {
-        return Tango::DEV_LONG;
-    }
-    else if (ShortSeq.operator->() != NULL)
-    {
-        return data_type;
-    }
-    else if (DoubleSeq.operator->() != NULL)
-    {
-        return Tango::DEV_DOUBLE;
-    }
-    else if (FloatSeq.operator->() != NULL)
-    {
-        return Tango::DEV_FLOAT;
-    }
-    else if (BooleanSeq.operator->() != NULL)
-    {
-        return Tango::DEV_BOOLEAN;
-    }
-    else if (UShortSeq.operator->() != NULL)
-    {
-        return Tango::DEV_USHORT;
-    }
-    else if (UCharSeq.operator->() != NULL)
-    {
-        return Tango::DEV_UCHAR;
-    }
-    else if (StringSeq.operator->() != NULL)
-    {
-        return Tango::DEV_STRING;
-    }
-    else if (Long64Seq.operator->() != NULL)
-    {
-        return Tango::DEV_LONG64;
-    }
-    else if (ULongSeq.operator->() != NULL)
-    {
-        return Tango::DEV_ULONG;
-    }
-    else if (ULong64Seq.operator->() != NULL)
-    {
-        return Tango::DEV_ULONG64;
-    }
-    else if (EncodedSeq.operator->() != NULL)
-    {
-        return Tango::DEV_ENCODED;
-    }
-    else if ((StateSeq.operator->() != NULL) || (d_state_filled == true))
-    {
-        return Tango::DEV_STATE;
-    }
-    else
-    {
-        return DATA_TYPE_UNKNOWN;
-    }
+	return data_type;
 }
 
 //-----------------------------------------------------------------------------
@@ -1504,6 +1515,7 @@ void DeviceAttribute::operator << (DevLong datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG;
 
 	DevVarLongArray *long_vararr = new(DevVarLongArray);
 	long_vararr->length(1);
@@ -1557,6 +1569,7 @@ void DeviceAttribute::operator << (DevLong64 datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG64;
 
 	DevVarLong64Array *long_vararr = new(DevVarLong64Array);
 	long_vararr->length(1);
@@ -1609,6 +1622,7 @@ void DeviceAttribute::operator << (double datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_DOUBLE;
 
     DevVarDoubleArray *double_vararr = new(DevVarDoubleArray);
     double_vararr->length(1);
@@ -1661,6 +1675,7 @@ void DeviceAttribute::operator << (const std::string& datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STRING;
 
     DevVarStringArray *string_vararr = new(DevVarStringArray);
     string_vararr->length(1);
@@ -1678,6 +1693,7 @@ void DeviceAttribute::operator << (DevString datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STRING;
 
     DevVarStringArray *string_vararr = new(DevVarStringArray);
     string_vararr->length(1);
@@ -1695,6 +1711,7 @@ void DeviceAttribute::operator << (const char *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STRING;
 
     DevVarStringArray *string_vararr = new(DevVarStringArray);
     string_vararr->length(1);
@@ -1747,6 +1764,7 @@ void DeviceAttribute::operator << (float datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_FLOAT;
 
     DevVarFloatArray *float_vararr = new(DevVarFloatArray);
     float_vararr->length(1);
@@ -1800,6 +1818,7 @@ void DeviceAttribute::operator << (bool datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_BOOLEAN;
 
 	DevVarBooleanArray *bool_vararr = new(DevVarBooleanArray);
 	bool_vararr->length(1);
@@ -1852,6 +1871,7 @@ void DeviceAttribute::operator << (unsigned short datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_USHORT;
 
 	DevVarUShortArray *ush_vararr = new(DevVarUShortArray);
 	ush_vararr->length(1);
@@ -1904,6 +1924,7 @@ void DeviceAttribute::operator << (unsigned char datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_UCHAR;
 
 	DevVarCharArray *uch_vararr = new(DevVarCharArray);
 	uch_vararr->length(1);
@@ -1957,6 +1978,7 @@ void DeviceAttribute::operator << (DevULong datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG;
 
 	DevVarULongArray *long_vararr = new(DevVarULongArray);
 	long_vararr->length(1);
@@ -2010,6 +2032,7 @@ void DeviceAttribute::operator << (DevULong64 datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG64;
 
 	DevVarULong64Array *long_vararr = new(DevVarULong64Array);
 	long_vararr->length(1);
@@ -2071,6 +2094,7 @@ void DeviceAttribute::operator << (DevState datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STATE;
 
 	DevVarStateArray *state_vararr = new(DevVarStateArray);
 	state_vararr->length(1);
@@ -2125,6 +2149,7 @@ void DeviceAttribute::operator << (const DevEncoded &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ENCODED;
 
 	DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
 	enc_vararr->length(1);
@@ -2142,6 +2167,7 @@ void DeviceAttribute::insert(char *&str,unsigned char *&ptr,unsigned int size)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ENCODED;
 
 	DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
 	enc_vararr->length(1);
@@ -2178,6 +2204,7 @@ void DeviceAttribute::insert(const std::string &str,std::vector<unsigned char> &
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ENCODED;
 
 	DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
 	enc_vararr->length(1);
@@ -2202,6 +2229,7 @@ void DeviceAttribute::insert(const char *str,DevVarCharArray *array)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ENCODED;
 
 	DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
 	enc_vararr->length(1);
@@ -2227,6 +2255,7 @@ void DeviceAttribute::operator << (const std::vector<std::string> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STRING;
 
 	if (StringSeq.operator->() == NULL)
 	{
@@ -2369,6 +2398,7 @@ void DeviceAttribute::operator << (const std::vector<DevLong> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG;
 
 	if (LongSeq.operator->() == NULL)
 	{
@@ -2439,6 +2469,7 @@ void DeviceAttribute::operator << (const std::vector<DevLong64> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG64;
 
 	if (Long64Seq.operator->() == NULL)
 	{
@@ -2508,6 +2539,7 @@ void DeviceAttribute::operator << (const std::vector<double> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_DOUBLE;
 
 	if (DoubleSeq.operator->() == NULL)
 	{
@@ -2578,6 +2610,7 @@ void DeviceAttribute::operator << (const std::vector<float> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_FLOAT;
 
 	if (FloatSeq.operator->() == NULL)
 	{
@@ -2648,6 +2681,7 @@ void DeviceAttribute::operator << (const std::vector<bool> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_BOOLEAN;
 
 	if (BooleanSeq.operator->() == NULL)
 	{
@@ -2718,6 +2752,7 @@ void DeviceAttribute::operator << (const std::vector<unsigned short> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_USHORT;
 
 	if (UShortSeq.operator->() == NULL)
 	{
@@ -2787,6 +2822,7 @@ void DeviceAttribute::operator << (const std::vector<unsigned char> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_UCHAR;
 
 	if (UCharSeq.operator->() == NULL)
 	{
@@ -2856,6 +2892,7 @@ void DeviceAttribute::operator << (const std::vector<DevULong> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG;
 
 	if (ULongSeq.operator->() == NULL)
 	{
@@ -2925,6 +2962,7 @@ void DeviceAttribute::operator << (const std::vector<DevULong64> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG64;
 
 	if (ULong64Seq.operator->() == NULL)
 	{
@@ -2994,6 +3032,7 @@ void DeviceAttribute::operator << (const std::vector<DevState> &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STATE;
 
 	if (StateSeq.operator->() == NULL)
 	{
@@ -3512,6 +3551,7 @@ void DeviceAttribute::operator << (const DevVarShortArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_SHORT;
 
 	ShortSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3543,6 +3583,7 @@ void DeviceAttribute::operator << (DevVarShortArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_SHORT;
 
 	ShortSeq = datum;
 
@@ -3572,6 +3613,7 @@ void DeviceAttribute::operator << (const DevVarLongArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG;
 
 	LongSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3603,6 +3645,7 @@ void DeviceAttribute::operator << (DevVarLongArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG;
 
 	LongSeq = datum;
 
@@ -3632,6 +3675,7 @@ void DeviceAttribute::operator << (const DevVarDoubleArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_DOUBLE;
 
 	DoubleSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3663,6 +3707,7 @@ void DeviceAttribute::operator << (DevVarDoubleArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_DOUBLE;
 
 	DoubleSeq = datum;
 
@@ -3692,6 +3737,7 @@ void DeviceAttribute::operator << (const DevVarStringArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STRING;
 
 	StringSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3723,6 +3769,7 @@ void DeviceAttribute::operator << (DevVarStringArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STRING;
 
 	StringSeq = datum;
 
@@ -3753,6 +3800,7 @@ void DeviceAttribute::operator << (const DevVarFloatArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_FLOAT;
 
 	FloatSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3784,6 +3832,7 @@ void DeviceAttribute::operator << (DevVarFloatArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_FLOAT;
 
 	FloatSeq = datum;
 
@@ -3813,6 +3862,7 @@ void DeviceAttribute::operator << (const DevVarBooleanArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_BOOLEAN;
 
 	BooleanSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3844,6 +3894,7 @@ void DeviceAttribute::operator << (DevVarBooleanArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_BOOLEAN;
 
 	BooleanSeq = datum;
 
@@ -3874,6 +3925,7 @@ void DeviceAttribute::operator << (const DevVarUShortArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_USHORT;
 
 	UShortSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3905,6 +3957,7 @@ void DeviceAttribute::operator << (DevVarUShortArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_USHORT;
 
 	UShortSeq = datum;
 
@@ -3935,6 +3988,7 @@ void DeviceAttribute::operator << (const DevVarCharArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_UCHAR;
 
 	UCharSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -3966,6 +4020,7 @@ void DeviceAttribute::operator << (DevVarCharArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_UCHAR;
 
 	UCharSeq = datum;
 
@@ -3995,6 +4050,7 @@ void DeviceAttribute::operator << (const DevVarLong64Array &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG64;
 
 	Long64Seq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -4026,6 +4082,7 @@ void DeviceAttribute::operator << (DevVarLong64Array *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_LONG64;
 
 	Long64Seq = datum;
 
@@ -4055,6 +4112,7 @@ void DeviceAttribute::operator << (const DevVarULongArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG;
 
 	ULongSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -4086,6 +4144,7 @@ void DeviceAttribute::operator << (DevVarULongArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG;
 
 	ULongSeq = datum;
 
@@ -4115,6 +4174,7 @@ void DeviceAttribute::operator << (const DevVarULong64Array &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG64;
 
 	ULong64Seq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -4146,6 +4206,7 @@ void DeviceAttribute::operator << (DevVarULong64Array *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_ULONG64;
 
 	ULong64Seq = datum;
 
@@ -4175,6 +4236,7 @@ void DeviceAttribute::operator << (const DevVarStateArray &datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STATE;
 
 	StateSeq->length(datum.length());
 	for (unsigned int i = 0;i < datum.length();i++)
@@ -4206,6 +4268,7 @@ void DeviceAttribute::operator << (DevVarStateArray *datum)
 	w_dim_y = 0;
 	quality = Tango::ATTR_VALID;
 	data_format = Tango::FMT_UNKNOWN;
+	data_type=Tango::DEV_STATE;
 
 	StateSeq = datum;
 

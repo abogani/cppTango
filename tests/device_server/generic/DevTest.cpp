@@ -1610,6 +1610,12 @@ void DevTest::read_String_spec_attr_rw(Tango::Attribute &att)
       	att.set_value(const_cast<char **>(string_spec_attr), 2);
 }
 
+void DevTest::read_String_empty_spec_attr_rw(Tango::Attribute &att)
+{
+      	TANGO_LOG << "[DevTest::read_attr] attribute name String_empty_spec_attr_rw" << std::endl;
+      	att.set_value(const_cast<char **>(string_empty_spec_attr), 0);
+}
+
 void DevTest::read_Long_spec_attr_rw(Tango::Attribute &att)
 {
       	TANGO_LOG << "[DevTest::read_attr] attribute name Long_spec_attr_rw" << std::endl;
