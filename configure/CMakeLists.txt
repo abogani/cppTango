@@ -68,11 +68,62 @@ if(TANGO_OMNI_BASE)
     link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
 else()
     #CORBA
-    pkg_search_module(OMNIORB_PKG REQUIRED omniORB4>=4.2.2)
+    pkg_search_module(OMNIORB_PKG REQUIRED omniORB4)
     #COS
-    pkg_search_module(OMNICOS_PKG REQUIRED omniCOS4>=4.2.2)
+    pkg_search_module(OMNICOS_PKG REQUIRED omniCOS4)
     #dynamic CORBA
-    pkg_search_module(OMNIDYN_PKG REQUIRED omniDynamic4>=4.2.2)
+    pkg_search_module(OMNIDYN_PKG REQUIRED omniDynamic4)
+endif()
+
+function(tango_find_omniorb_version)
+    if (DEFINED OMNIORB_PKG_VERSION)
+        set(version ${OMNIORB_PKG_VERSION})
+    else()
+        find_file(acconfig
+            NAMES omniORB4/acconfig.h
+            PATHS ${OMNIORB_PKG_INCLUDE_DIRS}
+            NO_DEFAULT_PATH
+            )
+
+        if (NOT acconfig)
+            message(WARNING "Could not find omniORB4/acconfig.h")
+            set(OMNIORB_VERSION OMNIORB_VERSION-NOTFOUND PARENT_SCOPE)
+            return()
+        endif()
+
+        file(STRINGS ${acconfig} version_info
+            REGEX "^#define[ \t]+PACKAGE_VERSION.*$")
+        list(LENGTH version_info version_info_length)
+
+        if (NOT version_info_length EQUAL 1)
+            message(WARNING "Could not find version information in ${acconfig}")
+            set(OMNIORB_VERSION OMNIORB_VERSION-NOTFOUND PARENT_SCOPE)
+            return()
+        endif()
+
+        string(REGEX REPLACE "^#define[ \t]+PACKAGE_VERSION[ \t]+\"(([0-9]+\\.?)+)\"" "\\1" version ${version_info})
+    endif()
+
+    set(OMNIORB_VERSION ${version} CACHE STRING "omniORB version")
+    mark_as_advanced(OMNIORB_VERSION)
+endfunction()
+
+if (NOT DEFINED OMNIORB_VERSION)
+    tango_find_omniorb_version()
+endif()
+
+# These define a semi-open "[min, max)" range of allowed omniORB versions
+set(OMNIORB_VERSION_MINIMUM 4.2.2) # See cppTango#1013
+set(OMNIORB_VERSION_MAXIMUM 4.3.0) # See cppTango#760
+
+if (OMNIORB_VERSION)
+    if (OMNIORB_VERSION VERSION_LESS OMNIORB_VERSION_MINIMUM OR
+        OMNIORB_VERSION VERSION_GREATER_EQUAL OMNIORB_VERSION_MAXIMUM)
+        message(FATAL_ERROR "Found omniORB version (${OMNIORB_VERSION}) outside of allowed range [${OMNIORB_VERSION_MINIMUM}, ${OMNIORB_VERSION_MAXIMUM})")
+    endif()
+    message(STATUS "Found OMNIORB_VERSION=${OMNIORB_VERSION}")
+else()
+    message(WARNING "omniORB version not found")
 endif()
 
 include(configure/find_and_check_omniidl.cmake)
