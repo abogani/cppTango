@@ -45,7 +45,7 @@ workflow:
         -dit
         cpp_tango
     - ci/install_tango_idl.sh
-    - test ${STOCK_CPPZMQ} = "OFF" && ci/install_cppzmq.sh || true
+    - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
   script:
     - set -e
     - ci/run.sh
@@ -84,7 +84,7 @@ abi-api-compliance-check:
         -dit
         cpp_tango
     - ci/install_tango_idl.sh
-    - test ${STOCK_CPPZMQ} = "OFF" && ci/install_cppzmq.sh || true
+    - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
   script:
     - >
         docker exec
