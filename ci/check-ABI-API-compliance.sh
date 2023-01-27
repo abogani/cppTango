@@ -13,8 +13,16 @@ then
 fi
 
 function exit_on_abi_api_breakages() {
-   echo "ABI/API breakages detected!"
-   exit 1
+  local reports=compat_reports/libtango/${old_revision}_to_${new_revision}
+  if [ -e ${reports}/abi_affected.txt ]; then
+    echo "ABI breakages detected:"
+    cat ${reports}/abi_affected.txt | c++filt
+  fi
+  if [ -e ${reports}/src_affected.txt ]; then
+    echo "API breakages detected:"
+    cat ${reports}/src_affected.txt | c++filt
+  fi
+  exit 1
 }
 
 # $1 string prefix
@@ -27,7 +35,7 @@ function generate_info() {
   git -c advice.detachedHead=false worktree add ${prefix}-branch ${revision}
   mkdir ${prefix}-branch/build
   cd ${prefix}-branch/build
-  cmake -DCMAKE_BUILD_TYPE=Debug -DTANGO_CPPZMQ_BASE=/home/tango -DBUILD_TESTING=OFF -DTANGO_USE_PCH=ON ..
+  cmake -DCMAKE_BUILD_TYPE=Debug -DTANGO_CPPZMQ_BASE=/home/tango -DBUILD_TESTING=OFF -DTANGO_USE_PCH=ON -DCMAKE_CXX_FLAGS=-gdwarf-4 ..
   cmake --build .
   abi-dumper libtango.so -o ${base}/libtango-${prefix}-${revision}.dump -lver ${revision}
   cd "${base}"
@@ -51,6 +59,6 @@ generate_info "old" ${old_revision}
 generate_info "new" ${new_revision}
 
 # Compare results
-sed "s/${old_revision}/fixed/g" ${base}/libtango-old-${old_revision}.dump > old.dump
-sed "s/${new_revision}/fixed/g" ${base}/libtango-new-${new_revision}.dump > new.dump
-diff -Nur old.dump new.dump || exit_on_abi_api_breakages
+abi-compliance-checker -l libtango -old ${base}/libtango-old-${old_revision}.dump \
+                                   -new ${base}/libtango-new-${new_revision}.dump \
+                                   -list-affected || exit_on_abi_api_breakages
