@@ -27,7 +27,7 @@ function generate_info() {
   git -c advice.detachedHead=false worktree add ${prefix}-branch ${revision}
   mkdir ${prefix}-branch/build
   cd ${prefix}-branch/build
-  cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -DTANGO_USE_PCH=ON ..
+  cmake -DCMAKE_BUILD_TYPE=Debug -DTANGO_CPPZMQ_BASE=/home/tango -DBUILD_TESTING=OFF -DTANGO_USE_PCH=ON ..
   cmake --build .
   abi-dumper libtango.so -o ${base}/libtango-${prefix}-${revision}.dump -lver ${revision}
   cd "${base}"

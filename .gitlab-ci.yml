@@ -81,6 +81,8 @@ abi-api-compliance-check:
         --user root
         -v `pwd`:/home/tango/src
         -v `pwd`/idl:/home/tango/idl
+        -v `pwd`/cppzmq:/home/tango/cppzmq
+        -v `pwd`/build-wrapper-linux-x86:/home/tango/build-wrapper-linux-x86
         -dit
         cpp_tango
     - ci/install_tango_idl.sh
@@ -92,7 +94,7 @@ abi-api-compliance-check:
         -e CI_TARGET_BRANCH=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
         -e CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
         cpp_tango
-        ci/check-ABI-API-compliance.sh || true
+        ci/check-ABI-API-compliance.sh
   after_script:
     - docker stop cpp_tango
   artifacts:
