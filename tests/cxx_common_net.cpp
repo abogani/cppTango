@@ -61,6 +61,29 @@ public:
     // we need a non empty string
     TS_ASSERT_THROWS_ASSERT(is_ip_address(""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
   }
+
+  void test_resolve_hostname_address()
+  {
+    std::vector<std::string> results;
+    TS_ASSERT_THROWS_NOTHING(results = resolve_hostname_address("localhost"));
+    TS_ASSERT(results.size() >= 1);
+    TS_ASSERT(std::find(std::cbegin(results), std::cend(results), "127.0.0.1") != std::end(results));
+
+    // IPv4 only
+    TS_ASSERT_THROWS_NOTHING(results = resolve_hostname_address("ip6-loopback"));
+    TS_ASSERT(results.size() >= 1);
+    TS_ASSERT(std::find(std::cbegin(results), std::cend(results), "127.0.0.1") != std::end(results));
+    TS_ASSERT(std::find(std::cbegin(results), std::cend(results), "::1") == std::end(results));
+
+    // invalid hostname
+    TS_ASSERT_THROWS_ASSERT(auto result = resolve_hostname_address("I_DONT_EXIST..com"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // unresolvable hostname
+    TS_ASSERT_THROWS_ASSERT(auto result = resolve_hostname_address("I_DONT_EXIST.AT.NON_EXISTING_SUBDOMAIN.byte-physics.de"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // we need a non empty string
+    TS_ASSERT_THROWS_ASSERT(auto result = resolve_hostname_address(""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+  }
 };
 
 #endif // CommonMiscTestSuite_h

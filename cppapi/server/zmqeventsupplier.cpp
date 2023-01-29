@@ -206,32 +206,8 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
 
     if (specified_name == true)
     {
-        struct addrinfo hints;
-
-        memset(&hints,0,sizeof(struct addrinfo));
-
-        hints.ai_flags     = AI_ADDRCONFIG;
-        hints.ai_family    = AF_INET;
-        hints.ai_socktype  = SOCK_STREAM;
-
-        struct addrinfo	*info;
-
-        int result = getaddrinfo(specified_addr.c_str(),NULL,&hints,&info);
-
-        if (result == 0)
-        {
-            struct sockaddr_in *s_in = (sockaddr_in *)info->ai_addr;
-            specified_ip = inet_ntoa(s_in->sin_addr);
-
-            freeaddrinfo(info);
-        }
-        else
-        {
-            std::stringstream ss;
-            ss << "Can't convert " << specified_addr << " to IP address";
-
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_ZmqInitFailed, ss.str());
-        }
+        auto results = detail::resolve_hostname_address(specified_addr);
+        specified_ip = results.front();
     }
     else
         specified_ip = specified_addr;

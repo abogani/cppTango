@@ -1,6 +1,9 @@
 #ifndef _INTERNAL_MISC_H
 #define _INTERNAL_MISC_H
 
+#include <vector>
+#include <string>
+
 namespace Tango
 {
 namespace detail
@@ -8,6 +11,9 @@ namespace detail
 
 /// @brief Return true if the given endpoint is a valid IPv4 address
 bool is_ip_address(const std::string &endpoint);
+
+/// @brief Return a list of IPv4 adresses of the given hostname
+std::vector<std::string> resolve_hostname_address(const std::string &hostname);
 
 } // namespace detail
 } // namespace Tango
