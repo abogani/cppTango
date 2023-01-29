@@ -68,7 +68,7 @@ if(WIN32)
 endif()
 
 add_library(server_objects OBJECT ${SOURCES})
-add_dependencies(server_objects idl_objects)
+add_dependencies(server_objects idl_objects common_objects)
 
 if(WIN32)
     target_compile_definitions(server_objects PRIVATE "${windows_defs}")

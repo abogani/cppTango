@@ -38,6 +38,7 @@ endif()
 add_library(${TANGO_LIBRARY_NAME} $<TARGET_OBJECTS:log4tango_objects>
         $<TARGET_OBJECTS:idl_objects>
         $<TARGET_OBJECTS:client_objects>
+        $<TARGET_OBJECTS:common_objects>
         $<TARGET_OBJECTS:server_objects>)
 
 set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES COMPILE_DEFINITIONS
