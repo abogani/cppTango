@@ -31,6 +31,7 @@
 //+==================================================================================================================
 
 #include <tango/tango.h>
+#include <tango/internal/net.h>
 #include <tango/server/eventsupplier.h>
 
 #include <omniORB4/internal/giopStream.h>
@@ -192,23 +193,12 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
     alternate_h_endpoint.clear();
 
     std::string &specified_addr = tg->get_specified_ip();
+
     bool specified_name = false;
-
-#ifndef _TG_WINDOWS_
-    unsigned char buf[sizeof(struct in_addr)];
-    if (specified_addr.empty() == false && inet_pton(AF_INET,specified_addr.c_str(),buf) == 0)
-#else
-	struct sockaddr_storage ss;
-	int size = sizeof(ss);
-	char src_copy[INET6_ADDRSTRLEN+1];
-
-	ZeroMemory(&ss, sizeof(ss));
-	strncpy (src_copy, specified_addr.c_str(), INET6_ADDRSTRLEN+1);
-	src_copy[INET6_ADDRSTRLEN] = 0;
-
-	if (specified_addr.empty() == false && WSAStringToAddress(src_copy,AF_INET,NULL,(struct sockaddr *)&ss,&size) != 0)
-#endif
-        specified_name = true;
+    if(!specified_addr.empty())
+    {
+        specified_name = !detail::is_ip_address(specified_addr);
+    }
 
     std::string &h_name = tg->get_host_name();
     std::string canon_name;

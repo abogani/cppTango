@@ -43,9 +43,23 @@ public:
 // Tests -------------------------------------------------------
 //
 
-  void test_nothing()
+  void test_is_ip_address()
   {
-    TS_ASSERT(true);
+    // IPv4
+    TS_ASSERT(is_ip_address("127.0.0.1"));
+    TS_ASSERT(is_ip_address("1.1.1.1"));
+
+    // IPv6 is not supported
+    TS_ASSERT(!is_ip_address("::1"));
+
+    // random strings
+    TS_ASSERT(!is_ip_address("example_dot_org"));
+
+    // hostname
+    TS_ASSERT(!is_ip_address("example.org"));
+
+    // we need a non empty string
+    TS_ASSERT_THROWS_ASSERT(is_ip_address(""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
   }
 };
 
