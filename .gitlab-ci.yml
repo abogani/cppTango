@@ -460,7 +460,7 @@ cmake-with-locations-and-min-versions:
   script:
     - >
       cmake ..
-      -DCMAKE_BUILD_TYPE=Debug
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -DBUILD_TESTING=ON
       -DTANGO_USE_JPEG=ON
       -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
@@ -510,7 +510,7 @@ alpine:
     - cd build
     - >
       cmake ..
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+      -DCMAKE_BUILD_TYPE=Debug
       -DBUILD_TESTING=ON
       -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
       -DTANGO_IDL_BASE=/usr/local/tango-idl
