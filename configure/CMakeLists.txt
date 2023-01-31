@@ -66,13 +66,28 @@ if(TANGO_OMNI_BASE)
     endif()
     include_directories(SYSTEM ${OMNIORB_PKG_INCLUDE_DIRS})
     link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
+
+    find_program(OMNIIDL NAMES omniidl
+                         HINTS ${OMNIIDL_PATH}
+                         DOC "omniidl executable location"
+                         NO_DEFAULT_PATH)
+    mark_as_advanced(OMNIIDL)
+
 else()
     #CORBA
     pkg_search_module(OMNIORB_PKG REQUIRED omniORB4)
+    pkg_get_variable(OMNIIDL omniORB4 omniidl)
+    set(OMNIIDL "${OMNIIDL}" CACHE FILEPATH "omniidl executable location")
+    mark_as_advanced(OMNIIDL)
+
     #COS
     pkg_search_module(OMNICOS_PKG REQUIRED omniCOS4)
     #dynamic CORBA
     pkg_search_module(OMNIDYN_PKG REQUIRED omniDynamic4)
+endif()
+
+if(NOT OMNIIDL)
+  message(FATAL_ERROR "Could not find a usable omniidl")
 endif()
 
 function(tango_find_omniorb_version)
