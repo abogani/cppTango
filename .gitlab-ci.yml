@@ -451,9 +451,10 @@ cmake-with-locations-and-min-versions:
     - mkdir /libjpeg/build
     - cd /libjpeg
     - autoreconf -fiv
-    - cd build/
-    - sh ../configure
-    - make install prefix=/usr/local/libjpeg libdir=/usr/local/libjpeg/lib
+    - cd build
+    - ../configure -- prefix=/usr/local/jpeg
+    - make
+    - make install
     - cd $CI_PROJECT_DIR
     - mkdir build
     - cd build
@@ -467,7 +468,7 @@ cmake-with-locations-and-min-versions:
       -DTANGO_IDL_BASE=/usr/local/tango-idl
       -DTANGO_OMNI_BASE=/usr/local/omniORB
       -DTANGO_ZMQ_BASE=/usr/local/zmq
-      -DTANGO_JPEG_BASE=/usr/local/libjpeg
+      -DTANGO_JPEG_BASE=/usr/local/jpeg
     - make
 
 alpine:
