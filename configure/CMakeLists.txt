@@ -162,11 +162,25 @@ if(TANGO_ZMQ_BASE)
         endif()
     else()
         set(ZMQ_PKG_LIBRARIES "-lzmq")
-        link_directories(${TANGO_ZMQ_BASE}/lib)
+        set(ZMQ_PKG_LIBRARY_DIRS ${TANGO_ZMQ_BASE}/lib)
+        link_directories(${ZMQ_PKG_LIBRARY_DIRS})
     endif()
-    include_directories(SYSTEM ${TANGO_ZMQ_BASE}/include)
+    include_directories(SYSTEM ${ZMQ_PKG_INCLUDE_DIRS})
 else()
     pkg_search_module(ZMQ_PKG REQUIRED libzmq)
+
+    # libzmq 4.0.5 does not set ZMQ_PKG_LIBRARY_DIRS only newer versions set
+    # this in addition to ZMQ_PKG_LIBDIR
+    if(ZMQ_PKG_LIBRARY_DIRS STREQUAL "")
+      set(ZMQ_PKG_LIBRARY_DIRS "${ZMQ_PKG_LIBDIR}")
+    endif()
+
+    # fedora 37 only sets ZMQ_PKG_INCLUDEDIR
+    if(ZMQ_PKG_INCLUDE_DIRS STREQUAL "")
+      set(ZMQ_PKG_INCLUDE_DIRS "${ZMQ_PKG_INCLUDEDIR}")
+    endif()
+
+    link_directories(SYSTEM ${ZMQ_PKG_LIBRARY_DIRS})
 endif()
 
 # Check for jpeg support
@@ -222,8 +236,9 @@ if(NOT WIN32)
   if(NOT DEFINED TANGO_CPPZMQ_USABLE_VERSION)
     try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_cppzmq_features
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_cppzmq_features.cpp
-                COMPILE_DEFINITIONS "-I ${TANGO_CPPZMQ_BASE}/include -I ${TANGO_ZMQ_BASE}/include"
-                LINK_LIBRARIES "$<$<BOOL:${TANGO_ZMQ_BASE}>:-L ${TANGO_ZMQ_BASE}/lib >${ZMQ_PKG_LIBRARIES}"
+                CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
+                COMPILE_DEFINITIONS "-I ${TANGO_CPPZMQ_BASE}/include -I ${ZMQ_PKG_INCLUDE_DIRS}"
+                LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
                 OUTPUT_VARIABLE CPPZMQ_TRY_COMPILE_OUTPUT)
   endif()
 
@@ -242,11 +257,12 @@ if(NOT WIN32)
   if(NOT DEFINED TANGO_ZMQ_USABLE_VERSION)
     try_compile(TANGO_ZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_zmq_version
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_zmq_version.cpp
-                COMPILE_DEFINITIONS "-I ${TANGO_ZMQ_BASE}/include
+                COMPILE_DEFINITIONS "-I ${ZMQ_PKG_INCLUDE_DIRS}
                 -DMINIMUM_VERSION_MAJOR=${ZMQ_MIN_VER_MAJOR}
                 -DMINIMUM_VERSION_MINOR=${ZMQ_MIN_VER_MINOR}
                 -DMINIMUM_VERSION_PATCH=${ZMQ_MIN_VER_PATCH}"
-                LINK_LIBRARIES "$<$<BOOL:${TANGO_ZMQ_BASE}>:-L ${TANGO_ZMQ_BASE}/lib >${ZMQ_PKG_LIBRARIES}"
+                CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
+                LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
                 OUTPUT_VARIABLE ZMQ_TRY_COMPILE_OUTPUT)
   endif()
 
