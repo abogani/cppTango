@@ -21,6 +21,7 @@ endif()
 add_custom_target(idl_source DEPENDS ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h tangoSK.cpp tangoDynSK.cpp)
 
 add_library(idl_objects OBJECT ${SOURCES})
+target_include_directories(idl_objects SYSTEM PUBLIC ${OMNIORB_PKG_INCLUDE_DIRS})
 add_dependencies(idl_objects idl_source)
 
 if(WIN32)
