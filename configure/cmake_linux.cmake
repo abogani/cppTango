@@ -9,7 +9,7 @@ target_link_libraries(tango PUBLIC ${ZMQ_PKG_LIBRARIES} ${OMNIORB_PKG_LIBRARIES}
 set_cflags_and_include(tango)
 
 if(TANGO_USE_JPEG)
-    target_link_libraries(tango PRIVATE ${JPEG_LIBRARIES})
+    target_link_libraries(tango PRIVATE ${JPEG_PKG_LIBRARIES})
 endif()
 
 set_target_properties(
