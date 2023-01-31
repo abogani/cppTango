@@ -320,6 +320,8 @@ if(TANGO_WARNINGS_AS_ERRORS)
   endif()
 endif()
 
+include(configure/functions.cmake)
+
 include(GNUInstallDirs)
 
 configure_file(tango.pc.cmake tango.pc @ONLY)
