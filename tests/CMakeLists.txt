@@ -67,6 +67,8 @@ function(CXX_GENERATE_TEST_EXEC name)
     target_include_directories(${name} PRIVATE cxxtest/include ${CMAKE_CURRENT_BINARY_DIR}/cxxtest/include)
     target_link_libraries(${name} PRIVATE tango ${CMAKE_THREAD_LIBS_INIT})
     target_compile_definitions(${name} PRIVATE ${COMMON_TEST_DEFS})
+    set_cflags_and_include(${name})
+
     if(TANGO_USE_PCH)
         tango_target_test_pch(${name})
     endif()

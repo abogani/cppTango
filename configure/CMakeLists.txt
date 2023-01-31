@@ -84,6 +84,8 @@ else()
     pkg_search_module(OMNICOS_PKG REQUIRED omniCOS4)
     #dynamic CORBA
     pkg_search_module(OMNIDYN_PKG REQUIRED omniDynamic4)
+
+    link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
 endif()
 
 if(NOT OMNIIDL)
@@ -210,6 +212,8 @@ if(TANGO_USE_JPEG)
       else()
         pkg_search_module(JPEG_PKG REQUIRED libjpeg)
       endif()
+
+      link_directories(SYSTEM ${JPEG_PKG_LIBRARY_DIRS})
     endif()
     # Set variables for substitution in the pkg-config file
     set(JPEG_LIB libjpeg)

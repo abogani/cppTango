@@ -2,6 +2,7 @@ set(SOURCES net.cpp)
 
 add_library(common_objects OBJECT ${SOURCES})
 add_dependencies(common_objects idl_objects)
+set_cflags_and_include(common_objects)
 
 if(WIN32)
     target_compile_definitions(common_objects PRIVATE "${windows_defs}")
