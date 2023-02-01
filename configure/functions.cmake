@@ -7,6 +7,7 @@ function(set_cflags_and_include target)
                                           ${OMNIDYN_PKG_CFLAGS_OTHER})
 
   target_include_directories(${target} SYSTEM PUBLIC ${ZMQ_PKG_INCLUDE_DIRS}
+                                                     $<$<BOOL:${CPPZMQ_PKG_INCLUDE_DIRS}>:${CPPZMQ_PKG_INCLUDE_DIRS}>
                                                      ${JPEG_PKG_INCLUDE_DIRS}
                                                      ${OMNIORB_PKG_INCLUDE_DIRS}
                                                      ${OMNIDYN_PKG_INCLUDE_DIRS})
