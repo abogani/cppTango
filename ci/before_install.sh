@@ -18,6 +18,7 @@ fi
 mkdir omniorb
 if [[ "$STOCK_OMNIORB" == "OFF" ]]
 then
+    apt-get install bzip2
     wget -OomniORB.tar.bz2 https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.5/omniORB-4.2.5.tar.bz2/download
     tar xaf omniORB.tar.bz2 -Comniorb/ --strip-components=1
 fi

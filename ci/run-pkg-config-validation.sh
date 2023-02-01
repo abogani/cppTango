@@ -34,6 +34,11 @@ then
   ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DOMNIIDL_TEST_RUN=0"
 fi
 
+# NOTE: Below we are lying to cmake about the OMNIORB_VERSION because the
+# version provided by Fedora is unsupported, however, for this test we do not
+# want to run anything, so we don't care.  If you are going to copy this for
+# some other CI job using Fedora, please set STOCK_OMNIORB=OFF and remove the
+# -DOMNIORB_VERSION
 docker exec cpp_tango cmake                                \
   -H${SOURCE_DIR}                                          \
   -B${BUILD_DIR}                                           \
@@ -41,7 +46,7 @@ docker exec cpp_tango cmake                                \
   -DCMAKE_VERBOSE_MAKEFILE=ON                              \
   -DTANGO_CPPZMQ_BASE=/home/tango                          \
   -DTANGO_IDL_BASE=/home/tango                             \
-  -DTANGO_OMNI_BASE=/home/tango                            \
+  -DOMNIORB_VERSION="4.2.5"                                \
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                   \
   -DTANGO_USE_PCH=${TANGO_USE_PCH}                         \
   -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                       \
