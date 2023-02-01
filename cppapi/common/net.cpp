@@ -99,6 +99,37 @@ std::string get_port_from_endpoint(const std::string& endpoint)
   return port;
 }
 
+void split_endpoint(const std::string &endpoint, std::string &name, std::string &port)
+{
+  name.clear();
+  port.clear();
+
+  auto invalid_args_assert = [&endpoint] (bool cond)
+  {
+    if(cond)
+      return;
+
+    TangoSys_OMemStream o;
+    o << "Could not extract name and port from " << "\"" << endpoint << "\"" << std::ends;
+
+    TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+  };
+
+  std::string::size_type pos = endpoint.rfind(':');
+  invalid_args_assert(pos != std::string::npos);
+
+  // 6 is the length of tcp://
+  std::string name_temp = endpoint.substr(6, pos - 6);
+  invalid_args_assert(!name_temp.empty());
+
+  std::string port_temp = endpoint.substr(pos + 1);
+  invalid_args_assert(!port_temp.empty());
+
+  // all good now
+  name = name_temp;
+  port = port_temp;
+}
+
 std::string qualify_host_address(std::string name, const std::string &port)
 {
   auto invalid_args_assert = [&name, &port] (bool cond)

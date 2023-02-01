@@ -21,6 +21,9 @@ std::string qualify_host_address(std::string name, const std::string &port);
 /// Returns the port from `something:port`
 std::string get_port_from_endpoint(const std::string& endpoint);
 
+/// Returns the name and port from `tcp://$name:$port
+void split_endpoint(const std::string &endpoint, std::string &name, std::string &port);
+
 } // namespace detail
 } // namespace Tango
 

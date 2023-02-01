@@ -110,6 +110,33 @@ public:
 
     TS_ASSERT_EQUALS(qualify_host_address("a", "b"), "tcp://a:b");
   }
+
+  void test_split_endpoint()
+  {
+    {
+      // clears pass-by-reference-parameters
+      std::string name = "abcd";
+      std::string port = "efgh";
+      TS_ASSERT_THROWS_ASSERT(split_endpoint("tcp://a:", name, port), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+      TS_ASSERT(name.empty());
+      TS_ASSERT(port.empty());
+    }
+
+    {
+      // too short
+      std::string name, port;
+      TS_ASSERT_THROWS_ASSERT(split_endpoint("ab", name, port), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+      TS_ASSERT(name.empty());
+      TS_ASSERT(port.empty());
+    }
+
+    {
+      std::string name, port;
+      TS_ASSERT_THROWS_NOTHING(split_endpoint("tcp://a:b", name, port));
+      TS_ASSERT_EQUALS(name, "a");
+      TS_ASSERT_EQUALS(port, "b");
+    }
+  }
 };
 
 #endif // CommonMiscTestSuite_h

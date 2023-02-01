@@ -3104,9 +3104,8 @@ bool ZmqEventConsumer::check_zmq_endpoint(const std::string &endpoint)
 // Isolate IP address in endpoint
 //
 
-    std::string::size_type pos = endpoint.rfind(':');
-    std::string ip = endpoint.substr(6,pos - 6);
-    std::string port_str = endpoint.substr(pos + 1);
+    std::string ip, port_str;
+    detail::split_endpoint(endpoint, ip, port_str);
     int port = atoi(port_str.c_str());
 
 //
