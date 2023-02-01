@@ -33,6 +33,7 @@ message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 if(TANGO_CPPZMQ_BASE)
     message("Using TANGO_CPPZMQ_BASE=${TANGO_CPPZMQ_BASE}")
     include_directories(SYSTEM ${TANGO_CPPZMQ_BASE}/include)
+    set(CPPZMQ_PKG_INCLUDE_DIRS ${TANGO_CPPZMQ_BASE}/include)
 endif()
 
 if(TANGO_IDL_BASE)
@@ -241,7 +242,7 @@ if(NOT WIN32)
     try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_cppzmq_features
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_cppzmq_features.cpp
                 CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
-                COMPILE_DEFINITIONS "-I ${TANGO_CPPZMQ_BASE}/include -I ${ZMQ_PKG_INCLUDE_DIRS}"
+                COMPILE_DEFINITIONS "-I ${CPPZMQ_PKG_INCLUDE_DIRS} -I ${ZMQ_PKG_INCLUDE_DIRS}"
                 LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
                 OUTPUT_VARIABLE CPPZMQ_TRY_COMPILE_OUTPUT)
   endif()
