@@ -77,5 +77,51 @@ std::vector<std::string> resolve_hostname_address(const std::string &hostname)
   return results;
 }
 
+std::string get_port_from_endpoint(const std::string& endpoint)
+{
+  auto invalid_args_assert = [&endpoint] (bool cond)
+  {
+    if(cond)
+      return;
+
+    TangoSys_OMemStream o;
+    o << "Could not extract the port from " << "\"" << endpoint << "\"" << std::ends;
+
+    TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+  };
+
+  std::string::size_type pos = endpoint.rfind(':');
+  invalid_args_assert(pos != std::string::npos);
+
+  auto port = endpoint.substr(pos + 1);
+  invalid_args_assert(!port.empty());
+
+  return port;
+}
+
+std::string qualify_host_address(std::string name, const std::string &port)
+{
+  auto invalid_args_assert = [&name, &port] (bool cond)
+  {
+    if(cond)
+      return;
+
+    TangoSys_OMemStream o;
+    o << "Neither name " << "\"" << name << "\"" << " nor port " << "\" " << port << "\" ";
+    o << "can be empty" << std::ends;
+
+    TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+  };
+
+  invalid_args_assert(!name.empty());
+  invalid_args_assert(!port.empty());
+
+  name.insert(0, "tcp://");
+  name.append(":");
+  name.append(port);
+
+  return name;
+}
+
 } // namespace detail
 } // namespace Tango

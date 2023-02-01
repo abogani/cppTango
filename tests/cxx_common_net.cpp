@@ -84,6 +84,32 @@ public:
     // we need a non empty string
     TS_ASSERT_THROWS_ASSERT(auto result = resolve_hostname_address(""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
   }
+
+  void test_get_port_from_endpoint()
+  {
+    // empty
+    TS_ASSERT_THROWS_ASSERT(auto port = get_port_from_endpoint(""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // invalid format without :
+    TS_ASSERT_THROWS_ASSERT(auto port = get_port_from_endpoint("a_b"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // invalid format as : is the last char
+    TS_ASSERT_THROWS_ASSERT(auto port = get_port_from_endpoint("b:"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    TS_ASSERT_EQUALS(get_port_from_endpoint("a:b"), "b");
+    TS_ASSERT_EQUALS(get_port_from_endpoint("tcp://a:b"), "b");
+  }
+
+  void test_qualify_host_address()
+  {
+    // empty name
+    TS_ASSERT_THROWS_ASSERT(qualify_host_address("", "b"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // empty port
+    TS_ASSERT_THROWS_ASSERT(qualify_host_address("a", ""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    TS_ASSERT_EQUALS(qualify_host_address("a", "b"), "tcp://a:b");
+  }
 };
 
 #endif // CommonMiscTestSuite_h
