@@ -115,14 +115,18 @@ void split_endpoint(const std::string &endpoint, std::string &name, std::string 
     TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
   };
 
-  std::string::size_type pos = endpoint.rfind(':');
+  // 6 is the length of tcp://
+  invalid_args_assert(endpoint.length() > 6);
+  std::string str = endpoint.substr(6);
+  invalid_args_assert(!str.empty());
+
+  std::string::size_type pos = str.rfind(':');
   invalid_args_assert(pos != std::string::npos);
 
-  // 6 is the length of tcp://
-  std::string name_temp = endpoint.substr(6, pos - 6);
+  std::string name_temp = str.substr(0, pos);
   invalid_args_assert(!name_temp.empty());
 
-  std::string port_temp = endpoint.substr(pos + 1);
+  std::string port_temp = str.substr(pos + 1);
   invalid_args_assert(!port_temp.empty());
 
   // all good now

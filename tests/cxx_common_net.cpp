@@ -123,9 +123,25 @@ public:
     }
 
     {
+      // requires port spec
+      std::string name, port;
+      TS_ASSERT_THROWS_ASSERT(split_endpoint("tcp://ab", name, port), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+      TS_ASSERT(name.empty());
+      TS_ASSERT(port.empty());
+    }
+
+    {
       // too short
       std::string name, port;
       TS_ASSERT_THROWS_ASSERT(split_endpoint("ab", name, port), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+      TS_ASSERT(name.empty());
+      TS_ASSERT(port.empty());
+    }
+
+    {
+      // still too short
+      std::string name, port;
+      TS_ASSERT_THROWS_ASSERT(split_endpoint("tcp://", name, port), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
       TS_ASSERT(name.empty());
       TS_ASSERT(port.empty());
     }
