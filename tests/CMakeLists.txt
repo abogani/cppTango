@@ -72,6 +72,7 @@ function(CXX_GENERATE_TEST_EXEC name)
     endif()
 endfunction()
 
+# Pass TRUE as second argument if your tests don't require the device servers
 function(CXX_GENERATE_TEST name)
 
     if(${ARGC} EQUAL 2)
