@@ -24,6 +24,11 @@ std::string get_port_from_endpoint(const std::string& endpoint);
 /// Returns the name and port from `tcp://$name:$port
 void split_endpoint(const std::string &endpoint, std::string &name, std::string &port);
 
+/// Returns the ip address/hostname of a CORBA URI
+///
+/// Returns `myhost` when given giop:tcp:myhost:12345.
+std::string parse_hostname_from_CORBA_URI(const std::string& input);
+
 } // namespace detail
 } // namespace Tango
 

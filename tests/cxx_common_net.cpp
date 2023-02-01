@@ -153,6 +153,27 @@ public:
       TS_ASSERT_EQUALS(port, "b");
     }
   }
+
+  void test_parse_hostname_from_CORBA_URI()
+  {
+    // empty
+    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(""), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // only one colon
+    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // only two colons
+    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // only three colons
+    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":::"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+
+    // bare minimum
+    TS_ASSERT_EQUALS(parse_hostname_from_CORBA_URI("::abcd:"), "abcd");
+
+    // proper entry
+    TS_ASSERT_EQUALS(parse_hostname_from_CORBA_URI("giop:tcp:myhost:12345"), "myhost");
+  }
 };
 
 #endif // CommonMiscTestSuite_h

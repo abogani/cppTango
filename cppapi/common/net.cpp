@@ -158,5 +158,33 @@ std::string qualify_host_address(std::string name, const std::string &port)
   return name;
 }
 
+std::string parse_hostname_from_CORBA_URI(const std::string& input)
+{
+  auto invalid_args_assert = [&input] (bool cond)
+  {
+    if(cond)
+      return;
+
+    TangoSys_OMemStream o;
+    o << "Could not parse " << "\"" << input << "\"" << " as CORBA URI" << std::ends;
+
+    TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+  };
+
+  auto start = input.find(':');
+  invalid_args_assert(start != std::string::npos);
+  ++start;
+  start = input.find(':', start);
+  invalid_args_assert(start != std::string::npos);
+  auto stop = input.find(':', start + 1);
+  invalid_args_assert(stop != std::string::npos);
+
+  ++start;
+  std::string ret = input.substr(start, stop - start);
+  invalid_args_assert(!ret.empty());
+
+  return ret;
+}
+
 } // namespace detail
 } // namespace Tango

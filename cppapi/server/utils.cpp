@@ -46,6 +46,7 @@
 #include <tango/server/dserversignal.h>
 #include <tango/server/dserverclass.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/internal/net.h>
 
 #ifndef _TG_WINDOWS_
 #include <unistd.h>
@@ -62,37 +63,6 @@
 #include <omniORB4/omniInterceptors.h>
 
 namespace {
-
-  /// Returns the ip address or hostname of a CORBA URI
-  ///
-  /// Returns `myhost` when given giop:tcp:myhost:12345.
-  std::string parse_host_or_address_from_URI(const std::string& input)
-  {
-      auto invalid_args_assert = [&input] (bool cond)
-      {
-        if(cond)
-          return;
-
-         TangoSys_OMemStream o;
-         o << "Could not parse " << "\"" << input << "\"" << " as CORBA URI" << std::ends;
-
-         TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
-      };
-
-      auto start = input.find(':');
-      invalid_args_assert(start != std::string::npos);
-      ++start;
-      start = input.find(':', start);
-      invalid_args_assert(start != std::string::npos);
-      auto stop = input.find(':', start + 1);
-      invalid_args_assert(stop != std::string::npos);
-
-      ++start;
-      std::string ret = input.substr(start, stop - start);
-      invalid_args_assert(!ret.empty());
-
-      return ret;
-  }
 
   /// Search the environment for the given OMNIORB variable
   ///
@@ -111,7 +81,7 @@ namespace {
       std::string param = "-ORB" + name;
       if (::strcmp(param.c_str(),argv[i]) == 0)
       {
-        return parse_host_or_address_from_URI(argv[i + 1]);
+        return Tango::detail::parse_hostname_from_CORBA_URI(argv[i + 1]);
       }
     }
 
@@ -123,7 +93,7 @@ namespace {
     std::string param = "ORB" + name;
     if (d.get_env_var(param.c_str(), env_var) == 0)
     {
-      return parse_host_or_address_from_URI(env_var);
+      return Tango::detail::parse_hostname_from_CORBA_URI(env_var);
     }
 
     //
@@ -190,7 +160,7 @@ namespace {
             //
             // Option found in file, extract host ip
             //
-            auto ip = parse_host_or_address_from_URI(value);
+            auto ip = Tango::detail::parse_hostname_from_CORBA_URI(value);
             conf_file.close();
 
             return ip;
