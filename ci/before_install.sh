@@ -15,4 +15,11 @@ else
   mkdir cppzmq
 fi
 
+mkdir omniorb
+if [[ "$STOCK_OMNIORB" == "OFF" ]]
+then
+    wget -OomniORB.tar.bz2 https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.5/omniORB-4.2.5.tar.bz2/download
+    tar xaf omniORB.tar.bz2 -Comniorb/ --strip-components=1
+fi
+
 git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git idl

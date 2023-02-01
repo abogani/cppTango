@@ -16,7 +16,8 @@ RUN dnf -y install \
   cmake                     \
   curl                      \
   git                       \
-  omniORB-devel             \
+  openssl-devel             \
+  python-devel              \
   zeromq-devel              \
   ${JPEG_LIB}               \
   python3

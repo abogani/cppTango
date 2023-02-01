@@ -4,6 +4,7 @@ variables: &variables
   # Build parameters. We later override them at job level if needed.
   RUN_TESTS: "ON"
   STOCK_CPPZMQ: "ON"
+  STOCK_OMNIORB: "ON"
   TANGO_USE_PCH: "ON"
   CMAKE_BUILD_TYPE: "Debug"
   TANGO_USE_JPEG: "ON"
@@ -27,7 +28,7 @@ workflow:
   before_script:
     - ulimit -c unlimited
     - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
-    - apt-get update && apt-get install -y git wget unzip docker.io
+    - apt-get update && apt-get install -y git wget unzip docker.io bzip2
     - ci/before_install.sh
     - docker build --build-arg JPEG_LIB=${JPEG_LIB} -t cpp_tango ci/${OS_TYPE}
     - >
@@ -41,11 +42,13 @@ workflow:
         -v `pwd`:/home/tango/src
         -v `pwd`/idl:/home/tango/idl
         -v `pwd`/cppzmq:/home/tango/cppzmq
+        -v `pwd`/omniorb:/home/tango/omniorb
         -v `pwd`/build-wrapper-linux-x86:/home/tango/build-wrapper-linux-x86
         -dit
         cpp_tango
     - ci/install_tango_idl.sh
     - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
+    - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
   script:
     - set -e
     - ci/run.sh
@@ -87,6 +90,7 @@ abi-api-compliance-check:
         cpp_tango
     - ci/install_tango_idl.sh
     - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
+    - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
   script:
     - >
         docker exec
@@ -689,6 +693,7 @@ pkgconfig-fedora37:
     OS_TYPE: fedora37
     RUN_TESTS: "OFF"
     STOCK_CPPZMQ: "OFF"
+    STOCK_OMNIORB: "OFF"
     JPEG_LIB: "libjpeg-turbo-devel"
     TANGO_USE_JPEG: "OFF"
   script:

@@ -41,6 +41,7 @@ docker exec cpp_tango cmake                                \
   -DCMAKE_VERBOSE_MAKEFILE=ON                              \
   -DTANGO_CPPZMQ_BASE=/home/tango                          \
   -DTANGO_IDL_BASE=/home/tango                             \
+  -DTANGO_OMNI_BASE=/home/tango                            \
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                   \
   -DTANGO_USE_PCH=${TANGO_USE_PCH}                         \
   -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                       \
@@ -51,7 +52,7 @@ docker exec cpp_tango cmake                                \
 
 docker exec cpp_tango mkdir -p ${BUILD_DIR}/tests/results
 
-docker exec cpp_tango bash -c "pkg-config --validate ${BUILD_DIR}/tango.pc 2>&1 | tee ${BUILD_DIR}/tests/results/pkgconfig-validation.log"
+docker exec cpp_tango bash -c "PKG_CONFIG_PATH=/home/tango/lib/pkgconfig pkg-config --validate ${BUILD_DIR}/tango.pc 2>&1 | tee ${BUILD_DIR}/tests/results/pkgconfig-validation.log"
 
 if [[ -f "build/tests/results/pkgconfig-validation.log" ]] 
 then
