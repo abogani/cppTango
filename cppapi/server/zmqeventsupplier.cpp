@@ -31,6 +31,7 @@
 //+==================================================================================================================
 
 #include <tango/tango.h>
+#include <tango/internal/net.h>
 #include <tango/server/eventsupplier.h>
 
 #include <omniORB4/internal/giopStream.h>
@@ -140,23 +141,12 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
     alternate_h_endpoint.clear();
 
     std::string &specified_addr = tg->get_specified_ip();
+
     bool specified_name = false;
-
-#ifndef _TG_WINDOWS_
-    unsigned char buf[sizeof(struct in_addr)];
-    if (specified_addr.empty() == false && inet_pton(AF_INET,specified_addr.c_str(),buf) == 0)
-#else
-	struct sockaddr_storage ss;
-	int size = sizeof(ss);
-	char src_copy[INET6_ADDRSTRLEN+1];
-
-	ZeroMemory(&ss, sizeof(ss));
-	strncpy (src_copy, specified_addr.c_str(), INET6_ADDRSTRLEN+1);
-	src_copy[INET6_ADDRSTRLEN] = 0;
-
-	if (specified_addr.empty() == false && WSAStringToAddress(src_copy,AF_INET,NULL,(struct sockaddr *)&ss,&size) != 0)
-#endif
-        specified_name = true;
+    if(!specified_addr.empty())
+    {
+        specified_name = !detail::is_ip_address(specified_addr);
+    }
 
     std::string &h_name = tg->get_host_name();
     std::string canon_name;
@@ -164,32 +154,8 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
 
     if (specified_name == true)
     {
-        struct addrinfo hints;
-
-        memset(&hints,0,sizeof(struct addrinfo));
-
-        hints.ai_flags     = AI_ADDRCONFIG;
-        hints.ai_family    = AF_INET;
-        hints.ai_socktype  = SOCK_STREAM;
-
-        struct addrinfo	*info;
-
-        int result = getaddrinfo(specified_addr.c_str(),NULL,&hints,&info);
-
-        if (result == 0)
-        {
-            struct sockaddr_in *s_in = (sockaddr_in *)info->ai_addr;
-            specified_ip = inet_ntoa(s_in->sin_addr);
-
-            freeaddrinfo(info);
-        }
-        else
-        {
-            std::stringstream ss;
-            ss << "Can't convert " << specified_addr << " to IP address";
-
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_ZmqInitFailed, ss.str());
-        }
+        auto results = detail::resolve_hostname_address(specified_addr);
+        specified_ip = results.front();
     }
     else
         specified_ip = specified_addr;
@@ -229,6 +195,8 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
         throw;
     }
 
+    auto port_str = detail::get_port_from_endpoint(heartbeat_endpoint);
+
 //
 // If needed, replace * by host IP address in endpoint string
 //
@@ -244,8 +212,6 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
         if (adrs.size() > 1)
         {
             bool first_set = false;
-            std::string::size_type po = heartbeat_endpoint.rfind(':');
-            std::string port_str = heartbeat_endpoint.substr(po + 1);
 
             for (unsigned int i = 0;i < adrs.size();++i)
             {
@@ -261,9 +227,7 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
                 }
                 else
                 {
-                    std::string str("tcp://");
-                    str = str + adrs[i] + ':' + port_str;
-                    alternate_h_endpoint.push_back(str);
+                    alternate_h_endpoint.push_back(detail::qualify_host_address(adrs[i], port_str));
                     alt_ip.push_back(adrs[i]);
                 }
             }
@@ -280,6 +244,11 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
         start = start + 2;
         std::string::size_type stop = heartbeat_endpoint.rfind(':');
         heartbeat_endpoint.replace(start,stop - start,specified_addr);
+    }
+
+    if(tg->get_endpoint_publish_specified())
+    {
+        alternate_h_endpoint.push_back(detail::qualify_host_address(tg->get_endpoint_publish(), port_str));
     }
 
 //
@@ -552,20 +521,16 @@ void ZmqEventSupplier::create_event_socket()
 //
 // If needed, replace * by host IP address in endpoint string
 //
+        auto port_str = detail::get_port_from_endpoint(event_endpoint);
 
         if (ip_specified == false)
         {
             event_endpoint.replace(6,1,host_ip);
             if (alt_ip.empty() == false)
             {
-                std::string::size_type pos = event_endpoint.rfind(':');
-                std::string port_str = event_endpoint.substr(pos + 1);
-
                 for (size_t loop = 0;loop < alt_ip.size();loop++)
                 {
-                    std::string tmp("tcp://");
-                    tmp = tmp + alt_ip[loop] + ':' + port_str;
-                    alternate_e_endpoint.push_back(tmp);
+                    alternate_e_endpoint.push_back(detail::qualify_host_address(alt_ip[loop], port_str));
                 }
             }
         }
@@ -576,6 +541,11 @@ void ZmqEventSupplier::create_event_socket()
             std::string::size_type stop = event_endpoint.rfind(':');
             std::string &specified_addr = tg->get_specified_ip();
             event_endpoint.replace(start,stop - start,specified_addr);
+        }
+
+        if(tg->get_endpoint_publish_specified())
+        {
+            alternate_e_endpoint.push_back(detail::qualify_host_address(tg->get_endpoint_publish(), port_str));
         }
     }
 }

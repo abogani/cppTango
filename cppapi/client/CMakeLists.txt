@@ -31,7 +31,7 @@ set(SOURCES dbapi_class.cpp
             zmqeventconsumer.cpp)
 
 add_library(client_objects OBJECT ${SOURCES})
-add_dependencies(client_objects idl_objects)
+add_dependencies(client_objects idl_objects common_objects)
 
 if(WIN32)
     target_compile_definitions(client_objects PRIVATE "${windows_defs}")

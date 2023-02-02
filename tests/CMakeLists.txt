@@ -72,6 +72,7 @@ function(CXX_GENERATE_TEST_EXEC name)
     endif()
 endfunction()
 
+# Pass TRUE as second argument if your tests don't require the device servers
 function(CXX_GENERATE_TEST name)
 
     if(${ARGC} EQUAL 2)
@@ -118,6 +119,7 @@ CXX_GENERATE_TEST(cxx_class_dev_signal)
 CXX_GENERATE_TEST(cxx_class_signal)
 CXX_GENERATE_TEST(cxx_cmd_query)
 CXX_GENERATE_TEST(cxx_cmd_types)
+CXX_GENERATE_TEST(cxx_common_net TRUE)
 CXX_GENERATE_TEST(cxx_database)
 CXX_GENERATE_TEST(cxx_device_pipe_blob TRUE)
 CXX_GENERATE_TEST(cxx_dserver_cmd)

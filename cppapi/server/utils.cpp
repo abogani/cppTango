@@ -46,6 +46,7 @@
 #include <tango/server/dserversignal.h>
 #include <tango/server/dserverclass.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/internal/net.h>
 
 #ifndef _TG_WINDOWS_
 #include <unistd.h>
@@ -60,6 +61,146 @@
 #endif /* _TG_WINDOWS_ */
 
 #include <omniORB4/omniInterceptors.h>
+
+namespace {
+
+  /// Search the environment for the given OMNIORB variable
+  ///
+  /// Search order:
+  /// - ARGV
+  /// - Environment variable
+  /// - OMNIORB configuration file
+  Tango::tango_optional<std::string> get_omniorb_variable(int argc, char *argv[], const std::string &name)
+  {
+    //
+    // First look at command line arg
+    //
+
+    for (int i = 2;i < argc;i++)
+    {
+      std::string param = "-ORB" + name;
+      if (::strcmp(param.c_str(),argv[i]) == 0)
+      {
+        const char* value = argv[i + 1];
+        if(value == nullptr)
+        {
+          TangoSys_OMemStream o;
+
+          o << "Missing value for argument " << param << std::ends;
+          TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+        }
+
+        return Tango::detail::parse_hostname_from_CORBA_URI(value);
+      }
+    }
+
+    //
+    // Then look in env. variables
+    //
+    Tango::DummyDeviceProxy d;
+    std::string env_var;
+    std::string param = "ORB" + name;
+    if (d.get_env_var(param.c_str(), env_var) == 0)
+    {
+      return Tango::detail::parse_hostname_from_CORBA_URI(env_var);
+    }
+
+    //
+    // Finally, look in config file but file name may be specified as command line option or as env. variable!!
+    //
+
+    //
+    // First get file name
+    //
+
+    std::string fname;
+    bool found = false;
+    for (int i = 2;i < argc;i++)
+    {
+      if (::strcmp("-ORBconfigFile",argv[i]) == 0)
+      {
+        const char* value = argv[i + 1];
+        if(value == nullptr)
+        {
+          TangoSys_OMemStream o;
+
+          o << "Missing value for argument -ORBconfigFile" << std::ends;
+          TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+        }
+        fname = value;
+
+        found = true;
+        break;
+      }
+    }
+
+    if (found == false)
+    {
+      Tango::DummyDeviceProxy d;
+      std::string env_var;
+      if (d.get_env_var("ORBconfigFile",env_var) == 0)
+      {
+        fname = env_var;
+        found = true;
+      }
+    }
+
+    if (found == false)
+      fname = Tango::DEFAULT_OMNI_CONF_FILE;
+
+    //
+    // Now, look into the file if it exist
+    //
+
+    std::string line;
+    std::ifstream conf_file(fname.c_str());
+
+    if (conf_file.is_open())
+    {
+      while (getline(conf_file,line))
+      {
+        if (line[0] == '#')
+          continue;
+
+        std::string::size_type pos = line.find(name);
+        if (pos != std::string::npos)
+        {
+          std::string::iterator ite = remove(line.begin(),line.end(),' ');
+          line.erase(ite,line.end());
+
+          pos = line.find('=');
+          if (pos != std::string::npos)
+          {
+            std::string value = line.substr(pos+1);
+            if ((pos = value.find('#')) != std::string::npos)
+              value.erase(pos);
+
+            //
+            // Option found in file, extract host ip
+            //
+            auto ip = Tango::detail::parse_hostname_from_CORBA_URI(value);
+            conf_file.close();
+
+            return ip;
+          }
+        }
+      }
+      conf_file.close();
+    }
+    else
+    {
+      if (fname != Tango::DEFAULT_OMNI_CONF_FILE)
+      {
+        std::stringstream ss;
+        ss << "Can't open omniORB configuration file (" << fname << ") to check " << name << "option" << std::endl;
+        TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, ss.str());
+      }
+    }
+
+    return Tango::tango_optional<std::string>();
+  }
+
+} // anonymous namespace
 
 namespace Tango
 {
@@ -2758,156 +2899,29 @@ void Util::tango_host_from_fqan(const std::string &fqan,std::string &host,int &p
 //          - on the command line
 //          - using one env. variable
 //          - in  the omniORB config file (/etc/omniORB.cfg)
-//      If true, extract the IP address from the end point and store it for future use in the ZMQ publiher(s)
+//      If true, extract the IP address from the end point and store it for future use in the ZMQ publisher(s)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 void Util::check_end_point_specified(int argc,char *argv[])
 {
-
-//
-// First look at command line arg
-//
-
-    for (int i = 2;i < argc;i++)
+  {
+    const tango_optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
+    if(endpoint.has_value())
     {
-        if (::strcmp("-ORBendPoint",argv[i]) == 0)
-        {
-            set_endpoint_specified(true);
-
-            std::string endPoint(argv[i + 1]);
-            std::string::size_type start,stop;
-            start = endPoint.find(':');
-            ++start;
-            start = endPoint.find(':',start);
-            stop = endPoint.find(':',start + 1);
-            ++start;
-            std::string ip = endPoint.substr(start,stop - start);
-
-            set_specified_ip(ip);
-            break;
-        }
-
+      set_endpoint_specified(true);
+      set_specified_ip(*endpoint);
     }
+  }
 
-//
-// Then look in env. variables
-//
-
-    if (get_endpoint_specified() == false)
+  {
+    const tango_optional<std::string> endpoint_publish = get_omniorb_variable(argc, argv, "endPointPublish");
+    if(endpoint_publish.has_value())
     {
-        DummyDeviceProxy d;
-        std::string env_var;
-        if (d.get_env_var("ORBendPoint",env_var) == 0)
-        {
-            set_endpoint_specified(true);
-
-            std::string::size_type start,stop;
-            start = env_var.find(':');
-            ++start;
-            start = env_var.find(':',start);
-            stop = env_var.find(':',start + 1);
-            ++start;
-            std::string ip = env_var.substr(start,stop - start);
-
-            set_specified_ip(ip);
-        }
+      set_endpoint_publish_specified(true);
+      set_endpoint_publish(*endpoint_publish);
     }
-
-//
-// Finally, look in config file but file name may be specified as command line option or as env. variable!!
-//
-
-    if (get_endpoint_specified() == false)
-    {
-
-//
-// First get file name
-//
-
-        std::string fname;
-        bool found = false;
-        for (int i = 2;i < argc;i++)
-        {
-            if (::strcmp("-ORBconfigFile",argv[i]) == 0)
-            {
-                fname = argv[i + 1];
-                found = true;
-                break;
-            }
-        }
-
-        if (found == false)
-        {
-            DummyDeviceProxy d;
-            std::string env_var;
-            if (d.get_env_var("ORBconfigFile",env_var) == 0)
-            {
-                fname = env_var;
-                found = true;
-            }
-        }
-
-        if (found == false)
-            fname = DEFAULT_OMNI_CONF_FILE;
-
-//
-// Now, look into the file if it exist
-//
-
-        std::string line;
-        std::ifstream conf_file(fname.c_str());
-
-        if (conf_file.is_open())
-        {
-            while (getline(conf_file,line))
-            {
-                if (line[0] == '#')
-                    continue;
-
-                std::string::size_type pos = line.find("endPoint");
-                if (pos != std::string::npos)
-                {
-                    std::string::iterator ite = remove(line.begin(),line.end(),' ');
-                    line.erase(ite,line.end());
-
-                    pos = line.find('=');
-                    if (pos != std::string::npos)
-                    {
-                        std::string value = line.substr(pos+1);
-                        if ((pos = value.find('#')) != std::string::npos)
-                            value.erase(pos);
-
-                        set_endpoint_specified(true);
-
-//
-// Option found in file, extract host ip
-//
-
-                        std::string::size_type start,stop;
-                        start = value.find(':');
-                        ++start;
-                        start = value.find(':',start);
-                        stop = value.find(':',start + 1);
-                        ++start;
-                        std::string ip = value.substr(start,stop - start);
-
-                        set_specified_ip(ip);
-                    }
-                }
-            }
-            conf_file.close();
-        }
-        else
-        {
-            if (fname != DEFAULT_OMNI_CONF_FILE)
-            {
-                 std::stringstream ss;
-                ss << "Can't open omniORB configuration file (" << fname << ") to check endPoint option" << std::endl;
-                TANGO_THROW_EXCEPTION(API_InvalidArgs, ss.str());
-            }
-        }
-    }
+  }
 }
 
 

@@ -31,6 +31,7 @@
 //====================================================================================================================
 
 #include <tango/tango.h>
+#include <tango/internal/net.h>
 #include <tango/client/eventconsumer.h>
 
 #include <stdio.h>
@@ -1187,8 +1188,47 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,TAN
         for (valid_endpoint = 0; valid_endpoint < nb_endpoints; valid_endpoint++)
         {
             std::string endpoint(ev_svr_data->svalue[valid_endpoint << 1]);
+
+            TANGO_LOG_DEBUG << "Trying alternate endpoint: " << endpoint << std::endl;
+
             if (check_zmq_endpoint(endpoint) == true)
+            {
+                TANGO_LOG_DEBUG << "Plain IPv4 address and OK: " << endpoint << std::endl;
                 break;
+            }
+
+            if(!detail::is_ip_address(endpoint))
+            {
+              TANGO_LOG_DEBUG << "Maybe this (" << endpoint << ") is a hostname?" << std::endl;
+
+              std::string hostname, port;
+              detail::split_endpoint(endpoint, hostname, port);
+
+              std::string resolved;
+
+              try
+              {
+                auto results = detail::resolve_hostname_address(hostname);
+
+                resolved = results.front();
+              }
+              catch(Tango::DevFailed&)
+              {
+                TANGO_LOG_DEBUG << "Could not resolve hostname: " << hostname << std::endl;
+                continue;
+              }
+
+              TANGO_LOG_DEBUG << "Trying again with resolved IPv4 address: " << resolved << std::endl;
+
+              if(check_zmq_endpoint(detail::qualify_host_address(resolved, port)))
+              {
+                TANGO_LOG_DEBUG << "Resolvable hostname which can be reached as well." << std::endl;
+                break;
+              }
+
+              TANGO_LOG_DEBUG << "Can't connect to hostname" << hostname << " which resolved to " << resolved << std::endl;
+              TANGO_LOG_DEBUG << "Removing " << endpoint << " from the list of possible alternate endpoints." << std::endl;
+            }
         }
 
         if (valid_endpoint == nb_endpoints)
@@ -3104,9 +3144,8 @@ bool ZmqEventConsumer::check_zmq_endpoint(const std::string &endpoint)
 // Isolate IP address in endpoint
 //
 
-    std::string::size_type pos = endpoint.rfind(':');
-    std::string ip = endpoint.substr(6,pos - 6);
-    std::string port_str = endpoint.substr(pos + 1);
+    std::string ip, port_str;
+    detail::split_endpoint(endpoint, ip, port_str);
     int port = atoi(port_str.c_str());
 
 //

@@ -748,9 +748,8 @@ private:
     class UtilExt
     {
     public:
-        UtilExt() {}
-
-        ~UtilExt() {}
+      bool endpoint_publish_specified = false; // PublishEndpoint specified on cmd line
+      std::string endpoint_publish;            // PublishEndpoint as gathered from the environment
     };
 
 
@@ -831,6 +830,12 @@ public:
 
 	std::string &get_specified_ip() {return specified_ip;}
 	void set_specified_ip(const std::string &val) {specified_ip = val;}
+
+	bool get_endpoint_publish_specified() {return ext->endpoint_publish_specified;}
+	void set_endpoint_publish_specified(bool val) {ext->endpoint_publish_specified = val;}
+
+	std::string &get_endpoint_publish() {return ext->endpoint_publish;}
+	void set_endpoint_publish(const std::string &val) {ext->endpoint_publish = val;}
 
 	DevLong get_user_pub_hwm() {return user_pub_hwm;}
 
@@ -1038,7 +1043,16 @@ inline void Util::check_orb_endpoint(int argc, char *argv[])
 		if (::strcmp(argv[arg_nb],"-ORBendPoint") == 0)
 		{
 			arg_nb++;
-			std::string endpoint = argv[arg_nb];
+			const char* value = argv[arg_nb];
+			if(value == nullptr)
+			{
+				TangoSys_OMemStream o;
+
+				o << "Missing value for argument -ORBendPoint" << std::ends;
+				TANGO_THROW_EXCEPTION(API_InvalidArgs, o.str());
+			}
+
+			std::string endpoint = value;
 			std::string::size_type pos;
 			if ((pos = endpoint.rfind(':')) == std::string::npos)
 			{
