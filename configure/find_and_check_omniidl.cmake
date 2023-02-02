@@ -7,7 +7,7 @@ function(test_omniidl)
     message(STATUS "Testing omniidl for bug in generated c++ for IDL union")
     execute_process(
         COMMAND ${OMNIIDL} -bcxx -Wbh=.h -Wbs=SK.cpp -Wbd=DynSK.cpp -Wba
-            ${CMAKE_SOURCE_DIR}/configure/test_omniidl.idl
+            ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_omniidl.idl
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         RESULT_VARIABLE OMNIIDL_RESULT
         OUTPUT_VARIABLE OMNIIDL_OUTPUT
@@ -47,7 +47,7 @@ function(test_omniidl)
     try_run(TANGO_OMNIIDL_HAS_NO_UNION_BUG TANGO_OMNIIDL_CHECK_COMPILE
         ${CMAKE_CURRENT_BINARY_DIR}/
         SOURCES
-            ${CMAKE_SOURCE_DIR}/configure/test_omniidl.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_omniidl.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlSK.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlDynSK.cpp
         CMAKE_FLAGS
