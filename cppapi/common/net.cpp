@@ -34,7 +34,7 @@ bool is_ip_address(const std::string &endpoint)
   strncpy (src_copy, endpoint.c_str(), INET6_ADDRSTRLEN + 1);
   src_copy[INET6_ADDRSTRLEN] = 0;
 
-  return WSAStringToAddress(src_copy, AF_INET, NULL, (struct sockaddr *)&ss ,&size) == 0;
+  return WSAStringToAddress(src_copy, AF_INET, nullptr, (struct sockaddr *)&ss ,&size) == 0;
 #endif
 }
 
@@ -53,7 +53,7 @@ std::vector<std::string> resolve_hostname_address(const std::string &hostname)
 
   struct addrinfo *info = nullptr;
 
-  int result = getaddrinfo(hostname.c_str(), NULL, &hints, &info);
+  int result = getaddrinfo(hostname.c_str(), nullptr, &hints, &info);
 
   if (result != 0)
   {
