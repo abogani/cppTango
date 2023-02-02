@@ -1043,7 +1043,16 @@ inline void Util::check_orb_endpoint(int argc, char *argv[])
 		if (::strcmp(argv[arg_nb],"-ORBendPoint") == 0)
 		{
 			arg_nb++;
-			std::string endpoint = argv[arg_nb];
+			const char* value = argv[arg_nb];
+			if(value == nullptr)
+			{
+				TangoSys_OMemStream o;
+
+				o << "Missing value for argument -ORBendPoint" << std::ends;
+				TANGO_THROW_EXCEPTION(API_InvalidArgs, o.str());
+			}
+
+			std::string endpoint = value;
 			std::string::size_type pos;
 			if ((pos = endpoint.rfind(':')) == std::string::npos)
 			{

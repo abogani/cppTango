@@ -81,7 +81,16 @@ namespace {
       std::string param = "-ORB" + name;
       if (::strcmp(param.c_str(),argv[i]) == 0)
       {
-        return Tango::detail::parse_hostname_from_CORBA_URI(argv[i + 1]);
+        const char* value = argv[i + 1];
+        if(value == nullptr)
+        {
+          TangoSys_OMemStream o;
+
+          o << "Missing value for argument " << param << std::ends;
+          TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+        }
+
+        return Tango::detail::parse_hostname_from_CORBA_URI(value);
       }
     }
 
@@ -110,7 +119,16 @@ namespace {
     {
       if (::strcmp("-ORBconfigFile",argv[i]) == 0)
       {
-        fname = argv[i + 1];
+        const char* value = argv[i + 1];
+        if(value == nullptr)
+        {
+          TangoSys_OMemStream o;
+
+          o << "Missing value for argument -ORBconfigFile" << std::ends;
+          TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+        }
+        fname = value;
+
         found = true;
         break;
       }
