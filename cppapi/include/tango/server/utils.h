@@ -745,14 +745,7 @@ protected:
 
 private:
 
-    class UtilExt
-    {
-    public:
-        UtilExt() {}
-
-        ~UtilExt() {}
-    };
-
+    class UtilExt{};
 
 public:
 /// @privatesection
