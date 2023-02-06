@@ -1,16 +1,19 @@
 # Tango C++ library 9.4.1 Release Notes
 
-February 1st, 2023
+February 2nd, 2023
 
 Table of Contents
 =================
   * [What's New (Since Version 9.3.5)?](#whats-new-since-version-935)
-  * [9.4.0 - Changes Which Might Have An Impact On Users](#940---changes-which-might-have-an-impact-on-users)
-  * [9.4.0 - Bug Fixes](#940---bug-fixes)
-  * [9.4.0 - Source Code Comparison With Version 9.3.5](#940---source-code-comparison-with-version-935)
-  * [9.4.0 - Feedback](#940---feedback)
-  * [9.4.0 - Contributions](#940---contributions)
-  * [9.4.0 - Acknowledgement](#940---acknowledgement)
+  * [9.4.0+ - Changes Which Might Have An Impact On Users](#940-changes-which-might-have-an-impact-on-users)
+  * [9.4.0 - Bug Fixes](#940-bug-fixes)
+  * [9.4.1 - Bug Fixes](#941-bug-fixes)
+  * [9.4.1 - Changes](#941-changes)
+  * [9.4.0+ - Source Code Comparison With Version 9.3.5](#940-source-code-comparison-with-version-935)
+  * [9.4.1 - Source Code Comparison With Version 9.4.0](#941-source-code-comparison-with-version-940)
+  * [9.4.1 - Feedback](#941-feedback)
+  * [9.4.1 - Contributions](#941-contributions)
+  * [9.4.1 - Acknowledgement](#941-acknowledgement)
 
 ## What's New Since Version 9.4.0?
 
@@ -197,7 +200,7 @@ Many bugs have been fixed in this new version. please refer to the Issues and Me
 
 - Fix tango.pc.cmake to take into account jpeg dependency (https://gitlab.com/tango-controls/cppTango/-/issues/1016, https://gitlab.com/tango-controls/cppTango/-/merge_requests/1024)
 
-- tests: Fix using invalid cmake variable COMMON_TEST_CXX_DEFS (, https://gitlab.com/tango-controls/cppTango/-/merge_requests/1038)
+- tests: Fix using invalid cmake variable COMMON_TEST_CXX_DEFS (https://gitlab.com/tango-controls/cppTango/-/merge_requests/1038)
 
 - Fix api-abi-compliance CI job (https://gitlab.com/tango-controls/cppTango/-/issues/1045, https://gitlab.com/tango-controls/cppTango/-/issues/1040, https://gitlab.com/tango-controls/cppTango/-/merge_requests/1041)
 
@@ -214,6 +217,11 @@ https://gitlab.com/tango-controls/cppTango/-/compare/9.3.5...9.4.1
 
 Sadly, at the time of writing these release notes, Gitlab imposes a limitation which prevents from displaying more than 100 commits at a time. We hope that this limit will be removed in the future.
 
+## 9.4.1 - Source Code Comparison With Version 9.4.0
+
+You can view the source code comparison with Tango 9.4.0, as well as the commits and contributors on this page:
+https://gitlab.com/tango-controls/cppTango/-/compare/9.4.0...9.4.1
+
 ## 9.4.1 - Feedback
 
 You can report issues on https://gitlab.com/tango-controls/cppTango/-/issues. If you find a problem which you think could also affect Tango Controls packages other than cppTango, e.g. cppTango and pyTango, or when you don't know where you should create the issue at all - Well, you know now! - then head over to https://gitlab.com/tango-controls/TangoTickets/-/issues.
@@ -226,4 +234,3 @@ Please do not hesitate to create new Merge Requests in [cppTango Gitlab reposito
 ## 9.4.1 - Acknowledgement
 
 Many thanks to all the persons who contributed to this release, to the Tango kernel team and to the Tango community for its ideas, feedback, bug reports and tests.
-
