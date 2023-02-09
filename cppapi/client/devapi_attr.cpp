@@ -4343,7 +4343,7 @@ bool DeviceAttribute::extract(std::string &str,std::vector<unsigned char> &dat)
 //
 // DeviceAttribute::extract_read(std::string &,std::vector<unsigned char> &)
 //
-// - extract the read value as a string, std::vector<unsigned char> from the DeviceAttribute
+// - extract the read value as a string, vector<unsigned char> from the DeviceAttribute
 // for the DevEncoded data type
 //
 //-----------------------------------------------------------------------------
@@ -4597,7 +4597,7 @@ bool DeviceAttribute::extract_set (std::vector<short>& datum)
 //
 // DeviceAttribute::extract_read(std::vector<DevLong> &)
 //
-// - extract the read value as a std::vector<DevLong> from the DeviceAttribute
+// - extract the read value as a vector<DevLong> from the DeviceAttribute
 //
 //-----------------------------------------------------------------------------
 

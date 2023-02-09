@@ -512,7 +512,7 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param,PropEltIdx &obj,boo
 
 //	TANGO_LOG_DEBUG << "DbCache --> Data returned for a get_obj_property for object " << (*in_param)[0] << std::endl;
 //	for (unsigned int ll=0;ll< ret_obj_prop.length();ll++)
-//		TANGO_LOG_DEBUG << "    DbCache --> Returned std::string = " << ret_obj_prop[ll] << std::endl;
+//		TANGO_LOG_DEBUG << "    DbCache --> Returned string = " << ret_obj_prop[ll] << std::endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------

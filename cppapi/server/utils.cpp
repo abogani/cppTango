@@ -1543,7 +1543,7 @@ void Util::init_host_name()
 
 			ApiUtil *au = ApiUtil::instance();
 			std::vector<std::string> ip_list;
-			au->get_ip_from_if(ip_list);	// returns a std::list of numeric network addresses
+			au->get_ip_from_if(ip_list);	// returns a list of numeric network addresses
 
 			for(size_t i = 0; i < ip_list.size() && !host_found; i++)
 			{
