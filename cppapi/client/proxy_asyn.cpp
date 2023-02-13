@@ -57,6 +57,22 @@ namespace Tango
 long Connection::command_inout_asynch(const std::string &command, const DeviceData &data_in, bool faf)
 {
 //
+// Reconnect to device in case it is needed
+//
+
+	try
+	{
+		check_and_reconnect();
+	}
+	catch (Tango::ConnectionFailed &e)
+	{
+		TangoSys_OMemStream desc;
+		desc << "Failed to execute command_inout on device " << dev_name();
+		desc << ", command " << command << std::ends;
+                TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+	}
+
+//
 // Throw exception if caller not allowed to do write action
 //
 
@@ -96,22 +112,6 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
 
 			TANGO_THROW_API_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
 		}
-	}
-
-//
-// Reconnect to device in case it is needed
-//
-
-	try
-	{
-		check_and_reconnect();
-	}
-	catch (Tango::ConnectionFailed &e)
-	{
-		TangoSys_OMemStream desc;
-		desc << "Failed to execute command_inout on device " << dev_name();
-		desc << ", command " << command << std::ends;
-                TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
 	}
 
 //
@@ -1914,18 +1914,6 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req,long id,read_attr_type
 long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &attr_list)
 {
 //
-// Throw exception if caller not allowed to write_attribute
-//
-
-	if (access == ACCESS_READ)
-	{
-		TangoSys_OMemStream desc;
-		desc << "Writing attribute(s) on device " << dev_name() << " is not authorized" << std::ends;
-
-		TANGO_THROW_API_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
-	}
-
-//
 // Reconnect to device in case it is needed
 //
 
@@ -1938,6 +1926,18 @@ long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &at
 		TangoSys_OMemStream desc;
 		desc << "Failed to execute write_attributes_asynch on device " << dev_name() << std::ends;
                 TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+	}
+
+//
+// Throw exception if caller not allowed to write_attribute
+//
+
+	if (access == ACCESS_READ)
+	{
+		TangoSys_OMemStream desc;
+		desc << "Writing attribute(s) on device " << dev_name() << " is not authorized" << std::ends;
+
+		TANGO_THROW_API_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
 	}
 
 //
@@ -2000,17 +2000,6 @@ long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &at
 
 long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
 {
-//
-// Throw exception if caller not allowed to write_attribute
-//
-
-	if (access == ACCESS_READ)
-	{
-		TangoSys_OMemStream desc;
-		desc << "Writing attribute(s) on device " << dev_name() << " is not authorized" << std::ends;
-
-		TANGO_THROW_API_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
-	}
 
 //
 // Reconnect to device in case it is needed
@@ -2025,6 +2014,18 @@ long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
 		TangoSys_OMemStream desc;
 		desc << "Failed to execute write_attributes_asynch on device " << dev_name() << std::ends;
                 TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+	}
+
+//
+// Throw exception if caller not allowed to write_attribute
+//
+
+	if (access == ACCESS_READ)
+	{
+		TangoSys_OMemStream desc;
+		desc << "Writing attribute(s) on device " << dev_name() << " is not authorized" << std::ends;
+
+		TANGO_THROW_API_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
 	}
 
 //
