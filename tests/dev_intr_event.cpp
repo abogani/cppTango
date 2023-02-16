@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 		cb.cb_err = 0;
 
 //
-// subscribe to a data ready event
+// subscribe to a interface change event
 //
 
 		int eve_id1 = device->subscribe_event(Tango::INTERFACE_CHANGE_EVENT,&cb);
