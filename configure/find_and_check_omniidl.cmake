@@ -2,11 +2,6 @@ if (NOT WIN32 AND NOT DEFINED OMNIORB_PKG_LIBRARIES)
     return()
 endif()
 
-message("Using OMNIIDL_PATH=${OMNIIDL_PATH}")
-
-find_program(OMNIIDL NAMES omniidl
-                     HINTS ${OMNIIDL_PATH})
-
 message(STATUS "Testing omniidl for bug in generated c++ for IDL union")
 execute_process(
     COMMAND ${OMNIIDL} -bcxx -Wbh=.h -Wbs=SK.cpp -Wbd=DynSK.cpp -Wba ${CMAKE_SOURCE_DIR}/configure/test_omniidl.idl

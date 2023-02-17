@@ -1,9 +1,5 @@
 message("Using IDL=${IDL_PKG_INCLUDE_DIRS}")
 
-if(NOT OMNIIDL)
-  message(FATAL_ERROR "Could not find omniidl")
-endif()
-
 add_custom_command(OUTPUT tango.h tangoSK.cpp tangoDynSK.cpp
                    COMMAND ${OMNIIDL} -I${IDL_PKG_INCLUDE_DIRS} -bcxx -Wbh=.h -Wbs=SK.cpp -Wbd=DynSK.cpp -Wba ${IDL_PKG_INCLUDE_DIRS}/tango.idl
                    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/apply-patches.cmake
@@ -25,6 +21,7 @@ endif()
 add_custom_target(idl_source DEPENDS ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h tangoSK.cpp tangoDynSK.cpp)
 
 add_library(idl_objects OBJECT ${SOURCES})
+target_include_directories(idl_objects SYSTEM PUBLIC ${OMNIORB_PKG_INCLUDE_DIRS})
 add_dependencies(idl_objects idl_source)
 
 if(WIN32)

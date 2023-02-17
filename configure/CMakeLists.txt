@@ -32,7 +32,7 @@ message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
 if(TANGO_CPPZMQ_BASE)
     message("Using TANGO_CPPZMQ_BASE=${TANGO_CPPZMQ_BASE}")
-    include_directories(SYSTEM ${TANGO_CPPZMQ_BASE}/include)
+    set(CPPZMQ_PKG_INCLUDE_DIRS ${TANGO_CPPZMQ_BASE}/include)
 endif()
 
 if(TANGO_IDL_BASE)
@@ -64,15 +64,31 @@ if(TANGO_OMNI_BASE)
         set(OMNIORB_PKG_LIBRARY_DIRS ${TANGO_OMNI_BASE}/lib)
         set(OMNIORB_PKG_LIBRARIES "-lomniORB4 -lomnithread -lCOS4 -lomniDynamic4")
     endif()
-    include_directories(SYSTEM ${OMNIORB_PKG_INCLUDE_DIRS})
     link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
+
+    find_program(OMNIIDL NAMES omniidl
+                         HINTS ${OMNIIDL_PATH}
+                         DOC "omniidl executable location"
+                         NO_DEFAULT_PATH)
+    mark_as_advanced(OMNIIDL)
+
 else()
     #CORBA
     pkg_search_module(OMNIORB_PKG REQUIRED omniORB4)
+    pkg_get_variable(OMNIIDL omniORB4 omniidl)
+    set(OMNIIDL "${OMNIIDL}" CACHE FILEPATH "omniidl executable location")
+    mark_as_advanced(OMNIIDL)
+
     #COS
     pkg_search_module(OMNICOS_PKG REQUIRED omniCOS4)
     #dynamic CORBA
     pkg_search_module(OMNIDYN_PKG REQUIRED omniDynamic4)
+
+    link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
+endif()
+
+if(NOT OMNIIDL)
+  message(FATAL_ERROR "Could not find a usable omniidl")
 endif()
 
 function(tango_find_omniorb_version)
@@ -147,18 +163,31 @@ if(TANGO_ZMQ_BASE)
         endif()
     else()
         set(ZMQ_PKG_LIBRARIES "-lzmq")
-        link_directories(${TANGO_ZMQ_BASE}/lib)
+        set(ZMQ_PKG_LIBRARY_DIRS ${TANGO_ZMQ_BASE}/lib)
+        link_directories(${ZMQ_PKG_LIBRARY_DIRS})
     endif()
-    include_directories(SYSTEM ${TANGO_ZMQ_BASE}/include)
 else()
     pkg_search_module(ZMQ_PKG REQUIRED libzmq)
+
+    # libzmq 4.0.5 does not set ZMQ_PKG_LIBRARY_DIRS only newer versions set
+    # this in addition to ZMQ_PKG_LIBDIR
+    if(ZMQ_PKG_LIBRARY_DIRS STREQUAL "")
+      set(ZMQ_PKG_LIBRARY_DIRS "${ZMQ_PKG_LIBDIR}")
+    endif()
+
+    # fedora 37 only sets ZMQ_PKG_INCLUDEDIR
+    if(ZMQ_PKG_INCLUDE_DIRS STREQUAL "")
+      set(ZMQ_PKG_INCLUDE_DIRS "${ZMQ_PKG_INCLUDEDIR}")
+    endif()
+
+    link_directories(SYSTEM ${ZMQ_PKG_LIBRARY_DIRS})
 endif()
 
 # Check for jpeg support
 if(TANGO_USE_JPEG)
     if(TANGO_JPEG_BASE)
         message("Using TANGO_JPEG_BASE=${TANGO_JPEG_BASE}")
-        include_directories(SYSTEM ${TANGO_JPEG_BASE}/include)
+        set(JPEG_PKG_INCLUDE_DIRS ${TANGO_JPEG_BASE}/include)
         link_directories(${TANGO_JPEG_BASE}/lib)
         if (WIN32)
             if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -169,10 +198,20 @@ if(TANGO_USE_JPEG)
                 set(JPEG_PKG_LIBRARIES_DYN "jpeg.lib")
             endif()
         else()
-            set(JPEG_LIBRARIES "-ljpeg")
+            set(JPEG_PKG_LIBRARIES "-ljpeg")
         endif()
     else()
-        find_package(JPEG REQUIRED)
+      find_package(JPEG)
+
+      if(JPEG_FOUND)
+        set(JPEG_PKG_LIBRARIES "${JPEG_LIBRARIES}")
+        set(JPEG_PKG_LIBRARY_DIRS "${JPEG_LIBRARY_DIRS}")
+        set(JPEG_PKG_CFLAGS_OTHER "${JPEG_CFLAGS_OTHER}")
+      else()
+        pkg_search_module(JPEG_PKG REQUIRED libjpeg)
+      endif()
+
+      link_directories(SYSTEM ${JPEG_PKG_LIBRARY_DIRS})
     endif()
     # Set variables for substitution in the pkg-config file
     set(JPEG_LIB libjpeg)
@@ -199,8 +238,9 @@ if(NOT WIN32)
   if(NOT DEFINED TANGO_CPPZMQ_USABLE_VERSION)
     try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_cppzmq_features
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_cppzmq_features.cpp
-                COMPILE_DEFINITIONS "-I ${TANGO_CPPZMQ_BASE}/include -I ${TANGO_ZMQ_BASE}/include"
-                LINK_LIBRARIES "$<$<BOOL:${TANGO_ZMQ_BASE}>:-L ${TANGO_ZMQ_BASE}/lib >${ZMQ_PKG_LIBRARIES}"
+                CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
+                COMPILE_DEFINITIONS "-I ${CPPZMQ_PKG_INCLUDE_DIRS} -I ${ZMQ_PKG_INCLUDE_DIRS}"
+                LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
                 OUTPUT_VARIABLE CPPZMQ_TRY_COMPILE_OUTPUT)
   endif()
 
@@ -219,11 +259,12 @@ if(NOT WIN32)
   if(NOT DEFINED TANGO_ZMQ_USABLE_VERSION)
     try_compile(TANGO_ZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_zmq_version
                 SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_zmq_version.cpp
-                COMPILE_DEFINITIONS "-I ${TANGO_ZMQ_BASE}/include
+                COMPILE_DEFINITIONS "-I ${ZMQ_PKG_INCLUDE_DIRS}
                 -DMINIMUM_VERSION_MAJOR=${ZMQ_MIN_VER_MAJOR}
                 -DMINIMUM_VERSION_MINOR=${ZMQ_MIN_VER_MINOR}
                 -DMINIMUM_VERSION_PATCH=${ZMQ_MIN_VER_PATCH}"
-                LINK_LIBRARIES "$<$<BOOL:${TANGO_ZMQ_BASE}>:-L ${TANGO_ZMQ_BASE}/lib >${ZMQ_PKG_LIBRARIES}"
+                CMAKE_FLAGS "-DLINK_DIRECTORIES=${ZMQ_PKG_LIBRARY_DIRS}"
+                LINK_LIBRARIES "${ZMQ_PKG_LIBRARIES}"
                 OUTPUT_VARIABLE ZMQ_TRY_COMPILE_OUTPUT)
   endif()
 
@@ -304,6 +345,8 @@ if(TANGO_WARNINGS_AS_ERRORS)
     endif()
   endif()
 endif()
+
+include(configure/functions.cmake)
 
 include(GNUInstallDirs)
 

@@ -451,23 +451,36 @@ cmake-with-locations-and-min-versions:
     - mkdir /libjpeg/build
     - cd /libjpeg
     - autoreconf -fiv
-    - cd build/
-    - sh ../configure
-    - make install prefix=/usr/local/libjpeg libdir=/usr/local/libjpeg/lib
-    - cd $CI_PROJECT_DIR
-    - mkdir build
     - cd build
+    - ../configure -- prefix=/usr/local/jpeg
+    - make
+    - make install
   script:
+    # using TANGO_XXX_BASE
+    - cd $CI_PROJECT_DIR
+    - mkdir build_base
+    - cd build_base
     - >
       cmake ..
-      -DCMAKE_BUILD_TYPE=Debug
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -DBUILD_TESTING=ON
       -DTANGO_USE_JPEG=ON
       -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
       -DTANGO_IDL_BASE=/usr/local/tango-idl
       -DTANGO_OMNI_BASE=/usr/local/omniORB
       -DTANGO_ZMQ_BASE=/usr/local/zmq
-      -DTANGO_JPEG_BASE=/usr/local/libjpeg
+      -DTANGO_JPEG_BASE=/usr/local/jpeg
+    - make
+    # using PKG_CONFIG_PATH
+    - cd $CI_PROJECT_DIR
+    - mkdir build_pkg_config
+    - cd build_pkg_config
+    - export PKG_CONFIG_PATH="/usr/local/omniORB/lib/pkgconfig:/usr/local/jpeg/lib/pkgconfig:/usr/local/tango-idl/lib/pkgconfig:/usr/local/zmq/lib/pkgconfig"
+    - cmake ..
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+      -DBUILD_TESTING=ON
+      -DTANGO_USE_JPEG=ON
+      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
     - make
 
 alpine:
@@ -510,7 +523,7 @@ alpine:
     - cd build
     - >
       cmake ..
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+      -DCMAKE_BUILD_TYPE=Debug
       -DBUILD_TESTING=ON
       -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
       -DTANGO_IDL_BASE=/usr/local/tango-idl

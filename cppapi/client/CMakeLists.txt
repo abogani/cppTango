@@ -32,6 +32,7 @@ set(SOURCES dbapi_class.cpp
 
 add_library(client_objects OBJECT ${SOURCES})
 add_dependencies(client_objects idl_objects common_objects)
+set_cflags_and_include(client_objects)
 
 if(WIN32)
     target_compile_definitions(client_objects PRIVATE "${windows_defs}")

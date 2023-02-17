@@ -69,6 +69,7 @@ endif()
 
 add_library(server_objects OBJECT ${SOURCES})
 add_dependencies(server_objects idl_objects common_objects)
+set_cflags_and_include(server_objects)
 
 if(WIN32)
     target_compile_definitions(server_objects PRIVATE "${windows_defs}")

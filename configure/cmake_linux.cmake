@@ -6,12 +6,10 @@ add_library(tango $<TARGET_OBJECTS:log4tango_objects>
                   $<TARGET_OBJECTS:idl_objects>
                   $<TARGET_OBJECTS:server_objects>)
 target_link_libraries(tango PUBLIC ${ZMQ_PKG_LIBRARIES} ${OMNIORB_PKG_LIBRARIES} ${OMNICOS_PKG_LIBRARIES} ${OMNIDYN_PKG_LIBRARIES} ${CMAKE_DL_LIBS})
-
-target_include_directories(tango SYSTEM PUBLIC ${ZMQ_PKG_INCLUDE_DIRS} ${OMNIORB_PKG_INCLUDE_DIRS} ${OMNIDYN_PKG_INCLUDE_DIRS})
-target_compile_options(tango PUBLIC ${ZMQ_PKG_CFLAGS_OTHER} ${OMNIORB_PKG_CFLAGS_OTHER} ${OMNICOS_PKG_CFLAGS_OTHER} ${OMNIDYN_PKG_CFLAGS_OTHER})
+set_cflags_and_include(tango)
 
 if(TANGO_USE_JPEG)
-    target_link_libraries(tango PRIVATE ${JPEG_LIBRARIES})
+    target_link_libraries(tango PRIVATE ${JPEG_PKG_LIBRARIES})
 endif()
 
 set_target_properties(

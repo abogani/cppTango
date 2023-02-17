@@ -44,7 +44,7 @@ add_library(${TANGO_LIBRARY_NAME} $<TARGET_OBJECTS:log4tango_objects>
 set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES COMPILE_DEFINITIONS
         "${windows_defs}")
 
-target_compile_options(${TANGO_LIBRARY_NAME} PUBLIC ${ZMQ_PKG_CFLAGS_OTHER} ${OMNIORB_PKG_CFLAGS_OTHER} ${OMNICOS_PKG_CFLAGS_OTHER} ${OMNIDYN_PKG_CFLAGS_OTHER})
+set_cflags_and_include(${TANGO_LIBRARY_NAME})
 
 if(BUILD_SHARED_LIBS)
     target_link_libraries(${TANGO_LIBRARY_NAME} PUBLIC ${WIN32_LIBS} ${OMNIORB_PKG_LIBRARIES_DYN} ${ZMQ_PKG_LIBRARIES_DYN} ${PTHREAD_WIN_PKG_LIBRARIES_DYN} ${CMAKE_DL_LIBS} PRIVATE ${JPEG_PKG_LIBRARIES_DYN})
@@ -60,8 +60,6 @@ endif()
 # https://docs.microsoft.com/en-us/cpp/build/reference/debug-generate-debug-info
 target_compile_options(${TANGO_LIBRARY_NAME} PRIVATE "/Zi")
 set_property(TARGET ${TANGO_LIBRARY_NAME} PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
-
-target_include_directories(${TANGO_LIBRARY_NAME} SYSTEM PUBLIC ${ZMQ_PKG_INCLUDE_DIRS} ${OMNIORB_PKG_INCLUDE_DIRS} ${OMNIDYN_PKG_INCLUDE_DIRS})
 
 set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES
         VERSION ${LIBRARY_VERSION}
