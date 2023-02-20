@@ -891,6 +891,28 @@ TEST_LOG << "required time for command SetGetProperties = " << elapsed << endl;
 		TS_ASSERT_EQUALS(string((*str_array)[0].in()), "Not initialised");
 	}
 
+	void test_write_attribute_error_message(void)
+	{
+		DeviceData di;
+
+		vector<short> data_in(2);
+		data_in[0] = 6;
+		data_in[1] = 1;
+		di << data_in;
+		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAttrThrowEx",di));
+
+		TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOInitWAttr"), Tango::DevFailed &e,
+						TS_ASSERT(string(e.errors[0].reason.in()) == "API_IncompatibleAttrDataType"
+								&& string(e.errors[0].desc.in()).find("expected Tango::DevVarShortArray") != string::npos
+								&& string(e.errors[0].desc.in()).find("found Tango::DevVarUShortArray") != string::npos
+								&& e.errors[0].severity == Tango::ERR));
+
+		data_in[0] = 6;
+		data_in[1] = 0;
+		di << data_in;
+		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAttrThrowEx",di));
+	}
+
 // Test read attribute on initialised write type attribute
 
 	void test_read_attribute_on_initialised_write_type_attribute(void)
