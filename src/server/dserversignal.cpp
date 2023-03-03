@@ -169,7 +169,7 @@ DServerSignal::DServerSignal() :
     //
     // With Solaris/Linux, the SIGINT and SIGQUIT default actions are set to SIG_IGN for all processes started in the
     // background (POSIX requirement). Signal SIGINT is used by Tango in its signal management, reset the default action
-    // to default
+    // to default. SIGTERM must also be reset, or a SIGTERM handler created in a thread stops the server from exiting.
     //
 
     struct sigaction sa;
@@ -186,6 +186,11 @@ DServerSignal::DServerSignal() :
     if(sigaction(SIGQUIT, &sa, NULL) == -1)
     {
         std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGQUIT to SIG_DFL" << std::endl;
+    }
+
+    if(sigaction(SIGTERM, &sa, NULL) == -1)
+    {
+        std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGTERM to SIG_DFL" << std::endl;
     }
 
     //
