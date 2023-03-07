@@ -4,7 +4,8 @@ endif()
 
 message(STATUS "Testing omniidl for bug in generated c++ for IDL union")
 execute_process(
-    COMMAND ${OMNIIDL} -bcxx -Wbh=.h -Wbs=SK.cpp -Wbd=DynSK.cpp -Wba ${CMAKE_SOURCE_DIR}/configure/test_omniidl.idl
+    COMMAND ${OMNIIDL} -bcxx -Wbh=.h -Wbs=SK.cpp -Wbd=DynSK.cpp -Wba
+        ${CMAKE_SOURCE_DIR}/configure/test_omniidl.idl
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     RESULT_VARIABLE OMNIIDL_RESULT
     OUTPUT_VARIABLE OMNIIDL_OUTPUT
@@ -31,12 +32,24 @@ function(test_omniidl)
         set(link_libs ${OMNIORB_PKG_LIBRARIES} ${OMNICOS_PKG_LIBRARIES} ${OMNIDYN_PKG_LIBRARIES})
         set(defs "")
     endif()
-    set(inc_dirs "${CMAKE_CURRENT_BINARY_DIR};${OMNIORB_PKG_INCLUDE_DIRS};${OMNIDYN_PKG_INCLUDE_DIRS};${OMNICOS_PKG_INCLUDE_DIRS}")
-    set(link_dirs "${OMNIORB_PKG_LIBRARY_DIRS};${OMNIDYN_PKG_LIBRARY_DIRS};${OMNICOS_PKG_LIBRARY_DIRS}")
+
+    set(inc_dirs
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${OMNIORB_PKG_INCLUDE_DIRS}
+        ${OMNIDYN_PKG_INCLUDE_DIRS}
+        ${OMNICOS_PKG_INCLUDE_DIRS})
+
+    set(link_dirs
+        ${OMNIORB_PKG_LIBRARY_DIRS}
+        ${OMNIDYN_PKG_LIBRARY_DIRS}
+        ${OMNICOS_PKG_LIBRARY_DIRS})
 
     try_run(OMNIIDL_TEST_RUN OMNIIDL_TEST_COMPILE
         ${CMAKE_CURRENT_BINARY_DIR}/
-        SOURCES ${CMAKE_SOURCE_DIR}/configure/test_omniidl.cpp ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlSK.cpp ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlDynSK.cpp
+        SOURCES
+            ${CMAKE_SOURCE_DIR}/configure/test_omniidl.cpp
+            ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlSK.cpp
+            ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlDynSK.cpp
         CMAKE_FLAGS
             "-DINCLUDE_DIRECTORIES=${inc_dirs}"
             "-DLINK_DIRECTORIES=${link_dirs}"
