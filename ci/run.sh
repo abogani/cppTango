@@ -32,6 +32,7 @@ then
 fi
 
 docker exec cpp_tango cmake                                \
+  -Werror=dev                                              \
   -H${SOURCE_DIR}                                          \
   -B${BUILD_DIR}                                           \
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                 \
