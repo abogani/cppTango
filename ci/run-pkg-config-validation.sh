@@ -29,9 +29,6 @@ ADDITIONAL_ARGS=""
 if [[ -f "$TOOLCHAIN_FILE" && -s "$TOOLCHAIN_FILE" ]]
 then
   ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DCMAKE_TOOLCHAIN_FILE=${SOURCE_DIR}/${TOOLCHAIN_FILE}"
-  # We cannot use try_run when cross compiling, so we just say running the
-  # binary succeeded
-  ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DOMNIIDL_TEST_RUN=0"
 fi
 
 # NOTE: Below we are lying to cmake about the OMNIORB_VERSION because the
