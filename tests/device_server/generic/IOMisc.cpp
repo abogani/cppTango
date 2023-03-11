@@ -4464,3 +4464,26 @@ CORBA::Any *PushStateStatusChangeEvent::execute(Tango::DeviceImpl *device, TANGO
 	return insert();
 }
 
+GetEnumWriteValue::GetEnumWriteValue(const char *name, Tango::CmdArgType in,
+								   Tango::CmdArgType out, const char *in_desc,
+								   const char *out_desc)
+	: Command(name, in, out, in_desc, out_desc)
+{
+}
+
+
+bool GetEnumWriteValue::is_allowed(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
+{
+    return true;
+}
+
+CORBA::Any *GetEnumWriteValue::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+	DevTest *dev = (static_cast<DevTest *>(device));
+
+        Tango::WAttribute& attr = dev->get_device_attr()->get_w_attr_by_name("Enum_attr_rw");
+
+        CardinalPoints w_val;
+        attr.get_write_value(w_val);
+	return insert((short)w_val);
+}

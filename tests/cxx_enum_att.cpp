@@ -518,6 +518,28 @@ public:
                 config_list.clear();
 
         }
+
+        void test_write_enum_attribute_out_of_range()
+	{
+            DeviceData write_val;
+            write_val = device1->command_inout("GetEnumWriteValue");
+            short before;
+            write_val >> before;
+
+            short sh_wr = -1;
+            DeviceAttribute da_wr("Enum_attr_rw",sh_wr);
+            std::vector<DeviceAttribute> list;
+            list.push_back(da_wr);
+
+            TS_ASSERT_THROWS_ASSERT(device1->write_attributes(list), Tango::NamedDevFailedList& e,
+                    TS_ASSERT(string(e.err_list[0].err_stack[0].reason.in()) == "API_WAttrOutsideLimit"
+                        && e.errors[0].severity == Tango::ERR));
+
+            write_val = device1->command_inout("GetEnumWriteValue");
+            short after;
+            write_val >> after;
+            TS_ASSERT_EQUALS(before, after);
+        }
 };
 
 #endif // EnumTestSuite_h

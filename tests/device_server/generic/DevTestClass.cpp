@@ -649,6 +649,13 @@ void DevTestClass::command_factory()
 	command_list.push_back(new Tango::TemplCommandInOut<Tango::DevDouble,Tango::DevVarDoubleArray *>((const char *)"IOTemplInOutState",
 			       static_cast<Tango::DbA_CmdMethPtr_Db>(&DevTest::IOTemplInOut),
 			       static_cast<Tango::StateMethPtr>(&DevTest::templ_state)));
+
+        command_list.push_back(new GetEnumWriteValue("GetEnumWriteValue",
+					   Tango::DEV_VOID,
+					   Tango::DEV_SHORT,
+					   "void",
+					   "short"));
+
 }
 
 
