@@ -1,6 +1,7 @@
 variables: &variables
   DEBIAN_FRONTEND: noninteractive
   DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
   # Build parameters. We later override them at job level if needed.
   RUN_TESTS: "ON"
   STOCK_CPPZMQ: "ON"
