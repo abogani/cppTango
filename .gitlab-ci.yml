@@ -26,6 +26,8 @@ workflow:
 
 .job-template: &job-template
   image: debian:10
+  tags:
+    - dind, docker, linux, amd64
   before_script:
     - ulimit -c unlimited
     - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
@@ -71,6 +73,8 @@ abi-api-compliance-check:
     # This job runs only for merge requests.
     - if: $CI_MERGE_REQUEST_IID
   image: debian:10
+  tags:
+    - dind, docker, linux, amd64
   before_script:
     - apt-get update && apt-get install -y git docker.io
     - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
@@ -241,6 +245,8 @@ ubuntu-20.04-jpeg9:
 
 clang-analyzer:
   image: ubuntu:focal
+  tags:
+    - docker, linux, amd64
   variables:
     DEBIAN_FRONTEND: noninteractive
     CC: /usr/lib/llvm-12/bin/clang
@@ -319,6 +325,8 @@ clang-analyzer:
 
 clang-tidy:
   image: ubuntu:focal
+  tags:
+    - docker, linux, amd64
   variables:
     DEBIAN_FRONTEND: noninteractive
     CC: /usr/lib/llvm-11/bin/clang
@@ -394,6 +402,8 @@ clang-tidy:
 # job to build against custom library locations and minimum supported versions of dependent libraries
 cmake-with-locations-and-min-versions:
   image: debian:buster
+  tags:
+    - docker, linux, amd64
   variables:
     DEBIAN_FRONTEND: noninteractive
   services: []
@@ -485,6 +495,8 @@ cmake-with-locations-and-min-versions:
 
 alpine:
   image: alpine:3.15
+  tags:
+    - docker, linux, amd64
   services: []
   before_script:
     - apk update
@@ -534,6 +546,8 @@ alpine:
 
 doxygen-documentation:
   image: debian:buster
+  tags:
+    - docker, linux, amd64
   variables:
     DEBIAN_FRONTEND: noninteractive
   services: []
@@ -580,6 +594,8 @@ sanitizer:
   # Failures are temporarily allowed until sanitizer issues are fixed.
   allow_failure: true
   image: ubuntu:focal
+  tags:
+    - dind, docker, linux, amd64
   variables:
     <<: *variables
     CC: /usr/lib/llvm-12/bin/clang
@@ -656,6 +672,8 @@ sanitizer:
 build-conda-dev-package:
   stage: test
   image: registry.gitlab.com/tango-controls/docker/conda-build:latest
+  tags:
+    - docker, linux, amd64
   services: []
   variables:
     <<: *variables
@@ -678,6 +696,8 @@ publish-conda-dev-package:
   stage: deploy
   services: []
   image: python:3-alpine
+  tags:
+    - docker, linux, amd64
   before_script:
     # anaconda-client version on pypi is from 2016...
     - pip install https://github.com/Anaconda-Platform/anaconda-client/archive/refs/tags/1.8.0.tar.gz
@@ -719,6 +739,8 @@ cmake-superproject:
   variables:
     DEBIAN_FRONTEND: noninteractive
   services: []
+  tags:
+    - docker, linux, amd64
   before_script:
     - apt-get update
     - >
