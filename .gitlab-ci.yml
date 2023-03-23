@@ -265,12 +265,12 @@ clang-analyzer:
     - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
     - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
     - make -C /cppzmq/build install
-    # Install tango-idl.
+    # Install tango-idl
     - mkdir /idl
     - >
       curl https://gitlab.com/tango-controls/tango-idl/-/archive/main/tango-idl-main.tar.gz
       | tar --strip-components=1 -C /idl -zxf -
-    - cmake -B/idl/build /idl
+    - cmake -B /idl/build /idl
     - make -C /idl/build install
     # Create build directory for cppTango.
     - mkdir build
@@ -345,9 +345,9 @@ clang-tidy:
     - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
     - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
     - make -C /cppzmq/build install
-    # Install tango-idl.
+    # Install tango-idl
     - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B/idl/build /idl
+    - cmake -B /idl/build /idl
     - make -C /idl/build install
     # Install codeclimate. This is needed for generating HTML report.
     - git clone -b v0.85.22 --depth 1 https://github.com/codeclimate/codeclimate.git /codeclimate
@@ -627,9 +627,9 @@ sanitizer:
       dev eth0
     # Symbolizer is required for sanitizers.
     - ln -s /usr/lib/llvm-12/bin/llvm-symbolizer /usr/local/bin
-    # Install tango-idl.
+    # Install tango-idl
     - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B/idl/build /idl
+    - cmake -B /idl/build /idl
     - make -C /idl/build install
     # Install cppzmq
     - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
