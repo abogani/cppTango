@@ -1573,19 +1573,17 @@ void Util::init_host_name()
 				}
 			}
 
-//
 // Several cases to find out the real name of the network interface on which the server is running.
 // First be sure that we got at least one name from call(s) to getnameinfo()
-// Then, we have to know if the -ORBendPoint option was specified on the command line
+// Then, we have to know if the -ORBendPoint option was specified (command line/environment/config file)
 // If it was not, select the name which is the same than the computer hostname. If not found, select the first name
 // returned by getnameinfo()
 // If the endPoint option is used by the host name is not specified within the option (Db case for instance), do the
 // same than in previous case
-// If a host is specified in endPOint option:
+// If a host is specified in endPoint option:
 // If it is specified as a name, search for this name in the list returned by getnameinfo calls and select it
 // If it is specified as a IP address, search for this IP in ip_list vector and select this name in the result
 // of getnameinfo() call
-//
 
 			if (host_names.size() != 0)
             {
