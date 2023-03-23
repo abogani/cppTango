@@ -165,14 +165,17 @@ public:
     // only two colons
     TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI("::"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
 
-    // only three colons
-    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":::"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+    // empty hostname
+    TS_ASSERT_EQUALS(parse_hostname_from_CORBA_URI(":::"), "");
 
     // bare minimum
     TS_ASSERT_EQUALS(parse_hostname_from_CORBA_URI("::abcd:"), "abcd");
 
-    // proper entry
+    // full entry with hostname
     TS_ASSERT_EQUALS(parse_hostname_from_CORBA_URI("giop:tcp:myhost:12345"), "myhost");
+
+    // full entry with IPv4 address
+    TS_ASSERT_EQUALS(parse_hostname_from_CORBA_URI("giop:tcp:0.0.0.0:12345"), "0.0.0.0");
   }
 };
 

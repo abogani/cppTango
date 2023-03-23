@@ -27,6 +27,8 @@ void split_endpoint(const std::string &endpoint, std::string &name, std::string 
 /// Returns the ip address/hostname of a CORBA URI
 ///
 /// Returns `myhost` when given giop:tcp:myhost:12345.
+///
+/// As specified by omniORB both port and hostname can be empty.
 std::string parse_hostname_from_CORBA_URI(const std::string& input);
 
 } // namespace detail
