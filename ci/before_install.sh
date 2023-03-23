@@ -23,4 +23,4 @@ then
     tar xaf omniORB.tar.bz2 -Comniorb/ --strip-components=1
 fi
 
-git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git idl
+git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git idl

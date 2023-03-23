@@ -14,6 +14,7 @@ environment:
   JPEG_VERSION: 2.0.3
   TANGO_JPEG_BASE: C:/libjpeg-turbo
   NASM_VERSION: 2.15.05
+  TANGO_IDL_TAG: 5.1.2
   
   # Iteration order:
   # - VS Image (2017)
@@ -76,7 +77,7 @@ init:
   #RDP from start
   #- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   # Tango IDL
-  - cmd: git clone --depth 1 --quiet https://gitlab.com/tango-controls/tango-idl %IDL_SOURCE%
+  - cmd: git clone -b %TANGO_IDL_TAG% --depth 1 --quiet https://gitlab.com/tango-controls/tango-idl %IDL_SOURCE%
   - cmd: cd "C:\projects\"
   # Zmq
   - cmd: cd "C:\projects\"
