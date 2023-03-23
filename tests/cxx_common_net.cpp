@@ -163,7 +163,7 @@ public:
     TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
 
     // only two colons
-    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
+    TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI("::"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
 
     // only three colons
     TS_ASSERT_THROWS_ASSERT(auto result = parse_hostname_from_CORBA_URI(":::"), Tango::DevFailed &e, TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), API_InvalidArgs));
