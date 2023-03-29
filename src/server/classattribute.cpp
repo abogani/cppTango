@@ -262,7 +262,7 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name, lo
                 unsigned int k;
                 for(k = 0; k < attr_list.size(); k++)
                 {
-                    if(attr_name == attr_list[k]->get_name())
+                    if(TG_strcasecmp(attr_name.c_str(), attr_list[k]->get_name().c_str()) == 0)
                     {
                         break;
                     }
