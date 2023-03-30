@@ -280,6 +280,7 @@ clang-analyzer:
   script:
     - >
       cmake . -B build
+      -Werror=dev
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DBUILD_TESTING=OFF
@@ -358,6 +359,7 @@ clang-tidy:
   script:
     - >
       cmake . -B build
+      -Werror=dev
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DCMAKE_UNITY_BUILD=ON
@@ -462,6 +464,7 @@ cmake-with-locations-and-min-versions:
     - cd build_base
     - >
       cmake ..
+      -Werror=dev
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -DBUILD_TESTING=ON
       -DTANGO_USE_JPEG=ON
@@ -523,6 +526,7 @@ alpine:
     - cd build
     - >
       cmake ..
+      -Werror=dev
       -DCMAKE_BUILD_TYPE=Debug
       -DBUILD_TESTING=ON
       -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
@@ -564,6 +568,7 @@ doxygen-documentation:
   script:
     - >
       cmake . -B build
+      -Werror=dev
       -DCMAKE_BUILD_TYPE=Debug
       -DBUILD_TESTING=OFF
       -DTANGO_IDL_BASE=/usr/local/tango-idl
@@ -641,6 +646,7 @@ sanitizer:
     - cd build
     - >
       cmake ..
+      -Werror=dev
       -DCMAKE_BUILD_TYPE=Debug
       -DBUILD_TESTING=ON
       -DTANGO_USE_PCH=ON

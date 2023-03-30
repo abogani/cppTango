@@ -103,9 +103,6 @@ advisable to cross compile tango. We demonstrate the approach by compiling for
 32-bit on a 64-bit linux. See [here](https://wiki.debian.org/Multiarch/HOWTO)
 for the generic debian howto.
 
-cmake will currently try to run `omniidl` to check if the version installed is working properly.
-This won't work when cross-compiling. Pass `-DOMNIIDL_TEST_RUN=0` to bypass this check.
-
 ```bash
 sudo dpkg --add-architecture i386
 sudo apt update
@@ -115,7 +112,7 @@ sudo apt install gcc-multilib g++-multilib
 sudo apt install libcos4-dev:i386 libomniorb4-dev:i386 libomnithread4-dev:i386 libzmq3-dev:i386
 mkdir build-cross-32bit
 cd build-cross-32bit
-cmake -DCMAKE_TOOLCHAIN_FILE=../configure/toolchain-i686.cmake -DOMNIIDL_TEST_RUN=0 ..
+cmake -DCMAKE_TOOLCHAIN_FILE=../configure/toolchain-i686.cmake ..
 make [-j NUMBER_OF_CPUS]
 ```
 
