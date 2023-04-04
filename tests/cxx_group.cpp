@@ -951,5 +951,38 @@ class GroupTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(0, set_env("TANGO_HOST", original_tango_host, force_update));
         ApiUtil::instance()->cleanup();
     }
+
+    // Test to extract invalid attribute with enable exception mode OFF and ON
+
+    void test_to_extract_invalid_attribute_with_with_enable_exception_mode_OFF_and_ON(void)
+    {
+        {
+            DeviceProxy dp{"test/debian8/10"};
+            DeviceData in{};
+            // Call the device's IOChangeQuality command with parameter=1.
+            // This should set the quality factor to ATTR_INVALID.
+            in << DevShort{1};
+            dp.command_inout("IOChangeQuality", in);
+            DeviceAttribute attr = dp.read_attribute("Event_quality_tst");
+            std::vector<DevShort> result{};
+            TS_ASSERT_EQUALS(attr.get_quality(), ATTR_INVALID);
+            TS_ASSERT_THROWS_ASSERT(attr >> result,
+                                    Tango::DevFailed & e,
+                                    TS_ASSERT_EQUALS(std::string{e.errors[0].reason.in()}, API_EmptyDeviceAttribute));
+        }
+        Group group{"test_group"};
+        group.add("test/debian8/10");
+        GroupAttrReplyList reply = group.read_attribute("Event_quality_tst");
+        TS_ASSERT_EQUALS(reply.size(), 1u);
+        TS_ASSERT_EQUALS(reply[0].get_data().get_quality(), ATTR_INVALID);
+        DevShort result;
+
+        TS_ASSERT_THROWS_NOTHING(reply[0] >> result);
+
+        GroupReply::enable_exception(true);
+        TS_ASSERT_THROWS_ASSERT(reply[0] >> result,
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(std::string{e.errors[0].reason.in()}, API_EmptyDeviceAttribute));
+    }
 };
 #endif // GroupTestSuite_h
