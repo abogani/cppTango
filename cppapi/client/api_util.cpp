@@ -31,6 +31,7 @@
 #include <tango/client/eventconsumer.h>
 #include <tango/client/api_util.tpp>
 #include <thread>
+#include <iomanip>
 
 #ifndef _TG_WINDOWS_
 #include <sys/types.h>
