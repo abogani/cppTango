@@ -67,7 +67,7 @@ if(TANGO_OMNI_BASE)
     link_directories(${OMNIORB_PKG_LIBRARY_DIRS})
 
     find_program(OMNIIDL NAMES omniidl
-                         HINTS ${OMNIIDL_PATH}
+                         HINTS ${OMNIIDL_PATH} ${TANGO_OMNIIDL_PATH}
                          DOC "omniidl executable location"
                          NO_DEFAULT_PATH)
     mark_as_advanced(OMNIIDL)

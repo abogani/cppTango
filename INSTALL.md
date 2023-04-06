@@ -84,6 +84,7 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 | `TANGO_IDL_BASE`             |                                        | tangoidl installed path
 | `TANGO_INSTALL_DEPENDENCIES` | `OFF`                                  | Install dependencies of tango as well (Windows only)
 | `TANGO_JPEG_BASE`            |                                        | libjpeg installed path
+| `TANGO_OMNIIDL_PATH`         |                                        | omniORB4 search path for omniidl
 | `TANGO_OMNI_BASE`            |                                        | omniORB4 installed path
 | `TANGO_USE_JPEG`             | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`           | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires CMake 3.13+ and clang)
