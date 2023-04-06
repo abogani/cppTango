@@ -214,7 +214,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
 
 		try
 		{
-			zmq::poll(items,nb_poll_item,-1);
+			zmq::poll(items,nb_poll_item);
 //TANGO_LOG << "Awaken !!!!!!!!" << std::endl;
 		}
 		catch(zmq::error_t &e)
