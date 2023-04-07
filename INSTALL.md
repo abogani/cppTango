@@ -36,7 +36,7 @@ If your linux does not have precompiled packages for these dependencies jump to 
 ## tango-idl
 
 ```bash
-git clone https://gitlab.com/tango-controls/tango-idl
+git clone -b 5.1.2 https://gitlab.com/tango-controls/tango-idl
 cd tango-idl
 mkdir build
 cd build
@@ -312,7 +312,7 @@ SET PYVER=py37
 https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.2.1-2/omniorb-4.2.1_%ARCH%_%PYVER%.zip
 https://github.com/tango-controls/Pthread_WIN32/releases/download/2.9.1/pthreads-win32-2.9.1_%ARCH%.zip
 https://github.com/tango-controls/zmq-windows-ci/releases/download/4.0.5-2/zmq-4.0.5-2_%ARCH%.zip
-git clone --depth 1 https://gitlab.com/tango-controls/tango-idl tango-idl-source
+git clone -b 5.1.2 --depth 1 https://gitlab.com/tango-controls/tango-idl tango-idl-source
 ```
 
 - Open a VS 2017 command prompt

@@ -12,6 +12,7 @@ variables: &variables
   TANGO_USE_LIBCPP: "OFF"
   TOOLCHAIN_FILE: ""
   JPEG_LIB: libjpeg-dev
+  TANGO_IDL_TAG: "5.1.2"
 
 services:
   - docker:20.10.16-dind
@@ -265,12 +266,10 @@ clang-analyzer:
     - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
     - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
     - make -C /cppzmq/build install
-    # Install tango-idl.
+    # Install tango-idl
     - mkdir /idl
-    - >
-      curl https://gitlab.com/tango-controls/tango-idl/-/archive/main/tango-idl-main.tar.gz
-      | tar --strip-components=1 -C /idl -zxf -
-    - cmake -B/idl/build /idl
+    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
+    - cmake -B /idl/build /idl
     - make -C /idl/build install
     # Create build directory for cppTango.
     - mkdir build
@@ -346,9 +345,9 @@ clang-tidy:
     - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
     - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
     - make -C /cppzmq/build install
-    # Install tango-idl.
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B/idl/build /idl
+    # Install tango-idl
+    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
+    - cmake -B /idl/build /idl
     - make -C /idl/build install
     # Install codeclimate. This is needed for generating HTML report.
     - git clone -b v0.85.22 --depth 1 https://github.com/codeclimate/codeclimate.git /codeclimate
@@ -422,7 +421,7 @@ cmake-with-locations-and-min-versions:
     - cd /usr/local
     - /tmp/cmake-install.sh --skip-license --exclude-subdir
     # Install tango-idl
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
+    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
     - mkdir /idl/build
     - cd /idl/build
     - cmake -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
@@ -504,7 +503,7 @@ alpine:
       zeromq-dev
       jpeg-dev
     # Install tango-idl
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
+    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
     - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
     - make -C /idl/build install
     # Install cppzmq
@@ -557,7 +556,7 @@ doxygen-documentation:
       libjpeg-dev
       pkg-config
     # Install tango-idl
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
+    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
     - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
     - make -C /idl/build install
     # Install cppzmq
@@ -632,9 +631,9 @@ sanitizer:
       dev eth0
     # Symbolizer is required for sanitizers.
     - ln -s /usr/lib/llvm-12/bin/llvm-symbolizer /usr/local/bin
-    # Install tango-idl.
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B/idl/build /idl
+    # Install tango-idl
+    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
+    - cmake -B /idl/build /idl
     - make -C /idl/build install
     # Install cppzmq
     - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
