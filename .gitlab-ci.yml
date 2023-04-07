@@ -51,10 +51,8 @@ workflow:
     - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
     - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
   script:
-    - set -e
     - ci/run.sh
     - ci/test.sh
-    - set +e
   after_script:
     - docker stop cpp_tango || true
     - mkdir -p build/tests/results
@@ -714,6 +712,4 @@ pkgconfig-fedora37:
     JPEG_LIB: "libjpeg-turbo-devel"
     TANGO_USE_JPEG: "OFF"
   script:
-    - set -e
     - ci/run-pkg-config-validation.sh
-    - set +e
