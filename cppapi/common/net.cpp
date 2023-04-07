@@ -181,7 +181,6 @@ std::string parse_hostname_from_CORBA_URI(const std::string& input)
 
   ++start;
   std::string ret = input.substr(start, stop - start);
-  invalid_args_assert(!ret.empty());
 
   return ret;
 }
