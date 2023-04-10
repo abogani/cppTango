@@ -5,6 +5,11 @@ if(POLICY CMP0115)
     cmake_policy(SET CMP0115 NEW)
 endif()
 
+# honour language standards for try_compile
+if(POLICY CMP0067)
+    cmake_policy(SET CMP0067 NEW)
+endif()
+
 project(cppTango)
 
 # omniORB>=4.2.4 is required for compilation in C++17 (or better) mode.
