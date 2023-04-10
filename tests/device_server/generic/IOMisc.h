@@ -440,6 +440,15 @@ public:
 	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
 };
 
+class GetEnumWriteValue : public Tango::Command {
+public:
+	GetEnumWriteValue(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *);
+	~GetEnumWriteValue() {}
+
+	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
+	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+};
+
 class ReynaldPollThread : public omni_thread
 {
 public :
