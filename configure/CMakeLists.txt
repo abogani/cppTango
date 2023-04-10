@@ -180,7 +180,7 @@ else()
       set(ZMQ_PKG_INCLUDE_DIRS "${ZMQ_PKG_INCLUDEDIR}")
     endif()
 
-    link_directories(SYSTEM ${ZMQ_PKG_LIBRARY_DIRS})
+    link_directories(${ZMQ_PKG_LIBRARY_DIRS})
 endif()
 
 # Check for jpeg support
@@ -211,7 +211,7 @@ if(TANGO_USE_JPEG)
         pkg_search_module(JPEG_PKG REQUIRED libjpeg)
       endif()
 
-      link_directories(SYSTEM ${JPEG_PKG_LIBRARY_DIRS})
+      link_directories(${JPEG_PKG_LIBRARY_DIRS})
     endif()
     # Set variables for substitution in the pkg-config file
     set(JPEG_LIB libjpeg)
