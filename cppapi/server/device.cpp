@@ -383,11 +383,6 @@ namespace Tango
         }
 
     }
-//
-// The per thread data storage key (The client identification is stored in thread specific storage) defined in utils.cpp
-//
-
-extern omni_thread::key_t key;
 
 //+-------------------------------------------------------------------------
 //
@@ -4732,7 +4727,7 @@ void DeviceImpl::push_att_conf_event(Attribute *attr)
 
 Tango::client_addr *DeviceImpl::get_client_ident()
 {
-    omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+    omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
     return (client_addr *) ip;
 }
 

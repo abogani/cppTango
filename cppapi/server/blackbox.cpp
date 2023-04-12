@@ -60,20 +60,13 @@ namespace Tango
 {
 
 //
-// The per thread data storage key (The client IP is stored in thread specific storage)
-// defined in utils.cpp
-//
-
-extern omni_thread::key_t key;
-
-//
 // The function called by the interceptor
 //
 
 CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::info_T &info)
 {
-    omni_thread::self()
-        ->set_value(key, new client_addr(((omni::giopStrand &) info.giop_s.strand()).connection->peeraddress()));
+    omni_thread::self()->set_value(Util::get_tssk_client_info(), 
+                                   new client_addr(((omni::giopStrand &) info.giop_s.strand()).connection->peeraddress()));
     return true;
 }
 
@@ -295,7 +288,7 @@ void BlackBox::insert_cmd_cl_ident(const char *cmd, const ClntIdent &cl_id, long
 // Add client ident info into the client_addr instance and into the box
 //
 
-    omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+    omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
     add_cl_ident(cl_id, static_cast<client_addr *>(ip));
     update_client_host(static_cast<client_addr *>(ip));
 
@@ -424,7 +417,7 @@ void BlackBox::insert_op(BlackBoxElt_OpType op, const ClntIdent &cl_id)
 // Add client ident info into the client_addr instance and into the box
 //
 
-    omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+    omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
     add_cl_ident(cl_id, static_cast<client_addr *>(ip));
     update_client_host(static_cast<client_addr *>(ip));
 
@@ -608,7 +601,7 @@ void BlackBox::insert_attr(const Tango::DevVarStringArray &names, const ClntIden
         return;
     }
 
-    omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+    omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
 
 //
 // Add client ident info into the client_addr instance and into the box
@@ -676,7 +669,7 @@ void BlackBox::insert_attr(const char *name, const ClntIdent &cl_id, TANGO_UNUSE
 
     if (poll_user == false)
     {
-        omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+        omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
         add_cl_ident(cl_id, static_cast<client_addr *>(ip));
         update_client_host(static_cast<client_addr *>(ip));
     }
@@ -747,7 +740,7 @@ void BlackBox::insert_attr(const Tango::DevPipeData &pipe_val, const ClntIdent &
 
     if (poll_user == false)
     {
-        omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+        omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
         add_cl_ident(cl_id, static_cast<client_addr *>(ip));
         update_client_host(static_cast<client_addr *>(ip));
     }
@@ -791,7 +784,7 @@ void BlackBox::insert_attr(const Tango::AttributeValueList_4 &att_list, const Cl
 // Add client ident info into the client_addr instance and into the box
 //
 
-    omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+    omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
     add_cl_ident(cl_id, static_cast<client_addr *>(ip));
     update_client_host(static_cast<client_addr *>(ip));
 
@@ -917,7 +910,7 @@ void BlackBox::insert_wr_attr(const Tango::AttributeValueList_4 &att_list,
 // Add client ident info into the client_addr instance and into the box
 //
 
-    omni_thread::value_t *ip = omni_thread::self()->get_value(key);
+    omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
     add_cl_ident(cl_id, static_cast<client_addr *>(ip));
     update_client_host(static_cast<client_addr *>(ip));
 
@@ -1017,7 +1010,7 @@ void BlackBox::get_client_host()
         th_id = omni_thread::create_dummy();
     }
 
-    omni_thread::value_t *ip = th_id->get_value(key);
+    omni_thread::value_t *ip = th_id->get_value(Util::get_tssk_client_info());
     if (ip == NULL)
     {
         Tango::Util *tg = Tango::Util::instance();
