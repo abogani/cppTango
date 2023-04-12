@@ -1639,10 +1639,10 @@ void Util::init_host_name()
                                     ind = loop;
                                     break;
                                 }
-
-                                if (ind != -1 && (((int)host_names.size() - 1) >= ind))
-                                    hostname = host_names[ind];
                             }
+
+                            if (ind != -1 && (((int)host_names.size() - 1) >= ind))
+                                hostname = host_names[ind];
                         }
                         else
                         {
