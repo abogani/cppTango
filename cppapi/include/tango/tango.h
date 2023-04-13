@@ -122,6 +122,7 @@ namespace Tango {
 //
 
 #include <tango/common/tango_const.h>
+#include <tango/common/utils/assert.h>
 #include <tango/server/except.h>
 #include <tango/server/attrmanip.h>
 #include <tango/server/seqvec.h>
