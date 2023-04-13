@@ -3961,7 +3961,7 @@ void PipeEventData::set_time()
 
 DeviceProxy& EventCallBackBase::get_device_proxy()
 {
-    assert(!callback_list.empty());
+    TANGO_ASSERT(!callback_list.empty());
     return *callback_list[0].device;
 }
 

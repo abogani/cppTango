@@ -987,7 +987,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         }
 
         size_t nb_alt = ev->get_alternate_heartbeat_endpoint().size();
-        assert(nb_alt == ev->get_alternate_event_endpoint().size());
+        TANGO_ASSERT(nb_alt == ev->get_alternate_event_endpoint().size());
         if (nb_alt != 0)
         {
             ret_data->svalue.length((nb_alt + 1) << 1);
@@ -1022,7 +1022,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         {
             event_topic = ev->create_full_event_name(dev, event, obj_name_lower, intr_change);
         }
-        assert(!(event_topic.empty()));
+        TANGO_ASSERT(!(event_topic.empty()));
         TANGO_LOG_DEBUG << "Sending event_topic = " << event_topic << std::endl;
         ret_data->svalue[size] = Tango::string_dup(event_topic.c_str());
 
@@ -1031,7 +1031,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         channel_name += adm_name;
         Tango::string_free(adm_name);
         std::transform(channel_name.begin(), channel_name.end(), channel_name.begin(), ::tolower);
-        assert(!(channel_name.empty()));
+        TANGO_ASSERT(!(channel_name.empty()));
         TANGO_LOG_DEBUG << "Sending channel_name = " << channel_name << std::endl;
         ret_data->svalue[size + 1] = Tango::string_dup(channel_name.c_str());
     }

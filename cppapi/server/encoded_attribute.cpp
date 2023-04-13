@@ -473,7 +473,7 @@ namespace
     template <typename JpegCompressDecompressStruct>
     [[noreturn]] void handle_jpeg_error(j_common_ptr cinfo_ptr)
     {
-        assert(cinfo_ptr->err->msg_code <= cinfo_ptr->err->last_jpeg_message);
+        TANGO_ASSERT(cinfo_ptr->err->msg_code <= cinfo_ptr->err->last_jpeg_message);
         std::string err_msg =
             std::string{"libjpeg error "} +
             std::to_string(cinfo_ptr->err->msg_code) + ": " +
