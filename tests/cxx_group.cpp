@@ -828,6 +828,97 @@ public:
 		CxxTest::TangoPrinter::restore_unset("double_attr_value");
 	}
 
+	// Test write attribute when server starts after client
+
+	void test_write_attribute_when_server_starts_after_client()
+	{
+		// prepare environment
+		CxxTest::TangoPrinter::restore_set("double_attr_value");
+
+		CxxTest::TangoPrinter::kill_server();
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		
+		delete device3;
+		device3 = new DeviceProxy(device3_name);
+		Tango::Group *test_group = new Tango::Group("g1");
+		test_group->add(device3_name);
+		DeviceAttribute value("Double_attr_w", 11.1);
+
+		// test write attribute with remote server not running
+		GroupReplyList rl = test_group->write_attribute(value);
+		TS_ASSERT(rl.has_failed());
+
+		// start server
+		CxxTest::TangoPrinter::start_server("test");
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+
+		// test write attribute with remote server running
+		rl = test_group->write_attribute(value);
+		TS_ASSERT(!rl.has_failed());
+
+		// read attribute to check if new value was properly set
+		GroupAttrReplyList arl = test_group->read_attribute("Double_attr_w");
+		TS_ASSERT(!arl.has_failed());
+		TS_ASSERT_EQUALS(arl.size(), 1u);
+		DevDouble db;
+		arl[0] >> db;
+		TS_ASSERT_EQUALS(db, 11.1);
+
+		// write old value to restore the defaults and read to check if successful
+		rl.reset();
+		arl.reset();
+		DeviceAttribute old_value("Double_attr_w",0.0);
+		rl = group->write_attribute(old_value);
+		TS_ASSERT(!rl.has_failed());
+		arl = group->read_attribute("Double_attr_w");
+		TS_ASSERT(!arl.has_failed());
+		TS_ASSERT_EQUALS(arl.size(), 3u);
+		for(size_t i = 0; i < arl.size(); i++)
+		{
+			DevDouble db;
+			arl[i] >> db;
+			TS_ASSERT_EQUALS(db, 0.0);
+		}
+
+		CxxTest::TangoPrinter::restore_unset("double_attr_value");
+	}
+
+	// Test command execution when server starts after client
+
+	void test_command_execution_when_server_starts_after_client()
+	{
+		// prepare environment
+		CxxTest::TangoPrinter::kill_server();
+		delete device3;
+		device3 = new DeviceProxy(device3_name);
+		Tango::Group *test_group = new Tango::Group("g1");
+		test_group->add(device3_name);
+
+		DeviceData dd;
+		DevDouble db = 4.0;
+		dd << db;
+
+		// test command execution when remote server not running
+		GroupCmdReplyList crl = test_group->command_inout("IODouble",dd);
+		TS_ASSERT(crl.has_failed());
+
+		// start server
+		CxxTest::TangoPrinter::start_server("test");
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+
+		// test command execution with remote server running
+		db = 5.0;
+		dd << db;
+		crl = test_group->command_inout("IODouble",dd);
+		TS_ASSERT(!crl.has_failed());
+		TS_ASSERT(!crl.has_failed());
+		TS_ASSERT_EQUALS(crl.size(), 1u);
+		crl[0] >> db;
+		TS_ASSERT_EQUALS(db, 10.);
+
+		delete test_group;
+	}
+
 	/* Verifies that a group can contain devices from a remote TANGO_HOST
 	 * (a Tango instance different from client's default TANGO_HOST).
 	 * An issue was reported when resolving names containing wildcards.
