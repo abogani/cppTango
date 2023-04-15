@@ -7,5 +7,6 @@ Name: @CMAKE_PROJECT_NAME@
 Description: Tango client/server API library
 Version: @LIBRARY_VERSION@
 Cflags: -I${includedir}
-Requires: libzmq omniORB4 omniCOS4 omniDynamic4 @JPEG_LIB@
+Requires: libzmq omniORB4 omniCOS4 omniDynamic4
+Requires.private: @JPEG_LIB@
 Libs: -L${libdir} -ltango -lzmq -lomniORB4 -lomnithread -lCOS4 -lomniDynamic4 @JPEG_LIB_FLAG@
