@@ -139,7 +139,7 @@ DServerSignal::DServerSignal():TangoMonitor("signal")
 	sig_name[SIGCLD]  = "SIGCLD";
 	sig_name[SIGPWR]  = "SIGPWR";
 #else
-#ifdef __darwin__
+#ifdef __APPLE__
 	sig_name[SIGEMT]  = "SIGEMT";
 	sig_name[SIGINFO] = "SIGINFO";
 #else
@@ -147,7 +147,7 @@ DServerSignal::DServerSignal():TangoMonitor("signal")
 	sig_name[SIGXCPU] = "SIGXCPU";
 	sig_name[SIGXFSZ] = "SIGXFSZ";
 #endif /* __freebsd__ */
-#endif /* __darwin__ */
+#endif /* __APPLE__ */
 #endif /* linux */
 #endif /* _TG_WINDOWS_ */
 

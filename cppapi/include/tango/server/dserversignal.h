@@ -52,7 +52,7 @@ namespace Tango
 //
 //=============================================================================
 
-#if (defined (_TG_WINDOWS_) || (defined __darwin__) || (defined __freebsd__))
+#if (defined (_TG_WINDOWS_) || (defined __APPLE__) || (defined __freebsd__))
 #define		_NSIG		NSIG
 #endif
 

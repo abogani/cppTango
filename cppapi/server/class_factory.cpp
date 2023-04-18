@@ -38,7 +38,7 @@
 //-===========================================================================
 
 #include <tango/server/dserver.h>
-#ifdef __darwin__
+#ifdef __APPLE__
 #include <dlfcn.h>
 #include <cstdlib>
 #include <cstring>
@@ -79,7 +79,7 @@ typedef union _convertor
 	PTR d;
 	FARPROC s;
 }convertor;
-#elif defined(__darwin__)
+#elif defined(__APPLE__)
 typedef void (DServer::*PTR)(void);
 typedef union _convertor
 {
@@ -131,7 +131,7 @@ void DServer::class_factory()
 		(this->*tmp)();
 	}
 
-#elif defined(__darwin__)
+#elif defined(__APPLE__)
     Tango::Util* tg{Tango::Util::instance()};
     const std::string& exe_name{tg->get_ds_unmodified_exec_name()};
 
