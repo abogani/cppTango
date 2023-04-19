@@ -26,10 +26,10 @@ We don't need a signed CLA (contributors license agreement) from you.
 - Before an MR can be merged, the modifications need to be reviewed.
     - You can either assign Reviewers yourself, if you know who should review your MR,
     - or Reviewers will be assigned by the cppTango team.
-    - Hard but soft rule (see [Approval](#approval) below): Each MR needs one reviewer from the [Code Owners](https://gitlab.com/tango-controls/cppTango/-/blob/main/CODEOWNERS) and one additional reviewer.
+    - Each MR needs one reviewer from the [Code Owners](https://gitlab.com/tango-controls/cppTango/-/blob/main/CODEOWNERS) (see [Approval](#approval) below).
 
-- The reviewers will go through the modifications that you made and provide feedback.
-- Once the review has concluded, the reviewers will approve the MR.
+- The reviewer will go through the modifications that you made and provide feedback.
+- Once the review has concluded, the reviewer will approve the MR.
 - After approval, the MR will be merged.
 
 # Merge request acceptance and merging
@@ -50,9 +50,8 @@ In order to make this process as smooth as possible for you, here are a few hint
 # Approval
 
 In general each merge request (MR) needs an approval from one of the [Code Owners](#glossary)
-listed [here](https://gitlab.com/tango-controls/cppTango/-/blob/main/CODEOWNERS) and an additional approval by a second reviewer. This is a hard rule, but it is also soft, because we have exceptions.  :smile:  cppTango is based on teamwork and we work together to make cppTango better, not to blindly follow procedures.
+listed [here](https://gitlab.com/tango-controls/cppTango/-/blob/main/CODEOWNERS).  If the reviewing Code Owner deems the MR sufficiently complicated, they may ask for a review from someone else as well (perhaps not a code owner).
 
-Exceptions to the hard approval rule: The [Code Owners](#glossary), when reviewing an MR, are allowed to make a judgement call and approve and merge immediately. An MR needs to be considered by the reviewing code owner(s) to have low impact. The code owner will then reduce the number of required approvals for the MR to one, approve the MR and merge it.
 
 # Assigning an issue or an MR
 
