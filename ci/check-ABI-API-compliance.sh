@@ -25,14 +25,26 @@ function exit_on_abi_api_breakages() {
   exit 1
 }
 
+function prepare_old() {
+  git worktree remove --force old-branch || true
+  git worktree add old-branch origin/${CI_TARGET_BRANCH}
+}
+
+function prepare_new() {
+  local revision=$(git rev-parse HEAD)
+
+  git worktree remove --force new-branch || true
+  git branch -D ci/abi-api-test-merge || true
+  git worktree add -b ci/abi-api-test-merge new-branch origin/${CI_TARGET_BRANCH}
+  cd new-branch
+  git merge ${revision} --no-commit
+  cd "${base}"
+}
+
 # $1 string prefix
-# $2 git revision
 function generate_info() {
   local prefix=$1
-  local revision=$2
 
-  git worktree remove --force $prefix-branch || true
-  git -c advice.detachedHead=false worktree add ${prefix}-branch ${revision}
   mkdir ${prefix}-branch/build
   cd ${prefix}-branch/build
   cmake                             \
@@ -44,28 +56,18 @@ function generate_info() {
     -DCMAKE_CXX_FLAGS=-gdwarf-4     \
     ..
   cmake --build .
-  abi-dumper libtango.so -o ${base}/libtango-${prefix}-${revision}.dump -lver ${revision}
+  abi-dumper libtango.so -o ${base}/libtango-${prefix}.dump -lver ${prefix}
   cd "${base}"
 }
 
-new_revision=$(git rev-parse HEAD)
-
-# old_revision is the first parent commit not in the history of this branch
-# see the help of git merge-base for the gritty detailed explanation
-old_revision=$(git merge-base --fork-point origin/${CI_TARGET_BRANCH} HEAD)
-
-if [[ "${new_revision}" == "${old_revision}" ]]
-then
-  echo "Nothing to do"
-  exit 0
-fi
-
 base=$(pwd)
 
-generate_info "old" ${old_revision}
-generate_info "new" ${new_revision}
+prepare_old
+prepare_new
+generate_info "old"
+generate_info "new"
 
 # Compare results
-abi-compliance-checker -l libtango -old ${base}/libtango-old-${old_revision}.dump \
-                                   -new ${base}/libtango-new-${new_revision}.dump \
+abi-compliance-checker -l libtango -old ${base}/libtango-old.dump \
+                                   -new ${base}/libtango-new.dump \
                                    -list-affected || exit_on_abi_api_breakages
