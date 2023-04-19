@@ -856,7 +856,8 @@ public:
     bool is_polling_bef_9_def() {return polling_bef_9_def;}
     bool get_polling_bef_9() {return polling_bef_9;}
 
-	// thread specific storage key accessor
+	// thread specific storage key accessor for client information/identification
+    // return: the (omni) thread specific storage key dedicated to client information/identification
 	static inline omni_thread::key_t get_tssk_client_info() {return Util::tssk_client_info;}
 
 private:
