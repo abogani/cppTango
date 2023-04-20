@@ -14,6 +14,7 @@ variables: &variables
   TOOLCHAIN_FILE: ""
   JPEG_LIB: libjpeg-dev
   TANGO_IDL_TAG: "5.1.2"
+  CTEST_PARALLEL_LEVEL: "1"
 
 services:
   - docker:20.10.16-dind
