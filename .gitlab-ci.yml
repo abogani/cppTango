@@ -396,10 +396,6 @@ pkgconfig-fedora37:
     OS_TYPE: fedora37:v1
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
-    # NOTE: Below we are lying to cmake about the OMNIORB_VERSION because the
-    # version provided by Fedora is unsupported, however, for this test we do not
-    # want to run anything, so we don't care.
-    OMNIORB_VERSION: "4.2.5"
   script: # override
     - ci/config.sh
     - ci/run-pkg-config-validation.sh
