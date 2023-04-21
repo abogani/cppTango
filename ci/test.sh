@@ -13,7 +13,6 @@ build_dir="/home/tango/src/build"
 function run_in_container {
   docker exec \
     -w "${build_dir}" \
-    -e CTEST_PARALLEL_LEVEL=$(nproc) \
     -e CTEST_OUTPUT_ON_FAILURE=ON \
     cpp_tango "$@"
 }
