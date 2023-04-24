@@ -1082,7 +1082,7 @@ inline void Util::check_orb_endpoint(int argc, char *argv[])
 //
 //-----------------------------------------------------------------------------
 
-inline void Util::event_name_2_event_type(const std::string &event_name,EventType &et)
+inline void Util::event_name_2_event_type(const std::string &event_name, EventType &et)
 {
 	if (event_name == "change")
 		et = CHANGE_EVENT;
@@ -1096,8 +1096,18 @@ inline void Util::event_name_2_event_type(const std::string &event_name,EventTyp
 		et = USER_EVENT;
 	else if (event_name == "attr_conf" || event_name == "attr_conf_5")
 		et = ATTR_CONF_EVENT;
-	else
+	else if (event_name == "data_ready")
 		et = DATA_READY_EVENT;
+	else if (event_name == "intr_change")
+		et = INTERFACE_CHANGE_EVENT;
+	else if (event_name == "pipe")
+		et = PIPE_EVENT;
+	else 
+	{
+		std::stringstream sss;
+		sss << "Util::event_name_2_event_type: invalid event name specified ['" << event_name << "' is invalid]";
+		TANGO_THROW_EXCEPTION(API_InvalidArgs, sss.str());
+	}
 }
 
 //+-------------------------------------------------------------------------
