@@ -102,6 +102,8 @@ abi-api-compliance-check:
         -w /home/tango/src
         -e CI_TARGET_BRANCH=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
         -e CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
+        -e GIT_COMMITTER_NAME="$GITLAB_USER_NAME"
+        -e GIT_COMMITTER_EMAIL="$GITLAB_USER_EMAIL"
         cpp_tango
         ci/check-ABI-API-compliance.sh
   after_script:
