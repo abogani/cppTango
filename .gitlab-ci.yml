@@ -673,45 +673,13 @@ sanitizer:
     - docker pull registry.gitlab.com/tango-controls/docker/tango-db:5.16
     - ctest -j$(nproc) -E '(event::per_event|old_tests::ring_depth)' --output-on-failure
 
+# Trigger conda dev package build for the default branch
 build-conda-dev-package:
   stage: test
-  image: registry.gitlab.com/tango-controls/docker/conda-build:latest
-  tags:
-    - docker, linux, amd64
-  services: []
   variables:
-    <<: *variables
-    GIT_DEPTH: 1000
-  script:
-    # Download conda_build_config.yaml here as the entrypoint isn't executed
-    # by kubernetes executor: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4125
-    - curl -Ls https://raw.githubusercontent.com/conda-forge/conda-forge-pinning-feedstock/main/recipe/conda_build_config.yaml > ${HOME}/conda_build_config.yaml
-    - mkdir pkg
-    - conda mambabuild --error-overlinking --output-folder pkg recipe
-  artifacts:
-    paths:
-      - pkg/linux-64/*.tar.bz2
-    expire_in: 1 week
-  rules:
-    # Only build conda dev package for default branch
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-publish-conda-dev-package:
-  stage: deploy
-  services: []
-  image: python:3-alpine
-  tags:
-    - docker, linux, amd64
-  before_script:
-    # anaconda-client version on pypi is from 2016...
-    - pip install https://github.com/Anaconda-Platform/anaconda-client/archive/refs/tags/1.8.0.tar.gz
-  script:
-    # Remove previous 9.4.1dev0 version if it exists (we keep only the latest)
-    - anaconda --token $ANACONDA_TOKEN remove -f tango-controls/cpptango/9.4.1dev0 || true
-    - anaconda --token $ANACONDA_TOKEN remove -f tango-controls/cpptango-dbg/9.4.1dev0 || true
-    - anaconda --token $ANACONDA_TOKEN upload pkg/*/*.tar.bz2 --label dev
-  dependencies:
-    - build-conda-dev-package
+    DEPLOY_PACKAGE: "true"
+  trigger:
+    project: tango-controls/conda/cpptango-feedstock
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
