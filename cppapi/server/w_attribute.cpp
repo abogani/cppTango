@@ -1362,4 +1362,32 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
     return ret;
 }
 
+namespace detail {
+
+std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d) {
+    switch(d) {
+        case Tango::ATT_BOOL: return data_type_to_string(DEVVAR_BOOLEANARRAY);
+        case Tango::ATT_SHORT: return data_type_to_string(DEVVAR_SHORTARRAY);
+        case Tango::ATT_LONG: return data_type_to_string(DEVVAR_LONGARRAY);
+        case Tango::ATT_LONG64: return data_type_to_string(DEVVAR_LONG64ARRAY);
+        case Tango::ATT_FLOAT:  return data_type_to_string(DEVVAR_FLOATARRAY);
+        case Tango::ATT_DOUBLE: return data_type_to_string(DEVVAR_DOUBLEARRAY);
+        case Tango::ATT_UCHAR: return data_type_to_string(DEVVAR_CHARARRAY);
+        case Tango::ATT_USHORT: return data_type_to_string(DEVVAR_USHORTARRAY);
+        case Tango::ATT_ULONG: return data_type_to_string(DEVVAR_ULONGARRAY);
+        case Tango::ATT_ULONG64: return data_type_to_string(DEVVAR_ULONG64ARRAY);
+        case Tango::ATT_STRING: return data_type_to_string(DEVVAR_STRINGARRAY);
+        case Tango::ATT_STATE: return data_type_to_string(DEVVAR_STATEARRAY);
+        case Tango::ATT_ENCODED: return data_type_to_string(DEVVAR_ENCODEDARRAY);
+        case Tango::DEVICE_STATE: /* fallthrough */
+        case Tango::ATT_NO_DATA: /* fallthrough */
+        default: {
+            TangoSys_OMemStream oss;
+            oss << "UnknownAttrValUnion<dtype=" << d << ">";
+            return oss.str();
+        }
+    }
+}
+
+}
 } // End of Tango namespace
