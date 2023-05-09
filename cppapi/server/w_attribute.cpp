@@ -1364,6 +1364,58 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
 
 namespace detail {
 
+template<class T>
+bool try_type(const CORBA::TypeCode_ptr type, std::string &result) {
+    if (type->equivalent(tango_type_traits<T>::corba_type_code())) {
+        result = data_type_to_string(tango_type_traits<T>::type_value());
+        return true;
+    }
+
+    return false;
+}
+
+std::string corba_any_to_type_name(const CORBA::Any& any)
+{
+    CORBA::TypeCode_ptr type = any.type();
+
+    std::string result;
+    if (try_type<Tango::DevVarShortArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarUShortArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarLongArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarULongArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarLong64Array>(type, result)) goto end;
+    if (try_type<Tango::DevVarULong64Array>(type, result)) goto end;
+    if (try_type<Tango::DevVarDoubleArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarStringArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarUCharArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarFloatArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarBooleanArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarStateArray>(type, result)) goto end;
+    if (try_type<Tango::DevVarEncodedArray>(type, result)) goto end;
+
+    {
+        TangoSys_OMemStream oss;
+        oss << "UnknownCorbaAny<kind=" << type->kind();
+
+        // `TypeCode`s for basic data types do not have a `name()`, as they can
+        // be distinguished with only their `kind()`.
+
+        try {
+            const char* name = type->name();
+            oss << ",name=" << name;
+        } catch(const CORBA::TypeCode::BadKind&) {
+            /* ignore */
+        }
+
+        oss << ">" << std::ends;
+        result = oss.str();
+    }
+
+end:
+    CORBA::release(type);
+    return result;
+}
+
 std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d) {
     switch(d) {
         case Tango::ATT_BOOL: return data_type_to_string(DEVVAR_BOOLEANARRAY);
