@@ -37,6 +37,7 @@
 #include <omniORB4/internal/giopStream.h>
 
 #include <iterator>
+#include <future>
 
 #ifdef _TG_WINDOWS_
 #include <ws2tcpip.h>
@@ -315,12 +316,6 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
 
     heartbeat_event_name = heartbeat_event_name + ".heartbeat";
     std::transform(heartbeat_event_name.begin(), heartbeat_event_name.end(), heartbeat_event_name.begin(), ::tolower);
-
-//
-// Init data used in no-copy Zmq API
-//
-
-	require_wait = true;
 }
 
 ZmqEventSupplier *ZmqEventSupplier::create(Util *tg)
@@ -926,9 +921,10 @@ void ZmqEventSupplier::push_heartbeat_event()
                 zmq::message_t dummy_mess(dummy_message.size());
                 memcpy(dummy_mess.data(),(void *)dummy_message.data(),dummy_message.size());
 
-                push_mutex.lock();
-                event_pub_sock->send(dummy_mess, zmq::send_flags::none);
-                push_mutex.unlock();
+                {
+                    omni_mutex_lock guard(push_mutex);
+                    event_pub_sock->send(dummy_mess, zmq::send_flags::none);
+                }
 
 //
 // For reference counting on zmq messages which do not have a local scope
@@ -981,38 +977,36 @@ void ZmqEventSupplier::push_heartbeat_event()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-//
-// Small callback used by ZMQ when using the no-copy API to signal that the message has been sent.
-// Take care, this method is also called when ZMQ connection is closed. In such a case, the calling thread is the
-// thread doing the zmq::send() call and it's not the ZMQ thread. When this happens, we do not need to send
-// a signal to the calling thread.
-//
 
+// Small callback used by ZMQ when using the no-copy API to signal that the message has been sent.
+// We now use a std::future (hidden by its associated std::promise) to notify the thread sending the event that
+// the associated data has been fully sent and is no longer used by zeromq (part of the Tango zero copy strategy). 
+// 
+// For information, note that this method is also called when ZMQ connection is closed. In such a case, 
+// the calling thread is the thread doing the zmq::send() call and it's not the ZMQ thread. However this particular
+// behavior has no impact on the current implementation (i.e. the one making use of the std::future).
+//
+// The hint argument is a pointer to std::promise<void>. Callback takes ownership of it and deletes it after setting a value.
+// Setting the value of the promise (i.e., of the underlying std::future) will wakeup any thread waiting on this future.
+// Contrary to what could happen with a condition variable, the std::future garantees that the thread calling std::future::wait 
+// will never be deadlocked. 
 void tg_unlock(TANGO_UNUSED(void *data),void *hint)
 {
-	omni_thread *th_id = omni_thread::self();
-	if (th_id == NULL)
-		th_id = omni_thread::create_dummy();
-
-    ZmqEventSupplier *ev = (ZmqEventSupplier *)hint;
-    omni_mutex &the_mut = ev->get_push_mutex();
-    omni_condition &the_cond = ev->get_push_cond();
-
-	if (th_id->id() != ev->get_calling_th())
-	{
-		omni_mutex_lock oml(the_mut);
-		the_cond.signal();
-	}
-	else
-	{
-		ev->set_require_wait(false);
-	}
+	std::promise<void> * p = static_cast<std::promise<void>*>(hint);
+	p->set_value();
+	delete p;
 }
 
-void ZmqEventSupplier::push_event(DeviceImpl *device_impl,std::string event_type,
-            TANGO_UNUSED(const std::vector<std::string> &filterable_names),TANGO_UNUSED(const std::vector<double> &filterable_data),
-            TANGO_UNUSED(const std::vector<std::string> &filterable_names_lg),TANGO_UNUSED(const std::vector<long> &filterable_data_lg),
-            const struct SuppliedEventData &ev_value,const std::string &obj_name,DevFailed *except,bool inc_cptr)
+void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
+            std::string event_type,
+            TANGO_UNUSED(const std::vector<std::string> &filterable_names),
+            TANGO_UNUSED(const std::vector<double> &filterable_data),
+            TANGO_UNUSED(const std::vector<std::string> &filterable_names_lg),
+            TANGO_UNUSED(const std::vector<long> &filterable_data_lg),
+            const struct SuppliedEventData &ev_value,
+            const std::string &obj_name,
+            DevFailed *except,
+            bool inc_cptr)
 {
 	if (device_impl == NULL)
 		return;
@@ -1032,9 +1026,9 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,std::string event_type
 	if (th_id == NULL)
 		th_id = omni_thread::create_dummy();
 
-	push_mutex.lock();
+	omni_mutex_lock guard(push_mutex);
+
 	calling_th = th_id->id();
-	require_wait = true;
 
 //
 // Create full event name
@@ -1156,10 +1150,15 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,std::string event_type
     memcpy(event_call_mess.data(),event_call_cdr.bufPtr(),event_call_cdr.bufSize());
 
 	bool large_data = false;
-	bool large_message_created = false;
 	size_t mess_size;
 	void *mess_ptr;
     zmq::message_t data_mess;
+//
+// We will need this std::future object only for sending a large data.
+// In other cases it has invalid state and shouldn't be used.
+//
+	std::future<void> large_message_future;
+
 
 	if (ev_value.zmq_mess != NULL)
 	{
@@ -1315,9 +1314,13 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,std::string event_type
 //
 
 		if (large_data == true)
-		{
-			data_mess.rebuild(mess_ptr,mess_size,tg_unlock,(void *)this);
-			large_message_created = true;
+		{	
+			std::promise<void> *large_message_promise = new std::promise<void>();
+			large_message_future = large_message_promise->get_future();
+//
+// We pass ownership of large_message_promise to tg_unlock function.
+//
+			data_mess.rebuild(mess_ptr,mess_size,tg_unlock,(void *)large_message_promise);
 		}
 		else
 		{
@@ -1536,31 +1539,18 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,std::string event_type
 		endian_mess.copy(endian_mess_2);
 
 //
-// release mutex if we haven't use ZMQ no copy mode
+// wait for data to be acyually sent (ZMQ no copy mode)
 //
-
-		if (large_data == false)
+		if (large_data)
 		{
-			push_mutex.release();
-		}
-		else
-		{
-			if (require_wait == true)
-			{
-				push_cond.wait();
-			}
-
-			push_mutex.release();
-		}
+			large_message_future.wait();
+        }
 	}
 	catch(...)
 	{
 		TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event() failed !!!!!!!!!!!\n";
 		if (endian_mess_sent == true)
 			endian_mess.copy(endian_mess_2);
-
-		if (large_message_created == false)
-			push_mutex.release();
 
 		TangoSys_OMemStream o;
 		o << "Can't push ZMQ event for event ";
