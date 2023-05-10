@@ -785,6 +785,7 @@ enum CmdArgType {
 	DEV_ENUM,
 	DEV_PIPE_BLOB,
 	DEVVAR_STATEARRAY,
+	DEVVAR_ENCODEDARRAY,
 	DATA_TYPE_UNKNOWN = 100
 };
 
@@ -904,6 +905,7 @@ const char * const CmdArgTypeName[] = {
 	"DevEnum",
 	"DevPipeBlob",
 	"DevVarStateArray",
+	"DevVarEncodedArray",
 	"Unknown"
 };
 
@@ -1313,6 +1315,14 @@ struct tango_type_traits<Tango::DevVarStateArray>
     using Type = Tango::DevVarStateArray;
     static constexpr auto type_value() {return DEVVAR_STATEARRAY;}
     static constexpr auto att_type_value() { return ATT_STATE;}
+};
+template<>
+struct tango_type_traits<Tango::DevVarEncodedArray>
+{
+    using ArrayType = Tango::DevVarEncodedArray;
+    using Type = Tango::DevVarEncodedArray;
+    static constexpr auto type_value() {return DEVVAR_ENCODEDARRAY;}
+    static constexpr auto att_type_value() { return ATT_ENCODED;}
 };
 
 } // End of Tango namespace
