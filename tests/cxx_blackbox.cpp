@@ -36,16 +36,6 @@ public:
 
 		CxxTest::TangoPrinter::validate_args();
 
-
-// For Windows / Linux compatibility
-		string::size_type pos = client_host.find('.');
-		pos--;
-		if (client_host[pos] == 0x0d)
-		{
-			client_host.erase(pos,1);
-		}
-
-
 //
 // Initialization --------------------------------------------------
 //
