@@ -34,12 +34,14 @@ void EventCallBack::push_event(Tango::PipeEventData* event_data)
 		else
 		{
 			TEST_LOG << "Error sent to callback" << std::endl;
+			cb_err++;
 //			Tango::Except::print_error_stack(event_data->errors);
 		}
 	}
 	catch (...)
 	{
 		TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
+		cb_err++;
 	}
 
 }
@@ -85,6 +87,7 @@ int main(int argc, char **argv)
 //
 
 		assert (cb.cb_executed == 1);
+		assert (cb.cb_err == 0);
 
 		TEST_LOG << "   subscribe_event --> OK" << std::endl;
 
@@ -105,6 +108,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 2);
+		assert (cb.cb_err == 0);
 		assert (cb.root_blob_name == "PipeEventCase0");
 
 //
@@ -123,6 +127,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 3);
+		assert (cb.cb_err == 0);
 		assert (cb.root_blob_name == "PipeEventCase1");
 
 		TEST_LOG << "   received event --> OK" << std::endl;
@@ -143,6 +148,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 4);
+		assert (cb.cb_err == 0);
 		assert (cb.root_blob_name == "PipeEventCase2");
 
 		TEST_LOG << "   received event (with specified date) --> OK" << std::endl;
@@ -163,6 +169,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 5);
+		assert (cb.cb_err == 1);
 
 		TEST_LOG << "   received event (with error) --> OK" << std::endl;
 
@@ -182,6 +189,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 6);
+		assert (cb.cb_err == 1);
 		assert (cb.root_blob_name == "PipeEventCase4");
 		assert (cb.nb_data == 3000);
 
@@ -211,12 +219,14 @@ int main(int argc, char **argv)
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		assert (cb.cb_executed == 2);
+		assert (cb.cb_err == 0);
 
 		DevicePipe pipe_data = device->read_pipe("rPipe");
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 3);
+		assert (cb.cb_err == 0);
 
 		device->unsubscribe_event(eve_id1);
 
