@@ -321,6 +321,7 @@ void ApiUtil::create_orb()
         {"maxGIOPConnectionPerServer", MAX_GIOP_PER_SERVER},
         {"giopMaxMsgSize", MAX_TRANSFER_SIZE},
         {"throwTransientOnTimeOut", "1"},
+        {"exceptionIdInAny","0"},
         {0, 0}};
 
     _orb = CORBA::ORB_init(_argc, _argv, "omniORB4", options);
