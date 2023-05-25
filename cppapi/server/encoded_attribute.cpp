@@ -36,6 +36,7 @@
 
 #ifdef TANGO_USE_JPEG
 #include <iostream>
+#include <jpeglib.h>
 #endif
 
 using namespace Tango;

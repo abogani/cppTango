@@ -38,11 +38,6 @@
 #include <tango/tango.h>
 #include <tango/server/encoded_format.h>
 
-#ifdef TANGO_USE_JPEG
-#include <jpeglib.h>
-#include <csetjmp>
-#endif
-
 namespace Tango
 {
 
