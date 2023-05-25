@@ -541,11 +541,7 @@ int main(int argc, char **argv)
 
 	bool except = false;
 	DeviceAttribute din_nan;
-#if ((defined WIN32))
 	double in_nan = std::numeric_limits<double>::quiet_NaN();
-#else
-	double in_nan = NAN;
-#endif
 	din_nan << in_nan;
 	din_nan.set_name("Double_attr_w");
 	try
@@ -561,11 +557,7 @@ int main(int argc, char **argv)
 	assert( except == true );
 
 	except=false;
-#ifdef WIN32
 	in_nan = std::numeric_limits<double>::infinity();
-#else
-	in_nan=INFINITY;
-#endif
 	din_nan << in_nan;
 	try
 	{	
@@ -580,11 +572,7 @@ int main(int argc, char **argv)
 	assert( except == true );
 
 	except = false;
-#if ((defined WIN32))
 	float in_nan_fl = std::numeric_limits<float>::quiet_NaN();
-#else
-	float in_nan_fl = NAN;
-#endif
 	din_nan << in_nan_fl;
 	din_nan.set_name("Float_attr_w");
 	try
@@ -600,11 +588,7 @@ int main(int argc, char **argv)
 	assert( except == true );
 
 	except=false;
-#ifdef WIN32
 	in_nan_fl = std::numeric_limits<float>::infinity();
-#else
-	in_nan_fl=INFINITY;
-#endif
 	din_nan << in_nan_fl;
 	try
 	{	
