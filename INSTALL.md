@@ -5,7 +5,7 @@ The following software packages are required to build cppTango:
 - A C++14 compliant compiler like GCC, clang or Visual Studio (2017 or newer)
 - [cmake](https://cmake.org), 3.18 or newer
 - [tango-idl](https://gitlab.com/tango-controls/tango-idl)
-- [omniorb](http://omniorb.sourceforge.net), 4.2.1 or newer
+- [omniORB](http://omniorb.sourceforge.net), 4.3.0 or newer
 - [libzmq](https://github.com/zeromq/libzmq), 4.0.5 or newer
 - [cppzmq](https://github.com/zeromq/cppzmq), 4.7.1 or newer
 
@@ -16,10 +16,10 @@ In this case a jpeg implementation must be present:
 
 In the following we assume a linux-based system, see [here](#building-on-windows) for building on Windows.
 
-On current debian systems the dependencies, except tango-idl, are available as distribution packages:
+On current debian systems only some dependencies are available. Most notably tango-idl and omniORB are missing.
 
 ```bash
-sudo apt install cmake cppzmq-dev build-essential git libcos4-dev libomniorb4-dev libomnithread4-dev libzmq3-dev omniidl libjpeg-dev python3
+sudo apt install cmake cppzmq-dev build-essential git libjpeg-dev python3
 ```
 
 If your linux does not have precompiled packages for these dependencies jump to the
@@ -178,10 +178,11 @@ sudo make install
 ## omniORB4
 
 ```bash
-wget -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download -O omniORB-4.2.4.tar.bz2
-tar xjf omniORB-4.2.4.tar.bz2
-cd omniORB-4.2.4
-./configure
+sudo apt install libzstd-dev zlib1g-dev python3-dev libssl-dev
+wget -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.3.0/omniORB-4.3.0.tar.bz2/download -O omniORB-4.3.0.tar.bz2
+tar xjf omniORB-4.3.0.tar.bz2
+cd omniORB-4.3.0
+./configure --with-openssl
 make [-j NUMBER_OF_CPUS]
 sudo make install
 ```
@@ -265,7 +266,7 @@ during installation as well.
 ```bat
 SET ARCH=x64-msvc15
 SET PYVER=py37
-https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.2.1-2/omniorb-4.2.1_%ARCH%_%PYVER%.zip
+https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.3.0/omniorb-4.3.0_%ARCH%_%PYVER%.zip
 https://github.com/tango-controls/Pthread_WIN32/releases/download/2.9.1/pthreads-win32-2.9.1_%ARCH%.zip
 https://github.com/tango-controls/zmq-windows-ci/releases/download/4.0.5-2/zmq-4.0.5-2_%ARCH%.zip
 git clone -b 5.1.2 --depth 1 https://gitlab.com/tango-controls/tango-idl tango-idl-source

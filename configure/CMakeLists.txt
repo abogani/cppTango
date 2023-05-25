@@ -108,7 +108,7 @@ function(tango_find_omniorb_version)
         endif()
 
         file(STRINGS ${acconfig} version_info
-            REGEX "^#define[ \t]+(OMNI_)?PACKAGE_VERSION.*$")
+            REGEX "^#define[ \t]+OMNI_PACKAGE_VERSION.*$")
         list(LENGTH version_info version_info_length)
 
         if (NOT version_info_length EQUAL 1)
@@ -117,7 +117,7 @@ function(tango_find_omniorb_version)
             return()
         endif()
 
-        string(REGEX REPLACE "^#define[ \t]+(OMNI_)?PACKAGE_VERSION[ \t]+\"(([0-9]+\\.?)+)\"" "\\2" version ${version_info})
+        string(REGEX REPLACE "^#define[ \t]+OMNI_PACKAGE_VERSION[ \t]+\"(([0-9]+\\.?)+)\"" "\\2" version ${version_info})
     endif()
 
     set(OMNIORB_VERSION ${version} CACHE STRING "omniORB version")
@@ -129,8 +129,8 @@ if (NOT DEFINED OMNIORB_VERSION)
 endif()
 
 # These define a semi-open "[min, max)" range of allowed omniORB versions
-set(OMNIORB_VERSION_MINIMUM 4.2.2) # See cppTango#1013
-set(OMNIORB_VERSION_MAXIMUM 4.3.1) # See cppTango#760
+set(OMNIORB_VERSION_MINIMUM 4.3.0)
+set(OMNIORB_VERSION_MAXIMUM 4.4.0)
 
 if (OMNIORB_VERSION)
     if (OMNIORB_VERSION VERSION_LESS OMNIORB_VERSION_MINIMUM OR
