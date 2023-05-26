@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
 		eve_id = device->subscribe_event(att_name,Tango::PERIODIC_EVENT,&cb,filters);
 
-		sleep(sleeping_time);
+		std::this_thread::sleep_for(std::chrono::seconds(sleeping_time));
 
 		device->unsubscribe_event(eve_id);
 	}
