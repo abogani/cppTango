@@ -72,11 +72,20 @@ public:
 	{
 		DevShort sh = 10;
 		DevLong lg = 1000;
+		DevUShort us = 42;
 		DeviceAttribute toto("toto", "test_string"),
 				short_attr_w("Short_attr_w", sh), short_attr_w2("Short_attr_w", sh),
 				short_attr("Short_attr", sh),
 				long_attr_w("Long_attr_w", lg);
 		vector<DeviceAttribute> attributes;
+		DeviceAttribute short_attr_wrong_type("Short_attr_w", us);
+
+
+		TS_ASSERT_THROWS_ASSERT(device1->write_attribute(short_attr_wrong_type), Tango::DevFailed &e,
+						TS_ASSERT(string(e.errors[0].reason.in()) == "API_IncompatibleAttrDataType"
+								&& string(e.errors[0].desc.in()).find("expected Tango::DevVarShortArray") != string::npos
+								&& string(e.errors[0].desc.in()).find("found Tango::DevVarUShortArray") != string::npos
+								&& e.errors[0].severity == Tango::ERR));
 
 		TS_ASSERT_THROWS_ASSERT(device1->write_attribute(toto), Tango::DevFailed &e,
 						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrNotFound);
@@ -206,5 +215,6 @@ public:
 		TS_ASSERT_EQUALS(attributes[2].name, "Boolean_attr_w");
 		TS_ASSERT_EQUALS(bl, false);
 	}
+
 };
 #endif // AttrWriteTestSuite_h

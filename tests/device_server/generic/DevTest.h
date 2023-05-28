@@ -240,6 +240,7 @@ public :
     int get_att_poll_period(std::string &_s) {return get_attribute_poll_period(_s);}
     void stop_poll_att(std::string &_s) {stop_poll_attribute(_s);}
 
+	friend class IOInitWAttr;
 	friend class IOAttrThrowEx;
 	friend class IOAddOneElt;
 	friend class IORemoveOneElt;
@@ -298,6 +299,7 @@ protected :
 	bool 				Short_attr_except;
 	bool 				Short_attr_w_except;
 	bool 				Long_attr_except;
+	bool 				io_init_wattr_except;
 	bool 				event_change_attr_except;
 	bool 				event_quality_attr_except;
 	bool 				event_throw_out_of_sync;

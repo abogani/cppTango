@@ -604,8 +604,14 @@ CORBA::Any *IOInitWAttr::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const C
 {
 // Give some default value to some writable attribute
 
+	DevTest& dev = static_cast<DevTest&>(*device);
+
 	Tango::WAttribute &w_sh_attr = device->get_device_attr()->get_w_attr_by_name("Short_attr_w");
-	w_sh_attr.set_write_value((Tango::DevShort)10);
+	if (dev.io_init_wattr_except) {
+		w_sh_attr.set_write_value((Tango::DevUShort)10);
+	} else {
+		w_sh_attr.set_write_value((Tango::DevShort)10);
+	}
 
 	Tango::WAttribute &w_lg_attr = device->get_device_attr()->get_w_attr_by_name("Long_attr_w");
 	w_lg_attr.set_write_value((Tango::DevLong)100);
@@ -715,6 +721,7 @@ CORBA::Any *IOAttrThrowEx::execute(Tango::DeviceImpl *device, const CORBA::Any &
 		(flag_disc == 3) ? dev.event_throw_out_of_sync :
 		(flag_disc == 4) ? dev.Short_attr_w_except :
 		(flag_disc == 5) ? dev.Long_attr_except :
+		(flag_disc == 6) ? dev.io_init_wattr_except :
 		default_flag;
 
 	flag = flag_value;

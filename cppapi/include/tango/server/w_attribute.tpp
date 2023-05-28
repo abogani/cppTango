@@ -143,12 +143,12 @@ namespace
         }
     }
 
-    void _throw_incompatible_exception(long data_type)
+    void _throw_incompatible_exception(CmdArgType expected, const std::string &found)
     {
         std::stringstream o;
 
-        o << "Incompatible attribute type, expected type is : " << data_type << " (even for single value)"
-          << std::ends;
+        o << "Incompatible attribute type: expected Tango::" << expected
+	  << " (even for single value), found Tango::" << found << std::ends;
         Except::throw_exception((const char *) API_IncompatibleAttrDataType,
                                 o.str(),
                                 (const char *) "WAttribute::check_written_value()");
@@ -897,18 +897,28 @@ void WAttribute::_update_any_written_value(const T& any, std::size_t x, std::siz
     }
 }
 
+namespace detail {
+
+std::string corba_any_to_type_name(const CORBA::Any& any);
+std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d);
+
+}
+
 template<class T>
 void WAttribute::_update_written_value(const CORBA::Any& any, std::size_t x, std::size_t y)
 {
 //
 // Check data type inside the any and data number
 //
+    using ArrayType = typename tango_type_traits<T>::ArrayType;
 
-    const typename tango_type_traits<T>::ArrayType *ptr;
+    ArrayType *ptr;
 
     if ((any >>= ptr) == false)
     {
-        _throw_incompatible_exception(data_type);
+        std::string found = detail::corba_any_to_type_name(any);
+        CmdArgType expected = tango_type_traits<ArrayType>::type_value();
+        _throw_incompatible_exception(expected, found);
     }
 
     update_internal_sequence<T>(*ptr, x, y);
@@ -921,12 +931,16 @@ void WAttribute::_update_written_value(const Tango::AttrValUnion &att_union, std
 //
 // Check data type inside the union
 //
+    using ArrayType = typename tango_type_traits<T>::ArrayType;
+
     if (att_union._d() != tango_type_traits<T>::att_type_value())
     {
-        _throw_incompatible_exception(data_type);
+        std::string found = detail::attr_union_dtype_to_type_name(att_union._d());
+        CmdArgType expected = tango_type_traits<ArrayType>::type_value();
+        _throw_incompatible_exception(expected, found);
     }
-    
-    const typename tango_type_traits<T>::ArrayType& seq = get_value<typename tango_type_traits<T>::ArrayType>(att_union);
+
+    const ArrayType& seq = get_value<ArrayType>(att_union);
 
     update_internal_sequence<T>(seq, x, y);
 }

@@ -531,7 +531,6 @@ public:
 	void rollback();
 
 	void check_written_value(const CORBA::Any &,unsigned long,unsigned long);
-	void check_written_value(const DevVarEncodedArray &,unsigned long,unsigned long);
 	void check_written_value(const AttrValUnion &,unsigned long,unsigned long);
 
 	void copy_data(const CORBA::Any &);
