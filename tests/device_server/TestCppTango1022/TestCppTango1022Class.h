@@ -80,11 +80,7 @@ public:
  *	The TestCppTango1022Class singleton definition
  */
 
-#ifdef _TG_WINDOWS_
-class __declspec(dllexport)  TestCppTango1022Class : public Tango::DeviceClass
-#else
 class TestCppTango1022Class : public Tango::DeviceClass
-#endif
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::Additional DServer data members) ENABLED START -----*/
 	/* clang-format on */

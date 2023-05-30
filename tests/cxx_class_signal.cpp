@@ -192,7 +192,7 @@ public:
 
 // Test class signal handling
 // This does not make sense on Windows since there is no SIGALARM signal
-#ifndef _TG_WINDOWS
+#ifndef _TG_WINDOWS_
 	void test_class_signal_handling(void)
 	{
 		DeviceData din, dout;

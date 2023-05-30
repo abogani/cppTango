@@ -50,12 +50,6 @@
  */
 //-------------------------------------------------------------------
 extern "C" {
-#ifdef _TG_WINDOWS_
-
-__declspec(dllexport)
-
-#endif
-
 	Tango::DeviceClass *_create_TestCppTango1022_class(const char *name) {
 		return TestCppTango1022_ns::TestCppTango1022Class::init(name);
 	}
