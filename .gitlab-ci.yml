@@ -77,6 +77,8 @@ abi-api-compliance-check:
   image: debian:10
   tags:
     - dind, skao, docker, linux, amd64
+  # allow failures for next release cycle which is allowed to break ABI
+  allow_failure: true
   before_script:
     - apt-get update && apt-get install -y git docker.io
     - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
