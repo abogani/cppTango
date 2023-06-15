@@ -43,12 +43,16 @@ function teardown {
     # Synchronously stop all running device servers. We need their exit codes.
     "@CMAKE_CURRENT_BINARY_DIR@/kill_server.sh" || true
 
+    docker logs "${tc_mysql_container}" &> ${TANGO_TEST_CASE_DIRECTORY}/mysql.log
+    docker logs "${tc_tango_container}" &> ${TANGO_TEST_CASE_DIRECTORY}/tangodb.log
+
     # Stop docker containers from a background subshell. We do not need to wait
     # for them. Also close stdout and stderr to allow ctest finish the test early.
     (
         exec 1<&-
         exec 2<&-
         docker stop "${tc_tango_container}" "${tc_mysql_container}" &>/dev/null || true
+        docker rm "${tc_tango_container}" "${tc_mysql_container}" &>/dev/null || true
     ) &
 
     # Wait up to 5s for device servers to produce files with exit status.

@@ -11,7 +11,6 @@ tango_container="${2:-tango_cs}"
 
 docker run \
     --name "$mysql_container" \
-    --rm \
     -e MYSQL_ROOT_PASSWORD=root \
     -e MYSQL_INITDB_SKIP_TZINFO=1 \
     -d \
@@ -23,7 +22,6 @@ docker run \
 
 docker run \
     --name "$tango_container" \
-    --rm \
     -e TANGO_HOST=127.0.0.1:10000 \
     -e MYSQL_HOST=mysql_db:3306 \
     -e MYSQL_USER=tango \
