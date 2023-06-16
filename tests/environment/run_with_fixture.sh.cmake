@@ -59,7 +59,10 @@ function teardown {
     num_servers="$(wc -l <"${TANGO_TEST_CASE_DIRECTORY}/server_pids")"
     for step in {1..50}; do
         exit_code_files="$(find "${TANGO_TEST_CASE_DIRECTORY}" -name '*_*_*_exit_code.txt')"
-        num_exit_code_files="$(wc -l <<<"${exit_code_files}")"
+        num_exit_code_files=0
+        if [[ ! -z "$exit_code_files" ]]; then
+            num_exit_code_files="$(wc -l <<<"${exit_code_files}")"
+        fi
         if [[ "${num_servers}" == "${num_exit_code_files}" ]]; then
             break;
         fi
@@ -94,6 +97,7 @@ function teardown {
 }
 
 if [[ -z "${TANGO_TEST_CASE_SKIP_FIXTURE}" ]]; then
+    touch ${TANGO_TEST_CASE_DIRECTORY}/server_pids
     trap teardown EXIT
     tango_host_cmd=$(
         set -e
