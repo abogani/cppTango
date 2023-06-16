@@ -95,13 +95,14 @@ function teardown {
 
 if [[ -z "${TANGO_TEST_CASE_SKIP_FIXTURE}" ]]; then
     trap teardown EXIT
-    eval $(
+    tango_host_cmd=$(
         set -e
         source "@CMAKE_CURRENT_BINARY_DIR@/setup_database.sh" \
             "${tc_mysql_container}" \
             "${tc_tango_container}"
         echo "export TANGO_HOST=$TANGO_HOST"
     )
+    eval $tango_host_cmd
     "@CMAKE_CURRENT_BINARY_DIR@/setup_devices.sh"
 fi
 

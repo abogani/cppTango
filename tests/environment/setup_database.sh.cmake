@@ -39,6 +39,6 @@ tango_ipaddr="$(docker inspect \
 export TANGO_HOST="${tango_ipaddr}:10000"
 
 if ! "@CMAKE_CURRENT_BINARY_DIR@/tango_admin.sh" --ping-database 30; then
-    echo "Failed to ping database"
+    echo >&2 "Failed to ping database"
     exit 1
 fi
