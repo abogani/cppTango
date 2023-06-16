@@ -29,7 +29,7 @@ docker run \
     -e MYSQL_DATABASE=tango \
     --link "$mysql_container":mysql_db \
     -d \
-    registry.gitlab.com/tango-controls/docker/tango-db:5.16 \
+    registry.gitlab.com/tango-controls/docker/tango-db:5.16-1 \
     > /dev/null
 
 tango_ipaddr="$(docker inspect \
@@ -38,7 +38,7 @@ tango_ipaddr="$(docker inspect \
 
 export TANGO_HOST="${tango_ipaddr}:10000"
 
-if ! "@CMAKE_CURRENT_BINARY_DIR@/tango_admin.sh" --ping-database 30; then
+if ! "@CMAKE_CURRENT_BINARY_DIR@/tango_admin.sh" --ping-database 120; then
     echo >&2 "Failed to ping database"
     exit 1
 fi
