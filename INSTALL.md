@@ -3,7 +3,7 @@
 The following software packages are required to build cppTango:
 
 - A C++14 compliant compiler like GCC, clang or Visual Studio (2017 or newer)
-- [cmake](https://cmake.org), 3.7 or newer
+- [cmake](https://cmake.org), 3.18 or newer
 - [tango-idl](https://gitlab.com/tango-controls/tango-idl)
 - [omniorb](http://omniorb.sourceforge.net), 4.2.1 or newer
 - [libzmq](https://github.com/zeromq/libzmq), 4.0.5 or newer
@@ -79,15 +79,15 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 | `CMAKE_INSTALL_PREFIX`       | `/usr/local` or `C:/Program Files`     | Desired install path
 | `CMAKE_VERBOSE_MAKEFILE`     | `OFF`                                  | Allows to increase the verbosity level with `ON`
 | `TANGO_CPPZMQ_BASE`          |                                        | cppzmq installed path
-| `TANGO_ENABLE_COVERAGE`      | `OFF`                                  | Instrument code for coverage analysis (Requires CMake 3.13+)
-| `TANGO_ENABLE_SANITIZER`     | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires CMake 3.13+ and Clang/GCC)
+| `TANGO_ENABLE_COVERAGE`      | `OFF`                                  | Instrument code for coverage analysis
+| `TANGO_ENABLE_SANITIZER`     | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
 | `TANGO_IDL_BASE`             |                                        | tangoidl installed path
 | `TANGO_INSTALL_DEPENDENCIES` | `OFF`                                  | Install dependencies of tango as well (Windows only)
 | `TANGO_JPEG_BASE`            |                                        | libjpeg installed path
 | `TANGO_OMNIIDL_PATH`         |                                        | omniORB4 search path for omniidl
 | `TANGO_OMNI_BASE`            |                                        | omniORB4 installed path
 | `TANGO_USE_JPEG`             | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
-| `TANGO_USE_LIBCPP`           | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires CMake 3.13+ and clang)
+| `TANGO_USE_LIBCPP`           | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires Clang)
 | `TANGO_USE_PCH`              | `ON`                                   | Use precompiled headers (makes compilation much faster)
 | `TANGO_WARNINGS_AS_ERRORS`   | `OFF`                                  | Treat compiler warnings as errors
 | `TANGO_ZMQ_BASE`             |                                        | libzmq installed path
@@ -377,8 +377,6 @@ static/release/x64:
 For 32-bit replace `-A x64` with `-A Win32`.
 
 # Generating code coverage report
-
-> *Note: This requires CMake 3.13 or better.*
 
 > *Note: Code coverage reports are currently supported only with GCC or Clang.*
 

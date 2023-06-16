@@ -36,11 +36,6 @@ set_cflags_and_include(client_objects)
 
 if(WIN32)
     target_compile_definitions(client_objects PRIVATE "${windows_defs}")
-
-    if(TANGO_USE_PCH AND NOT BUILD_SHARED_LIBS)
-        # shared cannot be compiled with PCH due to __@_PchSym_ collision
-        tango_target_pch(client_objects)
-    endif()
 else()
     target_compile_options(client_objects PRIVATE -fPIC)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -52,7 +47,8 @@ else()
     else()
         target_compile_definitions(client_objects PRIVATE _REENTRANT _TANGO_LIB)
     endif()
-    if(TANGO_USE_PCH)
-        tango_target_pch(client_objects)
-    endif()
+endif()
+
+if(TANGO_USE_PCH)
+    target_precompile_headers(client_objects REUSE_FROM common_objects)
 endif()

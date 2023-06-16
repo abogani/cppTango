@@ -432,7 +432,7 @@ cmake-with-locations-and-min-versions:
       autoconf
       nasm
     # Install cmake
-    - curl -L https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh -o /tmp/cmake-install.sh
+    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
     - chmod +x /tmp/cmake-install.sh
     - cd /usr/local
     - /tmp/cmake-install.sh --skip-license --exclude-subdir

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 # don't let cmake guess file extensions
 if(POLICY CMP0115)
@@ -68,9 +68,6 @@ set(PATCH_VERSION "1")
 
 if(WIN32)
     include(configure/cmake_win_defs.cmake)
-    include(configure/cmake_pch_win.cmake)
-else()
-    include(configure/cmake_pch_linux.cmake)
 endif()
 
 #convenient versions

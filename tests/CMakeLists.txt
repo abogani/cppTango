@@ -45,6 +45,15 @@ function(tango_add_test name_tag name command_tag command)
         ${ARGN})
 endfunction()
 
+add_executable(conf_devtest conf_devtest.cpp)
+target_link_libraries(conf_devtest PUBLIC tango ${CMAKE_DL_LIBS})
+add_library(compare_test_object OBJECT compare_test.cpp compare_test.h cxx_common.h)
+if(TANGO_USE_PCH)
+    target_precompile_headers(conf_devtest PRIVATE ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h)
+    target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_DEFS})
+    target_compile_definitions(compare_test_object PRIVATE ${COMMON_TEST_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
+endif()
+
 add_subdirectory(device_server)
 add_subdirectory(cxxtest)
 
@@ -71,7 +80,7 @@ function(CXX_GENERATE_TEST_EXEC name)
     set_cflags_and_include(${name})
 
     if(TANGO_USE_PCH)
-        tango_target_test_pch(${name})
+        target_precompile_headers(${name} REUSE_FROM conf_devtest)
     endif()
 endfunction()
 
@@ -164,18 +173,6 @@ CXX_GENERATE_TEST(cxx_z00_dyn_cmd)
 # CXX_GENERATE_TEST(cxx_zmcast02_local_remote)
 # CXX_GENERATE_TEST(cxx_zmcast03_svr_local_remote)
 
-add_executable(conf_devtest conf_devtest.cpp)
-target_link_libraries(conf_devtest PUBLIC tango ${CMAKE_DL_LIBS})
-add_library(compare_test_object OBJECT compare_test.cpp compare_test.h cxx_common.h)
-if(TANGO_USE_PCH)
-    tango_target_test_pch(conf_devtest)
-    tango_target_test_pch(compare_test_object)
-    target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_DEFS})
-    target_compile_definitions(compare_test_object PRIVATE ${COMMON_TEST_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
-
-    tango_add_pch(tango_test_pch cxx_syntax "${OMNIORB_PKG_CFLAGS_OTHER}")
-endif()
-
 set(TESTS asyn_attr_cb
           asyn_attr
           asyn_attr_multi
@@ -255,7 +252,7 @@ function(TEST_SUITE_ADD_TEST test)
     target_compile_definitions(${test} PUBLIC ${COMMON_TEST_DEFS})
     target_link_libraries(${test} tango ${CMAKE_DL_LIBS})
     if(TANGO_USE_PCH)
-        tango_target_test_pch(${test})
+        target_precompile_headers(${test} REUSE_FROM conf_devtest)
     endif()
         #TODO generalize tests
 #    add_test(NAME "CPP::${test}"  COMMAND $<TARGET_FILE:${test}> ${DEV1} ${DEV2} ${DEV3} ${DEV1_ALIAS})
