@@ -534,7 +534,7 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,CmdHist
     size_t i;
     Tango::DevFailed *save_except;
     bool cmd_failed;
-    CORBA::Any *any_ptr;
+    CORBA::Any *any_ptr = nullptr;
 
     for (i = 0;i < nb_elt;i++)
     {

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 // Read one attribute
 
 		long id;
-		DeviceAttribute *received;
+		DeviceAttribute *received = nullptr;
 
 		id = device->read_attribute_asynch("attr_asyn");
 

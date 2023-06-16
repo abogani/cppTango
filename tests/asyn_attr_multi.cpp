@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 // Read one attribute
 
 		long id;
-		std::vector<DeviceAttribute> *received;
+		std::vector<DeviceAttribute> *received = nullptr;
 		std::vector<std::string> names;
 		names.push_back("attr_asyn");
 		names.push_back("Short_attr");

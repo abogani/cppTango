@@ -188,7 +188,7 @@ public:
 
             // Read the attribute
 			long read_id;
-			DeviceAttribute *received;
+			DeviceAttribute *received = nullptr;
 
 			read_id = device1->read_attribute_asynch("attr_asyn_write");
 
