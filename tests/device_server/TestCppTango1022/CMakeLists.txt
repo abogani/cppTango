@@ -7,6 +7,4 @@ set(SOURCES ClassFactory.cpp
 
 add_executable(TestCppTango1022 ${SOURCES})
 target_link_libraries(TestCppTango1022 PUBLIC tango ${CMAKE_DL_LIBS})
-if(TANGO_USE_PCH)
-    target_precompile_headers(TestCppTango1022 REUSE_FROM conf_devtest)
-endif()
+target_precompile_headers(TestCppTango1022 REUSE_FROM conf_devtest)

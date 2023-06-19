@@ -49,6 +49,4 @@ else()
     endif()
 endif()
 
-if(TANGO_USE_PCH)
-    target_precompile_headers(client_objects REUSE_FROM common_objects)
-endif()
+target_precompile_headers(client_objects REUSE_FROM common_objects)

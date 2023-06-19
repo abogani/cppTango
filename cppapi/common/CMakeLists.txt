@@ -19,6 +19,4 @@ else()
     endif()
 endif()
 
-if(TANGO_USE_PCH)
-    target_precompile_headers(common_objects PRIVATE ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h)
-endif()
+target_precompile_headers(common_objects PRIVATE ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h)

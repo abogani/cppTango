@@ -6,7 +6,7 @@ echo "############################"
 echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
 echo "OS_TYPE=$OS_TYPE"
 echo "TANGO_HOST=$TANGO_HOST"
-echo "TANGO_USE_PCH=$TANGO_USE_PCH"
+echo "CMAKE_DISABLE_PRECOMPILE_HEADERS=$CMAKE_DISABLE_PRECOMPILE_HEADERS"
 echo "BUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
 echo "TANGO_USE_LIBCPP=$TANGO_USE_LIBCPP"
 echo "TANGO_WARNINGS_AS_ERRORS=$TANGO_WARNINGS_AS_ERRORS"
@@ -18,7 +18,7 @@ docker exec cpp_tango mkdir -p /home/tango/src/build
 # set defaults
 MAKEFLAGS=${MAKEFLAGS:- -j $(nproc)}
 TANGO_USE_LIBCPP=${TANGO_USE_LIBCPP:-OFF}
-TANGO_USE_PCH=${TANGO_USE_PCH:-OFF}
+CMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS:-ON}
 BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS:-ON}
 TANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS:-OFF}
 SOURCE_DIR=/home/tango/src
@@ -36,21 +36,21 @@ fi
 # want to run anything, so we don't care.  If you are going to copy this for
 # some other CI job using Fedora, please set STOCK_OMNIORB=OFF and remove the
 # -DOMNIORB_VERSION
-docker exec cpp_tango cmake                                \
-  -Werror=dev                                              \
-  -H${SOURCE_DIR}                                          \
-  -B${BUILD_DIR}                                           \
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                 \
-  -DCMAKE_VERBOSE_MAKEFILE=ON                              \
-  -DTANGO_CPPZMQ_BASE=/home/tango                          \
-  -DTANGO_IDL_BASE=/home/tango                             \
-  -DOMNIORB_VERSION="4.2.5"                                \
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                   \
-  -DTANGO_USE_PCH=${TANGO_USE_PCH}                         \
-  -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                       \
-  -DTANGO_USE_LIBCPP=${TANGO_USE_LIBCPP}                   \
-  -DTANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS}   \
-  -DTANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE:-OFF}    \
+docker exec cpp_tango cmake                                                \
+  -Werror=dev                                                              \
+  -H${SOURCE_DIR}                                                          \
+  -B${BUILD_DIR}                                                           \
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                                 \
+  -DCMAKE_VERBOSE_MAKEFILE=ON                                              \
+  -DTANGO_CPPZMQ_BASE=/home/tango                                          \
+  -DTANGO_IDL_BASE=/home/tango                                             \
+  -DOMNIORB_VERSION="4.2.5"                                                \
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                   \
+  -DCMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS}   \
+  -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                                       \
+  -DTANGO_USE_LIBCPP=${TANGO_USE_LIBCPP}                                   \
+  -DTANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS}                   \
+  -DTANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE:-OFF}                    \
   ${ADDITIONAL_ARGS}
 
 docker exec cpp_tango mkdir -p ${BUILD_DIR}/tests/results
