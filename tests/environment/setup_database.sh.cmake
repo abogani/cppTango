@@ -11,7 +11,6 @@ tango_container="${2:-tango_cs}"
 
 docker run \
     --name "$mysql_container" \
-    --rm \
     -e MYSQL_ROOT_PASSWORD=root \
     -e MYSQL_INITDB_SKIP_TZINFO=1 \
     -d \
@@ -23,7 +22,6 @@ docker run \
 
 docker run \
     --name "$tango_container" \
-    --rm \
     -e TANGO_HOST=127.0.0.1:10000 \
     -e MYSQL_HOST=mysql_db:3306 \
     -e MYSQL_USER=tango \
@@ -31,7 +29,7 @@ docker run \
     -e MYSQL_DATABASE=tango \
     --link "$mysql_container":mysql_db \
     -d \
-    registry.gitlab.com/tango-controls/docker/tango-db:5.16 \
+    registry.gitlab.com/tango-controls/docker/tango-db:5.16-1 \
     > /dev/null
 
 tango_ipaddr="$(docker inspect \
@@ -40,7 +38,7 @@ tango_ipaddr="$(docker inspect \
 
 export TANGO_HOST="${tango_ipaddr}:10000"
 
-if ! "@CMAKE_CURRENT_BINARY_DIR@/tango_admin.sh" --ping-database 30; then
-    echo "Failed to ping database"
+if ! "@CMAKE_CURRENT_BINARY_DIR@/tango_admin.sh" --ping-database 120; then
+    echo >&2 "Failed to ping database"
     exit 1
 fi
