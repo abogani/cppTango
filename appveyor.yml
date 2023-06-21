@@ -111,6 +111,11 @@ init:
   - cmd: cd "C:\projects\cppTango"
 
 install:
+  # CMake
+  - cmd: choco install cmake.install --version 3.22.3 --force -y --installargs '"ADD_CMAKE_TO_PATH=System"'
+  - cmd: refreshenv
+  # remove chocolatey/cpack that conflicts with cmake/cpack
+  - cmd: del C:\ProgramData\chocolatey\bin\cpack.exe
   #copy tree for debug build
   - cmd: cd c:/projects/
   # in case of wrong directory for cloning
