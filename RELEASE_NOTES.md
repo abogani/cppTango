@@ -1,3 +1,69 @@
+# Tango C++ library 9.4.2 Release Notes
+
+June 19th, 2023
+
+Table of Contents
+=================
+  * [What's New (Since Version 9.4.1)?](#whats-new-since-version-941)
+  * [9.4.2 - Bug Fixes](#942-bug-fixes)
+  * [9.4.2 - Changes](#942-changes)
+  * [9.4.2 - Source Code Comparison With Version 9.4.1](#942-source-code-comparison-with-version-941)
+  * [9.4.2 - Milestone](#942-milestone)
+  * [9.4.2 - Feedback](#942-feedback)
+  * [9.4.2 - Contributions](#942-contributions)
+  * [9.4.2 - Acknowledgement](#942-acknowledgement)
+
+## What's New Since Version 9.4.1?
+
+This cppTango release is a bug fix release outside of the normal six month release cycle.
+
+## 9.4.2 - Bug fixes
+
+- A regression introduced in cppTango 9.4.1 was preventing to specify an omniORB endpoint with an empty hostname. This bug is fixed in cppTango 9.4.2 ([#1055](https://gitlab.com/tango-controls/cppTango/-/issues/1055)).
+- MacOS support has been improved ([!1072](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1072), [!1094](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1094), [!1079](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1079), [!1056](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1056))
+- When using `Group::write_attribute`, a bug could prevent client/server connection if the server was started after the client ([#906](https://gitlab.com/tango-controls/cppTango/-/issues/906))
+- After our change of merging strategy, we add to update the ABI-API Compliance Check CI job which was failing from time to time([#1104](https://gitlab.com/tango-controls/cppTango/-/issues/1104))
+- A bug was fixed when the specified endpoint is an ip address ([!1066](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1066),[#1081](https://gitlab.com/tango-controls/cppTango/-/issues/1081))
+
+## 9.4.2 - Changes
+
+- The device server programmer can use the `DeviceImpl::get_client_ident` method to get some information on the current client calling him ([!1028](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1028),[#801](https://gitlab.com/tango-controls/cppTango/-/issues/801)).  
+- cppTango 9.4.2 supports supplying nearly all dependent libraries via PKG_CONFIG_PATH ([!1042](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1042), [#1042](https://gitlab.com/tango-controls/cppTango/-/issues/1042), [#1044](https://gitlab.com/tango-controls/cppTango/-/issues/1044))
+- Testing with debian 12 (bookworm) was added ([!1110](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1110),[#1130](https://gitlab.com/tango-controls/cppTango/-/issues/1130)).
+- CI is no longer using gitlab.com Gitlab runners but using runners provided by several institutes from the Tango-Controls collaboration (many thanks to them!) ([#1110](https://gitlab.com/tango-controls/cppTango/-/issues/1110)).
+- Some changes were required at the CMake level for a better integration with the Tango Source Distribution ([!1047](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1047)).
+- Thomas Ives and Damien Lacoste are now belonging to the Code Owners team in the hope to speed up the development process. Welcome! ([#1098](https://gitlab.com/tango-controls/cppTango/-/issues/1098))
+- The tests are now using a tag when cloning the tango-idl project ([#1082](https://gitlab.com/tango-controls/cppTango/-/issues/1082))
+- The LLVM CI Job is now using LLVM 16 ([!1064](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1064)).
+- The CMake omniidl check has been improved and is no longer called when cross-compiling without an emulator ([!1058](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1058)).  
+- We only support a few versions of omniORB.  We now ensure that a supported version has been found at cmake configuration time. If an invalid version is found, we raise an error ([!1039](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1039), [#1021](https://gitlab.com/tango-controls/cppTango/-/issues/1021)).
+- The commit 0bcb356f introduced a std:: namespace in many places in documentation and comments where this was not intended. 
+These unexpected side effects are no longer present in cppTango 9.4.2 ([!1037](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1037), [#1026](https://gitlab.com/tango-controls/cppTango/-/issues/1026))
+- The documentation about cross-compiling has been improved ([!1049](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1049)).
+
+## 9.4.2 - Source Code Comparison With Version 9.4.1
+
+You can view the source code comparison with Tango 9.4.1, as well as the commits and contributors on this page:
+https://gitlab.com/tango-controls/cppTango/-/compare/9.4.1...9.4.2
+
+## 9.4.2 - Milestone
+
+All the issues and Merge Requests associated to the 9.4.2 milestone can be found here: https://gitlab.com/tango-controls/cppTango/-/milestones/12
+
+## 9.4.2 - Feedback
+
+You can report issues on https://gitlab.com/tango-controls/cppTango/-/issues.  
+If you find a problem which you think could also affect Tango Controls packages other than cppTango, e.g. cppTango and pyTango, or when you don't know where you should create the issue at all - Well, you know now! - then head over to https://gitlab.com/tango-controls/TangoTickets/-/issues.
+
+## 9.4.2 - Contributions
+
+Contributions are always welcome!
+Please do not hesitate to create new Merge Requests in [cppTango Gitlab repository](https://gitlab.com/tango-controls/cppTango). Please refer to [CONTRIBUTING.md](https://gitlab.com/tango-controls/cppTango/-/blob/main/CONTRIBUTING.md) to familiarise yourself with the easiest way to contribute to the cppTango project.
+
+## 9.4.2 - Acknowledgement
+
+Many thanks to all the persons who contributed to this release, to the Tango kernel team and to the Tango community for its ideas, feedback, bug reports and tests.
+
 # Tango C++ library 9.4.1 Release Notes
 
 February 2nd, 2023
