@@ -41,6 +41,7 @@ workflow:
         --rm
         --name cpp_tango
         --user root
+        --ulimit core=-1
         -e TANGO_HOST=${TANGO_HOST}
         -e TOOLCHAIN_FILE=${TOOLCHAIN_FILE}
         -e DOCKER_HOST=tcp://$(getent hosts docker | awk '{ print $1 }'):2375
@@ -58,13 +59,14 @@ workflow:
     - ci/run.sh
     - ci/test.sh
   after_script:
+    - ci/print_coredumps.sh
     - docker stop cpp_tango || true
     - mkdir -p build/tests/results
   artifacts:
     when: always
     paths:
       - build/tests/results
-      - build/tests/*/core.*
+      - build/tests/core.*
 
 abi-api-compliance-check:
   variables:
@@ -174,7 +176,7 @@ coverage:
         path: coverage.xml
     paths:
       - build/tests/results
-      - build/tests/*/core.*
+      - build/tests/core.*
       - coverage.xml
       - coverage.tar.gz
   # keyword/regex to extract total coverage % for this CI job (which is also called "coverage")
@@ -633,6 +635,7 @@ sanitizer:
       clang-12
       cmake
       docker.io
+      gdb
       git
       iproute2
       libcos4-dev

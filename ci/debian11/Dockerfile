@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
   cmake                                  \
   curl                                   \
   gcovr                                  \
+  gdb                                    \
   git                                    \
   libcos4-dev                            \
   libomniorb4-dev                        \
