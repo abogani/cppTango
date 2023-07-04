@@ -301,7 +301,6 @@ public :
 
     int get_zmq_release() {return zmq_release;}
     int get_calling_th() {return calling_th;}
-    void set_require_wait(bool bo) {require_wait=bo;}
 
     std::string create_full_event_name(DeviceImpl *device_impl,
                                   const std::string &event_type,
@@ -369,7 +368,6 @@ private :
 	int							zmq_release;			// ZMQ lib release
 
 	int 						calling_th;
-	bool 						require_wait;
 
 	void tango_bind(zmq::socket_t *,std::string &);
 	unsigned char test_endian();
