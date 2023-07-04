@@ -29,7 +29,7 @@ environment:
       CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
       PYTHONPATH: c:\Python37-x64\
       PYVER: "py37"
-      TANGO_USE_PCH: ON
+      CMAKE_DISABLE_PRECOMPILE_HEADERS: OFF
       TANGO_WARNINGS_AS_ERRORS: ON
       NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/%NASM_VERSION%/win64/nasm-%NASM_VERSION%-installer-x64.exe"
       BUILD_SHARED_LIBS: ON
@@ -42,7 +42,7 @@ environment:
       CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
       PYTHONPATH: c:\Python37-x64\
       PYVER: "py37"
-      TANGO_USE_PCH: ON
+      CMAKE_DISABLE_PRECOMPILE_HEADERS: OFF
       TANGO_WARNINGS_AS_ERRORS: ON
       NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/%NASM_VERSION%/win64/nasm-%NASM_VERSION%-installer-x64.exe"
       BUILD_SHARED_LIBS: OFF
@@ -54,7 +54,7 @@ environment:
       CMAKE_GENERATOR: "Visual Studio 15 2017"
       PYTHONPATH: c:\Python37\
       PYVER: "py37"
-      TANGO_USE_PCH: ON
+      CMAKE_DISABLE_PRECOMPILE_HEADERS: OFF
       TANGO_WARNINGS_AS_ERRORS: OFF
       NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/%NASM_VERSION%/win32/nasm-%NASM_VERSION%-installer-x86.exe"
       BUILD_SHARED_LIBS: ON
@@ -66,7 +66,7 @@ environment:
       CMAKE_GENERATOR: "Visual Studio 15 2017"
       PYTHONPATH: c:\Python37\
       PYVER: "py37"
-      TANGO_USE_PCH: ON
+      CMAKE_DISABLE_PRECOMPILE_HEADERS: OFF
       TANGO_WARNINGS_AS_ERRORS: OFF
       NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/%NASM_VERSION%/win32/nasm-%NASM_VERSION%-installer-x86.exe"
       BUILD_SHARED_LIBS: OFF
@@ -111,6 +111,11 @@ init:
   - cmd: cd "C:\projects\cppTango"
 
 install:
+  # CMake
+  - cmd: choco install cmake.install --version 3.22.3 --force -y --installargs '"ADD_CMAKE_TO_PATH=System"'
+  - cmd: refreshenv
+  # remove chocolatey/cpack that conflicts with cmake/cpack
+  - cmd: del C:\ProgramData\chocolatey\bin\cpack.exe
   #copy tree for debug build
   - cmd: cd c:/projects/
   # in case of wrong directory for cloning
@@ -137,11 +142,11 @@ install:
   - cmd: set TANGO_CPPZMQ_BASE=C:/projects/zeromq/
   - cmd: set TANGO_OMNI_BASE=C:/projects/omniorb/
   - cmd: set PTHREAD_WIN=C:/projects/pthreads-win32/
-  - cmd: if not defined TANGO_USE_PCH set TANGO_USE_PCH=OFF
+  - cmd: if not defined CMAKE_DISABLE_PRECOMPILE_HEADERS set CMAKE_DISABLE_PRECOMPILE_HEADERS=ON
   - cmd: set TANGO_WARNINGS_AS_ERRORS=%TANGO_WARNINGS_AS_ERRORS%
   - cmd: md build
   - cmd: cd build
-  - cmd: cmake -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DTANGO_WARNINGS_AS_ERRORS=%TANGO_WARNINGS_AS_ERRORS% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_CXX_FLAGS_RELEASE="%CMAKE_CXX_FLAGS_RELEASE%" -DCMAKE_CXX_FLAGS_DEBUG="%CMAKE_CXX_FLAGS_DEBUG%" -DTANGO_IDL_BASE="%TANGO_IDL_BASE%" -DTANGO_OMNI_BASE="%TANGO_OMNI_BASE%" -DTANGO_ZMQ_BASE="%TANGO_ZMQ_BASE%" -DTANGO_CPPZMQ_BASE="%TANGO_CPPZMQ_BASE%" -DTANGO_JPEG_BASE="%TANGO_JPEG_BASE%%JPEG_ARCH%" -DPTHREAD_WIN=%PTHREAD_WIN% -DTANGO_USE_PCH=OFF -DTANGO_USE_JPEG=ON -DJPEG_DEBUG_POSTFIX=d -DBUILD_TESTING=OFF -DTANGO_INSTALL_DEPENDENCIES=ON ..
+  - cmd: cmake -G "%CMAKE_GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DTANGO_WARNINGS_AS_ERRORS=%TANGO_WARNINGS_AS_ERRORS% -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_CXX_FLAGS_RELEASE="%CMAKE_CXX_FLAGS_RELEASE%" -DCMAKE_CXX_FLAGS_DEBUG="%CMAKE_CXX_FLAGS_DEBUG%" -DTANGO_IDL_BASE="%TANGO_IDL_BASE%" -DTANGO_OMNI_BASE="%TANGO_OMNI_BASE%" -DTANGO_ZMQ_BASE="%TANGO_ZMQ_BASE%" -DTANGO_CPPZMQ_BASE="%TANGO_CPPZMQ_BASE%" -DTANGO_JPEG_BASE="%TANGO_JPEG_BASE%%JPEG_ARCH%" -DPTHREAD_WIN=%PTHREAD_WIN% -DCMAKE_DISABLE_PRECOMPILE_HEADERS="%CMAKE_DISABLE_PRECOMPILE_HEADERS%" -DTANGO_USE_JPEG=ON -DJPEG_DEBUG_POSTFIX=d -DBUILD_TESTING=OFF -DTANGO_INSTALL_DEPENDENCIES=ON ..
 
 clone_folder: C:/projects/cppTango
 

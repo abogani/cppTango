@@ -6,7 +6,7 @@ variables: &variables
   RUN_TESTS: "ON"
   STOCK_CPPZMQ: "ON"
   STOCK_OMNIORB: "ON"
-  TANGO_USE_PCH: "ON"
+  CMAKE_DISABLE_PRECOMPILE_HEADERS: "OFF"
   CMAKE_BUILD_TYPE: "Debug"
   TANGO_USE_JPEG: "ON"
   BUILD_SHARED_LIBS: "ON"
@@ -124,7 +124,7 @@ llvm-latest:
     OS_TYPE: llvm-latest
     RUN_TESTS: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
-    TANGO_USE_PCH: "OFF"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     STOCK_CPPZMQ: "OFF"
 
 gcc-latest:
@@ -134,7 +134,7 @@ gcc-latest:
     OS_TYPE: gcc-latest
     RUN_TESTS: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
-    TANGO_USE_PCH: "OFF"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     STOCK_CPPZMQ: "OFF"
 
 ubuntu-20.04:
@@ -196,7 +196,7 @@ debian11-no-pch:
   variables:
     <<: *variables
     OS_TYPE: debian11
-    TANGO_USE_PCH: "OFF"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     RUN_TESTS: "OFF"
     STOCK_CPPZMQ: "OFF"
 
@@ -232,7 +232,7 @@ debian11-cross-32bit:
     RUN_TESTS: "OFF"
     STOCK_CPPZMQ: "OFF"
     TOOLCHAIN_FILE: "configure/toolchain-i686.cmake"
-    TANGO_USE_PCH: "OFF"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     TANGO_USE_JPEG: "OFF"
 
@@ -261,6 +261,14 @@ clang-analyzer:
     CXX: /usr/lib/llvm-12/bin/clang++
   services: []
   before_script:
+    - apt-get update
+    # add kitware repository for cmake
+    - apt-get install -y ca-certificates gpg wget
+    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
+      | gpg --dearmor -
+      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
+      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
     - apt-get update
     - >
       apt-get install -y
@@ -295,7 +303,7 @@ clang-analyzer:
       -DCMAKE_BUILD_TYPE=Debug
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DBUILD_TESTING=OFF
-      -DTANGO_USE_PCH=OFF
+      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
     - make -C build idl_source
     # scan-build command must be wrapped in quotes because
     # --analyzer-config option cannot contain whitespaces.
@@ -342,6 +350,14 @@ clang-tidy:
   services: []
   before_script:
     - apt-get update
+    # add kitware repository for cmake
+    - apt-get install -y ca-certificates gpg wget
+    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
+      | gpg --dearmor -
+      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
+      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+    - apt-get update
     - >
       apt-get install -y
       clang-tidy-11
@@ -378,7 +394,7 @@ clang-tidy:
       -DCMAKE_UNITY_BUILD=ON
       -DCMAKE_UNITY_BUILD_BATCH_SIZE=0
       -DBUILD_TESTING=OFF
-      -DTANGO_USE_PCH=OFF
+      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
     - make -C build idl_source
     - >
       run-clang-tidy-11
@@ -432,7 +448,7 @@ cmake-with-locations-and-min-versions:
       autoconf
       nasm
     # Install cmake
-    - curl -L https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.sh -o /tmp/cmake-install.sh
+    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
     - chmod +x /tmp/cmake-install.sh
     - cd /usr/local
     - /tmp/cmake-install.sh --skip-license --exclude-subdir
@@ -564,7 +580,7 @@ doxygen-documentation:
     - >
       apt-get install -y
       build-essential
-      cmake
+      curl
       doxygen
       git
       graphviz
@@ -575,6 +591,10 @@ doxygen-documentation:
       omniidl
       libjpeg-dev
       pkg-config
+    # install cmake 3.18
+    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
+    - chmod +x /tmp/cmake-install.sh
+    - /tmp/cmake-install.sh --prefix=/usr/local --skip-license --exclude-subdir
     # Install tango-idl
     - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
     - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
@@ -630,6 +650,14 @@ sanitizer:
     - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
     - echo "1" > /proc/sys/net/ipv4/ip_forward
     - apt-get update
+    # add kitware repository for cmake
+    - apt-get install -y ca-certificates gpg wget
+    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
+      | gpg --dearmor -
+      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
+      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+    - apt-get update
     - >
       apt-get install -y
       clang-12
@@ -671,7 +699,7 @@ sanitizer:
       -Werror=dev
       -DCMAKE_BUILD_TYPE=Debug
       -DBUILD_TESTING=ON
-      -DTANGO_USE_PCH=ON
+      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF
       -DTANGO_ENABLE_SANITIZER=$SANITIZER
     - make
     - docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
@@ -696,7 +724,7 @@ libcpp:
     RUN_TESTS: "OFF"
     STOCK_CPPZMQ: "OFF"
     TANGO_WARNINGS_AS_ERRORS: "ON"
-    TANGO_USE_PCH: "OFF"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_USE_LIBCPP: "ON"
 
 pkgconfig-fedora37:

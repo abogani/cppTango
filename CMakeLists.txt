@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 # don't let cmake guess file extensions
 if(POLICY CMP0115)
@@ -24,12 +24,6 @@ include(CTest)
 option(TANGO_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(BUILD_SHARED_LIBS "Build a shared library instead of static" ON)
 option(TANGO_USE_LIBCPP "Build against libc++" OFF)
-
-option(TANGO_USE_PCH "Use precompiled header for include/tango/tango.h" ON)
-if (TANGO_USE_PCH AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU|MSVC|Clang"))
-    message(WARNING "Precompiled headers are not supported for selected compiler.")
-    set(TANGO_USE_PCH OFF)
-endif()
 
 option(TANGO_ENABLE_COVERAGE "Instrument code for coverage analysis" OFF)
 if (TANGO_ENABLE_COVERAGE AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
@@ -68,9 +62,6 @@ set(PATCH_VERSION "1")
 
 if(WIN32)
     include(configure/cmake_win_defs.cmake)
-    include(configure/cmake_pch_win.cmake)
-else()
-    include(configure/cmake_pch_linux.cmake)
 endif()
 
 #convenient versions

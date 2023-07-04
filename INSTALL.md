@@ -3,7 +3,7 @@
 The following software packages are required to build cppTango:
 
 - A C++14 compliant compiler like GCC, clang or Visual Studio (2017 or newer)
-- [cmake](https://cmake.org), 3.7 or newer
+- [cmake](https://cmake.org), 3.18 or newer
 - [tango-idl](https://gitlab.com/tango-controls/tango-idl)
 - [omniorb](http://omniorb.sourceforge.net), 4.2.1 or newer
 - [libzmq](https://github.com/zeromq/libzmq), 4.0.5 or newer
@@ -71,26 +71,26 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 
 <!-- Keep the variable list sorted -->
 
-| Variable name                |  Default value                         | Description
-|------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------
-| `BUILD_SHARED_LIBS`          | `ON`                                   | Build tango as shared library, `OFF` creates a static library
-| `BUILD_TESTING`              | `ON`                                   | Build the test suite
-| `CMAKE_BUILD_TYPE`           | `Release`                              | Compilation type, can be `Release`, `Debug` or `RelWithDebInfo/MinSizeRel` (Linux only)
-| `CMAKE_INSTALL_PREFIX`       | `/usr/local` or `C:/Program Files`     | Desired install path
-| `CMAKE_VERBOSE_MAKEFILE`     | `OFF`                                  | Allows to increase the verbosity level with `ON`
-| `TANGO_CPPZMQ_BASE`          |                                        | cppzmq installed path
-| `TANGO_ENABLE_COVERAGE`      | `OFF`                                  | Instrument code for coverage analysis (Requires CMake 3.13+)
-| `TANGO_ENABLE_SANITIZER`     | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires CMake 3.13+ and Clang/GCC)
-| `TANGO_IDL_BASE`             |                                        | tangoidl installed path
-| `TANGO_INSTALL_DEPENDENCIES` | `OFF`                                  | Install dependencies of tango as well (Windows only)
-| `TANGO_JPEG_BASE`            |                                        | libjpeg installed path
-| `TANGO_OMNIIDL_PATH`         |                                        | omniORB4 search path for omniidl
-| `TANGO_OMNI_BASE`            |                                        | omniORB4 installed path
-| `TANGO_USE_JPEG`             | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
-| `TANGO_USE_LIBCPP`           | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires CMake 3.13+ and clang)
-| `TANGO_USE_PCH`              | `ON`                                   | Use precompiled headers (makes compilation much faster)
-| `TANGO_WARNINGS_AS_ERRORS`   | `OFF`                                  | Treat compiler warnings as errors
-| `TANGO_ZMQ_BASE`             |                                        | libzmq installed path
+| Variable name                      |  Default value                         | Description
+|------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------
+| `BUILD_SHARED_LIBS`                | `ON`                                   | Build tango as shared library, `OFF` creates a static library
+| `BUILD_TESTING`                    | `ON`                                   | Build the test suite
+| `CMAKE_BUILD_TYPE`                 | `Release`                              | Compilation type, can be `Release`, `Debug` or `RelWithDebInfo/MinSizeRel` (Linux only)
+| `CMAKE_DISABLE_PRECOMPILE_HEADERS` | `OFF`                                  | Precompiled headers (makes compilation much faster)
+| `CMAKE_INSTALL_PREFIX`             | `/usr/local` or `C:/Program Files`     | Desired install path
+| `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                  | Allows to increase the verbosity level with `ON`
+| `TANGO_CPPZMQ_BASE`                |                                        | cppzmq installed path
+| `TANGO_ENABLE_COVERAGE`            | `OFF`                                  | Instrument code for coverage analysis
+| `TANGO_ENABLE_SANITIZER`           | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
+| `TANGO_IDL_BASE`                   |                                        | tangoidl installed path
+| `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                  | Install dependencies of tango as well (Windows only)
+| `TANGO_JPEG_BASE`                  |                                        | libjpeg installed path
+| `TANGO_OMNIIDL_PATH`               |                                        | omniORB4 search path for omniidl
+| `TANGO_OMNI_BASE`                  |                                        | omniORB4 installed path
+| `TANGO_USE_JPEG`                   | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
+| `TANGO_USE_LIBCPP`                 | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires Clang)
+| `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                  | Treat compiler warnings as errors
+| `TANGO_ZMQ_BASE`                   |                                        | libzmq installed path
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
@@ -335,7 +335,7 @@ cmake --build . --target install
 cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release           \
       -DCMAKE_CXX_FLAGS_RELEASE="/MT" -DCMAKE_CXX_FLAGS_DEBUG="/MTd" -DTANGO_IDL_BASE="c:/projects/tango-idl"    \
       -DTANGO_OMNI_BASE="c:/projects/omniorb" -DTANGO_ZMQ_BASE="c:/projects/zeromq" -DTANGO_CPPZMQ_BASE="c:/projects/zeromq" \
-      -DPTHREAD_WIN="c:/projects/pthreads-win32" -DTANGO_USE_PCH=OFF -DBUILD_TESTING=OFF ..
+      -DPTHREAD_WIN="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
 ```
 
 - Compile with `cmake --build .`
@@ -377,8 +377,6 @@ static/release/x64:
 For 32-bit replace `-A x64` with `-A Win32`.
 
 # Generating code coverage report
-
-> *Note: This requires CMake 3.13 or better.*
 
 > *Note: Code coverage reports are currently supported only with GCC or Clang.*
 

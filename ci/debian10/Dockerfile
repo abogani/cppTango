@@ -13,7 +13,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
   apt-utils                              \
   build-essential                        \
-  cmake                                  \
   curl                                   \
   gcovr                                  \
   gdb                                    \
@@ -26,6 +25,10 @@ RUN apt-get update && apt-get install -y \
   omniidl                                \
   ${JPEG_LIB}                            \
   python3
+
+RUN curl -k -o /tmp/cmake-install.sh https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh
+RUN chmod +x /tmp/cmake-install.sh
+RUN /tmp/cmake-install.sh --skip-license --exclude-subdir
 
 RUN apt-get install -y \
     apt-transport-https \
