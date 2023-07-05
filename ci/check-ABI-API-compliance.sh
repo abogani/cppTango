@@ -26,15 +26,15 @@ function exit_on_abi_api_breakages() {
 }
 
 function prepare_old() {
-  git worktree remove --force old-branch || true
+  git worktree remove --force old-branch 2>/dev/null || true
   git worktree add old-branch origin/${CI_TARGET_BRANCH}
 }
 
 function prepare_new() {
   local revision=$(git rev-parse HEAD)
 
-  git worktree remove --force new-branch || true
-  git branch -D ci/abi-api-test-merge || true
+  git worktree remove --force new-branch 2>/dev/null || true
+  git branch -D ci/abi-api-test-merge 2>/dev/null || true
   git worktree add -b ci/abi-api-test-merge new-branch origin/${CI_TARGET_BRANCH}
   cd new-branch
   git merge ${revision} --no-commit
