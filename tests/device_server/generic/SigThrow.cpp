@@ -49,11 +49,6 @@ CORBA::Any *IOThrow::execute(TANGO_UNUSED(Tango::DeviceImpl *device),const CORBA
   			         (const char *)"This is a test ",
 			         (const char *)"IOThrow::execute()",
 			         (Tango::ErrSeverity)severity );
-
-#if ((defined WIN32) || (defined __SUNPRO_CC))
-   CORBA::Any *out = NULL;
-   return(out);
-#endif
 }
 
 
@@ -100,11 +95,6 @@ CORBA::Any *IOExcept::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUS
   Tango::Except::throw_exception((const char *)API_ThrowException,
   			         (const char *)"This is a test ",
 			         (const char *)"IOExcept::execute()");
-
-#if ((defined WIN32) || (defined __SUNPRO_CC))
-  CORBA::Any *out = NULL;
-  return out;
-#endif
 }
 
 
@@ -187,11 +177,6 @@ CORBA::Any *IOReThrow::execute(TANGO_UNUSED(Tango::DeviceImpl *device),const COR
 			       		  (const char *)"IOReThrow::execute()",
 			       		  (Tango::ErrSeverity)((theException->lvalue)[nb_except - 1]));
   }
-
-#if ((defined WIN32) || (defined __SUNPRO_CC))
-   CORBA::Any *out = NULL;
-   return out;
-#endif
 }
 
 
