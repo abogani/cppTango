@@ -117,10 +117,10 @@ public:
     void init_seq(char *,CORBA::ULong &,TangoCdrMemoryStream &);
 
     template <typename T>
-    void set_seq(T &) {std::cerr << "In default ZmqAttrValUnion::set_seq!" << std::endl;assert(false);}
+    void set_seq(T &) {std::cerr << "In default ZmqAttrValUnion::set_seq!" << std::endl;TANGO_ASSERT(false);}
 
     template <typename T>
-    T &get_seq() {std::cerr << "In default ZmqAttrValUnion::get_seq!" << std::endl;assert(false);}
+    T &get_seq() {std::cerr << "In default ZmqAttrValUnion::get_seq!" << std::endl;TANGO_ASSERT(false);}
 };
 
 /***            ZmqAttributeValue_4               ***/

@@ -441,7 +441,7 @@ public:
  * @return The attribute data size
  */
 	long get_data_size() {
-            assert(data_size <= std::uint32_t((std::numeric_limits<long>::max)()));
+            TANGO_ASSERT(data_size <= std::uint32_t((std::numeric_limits<long>::max)()));
             return static_cast<long>(data_size);
         }
 /**

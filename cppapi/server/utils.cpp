@@ -50,7 +50,6 @@
 
 #ifndef _TG_WINDOWS_
 #include <unistd.h>
-#include <assert.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #else

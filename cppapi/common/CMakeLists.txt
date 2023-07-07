@@ -1,4 +1,4 @@
-set(SOURCES net.cpp)
+set(SOURCES net.cpp assert.cpp)
 
 add_library(common_objects OBJECT ${SOURCES})
 add_dependencies(common_objects idl_objects)

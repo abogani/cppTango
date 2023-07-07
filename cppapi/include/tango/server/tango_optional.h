@@ -2,7 +2,7 @@
 #define _TANGO_OPTIONAL_H
 
 #include <utility>
-#include <cassert>
+#include <tango/common/utils/assert.h>
 
 namespace Tango
 {
@@ -58,25 +58,25 @@ public:
 
     T& operator*()
     {
-        assert(has_value_);
+        TANGO_ASSERT(has_value_);
         return value_;
     }
 
     const T& operator*() const
     {
-        assert(has_value_);
+        TANGO_ASSERT(has_value_);
         return value_;
     }
 
     T* operator->()
     {
-        assert(has_value_);
+        TANGO_ASSERT(has_value_);
         return &operator*();
     }
 
     const T* operator->() const
     {
-        assert(has_value_);
+        TANGO_ASSERT(has_value_);
         return &operator*();
     }
 

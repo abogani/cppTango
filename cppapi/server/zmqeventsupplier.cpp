@@ -84,8 +84,8 @@ ZmqEventSupplier *ZmqEventSupplier::_instance = NULL;
 void get_zmq_port_from_envvar(const char *zmq_port_env_var, std::string &endpoint)
 {
     // We expect a valid endpoint without a port specification - so ends in ':'
-    assert(!endpoint.empty());
-    assert(endpoint.back() == ':');
+    TANGO_ASSERT(!endpoint.empty());
+    TANGO_ASSERT(endpoint.back() == ':');
     // default to ephemeral port request for zmq, so that this is always the drop
     // through incase of parsing failures
     std::string zmq_port("*");
@@ -1450,14 +1450,14 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 			if (!ret)
 			{
 				std::cerr << "Name message returned false, assertion!!!!" << std::endl;
-				assert(false);
+				TANGO_ASSERT(false);
 			}
 
 			ret = pub->send(*endian_mess_ptr,zmq::send_flags::sndmore);
 			if (!ret)
 			{
 				std::cerr << "Endian message returned false, assertion!!!!" << std::endl;
-				assert(false);
+				TANGO_ASSERT(false);
 			}
 			endian_mess_sent = true;
 
@@ -1465,14 +1465,14 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 			if (!ret)
 			{
 				std::cerr << "Call message returned false, assertion!!!!" << std::endl;
-				assert(false);
+				TANGO_ASSERT(false);
 			}
 
 			ret = pub->send(*data_mess_ptr,zmq::send_flags::none);
 			if (!ret)
 			{
 				std::cerr << "Data message returned false, assertion!!!!" << std::endl;
-				assert(false);
+				TANGO_ASSERT(false);
 			}
 
 			send_nb--;
