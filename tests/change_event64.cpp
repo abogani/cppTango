@@ -10,6 +10,8 @@ public:
 	int old_sec,old_usec;
 	DevLong64 val;
 	long val_size;
+
+	unique_ptr<Tango::DeviceAttribute> attr_err_info;
 };
 
 void EventCallBack::push_event(Tango::EventData* event_data)
@@ -43,6 +45,9 @@ void EventCallBack::push_event(Tango::EventData* event_data)
 		}
 		else
 		{
+			TEST_LOG << "Call get_err_attr()..." << std::endl;
+			attr_err_info = event_data->get_attr_err_info();
+			
 			TEST_LOG << "Error send to callback" << std::endl;
 			cb_err++;
 		}
@@ -224,9 +229,10 @@ int main(int argc, char **argv)
 		TEST_LOG << "   CallBack executed when spectrum size decreases --> OK" << std::endl;
 
 //
-// Stop polling
+// Stop polling. The CB's (error) DeviceAttribute should be null.
 //
-
+		assert (!cb.attr_err_info);
+		auto stopPollTime = make_TimeVal(std::chrono::system_clock::now());
 		device->stop_poll_attribute(att_name);
 
 //
@@ -237,8 +243,18 @@ int main(int argc, char **argv)
 
 		TEST_LOG << "cb err = " << cb.cb_err << std::endl;
 		assert (cb.cb_err == 1);
-
 		TEST_LOG << "   Error received in callback if we stop polling --> OK" << std::endl;
+
+//
+// The error event should have filled out the CB's (error) DeviceAttribute
+//
+		assert(cb.attr_err_info);
+		assert(cb.attr_err_info->get_err_stack().length());
+		assert(cb.attr_err_info->time.tv_sec == stopPollTime.tv_sec);
+		TEST_LOG << "Error stack:\n" << cb.attr_err_info->get_err_stack() 
+			<< "\nTime: " << cb.attr_err_info->time.tv_sec << "." 
+			<< cb.attr_err_info->time.tv_usec << std::endl;
+
 
 //
 // unsubscribe to the event

@@ -84,9 +84,11 @@ public :
 	Tango::TimeVal &get_date() {return reception_date;}
 
 ///@publicsection
+	std::unique_ptr<DeviceAttribute> get_attr_err_info(); ///< Construct and return a DeviceAttribute containing the error stack
+
 	DeviceProxy     *device;        ///< The DeviceProxy object on which the call was executed
-	std::string          attr_name;      ///< The attribute name
-	std::string          event;          ///< The event name
+	std::string     attr_name;      ///< The attribute name
+	std::string     event;          ///< The event name
 	DeviceAttribute *attr_value;    ///< The attribute data
 	bool            err;            ///< A boolean flag set to true if the request failed. False otherwise
 	DevErrorList    errors;         ///< The error stack
