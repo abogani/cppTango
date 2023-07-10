@@ -252,6 +252,10 @@ Please be aware that your code will no longer be backwards compatible with cppTa
 
 According to surveys with the tango-controls community, nobody seemed to use notifyd and ZMQ Multicast events. Therefore we have removed support for notifd events and ZMQ Multicast events in cppTango 9.4.0.  Only ZMQ Events are supported from cppTango 9.4.0 on.
 
+### Removed `Tango_isnan` helper function
+
+As it was simply pointing towards `std::isnan` we now recommend to use the later directly.
+
 ## 9.4.0 - Bug Fixes
 
 Many bugs have been fixed in this new version. please refer to the Issues and Merge Requests on the cppTango repository. [Milestone 9.4.0](https://gitlab.com/tango-controls/cppTango/-/milestones/7) is listing some of the many issues which have been fixed in this version.
