@@ -1516,9 +1516,8 @@ void Util::init_host_name()
 //
 // All supported OS have the getaddrinfo() call
 //
-
-	char buffer[80];
-	if (gethostname(buffer,80) == 0)
+	char buffer[Tango::detail::TANGO_MAX_HOSTNAME_LEN];
+	if (gethostname(buffer, Tango::detail::TANGO_MAX_HOSTNAME_LEN) == 0)
 	{
 		hostname = buffer;
 		std::transform(hostname.begin(), hostname.end(), hostname.begin(), ::tolower);	// to retain consistency with getnameinfo() which always returns lowercase

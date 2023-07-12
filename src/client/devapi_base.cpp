@@ -29,6 +29,7 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/devapi_utils_templ.h>
+#include <tango/internal/net.h>
 
 #ifdef _TG_WINDOWS_
 #include <process.h>
@@ -1006,10 +1007,10 @@ void Connection::get_fqdn(std::string &the_host)
 // set a flag
 //
 
-    char buffer[80];
+    char buffer[Tango::detail::TANGO_MAX_HOSTNAME_LEN];
     bool local_host = false;
 
-    if (gethostname(buffer, 80) == 0)
+    if (gethostname(buffer, Tango::detail::TANGO_MAX_HOSTNAME_LEN) == 0)
     {
         if (::strcmp(buffer, the_host.c_str()) == 0)
         {
@@ -8832,8 +8833,8 @@ bool DeviceProxy::get_locker(LockerInfo &lock_info)
         }
         else
         {
-            char h_name[80];
-            gethostname(h_name, 80);
+            char h_name[Tango::detail::TANGO_MAX_HOSTNAME_LEN];
+            gethostname(h_name, Tango::detail::TANGO_MAX_HOSTNAME_LEN);
 
             lock_info.locker_host = h_name;
         }
