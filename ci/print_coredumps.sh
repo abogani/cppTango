@@ -18,7 +18,7 @@ for corefile in build/tests/core.*; do
 
     for bin_path in $(find . -name "${bin_name}*" -type f -executable); do
       echo -e "$dline\nBacktrace for corefile=$corefile (binary=$bin_path)\n$dline"
-      docker exec -w "${src_dir}" cpp_tango gdb --batch $bin_path ./$corefile -ex "bt full"
+      docker exec -w "${src_dir}" cpp_tango gdb --batch $bin_path ./$corefile -ex "thread apply all bt full"
       echo
     done
   fi
