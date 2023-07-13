@@ -11,27 +11,6 @@
 
 using namespace std::chrono_literals;
 
-template <typename TEvent>
-struct EventCallback : public Tango::CallBack
-{
-    EventCallback()
-        : num_of_all_events(0)
-        , num_of_error_events(0)
-    {}
-
-    void push_event(TEvent* event)
-    {
-        num_of_all_events++;
-        if (event->err)
-        {
-            num_of_error_events++;
-        }
-    }
-
-    int num_of_all_events;
-    int num_of_error_events;
-};
-
 class DServerMiscTestSuite: public CxxTest::TestSuite
 {
 protected:
@@ -226,7 +205,7 @@ TEST_LOG << "str = " << str << endl;
      */
     void test_event_subscription_recovery_after_device_restart()
     {
-        EventCallback<Tango::EventData> callback{};
+        CountingCallBack<Tango::EventData> callback{};
 
         std::string attribute_name = "event_change_tst";
 
@@ -237,9 +216,9 @@ TEST_LOG << "str = " << str << endl;
             &callback));
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        TS_ASSERT_EQUALS(2, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         {
             Tango::DeviceData input{};
@@ -248,9 +227,9 @@ TEST_LOG << "str = " << str << endl;
         }
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        TS_ASSERT_EQUALS(3, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 3; });
+        TS_ASSERT_EQUALS(3, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->unsubscribe_event(subscription));
     }
@@ -260,7 +239,7 @@ TEST_LOG << "str = " << str << endl;
      */
     void test_attr_conf_change_event_after_device_restart()
     {
-        EventCallback<Tango::AttrConfEventData> callback{};
+        CountingCallBack<Tango::AttrConfEventData> callback{};
 
         const std::string attribute_name = "event_change_tst";
 
@@ -270,9 +249,9 @@ TEST_LOG << "str = " << str << endl;
             Tango::ATTR_CONF_EVENT,
             &callback));
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(1, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 1; });
+        TS_ASSERT_EQUALS(1, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         {
             Tango::DeviceData input{};
@@ -280,9 +259,9 @@ TEST_LOG << "str = " << str << endl;
             TS_ASSERT_THROWS_NOTHING(dserver->command_inout("DevRestart", input));
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->unsubscribe_event(subscription));
     }
@@ -297,7 +276,6 @@ TEST_LOG << "str = " << str << endl;
         // TODO: FIXME: This test is temporarily disabled due to failures on single-core machines.
 
         constexpr auto poll_period = 1000ms;
-        constexpr auto time_buffer = 100ms;
         constexpr auto poll_period_ms = std::chrono::milliseconds(poll_period).count();
 
         std::string attribute_name = "PollLong_attr";
@@ -309,9 +287,7 @@ TEST_LOG << "str = " << str << endl;
 
         TS_ASSERT_THROWS_NOTHING(device1->poll_attribute(attribute_name, poll_period_ms));
 
-        std::this_thread::sleep_for(time_buffer);
-
-        EventCallback<Tango::EventData> callback{};
+        CountingCallBack<Tango::EventData> callback{};
 
         int subscription = 0;
         TS_ASSERT_THROWS_NOTHING(subscription = device1->subscribe_event(
@@ -319,25 +295,29 @@ TEST_LOG << "str = " << str << endl;
             Tango::ARCHIVE_EVENT,
             &callback));
 
-        std::this_thread::sleep_for(poll_period + time_buffer);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
-        TS_ASSERT_EQUALS(2, callback.num_of_all_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+
+        TS_ASSERT_EQUALS(0, callback.error_count());
+        TS_ASSERT_EQUALS(2, callback.invocation_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->stop_poll_attribute(attribute_name));
 
-        std::this_thread::sleep_for(time_buffer);
-        TS_ASSERT_EQUALS(1, callback.num_of_error_events);
-        TS_ASSERT_EQUALS(3, callback.num_of_all_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 3; });
+
+        TS_ASSERT_EQUALS(1, callback.error_count());
+        TS_ASSERT_EQUALS(3, callback.invocation_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->poll_attribute(attribute_name, poll_period_ms));
 
-        std::this_thread::sleep_for(poll_period + time_buffer);
-        TS_ASSERT_EQUALS(1, callback.num_of_error_events);
-        TS_ASSERT_EQUALS(4, callback.num_of_all_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 4; });
 
-        std::this_thread::sleep_for(poll_period);
-        TS_ASSERT_EQUALS(1, callback.num_of_error_events);
-        TS_ASSERT_EQUALS(5, callback.num_of_all_events);
+        TS_ASSERT_EQUALS(1, callback.error_count());
+        TS_ASSERT_EQUALS(4, callback.invocation_count());
+
+        callback.wait_for([&](){ return callback.invocation_count() >= 5; });
+
+        TS_ASSERT_EQUALS(1, callback.error_count());
+        TS_ASSERT_EQUALS(5, callback.invocation_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->unsubscribe_event(subscription));
     }
@@ -348,8 +328,8 @@ TEST_LOG << "str = " << str << endl;
      */
     void test_unsubscription_during_deletion_of_multiple_proxies()
     {
-        EventCallback<Tango::EventData> callback1{};
-        EventCallback<Tango::EventData> callback2{};
+        CountingCallBack<Tango::EventData> callback1{};
+        CountingCallBack<Tango::EventData> callback2{};
 
         const std::string attribute_name = "event_change_tst";
 
@@ -364,37 +344,45 @@ TEST_LOG << "str = " << str << endl;
             attribute_name, Tango::USER_EVENT, &callback2));
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback1.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback1.num_of_error_events);
-        TS_ASSERT_EQUALS(2, callback2.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback2.num_of_error_events);
+        callback1.wait_for([&](){ return callback1.invocation_count() >= 2; });
+        callback2.wait_for([&](){ return callback2.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback1.invocation_count());
+        TS_ASSERT_EQUALS(0, callback1.error_count());
+        TS_ASSERT_EQUALS(2, callback2.invocation_count());
+        TS_ASSERT_EQUALS(0, callback2.error_count());
 
         TS_ASSERT_THROWS_NOTHING(proxy1->unsubscribe_event(subscription1));
         proxy1.reset(nullptr);
 
+        // We send two events so that we can confirm that callback1 hasn't been
+        // called.  As events are processed sequentially we know that if
+        // callback2 has been called twice then callback1 would have been called
+        // at least once if it was still subscribed to the event.
+
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback1.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback1.num_of_error_events);
-        TS_ASSERT_EQUALS(3, callback2.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback2.num_of_error_events);
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
+
+        callback2.wait_for([&](){ return callback2.invocation_count() >= 4; });
+        TS_ASSERT_EQUALS(2, callback1.invocation_count());
+        TS_ASSERT_EQUALS(0, callback1.error_count());
+        TS_ASSERT_EQUALS(4, callback2.invocation_count());
+        TS_ASSERT_EQUALS(0, callback2.error_count());
 
         TS_ASSERT_THROWS_NOTHING(proxy2->unsubscribe_event(subscription2));
         proxy2.reset(nullptr);
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback1.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback1.num_of_error_events);
-        TS_ASSERT_EQUALS(3, callback2.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback2.num_of_error_events);
+        TS_ASSERT_EQUALS(2, callback1.invocation_count());
+        TS_ASSERT_EQUALS(0, callback1.error_count());
+        TS_ASSERT_EQUALS(4, callback2.invocation_count());
+        TS_ASSERT_EQUALS(0, callback2.error_count());
     }
 
     void test_unsubscription_multiple_subscriptions_with_single_proxy()
     {
-        EventCallback<Tango::EventData> callback1{};
-        EventCallback<Tango::EventData> callback2{};
+        CountingCallBack<Tango::EventData> callback1{};
+        CountingCallBack<Tango::EventData> callback2{};
 
         const std::string attribute_name = "event_change_tst";
 
@@ -406,20 +394,21 @@ TEST_LOG << "str = " << str << endl;
             attribute_name, Tango::USER_EVENT, &callback2));
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback1.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback1.num_of_error_events);
-        TS_ASSERT_EQUALS(2, callback2.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback2.num_of_error_events);
+        callback1.wait_for([&](){ return callback1.invocation_count() >= 2; });
+        callback2.wait_for([&](){ return callback2.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback1.invocation_count());
+        TS_ASSERT_EQUALS(0, callback1.error_count());
+        TS_ASSERT_EQUALS(2, callback2.invocation_count());
+        TS_ASSERT_EQUALS(0, callback2.error_count());
 
         proxy.reset(nullptr);
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback1.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback1.num_of_error_events);
-        TS_ASSERT_EQUALS(2, callback2.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback2.num_of_error_events);
+        TS_ASSERT_EQUALS(2, callback1.invocation_count());
+        TS_ASSERT_EQUALS(0, callback1.error_count());
+        TS_ASSERT_EQUALS(2, callback2.invocation_count());
+        TS_ASSERT_EQUALS(0, callback2.error_count());
     }
 
 /*
@@ -429,7 +418,7 @@ TEST_LOG << "str = " << str << endl;
  */
     void test_pipe_event_subscription_recovery_after_restart_server_command()
     {
-        EventCallback<Tango::PipeEventData> callback{};
+        CountingCallBack<Tango::PipeEventData> callback{};
 
         TS_ASSERT_THROWS_NOTHING(device1->subscribe_event(
             "RWPipe",
@@ -437,17 +426,17 @@ TEST_LOG << "str = " << str << endl;
             &callback));
 
         TS_ASSERT_THROWS_NOTHING(push_pipe_event());
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         TS_ASSERT_THROWS_NOTHING(dserver->command_inout("RestartServer"));
         std::this_thread::sleep_for(std::chrono::seconds(5));
 
         TS_ASSERT_THROWS_NOTHING(push_pipe_event());
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(3, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 3; });
+        TS_ASSERT_EQUALS(3, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         {
             Tango::DeviceData input{};
@@ -456,9 +445,9 @@ TEST_LOG << "str = " << str << endl;
         }
 
         TS_ASSERT_THROWS_NOTHING(push_pipe_event());
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(4, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 4; });
+        TS_ASSERT_EQUALS(4, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
     }
 
     void push_pipe_event()
