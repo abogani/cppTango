@@ -1,47 +1,51 @@
 #include "common.h"
 
-class EventCallBack : public Tango::CallBack
+class EventCallBack : public CountingCallBack<Tango::PipeEventData>
 {
-	void push_event(Tango::PipeEventData*);
-
 public:
-	int cb_executed;
-	int cb_err;
-	std::string root_blob_name;
-	size_t	nb_data;
+	std::string root_blob_name() {
+		auto gaurd = lock();
+		return m_root_blob_name;
+	}
+
+	size_t nb_data() {
+		auto gaurd = lock();
+		return m_nb_data;
+	}
+
+private:
+	bool process_event(Tango::PipeEventData*) override;
+
+	std::string m_root_blob_name;
+	size_t m_nb_data;
 };
 
-void EventCallBack::push_event(Tango::PipeEventData* event_data)
+bool EventCallBack::process_event(Tango::PipeEventData* event_data)
 {
-	cb_executed++;
-
 	try
 	{
-		TEST_LOG << "EventCallBack::push_event(): called pipe " << event_data->pipe_name << " event " << event_data->event << "\n";
+		TEST_LOG << "EventCallBack::process_event(): called pipe " << event_data->pipe_name << " event " << event_data->event << "\n";
 		if (!event_data->err)
 		{
 			TEST_LOG << "Received pipe event for pipe " << event_data->pipe_name << std::endl;
-//			TEST_LOG << *(event_data->pipe_value) << std::endl;
-			root_blob_name = event_data->pipe_value->get_root_blob_name();
+			m_root_blob_name = event_data->pipe_value->get_root_blob_name();
 
-			if (root_blob_name == "PipeEventCase4")
+			if (m_root_blob_name == "PipeEventCase4")
 			{
 				std::vector<Tango::DevLong> v_dl;
 				(*(event_data->pipe_value))["Martes"] >> v_dl;
-				nb_data = v_dl.size();
+				m_nb_data = v_dl.size();
 			}
+			return false;
 		}
-		else
-		{
-			TEST_LOG << "Error sent to callback" << std::endl;
-			cb_err++;
-//			Tango::Except::print_error_stack(event_data->errors);
-		}
+
+		TEST_LOG << "Error sent to callback" << std::endl;
+		return true;
 	}
 	catch (...)
 	{
-		TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
-		cb_err++;
+		TEST_LOG << "EventCallBack::process_event(): could not extract data !\n";
+		return true;
 	}
 
 }
@@ -73,8 +77,6 @@ int main(int argc, char **argv)
 	try
 	{
 		EventCallBack cb;
-		cb.cb_executed = 0;
-		cb.cb_err = 0;
 
 //
 // subscribe to a pipe event
@@ -86,8 +88,8 @@ int main(int argc, char **argv)
 // The callback should have been executed once
 //
 
-		assert (cb.cb_executed == 1);
-		assert (cb.cb_err == 0);
+		assert (cb.invocation_count() == 1);
+		assert (cb.error_count() == 0);
 
 		TEST_LOG << "   subscribe_event --> OK" << std::endl;
 
@@ -105,11 +107,11 @@ int main(int argc, char **argv)
 // The callback should have been executed
 //
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		cb.wait_for([&](){ return cb.invocation_count() >= 2; });
 
-		assert (cb.cb_executed == 2);
-		assert (cb.cb_err == 0);
-		assert (cb.root_blob_name == "PipeEventCase0");
+		assert (cb.invocation_count() == 2);
+		assert (cb.error_count() == 0);
+		assert (cb.root_blob_name() == "PipeEventCase0");
 
 //
 // Ask device to push a pipe event with another data
@@ -124,11 +126,11 @@ int main(int argc, char **argv)
 // The callback should have been executed
 //
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		cb.wait_for([&]{ return cb.invocation_count() >= 3; });
 
-		assert (cb.cb_executed == 3);
-		assert (cb.cb_err == 0);
-		assert (cb.root_blob_name == "PipeEventCase1");
+		assert (cb.invocation_count() == 3);
+		assert (cb.error_count() == 0);
+		assert (cb.root_blob_name() == "PipeEventCase1");
 
 		TEST_LOG << "   received event --> OK" << std::endl;
 
@@ -145,11 +147,11 @@ int main(int argc, char **argv)
 // The callback should have been executed
 //
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		cb.wait_for([&](){ return cb.invocation_count() >= 4; });
 
-		assert (cb.cb_executed == 4);
-		assert (cb.cb_err == 0);
-		assert (cb.root_blob_name == "PipeEventCase2");
+		assert (cb.invocation_count() == 4);
+		assert (cb.error_count() == 0);
+		assert (cb.root_blob_name() == "PipeEventCase2");
 
 		TEST_LOG << "   received event (with specified date) --> OK" << std::endl;
 
@@ -166,10 +168,10 @@ int main(int argc, char **argv)
 // The callback should have been executed
 //
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		cb.wait_for([&](){ return cb.invocation_count() >= 5; });
 
-		assert (cb.cb_executed == 5);
-		assert (cb.cb_err == 1);
+		assert (cb.invocation_count() == 5);
+		assert (cb.error_count() == 1);
 
 		TEST_LOG << "   received event (with error) --> OK" << std::endl;
 
@@ -186,12 +188,12 @@ int main(int argc, char **argv)
 // The callback should have been executed
 //
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		cb.wait_for([&](){ return cb.invocation_count() >= 6; });
 
-		assert (cb.cb_executed == 6);
-		assert (cb.cb_err == 1);
-		assert (cb.root_blob_name == "PipeEventCase4");
-		assert (cb.nb_data == 3000);
+		assert (cb.invocation_count() == 6);
+		assert (cb.error_count() == 1);
+		assert (cb.root_blob_name() == "PipeEventCase4");
+		assert (cb.nb_data() == 3000);
 
 		TEST_LOG << "   received event (no copy sending) --> OK" << std::endl;
 
@@ -208,8 +210,7 @@ int main(int argc, char **argv)
 // subscribe to a another pipe
 //
 
-		cb.cb_executed = 0;
-		cb.cb_err = 0;
+		cb.reset_counts();
 
 		DeviceData d_in;
 		d_in << (short)9;
@@ -217,16 +218,17 @@ int main(int argc, char **argv)
 
 		eve_id1 = device->subscribe_event("RPipe",Tango::PIPE_EVENT,&cb);
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-		assert (cb.cb_executed == 2);
-		assert (cb.cb_err == 0);
+		cb.wait_for([&](){ return cb.invocation_count() >= 2; });
+
+		assert (cb.invocation_count() == 2);
+		assert (cb.error_count() == 0);
 
 		DevicePipe pipe_data = device->read_pipe("rPipe");
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		cb.wait_for([&](){ return cb.invocation_count() >= 3; });
 
-		assert (cb.cb_executed == 3);
-		assert (cb.cb_err == 0);
+		assert (cb.invocation_count() == 3);
+		assert (cb.error_count() == 0);
 
 		device->unsubscribe_event(eve_id1);
 
