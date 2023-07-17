@@ -10,37 +10,16 @@
 #undef SUITE_NAME
 #define SUITE_NAME RecoZmqTestSuite
 
-class EventCallback : public Tango::CallBack
-{
-public:
-    EventCallback()  { }
-    ~EventCallback() { }
-    void push_event( Tango::EventData *ed ){
-        TEST_LOG << "In callback with error flag = " << std::boolalpha << ed->err << endl;
-        if(ed->err) {
-            cb_err++;
-            TEST_LOG << "Error: " << ed->errors[0].reason << endl;
-        } else {
-            cb_executed++;
-        }
-    }
-
-
-    int cb_executed;
-    int cb_err;
-};
-
 class RecoZmqTestSuite : public CxxTest::TestSuite {
 protected:
     DeviceProxy *device1, *device2;
     string device1_name, device2_name, device1_instance_name, device2_instance_name;
-    EventCallback eventCallback;
+    CountingCallBack<Tango::EventData> eventCallback;
 
 public:
     SUITE_NAME() :
             device1_instance_name{"test"},//TODO pass via cl
-            device2_instance_name{"test2"},
-            eventCallback{}
+            device2_instance_name{"test2"}
     {
 
 //
@@ -113,8 +92,7 @@ public:
         string att_name("event_change_tst");
 
         const vector<string> filters;
-        eventCallback.cb_executed = 0;
-        eventCallback.cb_err = 0;
+        eventCallback.reset_counts();
 
         TS_ASSERT_THROWS_NOTHING(device1->subscribe_event(att_name, Tango::USER_EVENT, &eventCallback, filters));
 
@@ -125,13 +103,14 @@ public:
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        eventCallback.wait_for([&](){ return eventCallback.invocation_count() >= 3; });
 
-        TEST_LOG << "Callback execution before re-connection = " << eventCallback.cb_executed << endl;
-        TEST_LOG << "Callback error before re-connection = " << eventCallback.cb_err << endl;
 
-        TS_ASSERT_EQUALS (eventCallback.cb_executed, 3);
-        TS_ASSERT_EQUALS (eventCallback.cb_err, 0);
+        TEST_LOG << "Callback execution before re-connection = " << eventCallback.invocation_count() << endl;
+        TEST_LOG << "Callback error before re-connection = " << eventCallback.error_count() << endl;
+
+        TS_ASSERT_EQUALS(3, eventCallback.invocation_count());
+        TS_ASSERT_EQUALS(0, eventCallback.error_count());
 
 //
 // Kill device server (using its admin device)
@@ -144,18 +123,17 @@ public:
 //
 // Wait for some error and re-connection
 //
-
-        std::this_thread::sleep_for(std::chrono::seconds(40));
+        eventCallback.wait_for([&](){ return eventCallback.success_count() >= 4; });
 
 //
 // Check error and re-connection
 //
 
-        TEST_LOG << "Callback execution after re-connection = " << eventCallback.cb_executed << endl;
-        TEST_LOG << "Callback error after re-connection = " << eventCallback.cb_err << endl;
+        TEST_LOG << "Callback execution after re-connection = " << eventCallback.invocation_count() << endl;
+        TEST_LOG << "Callback error after re-connection = " << eventCallback.error_count() << endl;
 
-        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.cb_err);
-        TS_ASSERT_EQUALS (eventCallback.cb_executed, 4);
+        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.error_count());
+        TS_ASSERT_EQUALS(4, eventCallback.success_count());
 
 //
 // Fire another event
@@ -164,21 +142,20 @@ public:
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        eventCallback.wait_for([&](){ return eventCallback.success_count() >= 6; });
 
-        TEST_LOG << "Callback execution after re-connection and event = " << eventCallback.cb_executed << endl;
-        TEST_LOG << "Callback error after re-connection and event = " << eventCallback.cb_err << endl;
+        TEST_LOG << "Callback execution after re-connection and event = " << eventCallback.invocation_count() << endl;
+        TEST_LOG << "Callback error after re-connection and event = " << eventCallback.error_count() << endl;
 
-        TS_ASSERT_EQUALS (eventCallback.cb_executed, 6);
-        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.cb_err);
+
+        TS_ASSERT_EQUALS(6, eventCallback.success_count());
     }
 
 //
 // Clear call back counters and kill device server once more
 //
     void test_clear_cb_kill_ds(void) {
-        eventCallback.cb_executed = 0;
-        eventCallback.cb_err = 0;
+        eventCallback.reset_counts();
 
         string adm_name = device1->adm_name();
         DeviceProxy admin_dev(adm_name);
@@ -188,17 +165,17 @@ public:
 // Wait for some error and re-connection
 //
 
-        std::this_thread::sleep_for(std::chrono::seconds(40));
+        eventCallback.wait_for([&](){ return eventCallback.success_count() >= 1; });
 
 //
 // Check error and re-connection
 //
 
-        TEST_LOG << "Callback execution after second re-connection = " << eventCallback.cb_executed << endl;
-        TEST_LOG << "Callback error after second re-connection = " << eventCallback.cb_err << endl;
+        TEST_LOG << "Callback execution after second re-connection = " << eventCallback.invocation_count() << endl;
+        TEST_LOG << "Callback error after second re-connection = " << eventCallback.error_count() << endl;
 
-        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.cb_err);
-        TS_ASSERT_EQUALS (eventCallback.cb_executed, 1);
+        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.error_count());
+        TS_ASSERT_EQUALS(1, eventCallback.success_count());
 
 //
 // Fire yet another event
@@ -206,13 +183,13 @@ public:
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
 
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        eventCallback.wait_for([&](){ return eventCallback.success_count() >= 2; });
 
-        TEST_LOG << "Callback execution after second re-connection and event = " << eventCallback.cb_executed << endl;
-        TEST_LOG << "Callback error after second re-connection and event = " << eventCallback.cb_err << endl;
+        TEST_LOG << "Callback execution after second re-connection and event = " << eventCallback.invocation_count() << endl;
+        TEST_LOG << "Callback error after second re-connection and event = " << eventCallback.error_count() << endl;
 
-        TS_ASSERT_EQUALS (eventCallback.cb_executed, 2);
-        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.cb_err);
+        TS_ASSERT_EQUALS(2, eventCallback.success_count());
+        TS_ASSERT_LESS_THAN_EQUALS (1, eventCallback.error_count());
     }
 };
 
