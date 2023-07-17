@@ -361,7 +361,7 @@ typedef struct event_callback: public EventCallBackBase, public EventCallBackZmq
 {
 	std::string filter_constraint;
 	CosNotifyFilter::FilterID filter_id;
-	bool filter_ok;
+	bool filter_ok = false;
 	std::string client_attribute_name;
 	ReceivedFromAdmin received_from_admin;
 	std::string get_client_attribute_name()

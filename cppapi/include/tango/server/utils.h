@@ -856,6 +856,10 @@ public:
     bool is_polling_bef_9_def() {return polling_bef_9_def;}
     bool get_polling_bef_9() {return polling_bef_9;}
 
+	// thread specific storage key accessor for client information/identification
+    // return: the (omni) thread specific storage key dedicated to client information/identification
+	static inline omni_thread::key_t get_tssk_client_info() {return Util::tssk_client_info;}
+
 private:
 	TANGO_IMP static Util	*_instance;
 	static bool				_constructed;
@@ -987,6 +991,10 @@ private:
 
 	bool                        polling_bef_9_def;      // Is polling algo requirement defined
 	bool                        polling_bef_9;          // use Tango < 9 polling algo. flag
+
+	// thread specific storage key for client info (addr & more)
+	//---------------------------------------------------------------------------------
+	static omni_thread::key_t tssk_client_info;
 };
 
 //***************************************************************************

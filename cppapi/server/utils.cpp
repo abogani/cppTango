@@ -37,6 +37,7 @@
 #endif
 
 #include <omniORB4/internal/orbOptions.h>
+#include <omniORB4/callDescriptor.h>
 
 #ifdef _MSC_VER
 #pragma warning(pop)
@@ -220,15 +221,22 @@ bool Util::_service = false;
 // this global flag to true after construction.
 thread_local bool is_tango_library_thread = false;
 
-//
-// A global key used for per thread specific storage. This is used to retrieve
-// client host and stores it in the device blackbox. This global is referenced
-// in blackbox.cpp
-//
+//+-------------------------------------------------------------------------------------------------------------------
+// NOTE: about omni_thread::key_t
+//+-------------------------------------------------------------------------------------------------------------------
+//	- an omni_thread::key_t is a unique process-wide identifier 
+//				`--> an omni_thread::key_t must be instantiated by calling 'omni_thread::allocate_key' (thread safe static function).
+//				`--> once created, a key is usable by any thread in the process
+//	- the value associated with a key is unique (i.e.) and stored on a 'per omni_thread instance' basis
+//				`--> omni_thread::[set_value, get_value, remove_value] are NOT static member of the omni_thread 
+//				`--> omni_thread::[set_value, get_value, remove_value] are NOT thread safe! 
+//				`--> keys are unique but values are NOT - i.e., two different threads can have a different value associated to the same key
+//+-------------------------------------------------------------------------------------------------------------------
 
-
-omni_thread::key_t key;
-
+//+-------------------------------------------------------------------------------------------------------------------
+// tssk_client_info: a omni_thread::key_t used to store/retrieve client info. It is notably used by the blackbox.
+//+-------------------------------------------------------------------------------------------------------------------
+omni_thread::key_t Util::tssk_client_info = omni_thread::allocate_key();
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -602,7 +610,23 @@ void Util::create_CORBA_objects()
 //
 
 	omni::omniInterceptors *intercep = omniORB::getInterceptors();
-	intercep->serverReceiveRequest.add(get_client_addr);
+
+	// this is the Tango < 9.4.2 call interceptor
+	// ---------------------------------------------------------------------------
+	// works for remote calls only - will be removed once we adopt omniORB 4.3 
+	// ---------------------------------------------------------------------------
+	intercep->serverReceiveRequest.add(Tango::get_client_addr);
+
+	// install the client call interceptor 
+	// works for both colocated and remote calls so that the client info is properly setup in any case
+	// see section 10.3 of the omniORB documentation for details
+	// ---------------------------------------------------------------------------
+	// so far we use it for lacal calls only
+	// will be used for both local aan remote calls once omniORB 4.3 is adpoted 
+	// see why in cppTango issue #865
+	// ---------------------------------------------------------------------------
+	omniCallDescriptor::addInterceptor(Tango::client_call_interceptor);
+
 	intercep->createThread.add([](omni::omniInterceptors::createThread_T::info_T &info)
 	{
 		// Mark this thread as a library thread. This will allow setting
@@ -641,8 +665,6 @@ void Util::create_CORBA_objects()
 			interceptors->delete_thread();
 		}
 	});
-
-	key = omni_thread::allocate_key();
 
 //
 // Get some CORBA object references
@@ -2184,6 +2206,11 @@ void Util::server_run()
 void Util::server_cleanup()
 {
 #ifndef _TG_WINDOWS_
+
+// uninstall the client call interceptor
+// see section 10.3 of the omniORB documentation - see also cppTango issue #865 
+omniCallDescriptor::removeInterceptor(Tango::client_call_interceptor);
+
 //
 // Destroy the ORB
 //
