@@ -81,8 +81,13 @@ void client_call_interceptor(omniCallDescriptor* d, omniServant* s);
 class client_addr: public omni_thread::value_t
 {
 public:
-    client_addr():client_ident(false),client_pid(0) {client_ip[0]='\0';::memset(java_ident,0,sizeof(DevULong64)<<1);}
-	client_addr(const char *addr):client_ident(false),client_pid(0) {strcpy(client_ip,addr);}
+	client_addr() {
+		client_ip[0]='\0';
+		::memset(java_ident, 0, sizeof(DevULong64) * 2);
+	}
+	client_addr(const char *addr) {
+		strcpy(client_ip,addr);
+	}
 	~client_addr() {}
 
 	client_addr(const client_addr &);
@@ -90,12 +95,12 @@ public:
 	bool operator==(const client_addr &);
 	bool operator!=(const client_addr &);
 
-	bool				client_ident;
-	char				client_ip[IP_ADDR_BUFFER_SIZE];
-	LockerLanguage		client_lang;
-	TangoSys_Pid		client_pid;
-	std::string				java_main_class;
-	DevULong64			java_ident[2];
+	bool			client_ident = false;
+	char			client_ip[IP_ADDR_BUFFER_SIZE];
+	LockerLanguage		client_lang = LockerLanguage::CPP;
+	TangoSys_Pid		client_pid = 0;
+	std::string		java_main_class;
+	DevULong64		java_ident[2];
 
 	int client_ip_2_client_name(std::string &) const;
 	friend std::ostream &operator<<(std::ostream &o_str,const client_addr &ca);
