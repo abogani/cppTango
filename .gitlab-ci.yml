@@ -227,12 +227,10 @@ debian11:
     OS_TYPE: debian11:v1
 
 ubuntu-20.04-jpeg9:
-  <<: *job-template
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04
-    STOCK_CPPZMQ: "OFF"
-    JPEG_LIB: libjpeg9-dev
+    OS_TYPE: ubuntu-20.04-jpeg9:v1
 
 clang-analyzer:
   <<: *job-template-no-test-run
