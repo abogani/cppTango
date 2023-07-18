@@ -220,12 +220,11 @@ debian12-cross-32bit:
     TANGO_WARNINGS_AS_ERRORS: "ON"
     TANGO_USE_JPEG: "OFF"
 
-debian10:
-  <<: *job-template
+debian11:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian10
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian11:v1
 
 ubuntu-20.04-jpeg9:
   <<: *job-template
