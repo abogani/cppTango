@@ -75,3 +75,48 @@ general ideas of how the tests are, and should be, organized:
 - Once review has passed on MR1 and MR2, get MR1 merged and tag the repo
 - Update MR2 to point to the newly created tag
 - Pass review again and get MR2 merged
+
+### Running the tests
+
+Running the tests requires docker. See
+[here](https://docs.docker.com/engine/install) for install instructions.
+
+Once you have installed docker, you can run the tests from `build/` via:
+
+```bash
+make test
+```
+
+#### Run individual tests
+
+For debugging a single test execute the following:
+
+```
+ctest -R event::per_event --output-on-failure -V
+```
+
+Test output and device server logs are collected in `build/tests/results`.
+
+For more details on testing with CTest, see [here](https://cmake.org/Wiki/CMake/Testing_With_CTest).
+
+#### Setting environment up manually
+
+The test runner automatically starts database and all required
+device servers for each test. If you want to set up the environment
+manually, from `build/` directory run:
+
+```bash
+source ./tests/environment/setup_database.sh  # source to get TANGO_HOST
+./tests/environment/setup_devices.sh
+# attach the debugger or perform some additional configuration
+TANGO_TEST_CASE_SKIP_FIXTURE=1 ctest -V -R ds_cache
+killall DevTest FwdTest
+docker stop tango_cs mysql_db
+```
+
+#### Execucting gitlab CI jobs locally
+
+For faster development it is possible to execute gitlab CI jobs locally on the development machine.
+
+* Install gitlab runner, see https://docs.gitlab.com/runner/install
+* `gitlab-runner exec docker --env "MAKEFLAGS=-j NUMBER_OF_CPUS" JOBNAME`
