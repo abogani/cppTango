@@ -374,49 +374,13 @@ alpine:
     OS_TYPE: alpine-3.15:v1
 
 doxygen-documentation:
-  image: debian:buster
-  tags:
-    - docker, linux, amd64
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-  services: []
-  before_script:
-    - apt-get update
-    - >
-      apt-get install -y
-      build-essential
-      curl
-      doxygen
-      git
-      graphviz
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      omniidl
-      libjpeg-dev
-      pkg-config
-    # install cmake 3.18
-    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
-    - chmod +x /tmp/cmake-install.sh
-    - /tmp/cmake-install.sh --prefix=/usr/local --skip-license --exclude-subdir
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    - mkdir build
-  script:
-    - >
-      cmake . -B build
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=OFF
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-    - make -C build doc
+    <<: *variables
+    OS_TYPE: debian12:v1
+    TANGO_USE_JPEG: "OFF"
+    BUILD_TESTING: "OFF"
+    TANGO_MAKE_TARGET: "doc"
   artifacts:
     when: always
     paths:
