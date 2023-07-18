@@ -495,15 +495,18 @@ libcpp:
     TANGO_USE_LIBCPP: "ON"
 
 pkgconfig-fedora37:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: fedora37
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
-    JPEG_LIB: "libjpeg-turbo-devel"
+    OS_TYPE: fedora37:v1
     TANGO_USE_JPEG: "OFF"
-  script:
+    BUILD_TESTING: "OFF"
+    # NOTE: Below we are lying to cmake about the OMNIORB_VERSION because the
+    # version provided by Fedora is unsupported, however, for this test we do not
+    # want to run anything, so we don't care.
+    OMNIORB_VERSION: "4.2.5"
+  script: # override
+    - ci/config.sh
     - ci/run-pkg-config-validation.sh
 
 cmake-superproject:
