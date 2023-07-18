@@ -118,11 +118,10 @@ gcc-latest:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
 ubuntu-20.04:
-  <<: *job-template
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: ubuntu-20.04:v1
 
 coverage:
   <<: *job-template
