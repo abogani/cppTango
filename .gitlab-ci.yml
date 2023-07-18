@@ -79,49 +79,23 @@ workflow:
     - ci/build.sh
 
 abi-api-compliance-check:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: gcc-latest:v1
+    GIT_COMMITTER_NAME: "$GITLAB_USER_NAME"
+    GIT_COMMITTER_EMAIL: "$GITLAB_USER_EMAIL"
+    CI_TARGET_BRANCH: "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    GIT_STRATEGY: "none"
   rules:
     # This job runs only for merge requests.
     - if: $CI_MERGE_REQUEST_IID
-  image: debian:10
-  tags:
-    - dind, skao, docker, linux, amd64
   # allow failures for next release cycle which is allowed to break ABI
   allow_failure: true
-  before_script:
-    - apt-get update && apt-get install -y git docker.io
-    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - ci/before_install.sh
-    - docker build -t cpp_tango ci/gcc-latest
-    - >
-        docker run
-        --rm
-        --name cpp_tango
-        --user root
-        -v `pwd`:/home/tango/src
-        -v `pwd`/idl:/home/tango/idl
-        -v `pwd`/cppzmq:/home/tango/cppzmq
-        -v `pwd`/build-wrapper-linux-x86:/home/tango/build-wrapper-linux-x86
-        -dit
-        cpp_tango
-    - ci/install_tango_idl.sh
-    - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
-    - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
-  script:
-    - >
-        docker exec
-        -w /home/tango/src
-        -e CI_TARGET_BRANCH=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
-        -e CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-        -e GIT_COMMITTER_NAME="$GITLAB_USER_NAME"
-        -e GIT_COMMITTER_EMAIL="$GITLAB_USER_EMAIL"
-        cpp_tango
-        ci/check-ABI-API-compliance.sh
-  after_script:
-    - docker stop cpp_tango
+  script: # override
+    - git clone -b ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME} ${CI_PROJECT_URL} src
+    - cd src
+    - ci/check-ABI-API-compliance.sh
   artifacts:
     when: always
     paths:
