@@ -162,23 +162,19 @@ coverage:
   # keyword/regex to extract total coverage % for this CI job (which is also called "coverage")
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
 
-debian11-static:
-  <<: *job-template
+debian12-static:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian11
-    RUN_TESTS: "OFF"
+    OS_TYPE: debian12:v1
     BUILD_SHARED_LIBS: "OFF"
-    STOCK_CPPZMQ: "OFF"
 
-debian11-no-pch:
-  <<: *job-template
+debian12-no-pch:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian11
+    OS_TYPE: debian12:v1
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
 
 debian11-release:
   <<: *job-template
@@ -203,14 +199,12 @@ debian11-no-jpeg:
     STOCK_CPPZMQ: "OFF"
     TANGO_USE_JPEG: "OFF"
 
-debian11-cross-32bit:
-  <<: *job-template
+debian12-cross-32bit:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian11-cross-32bit
+    OS_TYPE: debian12-cross-32bit:v1
     CMAKE_BUILD_TYPE: "Debug"
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
     TOOLCHAIN_FILE: "configure/toolchain-i686.cmake"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
