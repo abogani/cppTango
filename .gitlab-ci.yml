@@ -510,42 +510,11 @@ pkgconfig-fedora37:
     - ci/run-pkg-config-validation.sh
 
 cmake-superproject:
-  image: debian:bullseye
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-  services: []
-  tags:
-    - docker, linux, amd64
-  before_script:
-    - apt-get update
-    - >
-      apt-get install -y
-      build-essential
-      cmake
-      doxygen
-      git
-      graphviz
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      omniidl
-      libjpeg-dev
-      pkg-config
-    # Install tango-idl
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    - mkdir build
-  script:
+    <<: *variables
+    OS_TYPE: debian12:v1
+  script: # override
     - cd tests/superproject
-    - >
-      cmake . -B build
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=OFF
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-    - cmake --build build
+    - ../../ci/config.sh
+    - ../../ci/build.sh
