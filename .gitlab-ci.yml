@@ -226,86 +226,48 @@ ubuntu-20.04-jpeg9:
     JPEG_LIB: libjpeg9-dev
 
 clang-analyzer:
-  image: ubuntu:focal
-  tags:
-    - docker, linux, amd64
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
+    <<: *variables
+    OS_TYPE: ubuntu-20.04:v1
+    CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    BUILD_TESTING: "OFF"
+    CMAKE_BUILD_TYPE: "Debug"
+    TANGO_MAKE_TARGET: "idl_source"
     CC: /usr/lib/llvm-12/bin/clang
     CXX: /usr/lib/llvm-12/bin/clang++
-  services: []
-  before_script:
-    - apt-get update
-    # add kitware repository for cmake
-    - apt-get install -y ca-certificates gpg wget
-    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
-      | gpg --dearmor -
-      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
-      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-    - apt-get update
-    - >
-      apt-get install -y
-      clang-tools-12
-      cmake
-      curl
-      git
-      omniidl
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      libjpeg-dev
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Install tango-idl
-    - mkdir /idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build /idl
-    - make -C /idl/build install
-    # Create build directory for cppTango.
-    - mkdir build
-    # scan-build expects 'clang' binary to be available on PATH.
-    - ln -s /usr/bin/clang-12 /usr/local/bin/clang
-    - ln -s /usr/bin/clang-extdef-mapping-12 /usr/local/bin/clang-extdef-mapping
-  script:
-    - >
-      cmake . -B build
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-      -DBUILD_TESTING=OFF
-      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-    - make -C build idl_source
+  script: # override
+    - sudo ln -s /usr/bin/clang-12 /usr/local/bin/clang
+    - sudo ln -s /usr/bin/clang-extdef-mapping-12 /usr/local/bin/clang-extdef-mapping
+    - ci/config.sh
+    - ci/build.sh
     # scan-build command must be wrapped in quotes because
     # --analyzer-config option cannot contain whitespaces.
-    - "/usr/share/clang/scan-build-py-12/bin/analyze-build \
-      -v \
-      --cdb build/compile_commands.json \
-      --exclude build/cppapi/server/idl \
-      --keep-empty \
-      --output clang-analyzer-results \
-      --force-analyze-debug-code \
-      --analyzer-config \
-        stable-report-filename=true,\
-        aggressive-binary-operation-simplification=true \
-      --enable-checker core \
-      --enable-checker cplusplus \
-      --enable-checker deadcode \
-      --enable-checker nullability \
-      --enable-checker optin.cplusplus \
-      --enable-checker optin.performance \
-      --enable-checker optin.portability \
-      --enable-checker security \
-      --enable-checker unix \
-      --enable-checker alpha.clone \
-      --enable-checker alpha.core \
-      --enable-checker alpha.cplusplus \
-      --enable-checker alpha.deadcode \
-      --enable-checker alpha.nondeterminism \
-      --enable-checker alpha.unix \
+    - "/usr/share/clang/scan-build-py-12/bin/analyze-build                          \
+      -v                                                                            \
+      --cdb build/compile_commands.json                                             \
+      --exclude build/cppapi/server/idl                                             \
+      --keep-empty                                                                  \
+      --output clang-analyzer-results                                               \
+      --force-analyze-debug-code                                                    \
+      --analyzer-config                                                             \
+        stable-report-filename=true,aggressive-binary-operation-simplification=true \
+      --enable-checker core                                                         \
+      --enable-checker cplusplus                                                    \
+      --enable-checker deadcode                                                     \
+      --enable-checker nullability                                                  \
+      --enable-checker optin.cplusplus                                              \
+      --enable-checker optin.performance                                            \
+      --enable-checker optin.portability                                            \
+      --enable-checker security                                                     \
+      --enable-checker unix                                                         \
+      --enable-checker alpha.clone                                                  \
+      --enable-checker alpha.core                                                   \
+      --enable-checker alpha.cplusplus                                              \
+      --enable-checker alpha.deadcode                                               \
+      --enable-checker alpha.nondeterminism                                         \
+      --enable-checker alpha.unix                                                   \
       > clang-analyzer-output.txt"
   artifacts:
     when: always
