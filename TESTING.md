@@ -84,7 +84,7 @@ Running the tests requires docker. See
 Once you have installed docker, you can run the tests from `build/` via:
 
 ```bash
-make test
+ctest
 ```
 
 #### Run individual tests
