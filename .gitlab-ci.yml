@@ -15,6 +15,7 @@ variables: &variables
   JPEG_LIB: libjpeg-dev
   TANGO_IDL_TAG: "5.1.2"
   CTEST_PARALLEL_LEVEL: "1"
+  BUILD_TESTING: "ON"
 
 services:
   - docker:20.10.16-dind
@@ -67,6 +68,15 @@ workflow:
     paths:
       - build/tests/results
       - build/tests/core.*
+
+.job-template-no-test-run: &job-template-no-test-run
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
+  services: []
+  tags:
+    - docker, linux, amd64
+  script:
+    - ci/config.sh
+    - ci/build.sh
 
 abi-api-compliance-check:
   variables:
