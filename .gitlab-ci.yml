@@ -143,28 +143,23 @@ ubuntu-20.04:
     OS_TYPE: ubuntu-20.04:v1
 
 coverage:
-  <<: *job-template
+  <<: *job-template-with-tests
   variables:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
-    OS_TYPE: debian10
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian12:v1
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
     - >
-        docker exec --workdir /home/tango/src cpp_tango
         gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --xml --output coverage.xml
     - >
-        docker exec --workdir /home/tango/src cpp_tango
         gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --html-details --output coverage/coverage.html
     - >
-        docker exec --workdir /home/tango/src cpp_tango
         gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
     - tar czf coverage.tar.gz coverage
-    - docker stop cpp_tango
   artifacts:
     when: always
     reports:
