@@ -110,14 +110,12 @@ llvm-latest:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
 gcc-latest:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: gcc-latest
-    RUN_TESTS: "OFF"
+    OS_TYPE: gcc-latest:v1
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    STOCK_CPPZMQ: "OFF"
 
 ubuntu-20.04:
   <<: *job-template
