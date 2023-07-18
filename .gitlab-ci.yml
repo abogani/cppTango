@@ -320,98 +320,52 @@ clang-tidy:
       - code-quality-report.html
 
 # job to build against custom library locations and minimum supported versions of dependent libraries
-cmake-with-locations-and-min-versions:
-  image: debian:buster
-  tags:
-    - docker, linux, amd64
+# using TANGO_XXX_BASE
+cmake-with-locations-and-min-versions-BASE:
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-  services: []
+    <<: *variables
+    OS_TYPE: debian-minimum-versions:v1
   parallel:
     matrix:
-      - BUILD_TYPE: [Release, Debug, RelWithDebInfo, MinSizeRel]
-  before_script:
-    - apt-get update
-    - >
-      apt-get install -y
-      build-essential
-      curl
-      git
-      pkg-config
-      python3-dev
-      python3-minimal
-      libtool
-      autoconf
-      nasm
-    # Install cmake
-    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
-    - chmod +x /tmp/cmake-install.sh
-    - cd /usr/local
-    - /tmp/cmake-install.sh --skip-license --exclude-subdir
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - mkdir /idl/build
-    - cd /idl/build
-    - cmake -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make install
-    # Install libzmq
-    - git clone -b v4.0.5 --depth 1 https://github.com/zeromq/zeromq4-x.git /zmq
-    - mkdir /zmq/build
-    - cd /zmq/build
-    - cmake -DCMAKE_INSTALL_PREFIX=/usr/local/zmq /zmq
-    - make install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - mkdir /cppzmq/build
-    - cd /cppzmq/build
-    - export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig
-    - cmake -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/cppzmq /cppzmq
-    - make install
-    # Install omniORB
-    - curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.2/omniORB-4.2.2.tar.bz2/download -o /omniORB.tar.bz2
-    - mkdir /omniORB
-    - tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB
-    - cd /omniORB
-    - ./configure --prefix=/usr/local/omniORB
-    - make
-    - make install
-    # Install libjpeg
-    - git clone -b 1.5.1 --depth 1 https://github.com/libjpeg-turbo/libjpeg-turbo.git /libjpeg
-    - mkdir /libjpeg/build
-    - cd /libjpeg
-    - autoreconf -fiv
-    - cd build
-    - ../configure -- prefix=/usr/local/jpeg
-    - make
-    - make install
+      - BUILD_TYPE: [Release , Debug, RelWithDebInfo, MinSizeRel]
   script:
-    # using TANGO_XXX_BASE
-    - cd $CI_PROJECT_DIR
-    - mkdir build_base
-    - cd build_base
+    # needs to be in-sync with scripts.git/install_minimum_versions.sh
+    - INSTALL_PREFIX=/tmp/install
+    - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
     - >
-      cmake ..
+      cmake
       -Werror=dev
+      -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DBUILD_TESTING=ON
-      -DTANGO_USE_JPEG=ON
-      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-      -DTANGO_OMNI_BASE=/usr/local/omniORB
-      -DTANGO_ZMQ_BASE=/usr/local/zmq
-      -DTANGO_JPEG_BASE=/usr/local/jpeg
-    - make
-    # using PKG_CONFIG_PATH
-    - cd $CI_PROJECT_DIR
-    - mkdir build_pkg_config
-    - cd build_pkg_config
-    - export PKG_CONFIG_PATH="/usr/local/omniORB/lib/pkgconfig:/usr/local/jpeg/lib/pkgconfig:/usr/local/tango-idl/lib/pkgconfig:/usr/local/zmq/lib/pkgconfig"
-    - cmake ..
+      -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
+      -DTANGO_IDL_BASE=${INSTALL_PREFIX}/tango-idl
+      -DTANGO_OMNI_BASE=${INSTALL_PREFIX}/omniORB
+      -DTANGO_ZMQ_BASE=${INSTALL_PREFIX}/libzmq
+      -DTANGO_JPEG_BASE=${INSTALL_PREFIX}/libjpeg
+    - ci/build.sh
+
+# and pkg-config
+cmake-with-locations-and-min-versions-PKGCONFIG:
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: debian-minimum-versions:v1
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Release , Debug, RelWithDebInfo, MinSizeRel]
+  script:
+    # needs to be in-sync with scripts.git/install_minimum_versions.sh
+    - INSTALL_PREFIX=/tmp/install
+    - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/tango-idl/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
+    - >
+      cmake
+      -Werror=dev
+      -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DBUILD_TESTING=ON
-      -DTANGO_USE_JPEG=ON
-      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
-    - make
+      -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
+    - ci/build.sh
 
 alpine:
   image: alpine:3.15
