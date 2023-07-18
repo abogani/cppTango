@@ -38,7 +38,7 @@ workflow:
     - ci/build.sh
     - ci/test.sh
   after_script:
-    - # ci/print_coredumps.sh # disable for now until the porting is finished
+    - ci/print_coredumps.sh
     - mkdir -p build/tests/results
   artifacts:
     when: always
