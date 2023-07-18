@@ -102,14 +102,12 @@ abi-api-compliance-check:
       - compat_reports
 
 llvm-latest:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest
-    RUN_TESTS: "OFF"
+    OS_TYPE: llvm-latest:v1
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    STOCK_CPPZMQ: "OFF"
 
 gcc-latest:
   <<: *job-template
