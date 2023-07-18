@@ -6,4 +6,4 @@ exec docker run --rm \
     --network=host \
     -e TANGO_HOST="$TANGO_HOST" \
     --entrypoint /tango/bin/tango_admin \
-    registry.gitlab.com/tango-controls/docker/tango-db:5.16 "$@"
+    registry.gitlab.com/tango-controls/docker/tango-db:5.16-1 "$@"
