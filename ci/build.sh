@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+MAKEFLAGS=${MAKEFLAGS:- -j $(nproc)}
+TANGO_MAKE_TARGET=${TANGO_MAKE_TARGET:-all}
+SOURCE_DIR=.
+BUILD_DIR=${SOURCE_DIR}/build
+
+make -C ${BUILD_DIR} ${MAKEFLAGS} ${TANGO_MAKE_TARGET}
