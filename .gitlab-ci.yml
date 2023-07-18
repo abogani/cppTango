@@ -394,14 +394,10 @@ doxygen-documentation:
       - build/doc_html
 
 sanitizer:
-  <<: *job-template
-  # Failures are temporarily allowed until sanitizer issues are fixed.
-  allow_failure: true
-  image: ubuntu:focal
-  tags:
-    - dind, skao, docker, linux, amd64
+  <<: *job-template-with-tests
   variables:
     <<: *variables
+    OS_TYPE: ubuntu-20.04:v1
     CC: /usr/lib/llvm-12/bin/clang
     CXX: /usr/lib/llvm-12/bin/clang++
     ASAN_OPTIONS: detect_stack_use_after_return=1
@@ -411,76 +407,19 @@ sanitizer:
       report_error_type=1,\
       halt_on_error=1,\
       suppressions=$CI_PROJECT_DIR/tests/suppressions-ubsan.supp"
+    SKIP_TESTS: "(event::per_event|old_tests::ring_depth)"
+  # Failures are temporarily allowed until sanitizer issues are fixed.
+  allow_failure: true
   # Increase timeout, this is required by UBSAN job.
   timeout: 2h
   parallel:
     matrix:
-      - SANITIZER: [ASAN, TSAN, UBSAN]
+      - TANGO_ENABLE_SANITIZER: [ASAN, TSAN, UBSAN]
   rules:
-    - if: '$CI_JOB_NAME == "sanitizer: [UBSAN]"'
+    - if: '$CI_JOB_NAME == "tango_enable_sanitizer: [UBSAN]"'
       allow_failure: false
       when: on_success
     - when: on_success
-  before_script:
-    - ulimit -c unlimited
-    - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
-    - echo "1" > /proc/sys/net/ipv4/ip_forward
-    - apt-get update
-    # add kitware repository for cmake
-    - apt-get install -y ca-certificates gpg wget
-    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
-      | gpg --dearmor -
-      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
-      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-    - apt-get update
-    - >
-      apt-get install -y
-      clang-12
-      cmake
-      docker.io
-      gdb
-      git
-      iproute2
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      omniidl
-      python3-minimal
-      libjpeg-dev
-    # Setup a route to the containers running inside dind.
-    - >
-      ip route add
-      $(docker network inspect -f '{{(index .IPAM.Config 0).Subnet}}' bridge)
-      via
-      $(getent hosts docker | awk '{ print $1 }')
-      dev eth0
-    # Symbolizer is required for sanitizers.
-    - ln -s /usr/lib/llvm-12/bin/llvm-symbolizer /usr/local/bin
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Create build directory for cppTango.
-    - mkdir build
-  script:
-    - cd build
-    - >
-      cmake ..
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=ON
-      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF
-      -DTANGO_ENABLE_SANITIZER=$SANITIZER
-    - make
-    - docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
-    - docker pull registry.gitlab.com/tango-controls/docker/tango-db:5.16
-    - ctest -j$(nproc) -E '(event::per_event|old_tests::ring_depth)' --output-on-failure
 
 # Trigger conda dev package build for the default branch
 build-conda-dev-package:
