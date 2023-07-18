@@ -78,6 +78,25 @@ workflow:
     - ci/config.sh
     - ci/build.sh
 
+.job-template-with-tests: &job-template-with-tests
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
+  services:
+    - docker:20.10.16-dind
+  tags:
+    - dind, skao, docker, linux, amd64
+  script:
+    - ci/config.sh
+    - ci/build.sh
+    - ci/test.sh
+  after_script:
+    - # ci/print_coredumps.sh # disable for now until the porting is finished
+    - mkdir -p build/tests/results
+  artifacts:
+    when: always
+    paths:
+      - build/tests/results
+      - build/tests/core.*
+
 abi-api-compliance-check:
   <<: *job-template-no-test-run
   variables:
