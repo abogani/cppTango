@@ -57,7 +57,7 @@ workflow:
     - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
   script:
     - ci/run.sh
-    - ci/test.sh
+    - ci/test-docker-exec.sh
   after_script:
     - ci/print_coredumps.sh
     - docker stop cpp_tango || true
