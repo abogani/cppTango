@@ -189,27 +189,24 @@ debian12-no-pch:
     OS_TYPE: debian12:v1
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
-debian11-release:
-  <<: *job-template
+debian12-release:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11
+    OS_TYPE: debian12:v1
     CMAKE_BUILD_TYPE: Release
-    STOCK_CPPZMQ: "OFF"
 
-debian11:
-  <<: *job-template
+debian12:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian12:v1
 
-debian11-no-jpeg:
-  <<: *job-template
+debian12-no-jpeg:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian12:v1
     TANGO_USE_JPEG: "OFF"
 
 debian12-cross-32bit:
