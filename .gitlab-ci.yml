@@ -368,55 +368,10 @@ cmake-with-locations-and-min-versions-PKGCONFIG:
     - ci/build.sh
 
 alpine:
-  image: alpine:3.15
-  tags:
-    - docker, linux, amd64
-  services: []
-  before_script:
-    - apk update
-    - >
-      apk add
-      g++
-      cmake
-      curl
-      git
-      python3-dev
-      python3
-      libzmq
-      make
-      zeromq-dev
-      jpeg-dev
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig
-    - cmake -B /cppzmq/build -DCMAKE_INSTALL_PREFIX=/usr/local/cppzmq -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Install omniORB
-    - curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.5/omniORB-4.2.5.tar.bz2/download -o /omniORB.tar.bz2
-    - mkdir /omniORB
-    - tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB
-    - cd /omniORB
-    - ./configure --prefix=/usr/local/omniORB
-    - make
-    - make install
-    - cd $CI_PROJECT_DIR
-    - mkdir build
-  script:
-    - cd build
-    - >
-      cmake ..
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=ON
-      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-      -DTANGO_OMNI_BASE=/usr/local/omniORB
-      -DTANGO_ZMQ_BASE=/usr/local/zmq
-    - make
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: alpine-3.15:v1
 
 doxygen-documentation:
   image: debian:buster
