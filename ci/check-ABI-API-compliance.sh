@@ -2,14 +2,14 @@
 
 set -e
 
+# taken from https://stackoverflow.com/a/246128
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source "${SCRIPT_DIR}"/vars.sh
+
 if [[ -z "$CI_TARGET_BRANCH" ]]
 then
   CI_TARGET_BRANCH=main
-fi
-
-if [[ -z "$CMAKE_BUILD_PARALLEL_LEVEL" ]]
-then
-  export CMAKE_BUILD_PARALLEL_LEVEL=$(grep -c ^processor /proc/cpuinfo)
 fi
 
 function exit_on_abi_api_breakages() {
@@ -55,7 +55,7 @@ function generate_info() {
     -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF \
     -DCMAKE_CXX_FLAGS=-gdwarf-4            \
     ..
-  cmake --build .
+  cmake --build . --parallel ${NUM_PROCESSORS}
   abi-dumper libtango.so -o ${base}/libtango-${prefix}.dump -lver ${prefix}
   cd "${base}"
 }
