@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 # vim: syntax=sh
 
 if ! hash docker 2>/dev/null; then
