@@ -103,7 +103,7 @@ sudo apt update
 sudo apt remove libcos4-dev libomniorb4-dev libomnithread4-dev libzmq3-dev
 sudo apt install gcc-i686-linux-gnu
 sudo apt install gcc-multilib g++-multilib
-sudo apt install libcos4-dev:i386 libomniorb4-dev:i386 libomnithread4-dev:i386 libzmq3-dev:i386
+sudo apt install libcos4-dev:i386 libomniorb4-dev:i386 libomnithread4-dev:i386 libzmq3-dev:i386 cppzmq-dev
 mkdir build-cross-32bit
 cd build-cross-32bit
 cmake -DCMAKE_TOOLCHAIN_FILE=../configure/toolchain-i686.cmake ..
