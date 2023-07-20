@@ -7,14 +7,6 @@ add_executable(test_bench ${BENCH_TEST_SOURCES} $<TARGET_OBJECTS:log4tango_objec
 if(WIN32)
     target_compile_definitions(test_log4tango PRIVATE "${static_defs}")
     target_compile_definitions(test_bench PRIVATE "${static_defs}")
-
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_options(test_log4tango PRIVATE "/MTd")
-        target_compile_options(test_bench PRIVATE "/MTd")
-    else()
-        target_compile_options(test_log4tango PRIVATE "/MT")
-        target_compile_options(test_bench PRIVATE "/MT")
-    endif()
 endif()
 
 add_test("log4tango_test"       test_log4tango)
