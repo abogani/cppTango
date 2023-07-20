@@ -88,8 +88,7 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
-for more details on how to enable and configure this feature (note that CMake
-3.16 or better is required).
+for more details on how to enable and configure this feature.
 
 ## Cross-compiling tango
 
@@ -142,7 +141,7 @@ Additionally the tools git, wget, tar and bzip2 are required.
 ```bash
 git clone https://github.com/Kitware/CMake cmake
 cd cmake
-git checkout v3.12.4
+git checkout v3.18.4
 mkdir build
 cd build
 ../bootstrap
