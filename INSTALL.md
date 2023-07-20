@@ -19,14 +19,8 @@ In the following we assume a linux-based system, see [here](#building-on-windows
 On current debian systems the dependencies, except tango-idl, are available as distribution packages:
 
 ```bash
-sudo apt install cmake build-essential git libcos4-dev libomniorb4-dev libomnithread4-dev libzmq3-dev omniidl libjpeg-dev python3
+sudo apt install cmake cppzmq-dev build-essential git libcos4-dev libomniorb4-dev libomnithread4-dev libzmq3-dev omniidl libjpeg-dev python3
 ```
-
-> **Note:**
-> Debian and derivatives provide both `libzmq` and `cppzmq` as one package (`libzmq3-dev`).
-> Versions provided will not necessarily satisfy both requirements.
-> In that case, manual compilation of `cppzmq` may be necessary.
-> This problem is known for at least Ubuntu 20.04. See [#899](https://gitlab.com/tango-controls/cppTango/-/issues/899) for details.
 
 If your linux does not have precompiled packages for these dependencies jump to the
 [next](#compiling-the-dependencies) section for compilation instructions.
