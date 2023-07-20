@@ -44,3 +44,5 @@ else()
     message("selected static-library build")
     set(windows_defs ${static_defs})
 endif()
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>$<$<BOOL:${BUILD_SHARED_LIBS}>:DLL>")

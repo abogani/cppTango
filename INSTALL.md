@@ -332,8 +332,8 @@ cmake --build . --target install
 - Configure with
 
 ```
-cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release           \
-      -DCMAKE_CXX_FLAGS_RELEASE="/MT" -DCMAKE_CXX_FLAGS_DEBUG="/MTd" -DTANGO_IDL_BASE="c:/projects/tango-idl"    \
+cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release                             \
+      -DTANGO_IDL_BASE="c:/projects/tango-idl"                                                                               \
       -DTANGO_OMNI_BASE="c:/projects/omniorb" -DTANGO_ZMQ_BASE="c:/projects/zeromq" -DTANGO_CPPZMQ_BASE="c:/projects/zeromq" \
       -DPTHREAD_WIN="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
 ```
@@ -349,28 +349,28 @@ This is currently not very well integrated into cmake, therefore the command lin
 shared/debug/x64:
 ```bat
     set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_shared_debug"
-    cmake -B build-shared -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_RELEASE="/MD" -DCMAKE_CXX_FLAGS_DEBUG="/MDd" -DCMAKE_CXX_FLAGS="-DTANGO_HAS_DLL" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="tangod;omniORB4_rtd;omnithread_rtd;COS4_rtd;omniDynamic4_rtd;libzmq-v141-mt-gd-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
+    cmake -B build-shared -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-DTANGO_HAS_DLL" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="tangod;omniORB4_rtd;omnithread_rtd;COS4_rtd;omniDynamic4_rtd;libzmq-v141-mt-gd-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
     cmake --build build-shared --config Debug
 ```
 
 static/debug/x64:
 ```bat
     set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_static_debug"
-    cmake -B build-static -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS_RELEASE="/MT" -DCMAKE_CXX_FLAGS_DEBUG="/MTd" -DCMAKE_CXX_FLAGS="-D_WINSTATIC" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="libtangod;omniORB4d;omnithreadd;COS4d;omniDynamic4d;libzmq-v141-mt-sgd-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
+    cmake -B build-static -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-D_WINSTATIC" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="libtangod;omniORB4d;omnithreadd;COS4d;omniDynamic4d;libzmq-v141-mt-sgd-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
     cmake --build build-static --config Debug
 ```
 
 shared/release/x64:
 ```bat
     set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_shared_release"
-    cmake -B build-shared -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE="/MD" -DCMAKE_CXX_FLAGS_DEBUG="/MDd" -DCMAKE_CXX_FLAGS="-DTANGO_HAS_DLL" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="tango;omniORB4_rt;omnithread_rt;COS4_rt;omniDynamic4_rt;libzmq-v141-mt-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
+    cmake -B build-shared -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DTANGO_HAS_DLL" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="tango;omniORB4_rt;omnithread_rt;COS4_rt;omniDynamic4_rt;libzmq-v141-mt-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
     cmake --build build-shared --config Release
 ```
 
 static/release/x64:
 ```bat
     set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_static_release"
-    cmake -B build-static -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE="/MT" -DCMAKE_CXX_FLAGS_DEBUG="/MTd" -DCMAKE_CXX_FLAGS="-D_WINSTATIC" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="libtango;omniORB4;omnithread;COS4;omniDynamic4;libzmq-v141-mt-s-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
+    cmake -B build-static -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-D_WINSTATIC" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="libtango;omniORB4;omnithread;COS4;omniDynamic4;libzmq-v141-mt-s-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
     cmake --build build-static --config Release
 ```
 

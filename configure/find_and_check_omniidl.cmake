@@ -22,7 +22,7 @@ function(test_omniidl)
 
     if (WIN32)
         # Always statically link on Windows so we don't need the omniorb dll's to be in the PATH
-        set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
         set(link_libs ${OMNIORB_PKG_LIBRARIES_STA_DEBUG};ws2_32.lib)
         set(defs "-D__x86__" "-D__NT__" "-D__OSVERSION__=4" "-D__WIN32__" "-D_WIN32_WINNT=0x0400")
         foreach(def ${static_defs})
