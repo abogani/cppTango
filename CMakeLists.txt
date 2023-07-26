@@ -71,17 +71,17 @@ set(SO_VERSION "${MAJOR_VERSION}${MINOR_VERSION}")
 set(TANGO_HOST $ENV{TANGO_HOST})
 include(configure/CMakeLists.txt)
 
-SET(BUILD_TANGO_LOCAL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cppapi/include)
+SET(BUILD_TANGO_LOCAL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 message(STATUS "Using ${BUILD_TANGO_LOCAL_INCLUDE_DIR} as build-time include directory")
 include_directories(${BUILD_TANGO_LOCAL_INCLUDE_DIR})
 include_directories(log4tango/include)
 #required for generated include/tango/idl/tango.h, include/tango/common/tango_const.h and config.h
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/cppapi/include)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/log4tango/include)
 
 #source code
 add_subdirectory("log4tango")
-add_subdirectory("cppapi")
+add_subdirectory("src")
 
 if(BUILD_TESTING)
 
