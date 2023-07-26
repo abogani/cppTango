@@ -256,44 +256,6 @@ As can be seen are header files now split into functional groups. The files are 
 
 Old device servers which include just `tango.h` can easily be recompiled after `tango/tango.h` is symlinked to `tango.h`.
 
-# Running the tests
-
-Running the tests requires docker. See
-[here](https://docs.docker.com/engine/install) for install instructions.
-
-Once you have installed docker, you can run the tests from `build/` via:
-
-```bash
-make test
-```
-
-## Run individual tests
-
-For debugging a single test execute the following:
-
-```
-ctest -R event::per_event --output-on-failure -V
-```
-
-Test output and device server logs are collected in `build/tests/results`.
-
-For more details on testing with CTest, see [here](https://cmake.org/Wiki/CMake/Testing_With_CTest).
-
-## Setting environment up manually
-
-The test runner automatically starts database and all required
-device servers for each test. If you want to set up the environment
-manually, from `build/` directory run:
-
-```bash
-source ./tests/environment/setup_database.sh  # source to get TANGO_HOST
-./tests/environment/setup_devices.sh
-# attach the debugger or perform some additional configuration
-TANGO_TEST_CASE_SKIP_FIXTURE=1 ctest -V -R ds_cache
-killall DevTest FwdTest
-docker stop tango_cs mysql_db
-```
-
 # Building on windows
 
 For the majority of users using the prebuilt binaries from the release page is
@@ -417,10 +379,3 @@ Example commands to run clang-tidy on all files (excluding the tests):
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=0 ...
 run-clang-tidy.py -header-filter='.*' 'cppapi/(?!server/idl)' 'log4tango/src'
 ```
-
-# Execucting gitlab CI jobs locally
-
-For faster development it is possible to execute gitlab CI jobs locally on the development machine.
-
-* Install gitlab runner, see https://docs.gitlab.com/runner/install
-* `gitlab-runner exec docker --env "MAKEFLAGS=-j NUMBER_OF_CPUS" JOBNAME`

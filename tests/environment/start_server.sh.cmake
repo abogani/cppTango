@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 # vim: syntax=sh
 
 export SHELLOPTS # Make below options effective also in subshells.

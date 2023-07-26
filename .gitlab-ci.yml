@@ -1,23 +1,15 @@
 variables: &variables
-  DEBIAN_FRONTEND: noninteractive
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
   # Build parameters. We later override them at job level if needed.
-  RUN_TESTS: "ON"
-  STOCK_CPPZMQ: "ON"
-  STOCK_OMNIORB: "ON"
   CMAKE_DISABLE_PRECOMPILE_HEADERS: "OFF"
   CMAKE_BUILD_TYPE: "Debug"
   TANGO_USE_JPEG: "ON"
   BUILD_SHARED_LIBS: "ON"
   TANGO_USE_LIBCPP: "OFF"
   TOOLCHAIN_FILE: ""
-  JPEG_LIB: libjpeg-dev
-  TANGO_IDL_TAG: "5.1.2"
   CTEST_PARALLEL_LEVEL: "1"
-
-services:
-  - docker:20.10.16-dind
+  BUILD_TESTING: "ON"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
 workflow:
@@ -26,41 +18,27 @@ workflow:
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-.job-template: &job-template
-  image: debian:10
+.job-template-no-test-run: &job-template-no-test-run
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
+  services: []
+  tags:
+    - docker, linux, amd64
+  script:
+    - ci/config.sh
+    - ci/build.sh
+
+.job-template-with-tests: &job-template-with-tests
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
+  services:
+    - docker:20.10.16-dind
   tags:
     - dind, skao, docker, linux, amd64
-  before_script:
-    - ulimit -c unlimited
-    - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
-    - apt-get update && apt-get install -y git wget unzip docker.io
-    - ci/before_install.sh
-    - docker build --build-arg JPEG_LIB=${JPEG_LIB} -t cpp_tango ci/${OS_TYPE}
-    - >
-        docker run
-        --rm
-        --name cpp_tango
-        --user root
-        --ulimit core=-1
-        -e TANGO_HOST=${TANGO_HOST}
-        -e TOOLCHAIN_FILE=${TOOLCHAIN_FILE}
-        -e DOCKER_HOST=tcp://$(getent hosts docker | awk '{ print $1 }'):2375
-        -v `pwd`:/home/tango/src
-        -v `pwd`/idl:/home/tango/idl
-        -v `pwd`/cppzmq:/home/tango/cppzmq
-        -v `pwd`/omniorb:/home/tango/omniorb
-        -v `pwd`/build-wrapper-linux-x86:/home/tango/build-wrapper-linux-x86
-        -dit
-        cpp_tango
-    - ci/install_tango_idl.sh
-    - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
-    - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
   script:
-    - ci/run.sh
+    - ci/config.sh
+    - ci/build.sh
     - ci/test.sh
   after_script:
     - ci/print_coredumps.sh
-    - docker stop cpp_tango || true
     - mkdir -p build/tests/results
   artifacts:
     when: always
@@ -69,104 +47,68 @@ workflow:
       - build/tests/core.*
 
 abi-api-compliance-check:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: gcc-latest:v1
+    GIT_COMMITTER_NAME: "$GITLAB_USER_NAME"
+    GIT_COMMITTER_EMAIL: "$GITLAB_USER_EMAIL"
+    CI_TARGET_BRANCH: "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+    GIT_STRATEGY: "none"
   rules:
     # This job runs only for merge requests.
     - if: $CI_MERGE_REQUEST_IID
-  image: debian:10
-  tags:
-    - dind, skao, docker, linux, amd64
   # allow failures for next release cycle which is allowed to break ABI
   allow_failure: true
-  before_script:
-    - apt-get update && apt-get install -y git docker.io
-    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - ci/before_install.sh
-    - docker build -t cpp_tango ci/gcc-latest
-    - >
-        docker run
-        --rm
-        --name cpp_tango
-        --user root
-        -v `pwd`:/home/tango/src
-        -v `pwd`/idl:/home/tango/idl
-        -v `pwd`/cppzmq:/home/tango/cppzmq
-        -v `pwd`/build-wrapper-linux-x86:/home/tango/build-wrapper-linux-x86
-        -dit
-        cpp_tango
-    - ci/install_tango_idl.sh
-    - if [ ${STOCK_CPPZMQ} = "OFF" ]; then ci/install_cppzmq.sh; fi
-    - if [ ${STOCK_OMNIORB} = "OFF" ]; then ci/install_omniorb.sh; fi
-  script:
-    - >
-        docker exec
-        -w /home/tango/src
-        -e CI_TARGET_BRANCH=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
-        -e CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
-        -e GIT_COMMITTER_NAME="$GITLAB_USER_NAME"
-        -e GIT_COMMITTER_EMAIL="$GITLAB_USER_EMAIL"
-        cpp_tango
-        ci/check-ABI-API-compliance.sh
-  after_script:
-    - docker stop cpp_tango
+  script: # override
+    - git clone -b ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME} ${CI_PROJECT_URL} src
+    - cd src
+    - ci/check-ABI-API-compliance.sh
   artifacts:
     when: always
     paths:
       - compat_reports
 
 llvm-latest:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest
-    RUN_TESTS: "OFF"
+    OS_TYPE: llvm-latest:v1
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    STOCK_CPPZMQ: "OFF"
 
 gcc-latest:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: gcc-latest
-    RUN_TESTS: "OFF"
+    OS_TYPE: gcc-latest:v1
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    STOCK_CPPZMQ: "OFF"
 
 ubuntu-20.04:
-  <<: *job-template
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: ubuntu-20.04:v1
 
 coverage:
-  <<: *job-template
+  <<: *job-template-with-tests
   variables:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
-    OS_TYPE: debian10
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian12:v1
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
     - >
-        docker exec --workdir /home/tango/src cpp_tango
         gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --xml --output coverage.xml
     - >
-        docker exec --workdir /home/tango/src cpp_tango
         gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --html-details --output coverage/coverage.html
     - >
-        docker exec --workdir /home/tango/src cpp_tango
         gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
     - tar czf coverage.tar.gz coverage
-    - docker stop cpp_tango
   artifacts:
     when: always
     reports:
@@ -182,156 +124,106 @@ coverage:
   # keyword/regex to extract total coverage % for this CI job (which is also called "coverage")
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
 
-debian11-static:
-  <<: *job-template
+debian12-static:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian11
-    RUN_TESTS: "OFF"
+    OS_TYPE: debian12:v1
     BUILD_SHARED_LIBS: "OFF"
-    STOCK_CPPZMQ: "OFF"
 
-debian11-no-pch:
-  <<: *job-template
+debian12-no-pch:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian11
+    OS_TYPE: debian12:v1
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
 
-debian11-release:
-  <<: *job-template
+debian12-release:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11
+    OS_TYPE: debian12:v1
     CMAKE_BUILD_TYPE: Release
-    STOCK_CPPZMQ: "OFF"
 
-debian11:
-  <<: *job-template
+debian12:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian12:v1
 
-debian11-no-jpeg:
-  <<: *job-template
+debian12-no-jpeg:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian12:v1
     TANGO_USE_JPEG: "OFF"
 
-debian11-cross-32bit:
-  <<: *job-template
+debian12-cross-32bit:
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian11-cross-32bit
+    OS_TYPE: debian12-cross-32bit:v1
     CMAKE_BUILD_TYPE: "Debug"
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
     TOOLCHAIN_FILE: "configure/toolchain-i686.cmake"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     TANGO_USE_JPEG: "OFF"
 
-debian10:
-  <<: *job-template
+debian11:
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian10
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: debian11:v1
 
 ubuntu-20.04-jpeg9:
-  <<: *job-template
+  <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04
-    STOCK_CPPZMQ: "OFF"
-    JPEG_LIB: libjpeg9-dev
+    OS_TYPE: ubuntu-20.04-jpeg9:v1
 
 clang-analyzer:
-  image: ubuntu:focal
-  tags:
-    - docker, linux, amd64
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
+    <<: *variables
+    OS_TYPE: ubuntu-20.04:v1
+    CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    BUILD_TESTING: "OFF"
+    CMAKE_BUILD_TYPE: "Debug"
+    TANGO_MAKE_TARGET: "idl_source"
     CC: /usr/lib/llvm-12/bin/clang
     CXX: /usr/lib/llvm-12/bin/clang++
-  services: []
-  before_script:
-    - apt-get update
-    # add kitware repository for cmake
-    - apt-get install -y ca-certificates gpg wget
-    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
-      | gpg --dearmor -
-      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
-      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-    - apt-get update
-    - >
-      apt-get install -y
-      clang-tools-12
-      cmake
-      curl
-      git
-      omniidl
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      libjpeg-dev
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Install tango-idl
-    - mkdir /idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build /idl
-    - make -C /idl/build install
-    # Create build directory for cppTango.
-    - mkdir build
-    # scan-build expects 'clang' binary to be available on PATH.
-    - ln -s /usr/bin/clang-12 /usr/local/bin/clang
-    - ln -s /usr/bin/clang-extdef-mapping-12 /usr/local/bin/clang-extdef-mapping
-  script:
-    - >
-      cmake . -B build
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-      -DBUILD_TESTING=OFF
-      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-    - make -C build idl_source
+  script: # override
+    - sudo ln -s /usr/bin/clang-12 /usr/local/bin/clang
+    - sudo ln -s /usr/bin/clang-extdef-mapping-12 /usr/local/bin/clang-extdef-mapping
+    - ci/config.sh
+    - ci/build.sh
     # scan-build command must be wrapped in quotes because
     # --analyzer-config option cannot contain whitespaces.
-    - "/usr/share/clang/scan-build-py-12/bin/analyze-build \
-      -v \
-      --cdb build/compile_commands.json \
-      --exclude build/cppapi/server/idl \
-      --keep-empty \
-      --output clang-analyzer-results \
-      --force-analyze-debug-code \
-      --analyzer-config \
-        stable-report-filename=true,\
-        aggressive-binary-operation-simplification=true \
-      --enable-checker core \
-      --enable-checker cplusplus \
-      --enable-checker deadcode \
-      --enable-checker nullability \
-      --enable-checker optin.cplusplus \
-      --enable-checker optin.performance \
-      --enable-checker optin.portability \
-      --enable-checker security \
-      --enable-checker unix \
-      --enable-checker alpha.clone \
-      --enable-checker alpha.core \
-      --enable-checker alpha.cplusplus \
-      --enable-checker alpha.deadcode \
-      --enable-checker alpha.nondeterminism \
-      --enable-checker alpha.unix \
+    - "/usr/share/clang/scan-build-py-12/bin/analyze-build                          \
+      -v                                                                            \
+      --cdb build/compile_commands.json                                             \
+      --exclude build/cppapi/server/idl                                             \
+      --keep-empty                                                                  \
+      --output clang-analyzer-results                                               \
+      --force-analyze-debug-code                                                    \
+      --analyzer-config                                                             \
+        stable-report-filename=true,aggressive-binary-operation-simplification=true \
+      --enable-checker core                                                         \
+      --enable-checker cplusplus                                                    \
+      --enable-checker deadcode                                                     \
+      --enable-checker nullability                                                  \
+      --enable-checker optin.cplusplus                                              \
+      --enable-checker optin.performance                                            \
+      --enable-checker optin.portability                                            \
+      --enable-checker security                                                     \
+      --enable-checker unix                                                         \
+      --enable-checker alpha.clone                                                  \
+      --enable-checker alpha.core                                                   \
+      --enable-checker alpha.cplusplus                                              \
+      --enable-checker alpha.deadcode                                               \
+      --enable-checker alpha.nondeterminism                                         \
+      --enable-checker alpha.unix                                                   \
       > clang-analyzer-output.txt"
   artifacts:
     when: always
@@ -340,66 +232,26 @@ clang-analyzer:
       - clang-analyzer-results
 
 clang-tidy:
-  image: ubuntu:focal
-  tags:
-    - docker, linux, amd64
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-    CC: /usr/lib/llvm-11/bin/clang
-    CXX: /usr/lib/llvm-11/bin/clang++
-  services: []
-  before_script:
-    - apt-get update
-    # add kitware repository for cmake
-    - apt-get install -y ca-certificates gpg wget
-    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
-      | gpg --dearmor -
-      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
-      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-    - apt-get update
-    - >
-      apt-get install -y
-      clang-tidy-11
-      cmake
-      git
-      omniidl
-      python3-minimal
-      ruby-dev
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      libjpeg-dev
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build /idl
-    - make -C /idl/build install
+    <<: *variables
+    OS_TYPE: ubuntu-20.04:v1
+    CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
+    CMAKE_UNITY_BUILD: "ON"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    BUILD_TESTING: "OFF"
+    CMAKE_BUILD_TYPE: "Debug"
+    TANGO_MAKE_TARGET: "idl_source"
+    CC: /usr/lib/llvm-12/bin/clang
+    CXX: /usr/lib/llvm-12/bin/clang++
+  script: # override
     # Install codeclimate. This is needed for generating HTML report.
-    - git clone -b v0.85.22 --depth 1 https://github.com/codeclimate/codeclimate.git /codeclimate
-    - gem build -C /codeclimate /codeclimate/codeclimate.gemspec
-    - gem install /codeclimate/codeclimate-*.gem
-    # Create build directory for cppTango.
-    - mkdir build
-  script:
+    - ci/config.sh
+    - ci/build.sh
     - >
-      cmake . -B build
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-      -DCMAKE_UNITY_BUILD=ON
-      -DCMAKE_UNITY_BUILD_BATCH_SIZE=0
-      -DBUILD_TESTING=OFF
-      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-    - make -C build idl_source
-    - >
-      run-clang-tidy-11
+      run-clang-tidy-12
       -p build -header-filter='.*' 'cppapi/(?!server/idl)' 'log4tango/src'
-      > clang-tidy-output.txt
+      | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' > clang-tidy-output.txt
     # Print warning summary (check name and occurrence count).
     - >
       grep -E 'warning: .+ \[.+\]$' clang-tidy-output.txt
@@ -412,7 +264,7 @@ clang-tidy:
     # Produce a report in HTML format.
     - >
       cat code-quality-report.json
-      | ruby -I/codeclimate/lib ci/code-climate-json-to-html.rb "$(pwd)"
+      | ruby -I/home/tango/dependencies/codeclimate/lib ci/code-climate-json-to-html.rb "$(pwd)"
       > code-quality-report.html
   artifacts:
     when: always
@@ -424,208 +276,77 @@ clang-tidy:
       - code-quality-report.html
 
 # job to build against custom library locations and minimum supported versions of dependent libraries
-cmake-with-locations-and-min-versions:
-  image: debian:buster
-  tags:
-    - docker, linux, amd64
+# using TANGO_XXX_BASE
+cmake-with-locations-and-min-versions-BASE:
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-  services: []
+    <<: *variables
+    OS_TYPE: debian-minimum-versions:v1
   parallel:
     matrix:
-      - BUILD_TYPE: [Release, Debug, RelWithDebInfo, MinSizeRel]
-  before_script:
-    - apt-get update
-    - >
-      apt-get install -y
-      build-essential
-      curl
-      git
-      pkg-config
-      python3-dev
-      python3-minimal
-      libtool
-      autoconf
-      nasm
-    # Install cmake
-    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
-    - chmod +x /tmp/cmake-install.sh
-    - cd /usr/local
-    - /tmp/cmake-install.sh --skip-license --exclude-subdir
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - mkdir /idl/build
-    - cd /idl/build
-    - cmake -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make install
-    # Install libzmq
-    - git clone -b v4.0.5 --depth 1 https://github.com/zeromq/zeromq4-x.git /zmq
-    - mkdir /zmq/build
-    - cd /zmq/build
-    - cmake -DCMAKE_INSTALL_PREFIX=/usr/local/zmq /zmq
-    - make install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - mkdir /cppzmq/build
-    - cd /cppzmq/build
-    - export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig
-    - cmake -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/cppzmq /cppzmq
-    - make install
-    # Install omniORB
-    - curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.2/omniORB-4.2.2.tar.bz2/download -o /omniORB.tar.bz2
-    - mkdir /omniORB
-    - tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB
-    - cd /omniORB
-    - ./configure --prefix=/usr/local/omniORB
-    - make
-    - make install
-    # Install libjpeg
-    - git clone -b 1.5.1 --depth 1 https://github.com/libjpeg-turbo/libjpeg-turbo.git /libjpeg
-    - mkdir /libjpeg/build
-    - cd /libjpeg
-    - autoreconf -fiv
-    - cd build
-    - ../configure -- prefix=/usr/local/jpeg
-    - make
-    - make install
+      - BUILD_TYPE: [Release , Debug, RelWithDebInfo, MinSizeRel]
   script:
-    # using TANGO_XXX_BASE
-    - cd $CI_PROJECT_DIR
-    - mkdir build_base
-    - cd build_base
+    # needs to be in-sync with scripts.git/install_minimum_versions.sh
+    - INSTALL_PREFIX=/tmp/install
+    - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
     - >
-      cmake ..
+      cmake
       -Werror=dev
+      -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DBUILD_TESTING=ON
-      -DTANGO_USE_JPEG=ON
-      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-      -DTANGO_OMNI_BASE=/usr/local/omniORB
-      -DTANGO_ZMQ_BASE=/usr/local/zmq
-      -DTANGO_JPEG_BASE=/usr/local/jpeg
-    - make
-    # using PKG_CONFIG_PATH
-    - cd $CI_PROJECT_DIR
-    - mkdir build_pkg_config
-    - cd build_pkg_config
-    - export PKG_CONFIG_PATH="/usr/local/omniORB/lib/pkgconfig:/usr/local/jpeg/lib/pkgconfig:/usr/local/tango-idl/lib/pkgconfig:/usr/local/zmq/lib/pkgconfig"
-    - cmake ..
+      -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
+      -DTANGO_IDL_BASE=${INSTALL_PREFIX}/tango-idl
+      -DTANGO_OMNI_BASE=${INSTALL_PREFIX}/omniORB
+      -DTANGO_ZMQ_BASE=${INSTALL_PREFIX}/libzmq
+      -DTANGO_JPEG_BASE=${INSTALL_PREFIX}/libjpeg
+    - ci/build.sh
+
+# and pkg-config
+cmake-with-locations-and-min-versions-PKGCONFIG:
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: debian-minimum-versions:v1
+  parallel:
+    matrix:
+      - BUILD_TYPE: [Release , Debug, RelWithDebInfo, MinSizeRel]
+  script:
+    # needs to be in-sync with scripts.git/install_minimum_versions.sh
+    - INSTALL_PREFIX=/tmp/install
+    - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/tango-idl/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
+    - >
+      cmake
+      -Werror=dev
+      -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DBUILD_TESTING=ON
-      -DTANGO_USE_JPEG=ON
-      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
-    - make
+      -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
+    - ci/build.sh
 
 alpine:
-  image: alpine:3.15
-  tags:
-    - docker, linux, amd64
-  services: []
-  before_script:
-    - apk update
-    - >
-      apk add
-      g++
-      cmake
-      curl
-      git
-      python3-dev
-      python3
-      libzmq
-      make
-      zeromq-dev
-      jpeg-dev
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig
-    - cmake -B /cppzmq/build -DCMAKE_INSTALL_PREFIX=/usr/local/cppzmq -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Install omniORB
-    - curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.5/omniORB-4.2.5.tar.bz2/download -o /omniORB.tar.bz2
-    - mkdir /omniORB
-    - tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB
-    - cd /omniORB
-    - ./configure --prefix=/usr/local/omniORB
-    - make
-    - make install
-    - cd $CI_PROJECT_DIR
-    - mkdir build
-  script:
-    - cd build
-    - >
-      cmake ..
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=ON
-      -DTANGO_CPPZMQ_BASE=/usr/local/cppzmq
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-      -DTANGO_OMNI_BASE=/usr/local/omniORB
-      -DTANGO_ZMQ_BASE=/usr/local/zmq
-    - make
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: alpine-3.15:v1
 
 doxygen-documentation:
-  image: debian:buster
-  tags:
-    - docker, linux, amd64
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-  services: []
-  before_script:
-    - apt-get update
-    - >
-      apt-get install -y
-      build-essential
-      curl
-      doxygen
-      git
-      graphviz
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      omniidl
-      libjpeg-dev
-      pkg-config
-    # install cmake 3.18
-    - curl -L https://cmake.org/files/v3.18/cmake-3.18.0-Linux-x86_64.sh -o /tmp/cmake-install.sh
-    - chmod +x /tmp/cmake-install.sh
-    - /tmp/cmake-install.sh --prefix=/usr/local --skip-license --exclude-subdir
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    - mkdir build
-  script:
-    - >
-      cmake . -B build
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=OFF
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-    - make -C build doc
+    <<: *variables
+    OS_TYPE: debian12:v1
+    TANGO_USE_JPEG: "OFF"
+    BUILD_TESTING: "OFF"
+    TANGO_MAKE_TARGET: "doc"
   artifacts:
     when: always
     paths:
       - build/doc_html
 
 sanitizer:
-  <<: *job-template
-  # Failures are temporarily allowed until sanitizer issues are fixed.
-  allow_failure: true
-  image: ubuntu:focal
-  tags:
-    - dind, skao, docker, linux, amd64
+  <<: *job-template-with-tests
   variables:
     <<: *variables
+    OS_TYPE: ubuntu-20.04:v1
     CC: /usr/lib/llvm-12/bin/clang
     CXX: /usr/lib/llvm-12/bin/clang++
     ASAN_OPTIONS: detect_stack_use_after_return=1
@@ -635,76 +356,19 @@ sanitizer:
       report_error_type=1,\
       halt_on_error=1,\
       suppressions=$CI_PROJECT_DIR/tests/suppressions-ubsan.supp"
+    SKIP_TESTS: "(event::per_event|old_tests::ring_depth)"
+  # Failures are temporarily allowed until sanitizer issues are fixed.
+  allow_failure: true
   # Increase timeout, this is required by UBSAN job.
   timeout: 2h
   parallel:
     matrix:
-      - SANITIZER: [ASAN, TSAN, UBSAN]
+      - TANGO_ENABLE_SANITIZER: [ASAN, TSAN, UBSAN]
   rules:
-    - if: '$CI_JOB_NAME == "sanitizer: [UBSAN]"'
+    - if: '$CI_JOB_NAME == "tango_enable_sanitizer: [UBSAN]"'
       allow_failure: false
       when: on_success
     - when: on_success
-  before_script:
-    - ulimit -c unlimited
-    - echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern
-    - echo "1" > /proc/sys/net/ipv4/ip_forward
-    - apt-get update
-    # add kitware repository for cmake
-    - apt-get install -y ca-certificates gpg wget
-    - wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null
-      | gpg --dearmor -
-      | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-    - echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main'
-      | tee /etc/apt/sources.list.d/kitware.list >/dev/null
-    - apt-get update
-    - >
-      apt-get install -y
-      clang-12
-      cmake
-      docker.io
-      gdb
-      git
-      iproute2
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      omniidl
-      python3-minimal
-      libjpeg-dev
-    # Setup a route to the containers running inside dind.
-    - >
-      ip route add
-      $(docker network inspect -f '{{(index .IPAM.Config 0).Subnet}}' bridge)
-      via
-      $(getent hosts docker | awk '{ print $1 }')
-      dev eth0
-    # Symbolizer is required for sanitizers.
-    - ln -s /usr/lib/llvm-12/bin/llvm-symbolizer /usr/local/bin
-    # Install tango-idl
-    - git clone -b $TANGO_IDL_TAG --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    # Create build directory for cppTango.
-    - mkdir build
-  script:
-    - cd build
-    - >
-      cmake ..
-      -Werror=dev
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=ON
-      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF
-      -DTANGO_ENABLE_SANITIZER=$SANITIZER
-    - make
-    - docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
-    - docker pull registry.gitlab.com/tango-controls/docker/tango-db:5.16
-    - ctest -j$(nproc) -E '(event::per_event|old_tests::ring_depth)' --output-on-failure
 
 # Trigger conda dev package build for the default branch
 build-conda-dev-package:
@@ -717,65 +381,35 @@ build-conda-dev-package:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 libcpp:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
+    OS_TYPE: llvm-latest:v1
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_USE_LIBCPP: "ON"
 
 pkgconfig-fedora37:
-  <<: *job-template
+  <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: fedora37
-    RUN_TESTS: "OFF"
-    STOCK_CPPZMQ: "OFF"
-    JPEG_LIB: "libjpeg-turbo-devel"
+    OS_TYPE: fedora37:v1
     TANGO_USE_JPEG: "OFF"
-  script:
+    BUILD_TESTING: "OFF"
+    # NOTE: Below we are lying to cmake about the OMNIORB_VERSION because the
+    # version provided by Fedora is unsupported, however, for this test we do not
+    # want to run anything, so we don't care.
+    OMNIORB_VERSION: "4.2.5"
+  script: # override
+    - ci/config.sh
     - ci/run-pkg-config-validation.sh
 
 cmake-superproject:
-  image: debian:bullseye
+  <<: *job-template-no-test-run
   variables:
-    DEBIAN_FRONTEND: noninteractive
-  services: []
-  tags:
-    - docker, linux, amd64
-  before_script:
-    - apt-get update
-    - >
-      apt-get install -y
-      build-essential
-      cmake
-      doxygen
-      git
-      graphviz
-      libcos4-dev
-      libomniorb4-dev
-      libomnithread4-dev
-      libzmq3-dev
-      omniidl
-      libjpeg-dev
-      pkg-config
-    # Install tango-idl
-    - git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl
-    - cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/tango-idl /idl
-    - make -C /idl/build install
-    # Install cppzmq
-    - git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq
-    - cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq
-    - make -C /cppzmq/build install
-    - mkdir build
-  script:
+    <<: *variables
+    OS_TYPE: debian12:v1
+  script: # override
     - cd tests/superproject
-    - >
-      cmake . -B build
-      -DCMAKE_BUILD_TYPE=Debug
-      -DBUILD_TESTING=OFF
-      -DTANGO_IDL_BASE=/usr/local/tango-idl
-    - cmake --build build
+    - ../../ci/config.sh
+    - ../../ci/build.sh

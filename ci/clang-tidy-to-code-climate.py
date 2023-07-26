@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 
 # This script produces a code quality report in Code Climate JSON format
 # suitable for use in Gitlab CI/CD pipeline. See the links for more details:

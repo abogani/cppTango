@@ -1,0 +1,70 @@
+#! /usr/bin/env bash
+
+set -e
+
+# taken from https://stackoverflow.com/a/246128
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source "${SCRIPT_DIR}"/vars.sh
+
+echo "############################"
+echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
+echo "CMAKE_DISABLE_PRECOMPILE_HEADERS=$CMAKE_DISABLE_PRECOMPILE_HEADERS"
+echo "BUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
+echo "TANGO_USE_LIBCPP=$TANGO_USE_LIBCPP"
+echo "TANGO_WARNINGS_AS_ERRORS=$TANGO_WARNINGS_AS_ERRORS"
+echo "TOOLCHAIN_FILE=$TOOLCHAIN_FILE"
+echo "CMAKE_EXPORT_COMPILE_COMMANDS=$CMAKE_EXPORT_COMPILE_COMMANDS"
+echo "CMAKE_UNITY_BUILD=$CMAKE_UNITY_BUILD"
+echo "BUILD_TESTING=$BUILD_TESTING"
+echo "TANGO_ENABLE_SANITIZER=$TANGO_ENABLE_SANITIZER"
+echo "TANGO_ENABLE_COVERAGE=$TANGO_ENABLE_COVERAGE"
+echo "############################"
+
+# set defaults
+TANGO_USE_LIBCPP=${TANGO_USE_LIBCPP:-OFF}
+CMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS:-ON}
+BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS:-ON}
+TANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS:-OFF}
+CMAKE_EXPORT_COMPILE_COMMANDS=${CMAKE_EXPORT_COMPILE_COMMANDS:-OFF}
+CMAKE_UNITY_BUILD=${CMAKE_UNITY_BUILD:-OFF}
+CMAKE_UNITY_BUILD_BATCH_SIZE=${CMAKE_UNITY_BUILD_BATCH_SIZE:-0}
+TANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE:-OFF}
+BUILD_TESTING=${BUILD_TESTING:-ON}
+
+ADDITIONAL_ARGS=""
+
+if [[ -f "$TOOLCHAIN_FILE" && -s "$TOOLCHAIN_FILE" ]]
+then
+  ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DCMAKE_TOOLCHAIN_FILE=${SOURCE_DIR}/${TOOLCHAIN_FILE}"
+fi
+
+if [[ -n "$TANGO_ENABLE_SANITIZER" ]]
+then
+  ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DTANGO_ENABLE_SANITIZER=${TANGO_ENABLE_SANITIZER}"
+fi
+
+if [[ -n "$OMNIORB_VERSION" ]]
+then
+  ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DOMNIORB_VERSION=${OMNIORB_VERSION}"
+fi
+
+cmake                                                                    \
+  -Werror=dev                                                            \
+  -H${SOURCE_DIR}                                                        \
+  -B${BUILD_DIR}                                                         \
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                               \
+  -DCMAKE_VERBOSE_MAKEFILE=ON                                            \
+  -DTANGO_CPPZMQ_BASE=${INSTALL_DIR}                                     \
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                 \
+  -DCMAKE_CXX_FLAGS_RELEASE="-g -O3"                                     \
+  -DCMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS} \
+  -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                                     \
+  -DTANGO_USE_LIBCPP=${TANGO_USE_LIBCPP}                                 \
+  -DTANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS}                 \
+  -DTANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE}                       \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=${CMAKE_EXPORT_COMPILE_COMMANDS}       \
+  -DBUILD_TESTING=${BUILD_TESTING}                                       \
+  -DCMAKE_UNITY_BUILD=${CMAKE_UNITY_BUILD}                               \
+  -DCMAKE_UNITY_BUILD_BATCH_SIZE=${CMAKE_UNITY_BUILD_BATCH_SIZE}         \
+  ${ADDITIONAL_ARGS}
