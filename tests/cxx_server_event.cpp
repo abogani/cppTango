@@ -9,27 +9,6 @@
 #undef SUITE_NAME
 #define SUITE_NAME ServerEventTestSuite
 
-template <typename TEvent>
-struct EventCallback : public Tango::CallBack
-{
-    EventCallback()
-        : num_of_all_events(0)
-        , num_of_error_events(0)
-    {}
-
-    void push_event(TEvent* event)
-    {
-        num_of_all_events++;
-        if (event->err)
-        {
-            num_of_error_events++;
-        }
-    }
-
-    int num_of_all_events;
-    int num_of_error_events;
-};
-
 class ServerEventTestSuite : public CxxTest::TestSuite {
 protected:
     DeviceProxy *device1, *device2;
@@ -162,7 +141,7 @@ public:
 
         const std::string attribute_name = "event_change_tst";
 
-        EventCallback<Tango::EventData> callback{};
+        CountingCallBack<Tango::EventData> callback{};
 
         int subscription{};
         TS_ASSERT_THROWS_NOTHING(subscription = device1->subscribe_event(
@@ -171,9 +150,9 @@ public:
             &callback));
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(2, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(0, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
 
         CxxTest::TangoPrinter::kill_server();
 
@@ -181,17 +160,17 @@ public:
         db.rename_server(old_ds_name, new_ds_name);
 
         CxxTest::TangoPrinter::start_server(new_instance_name);
-        std::this_thread::sleep_for(std::chrono::seconds(EVENT_HEARTBEAT_PERIOD)); // Wait for reconnection
+        // std::this_thread::sleep_for(std::chrono::seconds(EVENT_HEARTBEAT_PERIOD)); // Wait for reconnection
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(4, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(1, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 5; });
+        TS_ASSERT_EQUALS(4, callback.invocation_count());
+        TS_ASSERT_EQUALS(1, callback.error_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        TS_ASSERT_EQUALS(5, callback.num_of_all_events);
-        TS_ASSERT_EQUALS(1, callback.num_of_error_events);
+        callback.wait_for([&](){ return callback.invocation_count() >= 6; });
+        TS_ASSERT_EQUALS(5, callback.invocation_count());
+        TS_ASSERT_EQUALS(1, callback.error_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->unsubscribe_event(subscription));
 
