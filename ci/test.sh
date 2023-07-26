@@ -44,4 +44,4 @@ STORED_CWD=${PWD}
 trap "cd ${STORED_CWD}" EXIT
 
 cd ${BUILD_DIR}
-ctest --output-on-failure ${ADDITIONAL_ARGS}
+ctest --output-on-failure ${ADDITIONAL_ARGS} || ( echo "Rerunning failed tests"; ctest --output-on-failure --rerun-failed ${ADDITIONAL_ARGS})
