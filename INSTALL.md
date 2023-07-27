@@ -139,9 +139,8 @@ Additionally the tools git, wget, tar and bzip2 are required.
 ## CMake
 
 ```bash
-git clone https://github.com/Kitware/CMake cmake
+git clone -b v3.18.4 https://github.com/Kitware/CMake cmake
 cd cmake
-git checkout v3.18.4
 mkdir build
 cd build
 ../bootstrap
@@ -152,9 +151,8 @@ sudo make install
 ## libzmq
 
 ```bash
-git clone https://github.com/zeromq/libzmq
+git clone -b v4.2.0 https://github.com/zeromq/libzmq
 cd libzmq
-git checkout v4.2.0
 mkdir build
 cd build
 cmake -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF ..
@@ -165,9 +163,8 @@ sudo make install
 ## cppzmq
 
 ```bash
-git clone https://github.com/zeromq/cppzmq
+git clone -b v4.7.1 https://github.com/zeromq/cppzmq
 cd cppzmq
-git checkout v4.7.1
 mkdir build
 cd build
 cmake -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local ..
