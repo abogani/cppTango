@@ -50,7 +50,7 @@ function generate_info() {
   cmake                                    \
     -Werror=dev                            \
     -DCMAKE_BUILD_TYPE=Debug               \
-    -DTANGO_CPPZMQ_BASE=/home/tango        \
+    -Dcppzmq_ROOT=/home/tango        \
     -DBUILD_TESTING=OFF                    \
     -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF \
     -DCMAKE_CXX_FLAGS=-gdwarf-4            \
