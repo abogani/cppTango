@@ -101,13 +101,13 @@ coverage:
     - mkdir -p build/tests/results
     - mkdir coverage
     - >
-        gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --xml --output coverage.xml
     - >
-        gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --html-details --output coverage/coverage.html
     - >
-        gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
     - tar czf coverage.tar.gz coverage
   artifacts:
     when: always

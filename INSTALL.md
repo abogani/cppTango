@@ -242,7 +242,7 @@ pkg-config --variable=tangodsdir tango
 From cppTango version 9.4.0 on the header files will still be installed in `${prefix}/include/tango`, but they will not be installed in a single directory any more. The new directory structure for the header files follows discussion in issue [!735](https://gitlab.com/tango-controls/cppTango/-/issues/735):
 
 ```bash
-CPPTANGO REPO/cppapi/
+CPPTANGO REPO/src/
   include/
   include/tango/
   include/tango/server/
@@ -357,7 +357,7 @@ To generate code coverage report one can follow these steps:
    code and may want to exclude any test code from the report.
    Below command can be run from the project's root directory:
    ```
-   gcovr --filter '^cppapi/' --filter '^log4tango/(?!tests/)' --html-details --output coverage.html
+   gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' --html-details --output coverage.html
    ```
 
 # Using clang-tidy for code quality checks
@@ -377,5 +377,5 @@ Below are some comments worth noticing:
 Example commands to run clang-tidy on all files (excluding the tests):
 ```
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=0 ...
-run-clang-tidy.py -header-filter='.*' 'cppapi/(?!server/idl)' 'log4tango/src'
+run-clang-tidy.py -header-filter='.*' 'src/(?!server/idl)' 'log4tango/src'
 ```
