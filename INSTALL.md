@@ -30,7 +30,7 @@ If your linux does not have precompiled packages for these dependencies jump to 
 ## tango-idl
 
 ```bash
-git clone -b 5.1.2 https://gitlab.com/tango-controls/tango-idl
+git clone --depth 1 -b 5.1.2 https://gitlab.com/tango-controls/tango-idl
 cd tango-idl
 mkdir build
 cd build
@@ -42,7 +42,7 @@ sudo make install
 ## cppTango
 
 ```bash
-git clone https://gitlab.com/tango-controls/cppTango
+git clone --depth 1 https://gitlab.com/tango-controls/cppTango
 cd cppTango
 mkdir build
 cd build
@@ -139,7 +139,7 @@ Additionally the tools git, wget, tar and bzip2 are required.
 ## CMake
 
 ```bash
-git clone -b v3.18.4 https://github.com/Kitware/CMake cmake
+git clone --depth 1 -b v3.18.4 https://github.com/Kitware/CMake cmake
 cd cmake
 mkdir build
 cd build
@@ -151,7 +151,7 @@ sudo make install
 ## libzmq
 
 ```bash
-git clone -b v4.2.0 https://github.com/zeromq/libzmq
+git clone --depth 1 -b v4.2.0 https://github.com/zeromq/libzmq
 cd libzmq
 mkdir build
 cd build
@@ -163,7 +163,7 @@ sudo make install
 ## cppzmq
 
 ```bash
-git clone -b v4.7.1 https://github.com/zeromq/cppzmq
+git clone --depth 1 -b v4.7.1 https://github.com/zeromq/cppzmq
 cd cppzmq
 mkdir build
 cd build
@@ -266,7 +266,7 @@ SET PYVER=py37
 https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.3.0/omniorb-4.3.0_%ARCH%_%PYVER%.zip
 https://github.com/tango-controls/Pthread_WIN32/releases/download/2.9.1/pthreads-win32-2.9.1_%ARCH%.zip
 https://github.com/tango-controls/zmq-windows-ci/releases/download/4.0.5-2/zmq-4.0.5-2_%ARCH%.zip
-git clone -b 5.1.2 --depth 1 https://gitlab.com/tango-controls/tango-idl tango-idl-source
+git clone --depth 1 -b 5.1.2 https://gitlab.com/tango-controls/tango-idl tango-idl-source
 ```
 
 - Open a VS 2017 command prompt
