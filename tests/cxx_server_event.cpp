@@ -127,6 +127,55 @@ public:
 
         TS_ASSERT_EQUALS(cb2, cb);
     }
+
+    /**
+     * Tests that the client can still receive events after the device server is
+     * shut down, renamed in the database and then restarted. This scenario used
+     * to fail as reported in #679.
+     */
+    void test_reconnection_after_ds_instance_rename()
+    {
+        const std::string new_instance_name = "renamed_ds";
+        const std::string new_ds_name = "DevTest/" + new_instance_name;
+        const std::string old_ds_name = "DevTest/" + device1_instance_name;
+
+        const std::string attribute_name = "event_change_tst";
+
+        CountingCallBack<Tango::EventData> callback{};
+
+        int subscription{};
+        TS_ASSERT_THROWS_NOTHING(subscription = device1->subscribe_event(
+            attribute_name,
+            Tango::USER_EVENT,
+            &callback));
+
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
+        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+        TS_ASSERT_EQUALS(2, callback.invocation_count());
+        TS_ASSERT_EQUALS(0, callback.error_count());
+
+        CxxTest::TangoPrinter::kill_server();
+
+        Database db{};
+        db.rename_server(old_ds_name, new_ds_name);
+
+        CxxTest::TangoPrinter::start_server(new_instance_name);
+        // std::this_thread::sleep_for(std::chrono::seconds(EVENT_HEARTBEAT_PERIOD)); // Wait for reconnection
+
+        callback.wait_for([&](){ return callback.invocation_count() >= 5; });
+        TS_ASSERT_EQUALS(4, callback.invocation_count());
+        TS_ASSERT_EQUALS(1, callback.error_count());
+
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
+
+        callback.wait_for([&](){ return callback.invocation_count() >= 6; });
+        TS_ASSERT_EQUALS(5, callback.invocation_count());
+        TS_ASSERT_EQUALS(1, callback.error_count());
+
+        TS_ASSERT_THROWS_NOTHING(device1->unsubscribe_event(subscription));
+
+        db.rename_server(new_ds_name, old_ds_name);
+    }
 };
 
 #endif // ServerEventTestSuite_h

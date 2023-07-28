@@ -387,8 +387,8 @@ void EventConsumer::shutdown_keep_alive_thread()
 
 void EventConsumer::connect(DeviceProxy *device_proxy,const std::string &d_name,DeviceData &dd,const std::string &adm_name,bool &necm)
 {
+	// We always assume that the channel name is a fully qualified admin device name.
 	std::string channel_name = adm_name;
-
 
 //
 // If no connection exists to this channel then connect to it. Sometimes, this method is called in order to reconnect
