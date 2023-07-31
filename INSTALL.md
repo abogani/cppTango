@@ -5,7 +5,7 @@ The following software packages are required to build cppTango:
 - A C++14 compliant compiler like GCC, clang or Visual Studio (2017 or newer)
 - [cmake](https://cmake.org), 3.18 or newer
 - [tango-idl](https://gitlab.com/tango-controls/tango-idl)
-- [omniorb](http://omniorb.sourceforge.net), 4.2.1 or newer
+- [omniORB](http://omniorb.sourceforge.net), 4.3.0 or newer
 - [libzmq](https://github.com/zeromq/libzmq), 4.0.5 or newer
 - [cppzmq](https://github.com/zeromq/cppzmq), 4.7.1 or newer
 
@@ -16,17 +16,11 @@ In this case a jpeg implementation must be present:
 
 In the following we assume a linux-based system, see [here](#building-on-windows) for building on Windows.
 
-On current debian systems the dependencies, except tango-idl, are available as distribution packages:
+On current debian systems only some dependencies are available. Most notably tango-idl and omniORB are missing.
 
 ```bash
-sudo apt install cmake build-essential git libcos4-dev libomniorb4-dev libomnithread4-dev libzmq3-dev omniidl libjpeg-dev python3
+sudo apt install cmake cppzmq-dev build-essential git libjpeg-dev python3
 ```
-
-> **Note:**
-> Debian and derivatives provide both `libzmq` and `cppzmq` as one package (`libzmq3-dev`).
-> Versions provided will not necessarily satisfy both requirements.
-> In that case, manual compilation of `cppzmq` may be necessary.
-> This problem is known for at least Ubuntu 20.04. See [#899](https://gitlab.com/tango-controls/cppTango/-/issues/899) for details.
 
 If your linux does not have precompiled packages for these dependencies jump to the
 [next](#compiling-the-dependencies) section for compilation instructions.
@@ -36,7 +30,7 @@ If your linux does not have precompiled packages for these dependencies jump to 
 ## tango-idl
 
 ```bash
-git clone -b 5.1.2 https://gitlab.com/tango-controls/tango-idl
+git clone --depth 1 -b 5.1.2 https://gitlab.com/tango-controls/tango-idl
 cd tango-idl
 mkdir build
 cd build
@@ -48,7 +42,7 @@ sudo make install
 ## cppTango
 
 ```bash
-git clone https://gitlab.com/tango-controls/cppTango
+git clone --depth 1 https://gitlab.com/tango-controls/cppTango
 cd cppTango
 mkdir build
 cd build
@@ -94,8 +88,7 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
-for more details on how to enable and configure this feature (note that CMake
-3.16 or better is required).
+for more details on how to enable and configure this feature.
 
 ## Cross-compiling tango
 
@@ -110,7 +103,7 @@ sudo apt update
 sudo apt remove libcos4-dev libomniorb4-dev libomnithread4-dev libzmq3-dev
 sudo apt install gcc-i686-linux-gnu
 sudo apt install gcc-multilib g++-multilib
-sudo apt install libcos4-dev:i386 libomniorb4-dev:i386 libomnithread4-dev:i386 libzmq3-dev:i386
+sudo apt install libcos4-dev:i386 libomniorb4-dev:i386 libomnithread4-dev:i386 libzmq3-dev:i386 cppzmq-dev
 mkdir build-cross-32bit
 cd build-cross-32bit
 cmake -DCMAKE_TOOLCHAIN_FILE=../configure/toolchain-i686.cmake ..
@@ -146,9 +139,8 @@ Additionally the tools git, wget, tar and bzip2 are required.
 ## CMake
 
 ```bash
-git clone https://github.com/Kitware/CMake cmake
+git clone --depth 1 -b v3.18.4 https://github.com/Kitware/CMake cmake
 cd cmake
-git checkout v3.12.4
 mkdir build
 cd build
 ../bootstrap
@@ -159,9 +151,8 @@ sudo make install
 ## libzmq
 
 ```bash
-git clone https://github.com/zeromq/libzmq
+git clone --depth 1 -b v4.2.0 https://github.com/zeromq/libzmq
 cd libzmq
-git checkout v4.2.0
 mkdir build
 cd build
 cmake -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF ..
@@ -172,9 +163,8 @@ sudo make install
 ## cppzmq
 
 ```bash
-git clone https://github.com/zeromq/cppzmq
+git clone --depth 1 -b v4.7.1 https://github.com/zeromq/cppzmq
 cd cppzmq
-git checkout v4.7.1
 mkdir build
 cd build
 cmake -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local ..
@@ -185,10 +175,11 @@ sudo make install
 ## omniORB4
 
 ```bash
-wget -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download -O omniORB-4.2.4.tar.bz2
-tar xjf omniORB-4.2.4.tar.bz2
-cd omniORB-4.2.4
-./configure
+sudo apt install libzstd-dev zlib1g-dev python3-dev libssl-dev
+wget -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.3.0/omniORB-4.3.0.tar.bz2/download -O omniORB-4.3.0.tar.bz2
+tar xjf omniORB-4.3.0.tar.bz2
+cd omniORB-4.3.0
+./configure --with-openssl
 make [-j NUMBER_OF_CPUS]
 sudo make install
 ```
@@ -226,7 +217,7 @@ link_directories(${TANGO_PKG_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${TANGO_PKG_INCLUDE_DIRS})
-target_compile_options(${PROJECT_NAME} PUBLIC -std=c++11)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${TANGO_PKG_CFLAGS_OTHER})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${TANGO_PKG_LIBRARIES})
 ```
@@ -272,10 +263,10 @@ during installation as well.
 ```bat
 SET ARCH=x64-msvc15
 SET PYVER=py37
-https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.2.1-2/omniorb-4.2.1_%ARCH%_%PYVER%.zip
+https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.3.0/omniorb-4.3.0_%ARCH%_%PYVER%.zip
 https://github.com/tango-controls/Pthread_WIN32/releases/download/2.9.1/pthreads-win32-2.9.1_%ARCH%.zip
 https://github.com/tango-controls/zmq-windows-ci/releases/download/4.0.5-2/zmq-4.0.5-2_%ARCH%.zip
-git clone -b 5.1.2 --depth 1 https://gitlab.com/tango-controls/tango-idl tango-idl-source
+git clone --depth 1 -b 5.1.2 https://gitlab.com/tango-controls/tango-idl tango-idl-source
 ```
 
 - Open a VS 2017 command prompt

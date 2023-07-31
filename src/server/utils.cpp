@@ -429,15 +429,6 @@ void Util::effective_job(int argc,char *argv[])
 		}
 #endif
 
-//
-// Starting with omniORB 4.2, we need to add the throwTransientOnTimeout option for compatibility
-//
-
-        bool omni_42_compat = false;
-        CORBA::ULong omni_vers_hex = omniORB::versionHex();
-        if (omni_vers_hex > 0x04020000)
-            omni_42_compat = true;
-
 		if (get_endpoint_specified() == true)
 		{
 			const char *options[][2] = {
@@ -453,16 +444,10 @@ void Util::effective_job(int argc,char *argv[])
 #ifndef _TG_WINDOWS_
 				{"endPoint","giop:unix:"},
 #endif
-                {"throwTransientOnTimeOut","1"},
+				{"throwTransientOnTimeOut","1"},
+				{"exceptionIdInAny","0"},
 				{0,0}
 			};
-
-            if (omni_42_compat == false)
-            {
-                int nb_opt = sizeof(options) / sizeof (char *[2]);
-                options[nb_opt - 2][0] = NULL;
-                options[nb_opt - 2][1] = NULL;
-            }
 
 			orb = CORBA::ORB_init(argc,argv,"omniORB4",options);
 		}
@@ -483,16 +468,10 @@ void Util::effective_job(int argc,char *argv[])
 				{"endPoint","giop:tcp::"},
 				{"endPoint","giop:unix:"},
 #endif
-                {"throwTransientOnTimeOut","1"},
+				{"throwTransientOnTimeOut","1"},
+				{"exceptionIdInAny","0"},
 				{0,0}
 			};
-
-            if (omni_42_compat == false)
-            {
-                int nb_opt = sizeof(options) / sizeof (char *[2]);
-                options[nb_opt - 2][0] = NULL;
-                options[nb_opt - 2][1] = NULL;
-            }
 
 			orb = CORBA::ORB_init(argc,argv,"omniORB4",options);
 		}
