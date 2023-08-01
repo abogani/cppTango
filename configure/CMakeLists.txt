@@ -96,7 +96,7 @@ include(configure/clang-format.cmake)
 
 # Check for jpeg support
 if(TANGO_USE_JPEG)
-    find_package(customjpeg REQUIRED)
+    find_package(JPEG REQUIRED)
 endif()
 
 if(PTHREAD_WIN)

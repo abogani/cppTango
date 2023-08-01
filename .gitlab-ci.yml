@@ -360,7 +360,7 @@ cmake-with-locations-and-min-versions-ROOT:
       -Dtangoidl_ROOT=${INSTALL_PREFIX}/tango-idl
       -DomniORB4_ROOT=${INSTALL_PREFIX}/omniORB
       -DZeroMQ_ROOT=${INSTALL_PREFIX}/libzmq
-      -DTANGO_JPEG_BASE=${INSTALL_PREFIX}/libjpeg
+      -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
     - ci/build.sh
 
 # and pkg-config
@@ -383,6 +383,7 @@ cmake-with-locations-and-min-versions-PKGCONFIG:
       -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
+      -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
     - ci/build.sh
 
 debian-maximum-cmake:

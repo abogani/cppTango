@@ -151,7 +151,7 @@ target_include_directories(tango PUBLIC
 )
 
 if(TANGO_USE_JPEG)
-    target_link_libraries(tango PUBLIC jpeg)
+    target_link_libraries(tango PUBLIC JPEG::JPEG)
 endif()
 
 if(WIN32)

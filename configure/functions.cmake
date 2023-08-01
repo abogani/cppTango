@@ -15,7 +15,6 @@ function(set_cflags_and_include target)
   )
 
   if(TANGO_USE_JPEG)
-    target_link_libraries(${target} PUBLIC jpeg)
-    target_include_directories(${target} PRIVATE ${jpeg_INCLUDE_DIR})
+      target_link_libraries(${target} PRIVATE JPEG::JPEG)
   endif()
 endfunction()

@@ -23,7 +23,7 @@ windows-build:
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 16 2019"
-    TANGO_JPEG_BASE: dependencies/libjpeg
+    TANGO_JPEG_ROOT: dependencies/libjpeg
     TANGO_JPEG_SOURCE: dependencies/source/libjpeg-turbo-${JPEG_VERSION}
     TANGO_ZMQ_ROOT: dependencies/zeromq
     TANGO_CPPZMQ_ROOT: dependencies/zeromq # coincides with TANGO_ZMQ_ROOT
@@ -106,7 +106,7 @@ windows-build:
         -G "${CMAKE_GENERATOR}"
         -A "${ARCHITECTURE}"
         -DWITH_TURBOJPEG=ON
-        -DCMAKE_INSTALL_PREFIX="${TANGO_JPEG_BASE}"
+        -DCMAKE_INSTALL_PREFIX="${TANGO_JPEG_ROOT}"
         -DCMAKE_DEBUG_POSTFIX=d
     - cmake
         --build "${TANGO_JPEG_SOURCE}/build"
@@ -150,7 +150,7 @@ windows-build:
         -DomniORB4_ROOT="${cwd}/${TANGO_OMNI_ROOT}"
         -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}"
         -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}"
-        -DTANGO_JPEG_BASE="${cwd}/${TANGO_JPEG_BASE}"
+        -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}"
         -DPTHREAD_WIN="${PTHREAD_WIN}"
         -DTANGO_USE_JPEG=ON
         -DJPEG_DEBUG_POSTFIX=d
