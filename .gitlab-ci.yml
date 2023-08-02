@@ -323,6 +323,12 @@ cmake-with-locations-and-min-versions-PKGCONFIG:
       -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
     - ci/build.sh
 
+debian-maximum-cmake:
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: debian-maximum-cmake:v1
+
 alpine:
   <<: *job-template-no-test-run
   variables:
