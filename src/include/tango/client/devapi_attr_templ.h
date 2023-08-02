@@ -39,6 +39,27 @@
 namespace Tango
 {
 
+namespace detail
+{
+
+/// Type trait to judge if T is an enumeration usable as device attribute data
+///
+/// Example usage: `static_assert(detail::CheckEnumCompatibleType<T>::value, "Failing XYZ")`
+template <typename T, typename Enable = void>
+struct CheckEnumCompatibleType
+{
+    static constexpr bool value = std::false_type{};
+};
+
+template <typename T>
+struct CheckEnumCompatibleType<T, typename std::enable_if<std::is_enum<T>::value>::type>
+{
+    using UT = typename std::underlying_type<T>::type;
+    static constexpr bool value = std::is_same<short, UT>::value || std::is_same<unsigned int, UT>::value;
+};
+
+} // namespace detail
+
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
@@ -190,42 +211,33 @@ void DeviceAttribute::base_vect_size(const std::vector<T> &_val)
 template <typename T>
 bool DeviceAttribute::operator>>(T &datum)
 {
-    bool ret = true;
-
-    //
-    // Some check on provided type (for modern compiler...)
-    //
-
-    ret = template_type_check(datum);
+    template_type_check<T>();
 
     //
     // check for available data
     //
 
-    if(ret == true)
+    bool ret = check_for_data();
+    if(ret == false)
     {
-        ret = check_for_data();
-        if(ret == false)
-        {
-            return false;
-        }
+        return false;
+    }
 
-        if(ShortSeq.operator->() != nullptr)
+    if(ShortSeq.operator->() != nullptr)
+    {
+        if(ShortSeq->length() != 0)
         {
-            if(ShortSeq->length() != 0)
-            {
-                datum = static_cast<T>(ShortSeq[0]);
-            }
-            else
-            {
-                ret = false;
-            }
+            datum = static_cast<T>(ShortSeq[0]);
         }
         else
         {
-            // check the wrongtype_flag
-            ret = check_wrong_type_exception();
+            ret = false;
         }
+    }
+    else
+    {
+        // check the wrongtype_flag
+        ret = check_wrong_type_exception();
     }
 
     return ret;
@@ -234,20 +246,13 @@ bool DeviceAttribute::operator>>(T &datum)
 template <typename T>
 bool DeviceAttribute::operator>>(std::vector<T> &datum)
 {
-    bool ret = true;
-
-    //
-    // Some check on provided type (for modern compiler...)
-    //
-
-    T dummy;
-    ret = template_type_check(dummy);
+    template_type_check<T>();
 
     //
     // check for available data
     //
 
-    ret = check_for_data();
+    bool ret = check_for_data();
     if(ret == false)
     {
         return false;
@@ -279,20 +284,13 @@ bool DeviceAttribute::operator>>(std::vector<T> &datum)
 template <typename T>
 bool DeviceAttribute::extract_read(std::vector<T> &_data)
 {
-    bool ret = true;
-
-    //
-    // Some check on provided type (for modern compiler...)
-    //
-
-    T dummy;
-    ret = template_type_check(dummy);
+    template_type_check<T>();
 
     //
     // check for available data
     //
 
-    ret = check_for_data();
+    bool ret = check_for_data();
     if(ret == false)
     {
         return false;
@@ -325,20 +323,13 @@ bool DeviceAttribute::extract_read(std::vector<T> &_data)
 template <typename T>
 bool DeviceAttribute::extract_set(std::vector<T> &_data)
 {
-    bool ret = true;
-
-    //
-    // Some check on provided type (for modern compiler...)
-    //
-
-    T dummy;
-    ret = template_type_check(dummy);
+    template_type_check<T>();
 
     //
     // check for available data
     //
 
-    ret = check_for_data();
+    bool ret = check_for_data();
     if(ret == false)
     {
         return false;
@@ -389,7 +380,7 @@ bool DeviceAttribute::extract_set(std::vector<T> &_data)
 template <typename T>
 void DeviceAttribute::operator<<(T datum)
 {
-    template_type_check(datum);
+    template_type_check<T>();
 
     dim_x = 1;
     dim_y = 0;
@@ -410,8 +401,7 @@ void DeviceAttribute::operator<<(T datum)
 template <typename T>
 void DeviceAttribute::operator<<(const std::vector<T> &_datum)
 {
-    T dummy;
-    template_type_check(dummy);
+    template_type_check<T>();
 
     dim_x = _datum.size();
     dim_y = 0;
@@ -444,36 +434,12 @@ void DeviceAttribute::insert(std::vector<T> &_datum, int _x, int _y)
 }
 
 template <typename T>
-bool DeviceAttribute::template_type_check(T &TANGO_UNUSED(_datum))
+void DeviceAttribute::template_type_check()
 {
-    bool short_enum = std::is_same<short, typename std::underlying_type<T>::type>::value;
-    bool uns_int_enum = std::is_same<unsigned int, typename std::underlying_type<T>::type>::value;
-
-    if(short_enum == false && uns_int_enum == false)
-    {
-        if(exceptions_flags.test(wrongtype_flag))
-        {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                      API_IncompatibleAttrArgumentType,
-                                      "Type provided for insertion is not a valid enum. Only C enum or C++11 enum with "
-                                      "underlying short data type are supported");
-        }
-
-        return false;
-    }
-
-    if(std::is_enum<T>::value == false)
-    {
-        if(exceptions_flags.test(wrongtype_flag))
-        {
-            TANGO_THROW_API_EXCEPTION(
-                ApiDataExcept, API_IncompatibleAttrArgumentType, "Type provided for insertion is not an enumeration");
-        }
-
-        return false;
-    }
-
-    return true;
+    static_assert(detail::CheckEnumCompatibleType<T>::value,
+                  "Type provided for insertion is not a valid enum."
+                  " Only C enum or C++11 enum class with "
+                  "underlying short or unsigned int data type are supported.");
 }
 
 } // namespace Tango
