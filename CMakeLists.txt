@@ -1,14 +1,4 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-
-# don't let cmake guess file extensions
-if(POLICY CMP0115)
-    cmake_policy(SET CMP0115 NEW)
-endif()
-
-# honour language standards for try_compile
-if(POLICY CMP0067)
-    cmake_policy(SET CMP0067 NEW)
-endif()
+cmake_minimum_required(VERSION 3.18...3.26 FATAL_ERROR)
 
 project(cppTango)
 
