@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.18...3.26 FATAL_ERROR)
 # minimum version: https://gitlab.com/tango-controls/docker/ci/cpptango/debian-minimum-versions
 # maximum version: https://gitlab.com/tango-controls/docker/ci/cpptango/debian-maximum-cmake
 
-project(cppTango)
+project(cppTango LANGUAGES CXX
+                 HOMEPAGE_URL "https://www.tango-controls.org"
+                 DESCRIPTION "Distributed Control System")
 
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 14)
