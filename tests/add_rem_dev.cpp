@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if ((argc == 1) || (argc > 3))
 	{
 		TEST_LOG << "usage: %s device" << endl;
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	string device_name = argv[1];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -25,15 +25,15 @@ int main(int argc, char **argv)
 	TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
 
 	try
-	{	
-		device->command_inout("State");				
+	{
+		device->command_inout("State");
 	}
 	catch (Tango::DevFailed &e)
 	{
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
+
 	return 0;
-	
+
 }

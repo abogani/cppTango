@@ -1,5 +1,5 @@
 #include "common.h"
-/* 
+/*
  * Test module for sub device diagnostics in the Tango API.
  */
 
@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
 	DeviceProxy *device;
 	DeviceProxy *admin;
-	
+
 	if ((argc < 4) || (argc > 5))
 	{
 		TEST_LOG << "usage: sub_dev <device1> <device2> <device3>" << endl;
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	string device1_name = argv[1];
 	string device2_name = argv[2];
 	string device3_name = argv[3];
-	
+
 	// sort device names alphabetically
 	vector<string> devices;
 	std::transform(device1_name.begin(), device1_name.end(), device1_name.begin(), ::tolower);
@@ -28,15 +28,15 @@ int main(int argc, char **argv)
 	devices.push_back(device3_name);
 	sort(devices.begin(), devices.end());
 
-	try 
+	try
 	{
 		// be sure that the device name are lower case letters
 //		std::transform(device1_name.begin(), device1_name.end(),
 //                       device1_name.begin(), ::tolower);
-		
+
 		// connect to device
 		device = new DeviceProxy(device1_name);
-		
+
 		// Connect to admin device
 		string adm_name = device->adm_name();
 		admin = new DeviceProxy(adm_name);
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	{
 
 // restart server to clean all sub device lists
-		
+
 		bool except = false;
 		try
 		{
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 			da >> att_value;
 			assert (att_value == true);
 		}
-		
+
 // check the list of sub devices on the administration device
 
 		{
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 			dd >> sub_dev_list;
 
 			assert( sub_dev_list.size() == 3);
-			
+
 			string result = devices[1];
 			assert( sub_dev_list[0]     == result);
 			result = device1_name + " " + devices[1];
@@ -130,9 +130,9 @@ int main(int argc, char **argv)
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
+
 	delete admin;
 	delete device;
 	return 0;
-	
+
 }

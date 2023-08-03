@@ -20,4 +20,3 @@ auto set_env(const std::string& var, const std::string& value, bool force_update
     return setenv(var.c_str(), value.c_str(), force_update);
 #endif
 }
-

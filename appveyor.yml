@@ -15,7 +15,7 @@ environment:
   TANGO_JPEG_BASE: C:/libjpeg-turbo
   NASM_VERSION: 2.15.05
   TANGO_IDL_TAG: 5.1.2
-  
+
   # Iteration order:
   # - VS Image (2017)
   # - Architecture (x86 aka win32 or x64)

@@ -12,7 +12,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if ((argc < 3) || (argc > 4))
 	{
 		TEST_LOG << "usage: lock <device1> <device2>" << endl;
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	string device_name = argv[1];
 	string device2_name = argv[2];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -454,8 +454,8 @@ int main(int argc, char **argv)
 		Except::print_exception(e);
 		exit(1);
 	}
-	
+
 	delete device;
 	return 0;
-	
+
 }

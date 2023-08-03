@@ -828,7 +828,7 @@ public:
 		status[1] = status_arr_str.substr(status_arr_str.length() - status_ref[1].length(),
 				status_ref[1].length()); // last 3 lines
 		TS_ASSERT_EQUALS(status[1], status_ref[1]);
-		
+
 		// restart the device
 		din << device1_name;
 		TS_ASSERT_THROWS_NOTHING(dserver->command_inout("DevRestart", din));

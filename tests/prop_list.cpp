@@ -8,7 +8,7 @@ int main()
 	{
 
 		string dev_name("test/prop/list");
-			
+
 //
 // Put some device properties
 //
@@ -24,9 +24,9 @@ int main()
 		da.push_back(acceleration);
 		da.push_back(base_speed);
 		da.push_back(deceleration);
-		
+
 		dbase->put_device_property(dev_name,da);
-		
+
 //
 // Get prop. list
 //
@@ -56,7 +56,7 @@ int main()
 		assert (strcmp(prop_list[0].c_str(),"acceleration") == 0);
 
 		TEST_LOG << "   Get device property list --> OK" << endl;
-		
+
 //
 // Delete property in DB
 //
@@ -68,7 +68,7 @@ int main()
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
+
 	delete dbase;
 	return 0;
 }

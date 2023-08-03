@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if ((argc == 1) || (argc > 3))
 	{
 		TEST_LOG << "usage: %s device" << endl;
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	string device_name = argv[1];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -35,24 +35,24 @@ int main(int argc, char **argv)
 
 	try
 	{
-	
+
 		string short_att_name("Short_attr_w");
 		string string_att_name("String_attr_w");
 		string bool_att_name("Boolean_attr_w");
-		
+
 // Write  these attributes
 
 		short sh = 345;
 		string str("Do you want to dance?");
 		bool bo = true;
-		
+
 		vector<DeviceAttribute> v_da;
 		v_da.push_back(DeviceAttribute(short_att_name,sh));
 		v_da.push_back(DeviceAttribute(string_att_name,str));
 		v_da.push_back(DeviceAttribute(bool_att_name,bo));
-		
+
 		device->write_attributes(v_da);
-		
+
 // Restart the server
 
 		string adm_name = device->adm_name();
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
 #ifdef VALGRIND
 		adm_dev.set_timeout_millis(15000);
-#endif		
+#endif
 		adm_dev.command_inout("RestartServer");
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(3500));
@@ -74,19 +74,19 @@ int main(int argc, char **argv)
 		ra.push_back(short_att_name);
 		ra.push_back(string_att_name);
 		ra.push_back(bool_att_name);
-		
+
 		vector<DeviceAttribute> *r_att;
-		
+
 		r_att = device->read_attributes(ra);
-		
+
 		short read_sh;
 		string read_str;
 		bool read_bo;
-		
+
 		(*r_att)[0] >> read_sh;
 		(*r_att)[1] >> read_str;
 		(*r_att)[2] >> read_bo;
-		
+
 		TEST_LOG << "Read value for Short_attr_w = " << read_sh << endl;
 		TEST_LOG << "Read value for String_attr_w = " << read_str << endl;
 		TEST_LOG << "Read value for Boolean_attr_w = " << read_bo << endl;
@@ -94,9 +94,9 @@ int main(int argc, char **argv)
 		assert ( read_sh == sh );
 		assert ( read_str == str );
 		assert ( read_bo == bo );
-		
+
 		TEST_LOG << "   Memorized attributes --> OK" << endl;
-							
+
 // Reset the boolean attribute which is part of the device server
 // output message taken into account in the automatic sequence
 
@@ -109,10 +109,10 @@ int main(int argc, char **argv)
 // The memorized value is 345
 
 		AttributeInfoListEx *att_conf = NULL;
-		
+
 		vector<string> att_conf_list;
 		att_conf_list.push_back(short_att_name);
-	
+
 		att_conf = device->get_attribute_config_ex(att_conf_list);
 
 		string old_min_value = (*att_conf)[0].min_value;
@@ -212,8 +212,8 @@ int main(int argc, char **argv)
 		Except::print_exception(e);
 		exit(1);
 	}
-	
-	delete device;		
+
+	delete device;
 	return 0;
-	
+
 }

@@ -1703,7 +1703,7 @@ public :
  * Get class property list
  *
  * Query the database for a list of properties defined for the specified class.
- * A wildcard can be specified in a second argument to match against property name. 
+ * A wildcard can be specified in a second argument to match against property name.
  * @code
  * std::string classname("MyClass");
  *

@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if (argc < 2)
 	{
 		TEST_LOG << "Usage: %s device_name" << endl;
@@ -11,9 +11,9 @@ int main(int argc, char **argv)
 	}
 
 	string device_name(argv[1]);
-			
 
-	try 
+
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -24,12 +24,12 @@ int main(int argc, char **argv)
         }
 
 	TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
-	
+
 	while (true)
-	{	
+	{
 		try
 		{
-	
+
 // Test polling_status
 
 			vector<string> *poll_str;
@@ -47,12 +47,12 @@ int main(int argc, char **argv)
 		{
 			Except::print_exception(e);
 		}
-		
+
 		TEST_LOG << "Hit any key :" << endl;
 		char bid;
-		cin >> bid;		
+		cin >> bid;
 
 	}
-			
+
 	delete device;
 }

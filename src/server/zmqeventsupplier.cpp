@@ -980,16 +980,16 @@ void ZmqEventSupplier::push_heartbeat_event()
 
 // Small callback used by ZMQ when using the no-copy API to signal that the message has been sent.
 // We now use a std::future (hidden by its associated std::promise) to notify the thread sending the event that
-// the associated data has been fully sent and is no longer used by zeromq (part of the Tango zero copy strategy). 
-// 
-// For information, note that this method is also called when ZMQ connection is closed. In such a case, 
+// the associated data has been fully sent and is no longer used by zeromq (part of the Tango zero copy strategy).
+//
+// For information, note that this method is also called when ZMQ connection is closed. In such a case,
 // the calling thread is the thread doing the zmq::send() call and it's not the ZMQ thread. However this particular
 // behavior has no impact on the current implementation (i.e. the one making use of the std::future).
 //
 // The hint argument is a pointer to std::promise<void>. Callback takes ownership of it and deletes it after setting a value.
 // Setting the value of the promise (i.e., of the underlying std::future) will wakeup any thread waiting on this future.
-// Contrary to what could happen with a condition variable, the std::future garantees that the thread calling std::future::wait 
-// will never be deadlocked. 
+// Contrary to what could happen with a condition variable, the std::future garantees that the thread calling std::future::wait
+// will never be deadlocked.
 void tg_unlock(TANGO_UNUSED(void *data),void *hint)
 {
 	std::promise<void> * p = static_cast<std::promise<void>*>(hint);
@@ -1314,7 +1314,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 //
 
 		if (large_data == true)
-		{	
+		{
 			std::promise<void> *large_message_promise = new std::promise<void>();
 			large_message_future = large_message_promise->get_future();
 //

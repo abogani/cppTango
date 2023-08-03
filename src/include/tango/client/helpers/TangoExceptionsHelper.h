@@ -273,5 +273,3 @@
     _reaction; \
     throw; \
   }
-
-

@@ -47,7 +47,7 @@ void EventCallBack::push_event(Tango::EventData* event_data)
 		{
 			TEST_LOG << "Call get_err_attr()..." << std::endl;
 			attr_err_info = event_data->get_attr_err_info();
-			
+
 			TEST_LOG << "Error send to callback" << std::endl;
 			cb_err++;
 		}
@@ -251,8 +251,8 @@ int main(int argc, char **argv)
 		assert(cb.attr_err_info);
 		assert(cb.attr_err_info->get_err_stack().length());
 		assert(cb.attr_err_info->time.tv_sec == stopPollTime.tv_sec);
-		TEST_LOG << "Error stack:\n" << cb.attr_err_info->get_err_stack() 
-			<< "\nTime: " << cb.attr_err_info->time.tv_sec << "." 
+		TEST_LOG << "Error stack:\n" << cb.attr_err_info->get_err_stack()
+			<< "\nTime: " << cb.attr_err_info->time.tv_sec << "."
 			<< cb.attr_err_info->time.tv_usec << std::endl;
 
 

@@ -55,7 +55,7 @@
 
 /**
  *  TestCppTango1022 class description:
- *    
+ *
  */
 
 

@@ -264,4 +264,3 @@ void McastSimpleTestSuite::EventCallBack::push_event(Tango::EventData* event_dat
 }
 
 #endif // McastSimpleTestSuite_h
-

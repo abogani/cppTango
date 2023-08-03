@@ -10,14 +10,14 @@
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Log4tango is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public License
-// along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>. 
+// along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <cstdlib>
 #ifdef WIN32
@@ -61,7 +61,7 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 
 #include "clock.hh"
 
-namespace 
+namespace
 {
     const usec_t UsecPerSec = INT64_CONSTANT(1000000);
 }
@@ -73,7 +73,7 @@ usec_t Clock::time(void)
 {
     if (UsingCPU) {
 	static bool warn = true;
-		
+
 	if (warn) {
 	    std::cout << "Using CPU clock." << std::endl;
 	    warn = false;
@@ -84,7 +84,7 @@ usec_t Clock::time(void)
 #elif __linux__ && __i386__
 	{
 	    unsigned long tsc;
-			
+
 	    rdtscl(tsc);
 	    return (usec_t) tsc;
 	}
@@ -94,11 +94,11 @@ usec_t Clock::time(void)
 	    UsingCPU = false;
 	    return Clock::time();
 	}
-#endif	
+#endif
     } else {
 	struct timeval tv;
-	
-	gettimeofday(&tv, NULL);	
+
+	gettimeofday(&tv, NULL);
 	return (usec_t) (tv.tv_sec * UsecPerSec + tv.tv_usec);
     }
 }
@@ -107,7 +107,7 @@ usec_t Clock::time(void)
 Clock::Clock(void)
     : _start(0),
       _elapsed(0),
-      _active(false) 
+      _active(false)
 {
     start();
 }
@@ -144,4 +144,3 @@ usec_t Clock::stop(void)
 
     return _elapsed;
 }
-

@@ -74,4 +74,3 @@ inline void EventConsumer::base_attr_to_device(const T *attr_value,DeviceAttribu
 }
 
 } /* End of Tango namespace */
-

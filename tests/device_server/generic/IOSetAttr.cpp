@@ -4,8 +4,8 @@
 //+----------------------------------------------------------------------------
 //
 // method : 		IOSetAttr::IOSetAttr()
-// 
-// description : 	constructor for the IOSetAttr command of the 
+//
+// description : 	constructor for the IOSetAttr command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -26,7 +26,7 @@ IOSetAttr::IOSetAttr(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOSetAttr::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -55,7 +55,7 @@ bool IOSetAttr::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::
 //+----------------------------------------------------------------------------
 //
 // method : 		IOSetAttr::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOSetAttr
 //			command
 //
@@ -68,12 +68,12 @@ bool IOSetAttr::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::
 
 
 CORBA::Any *IOSetAttr::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
-{	
+{
   try {
     Tango::DevLong theNumber;
     extract(in_any,theNumber);
     TANGO_LOG << "[IOSetAttr::execute] received number " << theNumber << std::endl;
-    DevTest *dev = static_cast<DevTest *>(device);    
+    DevTest *dev = static_cast<DevTest *>(device);
     dev->set_attr_long(theNumber);
     return insert();
   }
@@ -83,5 +83,3 @@ CORBA::Any *IOSetAttr::execute(Tango::DeviceImpl *device,const CORBA::Any &in_an
       throw ;
     }
 }
-
-

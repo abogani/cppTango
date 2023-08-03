@@ -3485,13 +3485,13 @@ EventData::~EventData()
 // method :
 //		EventData::get_attr_err_info()
 //
-// description : 
-//		In case of Callback::push_event() error, the Callback's 
-//		DeviceAttribute member object attr_value is null. To make error 
+// description :
+//		In case of Callback::push_event() error, the Callback's
+//		DeviceAttribute member object attr_value is null. To make error
 //		handling easier, this function returns a DeviceAttribute object
 //		containing the error stack and event time.
 //
-// returns : 
+// returns :
 //		unique_ptr<DeviceAttribute> containing the Callback's error_stack.
 //------------------------------------------------------------------------
 std::unique_ptr<DeviceAttribute> EventData::get_attr_err_info()

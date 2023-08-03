@@ -277,4 +277,3 @@
 <log4j:message><![CDATA[removing target file::/tmp/dserver_cmd.out from DSERVER]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
-

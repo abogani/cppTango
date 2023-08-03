@@ -452,4 +452,3 @@
 <log4j:message><![CDATA[removing target file::/tmp/always_hook.out from DSERVER]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
-

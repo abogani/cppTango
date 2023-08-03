@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if (argc != 2)
 	{
 		TEST_LOG << "usage: %s device" << endl;
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	string device_name = argv[1];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -245,12 +245,12 @@ int main(int argc, char **argv)
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
+
 	assert (devfailed_except == true);
 	assert (except_reason == API_AttrNotWritable);
 
 	TEST_LOG << "  Some basic exception cases --> OK" << endl;
-	
+
 	delete device;
-	return 0;	
+	return 0;
 }

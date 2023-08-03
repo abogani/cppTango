@@ -9,7 +9,7 @@ int main()
 	{
 
 		string str("my_obj");
-			
+
 //
 // Try to put object properties
 //
@@ -20,11 +20,11 @@ int main()
 		acceleration << (long)123;
 		da.push_back(speed);
 		da.push_back(acceleration);
-		
+
 		dbase->put_property(str,da);
-		
+
 		TEST_LOG << "   Put object property --> OK" << endl;
-		
+
 //
 // Get prop. value
 //
@@ -32,18 +32,18 @@ int main()
 		DbData db;
 		db.push_back(DbDatum("speed"));
 		db.push_back(DbDatum("acceleration"));
-		
+
 		dbase->get_property(str,db);
-		
+
 		long lg1,lg2;
 		db[0] >> lg1;
 		db[1] >> lg2;
-		
+
 		assert ( lg1 == 22 );
 		assert ( lg2 == 123 );
-		
+
 		TEST_LOG << "   Get object property --> OK" << endl;
-		
+
 //
 // Update property
 //
@@ -52,21 +52,21 @@ int main()
 		DbDatum speeda("speed");
 		speeda << (long)44;
 		dc.push_back(speeda);
-		
+
 		dbase->put_property(str,dc);
-		
+
 		DbData dd;
 		dd.push_back(DbDatum("speed"));
-		
+
 		dbase->get_property(str,dd);
-		
+
 		long lg10;
 		dd[0] >> lg10;
-		
+
 		assert ( lg10 == 44 );
-		
+
 		TEST_LOG << "   Update object property --> OK" << endl;
-		
+
 //
 // Delete prop
 //
@@ -74,20 +74,20 @@ int main()
 		DbData de;
 		de.push_back(DbDatum("speed"));
 		de.push_back(DbDatum("acceleration"));
-		
+
 		dbase->delete_property(str,de);
 
 		DbData df;
 		df.push_back(DbDatum("speed"));
 		df.push_back(DbDatum("acceleration"));
-		
+
 		dbase->get_property(str,df);
 
 		assert( df[0].is_empty() == true );
 		assert( df[1].is_empty() == true );
-				
+
 		TEST_LOG << "   Delete object property --> OK" << endl;
-		
+
 //
 // Try to put object properties
 //
@@ -101,9 +101,9 @@ int main()
 		vf.push_back(2.0);
 		speed_v << vf;
 		da_v.push_back(speed_v);
-		
+
 		dbase->put_property(str,da_v);
-		
+
 		TEST_LOG << "   Put object property (for vectors) --> OK" << endl;
 
 //
@@ -112,9 +112,9 @@ int main()
 
 		DbData db_v1;
 		db_v1.push_back(DbDatum("vect"));
-		
+
 		dbase->get_property(str,db_v1);
-		
+
 		vector<double> vf1;
 		db_v1[0] >> vf1;
 
@@ -122,7 +122,7 @@ int main()
 		assert ( vf1[1] == 5 );
 		assert ( vf1[2] == 4.5678 );
 		assert ( vf1[3] == 2);
-		
+
 		TEST_LOG << "   Get object property (for vectors) --> OK" << endl;
 
 //
@@ -131,16 +131,16 @@ int main()
 
 		DbData de_v;
 		de_v.push_back(DbDatum("vect"));
-		
+
 		dbase->delete_property(str,de_v);
 
 		DbData df_v;
 		df_v.push_back(DbDatum("vect"));
-		
+
 		dbase->get_property(str,df_v);
 
 		assert( df_v[0].is_empty() == true );
-				
+
 		TEST_LOG << "   Delete object property (for vectors) --> OK" << endl;
 
 //
@@ -148,7 +148,7 @@ int main()
 //
 
 		Database db2 = *dbase;
-		
+
 		vector<string> vs;
 		DeviceData ddata;
 		ddata = db2.command_inout("DbInfo");
@@ -162,20 +162,20 @@ int main()
 
 		Database db3;
 		db3 = db2;
-		
+
 		ddata = db3.command_inout("DbInfo");
 		ddata >> vs;
 
 		TEST_LOG << "   Database call after assignement operator --> OK" << endl;
-										
+
 	}
-	
+
 	catch (Tango::DevFailed &e)
 	{
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
+
 	delete dbase;
 	return 0;
 }

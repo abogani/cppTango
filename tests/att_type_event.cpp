@@ -214,4 +214,3 @@ void check_attribute_data_type(DeviceProxy *device,std::string &att_name, const 
 	device->unsubscribe_event(eve_id);
 	device->stop_poll_attribute(att_name);
 }
-

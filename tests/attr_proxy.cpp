@@ -9,7 +9,7 @@
 int main(int argc, char **argv)
 {
 	AttributeProxy *attr;
-	
+
 	if (argc != 2)
 	{
 		TEST_LOG << "usage: " << argv[0] << " <attribute>" << endl;
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
 	string attribute_name = argv[1];
 
-	try 
+	try
 	{
 		attr = new AttributeProxy(attribute_name);
 	}
@@ -33,13 +33,13 @@ int main(int argc, char **argv)
 	int elapsed;
 	try
 	{
-		
+
 // Test ping
-			
+
 		elapsed = attr->ping();
 
 		TEST_LOG << "   Ping ( " << elapsed << " us ) --> OK" << endl;
-	
+
 // Test state
 
 		DevState sta;
@@ -47,35 +47,35 @@ int main(int argc, char **argv)
 
 		assert ( sta == Tango::ON);
 		TEST_LOG << "   State --> OK" << endl;
-	
+
 // Test status
 
 		string str;
 		str = attr->status();
-	
+
 		assert ( str == "The device is in ON state.");
 		TEST_LOG << "   Status --> OK" << endl;
-		
+
 // Test name
 
 		string name;
 		name = attr->name();
-	
+
 		assert ( name == "Short_attr_rw");
 		TEST_LOG << "   Name --> OK" << endl;
 
 // Test get_attribute_config
-		
+
 		AttributeInfo attr_conf;
-		
+
 		attr_conf = attr->get_config();
-		
+
 		assert ( attr_conf.name == "Short_attr_rw" );
 		assert ( attr_conf.data_format == SCALAR );
 		assert ( attr_conf.data_type == DEV_SHORT );
 
 		AttributeInfoEx attr_conf_ex;
-		
+
 		attr_conf_ex = attr->get_config();
 
 		assert ( attr_conf_ex.name == "Short_attr_rw" );
@@ -83,8 +83,8 @@ int main(int argc, char **argv)
 		assert ( attr_conf_ex.data_type == DEV_SHORT );
 		assert ( attr_conf_ex.alarms.min_alarm == "Not specified" );
 		assert ( attr_conf_ex.alarms.delta_t == "Not specified" );
-		assert ( attr_conf_ex.events.ch_event.abs_change == "Not specified" );		
-						
+		assert ( attr_conf_ex.events.ch_event.abs_change == "Not specified" );
+
 		TEST_LOG << "   Get config --> OK" << endl;
 
 // Test set_attribute_config
@@ -102,29 +102,29 @@ int main(int argc, char **argv)
 		string s;
 		st << pid;
 		st >> s;
-		
+
 		co.format = s;
-		
+
 		attr->set_config(co);
-		
+
 		AttributeInfo res = attr->get_config();
 		assert ( res.format == s );
 
 
 		AttributeInfoEx co_ex = attr->get_config();
 		co_ex.display_unit = s;
-		
+
 		attr->set_config(co_ex);
-		
+
 		AttributeInfoEx res_ex = attr->get_config();
 		assert (res_ex.display_unit == s);
-				
+
 		TEST_LOG << "   Set config --> OK" << endl;
 
 		res_ex.format = "Not specified";
 		res_ex.display_unit = "Not specified";
 		attr->set_config(res_ex);
-		
+
 // Test read
 
 		DeviceAttribute da;
@@ -132,52 +132,52 @@ int main(int argc, char **argv)
 		short val;
 		da >> val;
 		assert ( val == 66 );
-		
+
 		TEST_LOG << "   Read --> OK" << endl;
-		
+
 // Test write
 
 		val = 88;
 		da << val;
 		attr->write(da);
-		
+
 		DeviceAttribute da_res;
 		da_res = attr->read();
 		short val_res;
 		da_res >> val_res;
-		
+
 		assert (val_res == 88);
-		
+
 		TEST_LOG << "   Write --> OK" << endl;
-		
+
 		val = 66;
 		da << val;
 		attr->write(da);
-		
+
 // Test poll method
 
 		bool pol = attr->is_polled();
 		assert (pol == false);
-		
+
 		attr->poll(1000);
-		
+
 		pol = attr->is_polled();
 		assert (pol == true);
-		
+
 		TEST_LOG << "   poll --> OK" << endl;
-		
+
 // Test get_poll_period
 
 		int pol_per = attr->get_poll_period();
 		assert (pol_per == 1000);
-		
+
 		TEST_LOG << "   get_poll_period --> OK" << endl;
 
 // Test history
-		
+
 		std::this_thread::sleep_for(std::chrono::seconds(3));
 		vector<DeviceAttributeHistory> *hist = attr->history(2);
-		
+
 		int i;
 		for (i = 0;i < 2;i++)
 		{
@@ -187,17 +187,17 @@ int main(int argc, char **argv)
 			(*hist)[i] >> val;
 			assert (val == 66);
 		}
-		
+
 		TEST_LOG << "   history --> OK" << endl;
-		
+
 		delete hist;
-		
+
 //  Test stop_poll
 
 		attr->stop_poll();
 		pol = attr->is_polled();
 		assert (pol == false);
-		
+
 		TEST_LOG << "   stop_poll --> OK" << endl;
 
 // Test read_asynch and read_reply
@@ -208,10 +208,10 @@ int main(int argc, char **argv)
 		val = 0;
 		(*da_ptr) >> val;
 		assert (val == 66);
-		
+
 		TEST_LOG << "   read_asynch() and read_reply() --> OK" << endl;
 		delete da_ptr;
-		
+
 // Test write_asynch and write_reply
 
 		val = 99;
@@ -223,11 +223,11 @@ int main(int argc, char **argv)
 		val = 0;
 		da_res >> val_res;
 		assert (val_res == 99);
-		
+
 		val = 66;
 		da << val;
 		attr->write(da);
-		
+
 		TEST_LOG << "   write_asynch() and write_reply() --> OK" << endl;
 
 // Test put property
@@ -237,34 +237,34 @@ int main(int argc, char **argv)
 		dd << lg;
 		DbData in_prop;
 		in_prop.push_back(dd);
-		
+
 		attr->put_property(in_prop);
-				
+
 // Test get property
 
 		string prop_name("tst_prop");
 		DbData out_prop;
-		
+
 		attr->get_property(prop_name,out_prop);
-		
+
 		long lg_res = 0;
 		out_prop[0] >> lg_res;
-		
-		assert(lg_res == 1234);		
+
+		assert(lg_res == 1234);
 		TEST_LOG << "   put_property() and get_property() --> OK" << endl;
-		
+
 // Test delete property
 
 		attr->delete_property(prop_name);
-		
+
 		DbData no_prop;
 		attr->get_property(prop_name,no_prop);
 		assert (no_prop[0].is_empty() == true);
-		
+
 		TEST_LOG << "   delete_property() --> OK" << endl;
 
 // Test multiple get_property
-		
+
 		DbDatum dd_1("tst_prop_1");
 		DbDatum dd_2("tst_prop_2");
 		long lg_i = 3333;
@@ -274,36 +274,36 @@ int main(int argc, char **argv)
 		DbData in_prop_m;
 		in_prop_m.push_back(dd_1);
 		in_prop_m.push_back(dd_2);
-				
-		attr->put_property(in_prop_m);		
-		
+
+		attr->put_property(in_prop_m);
+
 		vector<string> name_list;
 		name_list.push_back("tst_prop_1");
 		name_list.push_back("tst_prop_10");
 		name_list.push_back("tst_prop_2");
 		DbData out_prop_m;
-		
+
 		attr->get_property(name_list,out_prop_m);
-		
+
 		long lg_res_2 = 0;
 		long lg_res_1 = 0;
 		out_prop_m[0] >> lg_res_1;
 		out_prop_m[2] >> lg_res_2;
-		
-		assert (lg_res_1 == 3333);		
-		assert (lg_res_2 == 4444);		
+
+		assert (lg_res_1 == 3333);
+		assert (lg_res_2 == 4444);
 		assert (out_prop_m[1].is_empty() == true);
-		
+
 		DbData db_dat;
 		db_dat.push_back(DbDatum("no"));
 		db_dat.push_back(DbDatum("tst_prop_2"));
 		db_dat.push_back(DbDatum("yes"));
-		
+
 		attr->get_property(db_dat);
-		
+
 		long lg_3;
 		db_dat[1] >> lg_3;
-		
+
 		assert(db_dat[0].is_empty() == true);
 		assert(db_dat[2].is_empty() == true);
 		assert(lg_3 == 4444);
@@ -315,14 +315,14 @@ int main(int argc, char **argv)
 		vector<string> p_name;
 		p_name.push_back("tst_prop_1");
 		p_name.push_back("tst_prop_2");
-		
+
 		attr->delete_property(p_name);
-		
+
 		DbData no_prop_bis;
 		attr->get_property(p_name,no_prop_bis);
 		assert (no_prop_bis[0].is_empty() == true);
 		assert (no_prop_bis[1].is_empty() == true);
-		
+
 		TEST_LOG << "   delete_property() for multiple properties --> OK" << endl;
 	}
 	catch (Tango::DevFailed &e)
@@ -330,8 +330,8 @@ int main(int argc, char **argv)
 		Except::print_exception(e);
 		exit(-1);
 	}
-		
+
 	delete attr;
-	
+
 	return 0;
 }

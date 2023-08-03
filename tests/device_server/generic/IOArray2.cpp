@@ -4,8 +4,8 @@
 //+----------------------------------------------------------------------------
 //
 // method : 		IOArray2::IOArray2()
-// 
-// description : 	constructor for the IOArray2 command of the 
+//
+// description : 	constructor for the IOArray2 command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -26,7 +26,7 @@ IOArray2::IOArray2(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOArray2::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -54,7 +54,7 @@ bool IOArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 //+----------------------------------------------------------------------------
 //
 // method : 		IOArray2::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOArray2
 //			command
 //
@@ -67,21 +67,21 @@ bool IOArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 
 
 CORBA::Any *IOArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA::Any &in_any))
-{	
+{
   try {
     Tango::DevVarShortArray *argout;
     short *data_ptr;
     long data_length;
 
-    DevTest *dev = static_cast<DevTest *>(device);    
+    DevTest *dev = static_cast<DevTest *>(device);
     (dev->get_short_array())[0] = 100;
     (dev->get_short_array())[1] = 200;
-        
+
     data_ptr = dev->get_short_array();
     data_length = 2;
-    
+
     argout = dev->create_DevVarShortArray(data_ptr,data_length);
- 
+
     return insert(argout);
   }
   catch (CORBA::Exception &e)
@@ -95,8 +95,8 @@ CORBA::Any *IOArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA
 //+----------------------------------------------------------------------------
 //
 // method : 		IOPollArray2::IOPollArray2()
-// 
-// description : 	constructor for the IOPollArray2 command of the 
+//
+// description : 	constructor for the IOPollArray2 command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -118,7 +118,7 @@ IOPollArray2::IOPollArray2(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOPollArray2::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -146,7 +146,7 @@ bool IOPollArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORB
 //+----------------------------------------------------------------------------
 //
 // method : 		IOPollArray2::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOPollArray2
 //			command
 //
@@ -159,7 +159,7 @@ bool IOPollArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORB
 
 
 CORBA::Any *IOPollArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA::Any &in_any))
-{	
+{
   try {
     Tango::DevVarShortArray *argout;
     short *data_ptr;
@@ -168,7 +168,7 @@ CORBA::Any *IOPollArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const C
     DevTest *dev = static_cast<DevTest *>(device);
     num++;
     if ((num % 2) == 0)
-    {   
+    {
     	(dev->get_short_array())[0] = 100;
     	(dev->get_short_array())[1] = 200;
 TANGO_LOG << "Value are 100,200" << std::endl;
@@ -179,12 +179,12 @@ TANGO_LOG << "Value are 100,200" << std::endl;
 	(dev->get_short_array())[1] = 400;
 TANGO_LOG << "Value are 300,400" << std::endl;
     }
-        
+
     data_ptr = dev->get_short_array();
     data_length = 2;
-    
+
     argout = dev->create_DevVarShortArray(data_ptr,data_length);
- 
+
     return insert(argout);
   }
   catch (CORBA::Exception &e)

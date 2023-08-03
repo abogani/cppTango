@@ -269,4 +269,3 @@ void reset_to_default(Tango::AttributeInfoEx &ai,string &att_name)
 }
 
 // eof
-

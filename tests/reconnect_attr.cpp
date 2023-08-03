@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	AttributeProxy *attr;
-	
+
 	if (argc != 2)
 	{
 		TEST_LOG << "usage: %s attribute" << endl;
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	string attr_name = argv[1];
 
-	try 
+	try
 	{
 		attr = new AttributeProxy(attr_name);
 		TEST_LOG << "new AttributeProxy() returned" << endl;
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
         }
 
 	attr->get_device_proxy()->set_transparency_reconnection(true);
-	
+
 	while (1)
 	{
 		TEST_LOG << "Hit any key :" << endl;
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 		cin >> bid;
 
 		try
-		{	
+		{
 			attr->ping();
 			TEST_LOG << "Ping successfull" << endl;
 		}
@@ -54,9 +54,9 @@ int main(int argc, char **argv)
 		{
 			TEST_LOG << "Unknown exception" << endl;
 		}
-		
+
 	}
-		
+
 	return 0;
 
 }

@@ -3,8 +3,8 @@
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStrArray::IOStrArray()
-// 
-// description : 	constructor for the IOStrArray command of the 
+//
+// description : 	constructor for the IOStrArray command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -25,7 +25,7 @@ IOStrArray::IOStrArray(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStrArray::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -53,7 +53,7 @@ bool IOStrArray::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA:
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStrArray::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOStrArray
 //			command
 //
@@ -66,14 +66,14 @@ bool IOStrArray::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA:
 
 
 CORBA::Any *IOStrArray::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
-{	
+{
   try {
     Tango::DevVarStringArray *argout = new Tango::DevVarStringArray();
 
     argout->length(2);
     (*argout)[0] = Tango::string_dup("First string from dev_string_array");
     (*argout)[1] = Tango::string_dup("Second string from dev_string_array");
-     
+
     return insert(argout);
   }
   catch (CORBA::Exception &e)
@@ -82,5 +82,3 @@ CORBA::Any *IOStrArray::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UN
       throw ;
     }
 }
-
-

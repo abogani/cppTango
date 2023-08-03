@@ -261,5 +261,3 @@ georg@taco10:/home/projekte/tango/Tests/ExitCrashProblem>
 georg@taco10:/home/projekte/tango/Tests/ExitCrashProblem>
 
 */
-
-

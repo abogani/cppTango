@@ -3,8 +3,8 @@
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStr2::IOStr2()
-// 
-// description : 	constructor for the IOStr2 command of the 
+//
+// description : 	constructor for the IOStr2 command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -25,7 +25,7 @@ IOStr2::IOStr2(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStr2::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -53,7 +53,7 @@ bool IOStr2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStr2::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOStr2
 //			command
 //
@@ -66,11 +66,11 @@ bool IOStr2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any
 
 
 CORBA::Any *IOStr2::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
-{	
+{
   try {
     const char *argout;
- 
-    argout = "Hello from IOStr2";    
+
+    argout = "Hello from IOStr2";
     return insert(argout);
   }
   catch (CORBA::Exception &e)
@@ -79,5 +79,3 @@ CORBA::Any *IOStr2::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED
       throw ;
     }
 }
-
-

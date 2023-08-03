@@ -1,6 +1,6 @@
 #include "common.h"
 
-/* 
+/*
  * Send the DevRestart command to the admin device of the
  * server in charg eof the device with name given as parameter.
  *
@@ -14,7 +14,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if ((argc < 3) || (argc > 4))
 	{
 		TEST_LOG << "usage: restart_device device cmd" << endl;
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	string cmd_name = argv[2];
 	transform(cmd_name.begin(),cmd_name.end(),cmd_name.begin(),::tolower);
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 			return 2;
 	}
 
-	delete device;		
+	delete device;
 	return 0;
-	
+
 }

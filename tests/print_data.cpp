@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	TEST_LOG << "Data = " << din << endl;
 	din >> s_out;
 	assert (s_out == 2);
-	
+
 	TEST_LOG << "   Short --> OK" << endl;
 
 // test long
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	TEST_LOG << "Data = " << din << endl;
 	din >> l_out;
 	assert (l_out == 3);
-	
+
 	TEST_LOG << "   Long --> OK" << endl;
 
 // test float
@@ -53,9 +53,9 @@ int main(int argc, char **argv)
 	TEST_LOG << "Data = " << din << endl;
 	din >> f_out;
 	assert (f_out == (float)3.1);
-	
+
 	TEST_LOG << "   Float --> OK" << endl;
-			
+
 // test double
 
 
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	TEST_LOG << "Data = " << din << endl;
 	din >> db_out;
 	assert (db_out == 1.3);
-	
+
 	TEST_LOG << "   Double --> OK" << endl;
 
 // test unsigned short
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	TEST_LOG << "Data = " << din << endl;
 	din >> ul_out;
 	assert (ul_out == 1000);
-	
+
 	TEST_LOG << "   Unsigned Long --> OK" << endl;
 
 // test string
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 	TEST_LOG << "Data = " << din << endl;
 	din >> str_out;
 	assert (str_out == "abc");
-	
+
 	TEST_LOG << "   String --> OK" << endl;
 
 // test DevVarCharArray
@@ -112,9 +112,9 @@ int main(int argc, char **argv)
 	din >> ch_out;
 	assert (ch_out[0] == 0);
 	assert (ch_out[1] == 1);
-	
+
 	TEST_LOG << "   DevVarCharArray --> OK" << endl;
-	
+
 // test DevVarShortArray
 
 	DevVarShortArray *sh_in = new DevVarShortArray(2);
@@ -127,9 +127,9 @@ int main(int argc, char **argv)
 	din >> sh_out;
 	assert (sh_out[0] == 10);
 	assert (sh_out[1] == 20);
-	
+
 	TEST_LOG << "   DevVarShortArray --> OK" << endl;
-	
+
 // test DevVarLongArray
 
 	DevVarLongArray *lg_arr = new DevVarLongArray(2);
@@ -142,9 +142,9 @@ int main(int argc, char **argv)
 	din >> lg_arr_out;
 	assert (lg_arr_out[0] == 111);
 	assert (lg_arr_out[1] == 222);
-	
+
 	TEST_LOG << "   DevVarLongArray --> OK" << endl;
-	
+
 // test DevVarFloatArray
 
 	DevVarFloatArray *fl_arr = new DevVarFloatArray(2);
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
 	din >> fl_arr_out;
 	assert (fl_arr_out[0] == (float)1.11);
 	assert (fl_arr_out[1] == (float)2.22);
-	
+
 	TEST_LOG << "   DevVarFloatArray --> OK" << endl;
 
 // test DevVarDoubleArray
@@ -172,9 +172,9 @@ int main(int argc, char **argv)
 	din >> db_arr_out;
 	assert (db_arr_out[0] == 1.12);
 	assert (db_arr_out[1] == 3.45);
-	
+
 	TEST_LOG << "   DevVarDoubleArray --> OK" << endl;
-	
+
 // test DevVarUShortArray
 
 	DevVarUShortArray *us_arr = new DevVarUShortArray(2);
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 	assert (us_arr_out[1] == 22);
 
 	TEST_LOG << "   DevVarUShortArray --> OK" << endl;
-	
+
 // test DevVarULongArray
 
 	DevVarULongArray *ul_arr = new DevVarULongArray(2);
@@ -202,9 +202,9 @@ int main(int argc, char **argv)
 	din >> ul_arr_out;
 	assert (ul_arr_out[0] == 1111);
 	assert (ul_arr_out[1] == 2222);
-	
+
 	TEST_LOG << "   DevVarULongArray --> OK" << endl;
-	
+
 // test DevVarStringArray
 
 	DevVarStringArray *str_arr = new DevVarStringArray(2);
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
 	assert (str_arr_out[2] == "ghi");
 
 	TEST_LOG << "   DevVarStringArray --> OK" << endl;
-	
+
 // test DevVarLongStringArray
 
 	DevVarLongStringArray *lgstr_arr = new DevVarLongStringArray();
@@ -240,9 +240,9 @@ int main(int argc, char **argv)
 	assert (lg_lgstr[1] == 2220);
 	assert (str_lgstr[0] == "zxc");
 	assert (str_lgstr[1] == "qwe");
-	
+
 	TEST_LOG << "   DevVarLongStringArray --> OK" << endl;
-	
+
 // test DevVarDoubleStringArray
 
 
@@ -264,9 +264,9 @@ int main(int argc, char **argv)
 	assert (str_dbstr[0] == "iop");
 	assert (str_dbstr[1] == "jkl");
 	assert (str_dbstr[2] == "bnm");
-	
+
 	TEST_LOG << "   DevVarDoubleStringArray --> OK" << endl;
-	
+
 // test DevState
 
 
@@ -276,9 +276,9 @@ int main(int argc, char **argv)
 	TEST_LOG << "State = " << din << endl;
 	din >> sta_out;
 	assert (sta_out == Tango::STANDBY);
-	
+
 	TEST_LOG << "   DevState --> OK" << endl;
-		
+
 // test DevEncoded
 
 	DevEncoded de;
@@ -296,20 +296,20 @@ int main(int argc, char **argv)
 	assert (dout.encoded_data[1] == 22);
 
 	TEST_LOG << "   DevEncoded --> OK" << endl;
-	
+
 // Attribute
 
 	DeviceAttribute da;
 	TEST_LOG << da << endl;
 TEST_LOG << "Empty attribute OK" << endl;
-	
+
 	short s_attr = 20;
 	da << s_attr;
 	TEST_LOG << da << endl;
 TEST_LOG << "DA with init value OK" << endl;
-	
+
 	DeviceProxy dev(device_name);
-	
+
 	da = dev.read_attribute("Long_attr");
 TEST_LOG << "Attribute read" << endl;
 	TEST_LOG << da  << endl;
@@ -318,7 +318,7 @@ TEST_LOG << "Attribute read" << endl;
 	assert (la == 1246);
 
 	TEST_LOG << "	DeviceAttribute --> OK" << endl;
-	
-	
+
+
 	return 0;
 }

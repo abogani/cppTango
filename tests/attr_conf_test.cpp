@@ -196,7 +196,7 @@ void check_description(Tango::DeviceProxy &dev,
     aie.description = dev_desc;
     aie_list.clear();
     aie_list.push_back(aie);
-    dev.set_attribute_config(aie_list);      
+    dev.set_attribute_config(aie_list);
 
 // Return to lib
 
@@ -276,12 +276,12 @@ void check_description(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.description == user_desc); 
+    assert (aie.description == user_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.description == user_desc); 
+    assert (aie.description == user_desc);
 
 // User input == class default
 
@@ -296,12 +296,12 @@ void check_description(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.description == class_desc); 
+    assert (aie.description == class_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.description == class_desc);    
+    assert (aie.description == class_desc);
 }
 
 
@@ -371,7 +371,7 @@ void check_min_value(Tango::DeviceProxy &dev,
     aie.min_value = dev_desc;
     aie_list.clear();
     aie_list.push_back(aie);
-    dev.set_attribute_config(aie_list); 
+    dev.set_attribute_config(aie_list);
 
 // Return to lib
 
@@ -451,12 +451,12 @@ void check_min_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.min_value == user_desc); 
+    assert (aie.min_value == user_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.min_value == user_desc); 
+    assert (aie.min_value == user_desc);
 
 // User input == class default
 
@@ -471,12 +471,12 @@ void check_min_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.min_value == class_desc); 
+    assert (aie.min_value == class_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.min_value == class_desc);           
+    assert (aie.min_value == class_desc);
 }
 
 
@@ -545,7 +545,7 @@ void check_ev_period_value(Tango::DeviceProxy &dev,
     aie.events.per_event.period = dev_desc;
     aie_list.clear();
     aie_list.push_back(aie);
-    dev.set_attribute_config(aie_list); 
+    dev.set_attribute_config(aie_list);
 
 // Return to lib
 
@@ -625,12 +625,12 @@ void check_ev_period_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.per_event.period == user_desc); 
+    assert (aie.events.per_event.period == user_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.per_event.period == user_desc); 
+    assert (aie.events.per_event.period == user_desc);
 
 // User input == class default
 
@@ -645,12 +645,12 @@ void check_ev_period_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.per_event.period == class_desc); 
+    assert (aie.events.per_event.period == class_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.per_event.period == class_desc);      
+    assert (aie.events.per_event.period == class_desc);
 }
 
 void check_rel_change_value(Tango::DeviceProxy &dev,
@@ -718,7 +718,7 @@ void check_rel_change_value(Tango::DeviceProxy &dev,
     aie.events.ch_event.rel_change = dev_desc;
     aie_list.clear();
     aie_list.push_back(aie);
-    dev.set_attribute_config(aie_list); 
+    dev.set_attribute_config(aie_list);
 
 // Return to lib
 
@@ -798,12 +798,12 @@ void check_rel_change_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.ch_event.rel_change == user_desc); 
+    assert (aie.events.ch_event.rel_change == user_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.ch_event.rel_change == user_desc); 
+    assert (aie.events.ch_event.rel_change == user_desc);
 
 // User input == class default
 
@@ -818,13 +818,13 @@ void check_rel_change_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.ch_event.rel_change == class_desc); 
+    assert (aie.events.ch_event.rel_change == class_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.events.ch_event.rel_change == class_desc);   
-       
+    assert (aie.events.ch_event.rel_change == class_desc);
+
 }
 
 
@@ -899,7 +899,7 @@ void check_delta_val_value(Tango::DeviceProxy &dev,
     aie.alarms.delta_t = "200";
     aie_list.clear();
     aie_list.push_back(aie);
-    dev.set_attribute_config(aie_list); 
+    dev.set_attribute_config(aie_list);
 
 // Return to lib
 
@@ -995,12 +995,12 @@ void check_delta_val_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.alarms.delta_val == user_desc); 
+    assert (aie.alarms.delta_val == user_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.alarms.delta_val == user_desc); 
+    assert (aie.alarms.delta_val == user_desc);
 
 // User input == class default
 
@@ -1015,12 +1015,11 @@ void check_delta_val_value(Tango::DeviceProxy &dev,
     dev.set_attribute_config(aie_list);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.alarms.delta_val == class_desc); 
+    assert (aie.alarms.delta_val == class_desc);
 
     admin_dev.command_inout("DevRestart",dd);
 
     aie = dev.get_attribute_config(att);
-    assert (aie.alarms.delta_val == class_desc); */  
-       
-}
+    assert (aie.alarms.delta_val == class_desc); */
 
+}

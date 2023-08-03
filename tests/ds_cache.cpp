@@ -83,14 +83,14 @@ int main(int, char **)
 				+ (2 * nb_prop)		// (property name + number describing the amount of its values) x number of properties
 				+ prop_elt			// number of all properties values
 				+ acc_ctrl_size;	// if AccessControl defined : 8 properties, if not : 0 properties
-		
+
 //
 // Try to create a DS cache
 //
 
 		string ds_name("DsCache/test");
-		DbServerCache *dsc = new DbServerCache(db,ds_name,h_name);	
-		
+		DbServerCache *dsc = new DbServerCache(db,ds_name,h_name);
+
 		TEST_LOG << "   Filling db cache --> OK" << endl;
 
 //
@@ -114,7 +114,7 @@ int main(int, char **)
 		last = first + 7;
 		assert(imp_data.first_idx == first);
 		assert(imp_data.last_idx == last);
-		
+
 		const DbServerCache::EltIdx &notifd_eve = dsc->get_imp_notifd_event();
 		TEST_LOG << "Notifd import event data between " << notifd_eve.first_idx << " and " << notifd_eve.last_idx << endl;
 		first = last + 1;
@@ -227,14 +227,14 @@ int main(int, char **)
 
 
 		delete db;
-		delete dsc;										
+		delete dsc;
 	}
-	
+
 	catch (Tango::DevFailed &e)
 	{
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
+
 	return 0;
 }
