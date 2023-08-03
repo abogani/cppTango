@@ -41,3 +41,22 @@ Example commands to run clang-tidy on all files (excluding the tests):
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=0 ...
 run-clang-tidy.py -header-filter='.*' 'src/(?!server/idl)' 'log4tango/src'
 ```
+
+# Code style checks
+
+Some of our CI jobs serve as early merge gate to detect easy to fix code style
+issues. All other CI jobs, which are more expensive to run, depend on those.
+
+## Pre-commit
+
+A [framework](https://pre-commit.com) to perform all kinds of checks.
+Can be installed via `pip install pre-commit`.
+
+Running the checks locally:
+
+```
+pre-commit run --all-files --show-diff-on-failure
+```
+
+pre-commit can also be integrated into git, see
+[here](https://pre-commit.com/#3-install-the-git-hook-scripts) for instructions.
