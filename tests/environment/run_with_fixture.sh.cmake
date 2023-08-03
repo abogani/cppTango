@@ -33,7 +33,7 @@ tc_mysql_container="mysql_db_${tc_run_name}"
 tc_tango_container="tango_cs_${tc_run_name}"
 
 # This path must be exported as other scripts use it for e.g. storing logs.
-export TANGO_TEST_CASE_DIRECTORY="@PROJECT_BINARY_DIR@/results/${tc_run_name}"
+export TANGO_TEST_CASE_DIRECTORY="@PROJECT_BINARY_DIR@/tests/results/${tc_run_name}"
 mkdir -p "${TANGO_TEST_CASE_DIRECTORY}"
 
 # Cleanup function. This is attached to the EXIT signal.

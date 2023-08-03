@@ -35,7 +35,7 @@ server_path="${3:-device_server/generic}"
         exec 1<>"${TANGO_TEST_CASE_DIRECTORY}/${server}_${instance}_${server_pid}_stdout.log"
         exec 2>&1
 
-        exec "@PROJECT_BINARY_DIR@/${server_path}/${server}" "$instance" -v5
+        exec "@PROJECT_BINARY_DIR@/tests/${server_path}/${server}" "$instance" -v5
     ) &
     server_pid="$!"
 

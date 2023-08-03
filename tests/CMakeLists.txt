@@ -1,5 +1,3 @@
-project(tests)
-
 find_package (Threads REQUIRED)
 
 find_package(Python3 COMPONENTS Interpreter)

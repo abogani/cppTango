@@ -1,5 +1,3 @@
-project(libtango)
-
 add_library(tango $<TARGET_OBJECTS:log4tango_objects>
                   $<TARGET_OBJECTS:client_objects>
                   $<TARGET_OBJECTS:common_objects>
