@@ -4,7 +4,7 @@ include(CheckCXXSourceCompiles)
 include(CheckTypeSize)
 
 macro (LOG4TANGO_CHECK_INCLUDE_FILE header var)
-    CHECK_INCLUDE_FILE("${header}"        LOG4TANGO_${var} )
+  CHECK_INCLUDE_FILE_CXX("${header}"        LOG4TANGO_${var} )
 endmacro()
 
 LOG4TANGO_CHECK_INCLUDE_FILE("io.h"           HAVE_IO_H)

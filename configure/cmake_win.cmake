@@ -1,5 +1,3 @@
-project(tango)
-
 if(CMAKE_CL_64)
     add_definitions(-D_64BITS)
 endif()
