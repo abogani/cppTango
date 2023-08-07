@@ -432,7 +432,7 @@ public :
 ///@privatesection
 	virtual std::string dev_name()=0;
 
-	Connection(CORBA::ORB *orb = NULL);
+	Connection(CORBA::ORB_var orb = CORBA::ORB::_nil());
 	Connection(bool dummy);
 	virtual ~Connection();
 	Connection(const Connection &);

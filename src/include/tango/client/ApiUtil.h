@@ -137,7 +137,7 @@ public:
 /// @privatesection
 
 	CORBA::ORB_var get_orb() {return _orb;}
-	void set_orb(CORBA::ORB_ptr orb_in) {_orb = orb_in;}
+	void set_orb(CORBA::ORB_var orb_in) {_orb = orb_in;}
 	void create_orb();
 	bool is_orb_nil() {return CORBA::is_nil(_orb);}
 	int	get_db_ind();

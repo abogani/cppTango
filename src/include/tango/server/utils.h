@@ -204,7 +204,7 @@ public:
  *
  * @return The CORBA ORB
  */
-	CORBA::ORB_ptr get_orb() {return CORBA::ORB::_duplicate(orb);}
+	CORBA::ORB_var get_orb() {return CORBA::ORB::_duplicate(orb);}
 
 /**
  * Get a reference to the CORBA Portable Object Adapter (POA)
