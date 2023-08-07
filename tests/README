@@ -53,7 +53,7 @@ The source files are required to have '.cpp' extension and unique names. The fil
 framework must have a 'cxx_' prefix.
 
 !! -- NB -- !!
-Store all files prefixed with 'cxx_' in one directory. 
+Store all files prefixed with 'cxx_' in one directory.
 
 To compile the binaries you need to:
 - create a profile file
@@ -130,7 +130,7 @@ To check if the process is running type in command line:
 
 In your control system there has to be a test device server set up (e.g. 'devTest'), consisting of at least 3 devices
 (e.g. 'dev/test/1', 'dev/test/2' and 'dev/test/3') from the 'DevTest' class.
-	
+
 -----------------------------------------------------------------------------------------------------------------------
  1.2.1. Control System configuration
 -----------------------------------------------------------------------------------------------------------------------
@@ -184,12 +184,12 @@ Some test suites require arguments which are common for all (e.g. the device on 
 database server name), for this reason they have been predefined (just the definition of the argument, not its value);
 however some other test suites need custom arguments (which make sense only locally in the test suite);
 hence there are 3 types of arguments distinguished:
-  
+
 - params (predefined parameters) - commonly used in all test suites, like device1, device2 and device3 on which the
   test suite will be executed or database server name, full device server name, etc.;
   they are provided in the command line as follows: '--' + parameter name + '=' + parameter value, e.g.:
   `./runner --device1=dev/test/1 --fulldsname=devTest/myname --dbserver=sys/database/2`
-  
+
 - params_opt (optional parameters) - same as params but not required by the test suite (like a loop parameter); they
   are provided in the command line the same way as params but processed by the test suite in a different (optional) way
   `./runner --loop=5`
@@ -204,27 +204,27 @@ hence there are 3 types of arguments distinguished:
 -----------------------------------------------------------------------------------------------------------------------
 
 To declare an argument and obtain its value use the following methods, e.g.:
-  
+
 - std::string my_param_value = CxxTest::TangoPrinter::get_param("my_param");
 
   this will declare a mandatory, predefined parameter (see the list below); predefined parameters are those which are
   common for different test suites and therefore have been defined in the Test Framework itself (namely in TangoPrinter.h);
   the params in the code are defined by the 'param_name' and provided by the user in the command line as
   '--param_name=param_value';
-  
+
   calling:
   std::string full_ds_name_value = CxxTest::TangoPrinter::get_param("fulldsname");
   and executing:
   `./runner --fulldsname=devTest/myname`
   will assign 'full_ds_name_value = "devTest/myname"'; if the user does not provide all mandatory parameters, the 'runner'
   will terminate and print out all expected mandatory parameters along with their descriptions;
-  
+
 - std::string my_param_opt_value = CxxTest::TangoPrinter::get_param_opt("my_param_opt");
 
   this will declare an optional parameter; optional parameters have the same definition, meaning and use as the
   mandatory parameters apart from that they are not obligatory. If the user does not provide some/any optional
   parameters the 'runner' will execute normally.
-  
+
 - std::string my_param_loc_value = CxxTest::TangoPrinter::get_param_loc("my_param_loc","description of what 'my_param_loc' is"); or
   std::string my_param_loc_value = CxxTest::TangoPrinter::get_param_loc("my_param_loc");
 
@@ -380,10 +380,10 @@ void test_MyTestCase()
 	/* modify the default configuration */
 	CxxTest::TangoPrinter::restore_set("my_restore_point");
 	// your code here, e.g. assertion which may fail
-	
+
 	// if it fails, the next line will not be executed, but thanks to the restore mechanism,
 	// the code from the 'Clean up' section will be called
-	
+
 	/* recover the default configuration */
 	CxxTest::TangoPrinter::restore_unset("my_restore_point");
 }

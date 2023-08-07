@@ -6,7 +6,7 @@
 // as provided by the distributation 7.0.2
 //
 // PROBLEM:
-// server sent a correct configuration changed event with correct data, 
+// server sent a correct configuration changed event with correct data,
 // but did not update the data internal or in the database.
 //
 // This problem occures for setting: abs_change and rel_change to control event generation.
@@ -15,7 +15,7 @@
 // just call the program, no options.
 
 // Contact me at:
-// Georg.Kasper@frm2.tum.de 
+// Georg.Kasper@frm2.tum.de
 // 7/2009
 
 /// NO PRODUCTION CODE
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
 //        TEST_LOG << "[main]: This program assumes that  \"TangoTest test\"  is running" << endl;
 //        TEST_LOG << "[main]: connect to " << dn
-//             << "  TANGO_HOST=" 
+//             << "  TANGO_HOST="
 //             << (getenv( "TANGO_HOST" ) != NULL ? getenv( "TANGO_HOST" ) : "not set")
 //             << endl;
 
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 	assert (ai.events.ch_event.abs_change == abs_change_according_last_event);
 	assert (ai.events.ch_event.rel_change == rel_change_according_last_event);
 
-/*	if( ai.events.ch_event.abs_change != abs_change_according_last_event 
+/*	if( ai.events.ch_event.abs_change != abs_change_according_last_event
      || ai.events.ch_event.rel_change != rel_change_according_last_event )
 	{
 		rc = -1;
@@ -175,6 +175,5 @@ georg@taco10:/home/projekte/tango/Tests/ConfEventBug> ConfEventBugClient
 
 [main]: BUG: server sent a config changed event with correct data, but did not update the data internal.
 
-georg@taco10:/home/projekte/tango/Tests/ConfEventBug>        
+georg@taco10:/home/projekte/tango/Tests/ConfEventBug>
 */
-

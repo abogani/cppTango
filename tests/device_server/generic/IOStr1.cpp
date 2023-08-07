@@ -3,8 +3,8 @@
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStr1::IOStr1()
-// 
-// description : 	constructor for the IOStr1 command of the 
+//
+// description : 	constructor for the IOStr1 command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -25,7 +25,7 @@ IOStr1::IOStr1(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStr1::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -53,7 +53,7 @@ bool IOStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStr1::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOStr1
 //			command
 //
@@ -66,13 +66,13 @@ bool IOStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any
 
 
 CORBA::Any *IOStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
-{	
+{
   try {
     Tango::DevString argout;
- 
+
     argout = new char[40];
     strcpy(argout,"Hello from IOStr1");
-    
+
     return insert(argout);
   }
   catch (CORBA::Exception &e)
@@ -86,8 +86,8 @@ CORBA::Any *IOStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED
 //+----------------------------------------------------------------------------
 //
 // method : 		IOPollStr1::IOPollStr1()
-// 
-// description : 	constructor for the IOPollStr1 command of the 
+//
+// description : 	constructor for the IOPollStr1 command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -109,7 +109,7 @@ IOPollStr1::IOPollStr1(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOPollStr1::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -137,7 +137,7 @@ bool IOPollStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA:
 //+----------------------------------------------------------------------------
 //
 // method : 		IOPollStr1::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOPollStr1
 //			command
 //
@@ -153,7 +153,7 @@ CORBA::Any *IOPollStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UN
 {
   try {
     Tango::DevString argout;
- 
+
     argout = new char[40];
     num++;
     if ((num % 3) == 0)
@@ -165,7 +165,7 @@ CORBA::Any *IOPollStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UN
     	delete [] argout;
     	TANGO_THROW_EXCEPTION("qqq", "www");
     }
-    
+
     return insert(argout);
   }
   catch (CORBA::Exception &e)

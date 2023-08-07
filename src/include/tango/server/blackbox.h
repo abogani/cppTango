@@ -48,7 +48,7 @@ namespace Tango
 
 #define		IP_ADDR_BUFFER_SIZE		80
 
-// client call interceptor for remote calls 
+// client call interceptor for remote calls
 // will be removed once omniORB 4.3 is adopted
 CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::info_T &);
 
@@ -56,15 +56,15 @@ CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::i
 // client_call_interceptor: a omniORB server-side call interceptor dealing with client info & more
 //==================================================================================================================
 // Description:
-// Calls can be intercepted on the server just before the upcall into application code. 
-// This interceptor is registered with omniORB’s callDescriptor class, which is responsible for encapsulating 
-// the state of a call. Unlike the transport-related serverReceiveRequest, serverSendReply and serverSendException 
-// interceptors, the callDescriptor interceptor is invoked for all calls, even ones from colocated clients in the 
-// same address space. The types used for the call interceptor are defined in include/omniORB4/callDescriptor.h. 
-// The interceptor takes the form of a bare function with two parameters. The first parameter is a pointer to the 
-// callDescriptor; the second is a pointer to omniServant, which is the base class of all servant classes. The 
-// interceptor function must call the callDescriptor’s interceptedCall() method to pass on the call. This interception 
-// point allows access to various parts of omniORB’s call machinery. The callDescriptor includes access to the operation 
+// Calls can be intercepted on the server just before the upcall into application code.
+// This interceptor is registered with omniORB’s callDescriptor class, which is responsible for encapsulating
+// the state of a call. Unlike the transport-related serverReceiveRequest, serverSendReply and serverSendException
+// interceptors, the callDescriptor interceptor is invoked for all calls, even ones from colocated clients in the
+// same address space. The types used for the call interceptor are defined in include/omniORB4/callDescriptor.h.
+// The interceptor takes the form of a bare function with two parameters. The first parameter is a pointer to the
+// callDescriptor; the second is a pointer to omniServant, which is the base class of all servant classes. The
+// interceptor function must call the callDescriptor’s interceptedCall() method to pass on the call. This interception
+// point allows access to various parts of omniORB’s call machinery. The callDescriptor includes access to the operation
 // name and, if cast to the concrete subclass defined by the IDL compiler, the call arguments and return values too.
 ///==================================================================================================================
 // Parameters:
@@ -73,7 +73,7 @@ CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::i
 ///==================================================================================================================
 // Comments:
 // This interceptor works for both collocated and remote calls so that the client info is properly setup in any case.
-// However, for the moment, we only use it for local calls. It will also be used for remote ones once we adopt ominitORB 
+// However, for the moment, we only use it for local calls. It will also be used for remote ones once we adopt ominitORB
 // 4.3. See also cppTango issue #865 for details.
 ///==================================================================================================================
 void client_call_interceptor(omniCallDescriptor* d, omniServant* s);

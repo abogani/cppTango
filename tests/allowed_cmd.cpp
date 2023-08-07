@@ -1,6 +1,6 @@
 #include "common.h"
 
-/* 
+/*
  * Small utility program to help testing locking features.
  *
  * Possible return code:
@@ -13,7 +13,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if ((argc == 1) || (argc > 3))
 	{
 		TEST_LOG << "usage: %s device" << endl;
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 	string device_name = argv[1];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -42,9 +42,9 @@ int main(int argc, char **argv)
 		dout = device->command_inout("IOFloat",din);
 		Tango::DevFloat val;
 		dout >> val;
-		
+
 		if (val != 4.0)
-			return -1;					
+			return -1;
 	}
 	catch (Tango::DevFailed &e)
 	{
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 			return 2;
 	}
 
-	delete device;		
+	delete device;
 	return 0;
-	
+
 }

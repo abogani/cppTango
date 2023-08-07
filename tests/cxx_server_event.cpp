@@ -179,7 +179,3 @@ public:
 };
 
 #endif // ServerEventTestSuite_h
-
-
-
-

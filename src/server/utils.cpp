@@ -208,7 +208,7 @@ namespace Tango
 Util *Util::_instance = NULL;
 int Util::_tracelevel = 0;
 bool Util::_UseDb = true;
-bool Util::_FileDb = false; 
+bool Util::_FileDb = false;
 bool Util::_daemon = false;
 long Util::_sleep_between_connect = 60;
 bool Util::_constructed = false;
@@ -224,12 +224,12 @@ thread_local bool is_tango_library_thread = false;
 //+-------------------------------------------------------------------------------------------------------------------
 // NOTE: about omni_thread::key_t
 //+-------------------------------------------------------------------------------------------------------------------
-//	- an omni_thread::key_t is a unique process-wide identifier 
+//	- an omni_thread::key_t is a unique process-wide identifier
 //				`--> an omni_thread::key_t must be instantiated by calling 'omni_thread::allocate_key' (thread safe static function).
 //				`--> once created, a key is usable by any thread in the process
 //	- the value associated with a key is unique (i.e.) and stored on a 'per omni_thread instance' basis
-//				`--> omni_thread::[set_value, get_value, remove_value] are NOT static member of the omni_thread 
-//				`--> omni_thread::[set_value, get_value, remove_value] are NOT thread safe! 
+//				`--> omni_thread::[set_value, get_value, remove_value] are NOT static member of the omni_thread
+//				`--> omni_thread::[set_value, get_value, remove_value] are NOT thread safe!
 //				`--> keys are unique but values are NOT - i.e., two different threads can have a different value associated to the same key
 //+-------------------------------------------------------------------------------------------------------------------
 
@@ -592,16 +592,16 @@ void Util::create_CORBA_objects()
 
 	// this is the Tango < 9.4.2 call interceptor
 	// ---------------------------------------------------------------------------
-	// works for remote calls only - will be removed once we adopt omniORB 4.3 
+	// works for remote calls only - will be removed once we adopt omniORB 4.3
 	// ---------------------------------------------------------------------------
 	intercep->serverReceiveRequest.add(Tango::get_client_addr);
 
-	// install the client call interceptor 
+	// install the client call interceptor
 	// works for both colocated and remote calls so that the client info is properly setup in any case
 	// see section 10.3 of the omniORB documentation for details
 	// ---------------------------------------------------------------------------
 	// so far we use it for lacal calls only
-	// will be used for both local aan remote calls once omniORB 4.3 is adpoted 
+	// will be used for both local aan remote calls once omniORB 4.3 is adpoted
 	// see why in cppTango issue #865
 	// ---------------------------------------------------------------------------
 	omniCallDescriptor::addInterceptor(Tango::client_call_interceptor);
@@ -2187,7 +2187,7 @@ void Util::server_cleanup()
 #ifndef _TG_WINDOWS_
 
 // uninstall the client call interceptor
-// see section 10.3 of the omniORB documentation - see also cppTango issue #865 
+// see section 10.3 of the omniORB documentation - see also cppTango issue #865
 omniCallDescriptor::removeInterceptor(Tango::client_call_interceptor);
 
 //

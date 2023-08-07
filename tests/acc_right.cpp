@@ -23,7 +23,7 @@ void call_devices_ds_off(DeviceProxy *,DeviceProxy *,bool);
 TangoSys_Pid start_ds(const std::string& path, const std::string& name, const std::string& inst);
 
 int main(int argc, char **argv)
-{	
+{
 	if ((argc < 6) || (argc > 7))
 	{
 		TEST_LOG << "usage: acc_right user host device1 device2 admin_device" << endl;
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
-	struct in_addr **addr_list;		
+	struct in_addr **addr_list;
 	addr_list = (struct in_addr **)my_addr->h_addr_list;
 	char *host_ptr = inet_ntoa(*addr_list[0]);
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 //
 
 	DeviceProxy *acc_device;
-	try 
+	try
 	{
 		acc_device = new DeviceProxy(serv_dev_name);
 	}
@@ -279,7 +279,7 @@ int main(int argc, char **argv)
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	ApiUtil::cleanup();
 
-	try 
+	try
 	{
 		acc_device = new DeviceProxy(serv_dev_name);
 	}
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
 	{
 		dev_dp = new  DeviceProxy(device);
 		another_dev_dp = new DeviceProxy(another_dev);
-		
+
 		check_device_access(dev_dp,true,false);
 		check_device_access(another_dev_dp,false,false);
 
@@ -340,7 +340,7 @@ int main(int argc, char **argv)
 
 	try
 	{
-		
+
 		check_device_access(dev_dp,true,false);
 		check_device_access(another_dev_dp,false,false);
 
@@ -445,7 +445,7 @@ int main(int argc, char **argv)
 
 	TangoSys_Pid ca_pid;
 	try
-	{		
+	{
 		check_device_access(dev_dp,true,false);
 		TEST_LOG << "Access before killing the Controlled Access service --> OK" << endl;
 
@@ -484,7 +484,7 @@ int main(int argc, char **argv)
 	TEST_LOG << "  Device rights after re-start of Controlled Access Service --> OK" << endl;
 
 	try
-	{		
+	{
 		cmd_stream.str("");
 		cmd_stream << "kill -9 " << ca_pid;
 		TEST_LOG << "Third kill cmd = " << cmd_stream.str() << endl;
@@ -563,7 +563,7 @@ int main(int argc, char **argv)
 	}
 
 	return 0;
-	
+
 }
 
 void set_user_address(DeviceProxy *dev,const char *user,const char *addr)
@@ -628,10 +628,10 @@ void set_user_device_right(DeviceProxy *acc_dev,const char *user,const char *dev
 			acc_dev->command_inout("RemoveDeviceForUser",din);
 			in.pop_back();
 		}
-	
-		in.push_back(right_str);	
+
+		in.push_back(right_str);
 		din << in;
-		acc_dev->command_inout("AddDeviceForUser",din);	
+		acc_dev->command_inout("AddDeviceForUser",din);
 	}
 	catch (Tango::DevFailed &e)
 	{
@@ -808,7 +808,7 @@ void call_devices_ds_off(DeviceProxy *dev_dp,DeviceProxy *another_dev_dp,bool ki
 	TEST_LOG << "First State: OK" << endl;
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	
+
 	not_exported_except = false;
 	cant_connect_except = false;
 	try
@@ -952,7 +952,7 @@ TangoSys_Pid start_ds(const std::string& path, const std::string& name, const st
 			TEST_LOG << "Cann't open /dev/null for 2" << endl;
 			exit(-1);
 		}
-	
+
 		char *args[] = {(char *)name.c_str(),(char *)inst.c_str(),(char *)0};
 		execv(path.c_str(),args);
 		TEST_LOG << "Error !!!!!!!!!!" << endl;

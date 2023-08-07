@@ -3,8 +3,8 @@
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStruct::IOStruct()
-// 
-// description : 	constructor for the IOStruct command of the 
+//
+// description : 	constructor for the IOStruct command of the
 //			DevTest.
 //
 // In : - name : The command name
@@ -25,7 +25,7 @@ IOStruct::IOStruct(const char *name,Tango::CmdArgType in,
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStruct::is_allowed()
-// 
+//
 // description : 	method to test whether command is allowed or not in this
 //			state. In this case, the command is allowed only if
 //			the device is in ON state
@@ -53,7 +53,7 @@ bool IOStruct::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 //+----------------------------------------------------------------------------
 //
 // method : 		IOStruct::execute()
-// 
+//
 // description : 	method to trigger the execution of the IOStruct
 //			command
 //
@@ -66,20 +66,20 @@ bool IOStruct::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 
 
 CORBA::Any *IOStruct::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
-{	
+{
   try {
     Tango::DevVarLongStringArray	*argout = new Tango::DevVarLongStringArray();
 
 	//	Add your own code to control device here
-	
+
     argout->lvalue.length(2);
     argout->lvalue[0] = 1000;
     argout->lvalue[1] = 2000;
-		
+
     argout->svalue.length(2);
     argout->svalue[0] = Tango::string_dup("First string from dev_struct");
     argout->svalue[1] = Tango::string_dup("Second string from dev_struct");
-     
+
     return insert(argout);
   }
   catch (CORBA::Exception &e)
@@ -88,5 +88,3 @@ CORBA::Any *IOStruct::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUS
       throw ;
     }
 }
-
-

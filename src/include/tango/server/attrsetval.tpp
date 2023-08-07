@@ -73,7 +73,7 @@ inline void Attribute::set_value(T *enum_ptr,long x,long y,bool release)
 
 		std::stringstream o;
 		o << "Invalid data type for attribute " << name
-                    <<  ". Expected: " << Tango::DEV_ENUM 
+                    <<  ". Expected: " << Tango::DEV_ENUM
                     << " got " << (CmdArgType)data_type << std::ends;
 
 		TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
@@ -144,7 +144,7 @@ inline void Attribute::set_value(T *enum_ptr,long x,long y,bool release)
 		delete_data_if_needed(enum_ptr,release);
 
 		std::stringstream o;
-		
+
                 o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
                   << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
 
@@ -194,7 +194,7 @@ inline void Attribute::set_value(T *enum_ptr,long x,long y,bool release)
 
 			std::stringstream o;
 			o << "Wrong value for attribute " << name
-			  << ". Element " << i << " (value = " << loc_enum_ptr[i] 
+			  << ". Element " << i << " (value = " << loc_enum_ptr[i]
                           << ") is negative or above the limit defined by the enum (" << max_val << ").";
 
                         delete [] loc_enum_ptr;
@@ -570,11 +570,11 @@ inline void Attribute::set_value(Tango::DevString *p_data,long x, long y,bool re
 	if (data_type != Tango::DEV_STRING)
 	{
                 delete_data_if_needed(p_data,release);
-		
+
                 std::stringstream o;
 
 		o << "Invalid data type for attribute " << name
-                    <<  ". Expected: " << Tango::DEV_STRING 
+                    <<  ". Expected: " << Tango::DEV_STRING
                     << " got " << (CmdArgType)data_type << std::ends;
 
                 TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
@@ -718,7 +718,7 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data,long x, long y,bool r
 		std::stringstream o;
 
 		o << "Invalid data type for attribute " << name
-                    <<  ". Expected: " << Tango::DEV_ENCODED 
+                    <<  ". Expected: " << Tango::DEV_ENCODED
                     << " got " << (CmdArgType)data_type << std::ends;
 
                 TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());

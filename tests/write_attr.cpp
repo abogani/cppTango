@@ -5,7 +5,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if (argc != 3)
 	{
 		TEST_LOG << "usage: %s device loop" << endl;
@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 	string device_name = argv[1];
 	int loop = atoi(argv[2]);
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("Short_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Short_attr_w");
 		}
@@ -62,9 +62,9 @@ int main(int argc, char **argv)
 		string att_name("Short_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Short_attr_w");
 		}
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 		assert( received == in );
 	}
 	TEST_LOG << "   Short (with DeviceAttribute constructor) --> OK" << endl;
-		
+
 // Write a long
 
 	for (i = 0;i < loop;i++)
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("Long_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Long_attr_w");
 		}
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 		assert( received == in );
 	}
 	TEST_LOG << "   Long --> OK" << endl;
-	
+
 // Write a long (with DeviceAttribute constructor)
 
 	for (i = 0;i < loop;i++)
@@ -111,9 +111,9 @@ int main(int argc, char **argv)
 		string att_name("Long_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Long_attr_w");
 		}
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 		assert( received == in );
 	}
 	TEST_LOG << "   Long (with DeviceAttribute constructor) --> OK" << endl;
-	
+
 // Write a double
 
 	for (i = 0;i < loop;i++)
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("Double_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Double_attr_w");
 		}
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 		assert( received == in );
 	}
 	TEST_LOG << "   Double --> OK" << endl;
-	
+
 // Write a double (with DeviceAttribute constructor)
 
 	for (i = 0;i < loop;i++)
@@ -160,9 +160,9 @@ int main(int argc, char **argv)
 		string att_name("Double_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Double_attr_w");
 		}
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 		assert( received == in );
 	}
 	TEST_LOG << "   Double (with DeviceAttribute constructor) --> OK" << endl;
-	
+
 // Write a string
 
 	for (i = 0;i < loop;i++)
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("String_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("String_attr_w");
 		}
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 		assert( received == in );
 	}
 	TEST_LOG << "   String --> OK" << endl;
-	
+
 // Write a string (with DeviceAttribute constructor)
 
 	for (i = 0;i < loop;i++)
@@ -209,9 +209,9 @@ int main(int argc, char **argv)
 		string att_name("String_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("String_attr_w");
 		}
@@ -235,7 +235,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("Float_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Float_attr_w");
 		}
@@ -258,9 +258,9 @@ int main(int argc, char **argv)
 		string att_name("Float_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Float_attr_w");
 		}
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("Boolean_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Boolean_attr_w");
 		}
@@ -307,9 +307,9 @@ int main(int argc, char **argv)
 		string att_name("Boolean_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("Boolean_attr_w");
 		}
@@ -333,7 +333,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("UShort_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("UShort_attr_w");
 		}
@@ -356,9 +356,9 @@ int main(int argc, char **argv)
 		string att_name("UShort_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("UShort_attr_w");
 		}
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 		din << in;
 		din.set_name("UChar_attr_w");
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("UChar_attr_w");
 		}
@@ -405,9 +405,9 @@ int main(int argc, char **argv)
 		string att_name("UChar_attr_w");
 		DeviceAttribute din(att_name,in);
 		DeviceAttribute dout;
-		
+
 		try
-		{	
+		{
 			device->write_attribute(din);
 			dout = device->read_attribute("UChar_attr_w");
 		}
@@ -442,12 +442,12 @@ int main(int argc, char **argv)
 	catch (CORBA::Exception &)
 	{
 	}
-	
+
 	assert (devfailed == true);
 	assert (except_reason == API_AttrNotWritable);
-	
+
 	TEST_LOG << "   write_attribute() method with exception --> OK" << endl;
-	
+
 //
 // One test with several attributes within the same call
 //
@@ -463,7 +463,7 @@ int main(int argc, char **argv)
 		attr_in.push_back(DeviceAttribute(att_name_2,in_d));
 		DeviceAttribute dout_str;
 		DeviceAttribute dout_d;
-		
+
 		try
 		{
 			device->write_attributes(attr_in);
@@ -478,8 +478,8 @@ int main(int argc, char **argv)
 		string received_str;
 		dout_str >> received_str;
 		assert( received_str == in );
-		
-		double received_d;		
+
+		double received_d;
 		dout_d >> received_d;
 		assert( received_d == in_d );
 	}
@@ -497,13 +497,13 @@ int main(int argc, char **argv)
 	bool multi_except = false;
 	vector<string> att_in_fault;
 	vector<long> idx_att_in_fault;
-	
+
 	vector<DeviceAttribute> attr_in;
 	attr_in.push_back(DeviceAttribute("Short_attr_w",in_sh));
 	attr_in.push_back(DeviceAttribute("Double_attr",in_d));
 	attr_in.push_back(DeviceAttribute("Double_attr_w",in_d));
 	attr_in.push_back(DeviceAttribute("Double_attr",in_d));
-		
+
 	try
 	{
 		device->write_attributes(attr_in);
@@ -525,12 +525,12 @@ int main(int argc, char **argv)
 
 	assert (multi_except == true);
 	assert (att_in_fault.size() == 2);
-	assert (att_in_fault[0] == "Double_attr");		
-	assert (att_in_fault[1] == "Double_attr");		
+	assert (att_in_fault[0] == "Double_attr");
+	assert (att_in_fault[1] == "Double_attr");
 	assert (idx_att_in_fault.size() == 2);
-	assert (idx_att_in_fault[0] == 1);		
+	assert (idx_att_in_fault[0] == 1);
 	assert (idx_att_in_fault[1] == 3);
-	
+
 	TEST_LOG << "   write_attributes() method with several attributes and exception --> OK" << endl;
 
 //
@@ -545,7 +545,7 @@ int main(int argc, char **argv)
 	din_nan << in_nan;
 	din_nan.set_name("Double_attr_w");
 	try
-	{	
+	{
 		device->write_attribute(din_nan);
 	}
 	catch (Tango::DevFailed &)
@@ -560,7 +560,7 @@ int main(int argc, char **argv)
 	in_nan = std::numeric_limits<double>::infinity();
 	din_nan << in_nan;
 	try
-	{	
+	{
 		device->write_attribute(din_nan);
 	}
 	catch (Tango::DevFailed &)
@@ -576,7 +576,7 @@ int main(int argc, char **argv)
 	din_nan << in_nan_fl;
 	din_nan.set_name("Float_attr_w");
 	try
-	{	
+	{
 		device->write_attribute(din_nan);
 	}
 	catch (Tango::DevFailed &)
@@ -591,7 +591,7 @@ int main(int argc, char **argv)
 	in_nan_fl = std::numeric_limits<float>::infinity();
 	din_nan << in_nan_fl;
 	try
-	{	
+	{
 		device->write_attribute(din_nan);
 	}
 	catch (Tango::DevFailed &)
@@ -603,7 +603,7 @@ int main(int argc, char **argv)
 	assert( except == true );
 
 	TEST_LOG << "   NaN and INF refused for double/float attributes --> OK" << endl;
-	
+
 	delete device;
-	return 0;	
+	return 0;
 }

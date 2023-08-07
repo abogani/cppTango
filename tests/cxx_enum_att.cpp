@@ -472,10 +472,10 @@ public:
 		Tango::AttributeInfoEx config;
                 Tango::AttributeInfoListEx config_list;
 		Tango::AttributeInfoEx new_config;
-		
+
                 // Retrieve the config
                 TS_ASSERT_THROWS_NOTHING(config = device1->get_attribute_config("Enum_attr_rw"));
-	
+
                 // Try to set max_alarm
                 new_config = config;
                 new_config.alarms.max_alarm = "2";
@@ -484,9 +484,9 @@ public:
 		TS_ASSERT_THROWS_ASSERT(device1->set_attribute_config(config_list), Tango::DevFailed &e,
                         TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrOptProp);
                         TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
-                
+
                 config_list.clear();
-                
+
                 // Try to set max_warning
                 new_config = config;
                 new_config.alarms.max_warning = "2";
@@ -496,7 +496,7 @@ public:
                         TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrOptProp);
                         TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
                 config_list.clear();
-                
+
                 // Try to set min_alarm
                 new_config = config;
                 new_config.alarms.min_alarm = "1";
@@ -506,7 +506,7 @@ public:
                         TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrOptProp);
                         TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
                 config_list.clear();
-                
+
                 // Try to set min_warning
                 new_config = config;
                 new_config.alarms.min_warning = "1";

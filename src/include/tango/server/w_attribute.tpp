@@ -118,12 +118,12 @@ namespace
     {
         return att_union.encoded_att_value();
     }
-    
+
     template<typename T
         , typename std::enable_if<!(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value), T>::type* = nullptr>
     void check_nan(const std::string&, const T&, const size_t)
     {}
-    
+
     template<typename T
         , typename std::enable_if<(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value), T>::type* = nullptr>
     void check_nan(const std::string&, const T&, const size_t);
@@ -153,10 +153,10 @@ namespace
                                 o.str(),
                                 (const char *) "WAttribute::check_written_value()");
     }
-    
+
     template<class T>
     bool _check_for_nan(Tango::Util* ) {return false;}
-    
+
     template<>
     inline bool _check_for_nan<Tango::DevDouble>(Tango::Util* tg)
     {
@@ -834,7 +834,7 @@ void WAttribute::_update_value(const Tango::DevVarStringArray& seq)
     Tango::string_free(old_str_val);
     old_str_val = Tango::string_dup(str_val);
     Tango::string_free(str_val);
-    
+
     str_val = Tango::string_dup(seq[0]);
 }
 
@@ -895,7 +895,7 @@ void WAttribute::_update_any_written_value(const T& any, std::size_t x, std::siz
         case Tango::DEV_ENCODED :
             _update_written_value<Tango::DevEncoded>(any, x, y);
             break;
-        
+
         default:
             TANGO_THROW_ON_DEFAULT(data_type);
     }
@@ -965,7 +965,7 @@ void WAttribute::update_internal_sequence(const typename tango_type_traits<T>::A
 
     using BufferType = decltype(seq.get_buffer());
     get_write_value_ptr<BufferType>() = seq.get_buffer();
-    
+
     if (data_format == Tango::SCALAR)
     {
         _update_value(seq);

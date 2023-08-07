@@ -1121,7 +1121,7 @@ inline void Util::event_name_2_event_type(const std::string &event_name, EventTy
 		et = INTERFACE_CHANGE_EVENT;
 	else if (event_name == "pipe")
 		et = PIPE_EVENT;
-	else 
+	else
 	{
 		std::stringstream sss;
 		sss << "Util::event_name_2_event_type: invalid event name specified ['" << event_name << "' is invalid]";

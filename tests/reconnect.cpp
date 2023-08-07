@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if (argc != 2)
 	{
 		TEST_LOG << "usage: %s device" << endl;
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	string device_name = argv[1];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 		TEST_LOG << "new DeviceProxy() returned" << endl;
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 		cin >> bid;
 
 		try
-		{	
+		{
 //			device->ping();
 //			TEST_LOG << "Ping successfull, device IDL version = ";
 //			TEST_LOG << device->get_idl_version() << endl;
@@ -58,9 +58,9 @@ int main(int argc, char **argv)
 		{
 			TEST_LOG << "Unknown exception" << endl;
 		}
-		
+
 	}
-		
+
 	return 0;
 
 }

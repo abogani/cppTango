@@ -837,7 +837,7 @@ public:
 
 		CxxTest::TangoPrinter::kill_server();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-		
+
 		delete device3;
 		device3 = new DeviceProxy(device3_name);
 		Tango::Group *test_group = new Tango::Group("g1");

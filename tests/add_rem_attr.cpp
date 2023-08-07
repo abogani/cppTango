@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
 	DeviceProxy *device;
-	
+
 	if ((argc == 1) || (argc > 3))
 	{
 		TEST_LOG << "usage: %s device" << endl;
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
 	string device_name = argv[1];
 
-	try 
+	try
 	{
 		device = new DeviceProxy(device_name);
 	}
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
 	try
 	{
-	
+
 //
 // Get attribute number
 //
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		vector<string> *att_list;
 		att_list = device->get_attribute_list();
 		long nb_att = att_list->size();
-		
+
 		TEST_LOG << "Device attribute number before add = " << nb_att << endl;
 
 //
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 		Tango::DeviceData din;
 		din << ds;
 		device->command_inout("IOAddAttribute",din);
-		
+
 //
 // Get new attribute number
 //
@@ -53,38 +53,38 @@ int main(int argc, char **argv)
 		vector<string> *att_list_add;
 		att_list_add = device->get_attribute_list();
 		long nb_att_add = att_list_add->size();
-		
+
 		TEST_LOG << "Device attribute number after add = " << nb_att_add << endl;
 		assert (nb_att_add == (nb_att + 1));
-		
+
 //
 // Redo it once, this should not change att number (attribute already added)
 //
 
 		device->command_inout("IOAddAttribute",din);
-		
-		vector<string> *att_list_add2;		
+
+		vector<string> *att_list_add2;
 		att_list_add2 = device->get_attribute_list();
 		long nb_att_add2 = att_list_add2->size();
-		
+
 		TEST_LOG << "Device attribute number after second add = " << nb_att_add2 << endl;
 		assert (nb_att_add2 == (nb_att + 1));
-		
+
 		TEST_LOG << "   Adding attribute --> OK" << endl;
-		
+
 //
 // Remove the attribute
 //
 
 		device->command_inout("IORemoveAttribute",din);
-		
-		vector<string> *att_list_rem;		
+
+		vector<string> *att_list_rem;
 		att_list_rem = device->get_attribute_list();
 		long nb_att_rem = att_list_rem->size();
-		
+
 		TEST_LOG << "Device attribute number after removing add = " << nb_att_rem << endl;
 		assert (nb_att_rem == nb_att);
-		
+
 //
 // Do it once more. This time, it should send an exception
 //
@@ -99,19 +99,19 @@ int main(int argc, char **argv)
 			TEST_LOG << "Received exception" << endl;
 			except = true;
 		}
-		
+
 		assert (except == true);
-		
+
 		TEST_LOG << "   Removing attribute --> OK" << endl;
-						
+
 	}
 	catch (Tango::DevFailed &e)
 	{
 		Except::print_exception(e);
 		exit(-1);
 	}
-	
-		
+
+
 	return 0;
-	
+
 }

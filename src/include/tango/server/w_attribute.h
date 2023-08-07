@@ -721,7 +721,7 @@ private:
  */
     template<class T>
     void _copy_any_data(const T& data);
-	
+
     template <typename T>
     void check_type(const std::string &);
 

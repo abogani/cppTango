@@ -11,9 +11,9 @@ mkdir -p ${BUILD_DIR}/tests/results
 
 pkg-config --validate ${BUILD_DIR}/tango.pc 2>&1 | tee ${BUILD_DIR}/tests/results/pkgconfig-validation.log
 
-if [[ -f "build/tests/results/pkgconfig-validation.log" ]] 
+if [[ -f "build/tests/results/pkgconfig-validation.log" ]]
 then
-	if [[ -s "build/tests/results/pkgconfig-validation.log" ]] 
+	if [[ -s "build/tests/results/pkgconfig-validation.log" ]]
 	then
 		# The log file is not empty. Some errors got reported during pkg-config validation
 		echo "ERROR: tango.pc file pkg-config validation NOT OK"

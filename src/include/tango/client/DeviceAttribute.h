@@ -1344,17 +1344,17 @@ private:
  */
     template<class T>
     T& get_seq_storage();
-    
+
 };
 
 template<class T>
 void DeviceAttribute::update_internal_sequence(const T* buffer, std::size_t offset, std::size_t data_length)
 {
     auto& seq = get_seq_storage<typename T::_var_type>();
-    
+
     seq = new T();
     seq->length(data_length);
-    
+
     for (size_t i = 0; i < data_length; ++i)
     {
         seq[i] = (*buffer)[offset + i];

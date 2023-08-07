@@ -1,6 +1,6 @@
 			Full TANGO C++ API  README
 			==========================
-		     	      
+
 			taurel@esrf.fr (25/3/2003)
 
 This directory contains the files necessary to implement the server
@@ -27,19 +27,15 @@ Win32 library build
 -------------------
 
 A workspace called "winnt_lib" is in the winnt_lib directory. This workspace
-contains two projects called "tango_dll" and "tango_static". Obviously, 
+contains two projects called "tango_dll" and "tango_static". Obviously,
 tango_static builds static tango libs (debug and release) and
 tango_dll builds dll tango libs (debug and release). Nowdays, to build dll
 libraries, you need "perl" on your windows computer which is available in the
 Windows NT or XP resource kit. It is in our TODO list to remove this "perl"
 usage.
-To correctly build libraries, two environment variables called "TANGO_OMNI_BASE" 
+To correctly build libraries, two environment variables called "TANGO_OMNI_BASE"
 and "LOG4TANGO_BASE" are needed.
-The environment variable TANGO_OMNI_BASE should be set to the directory where 
+The environment variable TANGO_OMNI_BASE should be set to the directory where
 omniORB has been installed.
 The environment variable LOG4TANGO_BASE should be set to the directory where
 log4tango has been installed.
-
-
-		
-

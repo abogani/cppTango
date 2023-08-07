@@ -453,5 +453,3 @@ CORBA::Any *IOUnregSig::execute(Tango::DeviceImpl *device,const CORBA::Any &in_a
       throw ;
     }
 }
-
-
