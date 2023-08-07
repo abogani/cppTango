@@ -1,6 +1,6 @@
 //+===================================================================================================================
 //
-// file :               fwdattribute_spec.tpp
+// file :               fwdattribute_spec_templ.h
 //
 // description :        C++ source code for the FwdAttribute class template methods specialization
 //

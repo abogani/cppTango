@@ -1,6 +1,6 @@
 //+===================================================================================================================
 //
-// file :               attsetval.tpp
+// file :               attsetval_templ.h
 //
 // description :        C++ source code for the Attribute class template methods when they are not specialized and
 //						related to attribute value setting

@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-// file :               utils_spec.tpp
+// file :               utils_spec_templ.h
 //
 // description :        C++ source code for the Util::fill_cmd_polling_buffer method template specialization
 //

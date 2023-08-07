@@ -55,7 +55,7 @@
 
 #include <tango/server/device_5.h>
 #include <tango/server/eventsupplier.h>
-#include <tango/server/device_3.tpp>
+#include <tango/server/device_3_templ.h>
 
 
 namespace Tango

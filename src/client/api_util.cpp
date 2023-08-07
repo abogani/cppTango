@@ -29,7 +29,7 @@
 
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
-#include <tango/client/api_util.tpp>
+#include <tango/client/api_util_templ.h>
 #include <thread>
 #include <iomanip>
 

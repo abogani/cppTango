@@ -1,6 +1,6 @@
 //====================================================================================================================
 //
-// file :               PollExt.tpp
+// file :               PollExt_templ.h
 //
 // description :        Template method decleration for classes used by the method dedicated
 //			   			to fill the polling buffer for command or attributes.

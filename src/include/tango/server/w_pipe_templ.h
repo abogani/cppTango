@@ -1,9 +1,8 @@
-
-//+==================================================================================================================
+//+===================================================================================================================
 //
-// file :               Pipe.tpp
+// file :               w_pipe_templ.h
 //
-// description :        C++ source code for the template methods of the Pipe class.
+// description :        C++ source code for the WPipe class template methods/functions
 //
 // project :            TANGO
 //
@@ -29,10 +28,10 @@
 //
 //
 //
-//-==================================================================================================================
+//-===================================================================================================================
 
-#ifndef _PIPE_TPP
-#define _PIPE_TPP
+#ifndef _W_PIPE_TPP
+#define _W_PIPE_TPP
 
 
 namespace Tango
@@ -41,37 +40,34 @@ namespace Tango
 //+------------------------------------------------------------------------------------------------------------------
 //
 // Function
-// 		operator overloading : 	<<
+// 		operator overloading : 	>>
 //
 // description :
-//		Helper function to ease data insertion into Pipe root blob
+//		Helper function to ease data extraction from WPipe root blob
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-Pipe &operator<<(Pipe &_dp,T &datum)
+WPipe &operator>>(WPipe &_dp,T &datum)
 {
-	_dp.get_blob().operator<<(datum);
-	_dp.set_value_flag(true);
+	_dp.get_blob().operator>>(datum);
 	return _dp;
 }
 
 template <typename T>
-Pipe &operator<<(Pipe &_dp,T *datum)
+WPipe &operator>>(WPipe &_dp,T *datum)
 {
-	_dp.get_blob().operator<<(datum);
-	_dp.set_value_flag(true);
+	_dp.get_blob().operator>>(datum);
 	return _dp;
 }
 
 template <typename T>
-Pipe &operator<<(Pipe &_dp,DataElement<T> &datum)
+WPipe &operator>>(WPipe &_dp,DataElement<T> &datum)
 {
-	_dp.get_blob().set_current_delt_name(datum.name);
-	_dp.get_blob().operator<<(datum.value);
-	_dp.set_value_flag(true);
+	datum.name = _dp.get_blob().get_current_delt_name();
+	_dp.get_blob().operator>>(datum.value);
 	return _dp;
 }
 
 } // End of Tango namespace
-#endif // _PIPE_TPP
+#endif // _W_PIPE_TPP

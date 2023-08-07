@@ -35,8 +35,8 @@
 // For template management we have several files:
 // - A file with explicit template instanciation. This file (templ_inst.cpp)
 // For class with templates:
-// - A file with template methods/class definition (attribute.tpp for Attribute class)
-// - A file with template methods/class specialization definition (attribute_spec.tpp for Attribute class)
+// - A file with template methods/class definition (attribute_templ.h for Attribute class)
+// - A file with template methods/class specialization definition (attribute_spec_templ.h for Attribute class)
 //
 // We did this in order to have explicit instanciation of templates method except for specialized templates
 // for which we have instanciation following the inclusion model
@@ -45,13 +45,13 @@
 
 #include <tango/tango.h>
 
-#include <tango/server/attribute.tpp>
-#include <tango/server/pollext.tpp>
-#include <tango/server/utils.tpp>
-#include <tango/server/w_attribute.tpp>
-#include <tango/client/devapi_pipe.tpp>
-#include <tango/server/pipe.tpp>
-#include <tango/server/w_pipe.tpp>
+#include <tango/server/attribute_templ.h>
+#include <tango/server/pollext_templ.h>
+#include <tango/server/utils_templ.h>
+#include <tango/server/w_attribute_templ.h>
+#include <tango/client/devapi_pipe_templ.h>
+#include <tango/server/pipe_templ.h>
+#include <tango/server/w_pipe_templ.h>
 
 namespace Tango
 {

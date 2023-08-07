@@ -115,7 +115,7 @@ namespace Tango {
 #include <tango/client/devapi.h>
 #include <tango/client/group.h>
 #include <tango/client/filedatabase.h>
-#include <tango/client/devapi_attr.tpp>
+#include <tango/client/devapi_attr_templ.h>
 
 //
 // Include Tango utility files
@@ -151,14 +151,14 @@ namespace Tango {
 	#include <tango/server/pipedesc.h>
 	#include <tango/server/pipe.h>
 	#include <tango/server/w_pipe.h>
-	#include <tango/server/pipe.tpp>
+	#include <tango/server/pipe_templ.h>
 	#include <tango/server/dserver.h>
-	#include <tango/server/attribute_spec.tpp>
-	#include <tango/server/utils_spec.tpp>
-	#include <tango/server/w_attribute_spec.tpp>
-	#include <tango/server/attrprop.tpp>
-	#include <tango/server/attrsetval.tpp>
-	#include <tango/server/w_attrsetval.tpp>
+	#include <tango/server/attribute_spec_templ.h>
+	#include <tango/server/utils_spec_templ.h>
+	#include <tango/server/w_attribute_spec_templ.h>
+	#include <tango/server/attrprop_templ.h>
+	#include <tango/server/attrsetval_templ.h>
+	#include <tango/server/w_attrsetval_templ.h>
 #endif
 
 #include <tango/client/event.h>

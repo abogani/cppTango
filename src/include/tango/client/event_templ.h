@@ -1,7 +1,7 @@
 
 //====================================================================================================================
 //
-//  file :  			event.tpp
+//  file :  			event_templ.h
 //
 //	description : 		C++ classes for implementing the template method(s) of the EventConsumer class
 //

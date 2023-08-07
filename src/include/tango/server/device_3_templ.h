@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-// file :               device_3.tpp
+// file :               device_3_templ.h
 //
 // description :        C++ source code for the Device_3Impl class template methods
 //

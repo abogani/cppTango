@@ -28,7 +28,7 @@
 
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
-#include <tango/client/devapi_utils.tpp>
+#include <tango/client/devapi_utils_templ.h>
 
 #ifdef _TG_WINDOWS_
 #include <process.h>

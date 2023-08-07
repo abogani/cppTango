@@ -1,6 +1,6 @@
 //+===================================================================================================================
 //
-// file :               w_attribute_spec.tpp
+// file :               w_attribute_spec_templ.h
 //
 // description :        C++ source code for the WAttribute class template methods specialization
 //

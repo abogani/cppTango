@@ -1,6 +1,6 @@
 //+===================================================================================================================
 //
-// file :               Attribute.tpp
+// file :               Attribute_templ.h
 //
 // description :        C++ source code for the Attribute class template methods when they are not specialized
 //

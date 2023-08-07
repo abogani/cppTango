@@ -1,6 +1,6 @@
 //===================================================================================================================
 //
-// file :               utils.tpp
+// file :               utils_templ.h
 //
 // description :        C++ source code for the Attribute class template methods
 //

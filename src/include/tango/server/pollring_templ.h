@@ -1,6 +1,6 @@
 //+==================================================================================================================
 //
-// file :               PollRing.tpp
+// file :               PollRing_templ.h
 //
 // description :        C++ source code for the PollRing class template methods
 //

@@ -1,6 +1,6 @@
 //+===================================================================================================================
 //
-// file :               devapi_pipe.tpp
+// file :               devapi_pipe_templ.h
 //
 // description :        C++ source code for the DevicePipe class template methods/functions
 //

@@ -1,6 +1,6 @@
 //+===================================================================================================================
 //
-// file :               w_attribute.tpp
+// file :               w_attribute_templ.h
 //
 // description :        C++ source code for the WAttribute class template methods
 //

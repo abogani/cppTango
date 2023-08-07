@@ -1,6 +1,6 @@
 //+==================================================================================================================
 //
-// file :               attribute_spec.tpp
+// file :               attribute_spec_templ.h
 //
 // description :        C++ source code for the Attribute class template methods when they are specialized
 //
@@ -36,8 +36,8 @@
 // These methods are in a sepearte files because I did not find a way to explicitely instantiate specialized
 // templates. Therefore, for template management we have three files:
 // 1 - A file with explicit template instanciation (templ_inst.cpp)
-// 2 - A file with template method definition (attribute.tpp for Attribute class)
-// 3 - A file with template specialization defnition (attribute_spec.tpp (this file))
+// 2 - A file with template method definition (attribute_templ.h for Attribute class)
+// 3 - A file with template specialization defnition (attribute_spec_templ.h (this file))
 //
 // We did this in order to have explicit instanciation of templates method except for specialized templates
 // for which we have instanciation following the inclusion model
