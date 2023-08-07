@@ -1,5 +1,5 @@
 //
-// Layout.hh
+// Layout.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -28,8 +28,8 @@
 #ifndef _LOG4TANGO_LAYOUT_H
 #define _LOG4TANGO_LAYOUT_H
 
-#include <tango/common/log4tango/Portability.hh>
-#include <tango/common/log4tango/LoggingEvent.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <tango/common/log4tango/LoggingEvent.h>
 #include <string>
 
 namespace log4tango {

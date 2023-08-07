@@ -27,8 +27,8 @@
 
 #ifdef APPENDERS_HAVE_FILTERS
 
-#include <tango/common/log4tango/Portability.hh>
-#include <tango/common/log4tango/Filter.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <tango/common/log4tango/Filter.h>
 
 namespace log4tango {
 

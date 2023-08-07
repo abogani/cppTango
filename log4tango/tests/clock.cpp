@@ -59,7 +59,7 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 #endif
 #include <iostream>
 
-#include "clock.hh"
+#include "clock.h"
 
 namespace
 {

@@ -1,5 +1,5 @@
 //
-// LayoutAppender.hh
+// LogSeparator.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -25,41 +25,31 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _LOG4TANGO_LAYOUTAPPENDER_H
-#define _LOG4TANGO_LAYOUTAPPENDER_H
+#ifndef _LOG4TANGO_LOG_SEPARATOR_H
+#define _LOG4TANGO_LOG_SEPARATOR_H
 
-#include <tango/common/log4tango/Portability.hh>
-#include <string>
-#include <tango/common/log4tango/Appender.hh>
-#include <tango/common/log4tango/PatternLayout.hh>
+#include <tango/common/log4tango/Portability.h>
 
 namespace log4tango {
 
 //-----------------------------------------------------------------------------
-// class : LayoutAppender (superclass for appenders that require a Layout)
+// Class : LogInitiator
 //-----------------------------------------------------------------------------
-class LayoutAppender : public Appender
-{
-public:
-
-  typedef PatternLayout DefaultLayoutType;
-
-  LayoutAppender(const std::string& name);
-
-  virtual ~LayoutAppender();
-
-  virtual bool requires_layout() const;
-
-  virtual void set_layout (Layout* layout = 0);
-
-protected:
-
-  Layout& get_layout();
-
-private:
-  Layout* _layout;
+struct LogInitiator {
+    explicit LogInitiator() = default;
 };
+
+constexpr LogInitiator _begin_log{};
+
+//-----------------------------------------------------------------------------
+// Class : LogSeparator
+//-----------------------------------------------------------------------------
+struct LogSeparator {
+    explicit LogSeparator() = default;
+};
+
+constexpr LogSeparator _end_log{};
 
 } // namespace log4tango
 
-#endif // _LOG4TANGO_LAYOUTAPPENDER_H
+#endif // _LOG4TANGO_LOG_SEPARATOR_H

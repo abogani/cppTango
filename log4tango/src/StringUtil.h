@@ -1,5 +1,5 @@
 //
-// StringUtil.hh
+// StringUtil.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -28,7 +28,7 @@
 #ifndef _LOG4TANGO_STRINGUTIL_H
 #define _LOG4TANGO_STRINGUTIL_H
 
-#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.h>
 #include <string>
 #include <vector>
 #include <climits>

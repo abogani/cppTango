@@ -1,5 +1,5 @@
 //
-// Portability.hh
+// Portability.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.

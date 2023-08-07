@@ -1,5 +1,5 @@
 //
-// LoggingEvent.hh
+// LoggingEvent.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -28,12 +28,12 @@
 #ifndef _LOG4TANGO_LOGGINGEVENT_H
 #define _LOG4TANGO_LOGGINGEVENT_H
 
-#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.h>
 #include <string>
 #include <thread>
 #include <chrono>
 
-#include <tango/common/log4tango/Level.hh>
+#include <tango/common/log4tango/Level.h>
 
 namespace log4tango {
 

@@ -1,5 +1,5 @@
 //
-// Appender.hh
+// Appender.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -25,13 +25,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.h>
 #include <string>
 #include <map>
 #include <set>
-#include <tango/common/log4tango/Level.hh>
-#include <tango/common/log4tango/Layout.hh>
-#include <tango/common/log4tango/LoggingEvent.hh>
+#include <tango/common/log4tango/Level.h>
+#include <tango/common/log4tango/Layout.h>
+#include <tango/common/log4tango/LoggingEvent.h>
 
 #ifndef _LOG4TANGO_APPENDER_H
 #define _LOG4TANGO_APPENDER_H

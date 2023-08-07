@@ -1,5 +1,5 @@
 //
-// XMLLayout.hh
+// LayoutAppender.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -25,36 +25,41 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _LOG4TANGO_XML_LAYOUT_H
-#define _LOG4TANGO_XML_LAYOUT_H
+#ifndef _LOG4TANGO_LAYOUTAPPENDER_H
+#define _LOG4TANGO_LAYOUTAPPENDER_H
 
-#include <tango/common/log4tango/Portability.hh>
-#include <tango/common/log4tango/Layout.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <string>
+#include <tango/common/log4tango/Appender.h>
+#include <tango/common/log4tango/PatternLayout.h>
 
 namespace log4tango {
 
-/**
-* XMLLayout is a simple fixed format Layout implementation.
-**/
-class XMLLayout : public Layout
+//-----------------------------------------------------------------------------
+// class : LayoutAppender (superclass for appenders that require a Layout)
+//-----------------------------------------------------------------------------
+class LayoutAppender : public Appender
 {
 public:
-  /**
-   * Ctor.
-   **/
-  XMLLayout ();
 
-  /**
-   * Dtor.
-   **/
-  virtual ~XMLLayout ();
+  typedef PatternLayout DefaultLayoutType;
 
-  /**
-   * Formats the LoggingEvent in XML
-   **/
-  virtual std::string format (const LoggingEvent& event);
+  LayoutAppender(const std::string& name);
+
+  virtual ~LayoutAppender();
+
+  virtual bool requires_layout() const;
+
+  virtual void set_layout (Layout* layout = 0);
+
+protected:
+
+  Layout& get_layout();
+
+private:
+  Layout* _layout;
 };
 
 } // namespace log4tango
 
-#endif // _LOG4TANGO_XML_LAYOUT_H
+#endif // _LOG4TANGO_LAYOUTAPPENDER_H

@@ -1,5 +1,5 @@
 //
-// OstreamAppender.hh
+// XMLLayout.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -25,32 +25,36 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _LOG4TANGO_OSTREAMAPPENDER_H
-#define _LOG4TANGO_OSTREAMAPPENDER_H
+#ifndef _LOG4TANGO_XML_LAYOUT_H
+#define _LOG4TANGO_XML_LAYOUT_H
 
-#include <tango/common/log4tango/Portability.hh>
-#include <string>
-#include <iostream>
-#include <tango/common/log4tango/LayoutAppender.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <tango/common/log4tango/Layout.h>
 
 namespace log4tango {
 
-//-----------------------------------------------------------------------------
-// class : OstreamAppender (appends LoggingEvents to ostreams)
-//-----------------------------------------------------------------------------
-class OstreamAppender : public LayoutAppender {
+/**
+* XMLLayout is a simple fixed format Layout implementation.
+**/
+class XMLLayout : public Layout
+{
 public:
-  OstreamAppender(const std::string& name, std::ostream* stream);
-  virtual ~OstreamAppender();
+  /**
+   * Ctor.
+   **/
+  XMLLayout ();
 
-  virtual bool reopen();
-  virtual void close();
+  /**
+   * Dtor.
+   **/
+  virtual ~XMLLayout ();
 
-protected:
-  virtual int _append (const LoggingEvent& event);
-  std::ostream* _stream;
+  /**
+   * Formats the LoggingEvent in XML
+   **/
+  virtual std::string format (const LoggingEvent& event);
 };
 
 } // namespace log4tango
 
-#endif // _LOG4TANGO_OSTREAMAPPENDER_HH
+#endif // _LOG4TANGO_XML_LAYOUT_H

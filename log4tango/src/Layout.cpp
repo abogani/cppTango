@@ -25,10 +25,10 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.h>
 #include <sstream>
-#include <tango/common/log4tango/Level.hh>
-#include <tango/common/log4tango/Layout.hh>
+#include <tango/common/log4tango/Level.h>
+#include <tango/common/log4tango/Layout.h>
 #include <chrono>
 
 namespace log4tango {

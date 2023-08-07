@@ -1,5 +1,5 @@
 //
-// AppenderAttachable.hh
+// AppenderAttachable.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -28,11 +28,11 @@
 #ifndef _LOG4TANGO_APPENDER_ATTACHABLE_H
 #define _LOG4TANGO_APPENDER_ATTACHABLE_H
 
-#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.h>
 #include <map>
 #include <vector>
 #include <mutex>
-#include <tango/common/log4tango/Appender.hh>
+#include <tango/common/log4tango/Appender.h>
 
 namespace log4tango {
 

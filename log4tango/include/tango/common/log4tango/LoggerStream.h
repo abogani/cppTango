@@ -1,5 +1,5 @@
 //
-// LoggerStream.hh
+// LoggerStream.h
 //
 // Copyright (C) :  2000 - 2002
 //					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
@@ -28,10 +28,10 @@
 #ifndef _LOG4TANGO_LOGGER_STREAM_H
 #define _LOG4TANGO_LOGGER_STREAM_H
 
-#include <tango/common/log4tango/Portability.hh>
-#include <tango/common/log4tango/Level.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <tango/common/log4tango/Level.h>
 #include <sstream>
-#include <tango/common/log4tango/LogSeparator.hh>
+#include <tango/common/log4tango/LogSeparator.h>
 
 namespace log4tango {
 

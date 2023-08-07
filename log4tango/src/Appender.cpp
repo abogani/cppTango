@@ -26,8 +26,8 @@
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <tango/common/log4tango/Portability.hh>
-#include <tango/common/log4tango/Appender.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <tango/common/log4tango/Appender.h>
 
 namespace log4tango {
 
