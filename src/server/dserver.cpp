@@ -112,7 +112,7 @@ void DServer::init_device()
 //
 
 	Tango::Util *tg = Tango::Util::instance();
-	if (tg->_FileDb)
+	if (tg->use_file_db())
 	{
 		tg->reset_filedatabase();
 		db_dev->set_dbase(tg->get_database());
@@ -181,7 +181,7 @@ void DServer::init_device()
 // In case nodb is used, validate class name used in DS command line
 //
 
-			if (tg->_UseDb == false)
+			if (!tg->use_db())
 				tg->validate_cmd_line_classes();
 
 //
@@ -217,7 +217,7 @@ void DServer::init_device()
 // before we reach this code.
 //
 
-				if (tg->_UseDb == true)
+				if (tg->use_db())
 				{
 					Tango::Database *db = tg->get_database();
 					Tango::DbDatum na;
@@ -1477,7 +1477,7 @@ void DServer::get_dev_prop(Tango::Util *tg)
 // Try to retrieve device properties (Polling threads pool conf.)
 //
 
-	if (tg->_UseDb == true)
+	if (tg->use_db())
 	{
 		DbData db_data;
 
@@ -1629,7 +1629,7 @@ void DServer::check_lock_owner(DeviceImpl *dev,const char *cmd_name,const char *
 void DServer::get_event_misc_prop(Tango::Util *tg)
 {
 
-	if (tg->_UseDb == true)
+	if (tg->use_db())
 	{
 
 //

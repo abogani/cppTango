@@ -19,3 +19,4 @@ set(SOURCES main.cpp
 add_executable(DevTest ${SOURCES})
 target_link_libraries(DevTest PUBLIC tango ${CMAKE_DL_LIBS})
 target_precompile_headers(DevTest REUSE_FROM conf_devtest)
+target_compile_definitions(DevTest PRIVATE ${COMMON_TEST_DEFS})

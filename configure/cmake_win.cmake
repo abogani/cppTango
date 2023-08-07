@@ -11,9 +11,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(TANGO_LIBRARY_NAME ${TANGO_LIBRARY_NAME}d)
 endif()
 
-# The name without the variant tag (i.e. -static)
-set(TANGO_LIBRARY_OUTPUT_NAME ${TANGO_LIBRARY_NAME})
-
 if(BUILD_SHARED_LIBS)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else()
@@ -33,35 +30,34 @@ if(PTHREAD_WIN)
     link_directories(${PTHREAD_WIN}/lib)
 endif()
 
-add_library(${TANGO_LIBRARY_NAME} $<TARGET_OBJECTS:log4tango_objects>
+add_library(tango $<TARGET_OBJECTS:log4tango_objects>
         $<TARGET_OBJECTS:idl_objects>
         $<TARGET_OBJECTS:client_objects>
         $<TARGET_OBJECTS:common_objects>
         $<TARGET_OBJECTS:server_objects>)
 
-set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES COMPILE_DEFINITIONS
-        "${windows_defs}")
+set_target_properties(tango PROPERTIES
+    COMPILE_DEFINITIONS "${windows_defs}"
+    VERSION ${LIBRARY_VERSION}
+    SOVERSION ${SO_VERSION}
+    DEBUG_POSTFIX "d")
 
-set_cflags_and_include(${TANGO_LIBRARY_NAME})
+set_cflags_and_include(tango)
 
 if(BUILD_SHARED_LIBS)
-    target_link_libraries(${TANGO_LIBRARY_NAME} PUBLIC ${WIN32_LIBS} ${OMNIORB_PKG_LIBRARIES_DYN} ${ZMQ_PKG_LIBRARIES_DYN} ${PTHREAD_WIN_PKG_LIBRARIES_DYN} ${CMAKE_DL_LIBS} PRIVATE ${JPEG_PKG_LIBRARIES_DYN})
+    target_link_libraries(tango PUBLIC ${WIN32_LIBS} ${OMNIORB_PKG_LIBRARIES_DYN} ${ZMQ_PKG_LIBRARIES_DYN} ${PTHREAD_WIN_PKG_LIBRARIES_DYN} ${CMAKE_DL_LIBS} PRIVATE ${JPEG_PKG_LIBRARIES_DYN})
 else()
-    target_link_libraries(${TANGO_LIBRARY_NAME} PUBLIC ${WIN32_LIBS} ${OMNIORB_PKG_LIBRARIES_STA} ${ZMQ_PKG_LIBRARIES_STA} ${PTHREAD_WIN_PKG_LIBRARIES_STA} ${CMAKE_DL_LIBS} PRIVATE ${JPEG_PKG_LIBRARIES_STA})
-    set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES OUTPUT_NAME ${TANGO_LIBRARY_OUTPUT_NAME})
-    set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES PREFIX "lib")
+    target_link_libraries(tango PUBLIC ${WIN32_LIBS} ${OMNIORB_PKG_LIBRARIES_STA} ${ZMQ_PKG_LIBRARIES_STA} ${PTHREAD_WIN_PKG_LIBRARIES_STA} ${CMAKE_DL_LIBS} PRIVATE ${JPEG_PKG_LIBRARIES_STA})
+    set_target_properties(tango PROPERTIES OUTPUT_NAME ${TANGO_LIBRARY_NAME})
+    set_target_properties(tango PROPERTIES PREFIX "lib")
 endif()
 
 # Always generate separate PDB files for shared builds, even for release build types
 #
 # https://docs.microsoft.com/en-us/cpp/build/reference/z7-zi-zi-debug-information-format
 # https://docs.microsoft.com/en-us/cpp/build/reference/debug-generate-debug-info
-target_compile_options(${TANGO_LIBRARY_NAME} PRIVATE "/Zi")
-set_property(TARGET ${TANGO_LIBRARY_NAME} PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
-
-set_target_properties(${TANGO_LIBRARY_NAME} PROPERTIES
-        VERSION ${LIBRARY_VERSION}
-        SOVERSION ${SO_VERSION})
+target_compile_options(tango PRIVATE "/Zi")
+set_property(TARGET tango PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/Debug)
@@ -74,11 +70,11 @@ endif()
 
 #install code
 
-install(TARGETS ${TANGO_LIBRARY_NAME}
+install(TARGETS tango
         ARCHIVE DESTINATION lib COMPONENT static
         RUNTIME DESTINATION bin COMPONENT dynamic)
 
-install(DIRECTORY "$<TARGET_FILE_DIR:${TANGO_LIBRARY_NAME}>/"
+install(DIRECTORY "$<TARGET_FILE_DIR:tango>/"
         DESTINATION lib COMPONENT static
         DESTINATION bin COMPONENT dynamic
         FILES_MATCHING PATTERN "*.pdb")

@@ -117,7 +117,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
 		Tango::Util *tg = Tango::Util::instance();
 		Tango::DbData db_list;
 
-		if (tg->_UseDb == true)
+		if (tg->use_db())
 		{
 			for (i = 0;i < nb_attr;i++)
 				db_list.push_back(DbDatum(tmp_attr_list[i]->get_name()));
@@ -129,7 +129,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
 
 
             int old_db_timeout = 0;
-            if (Util::_FileDb == false)
+            if (!tg->use_file_db())
                 old_db_timeout = tg->get_database()->get_timeout_millis();
 			try
 			{
@@ -177,7 +177,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
 
 			std::vector<AttrProperty> dev_prop;
 
-			if (tg->_UseDb == true)
+			if (tg->use_db())
 			{
 				long nb_prop = 0;
 				db_list[ind] >> nb_prop;
@@ -708,7 +708,7 @@ void MultiAttribute::add_attribute(const std::string &dev_name,DeviceClass *dev_
 	Tango::Util *tg = Tango::Util::instance();
 	Tango::DbData db_list;
 
-	if (tg->_UseDb == true)
+	if (tg->use_db())
 	{
 		db_list.push_back(DbDatum(tmp_attr_list[index]->get_name()));
 
@@ -739,7 +739,7 @@ void MultiAttribute::add_attribute(const std::string &dev_name,DeviceClass *dev_
 
 	std::vector<AttrProperty> dev_prop;
 
-	if (tg->_UseDb == true)
+	if (tg->use_db())
 	{
 	    long ind = 0;
 		long nb_prop = 0;
@@ -908,7 +908,7 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,DeviceClass *
 		// prior to calling validate_fwd_att()
 		std::vector<AttrProperty> dev_prop;
 		Tango::Util *tg = Tango::Util::instance();
-		if ((tg->_UseDb==true) && (fwd_attr->get_full_root_att()==RootAttNotDef))
+		if (tg->use_db() && (fwd_attr->get_full_root_att()==RootAttNotDef))
 		{
 			Tango::DbData db_list;
 			db_list.push_back(DbDatum(fwd_attr->get_name()));

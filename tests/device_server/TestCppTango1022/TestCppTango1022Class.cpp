@@ -50,12 +50,6 @@
  */
 //-------------------------------------------------------------------
 extern "C" {
-#ifdef _TG_WINDOWS_
-
-__declspec(dllexport)
-
-#endif
-
 	Tango::DeviceClass *_create_TestCppTango1022_class(const char *name) {
 		return TestCppTango1022_ns::TestCppTango1022Class::init(name);
 	}
@@ -238,7 +232,7 @@ void TestCppTango1022Class::set_default_property()
 void TestCppTango1022Class::write_class_property()
 {
 //	First time, check if database used
-if (Tango::Util::_UseDb == false)
+if (!Tango::Util::instance()->use_db())
 	return;
 
 Tango::DbData	data;
@@ -306,7 +300,7 @@ for (unsigned long i=1 ; i<=devlist_ptr->length() ; i++)
 	dev->add_dynamic_attributes();
 
 	//	Check before if database used.
-	if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
+	if ((Tango::Util::instance()->use_db()) && (!Tango::Util::instance()->use_file_db()))
 		export_device(dev);
 	else
 		export_device(dev, dev->get_name().c_str());

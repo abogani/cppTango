@@ -359,7 +359,7 @@ public:
 	{
 		TangoSys_MemStream st;
 		st.precision(TANGO_FLOAT_PRECISION);
-		if(ranges_type2const<T>::enu == Tango::DEV_UCHAR)
+		if(Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR)
 			st << (short)value; // to represent the numeric value
 		else
 			st << value;
@@ -553,7 +553,7 @@ public:
 #pragma clang diagnostic ignored "-Wundefined-var-template"
 #endif
 
-		CmdArgType type = ranges_type2const<T>::enu; // restricts template initialisation to supported types
+		CmdArgType type = Tango::tango_type_traits<T>::type_value(); // restricts template initialisation to supported types
 		if(type){} // prevents compiler warning about unused variable type
 
 #if defined(__clang__)

@@ -72,7 +72,7 @@ class DServer;
  * @ingroup Server
  */
 
-class TANGO_REV_EXP DeviceClass
+class DeviceClass
 {
 	friend class Tango::AutoTangoMonitor;
 public:

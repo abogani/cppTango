@@ -90,7 +90,7 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
 // before we reach this code.
 //
 
-	if ((nb_pipe != 0) && (Tango::Util::_UseDb == true))
+	if ((nb_pipe != 0) && (Tango::Util::instance()->use_db()))
 	{
 		size_t i;
 		Tango::DbData db_list;

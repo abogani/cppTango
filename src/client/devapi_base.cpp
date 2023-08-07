@@ -9568,7 +9568,7 @@ void DeviceProxy::local_import(std::string &local_ior)
         {
             if (dev_list[lo]->get_name_lower() == device_name)
             {
-                if (Tango::Util::_UseDb == true)
+                if (Tango::Util::instance()->use_db())
                 {
                     Database *db = tg->get_database();
                     if (db->get_db_host() != get_db_host())

@@ -190,11 +190,13 @@ public:
 		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOUnregClassSig", din));
 	}
 
-// Test class signal handling
-// This does not make sense on Windows since there is no SIGALARM signal
-#ifndef _TG_WINDOWS
 	void test_class_signal_handling(void)
 	{
+// Test signal handling
+// This does not make sense on Windows since there is no SIGALARM signal
+// Keep the definition but the test does nothing, as code calling it
+// is generated on windows anyway
+#ifndef _TG_WINDOWS_
 		DeviceData din, dout;
 		DevLong sig_num = 14;
 		int sig_num_int = 14;
@@ -275,8 +277,8 @@ public:
 		din << sig_num;
 		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOUnregClassSig", din));
 		CxxTest::TangoPrinter::restore_unset("class_signal_unregistered");
-	}
 #endif
+	}
 // Test comparing input with output
 
 	void test_comparing_input_with_output(void)

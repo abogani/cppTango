@@ -67,6 +67,24 @@ void _t_handler(TANGO_UNUSED(int signum))
     std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
+ApiUtil *ApiUtil::instance()
+{
+	omni_mutex_lock lo(inst_mutex);
+
+	if (_instance == nullptr)
+		_instance = new ApiUtil();
+	return _instance;
+}
+
+void ApiUtil::cleanup()
+{
+    if (_instance != nullptr)
+    {
+        delete _instance;
+        _instance = nullptr;
+    }
+}
+
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :

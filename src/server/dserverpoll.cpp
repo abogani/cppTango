@@ -844,7 +844,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin,bool wit
 // (it should not but...), only update its polling period
 //
 
-	if ((with_db_upd == true) && (Tango::Util::_UseDb == true))
+	if ((with_db_upd == true) && (Tango::Util::instance()->use_db()))
 	{
 		TangoSys_MemStream s;
 		std::string upd_str;
@@ -956,7 +956,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin,bool wit
 			conf_entry = conf_entry + ',' + dev_name;
 		}
 
-		if ((with_db_upd == true) && (Tango::Util::_UseDb == true))
+		if ((with_db_upd == true) && (Tango::Util::instance()->use_db()))
 		{
 			DbData send_data;
 			send_data.push_back(DbDatum("polling_threads_pool_conf"));
@@ -1208,7 +1208,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin,b
 // Add object name and update period if the object is not known in the property
 //
 
-	if ((with_db_upd == true) && (Tango::Util::_UseDb == true))
+	if ((with_db_upd == true) && (Tango::Util::instance()->use_db()))
 	{
 		TangoSys_MemStream s;
 		std::string upd_str;
@@ -1508,7 +1508,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin,bool with_db
 // Do this if possible and wanted.
 //
 
-	if ((with_db_upd == true) && (Tango::Util::_UseDb == true))
+	if ((with_db_upd == true) && (Tango::Util::instance()->use_db()))
 	{
 		DbData send_data;
 		DbDatum db_info("polled_attr");
@@ -1662,7 +1662,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin,bool with_db
 // Update db
 //
 
-		if ((with_db_upd == true) && (Tango::Util::_UseDb == true))
+		if ((with_db_upd == true) && (Tango::Util::instance()->use_db()))
 		{
 			DbData send_data;
 			send_data.push_back(DbDatum("polling_threads_pool_conf"));

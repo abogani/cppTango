@@ -67,8 +67,8 @@ public:
  *
  * Destroy the ApiUtil singleton instance.
  */
-	static inline void cleanup()
-	{if (_instance != NULL){delete _instance;_instance=NULL;}}
+	static void cleanup();
+
 /**
  * Get environment variable
  *
@@ -155,7 +155,7 @@ public:
 	void need_reset_already_flag(bool in) {reset_already_executed_flag = in;}
 
 	static inline bool _is_instance_null()
-	{return _instance == NULL;}
+	{return instance() == nullptr;}
 
 //
 // Utilities methods
@@ -235,8 +235,8 @@ private:
         ApiUtilExt() {}
     };
 
-	TANGO_IMP static ApiUtil 	*_instance;
-	TANGO_IMP static omni_mutex			inst_mutex;
+	static ApiUtil 	*_instance;
+	static omni_mutex			inst_mutex;
 	bool						exit_lock_installed;
 	bool						reset_already_executed_flag;
 

@@ -896,7 +896,8 @@ TangoSys_Pid start_ds(const std::string& path, const std::string& name, const st
 {
 	TangoSys_Pid pi;
 #ifdef _TG_WINDOWS_
-        TS_FAIL("not implemented");
+	TEST_LOG << "not implemented" << endl;
+        exit(-1);
 
         std::string cmd_line = path + " " + inst;
         char* cmdline = new char[cmd_line.length() + 1];

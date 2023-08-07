@@ -684,7 +684,7 @@ void DevTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr) {
     //
     // Export device to the outside world
     //
-    if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
+    if (Tango::Util::instance()->use_db() && !Tango::Util::instance()->use_file_db())
     	export_device(device_list.back());
     else
     	export_device(device_list.back(),(*devlist_ptr)[i]);

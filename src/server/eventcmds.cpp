@@ -98,7 +98,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
 // If we are using a file as database, gives port number to event supplier
 //
 
-	if (Util::_FileDb == true && ev != NULL)
+	if (Util::instance()->use_file_db() && ev != NULL)
 	{
 		ev->file_db_svr();
 	}
@@ -859,7 +859,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 //
 
         std::string ev_name = ev->get_fqdn_prefix();
-        if (Util::_FileDb == true)
+        if (Util::instance()->use_file_db())
         {
             int size = ev_name.size();
             if (ev_name[size - 1] == '#')
@@ -869,7 +869,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         ev_name = ev_name + dev->get_name_lower();
         if (intr_change == false)
 			ev_name = ev_name + '/' + obj_name_lower;
-        if (Util::_FileDb == true && ev != NULL)
+        if (Util::instance()->use_file_db() && ev != NULL)
             ev_name = ev_name + MODIFIER_DBASE_NO;
         ev_name = ev_name + '.' +  event;
 

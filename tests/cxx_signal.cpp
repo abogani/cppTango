@@ -196,11 +196,13 @@ public:
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 	}
 
-// Test signal handling
-// This does not make sense on Windows since there is no SIGALARM signal
-#ifndef _TG_WINDOWS
 	void test_signal_handling(void)
 	{
+// Test signal handling
+// This does not make sense on Windows since there is no SIGALARM signal
+// Keep the definition but the test does nothing, as code calling it
+// is generated on windows anyway
+#ifndef _TG_WINDOWS_
 		DeviceData din, dout;
 		DevLong sig_num = 14;
 		int sig_num_int = 14;
@@ -283,8 +285,8 @@ public:
 		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOUnregSig", din));
 		TS_ASSERT_THROWS_NOTHING(device2->command_inout("IOUnregSig", din));
 		CxxTest::TangoPrinter::restore_unset("signal_unregistered");
-	}
 #endif
+	}
 // Test comparing input with output
 
 	void test_comparing_input_with_output(void)

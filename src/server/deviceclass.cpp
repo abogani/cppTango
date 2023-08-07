@@ -148,7 +148,7 @@ void DeviceClass::get_class_system_resource()
 //
 
 	Tango::Util *tg = Tango::Util::instance();
-	if (tg->_UseDb == true)
+	if (tg->use_db())
 	{
 		Database *db = tg->get_database();
 		DbData db_data;
@@ -940,7 +940,7 @@ void DeviceClass::export_device(DeviceImpl *dev,const char *corba_obj_name)
 
 	Device_var d;
 
-	if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
+	if (Tango::Util::instance()->use_db() && !Tango::Util::instance()->use_file_db())
 	{
 
 //
@@ -1019,7 +1019,7 @@ void DeviceClass::export_device(DeviceImpl *dev,const char *corba_obj_name)
 // Prepare sent parameters and allocate mem for them
 //
 
-	if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
+	if (Tango::Util::instance()->use_db() && !Tango::Util::instance()->use_file_db())
 	{
 		Tango::Util *tg = Tango::Util::instance();
 		CORBA::ORB_ptr orb_ptr = tg->get_orb();

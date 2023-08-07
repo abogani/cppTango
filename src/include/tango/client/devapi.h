@@ -749,15 +749,6 @@ public:
 ///					-------------------
 ///
 
-inline ApiUtil *ApiUtil::instance()
-{
-	omni_mutex_lock lo(inst_mutex);
-
-	if (_instance == NULL)
-		_instance = new ApiUtil();
-	return _instance;
-}
-
 inline long Connection::add_asyn_request(CORBA::Request_ptr req,TgRequest::ReqType req_type)
 {
 	omni_mutex_lock guard(asyn_mutex);

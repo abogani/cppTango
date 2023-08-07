@@ -1080,39 +1080,6 @@ typedef struct _AttributeIdlData
 	}
 }AttributeIdlData;
 
-// Ranges type-enum-string conversions
-
-template <typename T>
-struct ranges_type2const
-{
-	TANGO_IMP static CmdArgType enu;
-	TANGO_IMP static TANGO_CXX11_ABI std::string str;
-};
-
-template <CmdArgType>
-struct ranges_const2type
-{
-	TANGO_IMP static TANGO_CXX11_ABI std::string str;
-};
-
-#define RANGES_TYPE2CONST(type,constant)                                       \
-  template <>                                                                  \
-  struct ranges_type2const<type>                                               \
-  {                                                                            \
-        TANGO_IMP static CmdArgType enu;                                       \
-        TANGO_IMP TANGO_CXX11_ABI static std::string str;                      \
-  };                                                                           \
-  CmdArgType ranges_type2const<type>::enu = constant;                          \
-  TANGO_CXX11_ABI std::string ranges_type2const<type>::str = #type;            \
-  template<>                                                                   \
-  struct ranges_const2type<Tango::constant>                                    \
-  {                                                                            \
-        typedef type Type;                                                     \
-        TANGO_IMP TANGO_CXX11_ABI static std::string str;                      \
-  };                                                                           \
-                                                                               \
-  TANGO_CXX11_ABI std::string ranges_const2type<Tango::constant>::str = #type;
-
 #cmakedefine TANGO_USE_JPEG
 
 template<class T>
