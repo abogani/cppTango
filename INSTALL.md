@@ -53,15 +53,30 @@ sudo make install
 
 ## CMake Variables
 
-The following variable can be passed to cmake to tweak compilation. The general syntax is `-D$var=$value`.
+Dependencies are located through cmake's find modules.
+You can provide custom locations for the dependencies using [`<PackageName>_ROOT`](https://cmake.org/cmake/help/latest/variable/PackageName_ROOT.html#variable:%3CPackageName%3E_ROOT)
+which can be both used as environment variables or directly as a cmake variable.
+e.g.:
+```bash
+cmake -Dtangoidl_ROOT=/us/local ..
+```
 
-On linux-based systems all dependencies are searched via `pkg-config`.
+On linux-based systems we leverage the use of `pkg-config`.
 Therefore you can also pass additional search locations via the
 `PKG_CONFIG_PATH` environment variable as in
 
 ```
 PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 ```
+
+the dependencies we need are:
+ * cppzmq
+ * JPEG
+ * omniORB4
+ * tangoidl
+ * ZeroMQ
+
+The following variable can be passed to cmake to tweak compilation. The general syntax is `-D$var=$value`.
 
 <!-- Keep the variable list sorted -->
 
@@ -74,18 +89,13 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 | `CMAKE_INSTALL_PREFIX`             | `/usr/local` or `C:/Program Files`     | Desired install path
 | `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                  | Allows to increase the verbosity level with `ON`
 | `TANGO_CLANG_FORMAT`               | `OFF`                                  | Adds a target `clang-format` for automatic C++ source code formatting
-| `TANGO_CPPZMQ_BASE`                |                                        | cppzmq installed path
 | `TANGO_ENABLE_COVERAGE`            | `OFF`                                  | Instrument code for coverage analysis
 | `TANGO_ENABLE_SANITIZER`           | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
-| `TANGO_IDL_BASE`                   |                                        | tangoidl installed path
 | `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                  | Install dependencies of tango as well (Windows only)
-| `TANGO_JPEG_BASE`                  |                                        | libjpeg installed path
 | `TANGO_OMNIIDL_PATH`               |                                        | omniORB4 search path for omniidl
-| `TANGO_OMNI_BASE`                  |                                        | omniORB4 installed path
 | `TANGO_USE_JPEG`                   | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires Clang)
 | `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                  | Treat compiler warnings as errors
-| `TANGO_ZMQ_BASE`                   |                                        | libzmq installed path
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
@@ -198,7 +208,7 @@ if cmake does not find some of the dependencies, you can either add a custom `PK
 PKG_CONFIG_PATH=/usr/local/lib/pkgconfig cmake ..
 ```
 
-or use the the CMAKE variables `TANGO_ZMQ_BASE`, `TANGO_CPPZMQ_BASE`, `TANGO_IDL_BASE`, `TANGO_OMNI_BASE` from [here](#cmake-variables).
+or use the the CMAKE variables `ZeroMQ_ROOT`, `cppzmq_ROOT`, `tangoidl_ROOT`, `omniORB4_ROOT` from [here](#cmake-variables).
 
 # Using pkg-config in packages requiring tango
 
@@ -287,8 +297,8 @@ cmake --build . --target install
 
 ```
 cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release                             \
-      -DTANGO_IDL_BASE="c:/projects/tango-idl"                                                                               \
-      -DTANGO_OMNI_BASE="c:/projects/omniorb" -DTANGO_ZMQ_BASE="c:/projects/zeromq" -DTANGO_CPPZMQ_BASE="c:/projects/zeromq" \
+      -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                               \
+      -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" \
       -DPTHREAD_WIN="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
 ```
 
