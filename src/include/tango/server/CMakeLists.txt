@@ -1,11 +1,11 @@
 set(SERVER_HEADERS attrdesc.h
     attribute.h
-    attribute.tpp
-    attrsetval.tpp
-    attribute_spec.tpp
+    attribute_templ.h
+    attrsetval_templ.h
+    attribute_spec_templ.h
     attrmanip.h
     attrprop.h
-    attrprop.tpp
+    attrprop_templ.h
     auto_tango_monitor.h
     basiccommand.h
     blackbox.h
@@ -13,12 +13,12 @@ set(SERVER_HEADERS attrdesc.h
     classpipe.h
     command.h
     pipe.h
-    pipe.tpp
+    pipe_templ.h
     coutappender.h
     device.h
     device_2.h
     device_3.h
-    device_3.tpp
+    device_3_templ.h
     device_4.h
     device_5.h
     deviceclass.h
@@ -31,8 +31,8 @@ set(SERVER_HEADERS attrdesc.h
     except.h
     fwdattrdesc.h
     fwdattribute.h
-    fwdattribute.tpp
-    fwdattribute_spec.tpp
+    fwdattribute_templ.h
+    fwdattribute_spec_templ.h
     log4tango.h
     logcmds.h
     logging.h
@@ -41,12 +41,12 @@ set(SERVER_HEADERS attrdesc.h
     pipedesc.h
     pollcmds.h
     pollext.h
-    pollext.tpp
+    pollext_templ.h
     pollobj.h
     pollring.h
-    pollring.tpp
+    pollring_templ.h
     pollthread.h
-    pollthread.tpp
+    pollthread_templ.h
     readers_writers_lock.h
     rootattreg.h
     seqvec.h
@@ -55,14 +55,14 @@ set(SERVER_HEADERS attrdesc.h
     tangoappender.h
     tangorollingfileappender.h
     utils.h
-    utils.tpp
-    utils_spec.tpp
+    utils_templ.h
+    utils_spec_templ.h
     w_attribute.h
-    w_attribute.tpp
-    w_attrsetval.tpp
-    w_attribute_spec.tpp
+    w_attribute_templ.h
+    w_attrsetval_templ.h
+    w_attribute_spec_templ.h
     w_pipe.h
-    w_pipe.tpp
+    w_pipe_templ.h
     subdev_diag.h
     encoded_attribute.h
     encoded_format.h

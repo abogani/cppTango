@@ -21,11 +21,11 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <tango/common/log4tango/Logger.hh>
-#include <tango/common/log4tango/Appender.hh>
-#include <tango/common/log4tango/OstreamAppender.hh>
-#include <tango/common/log4tango/Layout.hh>
-#include <tango/common/log4tango/Level.hh>
+#include <tango/common/log4tango/Logger.h>
+#include <tango/common/log4tango/Appender.h>
+#include <tango/common/log4tango/OstreamAppender.h>
+#include <tango/common/log4tango/Layout.h>
+#include <tango/common/log4tango/Level.h>
 
 int test_get_appender (log4tango::Logger& logger,
                        log4tango::Appender* appender_1,

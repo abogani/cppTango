@@ -33,7 +33,7 @@
 
 #include <tango/tango.h>
 #include <tango/server/fwdattribute.h>
-#include <tango/server/fwdattribute.tpp>
+#include <tango/server/fwdattribute_templ.h>
 
 namespace Tango
 {

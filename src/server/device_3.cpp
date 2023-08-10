@@ -33,7 +33,7 @@
 #include <tango/tango.h>
 #include <tango/server/device_3.h>
 #include <tango/server/eventsupplier.h>
-#include <tango/server/device_3.tpp>
+#include <tango/server/device_3_templ.h>
 #include <tango/server/tango_clock.h>
 #include <new>
 

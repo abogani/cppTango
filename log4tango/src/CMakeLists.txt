@@ -13,7 +13,7 @@ set(SOURCES
                 LoggingEvent.cpp
                 Level.cpp
                 Filter.cpp
-                StringUtil.hh
+                StringUtil.h
                 StringUtil.cpp)
 
 add_library(log4tango_objects OBJECT ${SOURCES})

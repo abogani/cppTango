@@ -25,7 +25,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <tango/common/log4tango/Portability.hh>
+#include <tango/common/log4tango/Portability.h>
 #ifdef LOG4TANGO_HAVE_IO_H
 #    include <io.h>
 #endif
@@ -36,8 +36,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <tango/common/log4tango/RollingFileAppender.hh>
-#include <tango/common/log4tango/Logger.hh>
+#include <tango/common/log4tango/RollingFileAppender.h>
+#include <tango/common/log4tango/Logger.h>
 #include <sstream>
 
 namespace log4tango {

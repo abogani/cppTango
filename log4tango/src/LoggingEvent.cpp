@@ -27,8 +27,8 @@
 
 #include <chrono>
 
-#include <tango/common/log4tango/Portability.hh>
-#include <tango/common/log4tango/LoggingEvent.hh>
+#include <tango/common/log4tango/Portability.h>
+#include <tango/common/log4tango/LoggingEvent.h>
 
 namespace log4tango {
 
