@@ -60,3 +60,14 @@ pre-commit run --all-files --show-diff-on-failure
 
 pre-commit can also be integrated into git, see
 [here](https://pre-commit.com/#3-install-the-git-hook-scripts) for instructions.
+
+## Ignoring commits for git blame
+
+The commits in the file `.git-blame-ignore-revs` are meant to be ignored for invocations of
+git blame as they contain tree-wide scripted changes only.
+
+The following command sets that up:
+
+```
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
