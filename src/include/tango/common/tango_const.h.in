@@ -41,9 +41,12 @@ namespace Tango
 // Some general interest define
 //
 
-#define   TANGO_VERSION_MAJOR        @MAJOR_VERSION@
-#define   TANGO_VERSION_MINOR        @MINOR_VERSION@
-#define   TANGO_VERSION_PATCH        @PATCH_VERSION@
+// clang-format off
+// The next lines are invalid C++ before the replacement
+#define TANGO_VERSION_MAJOR @MAJOR_VERSION@
+#define TANGO_VERSION_MINOR @MINOR_VERSION@
+#define TANGO_VERSION_PATCH @PATCH_VERSION@
+// clang-format on
 
 #define   TANGO_GIT_REVISION         "@TANGO_GIT_REVISION@"
 
