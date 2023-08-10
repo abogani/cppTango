@@ -1,9 +1,11 @@
 #include "common.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     DeviceProxy *device;
 
-    if (argc != 3) {
+    if(argc != 3)
+    {
         TEST_LOG << "usage: %s device loop" << endl;
         exit(-1);
     }
@@ -11,10 +13,12 @@ int main(int argc, char **argv) {
     string device_name = argv[1];
     int loop = atoi(argv[2]);
 
-    try {
+    try
+    {
         device = new DeviceProxy(device_name);
     }
-    catch (CORBA::Exception &e) {
+    catch(CORBA::Exception &e)
+    {
         Except::print_exception(e);
         exit(1);
     }
@@ -23,29 +27,35 @@ int main(int argc, char **argv) {
 
     int i;
 
-// Test void
+    // Test void
 
-    for (i = 0; i < loop; i++) {
-        try {
+    for(i = 0; i < loop; i++)
+    {
+        try
+        {
             device->command_inout("IOVoid");
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
     }
     TEST_LOG << "   Void --> OK" << endl;
 
-// Test boolean
+    // Test boolean
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         bool in = true;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOBool", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -57,16 +67,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Boolean --> OK" << endl;
 
-// test short
+    // test short
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         short in = 2;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOShort", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -78,16 +91,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Short --> OK" << endl;
 
-// test long
+    // test long
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevLong in = 3;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOLong", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -97,16 +113,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Long --> OK" << endl;
 
-// test float
+    // test float
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         float in = (float) 3.1;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOFloat", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -116,16 +135,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Float --> OK" << endl;
 
-// test double
+    // test double
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         double in = 3.1;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IODouble", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -135,16 +157,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Double --> OK" << endl;
 
-// test unsigned short
+    // test unsigned short
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         unsigned short in = 100;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOUShort", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -154,16 +179,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Unsigned Short --> OK" << endl;
 
-// test unsigned long
+    // test unsigned long
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevULong in = 1000;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOULong", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -173,16 +201,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   Unsigned Long --> OK" << endl;
 
-// test C++ string
+    // test C++ string
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         string str("abc");
         din << str;
-        try {
+        try
+        {
             dout = device->command_inout("IOString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -192,16 +223,19 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   C++ string --> OK" << endl;
 
-// test classical C string
+    // test classical C string
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         const char *str = "abcd";
         din << str;
-        try {
+        try
+        {
             dout = device->command_inout("IOString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -211,15 +245,18 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   const char * string --> OK" << endl;
 
-// test direct classical C string
+    // test direct classical C string
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         din << "abcde";
-        try {
+        try
+        {
             dout = device->command_inout("IOString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -229,17 +266,20 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   direct const char * string --> OK" << endl;
 
-// test non-const C string
+    // test non-const C string
 
-    for (i = 0; i < loop; i++) {
-        char * in = strdup("abcdef");
+    for(i = 0; i < loop; i++)
+    {
+        char *in = strdup("abcdef");
         DeviceData din, dout;
         din << in;
         free(in);
-        try {
+        try
+        {
             dout = device->command_inout("IOString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -251,7 +291,8 @@ int main(int argc, char **argv) {
 
     // test DevVarBooleanArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarBooleanArray *in = new DevVarBooleanArray(3);
         in->length(3);
@@ -260,10 +301,12 @@ int main(int argc, char **argv) {
         (*in)[2] = false;
 
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOBoolArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -274,7 +317,8 @@ int main(int argc, char **argv) {
         assert((*received)[2] == false);
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarBooleanArray in(2);
         in.length(2);
@@ -282,10 +326,12 @@ int main(int argc, char **argv) {
         in[1] = false;
 
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOBoolArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -296,18 +342,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarBooleanArray (by pointer and reference) --> OK" << endl;
 
-// test char array
+    // test char array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<unsigned char> in;
         in.push_back(1);
         in.push_back(2);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOCharArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -320,10 +369,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of unsigned char --> OK" << endl;
 
-// test DevVarCharArray
+    // test DevVarCharArray
 
-
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         const DevVarCharArray *received;
         DeviceData din, dout;
 
@@ -333,10 +382,12 @@ int main(int argc, char **argv) {
         (*in)[1] = 20;
         din << in;
 
-        try {
+        try
+        {
             dout = device->command_inout("IOCharArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -346,7 +397,8 @@ int main(int argc, char **argv) {
         assert(20 == (*received)[0]);
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         const DevVarCharArray *received;
         DeviceData din, dout;
 
@@ -356,10 +408,12 @@ int main(int argc, char **argv) {
         in[1] = 20;
         din << in;
 
-        try {
+        try
+        {
             dout = device->command_inout("IOCharArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -370,18 +424,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarCharArray (by pointer and reference) --> OK" << endl;
 
-// test short array
+    // test short array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<short> in;
         in.push_back(10);
         in.push_back(20);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOShortArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -392,9 +449,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of short --> OK" << endl;
 
-// test DevVarShortArray
+    // test DevVarShortArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarShortArray *in = new DevVarShortArray(2);
         in->length(2);
@@ -402,10 +460,12 @@ int main(int argc, char **argv) {
         (*in)[1] = 2;
 
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOShortArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -415,7 +475,8 @@ int main(int argc, char **argv) {
         assert((*received)[1] == (2 * 2));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarShortArray in(2);
         in.length(2);
@@ -423,10 +484,12 @@ int main(int argc, char **argv) {
         in[1] = 2;
 
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOShortArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -437,18 +500,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarShortArray (by pointer and reference) --> OK" << endl;
 
-// test long array
+    // test long array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<DevLong> in;
         in.push_back(100);
         in.push_back(200);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOLongArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -459,19 +525,22 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of long --> OK" << endl;
 
-// test DevVarLongArray
+    // test DevVarLongArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarLongArray *in = new DevVarLongArray(2);
         in->length(2);
         (*in)[0] = 11;
         (*in)[1] = 22;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOLongArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -481,17 +550,20 @@ int main(int argc, char **argv) {
         assert((*received)[1] == (22 * 2));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarLongArray in(2);
         in.length(2);
         in[0] = 11;
         in[1] = 22;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOLongArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -502,18 +574,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarLongArray (by pointer and reference) --> OK" << endl;
 
-// test float array
+    // test float array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<float> in;
         in.push_back((float) 100.1);
         in.push_back((float) 200.2);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOFloatArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -524,19 +599,22 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of float --> OK" << endl;
 
-// test DevVarFloatArray
+    // test DevVarFloatArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarFloatArray *in = new DevVarFloatArray(2);
         in->length(2);
         (*in)[0] = (float) 1.11;
         (*in)[1] = (float) 2.22;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOFloatArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -546,17 +624,20 @@ int main(int argc, char **argv) {
         assert((*received)[1] == ((float) 2.22 * 2));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarFloatArray in(2);
         in.length(2);
         in[0] = (float) 1.11;
         in[1] = (float) 2.22;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOFloatArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -567,18 +648,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarFloatArray (by pointer and reference) --> OK" << endl;
 
-// test double array
+    // test double array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<double> in;
         in.push_back(1.234);
         in.push_back(2.111);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IODoubleArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -589,19 +673,22 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of double --> OK" << endl;
 
-// test DevVarDoubleArray
+    // test DevVarDoubleArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarDoubleArray *in = new DevVarDoubleArray(2);
         in->length(2);
         (*in)[0] = 1.12;
         (*in)[1] = 3.45;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IODoubleArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -611,17 +698,20 @@ int main(int argc, char **argv) {
         assert((*received)[1] == (3.45 * 2));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarDoubleArray in(2);
         in.length(2);
         in[0] = 1.12;
         in[1] = 3.45;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IODoubleArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -632,18 +722,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarDoubleArray (by pointer and reference) --> OK" << endl;
 
-// test unsigned short array
+    // test unsigned short array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<unsigned short> in;
         in.push_back(100);
         in.push_back(200);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOUShortArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -654,19 +747,22 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of unsigned short --> OK" << endl;
 
-// test DevVarUShortArray
+    // test DevVarUShortArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarUShortArray *in = new DevVarUShortArray(2);
         in->length(2);
         (*in)[0] = 11;
         (*in)[1] = 22;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOUShortArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -676,17 +772,20 @@ int main(int argc, char **argv) {
         assert((*received)[1] == (22 * 2));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarUShortArray in(2);
         in.length(2);
         in[0] = 11;
         in[1] = 22;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOUShortArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -697,18 +796,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarUShortArray (by pointer and reference) --> OK" << endl;
 
-// test unsigned long array
+    // test unsigned long array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<DevULong> in;
         in.push_back(1000);
         in.push_back(2001);
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOULongArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -719,19 +821,22 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of unsigned long --> OK" << endl;
 
-// test DevVarULongArray
+    // test DevVarULongArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarULongArray *in = new DevVarULongArray(2);
         in->length(2);
         (*in)[0] = 111;
         (*in)[1] = 222;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOULongArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -741,17 +846,20 @@ int main(int argc, char **argv) {
         assert((*received)[1] == (222 * 2));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarULongArray in(2);
         in.length(2);
         in[0] = 111;
         in[1] = 222;
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOULongArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -762,18 +870,21 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarULongArray (by pointer and reference) --> OK" << endl;
 
-// test string array
+    // test string array
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<string> in;
         in.push_back("abc");
         in.push_back("wxyz");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOStringArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -787,19 +898,22 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of string --> OK" << endl;
 
-// test DevVarStringArray
+    // test DevVarStringArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarStringArray *in = new DevVarStringArray(2);
         in->length(2);
         (*in)[0] = CORBA::string_dup("abc");
         (*in)[1] = CORBA::string_dup("def");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOStringArray", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -810,9 +924,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarStringArray --> OK" << endl;
 
-// test vector of long and vector of string
+    // test vector of long and vector of string
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<DevLong> in1;
         in1.push_back(1000);
@@ -822,10 +937,12 @@ int main(int argc, char **argv) {
         in2.push_back("abc");
         in2.push_back("def");
         din.insert(in1, in2);
-        try {
+        try
+        {
             dout = device->command_inout("IOLongString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -841,9 +958,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of long, string --> OK" << endl;
 
-// test DevVarLongStringArray
+    // test DevVarLongStringArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarLongStringArray *in = new DevVarLongStringArray();
         in->lvalue.length(2);
@@ -853,10 +971,12 @@ int main(int argc, char **argv) {
         in->svalue[0] = CORBA::string_dup("zxc");
         in->svalue[1] = CORBA::string_dup("qwe");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOLongString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -869,7 +989,8 @@ int main(int argc, char **argv) {
         assert(!strcmp(received->svalue[1], "qwe"));
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarLongStringArray in;
         in.lvalue.length(2);
@@ -879,10 +1000,12 @@ int main(int argc, char **argv) {
         in.svalue[0] = CORBA::string_dup("zxc");
         in.svalue[1] = CORBA::string_dup("qwe");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOLongString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -898,9 +1021,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarLongStringArray (by pointer and reference) --> OK" << endl;
 
-// test vector of double and vector of string
+    // test vector of double and vector of string
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         vector<double> in1;
         in1.push_back(10.0);
@@ -910,10 +1034,12 @@ int main(int argc, char **argv) {
         in2.push_back("abc");
         in2.push_back("def");
         din.insert(in1, in2);
-        try {
+        try
+        {
             dout = device->command_inout("IODoubleString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -931,9 +1057,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   vector of double, string --> OK" << endl;
 
-// test DevVarDoubleStringArray
+    // test DevVarDoubleStringArray
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarDoubleStringArray *in = new DevVarDoubleStringArray();
         in->dvalue.length(2);
@@ -944,10 +1071,12 @@ int main(int argc, char **argv) {
         in->svalue[1] = CORBA::string_dup("jkl");
         in->svalue[2] = CORBA::string_dup("bnm");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IODoubleString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -961,8 +1090,8 @@ int main(int argc, char **argv) {
         assert(!strcmp(received->svalue[2], "bnm"));
     }
 
-
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevVarDoubleStringArray in;
         in.dvalue.length(2);
@@ -973,10 +1102,12 @@ int main(int argc, char **argv) {
         in.svalue[1] = CORBA::string_dup("jkl");
         in.svalue[2] = CORBA::string_dup("bnm");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IODoubleString", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -991,9 +1122,10 @@ int main(int argc, char **argv) {
     }
     TEST_LOG << "   DevVarDoubleStringArray (by pointer and reference) --> OK" << endl;
 
-// test DevEncoded
+    // test DevEncoded
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         DevEncoded in;
         in.encoded_data.length(2);
@@ -1001,10 +1133,12 @@ int main(int argc, char **argv) {
         in.encoded_data[1] = 22;
         in.encoded_format = CORBA::string_dup("Sent");
         din << in;
-        try {
+        try
+        {
             dout = device->command_inout("IOEncoded", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -1019,7 +1153,8 @@ int main(int argc, char **argv) {
         assert(data_type == Tango::DEV_ENCODED);
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         string in_str("Sent");
         vector<unsigned char> in_data;
@@ -1028,10 +1163,12 @@ int main(int argc, char **argv) {
         in_data.push_back((unsigned char) 25);
 
         din.insert(in_str, in_data);
-        try {
+        try
+        {
             dout = device->command_inout("IOEncoded", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -1046,7 +1183,8 @@ int main(int argc, char **argv) {
         assert(data_type == Tango::DEV_ENCODED);
     }
 
-    for (i = 0; i < loop; i++) {
+    for(i = 0; i < loop; i++)
+    {
         DeviceData din, dout;
         string in_str("Sent");
         DevVarCharArray in_data;
@@ -1058,10 +1196,12 @@ int main(int argc, char **argv) {
         in_data[3] = ((unsigned char) 45);
 
         din.insert("Sent", &in_data);
-        try {
+        try
+        {
             dout = device->command_inout("IOEncoded", din);
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }

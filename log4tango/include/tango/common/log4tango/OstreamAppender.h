@@ -33,22 +33,24 @@
 #include <iostream>
 #include <tango/common/log4tango/LayoutAppender.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // class : OstreamAppender (appends LoggingEvents to ostreams)
 //-----------------------------------------------------------------------------
-class OstreamAppender : public LayoutAppender {
-public:
-  OstreamAppender(const std::string& name, std::ostream* stream);
-  virtual ~OstreamAppender();
+class OstreamAppender : public LayoutAppender
+{
+  public:
+    OstreamAppender(const std::string &name, std::ostream *stream);
+    virtual ~OstreamAppender();
 
-  virtual bool reopen();
-  virtual void close();
+    virtual bool reopen();
+    virtual void close();
 
-protected:
-  virtual int _append (const LoggingEvent& event);
-  std::ostream* _stream;
+  protected:
+    virtual int _append(const LoggingEvent &event);
+    std::ostream *_stream;
 };
 
 } // namespace log4tango

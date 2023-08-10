@@ -6,20 +6,19 @@
 #undef SUITE_NAME
 #define SUITE_NAME DynCmdTestSuite
 
-class DynCmdTestSuite: public CxxTest::TestSuite
+class DynCmdTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
+    DeviceProxy *device1, *device2;
+    string device1_name;
+    string device2_name;
 
-    DeviceProxy             *device1,*device2;
-    string                     device1_name;
-    string                    device2_name;
-
-public:
+  public:
     SUITE_NAME()
     {
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string full_ds_name;
 
@@ -30,10 +29,9 @@ public:
         // always add this line, otherwise arguments will not be parsed correctly
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -43,7 +41,7 @@ public:
             device2 = new DeviceProxy(device2_name);
             device2->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -66,21 +64,21 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test dynamic command installed at class level
+    // Test dynamic command installed at class level
 
     void test_dynamic_command_at_class_level()
     {
         // Add a dynamic command
 
         Tango::DevLong device_level = 0;
-        DeviceData din,dout;
+        DeviceData din, dout;
         din << device_level;
 
-        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand",din));
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand", din));
 
         // Execute command
 
@@ -100,10 +98,12 @@ public:
         TS_ASSERT_THROWS_NOTHING(cil = device1->command_list_query());
         bool found = false;
         size_t nb_cmd = cil->size();
-        for (size_t loop = 0;loop < nb_cmd;loop++)
+        for(size_t loop = 0; loop < nb_cmd; loop++)
         {
-            if ((*cil)[loop].cmd_name == "Added_cmd")
+            if((*cil)[loop].cmd_name == "Added_cmd")
+            {
                 found = true;
+            }
         }
 
         TS_ASSERT(found);
@@ -114,10 +114,12 @@ public:
         TS_ASSERT_THROWS_NOTHING(cil2 = device2->command_list_query());
         found = false;
         nb_cmd = cil2->size();
-        for (size_t loop = 0;loop < nb_cmd;loop++)
+        for(size_t loop = 0; loop < nb_cmd; loop++)
         {
-            if ((*cil2)[loop].cmd_name == "Added_cmd")
+            if((*cil2)[loop].cmd_name == "Added_cmd")
+            {
                 found = true;
+            }
         }
 
         TS_ASSERT(found);
@@ -127,17 +129,17 @@ public:
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IORemoveCommand"));
     }
 
-// Test dynamic command installed at device level
+    // Test dynamic command installed at device level
 
     void test_dynamic_command_at_device_level()
     {
         // Add a dynamic command
 
         Tango::DevLong device_level = 1;
-        DeviceData din,dout;
+        DeviceData din, dout;
         din << device_level;
 
-        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand",din));
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand", din));
 
         // Execute command
 
@@ -157,10 +159,12 @@ public:
         TS_ASSERT_THROWS_NOTHING(cil = device1->command_list_query());
         bool found = false;
         size_t nb_cmd = cil->size();
-        for (size_t loop = 0;loop < nb_cmd;loop++)
+        for(size_t loop = 0; loop < nb_cmd; loop++)
         {
-            if ((*cil)[loop].cmd_name == "Added_cmd")
+            if((*cil)[loop].cmd_name == "Added_cmd")
+            {
                 found = true;
+            }
         }
 
         TS_ASSERT(found);
@@ -171,10 +175,12 @@ public:
         TS_ASSERT_THROWS_NOTHING(cil2 = device2->command_list_query());
         found = false;
         nb_cmd = cil2->size();
-        for (size_t loop = 0;loop < nb_cmd;loop++)
+        for(size_t loop = 0; loop < nb_cmd; loop++)
         {
-            if ((*cil2)[loop].cmd_name == "Added_cmd")
+            if((*cil2)[loop].cmd_name == "Added_cmd")
+            {
                 found = true;
+            }
         }
 
         TS_ASSERT(!found);

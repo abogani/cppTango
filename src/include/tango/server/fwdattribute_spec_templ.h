@@ -55,8 +55,11 @@ namespace Tango
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-template<>
-void FwdAttribute::propagate_writen_data(DeviceAttribute &da,WAttribute &attr,ConstDevString *&ptr,DevVarStringArray *&seq_ptr)
+template <>
+void FwdAttribute::propagate_writen_data(DeviceAttribute &da,
+                                         WAttribute &attr,
+                                         ConstDevString *&ptr,
+                                         DevVarStringArray *&seq_ptr)
 {
     const ConstDevString *tmp_ptr = const_cast<const ConstDevString *>(ptr);
     attr.get_write_value(tmp_ptr);
@@ -64,19 +67,22 @@ void FwdAttribute::propagate_writen_data(DeviceAttribute &da,WAttribute &attr,Co
     long w_dim_x = attr.get_w_dim_x();
     long w_dim_y = attr.get_w_dim_y();
 
-    seq_ptr = new DevVarStringArray(data_length,data_length,const_cast<DevString *>(tmp_ptr),false);
-    da.insert(seq_ptr,w_dim_x,w_dim_y);
+    seq_ptr = new DevVarStringArray(data_length, data_length, const_cast<DevString *>(tmp_ptr), false);
+    da.insert(seq_ptr, w_dim_x, w_dim_y);
 }
 
-template<>
-void FwdAttribute::propagate_writen_data(DeviceAttribute &da,WAttribute &attr,DevEncoded *&ptr,DevVarEncodedArray *&seq_ptr)
+template <>
+void FwdAttribute::propagate_writen_data(DeviceAttribute &da,
+                                         WAttribute &attr,
+                                         DevEncoded *&ptr,
+                                         DevVarEncodedArray *&seq_ptr)
 {
-    attr.get_write_value(const_cast<const DevEncoded* &>(ptr));
+    attr.get_write_value(const_cast<const DevEncoded *&>(ptr));
     int data_length = attr.get_write_value_length();
 
-    seq_ptr = new DevVarEncodedArray(data_length,data_length,ptr,false);
+    seq_ptr = new DevVarEncodedArray(data_length, data_length, ptr, false);
     da << seq_ptr;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 #endif // _FWDATTRIBUTE_SPEC_TPP

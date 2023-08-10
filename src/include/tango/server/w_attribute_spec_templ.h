@@ -61,11 +61,11 @@ inline void WAttribute::set_min_value(const Tango::DevEncoded &)
 template <>
 inline void WAttribute::set_min_value(const std::string &new_min_value_str)
 {
-    if((data_type == Tango::DEV_STRING) ||
-        (data_type == Tango::DEV_BOOLEAN) ||
-        (data_type == Tango::DEV_STATE) ||
-        (data_type == Tango::DEV_ENUM))
-        throw_err_data_type("min_value",d_name,"WAttribute::set_min_value()");
+    if((data_type == Tango::DEV_STRING) || (data_type == Tango::DEV_BOOLEAN) || (data_type == Tango::DEV_STATE) ||
+       (data_type == Tango::DEV_ENUM))
+    {
+        throw_err_data_type("min_value", d_name, "WAttribute::set_min_value()");
+    }
 
     std::string min_value_str_tmp = new_min_value_str;
     std::string dev_name = d_name;
@@ -85,29 +85,29 @@ inline void WAttribute::set_min_value(const std::string &new_min_value_str)
     bool user_defaults = false;
     bool class_defaults = false;
 
-    user_defaults = prop_in_list("min_value",usr_def_val,nb_user,def_user_prop);
+    user_defaults = prop_in_list("min_value", usr_def_val, nb_user, def_user_prop);
 
-    class_defaults = prop_in_list("min_value",class_def_val,nb_class,def_class_prop);
+    class_defaults = prop_in_list("min_value", class_def_val, nb_class, def_class_prop);
 
     bool set_value = true;
 
-    if (class_defaults)
+    if(class_defaults)
     {
-        if(TG_strcasecmp(new_min_value_str.c_str(),AlrmValueNotSpec) == 0)
+        if(TG_strcasecmp(new_min_value_str.c_str(), AlrmValueNotSpec) == 0)
         {
             set_value = false;
 
-            avns_in_db("min_value",dev_name);
+            avns_in_db("min_value", dev_name);
             avns_in_att(MIN_VALUE);
         }
-        else if ((TG_strcasecmp(new_min_value_str.c_str(),NotANumber) == 0) ||
-                (TG_strcasecmp(new_min_value_str.c_str(),class_def_val.c_str()) == 0))
+        else if((TG_strcasecmp(new_min_value_str.c_str(), NotANumber) == 0) ||
+                (TG_strcasecmp(new_min_value_str.c_str(), class_def_val.c_str()) == 0))
         {
             min_value_str_tmp = class_def_val;
         }
-        else if (strlen(new_min_value_str.c_str()) == 0)
+        else if(strlen(new_min_value_str.c_str()) == 0)
         {
-            if (user_defaults)
+            if(user_defaults)
             {
                 min_value_str_tmp = usr_def_val;
             }
@@ -115,43 +115,42 @@ inline void WAttribute::set_min_value(const std::string &new_min_value_str)
             {
                 set_value = false;
 
-                avns_in_db("min_value",dev_name);
+                avns_in_db("min_value", dev_name);
                 avns_in_att(MIN_VALUE);
             }
         }
     }
     else if(user_defaults)
     {
-        if(TG_strcasecmp(new_min_value_str.c_str(),AlrmValueNotSpec) == 0)
+        if(TG_strcasecmp(new_min_value_str.c_str(), AlrmValueNotSpec) == 0)
         {
             set_value = false;
 
-            avns_in_db("min_value",dev_name);
+            avns_in_db("min_value", dev_name);
             avns_in_att(MIN_VALUE);
         }
-        else if ((TG_strcasecmp(new_min_value_str.c_str(),NotANumber) == 0) ||
-                (TG_strcasecmp(new_min_value_str.c_str(),usr_def_val.c_str()) == 0) ||
+        else if((TG_strcasecmp(new_min_value_str.c_str(), NotANumber) == 0) ||
+                (TG_strcasecmp(new_min_value_str.c_str(), usr_def_val.c_str()) == 0) ||
                 (strlen(new_min_value_str.c_str()) == 0))
+        {
             min_value_str_tmp = usr_def_val;
+        }
     }
     else
     {
-        if ((TG_strcasecmp(new_min_value_str.c_str(),AlrmValueNotSpec) == 0) ||
-                (TG_strcasecmp(new_min_value_str.c_str(),NotANumber) == 0) ||
-                (strlen(new_min_value_str.c_str()) == 0))
+        if((TG_strcasecmp(new_min_value_str.c_str(), AlrmValueNotSpec) == 0) ||
+           (TG_strcasecmp(new_min_value_str.c_str(), NotANumber) == 0) || (strlen(new_min_value_str.c_str()) == 0))
         {
             set_value = false;
 
-            avns_in_db("min_value",dev_name);
+            avns_in_db("min_value", dev_name);
             avns_in_att(MIN_VALUE);
         }
     }
 
     if(set_value)
     {
-        if ((data_type != Tango::DEV_STRING) &&
-            (data_type != Tango::DEV_BOOLEAN) &&
-            (data_type != Tango::DEV_STATE))
+        if((data_type != Tango::DEV_STRING) && (data_type != Tango::DEV_BOOLEAN) && (data_type != Tango::DEV_STATE))
         {
             double db;
             float fl;
@@ -159,74 +158,95 @@ inline void WAttribute::set_min_value(const std::string &new_min_value_str)
             TangoSys_MemStream str;
             str.precision(TANGO_FLOAT_PRECISION);
             str << min_value_str_tmp;
-            switch (data_type)
+            switch(data_type)
             {
             case Tango::DEV_SHORT:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                set_min_value((DevShort)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                set_min_value((DevShort) db);
                 break;
 
             case Tango::DEV_LONG:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                set_min_value((DevLong)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                set_min_value((DevLong) db);
                 break;
 
             case Tango::DEV_LONG64:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                set_min_value((DevLong64)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                set_min_value((DevLong64) db);
                 break;
 
             case Tango::DEV_DOUBLE:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
                 set_min_value(db);
                 break;
 
             case Tango::DEV_FLOAT:
-                if (!(str >> fl && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
+                if(!(str >> fl && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
                 set_min_value(fl);
                 break;
 
             case Tango::DEV_USHORT:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                (db < 0.0) ? set_min_value((DevUShort)(-db)) : set_min_value((DevUShort)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((DevUShort) (-db)) : set_min_value((DevUShort) db);
                 break;
 
             case Tango::DEV_UCHAR:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                (db < 0.0) ? set_min_value((DevUChar)(-db)) : set_min_value((DevUChar)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((DevUChar) (-db)) : set_min_value((DevUChar) db);
                 break;
 
             case Tango::DEV_ULONG:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                (db < 0.0) ? set_min_value((DevULong)(-db)) : set_min_value((DevULong)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((DevULong) (-db)) : set_min_value((DevULong) db);
                 break;
 
             case Tango::DEV_ULONG64:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                (db < 0.0) ? set_min_value((DevULong64)(-db)) : set_min_value((DevULong64)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((DevULong64) (-db)) : set_min_value((DevULong64) db);
                 break;
 
             case Tango::DEV_ENCODED:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("min_value",dev_name,"WAttribute::set_min_value()");
-                (db < 0.0) ? set_min_value((DevUChar)(-db)) : set_min_value((DevUChar)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("min_value", dev_name, "WAttribute::set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((DevUChar) (-db)) : set_min_value((DevUChar) db);
                 break;
             }
         }
         else
-            throw_err_data_type("min_value",dev_name,"WAttribute::set_min_value()");
+        {
+            throw_err_data_type("min_value", dev_name, "WAttribute::set_min_value()");
+        }
     }
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -253,10 +273,10 @@ inline void WAttribute::set_max_value(const Tango::DevEncoded &)
 template <>
 inline void WAttribute::set_max_value(const std::string &new_max_value_str)
 {
-    if((data_type == Tango::DEV_STRING) ||
-        (data_type == Tango::DEV_BOOLEAN) ||
-        (data_type == Tango::DEV_STATE))
-        throw_err_data_type("max_value",d_name,"WAttribute::set_max_value()");
+    if((data_type == Tango::DEV_STRING) || (data_type == Tango::DEV_BOOLEAN) || (data_type == Tango::DEV_STATE))
+    {
+        throw_err_data_type("max_value", d_name, "WAttribute::set_max_value()");
+    }
 
     std::string max_value_str_tmp = new_max_value_str;
     std::string dev_name = d_name;
@@ -276,29 +296,29 @@ inline void WAttribute::set_max_value(const std::string &new_max_value_str)
     bool user_defaults = false;
     bool class_defaults = false;
 
-    user_defaults = prop_in_list("max_value",usr_def_val,nb_user,def_user_prop);
+    user_defaults = prop_in_list("max_value", usr_def_val, nb_user, def_user_prop);
 
-    class_defaults = prop_in_list("max_value",class_def_val,nb_class,def_class_prop);
+    class_defaults = prop_in_list("max_value", class_def_val, nb_class, def_class_prop);
 
     bool set_value = true;
 
-    if (class_defaults)
+    if(class_defaults)
     {
-        if(TG_strcasecmp(new_max_value_str.c_str(),AlrmValueNotSpec) == 0)
+        if(TG_strcasecmp(new_max_value_str.c_str(), AlrmValueNotSpec) == 0)
         {
             set_value = false;
 
-            avns_in_db("max_value",dev_name);
+            avns_in_db("max_value", dev_name);
             avns_in_att(MAX_VALUE);
         }
-        else if ((TG_strcasecmp(new_max_value_str.c_str(),NotANumber) == 0) ||
-                (TG_strcasecmp(new_max_value_str.c_str(),class_def_val.c_str()) == 0))
+        else if((TG_strcasecmp(new_max_value_str.c_str(), NotANumber) == 0) ||
+                (TG_strcasecmp(new_max_value_str.c_str(), class_def_val.c_str()) == 0))
         {
             max_value_str_tmp = class_def_val;
         }
-        else if (strlen(new_max_value_str.c_str()) == 0)
+        else if(strlen(new_max_value_str.c_str()) == 0)
         {
-            if (user_defaults)
+            if(user_defaults)
             {
                 max_value_str_tmp = usr_def_val;
             }
@@ -306,44 +326,43 @@ inline void WAttribute::set_max_value(const std::string &new_max_value_str)
             {
                 set_value = false;
 
-                avns_in_db("max_value",dev_name);
+                avns_in_db("max_value", dev_name);
                 avns_in_att(MAX_VALUE);
             }
         }
     }
     else if(user_defaults)
     {
-        if(TG_strcasecmp(new_max_value_str.c_str(),AlrmValueNotSpec) == 0)
+        if(TG_strcasecmp(new_max_value_str.c_str(), AlrmValueNotSpec) == 0)
         {
             set_value = false;
 
-            avns_in_db("max_value",dev_name);
+            avns_in_db("max_value", dev_name);
             avns_in_att(MAX_VALUE);
         }
-        else if ((TG_strcasecmp(new_max_value_str.c_str(),NotANumber) == 0) ||
-                (TG_strcasecmp(new_max_value_str.c_str(),usr_def_val.c_str()) == 0) ||
+        else if((TG_strcasecmp(new_max_value_str.c_str(), NotANumber) == 0) ||
+                (TG_strcasecmp(new_max_value_str.c_str(), usr_def_val.c_str()) == 0) ||
                 (strlen(new_max_value_str.c_str()) == 0))
+        {
             max_value_str_tmp = usr_def_val;
+        }
     }
     else
     {
-        if ((TG_strcasecmp(new_max_value_str.c_str(),AlrmValueNotSpec) == 0) ||
-                (TG_strcasecmp(new_max_value_str.c_str(),NotANumber) == 0) ||
-                (strlen(new_max_value_str.c_str()) == 0))
+        if((TG_strcasecmp(new_max_value_str.c_str(), AlrmValueNotSpec) == 0) ||
+           (TG_strcasecmp(new_max_value_str.c_str(), NotANumber) == 0) || (strlen(new_max_value_str.c_str()) == 0))
         {
             set_value = false;
 
-            avns_in_db("max_value",dev_name);
+            avns_in_db("max_value", dev_name);
             avns_in_att(MAX_VALUE);
         }
     }
 
     if(set_value)
     {
-        if ((data_type != Tango::DEV_STRING) &&
-            (data_type != Tango::DEV_BOOLEAN) &&
-            (data_type != Tango::DEV_STATE) &&
-            (data_type != Tango::DEV_ENUM))
+        if((data_type != Tango::DEV_STRING) && (data_type != Tango::DEV_BOOLEAN) && (data_type != Tango::DEV_STATE) &&
+           (data_type != Tango::DEV_ENUM))
         {
             double db;
             float fl;
@@ -351,330 +370,402 @@ inline void WAttribute::set_max_value(const std::string &new_max_value_str)
             TangoSys_MemStream str;
             str.precision(TANGO_FLOAT_PRECISION);
             str << max_value_str_tmp;
-            switch (data_type)
+            switch(data_type)
             {
             case Tango::DEV_SHORT:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                set_max_value((DevShort)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                set_max_value((DevShort) db);
                 break;
 
             case Tango::DEV_LONG:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                set_max_value((DevLong)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                set_max_value((DevLong) db);
                 break;
 
             case Tango::DEV_LONG64:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                set_max_value((DevLong64)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                set_max_value((DevLong64) db);
                 break;
 
             case Tango::DEV_DOUBLE:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
                 set_max_value(db);
                 break;
 
             case Tango::DEV_FLOAT:
-                if (!(str >> fl && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
+                if(!(str >> fl && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
                 set_max_value(fl);
                 break;
 
             case Tango::DEV_USHORT:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                (db < 0.0) ? set_max_value((DevUShort)(-db)) : set_max_value((DevUShort)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((DevUShort) (-db)) : set_max_value((DevUShort) db);
                 break;
 
             case Tango::DEV_UCHAR:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                (db < 0.0) ? set_max_value((DevUChar)(-db)) : set_max_value((DevUChar)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((DevUChar) (-db)) : set_max_value((DevUChar) db);
                 break;
 
             case Tango::DEV_ULONG:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                (db < 0.0) ? set_max_value((DevULong)(-db)) : set_max_value((DevULong)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((DevULong) (-db)) : set_max_value((DevULong) db);
                 break;
 
             case Tango::DEV_ULONG64:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                (db < 0.0) ? set_max_value((DevULong64)(-db)) : set_max_value((DevULong64)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((DevULong64) (-db)) : set_max_value((DevULong64) db);
                 break;
 
             case Tango::DEV_ENCODED:
-                if (!(str >> db && str.eof()))
-                    throw_err_format("max_value",dev_name,"WAttribute::set_max_value()");
-                (db < 0.0) ? set_max_value((DevUChar)(-db)) : set_max_value((DevUChar)db);
+                if(!(str >> db && str.eof()))
+                {
+                    throw_err_format("max_value", dev_name, "WAttribute::set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((DevUChar) (-db)) : set_max_value((DevUChar) db);
                 break;
             }
         }
         else
-            throw_err_data_type("max_value",dev_name,"WAttribute::set_max_value()");
+        {
+            throw_err_data_type("max_value", dev_name, "WAttribute::set_max_value()");
+        }
     }
 }
 
-template<>
-inline const Tango::DevShort*& WAttribute::get_write_value_ptr()
+template <>
+inline const Tango::DevShort *&WAttribute::get_write_value_ptr()
 {
     return short_ptr;
 }
-template<>
-inline Tango::DevVarShortArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarShortArray &WAttribute::get_last_written_value()
 {
     return short_array_val;
 }
-template<>
-inline Tango::DevShort& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevShort &WAttribute::get_write_value()
 {
     return short_val;
 }
-template<>
-inline Tango::DevShort& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevShort &WAttribute::get_old_value()
 {
     return old_short_val;
 }
-template<>
-inline const Tango::DevUShort*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevUShort *&WAttribute::get_write_value_ptr()
 {
     return ushort_ptr;
 }
-template<>
-inline Tango::DevVarUShortArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarUShortArray &WAttribute::get_last_written_value()
 {
     return ushort_array_val;
 }
-template<>
-inline Tango::DevUShort& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevUShort &WAttribute::get_write_value()
 {
     return ushort_val;
 }
-template<>
-inline Tango::DevUShort& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevUShort &WAttribute::get_old_value()
 {
     return old_ushort_val;
 }
-template<>
-inline const Tango::DevLong*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevLong *&WAttribute::get_write_value_ptr()
 {
     return long_ptr;
 }
-template<>
-inline Tango::DevVarLongArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarLongArray &WAttribute::get_last_written_value()
 {
     return long_array_val;
 }
-template<>
-inline Tango::DevLong& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevLong &WAttribute::get_write_value()
 {
     return long_val;
 }
-template<>
-inline Tango::DevLong& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevLong &WAttribute::get_old_value()
 {
     return old_long_val;
 }
-template<>
-inline const Tango::DevULong*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevULong *&WAttribute::get_write_value_ptr()
 {
     return ulong_ptr;
 }
-template<>
-inline Tango::DevVarULongArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarULongArray &WAttribute::get_last_written_value()
 {
     return ulong_array_val;
 }
-template<>
-inline Tango::DevULong& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevULong &WAttribute::get_write_value()
 {
     return ulong_val;
 }
-template<>
-inline Tango::DevULong& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevULong &WAttribute::get_old_value()
 {
     return old_ulong_val;
 }
-template<>
-inline const Tango::DevLong64*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevLong64 *&WAttribute::get_write_value_ptr()
 {
     return long64_ptr;
 }
-template<>
-inline Tango::DevVarLong64Array& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarLong64Array &WAttribute::get_last_written_value()
 {
     return long64_array_val;
 }
-template<>
-inline Tango::DevLong64& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevLong64 &WAttribute::get_write_value()
 {
     return long64_val;
 }
-template<>
-inline Tango::DevLong64& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevLong64 &WAttribute::get_old_value()
 {
     return old_long64_val;
 }
-template<>
-inline const Tango::DevULong64*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevULong64 *&WAttribute::get_write_value_ptr()
 {
     return ulong64_ptr;
 }
-template<>
-inline Tango::DevVarULong64Array& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarULong64Array &WAttribute::get_last_written_value()
 {
     return ulong64_array_val;
 }
-template<>
-inline Tango::DevULong64& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevULong64 &WAttribute::get_write_value()
 {
     return ulong64_val;
 }
-template<>
-inline Tango::DevULong64& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevULong64 &WAttribute::get_old_value()
 {
     return old_ulong64_val;
 }
-template<>
-inline const Tango::DevDouble*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevDouble *&WAttribute::get_write_value_ptr()
 {
     return double_ptr;
 }
-template<>
-inline Tango::DevVarDoubleArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarDoubleArray &WAttribute::get_last_written_value()
 {
     return double_array_val;
 }
-template<>
-inline Tango::DevDouble& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevDouble &WAttribute::get_write_value()
 {
     return double_val;
 }
-template<>
-inline Tango::DevDouble& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevDouble &WAttribute::get_old_value()
 {
     return old_double_val;
 }
-template<>
-inline const Tango::DevFloat*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevFloat *&WAttribute::get_write_value_ptr()
 {
     return float_ptr;
 }
-template<>
-inline Tango::DevVarFloatArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarFloatArray &WAttribute::get_last_written_value()
 {
     return float_array_val;
 }
-template<>
-inline Tango::DevFloat& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevFloat &WAttribute::get_write_value()
 {
     return float_val;
 }
-template<>
-inline Tango::DevFloat& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevFloat &WAttribute::get_old_value()
 {
     return old_float_val;
 }
-template<>
-inline const Tango::ConstDevString*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::ConstDevString *&WAttribute::get_write_value_ptr()
 {
     return str_ptr;
 }
-template<>
-inline Tango::DevVarStringArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarStringArray &WAttribute::get_last_written_value()
 {
     return str_array_val;
 }
-template<>
-inline Tango::DevString& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevString &WAttribute::get_write_value()
 {
     return str_val;
 }
-template<>
-inline Tango::DevString& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevString &WAttribute::get_old_value()
 {
     return old_str_val;
 }
-template<>
-inline const Tango::DevState*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevState *&WAttribute::get_write_value_ptr()
 {
     return state_ptr;
 }
-template<>
-inline Tango::DevVarStateArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarStateArray &WAttribute::get_last_written_value()
 {
     return state_array_val;
 }
-template<>
-inline Tango::DevState& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevState &WAttribute::get_write_value()
 {
     return dev_state_val;
 }
-template<>
-inline Tango::DevState& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevState &WAttribute::get_old_value()
 {
     return old_dev_state_val;
 }
-template<>
-inline const Tango::DevBoolean*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevBoolean *&WAttribute::get_write_value_ptr()
 {
     return boolean_ptr;
 }
-template<>
-inline Tango::DevVarBooleanArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarBooleanArray &WAttribute::get_last_written_value()
 {
     return boolean_array_val;
 }
-template<>
-inline Tango::DevBoolean& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevBoolean &WAttribute::get_write_value()
 {
     return boolean_val;
 }
-template<>
-inline Tango::DevBoolean& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevBoolean &WAttribute::get_old_value()
 {
     return old_boolean_val;
 }
-template<>
-inline const Tango::DevEncoded*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevEncoded *&WAttribute::get_write_value_ptr()
 {
     return encoded_ptr;
 }
-template<>
-inline Tango::DevEncoded& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevEncoded &WAttribute::get_write_value()
 {
     return encoded_val;
 }
-template<>
-inline Tango::DevEncoded& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevEncoded &WAttribute::get_old_value()
 {
     return old_encoded_val;
 }
-template<>
-inline const Tango::DevUChar*& WAttribute::get_write_value_ptr()
+
+template <>
+inline const Tango::DevUChar *&WAttribute::get_write_value_ptr()
 {
     return uchar_ptr;
 }
-template<>
-inline Tango::DevVarCharArray& WAttribute::get_last_written_value()
+
+template <>
+inline Tango::DevVarCharArray &WAttribute::get_last_written_value()
 {
     return uchar_array_val;
 }
-template<>
-inline Tango::DevUChar& WAttribute::get_write_value()
+
+template <>
+inline Tango::DevUChar &WAttribute::get_write_value()
 {
     return uchar_val;
 }
-template<>
-inline Tango::DevUChar& WAttribute::get_old_value()
+
+template <>
+inline Tango::DevUChar &WAttribute::get_old_value()
 {
     return old_uchar_val;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _WATTRIBUTE_SPEC_TPP

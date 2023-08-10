@@ -21,32 +21,32 @@
 /// NO PRODUCTION CODE
 /// NO ERROR CHECKS
 
-std::string  abs_change_according_last_event = "-not yet set-";
-std::string  rel_change_according_last_event = "-not yet set-";
+std::string abs_change_according_last_event = "-not yet set-";
+std::string rel_change_according_last_event = "-not yet set-";
 
 class ConfigChangedEventCallback : public Tango::CallBack
 {
-public:
-        ConfigChangedEventCallback() { }
-        ~ConfigChangedEventCallback() { }
-        void push_event( Tango::AttrConfEventData* ed );
+  public:
+    ConfigChangedEventCallback() { }
+
+    ~ConfigChangedEventCallback() { }
+
+    void push_event(Tango::AttrConfEventData *ed);
 };
 
-
-void ConfigChangedEventCallback::push_event( Tango::AttrConfEventData* ed )
+void ConfigChangedEventCallback::push_event(Tango::AttrConfEventData *ed)
 {
-        abs_change_according_last_event = ed->attr_conf->events.ch_event.abs_change;
-        rel_change_according_last_event = ed->attr_conf->events.ch_event.rel_change;
+    abs_change_according_last_event = ed->attr_conf->events.ch_event.abs_change;
+    rel_change_according_last_event = ed->attr_conf->events.ch_event.rel_change;
 
-//    TEST_LOG << "[ConfigChangedEventCallback]: push_event( AttrConfEventData ) entering for:" << endl
-//             << "[ConfigChangedEventCallback]: " << ed->attr_name << endl
-//             << "[ConfigChangedEventCallback]: event type: " << ed->event << endl
-//             << "[ConfigChangedEventCallback]: err: " << ed->err << endl
-//            << "[ConfigChangedEventCallback]: abs_change: " << abs_change_according_last_event << endl
-//             << "[ConfigChangedEventCallback]: rel_change: " << rel_change_according_last_event << endl
-//             << "[ConfigChangedEventCallback]: push_event( AttrConfEventData ) leaving." << endl;
+    //    TEST_LOG << "[ConfigChangedEventCallback]: push_event( AttrConfEventData ) entering for:" << endl
+    //             << "[ConfigChangedEventCallback]: " << ed->attr_name << endl
+    //             << "[ConfigChangedEventCallback]: event type: " << ed->event << endl
+    //             << "[ConfigChangedEventCallback]: err: " << ed->err << endl
+    //            << "[ConfigChangedEventCallback]: abs_change: " << abs_change_according_last_event << endl
+    //             << "[ConfigChangedEventCallback]: rel_change: " << rel_change_according_last_event << endl
+    //             << "[ConfigChangedEventCallback]: push_event( AttrConfEventData ) leaving." << endl;
 }
-
 
 int main(int argc, char **argv)
 {
@@ -54,86 +54,90 @@ int main(int argc, char **argv)
     Tango::AttributeInfoEx ai;
     Tango::AttributeInfoListEx ail;
     Tango::DeviceProxy *dev;
-    ConfigChangedEventCallback * configChangedEventCallback = new ConfigChangedEventCallback();
+    ConfigChangedEventCallback *configChangedEventCallback = new ConfigChangedEventCallback();
 
-    if (argc != 2)
+    if(argc != 2)
     {
         TEST_LOG << "usage: ConfEventBugClient <device>" << endl;
         exit(-1);
     }
 
     string dn(argv[1]);
-    string an( "double_attr" );
+    string an("double_attr");
     string resetValue = "Not specified";
-//        string resetValue = "NaN";
+    //        string resetValue = "NaN";
 
-//        TEST_LOG << "[main]: This program assumes that  \"TangoTest test\"  is running" << endl;
-//        TEST_LOG << "[main]: connect to " << dn
-//             << "  TANGO_HOST="
-//             << (getenv( "TANGO_HOST" ) != NULL ? getenv( "TANGO_HOST" ) : "not set")
-//             << endl;
+    //        TEST_LOG << "[main]: This program assumes that  \"TangoTest test\"  is running" << endl;
+    //        TEST_LOG << "[main]: connect to " << dn
+    //             << "  TANGO_HOST="
+    //             << (getenv( "TANGO_HOST" ) != NULL ? getenv( "TANGO_HOST" ) : "not set")
+    //             << endl;
 
-    dev = new Tango::DeviceProxy( dn );
-//        TEST_LOG << "[main]: ok, connected." << endl;
+    dev = new Tango::DeviceProxy(dn);
+    //        TEST_LOG << "[main]: ok, connected." << endl;
 
-        // put into a defined state:
-    ai = dev->attribute_query( an );
+    // put into a defined state:
+    ai = dev->attribute_query(an);
     ai.events.ch_event.abs_change = "33333";
     ai.events.ch_event.rel_change = "99.99";
-//        TEST_LOG << "[main]: for " << an << ": set abs_change to: " << ai.events.ch_event.abs_change << endl;
-//        TEST_LOG << "[main]: for " << an << ": set rel_change to: " << ai.events.ch_event.rel_change << endl;
-    ail.push_back( ai );
-    dev->set_attribute_config( ail );
+    //        TEST_LOG << "[main]: for " << an << ": set abs_change to: " << ai.events.ch_event.abs_change << endl;
+    //        TEST_LOG << "[main]: for " << an << ": set rel_change to: " << ai.events.ch_event.rel_change << endl;
+    ail.push_back(ai);
+    dev->set_attribute_config(ail);
 
-//        TEST_LOG << "[main]: make a subscribe_event() for: attribute configuration changed, " << an << endl;
-    const vector< string >  filters;
-    dev -> subscribe_event( an, Tango::ATTR_CONF_EVENT, configChangedEventCallback, filters );
-//        TEST_LOG << "[main]: subscribe_event() done." << endl << endl;
+    //        TEST_LOG << "[main]: make a subscribe_event() for: attribute configuration changed, " << an << endl;
+    const vector<string> filters;
+    dev->subscribe_event(an, Tango::ATTR_CONF_EVENT, configChangedEventCallback, filters);
+    //        TEST_LOG << "[main]: subscribe_event() done." << endl << endl;
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
-//        TEST_LOG << "[main]: current setting according configuration changed event: abs_chang=" <<  abs_change_according_last_event << endl;
-//        TEST_LOG << "[main]: current setting according configuration changed event: rel_chang=" <<  rel_change_according_last_event << endl;
+    //        TEST_LOG << "[main]: current setting according configuration changed event: abs_chang=" <<
+    //        abs_change_according_last_event << endl; TEST_LOG << "[main]: current setting according configuration
+    //        changed event: rel_chang=" <<  rel_change_according_last_event << endl;
 
     // try to reset:
-    ai = dev->attribute_query( an );
+    ai = dev->attribute_query(an);
     ai.events.ch_event.abs_change = resetValue;
     ai.events.ch_event.rel_change = resetValue;
     ail.clear();
-    ail.push_back( ai );
-    dev->set_attribute_config( ail );
+    ail.push_back(ai);
+    dev->set_attribute_config(ail);
 
-//        TEST_LOG << "[main]: clearing setting for rel/abs_change.  Wait for a config changed event ..." << endl;
+    //        TEST_LOG << "[main]: clearing setting for rel/abs_change.  Wait for a config changed event ..." << endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     // bug demonstration:
-//    TEST_LOG << "[main]: doing a query for configuration from server: dev->attribute_query() ..." << endl;
-    ai = dev->attribute_query( an );
-//    TEST_LOG << "[main]: setting as seen by server:                                abs_change=" << ai.events.ch_event.abs_change << endl;
-//    TEST_LOG << "[main]: setting as seen by client due to the config change event: abs_change=" << abs_change_according_last_event << endl;
-//    TEST_LOG << "[main]: setting as seen by server:                                rel_change=" << ai.events.ch_event.rel_change << endl;
-//    TEST_LOG << "[main]: setting as seen by client due to the config change event: rel_change=" << rel_change_according_last_event << endl;
+    //    TEST_LOG << "[main]: doing a query for configuration from server: dev->attribute_query() ..." << endl;
+    ai = dev->attribute_query(an);
+    //    TEST_LOG << "[main]: setting as seen by server:                                abs_change=" <<
+    //    ai.events.ch_event.abs_change << endl; TEST_LOG << "[main]: setting as seen by client due to the config change
+    //    event: abs_change=" << abs_change_according_last_event << endl; TEST_LOG << "[main]: setting as seen by
+    //    server:                                rel_change=" << ai.events.ch_event.rel_change << endl; TEST_LOG <<
+    //    "[main]: setting as seen by client due to the config change event: rel_change=" <<
+    //    rel_change_according_last_event << endl;
 
-    assert (abs_change_according_last_event == resetValue);
-    assert (rel_change_according_last_event == resetValue);
+    assert(abs_change_according_last_event == resetValue);
+    assert(rel_change_according_last_event == resetValue);
 
-/*    if( abs_change_according_last_event != resetValue
-     || rel_change_according_last_event != resetValue )
-    {
-        rc = -1;
-        TEST_LOG << endl << "[main]: BUG: could not reset setting." << endl;
-    }*/
+    /*    if( abs_change_according_last_event != resetValue
+         || rel_change_according_last_event != resetValue )
+        {
+            rc = -1;
+            TEST_LOG << endl << "[main]: BUG: could not reset setting." << endl;
+        }*/
 
-    assert (ai.events.ch_event.abs_change == abs_change_according_last_event);
-    assert (ai.events.ch_event.rel_change == rel_change_according_last_event);
+    assert(ai.events.ch_event.abs_change == abs_change_according_last_event);
+    assert(ai.events.ch_event.rel_change == rel_change_according_last_event);
 
-/*    if( ai.events.ch_event.abs_change != abs_change_according_last_event
-     || ai.events.ch_event.rel_change != rel_change_according_last_event )
-    {
-        rc = -1;
-        TEST_LOG << endl << "[main]: BUG: server sent a config changed event with correct data, but did not update the data internal." << endl;
-    }*/
+    /*    if( ai.events.ch_event.abs_change != abs_change_according_last_event
+         || ai.events.ch_event.rel_change != rel_change_according_last_event )
+        {
+            rc = -1;
+            TEST_LOG << endl << "[main]: BUG: server sent a config changed event with correct data, but did not update
+       the data internal." << endl;
+        }*/
 
-//    TEST_LOG << endl;
+    //    TEST_LOG << endl;
     TEST_LOG << "   Resetting attribute event configuration parameters --> OK" << endl;
     return rc;
 }

@@ -55,15 +55,13 @@ namespace Tango
 
 class DevStatusCmd : public Command
 {
-public:
-    DevStatusCmd(const char *cmd_name,
-             Tango::CmdArgType in,
-             Tango::CmdArgType out);
-    ~DevStatusCmd() {}
+  public:
+    DevStatusCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    virtual CORBA::Any * execute(DeviceImpl *device,const CORBA::Any &in_any);
+    ~DevStatusCmd() { }
+
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
-
 
 //=============================================================================
 //
@@ -75,17 +73,14 @@ public:
 //
 //=============================================================================
 
-
 class DevStateCmd : public Command
 {
-public:
+  public:
+    DevStateCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    DevStateCmd(const char *cmd_name,
-            Tango::CmdArgType in,
-            Tango::CmdArgType out);
-    ~DevStateCmd() {}
+    ~DevStateCmd() { }
 
-    virtual CORBA::Any * execute(DeviceImpl *device,const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
@@ -99,19 +94,16 @@ public:
 //
 //=============================================================================
 
-
 class DevInitCmd : public Command
 {
-public:
+  public:
+    DevInitCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    DevInitCmd(const char *cmd_name,
-            Tango::CmdArgType in,
-            Tango::CmdArgType out);
-    ~DevInitCmd() {}
+    ~DevInitCmd() { }
 
-    virtual CORBA::Any * execute(DeviceImpl *device,const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _BASICCOMMAND_H

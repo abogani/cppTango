@@ -8,11 +8,11 @@
 
 class EventCallBack : public CountingCallBack<Tango::DevIntrChangeEventData>
 {
-public:
+  public:
     std::string cb_err_reason;
 
-private:
-    bool process_event(Tango::DevIntrChangeEventData* event) override
+  private:
+    bool process_event(Tango::DevIntrChangeEventData *event) override
     {
         TS_ASSERT_EQUALS(event->errors.length(), 1u);
         cb_err_reason = event->errors[0].reason;
@@ -23,10 +23,9 @@ private:
 
 class DevIntrNotRunningTest : public CxxTest::TestSuite
 {
-public:
+  public:
     SUITE_NAME()
     {
-
         CxxTest::TangoPrinter::validate_args();
     }
 
@@ -42,35 +41,35 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
     void test_not_running_error()
     {
-    try
-    {
-      // connect to a defined device which is not running
-      auto device = std::make_shared<DeviceProxy>("sys/tg_test/1");
+        try
+        {
+            // connect to a defined device which is not running
+            auto device = std::make_shared<DeviceProxy>("sys/tg_test/1");
 
-      EventCallBack cb{};
+            EventCallBack cb{};
 
-      device->subscribe_event(Tango::INTERFACE_CHANGE_EVENT, &cb, true);
+            device->subscribe_event(Tango::INTERFACE_CHANGE_EVENT, &cb, true);
 
-      TS_ASSERT_EQUALS(cb.invocation_count(), 1);
-      TS_ASSERT_EQUALS(cb.error_count(), 1);
-      TS_ASSERT_EQUALS(cb.cb_err_reason, std::string(API_CantConnectToDevice));
+            TS_ASSERT_EQUALS(cb.invocation_count(), 1);
+            TS_ASSERT_EQUALS(cb.error_count(), 1);
+            TS_ASSERT_EQUALS(cb.cb_err_reason, std::string(API_CantConnectToDevice));
+        }
+        catch(Tango::DevFailed &e)
+        {
+            Except::print_exception(e);
+            TS_FAIL("Unexpected exception");
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            TS_FAIL("Unexpected exception");
+        }
     }
-    catch (Tango::DevFailed &e)
-    {
-      Except::print_exception(e);
-      TS_FAIL("Unexpected exception");
-    }
-    catch (CORBA::Exception &e)
-    {
-      Except::print_exception(e);
-      TS_FAIL("Unexpected exception");
-    }
-  }
 };
 
 #endif // DevIntrNR_h

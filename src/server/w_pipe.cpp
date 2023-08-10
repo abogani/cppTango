@@ -45,8 +45,9 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-WPipe::WPipe(const std::string &_name,Tango::DispLevel _level)
-:Pipe(_name,_level,PIPE_READ_WRITE),w_ext(new WPipeExt)
+WPipe::WPipe(const std::string &_name, Tango::DispLevel _level) :
+    Pipe(_name, _level, PIPE_READ_WRITE),
+    w_ext(new WPipeExt)
 {
 }
 
@@ -66,5 +67,4 @@ WPipe &WPipe::operator[](const std::string &_na)
     return *this;
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

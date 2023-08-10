@@ -46,9 +46,8 @@ namespace Tango
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *dev_attr)
+inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *dev_attr)
 {
-
     CORBA::Long *tmp_lo;
     CORBA::Short *tmp_sh;
     CORBA::Double *tmp_db;
@@ -63,7 +62,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
     Tango::DevState *tmp_state;
     Tango::DevEncoded *tmp_enc;
 
-    CORBA::ULong max,len;
+    CORBA::ULong max, len;
 
     dev_attr->name = attr_value->name;
     dev_attr->quality = attr_value->quality;
@@ -75,277 +74,275 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value,DeviceAttribute *de
     dev_attr->set_w_dim_y(attr_value->w_dim.dim_y);
     dev_attr->err_list = new DevErrorList(attr_value->err_list);
 
-    if (dev_attr->quality != Tango::ATTR_INVALID)
+    if(dev_attr->quality != Tango::ATTR_INVALID)
     {
-        switch (attr_value->value._d())
+        switch(attr_value->value._d())
         {
-            case ATT_BOOL:
+        case ATT_BOOL:
+        {
+            const DevVarBooleanArray &tmp_seq = attr_value->value.bool_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                const DevVarBooleanArray &tmp_seq = attr_value->value.bool_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_boo = (const_cast<DevVarBooleanArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->BooleanSeq = new DevVarBooleanArray(max,len,tmp_boo,true);
-                }
-                else
-                {
-                    tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq.get_buffer());
-                    dev_attr->BooleanSeq = new DevVarBooleanArray(max,len,tmp_boo,false);
-                }
-                dev_attr->data_type = Tango::DEV_BOOLEAN;
+                tmp_boo = (const_cast<DevVarBooleanArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
             }
-            break;
-
-            case ATT_SHORT:
+            else
             {
-                const DevVarShortArray &tmp_seq = attr_value->value.short_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_sh = (const_cast<DevVarShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->ShortSeq = new DevVarShortArray(max,len,tmp_sh,true);
-                }
-                else
-                {
-                    tmp_sh = const_cast<CORBA::Short *>(tmp_seq.get_buffer());
-                    dev_attr->ShortSeq = new DevVarShortArray(max,len,tmp_sh,false);
-                }
-                dev_attr->data_type = Tango::DEV_SHORT;
+                tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq.get_buffer());
+                dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_BOOLEAN;
+        }
+        break;
 
-            case ATT_LONG:
+        case ATT_SHORT:
+        {
+            const DevVarShortArray &tmp_seq = attr_value->value.short_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                const DevVarLongArray &tmp_seq = attr_value->value.long_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_lo = (const_cast<DevVarLongArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->LongSeq = new DevVarLongArray(max,len,tmp_lo,true);
-                }
-                else
-                {
-                    tmp_lo = const_cast<CORBA::Long *>(tmp_seq.get_buffer());
-                    dev_attr->LongSeq = new DevVarLongArray(max,len,tmp_lo,false);
-                }
-                dev_attr->data_type = Tango::DEV_LONG;
+                tmp_sh = (const_cast<DevVarShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
             }
-            break;
-
-            case ATT_LONG64:
+            else
             {
-                const DevVarLong64Array &tmp_seq = attr_value->value.long64_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_lolo = (const_cast<DevVarLong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->Long64Seq = new DevVarLong64Array(max,len,tmp_lolo,true);
-                }
-                else
-                {
-                    tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq.get_buffer());
-                    dev_attr->Long64Seq = new DevVarLong64Array(max,len,tmp_lolo,false);
-                }
-                dev_attr->data_type = Tango::DEV_LONG64;
+                tmp_sh = const_cast<CORBA::Short *>(tmp_seq.get_buffer());
+                dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_SHORT;
+        }
+        break;
 
-            case ATT_FLOAT:
+        case ATT_LONG:
+        {
+            const DevVarLongArray &tmp_seq = attr_value->value.long_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                const DevVarFloatArray &tmp_seq = attr_value->value.float_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_fl = (const_cast<DevVarFloatArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->FloatSeq = new DevVarFloatArray(max,len,tmp_fl,true);
-                }
-                else
-                {
-                    tmp_fl = const_cast<CORBA::Float *>(tmp_seq.get_buffer());
-                    dev_attr->FloatSeq = new DevVarFloatArray(max,len,tmp_fl,false);
-                }
-                dev_attr->data_type = Tango::DEV_FLOAT;
+                tmp_lo = (const_cast<DevVarLongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
             }
-            break;
-
-            case ATT_DOUBLE:
+            else
             {
-                const DevVarDoubleArray &tmp_seq = attr_value->value.double_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_db = (const_cast<DevVarDoubleArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->DoubleSeq = new DevVarDoubleArray(max,len,tmp_db,true);
-                }
-                else
-                {
-                    tmp_db = const_cast<CORBA::Double *>(tmp_seq.get_buffer());
-                    dev_attr->DoubleSeq = new DevVarDoubleArray(max,len,tmp_db,false);
-                }
-                dev_attr->data_type = Tango::DEV_DOUBLE;
+                tmp_lo = const_cast<CORBA::Long *>(tmp_seq.get_buffer());
+                dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_LONG;
+        }
+        break;
 
-            case ATT_UCHAR:
+        case ATT_LONG64:
+        {
+            const DevVarLong64Array &tmp_seq = attr_value->value.long64_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                const DevVarCharArray &tmp_seq = attr_value->value.uchar_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_uch = (const_cast<DevVarCharArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->UCharSeq = new DevVarCharArray(max,len,tmp_uch,true);
-                }
-                else
-                {
-                    tmp_uch = const_cast<CORBA::Octet *>(tmp_seq.get_buffer());
-                    dev_attr->UCharSeq = new DevVarCharArray(max,len,tmp_uch,false);
-                }
-                dev_attr->data_type = Tango::DEV_UCHAR;
+                tmp_lolo = (const_cast<DevVarLong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
             }
-            break;
-
-            case ATT_USHORT:
+            else
             {
-                const DevVarUShortArray &tmp_seq = attr_value->value.ushort_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_ush = (const_cast<DevVarUShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->UShortSeq = new DevVarUShortArray(max,len,tmp_ush,true);
-                }
-                else
-                {
-                    tmp_ush = const_cast<CORBA::UShort *>(tmp_seq.get_buffer());
-                    dev_attr->UShortSeq = new DevVarUShortArray(max,len,tmp_ush,false);
-                }
-                dev_attr->data_type = Tango::DEV_USHORT;
+                tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq.get_buffer());
+                dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_LONG64;
+        }
+        break;
 
-            case ATT_ULONG:
+        case ATT_FLOAT:
+        {
+            const DevVarFloatArray &tmp_seq = attr_value->value.float_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                const DevVarULongArray &tmp_seq = attr_value->value.ulong_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_ulo = (const_cast<DevVarULongArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->ULongSeq = new DevVarULongArray(max,len,tmp_ulo,true);
-                }
-                else
-                {
-                    tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq.get_buffer());
-                    dev_attr->ULongSeq = new DevVarULongArray(max,len,tmp_ulo,false);
-                }
-                dev_attr->data_type = Tango::DEV_ULONG;
+                tmp_fl = (const_cast<DevVarFloatArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
             }
-            break;
-
-            case ATT_ULONG64:
+            else
             {
-                const DevVarULong64Array &tmp_seq = attr_value->value.ulong64_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_ulolo = (const_cast<DevVarULong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->ULong64Seq = new DevVarULong64Array(max,len,tmp_ulolo,true);
-                }
-                else
-                {
-                    tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq.get_buffer());
-                    dev_attr->ULong64Seq = new DevVarULong64Array(max,len,tmp_ulolo,false);
-                }
-                dev_attr->data_type = Tango::DEV_ULONG64;
+                tmp_fl = const_cast<CORBA::Float *>(tmp_seq.get_buffer());
+                dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_FLOAT;
+        }
+        break;
 
-            case ATT_STRING:
+        case ATT_DOUBLE:
+        {
+            const DevVarDoubleArray &tmp_seq = attr_value->value.double_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                const DevVarStringArray &tmp_seq = attr_value->value.string_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_str = (const_cast<DevVarStringArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->StringSeq = new DevVarStringArray(max,len,tmp_str,true);
-                }
-                else
-                {
-                    tmp_str = const_cast<char **>(tmp_seq.get_buffer());
-                    dev_attr->StringSeq = new DevVarStringArray(max,len,tmp_str,false);
-                }
-                dev_attr->data_type = Tango::DEV_STRING;
+                tmp_db = (const_cast<DevVarDoubleArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
             }
-            break;
-
-            case ATT_STATE:
+            else
             {
-                const DevVarStateArray &tmp_seq = attr_value->value.state_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_state = (const_cast<DevVarStateArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->StateSeq = new DevVarStateArray(max,len,tmp_state,true);
-                }
-                else
-                {
-                    tmp_state = const_cast<Tango::DevState *>(tmp_seq.get_buffer());
-                    dev_attr->StateSeq = new DevVarStateArray(max,len,tmp_state,false);
-                }
-                dev_attr->data_type = Tango::DEV_STATE;
+                tmp_db = const_cast<CORBA::Double *>(tmp_seq.get_buffer());
+                dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_DOUBLE;
+        }
+        break;
 
-            case DEVICE_STATE:
+        case ATT_UCHAR:
+        {
+            const DevVarCharArray &tmp_seq = attr_value->value.uchar_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                dev_attr->d_state = attr_value->value.dev_state_att();
-                dev_attr->d_state_filled = true;
-                dev_attr->data_type = Tango::DEV_STATE;
+                tmp_uch = (const_cast<DevVarCharArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
             }
-            break;
-
-            case ATT_ENCODED:
+            else
             {
-                const DevVarEncodedArray &tmp_seq = attr_value->value.encoded_att_value();
-                max = tmp_seq.maximum();
-                len = tmp_seq.length();
-                if (tmp_seq.release() == true)
-                {
-                    tmp_enc = (const_cast<DevVarEncodedArray &>(tmp_seq)).get_buffer((CORBA::Boolean)true);
-                    dev_attr->EncodedSeq = new DevVarEncodedArray(max,len,tmp_enc,true);
-                }
-                else
-                {
-                    tmp_enc = const_cast<Tango::DevEncoded *>(tmp_seq.get_buffer());
-                    dev_attr->EncodedSeq = new DevVarEncodedArray(max,len,tmp_enc,false);
-                }
-                dev_attr->data_type = Tango::DEV_ENCODED;
+                tmp_uch = const_cast<CORBA::Octet *>(tmp_seq.get_buffer());
+                dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, false);
             }
-            break;
+            dev_attr->data_type = Tango::DEV_UCHAR;
+        }
+        break;
 
-            case ATT_NO_DATA:
+        case ATT_USHORT:
+        {
+            const DevVarUShortArray &tmp_seq = attr_value->value.ushort_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
             {
-                dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+                tmp_ush = (const_cast<DevVarUShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
             }
-            break;
+            else
+            {
+                tmp_ush = const_cast<CORBA::UShort *>(tmp_seq.get_buffer());
+                dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, false);
+            }
+            dev_attr->data_type = Tango::DEV_USHORT;
+        }
+        break;
 
-            default:
-                dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+        case ATT_ULONG:
+        {
+            const DevVarULongArray &tmp_seq = attr_value->value.ulong_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
+            {
+                tmp_ulo = (const_cast<DevVarULongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
+            }
+            else
+            {
+                tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq.get_buffer());
+                dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, false);
+            }
+            dev_attr->data_type = Tango::DEV_ULONG;
+        }
+        break;
+
+        case ATT_ULONG64:
+        {
+            const DevVarULong64Array &tmp_seq = attr_value->value.ulong64_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
+            {
+                tmp_ulolo = (const_cast<DevVarULong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
+            }
+            else
+            {
+                tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq.get_buffer());
+                dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, false);
+            }
+            dev_attr->data_type = Tango::DEV_ULONG64;
+        }
+        break;
+
+        case ATT_STRING:
+        {
+            const DevVarStringArray &tmp_seq = attr_value->value.string_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
+            {
+                tmp_str = (const_cast<DevVarStringArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
+            }
+            else
+            {
+                tmp_str = const_cast<char **>(tmp_seq.get_buffer());
+                dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, false);
+            }
+            dev_attr->data_type = Tango::DEV_STRING;
+        }
+        break;
+
+        case ATT_STATE:
+        {
+            const DevVarStateArray &tmp_seq = attr_value->value.state_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
+            {
+                tmp_state = (const_cast<DevVarStateArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
+            }
+            else
+            {
+                tmp_state = const_cast<Tango::DevState *>(tmp_seq.get_buffer());
+                dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, false);
+            }
+            dev_attr->data_type = Tango::DEV_STATE;
+        }
+        break;
+
+        case DEVICE_STATE:
+        {
+            dev_attr->d_state = attr_value->value.dev_state_att();
+            dev_attr->d_state_filled = true;
+            dev_attr->data_type = Tango::DEV_STATE;
+        }
+        break;
+
+        case ATT_ENCODED:
+        {
+            const DevVarEncodedArray &tmp_seq = attr_value->value.encoded_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release() == true)
+            {
+                tmp_enc = (const_cast<DevVarEncodedArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->EncodedSeq = new DevVarEncodedArray(max, len, tmp_enc, true);
+            }
+            else
+            {
+                tmp_enc = const_cast<Tango::DevEncoded *>(tmp_seq.get_buffer());
+                dev_attr->EncodedSeq = new DevVarEncodedArray(max, len, tmp_enc, false);
+            }
+            dev_attr->data_type = Tango::DEV_ENCODED;
+        }
+        break;
+
+        case ATT_NO_DATA:
+        {
+            dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+        }
+        break;
+
+        default:
+            dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
         }
     }
 }
 
-
-
-} // End of tango namespace
+} // namespace Tango

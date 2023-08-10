@@ -30,12 +30,14 @@
 
 #include <tango/common/log4tango/Portability.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // Class : LogInitiator
 //-----------------------------------------------------------------------------
-struct LogInitiator {
+struct LogInitiator
+{
     explicit LogInitiator() = default;
 };
 
@@ -44,7 +46,8 @@ constexpr LogInitiator _begin_log{};
 //-----------------------------------------------------------------------------
 // Class : LogSeparator
 //-----------------------------------------------------------------------------
-struct LogSeparator {
+struct LogSeparator
+{
     explicit LogSeparator() = default;
 };
 

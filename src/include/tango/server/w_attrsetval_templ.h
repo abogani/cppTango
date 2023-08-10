@@ -52,38 +52,36 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-
 template <typename T>
 void WAttribute::get_write_value(T &data)
 {
-//
-// First some check on user type
-//
+    //
+    // First some check on user type
+    //
 
     check_type<T>("WAttribute::get_write_value");
 
-//
-// Then, init user data
-//
+    //
+    // Then, init user data
+    //
 
     data = static_cast<T>(short_val);
 }
 
-
 template <typename T>
 void WAttribute::get_write_value(const T *&ptr)
 {
-//
-// First some check on user type
-//
+    //
+    // First some check on user type
+    //
 
     check_type<T>("WAttribute::get_write_value");
 
-//
-// Then, init user data
-//
+    //
+    // Then, init user data
+    //
 
-    ptr = (const T *)short_ptr;
+    ptr = (const T *) short_ptr;
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -104,10 +102,10 @@ void WAttribute::get_write_value(const T *&ptr)
 template <typename T>
 void WAttribute::check_type(const std::string &origin)
 {
-    bool short_enum = std::is_same<short,typename std::underlying_type<T>::type>::value;
-    bool uns_int_enum = std::is_same<unsigned int,typename std::underlying_type<T>::type>::value;
+    bool short_enum = std::is_same<short, typename std::underlying_type<T>::type>::value;
+    bool uns_int_enum = std::is_same<unsigned int, typename std::underlying_type<T>::type>::value;
 
-    if (short_enum == false && uns_int_enum == false)
+    if(short_enum == false && uns_int_enum == false)
     {
         std::stringstream ss;
         ss << "Invalid enumeration type. Supported types are C++11 scoped enum with short as underlying data type\n";
@@ -116,13 +114,14 @@ void WAttribute::check_type(const std::string &origin)
         Except::throw_exception(API_IncompatibleArgumentType, ss.str(), origin);
     }
 
-//
-// Check if the input type is an enum and if it is from the valid type
-//
+    //
+    // Check if the input type is an enum and if it is from the valid type
+    //
 
-    if (std::is_enum<T>::value == false)
+    if(std::is_enum<T>::value == false)
     {
-        Except::throw_exception(API_IncompatibleArgumentType, "The input argument data type is not an enumeration", origin);
+        Except::throw_exception(
+            API_IncompatibleArgumentType, "The input argument data type is not an enumeration", origin);
     }
 
     Tango::DeviceClass *dev_class;
@@ -131,23 +130,25 @@ void WAttribute::check_type(const std::string &origin)
         DeviceImpl *dev = get_att_device();
         dev_class = dev->get_device_class();
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         std::string reas = e.errors[0].reason.in();
-        if (reas == API_DeviceNotFound)
+        if(reas == API_DeviceNotFound)
         {
             Util *tg = Util::instance();
             const std::vector<Tango::DeviceClass *> *cl_list_ptr = tg->get_class_list();
             dev_class = (*cl_list_ptr)[cl_list_ptr->size() - 2];
         }
         else
+        {
             throw;
+        }
     }
 
     Tango::MultiClassAttribute *mca = dev_class->get_class_attr();
     Tango::Attr &att = mca->get_attr(name);
 
-    if (att.same_type(typeid(T)) == false)
+    if(att.same_type(typeid(T)) == false)
     {
         std::stringstream ss;
         ss << "Invalid enumeration type. Requested enum type is " << att.get_enum_type();
@@ -168,25 +169,33 @@ void WAttribute::check_type(const std::string &origin)
 //             - val : Data to be set as written value
 //
 //-----------------------------------------------------------------------------------------------------------------
-template<class T, typename std::enable_if<std::is_enum<T>::value && !std::is_same<T,Tango::DevState>::value, T>::type*>
+template <class T,
+          typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type *>
 inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 {
     check_type<T>("WAttribute::set_write_value");
 
     size_t nb_data;
 
-    if (y == 0)
+    if(y == 0)
+    {
         nb_data = x;
+    }
     else
+    {
         nb_data = x * y;
+    }
 
-    short *ptr = new short [nb_data];
-    for (size_t i = 0;i < nb_data; ++i)
-        ptr[i] = (short)val[i];
+    short *ptr = new short[nb_data];
+    for(size_t i = 0; i < nb_data; ++i)
+    {
+        ptr[i] = (short) val[i];
+    }
 
     try
     {
-        Tango::DevVarShortArray tmp_seq(static_cast<CORBA::ULong>(nb_data),static_cast<CORBA::ULong>(nb_data),ptr,false);
+        Tango::DevVarShortArray tmp_seq(
+            static_cast<CORBA::ULong>(nb_data), static_cast<CORBA::ULong>(nb_data), ptr, false);
 
         CORBA::Any tmp_any;
         tmp_any <<= tmp_seq;
@@ -194,21 +203,22 @@ inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
         copy_data(tmp_any);
         set_user_set_write_value(true);
 
-        delete [] ptr;
+        delete[] ptr;
     }
-    catch (...)
+    catch(...)
     {
-        delete [] ptr;
+        delete[] ptr;
         throw;
     }
 }
 
-template<class T, typename std::enable_if<!std::is_enum<T>::value || std::is_same<T,Tango::DevState>::value, T>::type*>
-inline void WAttribute::set_write_value(T* val, size_t x, size_t y)
+template <class T,
+          typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type *>
+inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 {
     size_t nb_data;
 
-    if (y == 0)
+    if(y == 0)
     {
         nb_data = x;
     }
@@ -217,7 +227,8 @@ inline void WAttribute::set_write_value(T* val, size_t x, size_t y)
         nb_data = x * y;
     }
 
-    typename tango_type_traits<T>::ArrayType tmp_seq(static_cast<CORBA::ULong>(nb_data), static_cast<CORBA::ULong>(nb_data), val, false);
+    typename tango_type_traits<T>::ArrayType tmp_seq(
+        static_cast<CORBA::ULong>(nb_data), static_cast<CORBA::ULong>(nb_data), val, false);
 
     CORBA::Any tmp_any;
     tmp_any <<= tmp_seq;
@@ -226,18 +237,17 @@ inline void WAttribute::set_write_value(T* val, size_t x, size_t y)
     set_user_set_write_value(true);
 }
 
-template<class T>
+template <class T>
 inline void WAttribute::set_write_value(std::vector<T> &val, size_t x, size_t y)
 {
     set_write_value(&val[0], x, y);
 }
 
-template<class T>
+template <class T>
 inline void WAttribute::set_write_value(T val)
 {
     set_write_value(&val, 1, 0);
 }
 
-
-} // End of Tango namespace
+} // namespace Tango
 #endif // _WATTRSETVAL_TPP

@@ -41,7 +41,6 @@
 namespace Tango
 {
 
-
 //+-------------------------------------------------------------------------
 //
 // method :         CallBackThread::CallBackThread
@@ -56,7 +55,6 @@ namespace Tango
 //
 //--------------------------------------------------------------------------
 
-
 void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
 {
     while(shared_cmd.is_stopped() == false)
@@ -65,16 +63,18 @@ void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
         {
             {
                 omni_mutex_lock sync(*asyn_ptr);
-                if (asyn_ptr->get_cb_request_nb_i() == 0)
+                if(asyn_ptr->get_cb_request_nb_i() == 0)
                 {
                     asyn_ptr->wait();
                 }
             }
 
-            if (asyn_ptr->get_cb_request_nb() != 0)
+            if(asyn_ptr->get_cb_request_nb() != 0)
+            {
                 ApiUtil::instance()->get_asynch_replies(0);
+            }
         }
-        catch (omni_thread_fatal &)
+        catch(omni_thread_fatal &)
         {
             std::cerr << "OUPS !! A omni thread fatal exception !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
@@ -88,8 +88,6 @@ void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
     omni_thread::exit();
 
     return NULL;
-
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

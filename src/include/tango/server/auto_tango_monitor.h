@@ -48,7 +48,7 @@ namespace Tango
 
 class AutoTangoMonitor
 {
-public:
+  public:
     AutoTangoMonitor(Tango::DeviceImpl *dev, bool force = false);
 
     AutoTangoMonitor(Tango::DeviceClass *dev_cl);
@@ -57,9 +57,9 @@ public:
 
     ~AutoTangoMonitor();
 
-private:
-    TangoMonitor                 *mon;
-    omni_thread::ensure_self    auto_self;
+  private:
+    TangoMonitor *mon;
+    omni_thread::ensure_self auto_self;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -75,17 +75,16 @@ private:
 
 class NoSyncModelTangoMonitor
 {
-public:
+  public:
     NoSyncModelTangoMonitor(Tango::DeviceImpl *dev);
 
     ~NoSyncModelTangoMonitor();
 
-private:
-    TangoMonitor             *mon;
-    omni_thread::ensure_self    auto_self;
+  private:
+    TangoMonitor *mon;
+    omni_thread::ensure_self auto_self;
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* AUTO_TANGO_MONITOR */

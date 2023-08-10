@@ -15,10 +15,9 @@
 //
 //-----------------------------------------------------------------------------
 
-IOStrArray::IOStrArray(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Command(name,in,out,in_desc,out_desc)
+IOStrArray::IOStrArray(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -39,15 +38,18 @@ IOStrArray::IOStrArray(const char *name,Tango::CmdArgType in,
 
 bool IOStrArray::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -64,21 +66,21 @@ bool IOStrArray::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA:
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOStrArray::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IOStrArray::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
 {
-  try {
-    Tango::DevVarStringArray *argout = new Tango::DevVarStringArray();
-
-    argout->length(2);
-    (*argout)[0] = Tango::string_dup("First string from dev_string_array");
-    (*argout)[1] = Tango::string_dup("Second string from dev_string_array");
-
-    return insert(argout);
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::DevVarStringArray *argout = new Tango::DevVarStringArray();
+
+        argout->length(2);
+        (*argout)[0] = Tango::string_dup("First string from dev_string_array");
+        (*argout)[1] = Tango::string_dup("Second string from dev_string_array");
+
+        return insert(argout);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }

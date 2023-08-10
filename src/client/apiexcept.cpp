@@ -41,10 +41,10 @@
 namespace Tango
 {
 
-NamedDevFailed::NamedDevFailed():idx_in_call(0)
+NamedDevFailed::NamedDevFailed() :
+    idx_in_call(0)
 {
 }
-
 
 //+-------------------------------------------------------------------------
 //
@@ -66,36 +66,36 @@ NamedDevFailed::NamedDevFailed():idx_in_call(0)
 //
 //--------------------------------------------------------------------------
 
-
 NamedDevFailedList::NamedDevFailedList(const Tango::MultiDevFailed &corba_ex,
-                       std::string dev_name,
-                       const char *op_name,
-                       const char *reason)
+                                       std::string dev_name,
+                                       const char *op_name,
+                                       const char *reason)
 {
     unsigned int i;
     unsigned long nb_obj_failed = corba_ex.errors.length();
 
-    for (i = 0;i < nb_obj_failed;i++)
+    for(i = 0; i < nb_obj_failed; i++)
     {
-        NamedDevFailed tmp_err(corba_ex.errors[i].err_list,
-                       corba_ex.errors[i].name.in(),
-                       corba_ex.errors[i].index_in_call);
+        NamedDevFailed tmp_err(
+            corba_ex.errors[i].err_list, corba_ex.errors[i].name.in(), corba_ex.errors[i].index_in_call);
         err_list.push_back(tmp_err);
     }
 
-//
-// Build an exception summary (as string) in the DevFailed part of this
-// exception.
-//
+    //
+    // Build an exception summary (as string) in the DevFailed part of this
+    // exception.
+    //
 
     TangoSys_OMemStream desc;
     desc << "Failed to execute " << op_name << " on device " << dev_name;
     desc << ", object(s) ";
-    for (i = 0;i < nb_obj_failed;i++)
+    for(i = 0; i < nb_obj_failed; i++)
     {
         desc << corba_ex.errors[i].name;
-        if (i != nb_obj_failed - 1)
+        if(i != nb_obj_failed - 1)
+        {
             desc << ", ";
+        }
     }
     desc << std::ends;
 
@@ -108,5 +108,4 @@ NamedDevFailedList::NamedDevFailedList(const Tango::MultiDevFailed &corba_ex,
     errors[0].desc = Tango::string_dup(st.c_str());
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

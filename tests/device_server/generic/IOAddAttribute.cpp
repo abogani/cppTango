@@ -16,10 +16,9 @@
 //
 //-----------------------------------------------------------------------------
 
-IOAddAttribute::IOAddAttribute(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Tango::Command(name,in,out,in_desc,out_desc)
+IOAddAttribute::IOAddAttribute(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Tango::Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -40,15 +39,18 @@ IOAddAttribute::IOAddAttribute(const char *name,Tango::CmdArgType in,
 
 bool IOAddAttribute::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -65,49 +67,48 @@ bool IOAddAttribute::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CO
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOAddAttribute::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
+CORBA::Any *IOAddAttribute::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-  try {
-    TANGO_LOG << "[IOAddAttribute::execute] " << std::endl;
-
-    Tango::DevString new_att;
-	extract(in_any, new_att);
-	std::string str(new_att);
-	std::transform(str.begin(),str.end(),str.begin(),::tolower);
-
-	if (str == "added_short_attr")
-	{
-		Tango::Attr *at = new Tango::Attr("Added_short_attr", Tango::DEV_SHORT, Tango::READ);
-		Tango::UserDefaultAttrProp def_prop;
-		def_prop.set_label("Test label");
-		def_prop.set_description("Test description");
-		def_prop.set_format("Illisible");
-		at->set_default_properties(def_prop);
-		device->add_attribute(at);
-	}
-	else if (str == "added_enum_attr")
-	{
-		Tango::Attr *at = new Tango::Attr("Added_enum_attr", Tango::DEV_ENUM, Tango::READ);
-		Tango::UserDefaultAttrProp def_prop;
-		std::vector<std::string> v_s;
-		v_s.push_back("Red");
-		v_s.push_back("Green");
-		v_s.push_back("Blue");
-		def_prop.set_enum_labels(v_s);
-		at->set_default_properties(def_prop);
-		device->add_attribute(at);
-	}
-
-    return insert();
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        TANGO_LOG << "[IOAddAttribute::execute] " << std::endl;
+
+        Tango::DevString new_att;
+        extract(in_any, new_att);
+        std::string str(new_att);
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+
+        if(str == "added_short_attr")
+        {
+            Tango::Attr *at = new Tango::Attr("Added_short_attr", Tango::DEV_SHORT, Tango::READ);
+            Tango::UserDefaultAttrProp def_prop;
+            def_prop.set_label("Test label");
+            def_prop.set_description("Test description");
+            def_prop.set_format("Illisible");
+            at->set_default_properties(def_prop);
+            device->add_attribute(at);
+        }
+        else if(str == "added_enum_attr")
+        {
+            Tango::Attr *at = new Tango::Attr("Added_enum_attr", Tango::DEV_ENUM, Tango::READ);
+            Tango::UserDefaultAttrProp def_prop;
+            std::vector<std::string> v_s;
+            v_s.push_back("Red");
+            v_s.push_back("Green");
+            v_s.push_back("Blue");
+            def_prop.set_enum_labels(v_s);
+            at->set_default_properties(def_prop);
+            device->add_attribute(at);
+        }
+
+        return insert();
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }
-
 
 //+----------------------------------------------------------------------------
 //
@@ -124,10 +125,9 @@ CORBA::Any *IOAddAttribute::execute(Tango::DeviceImpl *device,const CORBA::Any &
 //
 //-----------------------------------------------------------------------------
 
-IORemoveAttribute::IORemoveAttribute(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Tango::Command(name,in,out,in_desc,out_desc)
+IORemoveAttribute::IORemoveAttribute(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Tango::Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -148,15 +148,18 @@ IORemoveAttribute::IORemoveAttribute(const char *name,Tango::CmdArgType in,
 
 bool IORemoveAttribute::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -173,24 +176,24 @@ bool IORemoveAttribute::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IORemoveAttribute::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
+CORBA::Any *IORemoveAttribute::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-  try {
-    TANGO_LOG << "[IORemoveAttribute::execute] " << std::endl;
-
-	Tango::DevString att_name;
-	extract(in_any, att_name);
-	std::string str(att_name);
-/*	transform(str.begin(),str.end(),str.begin(),::tolower);*/
-
-    device->remove_attribute(str,true);
-    return insert();
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        TANGO_LOG << "[IORemoveAttribute::execute] " << std::endl;
+
+        Tango::DevString att_name;
+        extract(in_any, att_name);
+        std::string str(att_name);
+        /*	transform(str.begin(),str.end(),str.begin(),::tolower);*/
+
+        device->remove_attribute(str, true);
+        return insert();
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }
 
@@ -211,10 +214,9 @@ CORBA::Any *IORemoveAttribute::execute(Tango::DeviceImpl *device,const CORBA::An
 //
 //-----------------------------------------------------------------------------
 
-DynCommand::DynCommand(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Tango::Command(name,in,out,in_desc,out_desc)
+DynCommand::DynCommand(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Tango::Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -235,15 +237,18 @@ DynCommand::DynCommand(const char *name,Tango::CmdArgType in,
 
 bool DynCommand::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -260,24 +265,22 @@ bool DynCommand::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA:
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *DynCommand::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *DynCommand::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	try
-	{
-		TANGO_LOG << "[DynCommand::execute] " << std::endl;
-		Tango::DevFloat theNumber = 4.0;
-		return insert(theNumber);
-	}
-	catch (CORBA::Exception &e)
-	{
-		Tango::Except::print_exception(e);
-		throw ;
+    try
+    {
+        TANGO_LOG << "[DynCommand::execute] " << std::endl;
+        Tango::DevFloat theNumber = 4.0;
+        return insert(theNumber);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }
 
 //------------------------------------------------------------------------------------------------------------
-
 
 //+----------------------------------------------------------------------------
 //
@@ -294,10 +297,9 @@ CORBA::Any *DynCommand::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UN
 //
 //-----------------------------------------------------------------------------
 
-IOAddCommand::IOAddCommand(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Tango::Command(name,in,out,in_desc,out_desc)
+IOAddCommand::IOAddCommand(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Tango::Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -318,15 +320,18 @@ IOAddCommand::IOAddCommand(const char *name,Tango::CmdArgType in,
 
 bool IOAddCommand::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -343,41 +348,46 @@ bool IOAddCommand::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORB
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOAddCommand::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
+CORBA::Any *IOAddCommand::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-	try
-	{
-		TANGO_LOG << "[IOAddCommand::execute] " << std::endl;
-		Tango::DevLong cmd_arg;
-		extract(in_any,cmd_arg);
+    try
+    {
+        TANGO_LOG << "[IOAddCommand::execute] " << std::endl;
+        Tango::DevLong cmd_arg;
+        extract(in_any, cmd_arg);
 
-		bool device_level = false;
-		if (cmd_arg >= 1)
-			device_level = true;
-		int loop = 1;
-		if (cmd_arg == 2)
-			loop = 3;
-		for (int ctr = 0;ctr < loop;ctr++)
-		{
-			std::stringstream ss;
-			ss << "Added_cmd";
-			if (ctr != 0)
-				ss << "_" << ctr;
+        bool device_level = false;
+        if(cmd_arg >= 1)
+        {
+            device_level = true;
+        }
+        int loop = 1;
+        if(cmd_arg == 2)
+        {
+            loop = 3;
+        }
+        for(int ctr = 0; ctr < loop; ctr++)
+        {
+            std::stringstream ss;
+            ss << "Added_cmd";
+            if(ctr != 0)
+            {
+                ss << "_" << ctr;
+            }
 
-			Tango::Command *at = new DynCommand(ss.str().c_str(), Tango::DEV_VOID, Tango::DEV_FLOAT,"","Output value (4.0)");
-			device->add_command(at,device_level);
-		}
+            Tango::Command *at =
+                new DynCommand(ss.str().c_str(), Tango::DEV_VOID, Tango::DEV_FLOAT, "", "Output value (4.0)");
+            device->add_command(at, device_level);
+        }
 
-		return insert();
-	}
-	catch (CORBA::Exception &e)
-	{
-		Tango::Except::print_exception(e);
-		throw ;
+        return insert();
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }
-
 
 //+----------------------------------------------------------------------------
 //
@@ -394,10 +404,9 @@ CORBA::Any *IOAddCommand::execute(Tango::DeviceImpl *device,const CORBA::Any &in
 //
 //-----------------------------------------------------------------------------
 
-IORemoveCommand::IORemoveCommand(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Tango::Command(name,in,out,in_desc,out_desc)
+IORemoveCommand::IORemoveCommand(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Tango::Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -418,15 +427,18 @@ IORemoveCommand::IORemoveCommand(const char *name,Tango::CmdArgType in,
 
 bool IORemoveCommand::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -443,19 +455,18 @@ bool IORemoveCommand::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const C
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IORemoveCommand::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IORemoveCommand::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	try
-	{
-		TANGO_LOG << "[IORemoveCommand::execute] " << std::endl;
-		std::string st("Added_cmd");
-		device->remove_command(st,true);
-		return insert();
-	}
-	catch (CORBA::Exception &e)
-	{
-		Tango::Except::print_exception(e);
-		throw ;
-	}
+    try
+    {
+        TANGO_LOG << "[IORemoveCommand::execute] " << std::endl;
+        std::string st("Added_cmd");
+        device->remove_command(st, true);
+        return insert();
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
+    }
 }

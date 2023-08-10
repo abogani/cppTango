@@ -35,7 +35,8 @@
 
 #include <tango/common/log4tango/Level.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 /**
  * The internal representation of logging events. When a affirmative
@@ -50,57 +51,56 @@ namespace log4tango {
 //-----------------------------------------------------------------------------
 struct LoggingEvent
 {
-public:
-  /**
-   * Instantiate a LoggingEvent from the supplied parameters.
-   *
-   * <p>Except <code>timeStamp</code> all the other fields of
-   * <code>LoggingEvent</code> are filled when actually needed.
-   * <p>
-   * @param logger The logger of this event.
-   * @param message  The message of this event.
-   * @param level The level of this event.
-   * @param file_path The file path where this event was generated.
-   * @param line_number The line number where this event was generated.
-   **/
-  LoggingEvent(const std::string& logger,
-               const std::string& message,
-               Level::Value level,
-               const std::string& file_path,
-               int line_number);
+  public:
+    /**
+     * Instantiate a LoggingEvent from the supplied parameters.
+     *
+     * <p>Except <code>timeStamp</code> all the other fields of
+     * <code>LoggingEvent</code> are filled when actually needed.
+     * <p>
+     * @param logger The logger of this event.
+     * @param message  The message of this event.
+     * @param level The level of this event.
+     * @param file_path The file path where this event was generated.
+     * @param line_number The line number where this event was generated.
+     **/
+    LoggingEvent(const std::string &logger,
+                 const std::string &message,
+                 Level::Value level,
+                 const std::string &file_path,
+                 int line_number);
 
-  /** Copy constructor */
-  LoggingEvent(const LoggingEvent& event);
+    /** Copy constructor */
+    LoggingEvent(const LoggingEvent &event);
 
-  /** The logger name. */
-  const std::string logger_name;
+    /** The logger name. */
+    const std::string logger_name;
 
-  /** The application supplied message of logging event. */
-  const std::string message;
+    /** The application supplied message of logging event. */
+    const std::string message;
 
+    /** Level of logging event. */
+    Level::Value level;
 
-  /** Level of logging event. */
-  Level::Value level;
+    /** Name of thread in which this logging event was generated */
+    std::string thread_name;
 
-  /** Name of thread in which this logging event was generated */
-  std::string thread_name;
+    /** id of thread in which this logging event was generated */
+    std::thread::id thread_id;
 
-  /** id of thread in which this logging event was generated */
-  std::thread::id thread_id;
+    /** The number of seconds elapsed since the epoch
+        (1/1/1970 00:00:00 UTC) until logging event was created. */
+    std::chrono::system_clock::time_point timestamp;
 
-  /** The number of seconds elapsed since the epoch
-      (1/1/1970 00:00:00 UTC) until logging event was created. */
-  std::chrono::system_clock::time_point timestamp;
+    /** File path where the event was generated */
+    const std::string file_path;
 
-  /** File path where the event was generated */
-  const std::string file_path;
+    /** Line number where the event was generated */
+    const int line_number;
 
-  /** Line number where the event was generated */
-  const int line_number;
-
-private:
-  /** Prevent implicit copy */
-  const LoggingEvent& operator= (const LoggingEvent&);
+  private:
+    /** Prevent implicit copy */
+    const LoggingEvent &operator=(const LoggingEvent &);
 };
 
 } // namespace log4tango

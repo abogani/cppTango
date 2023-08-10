@@ -37,17 +37,34 @@
 
 #include <tango/tango.h>
 
-
 namespace Tango
 {
 
-class CbThreadCmd: public omni_mutex
+class CbThreadCmd : public omni_mutex
 {
-public:
-    CbThreadCmd():stop(false) {}
-    void stop_thread() {omni_mutex_lock sync(*this);stop=true;}
-    void start_thread() {omni_mutex_lock sync(*this);stop=false;}
-    bool is_stopped() {omni_mutex_lock sync(*this);return stop;}
+  public:
+    CbThreadCmd() :
+        stop(false)
+    {
+    }
+
+    void stop_thread()
+    {
+        omni_mutex_lock sync(*this);
+        stop = true;
+    }
+
+    void start_thread()
+    {
+        omni_mutex_lock sync(*this);
+        stop = false;
+    }
+
+    bool is_stopped()
+    {
+        omni_mutex_lock sync(*this);
+        return stop;
+    }
 
     bool stop;
 };
@@ -61,22 +78,26 @@ public:
 //
 //=============================================================================
 
-
-class CallBackThread: public omni_thread
+class CallBackThread : public omni_thread
 {
-public:
-    CallBackThread(CbThreadCmd &cmd,AsynReq *as):shared_cmd(cmd),
-                             asyn_ptr(as) {}
+  public:
+    CallBackThread(CbThreadCmd &cmd, AsynReq *as) :
+        shared_cmd(cmd),
+        asyn_ptr(as)
+    {
+    }
 
     void *run_undetached(void *);
-    void start() {start_undetached();}
 
-    CbThreadCmd    &shared_cmd;
-    AsynReq        *asyn_ptr;
+    void start()
+    {
+        start_undetached();
+    }
+
+    CbThreadCmd &shared_cmd;
+    AsynReq *asyn_ptr;
 };
 
-
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _CBTHREAD_ */

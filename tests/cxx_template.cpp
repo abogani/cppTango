@@ -6,23 +6,22 @@
 #undef SUITE_NAME
 #define SUITE_NAME TemplateTestSuite
 
-class TemplateTestSuite: public CxxTest::TestSuite
+class TemplateTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string localparam, device1_name, dserver_name;
 
         // locally defined (test suite scope) mandatory parameters
-        localparam = CxxTest::TangoPrinter::get_param_loc("localparam","description of what localparam is");
+        localparam = CxxTest::TangoPrinter::get_param_loc("localparam", "description of what localparam is");
 
         // predefined mandatory parameters
         device1_name = CxxTest::TangoPrinter::get_param("device1");
@@ -35,10 +34,9 @@ public:
         // always add this line, otherwise arguments will not be parsed correctly
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -47,20 +45,18 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
     {
-
-//
-// Clean up --------------------------------------------------------
-//
+        //
+        // Clean up --------------------------------------------------------
+        //
 
         // clean up in case test suite terminates before my_restore_point is restored to defaults
         if(CxxTest::TangoPrinter::is_restore_set("my_restore_point"))
@@ -91,22 +87,23 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test TestName
+    // Test TestName
 
     void test_TestName()
     {
         // if your code modifies the default (device) configuration, append the following line straight after
         CxxTest::TangoPrinter::restore_set("my_restore_point");
         TS_ASSERT(true);
-        TS_ASSERT_THROWS_ASSERT(device1->command_inout("UndefinedCommand"), Tango::DevFailed &e,
-                                                        TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CommandNotFound);
-                                                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
-        // if the test suite fails here, thanks to the restore point, the test suite TearDown method will restore the defaults
-        // after you set back the default configuration, append the following line
+        TS_ASSERT_THROWS_ASSERT(device1->command_inout("UndefinedCommand"),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CommandNotFound);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        // if the test suite fails here, thanks to the restore point, the test suite TearDown method will restore the
+        // defaults after you set back the default configuration, append the following line
         CxxTest::TangoPrinter::restore_unset("my_restore_point");
     }
 };

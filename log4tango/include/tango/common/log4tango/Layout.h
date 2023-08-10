@@ -32,32 +32,32 @@
 #include <tango/common/log4tango/LoggingEvent.h>
 #include <string>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // class : Appender (abstract class)
 //-----------------------------------------------------------------------------
 class Layout
 {
-public:
+  public:
+    /**
+     * Constructor for Layout.
+     **/
+    Layout() { }
 
-  /**
-   * Constructor for Layout.
-   **/
-  Layout() {}
+    /**
+     * Destructor for Layout.
+     **/
+    virtual ~Layout() { }
 
-  /**
-   * Destructor for Layout.
-   **/
-  virtual ~Layout() {}
-
-  /**
-   * Formats the LoggingEvent data to a string that appenders can log.
-   * Overload this method to create your own layout format.
-   * @param event The LoggingEvent.
-   * @returns an appendable string.
-   **/
-  virtual std::string format (const LoggingEvent& event);
+    /**
+     * Formats the LoggingEvent data to a string that appenders can log.
+     * Overload this method to create your own layout format.
+     * @param event The LoggingEvent.
+     * @returns an appendable string.
+     **/
+    virtual std::string format(const LoggingEvent &event);
 };
 
 } // namespace log4tango

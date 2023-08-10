@@ -38,7 +38,6 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #include "TestCppTango1022Class.h"
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class.cpp
@@ -80,8 +79,8 @@ TestCppTango1022Class::TestCppTango1022Class(std::string &s):Tango::DeviceClass(
 	write_class_property();
 
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::constructor) ENABLED START -----*/
-	/* clang-format on */
-	/* clang-format off */
+    /* clang-format on */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::constructor
 
 	TANGO_LOG_INFO << "Leaving TestCppTango1022Class constructor" << std::endl;
@@ -96,8 +95,8 @@ TestCppTango1022Class::TestCppTango1022Class(std::string &s):Tango::DeviceClass(
 TestCppTango1022Class::~TestCppTango1022Class()
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::destructor) ENABLED START -----*/
-	/* clang-format on */
-	/* clang-format off */
+    /* clang-format on */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::destructor
 
 	_instance = NULL;
@@ -277,9 +276,9 @@ get_db_class()->put_property(data);
 void TestCppTango1022Class::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 {
 /*----- PROTECTED REGION ID(TestCppTango1022Class::device_factory_before) ENABLED START -----*/
-/* clang-format on */
-//	Add your own code
-/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::device_factory_before
 
 //	Create devices and add it into the device list
@@ -307,9 +306,9 @@ for (unsigned long i=1 ; i<=devlist_ptr->length() ; i++)
 }
 
 /*----- PROTECTED REGION ID(TestCppTango1022Class::device_factory_after) ENABLED START -----*/
-/* clang-format on */
-//	Add your own code
-/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::device_factory_after
 }
 //--------------------------------------------------------
@@ -322,17 +321,17 @@ for (unsigned long i=1 ; i<=devlist_ptr->length() ; i++)
 void TestCppTango1022Class::attribute_factory(TANGO_UNUSED(std::vector<Tango::Attr *> &att_list))
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::attribute_factory_before) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::attribute_factory_before
 
 	//	Create a list of static attributes
 	create_static_attribute_list(get_class_attr()->get_attr_list());
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::attribute_factory_after) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::attribute_factory_after
 }
 //--------------------------------------------------------
@@ -345,14 +344,14 @@ void TestCppTango1022Class::attribute_factory(TANGO_UNUSED(std::vector<Tango::At
 void TestCppTango1022Class::pipe_factory()
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::pipe_factory_before) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::pipe_factory_before
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::pipe_factory_after) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::pipe_factory_after
 }
 //--------------------------------------------------------
@@ -365,16 +364,16 @@ void TestCppTango1022Class::pipe_factory()
 void TestCppTango1022Class::command_factory()
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::command_factory_before) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::command_factory_before
 
 
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::command_factory_after) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::command_factory_after
 }
 
@@ -402,8 +401,8 @@ void TestCppTango1022Class::create_static_attribute_list(std::vector<Tango::Attr
 	TANGO_LOG_INFO << defaultAttList.size() << " attributes in default list" << std::endl;
 
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::create_static_att_list) ENABLED START -----*/
-	/* clang-format on */
-	/* clang-format off */
+    /* clang-format on */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::create_static_att_list
 }
 
@@ -444,8 +443,8 @@ void TestCppTango1022Class::erase_dynamic_attributes(const Tango::DevVarStringAr
 		}
 	}
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::erase_dynamic_attributes) ENABLED START -----*/
-	/* clang-format on */
-	/* clang-format off */
+    /* clang-format on */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::erase_dynamic_attributes
 }
 

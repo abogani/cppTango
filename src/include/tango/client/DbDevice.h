@@ -22,7 +22,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #ifndef _DBDEVICE_H
 #define _DBDEVICE_H
 
@@ -50,184 +49,192 @@
 
 class DbDevice
 {
-private :
-    std::string         name;
-    Database     *dbase;
-    int         db_ind;
-    bool         ext_dbase;
+  private:
+    std::string name;
+    Database *dbase;
+    int db_ind;
+    bool ext_dbase;
 
     class DbDeviceExt
     {
-    public:
-        DbDeviceExt() {}
+      public:
+        DbDeviceExt() { }
     };
 
-    std::unique_ptr<DbDeviceExt>     ext;
+    std::unique_ptr<DbDeviceExt> ext;
 
-public :
-/**@name Constructors */
-//@{
-/**
- * Create a DbDevice object.
- *
- * A constructor for a DbDevice object for a device in the TANGO database specified by the TANGO_HOST
- * environment variable.
- *
- * @param [in] dev_name    The device name
- *
- */
+  public:
+    /**@name Constructors */
+    //@{
+    /**
+     * Create a DbDevice object.
+     *
+     * A constructor for a DbDevice object for a device in the TANGO database specified by the TANGO_HOST
+     * environment variable.
+     *
+     * @param [in] dev_name    The device name
+     *
+     */
     DbDevice(const std::string &dev_name);
-/**
- * Create a DbDevice object using a specified database
- *
- * A constructor for a DbDevice object for the device in the specified database. This method reuses the
- * Database supplied by the programmer.
- *
- * @param [in] dev_name    The device name
- * @param [in] db The database object
- *
- */
+    /**
+     * Create a DbDevice object using a specified database
+     *
+     * A constructor for a DbDevice object for the device in the specified database. This method reuses the
+     * Database supplied by the programmer.
+     *
+     * @param [in] dev_name    The device name
+     * @param [in] db The database object
+     *
+     */
     DbDevice(const std::string &dev_name, Database *db);
-//@}
+    //@}
 
-
-/**@name Device oriented methods */
-//@{
-/**
- * Import the device from database
- *
- * Query the database for the import info of this device. Returns a DbDevImportInfo structure.
- *
- * @return [in] The device import information
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**@name Device oriented methods */
+    //@{
+    /**
+     * Import the device from database
+     *
+     * Query the database for the import info of this device. Returns a DbDevImportInfo structure.
+     *
+     * @return [in] The device import information
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     DbDevImportInfo import_device();
-/**
- * Export device info to the database
- *
- * Update the export info for this device in the database.
- *
- * @param [in] dev_info Device export info
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Export device info to the database
+     *
+     * Update the export info for this device in the database.
+     *
+     * @param [in] dev_info Device export info
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void export_device(const DbDevExportInfo &dev_info);
-//@}
+    //@}
 
-/**@name Property oriented methods */
-//@{
-/**
- * Get device property from database
- *
- * Query the database for the list of properties of this device. See Database::get_device_property() for an
- * example of how to specify and retrieve the properties.
- *
- * @param [in,out] db Property name(s) and value
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**@name Property oriented methods */
+    //@{
+    /**
+     * Get device property from database
+     *
+     * Query the database for the list of properties of this device. See Database::get_device_property() for an
+     * example of how to specify and retrieve the properties.
+     *
+     * @param [in,out] db Property name(s) and value
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void get_property(DbData &db);
-/**
- * Update device property in database
- *
- * Update the list of properties for this device in the database. See Database::put_device_property() for an
- * example of how to specify the properties.
- *
- * @param [in] db Property name(s) and value
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Update device property in database
+     *
+     * Update the list of properties for this device in the database. See Database::put_device_property() for an
+     * example of how to specify the properties.
+     *
+     * @param [in] db Property name(s) and value
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void put_property(const DbData &db);
-/**
- * Remove device property from database
- *
- * Delete the list of specified properties for this device in the database. See Database::delete_property() for
- * an example of how to specify the properties.
- *
- * @param [in] db Property name(s)
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Remove device property from database
+     *
+     * Delete the list of specified properties for this device in the database. See Database::delete_property() for
+     * an example of how to specify the properties.
+     *
+     * @param [in] db Property name(s)
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void delete_property(const DbData &db);
-/**
- * Get device attribute property from database
- *
- * Query the database for the list of attribute properties of this device. See Database::get_device_attribute_property()
- * for an example of how to specify and retrieve the properties.
- *
- * @param [in,out] db Property name(s) and value
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Get device attribute property from database
+     *
+     * Query the database for the list of attribute properties of this device. See
+     * Database::get_device_attribute_property() for an example of how to specify and retrieve the properties.
+     *
+     * @param [in,out] db Property name(s) and value
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void get_attribute_property(DbData &db);
-/**
- * Update device attribute property in database
- *
- * Update the list of attribute properties for this device in the database. See Database::put_device_attribute_property()
- * for an example of how to specify the properties.
- *
- * @param [in] db Property name(s) and value
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Update device attribute property in database
+     *
+     * Update the list of attribute properties for this device in the database. See
+     * Database::put_device_attribute_property() for an example of how to specify the properties.
+     *
+     * @param [in] db Property name(s) and value
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void put_attribute_property(const DbData &db);
-/**
- * Remove device attribute property from database
- *
- * Delete all properties for the list of specified attributes for this device in the database. See Database::delete_device_attribute_property()
- * for an example of how to specify the properties.
- *
- * @param [in] db Property name(s)
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Remove device attribute property from database
+     *
+     * Delete all properties for the list of specified attributes for this device in the database. See
+     * Database::delete_device_attribute_property() for an example of how to specify the properties.
+     *
+     * @param [in] db Property name(s)
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void delete_attribute_property(const DbData &db);
-/**
- * Get device pipe property from database
- *
- * Query the database for the list of pipe properties of this device. See Database::get_device_pipe_property()
- * for an example of how to specify and retrieve the properties.
- *
- * @param [in,out] db Property name(s) and value
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Get device pipe property from database
+     *
+     * Query the database for the list of pipe properties of this device. See Database::get_device_pipe_property()
+     * for an example of how to specify and retrieve the properties.
+     *
+     * @param [in,out] db Property name(s) and value
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void get_pipe_property(DbData &db);
-/**
- * Update device pipe property in database
- *
- * Update the list of pipe properties for this device in the database. See Database::put_device_pipe_property()
- * for an example of how to specify the properties.
- *
- * @param [in] db Property name(s) and value
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Update device pipe property in database
+     *
+     * Update the list of pipe properties for this device in the database. See Database::put_device_pipe_property()
+     * for an example of how to specify the properties.
+     *
+     * @param [in] db Property name(s) and value
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void put_pipe_property(const DbData &db);
-/**
- * Remove device pipe property from database
- *
- * Delete all properties for the list of specified pipes for this device in the database. See Database::delete_device_pipe_property()
- * for an example of how to specify the properties.
- *
- * @param [in] db Property name(s)
- *
- * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
- */
+    /**
+     * Remove device pipe property from database
+     *
+     * Delete all properties for the list of specified pipes for this device in the database. See
+     * Database::delete_device_pipe_property() for an example of how to specify the properties.
+     *
+     * @param [in] db Property name(s)
+     *
+     * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
+     */
     void delete_pipe_property(const DbData &db);
-//@}
+    //@}
 
-/// @privatesection
+    /// @privatesection
 
-    DbDevice(const std::string &,const std::string &,const std::string &);
+    DbDevice(const std::string &, const std::string &, const std::string &);
     ~DbDevice();
-    void set_name(const std::string &new_name) {name = new_name;}
+
+    void set_name(const std::string &new_name)
+    {
+        name = new_name;
+    }
+
     Database *get_dbase();
-    void set_dbase(Database *db) {dbase = db;}
+
+    void set_dbase(Database *db)
+    {
+        dbase = db;
+    }
 
     AccessControlType check_access_control();
     void clear_access_except_errors();
-    void get_property_list(const std::string &,std::vector<std::string> &);
+    void get_property_list(const std::string &, std::vector<std::string> &);
 };
 #endif /* _DBDEVICE_H */

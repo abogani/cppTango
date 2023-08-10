@@ -6,19 +6,18 @@
 #undef SUITE_NAME
 #define SUITE_NAME AttrTestSuite
 
-class AttrTestSuite: public CxxTest::TestSuite
+class AttrTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
     string device1_name;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string dserver_name;
 
@@ -27,10 +26,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -39,12 +37,11 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -75,11 +72,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test one attribute at a time for all SCALAR types
+    // Test one attribute at a time for all SCALAR types
 
     void test_one_attribute_at_a_time_for_all_SCALAR_types(void)
     {
@@ -122,7 +119,7 @@ public:
         TS_ASSERT_EQUALS(str, "test_string");
     }
 
-// Test several SCALAR attributes in one call
+    // Test several SCALAR attributes in one call
 
     void test_several_SCALAR_attributes_in_one_call(void)
     {
@@ -193,7 +190,7 @@ public:
         TS_ASSERT_EQUALS(sh, 12);
     }
 
-// Test one attribute at a time for all SPECTRUM types
+    // Test one attribute at a time for all SPECTRUM types
 
     void test_one_attribute_at_a_time_for_all_SPECTRUM_types(void)
     {
@@ -220,16 +217,16 @@ public:
         TS_ASSERT_EQUALS(long_attr.get_dim_x(), 10);
         TS_ASSERT_EQUALS(long_attr.get_dim_y(), 0);
         long_attr >> lg;
-                TS_ASSERT_EQUALS(lg[0], 0);
-                TS_ASSERT_EQUALS(lg[1], 1);
-                TS_ASSERT_EQUALS(lg[2], 2);
-                TS_ASSERT_EQUALS(lg[3], 3);
-                TS_ASSERT_EQUALS(lg[4], 4);
-                TS_ASSERT_EQUALS(lg[5], 5);
-                TS_ASSERT_EQUALS(lg[6], 6);
-                TS_ASSERT_EQUALS(lg[7], 7);
-                TS_ASSERT_EQUALS(lg[8], 8);
-                TS_ASSERT_EQUALS(lg[9], 9);
+        TS_ASSERT_EQUALS(lg[0], 0);
+        TS_ASSERT_EQUALS(lg[1], 1);
+        TS_ASSERT_EQUALS(lg[2], 2);
+        TS_ASSERT_EQUALS(lg[3], 3);
+        TS_ASSERT_EQUALS(lg[4], 4);
+        TS_ASSERT_EQUALS(lg[5], 5);
+        TS_ASSERT_EQUALS(lg[6], 6);
+        TS_ASSERT_EQUALS(lg[7], 7);
+        TS_ASSERT_EQUALS(lg[8], 8);
+        TS_ASSERT_EQUALS(lg[9], 9);
 
         TS_ASSERT_THROWS_NOTHING(double_attr = device1->read_attribute("Double_spec_attr"));
         TS_ASSERT_EQUALS(double_attr.get_name(), "Double_spec_attr");
@@ -250,7 +247,7 @@ public:
         TS_ASSERT_EQUALS(str[1], "Hello universe");
     }
 
-// Test several SPECTRUM attributes in one call
+    // Test several SPECTRUM attributes in one call
 
     void test_several_SPECTRUM_attributes_in_one_call(void)
     {
@@ -284,7 +281,7 @@ public:
         TS_ASSERT_EQUALS(db[1], 2.22);
     }
 
-// Test one attribute at a time for all IMAGE types
+    // Test one attribute at a time for all IMAGE types
 
     void test_one_attribute_at_a_time_for_all_IMAGE_types(void)
     {
@@ -337,7 +334,7 @@ public:
         TS_ASSERT_EQUALS(str[1], "Hello moon");
     }
 
-// Test one call with all three types
+    // Test one call with all three types
 
     void test_one_call_with_all_three_types(void)
     {
@@ -384,7 +381,7 @@ public:
         TS_ASSERT_EQUALS(lg[5], 5);
     }
 
-// Test attributes written using the set value date and quality method
+    // Test attributes written using the set value date and quality method
 
     void test_attributes_written_using_the_set_value_date_and_quality_method(void)
     {

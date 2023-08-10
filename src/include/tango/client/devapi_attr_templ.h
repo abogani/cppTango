@@ -50,14 +50,16 @@ namespace Tango
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-DeviceAttribute::DeviceAttribute(const std::string &_name,T _val):ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &_name, T _val) :
+    ext(new DeviceAttributeExt)
 {
     name = _name;
     base_val(_val);
 }
 
 template <typename T>
-DeviceAttribute::DeviceAttribute(const char *_name,T _val):ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *_name, T _val) :
+    ext(new DeviceAttributeExt)
 {
     name = _name;
     base_val(_val);
@@ -87,7 +89,8 @@ void DeviceAttribute::base_val(T _val)
 //-----------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-DeviceAttribute::DeviceAttribute(const std::string &_name,const std::vector<T> &_val):ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &_name, const std::vector<T> &_val) :
+    ext(new DeviceAttributeExt)
 {
     name = _name;
     dim_x = _val.size();
@@ -95,7 +98,8 @@ DeviceAttribute::DeviceAttribute(const std::string &_name,const std::vector<T> &
 }
 
 template <typename T>
-DeviceAttribute::DeviceAttribute(const char *_name,const std::vector<T> &_val):ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *_name, const std::vector<T> &_val) :
+    ext(new DeviceAttributeExt)
 {
     name = _name;
     dim_x = _val.size();
@@ -119,14 +123,17 @@ void DeviceAttribute::base_vect(const std::vector<T> &_val)
     data_type = DEV_ENUM;
     ShortSeq = new(DevVarShortArray);
     ShortSeq->length(_val.size());
-    for (size_t loop = 0;loop < _val.size();loop++)
+    for(size_t loop = 0; loop < _val.size(); loop++)
+    {
         ShortSeq[loop] = static_cast<short>(_val[loop]);
+    }
 }
 
 //-----------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-DeviceAttribute::DeviceAttribute(const std::string &_name,const std::vector<T> &_val,int _x,int _y):ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &_name, const std::vector<T> &_val, int _x, int _y) :
+    ext(new DeviceAttributeExt)
 {
     name = _name;
     dim_x = _x;
@@ -135,7 +142,8 @@ DeviceAttribute::DeviceAttribute(const std::string &_name,const std::vector<T> &
 }
 
 template <typename T>
-DeviceAttribute::DeviceAttribute(const char *_name,const std::vector<T> &_val,int _x,int _y):ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *_name, const std::vector<T> &_val, int _x, int _y) :
+    ext(new DeviceAttributeExt)
 {
     name = _name;
     dim_x = _x;
@@ -159,8 +167,10 @@ void DeviceAttribute::base_vect_size(const std::vector<T> &_val)
     // This is supposed to be used only for enum types since all
     // the constructors for the other standard Tango types have a specialization defined
     data_type = DEV_ENUM;
-    for (size_t loop = 0;loop < _val.size();loop++)
+    for(size_t loop = 0; loop < _val.size(); loop++)
+    {
         ShortSeq[loop] = static_cast<short>(_val[loop]);
+    }
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -177,34 +187,39 @@ void DeviceAttribute::base_vect_size(const std::vector<T> &_val)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
 template <typename T>
-bool DeviceAttribute::operator >> (T &datum)
+bool DeviceAttribute::operator>>(T &datum)
 {
     bool ret = true;
 
-//
-// Some check on provided type (for modern compiler...)
-//
+    //
+    // Some check on provided type (for modern compiler...)
+    //
 
     ret = template_type_check(datum);
 
-//
-// check for available data
-//
+    //
+    // check for available data
+    //
 
-    if (ret == true)
+    if(ret == true)
     {
         ret = check_for_data();
-        if (ret == false)
-            return false;
-
-        if (ShortSeq.operator->() != NULL)
+        if(ret == false)
         {
-            if (ShortSeq->length() != 0)
+            return false;
+        }
+
+        if(ShortSeq.operator->() != NULL)
+        {
+            if(ShortSeq->length() != 0)
+            {
                 datum = static_cast<T>(ShortSeq[0]);
+            }
             else
+            {
                 ret = false;
+            }
         }
         else
         {
@@ -217,35 +232,41 @@ bool DeviceAttribute::operator >> (T &datum)
 }
 
 template <typename T>
-bool DeviceAttribute::operator >> (std::vector<T> &datum)
+bool DeviceAttribute::operator>>(std::vector<T> &datum)
 {
     bool ret = true;
 
-//
-// Some check on provided type (for modern compiler...)
-//
+    //
+    // Some check on provided type (for modern compiler...)
+    //
 
     T dummy;
     ret = template_type_check(dummy);
 
-//
-// check for available data
-//
+    //
+    // check for available data
+    //
 
     ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
         {
             datum.resize(ShortSeq->length());
-            for (size_t i=0; i<ShortSeq->length(); i++)
+            for(size_t i = 0; i < ShortSeq->length(); i++)
+            {
                 datum[i] = static_cast<T>(ShortSeq[i]);
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -256,36 +277,42 @@ bool DeviceAttribute::operator >> (std::vector<T> &datum)
 }
 
 template <typename T>
-bool DeviceAttribute::extract_read (std::vector<T> &_data)
+bool DeviceAttribute::extract_read(std::vector<T> &_data)
 {
     bool ret = true;
 
-//
-// Some check on provided type (for modern compiler...)
-//
+    //
+    // Some check on provided type (for modern compiler...)
+    //
 
     T dummy;
     ret = template_type_check(dummy);
 
-//
-// check for available data
-//
+    //
+    // check for available data
+    //
 
     ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
         {
             size_t length = get_nb_read();
             _data.resize(length);
-             for (size_t i=0; i<length; i++)
-                 _data[i] = static_cast<T>(ShortSeq[i]);
+            for(size_t i = 0; i < length; i++)
+            {
+                _data[i] = static_cast<T>(ShortSeq[i]);
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -300,36 +327,42 @@ bool DeviceAttribute::extract_set(std::vector<T> &_data)
 {
     bool ret = true;
 
-//
-// Some check on provided type (for modern compiler...)
-//
+    //
+    // Some check on provided type (for modern compiler...)
+    //
 
     T dummy;
     ret = template_type_check(dummy);
 
-//
-// check for available data
-//
+    //
+    // check for available data
+    //
 
     ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (ShortSeq->length());
+            long read_length = check_set_value_size(ShortSeq->length());
 
             // copy the set point values to the vector
             _data.resize(ShortSeq->length() - read_length);
             unsigned int k = 0;
-             for (unsigned int i=read_length; i<ShortSeq->length(); i++, k++)
-                 _data[k] = static_cast<T>(ShortSeq[i]);
+            for(unsigned int i = read_length; i < ShortSeq->length(); i++, k++)
+            {
+                _data[k] = static_cast<T>(ShortSeq[i]);
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -354,7 +387,7 @@ bool DeviceAttribute::extract_set(std::vector<T> &_data)
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-void DeviceAttribute::operator << (T datum)
+void DeviceAttribute::operator<<(T datum)
 {
     template_type_check(datum);
 
@@ -375,7 +408,7 @@ void DeviceAttribute::operator << (T datum)
 }
 
 template <typename T>
-void DeviceAttribute::operator << (const std::vector<T> &_datum)
+void DeviceAttribute::operator<<(const std::vector<T> &_datum)
 {
     T dummy;
     template_type_check(dummy);
@@ -388,20 +421,22 @@ void DeviceAttribute::operator << (const std::vector<T> &_datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = DEV_ENUM;
 
-    if (ShortSeq.operator->() == NULL)
+    if(ShortSeq.operator->() == NULL)
     {
         DevVarShortArray *short_vararr = new(DevVarShortArray);
         ShortSeq = short_vararr;
     }
     ShortSeq->length(_datum.size());
-    for (size_t loop = 0;loop < _datum.size();loop++)
+    for(size_t loop = 0; loop < _datum.size(); loop++)
+    {
         ShortSeq[loop] = static_cast<short>(_datum[loop]);
+    }
 
     del_mem(Tango::DEV_SHORT);
 }
 
 template <typename T>
-void DeviceAttribute::insert(std::vector<T> &_datum,int _x,int _y)
+void DeviceAttribute::insert(std::vector<T> &_datum, int _x, int _y)
 {
     *this << _datum;
     dim_x = _x;
@@ -411,24 +446,28 @@ void DeviceAttribute::insert(std::vector<T> &_datum,int _x,int _y)
 template <typename T>
 bool DeviceAttribute::template_type_check(T &TANGO_UNUSED(_datum))
 {
-    bool short_enum = std::is_same<short,typename std::underlying_type<T>::type>::value;
-    bool uns_int_enum = std::is_same<unsigned int,typename std::underlying_type<T>::type>::value;
+    bool short_enum = std::is_same<short, typename std::underlying_type<T>::type>::value;
+    bool uns_int_enum = std::is_same<unsigned int, typename std::underlying_type<T>::type>::value;
 
-    if (short_enum == false && uns_int_enum == false)
+    if(short_enum == false && uns_int_enum == false)
     {
-        if (exceptions_flags.test(wrongtype_flag))
+        if(exceptions_flags.test(wrongtype_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleAttrArgumentType, "Type provided for insertion is not a valid enum. Only C enum or C++11 enum with underlying short data type are supported");
+            TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                      API_IncompatibleAttrArgumentType,
+                                      "Type provided for insertion is not a valid enum. Only C enum or C++11 enum with "
+                                      "underlying short data type are supported");
         }
 
         return false;
     }
 
-    if (std::is_enum<T>::value == false)
+    if(std::is_enum<T>::value == false)
     {
-        if (exceptions_flags.test(wrongtype_flag))
+        if(exceptions_flags.test(wrongtype_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleAttrArgumentType, "Type provided for insertion is not an enumeration");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_IncompatibleAttrArgumentType, "Type provided for insertion is not an enumeration");
         }
 
         return false;
@@ -437,5 +476,5 @@ bool DeviceAttribute::template_type_check(T &TANGO_UNUSED(_datum))
     return true;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 #endif // _DEVAPI_ATTR_TPP

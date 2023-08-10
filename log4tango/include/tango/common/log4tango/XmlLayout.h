@@ -31,28 +31,29 @@
 #include <tango/common/log4tango/Portability.h>
 #include <tango/common/log4tango/Layout.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 /**
-* XMLLayout is a simple fixed format Layout implementation.
-**/
+ * XMLLayout is a simple fixed format Layout implementation.
+ **/
 class XMLLayout : public Layout
 {
-public:
-  /**
-   * Ctor.
-   **/
-  XMLLayout ();
+  public:
+    /**
+     * Ctor.
+     **/
+    XMLLayout();
 
-  /**
-   * Dtor.
-   **/
-  virtual ~XMLLayout ();
+    /**
+     * Dtor.
+     **/
+    virtual ~XMLLayout();
 
-  /**
-   * Formats the LoggingEvent in XML
-   **/
-  virtual std::string format (const LoggingEvent& event);
+    /**
+     * Formats the LoggingEvent in XML
+     **/
+    virtual std::string format(const LoggingEvent &event);
 };
 
 } // namespace log4tango

@@ -43,35 +43,42 @@ namespace Tango
 //   Some defines
 //
 
-#define IDC_LIST          -777
-#define MAXLISTLINES      200
+#define IDC_LIST -777
+#define MAXLISTLINES 200
 
 class CoutBuf
 {
-public:
-      CoutBuf(HINSTANCE,int,HWND,LPCSTR);
-      virtual ~CoutBuf();
-      HWND get_debug_window() {return DbgWin;}
-      void clear_debug_window() {DbgWin = NULL;}
-      void CreateWin(LPCSTR);
+  public:
+    CoutBuf(HINSTANCE, int, HWND, LPCSTR);
+    virtual ~CoutBuf();
 
-      int dbg_out (LPCSTR);
+    HWND get_debug_window()
+    {
+        return DbgWin;
+    }
 
-protected:
+    void clear_debug_window()
+    {
+        DbgWin = NULL;
+    }
 
-      HWND DbgWin;
-      HWND parent_window;
+    void CreateWin(LPCSTR);
 
+    int dbg_out(LPCSTR);
+
+  protected:
+    HWND DbgWin;
+    HWND parent_window;
 };
 
 //
 //  Some functions for windows window management!!!
 //
 
-LRESULT CALLBACK DebugWndProc(HWND, UINT, WPARAM, LPARAM );
-void DrawDebugItem(HWND, LPDRAWITEMSTRUCT );
+LRESULT CALLBACK DebugWndProc(HWND, UINT, WPARAM, LPARAM);
+void DrawDebugItem(HWND, LPDRAWITEMSTRUCT);
 void MeasureDebugItem(HWND, LPMEASUREITEMSTRUCT);
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _COUTBUF_H */

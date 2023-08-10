@@ -28,7 +28,6 @@
 
 #include <tango/tango.h>
 
-
 namespace Tango
 {
 
@@ -45,47 +44,52 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-long AsynReq::store_request(CORBA::Request_ptr req,TgRequest::ReqType type)
+long AsynReq::store_request(CORBA::Request_ptr req, TgRequest::ReqType type)
 {
-//
-// If they are some cancelled requests, remove them
-//
+    //
+    // If they are some cancelled requests, remove them
+    //
 
     omni_mutex_lock sync(*this);
-    if (cancelled_request.empty() == false)
+    if(cancelled_request.empty() == false)
     {
         std::vector<long>::iterator ite;
         bool ret;
-        for (ite = cancelled_request.begin();ite != cancelled_request.end();++ite)
+        for(ite = cancelled_request.begin(); ite != cancelled_request.end(); ++ite)
         {
             try
             {
                 ret = remove_cancelled_request(*ite);
             }
-            catch(...) {ret = false;}
+            catch(...)
+            {
+                ret = false;
+            }
 
-            if (ret == true)
+            if(ret == true)
             {
                 ite = cancelled_request.erase(ite);
-                if (ite == cancelled_request.end())
+                if(ite == cancelled_request.end())
+                {
                     break;
+                }
             }
         }
     }
 
-//
-// Get a request identifier
-//
+    //
+    // Get a request identifier
+    //
 
     long req_id = ui_ptr->get_ident();
 
-//
-// Store couple ident/request in map
-//
+    //
+    // Store couple ident/request in map
+    //
 
-    TgRequest tmp_req(req,type);
+    TgRequest tmp_req(req, type);
 
-    asyn_poll_req_table.insert(std::map<long,TgRequest>::value_type(req_id,tmp_req));
+    asyn_poll_req_table.insert(std::map<long, TgRequest>::value_type(req_id, tmp_req));
 
     return req_id;
 }
@@ -103,23 +107,18 @@ long AsynReq::store_request(CORBA::Request_ptr req,TgRequest::ReqType type)
 //
 //-----------------------------------------------------------------------------
 
-
-void AsynReq::store_request(CORBA::Request_ptr req,
-                   CallBack *cb,
-                   Connection *dev,
-                   TgRequest::ReqType type)
+void AsynReq::store_request(CORBA::Request_ptr req, CallBack *cb, Connection *dev, TgRequest::ReqType type)
 {
-//
-// Store couple device_ptr/request in map
-//
+    //
+    // Store couple device_ptr/request in map
+    //
 
-    TgRequest tmp_req_dev(req,type,cb);
-    TgRequest tmp_req(dev,type,cb);
+    TgRequest tmp_req_dev(req, type, cb);
+    TgRequest tmp_req(dev, type, cb);
 
     omni_mutex_lock sync(*this);
-    cb_dev_table.insert(std::map<Connection *,TgRequest>::value_type(dev,tmp_req_dev));
-    cb_req_table.insert(std::map<CORBA::Request_ptr,TgRequest>::value_type(req,tmp_req));
-
+    cb_dev_table.insert(std::map<Connection *, TgRequest>::value_type(dev, tmp_req_dev));
+    cb_req_table.insert(std::map<CORBA::Request_ptr, TgRequest>::value_type(req, tmp_req));
 }
 
 //+----------------------------------------------------------------------------
@@ -138,17 +137,17 @@ void AsynReq::store_request(CORBA::Request_ptr req,
 
 Tango::TgRequest &AsynReq::get_request(long req_id)
 {
-    std::map<long,TgRequest>::iterator pos;
+    std::map<long, TgRequest>::iterator pos;
 
     omni_mutex_lock sync(*this);
     pos = asyn_poll_req_table.find(req_id);
 
-    if (pos == asyn_poll_req_table.end())
+    if(pos == asyn_poll_req_table.end())
     {
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous polling request ";
         desc << "with id = " << req_id << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
+        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
     }
 
     return pos->second;
@@ -170,16 +169,16 @@ Tango::TgRequest &AsynReq::get_request(long req_id)
 
 Tango::TgRequest &AsynReq::get_request(CORBA::Request_ptr req)
 {
-    std::map<CORBA::Request_ptr,TgRequest>::iterator pos;
+    std::map<CORBA::Request_ptr, TgRequest>::iterator pos;
 
     omni_mutex_lock sync(*this);
     pos = cb_req_table.find(req);
 
-    if (pos == cb_req_table.end())
+    if(pos == cb_req_table.end())
     {
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous callback request ";
-                TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsyn, desc.str());
+        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsyn, desc.str());
     }
 
     return pos->second;
@@ -202,23 +201,27 @@ Tango::TgRequest &AsynReq::get_request(CORBA::Request_ptr req)
 
 Tango::TgRequest *AsynReq::get_request(Tango::Connection *dev)
 {
-    std::multimap<Connection *,TgRequest>::iterator pos;
+    std::multimap<Connection *, TgRequest>::iterator pos;
 
     bool found = false;
     omni_mutex_lock sync(*this);
-    for (pos = cb_dev_table.lower_bound(dev);pos != cb_dev_table.upper_bound(dev);++pos)
+    for(pos = cb_dev_table.lower_bound(dev); pos != cb_dev_table.upper_bound(dev); ++pos)
     {
-        if (pos->second.arrived == true)
+        if(pos->second.arrived == true)
         {
             found = true;
             break;
         }
     }
 
-    if (found == false)
+    if(found == false)
+    {
         return NULL;
+    }
     else
+    {
         return &(pos->second);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -233,12 +236,12 @@ Tango::TgRequest *AsynReq::get_request(Tango::Connection *dev)
 
 void AsynReq::mark_as_arrived(CORBA::Request_ptr req)
 {
-    std::multimap<Connection *,TgRequest>::iterator pos;
+    std::multimap<Connection *, TgRequest>::iterator pos;
 
     omni_mutex_lock sync(*this);
-    for (pos = cb_dev_table.begin();pos != cb_dev_table.end();++pos)
+    for(pos = cb_dev_table.begin(); pos != cb_dev_table.end(); ++pos)
     {
-        if (pos->second.request == req)
+        if(pos->second.request == req)
         {
             pos->second.arrived = true;
             break;
@@ -260,17 +263,17 @@ void AsynReq::mark_as_arrived(CORBA::Request_ptr req)
 
 void AsynReq::remove_request(long req_id)
 {
-    std::map<long,TgRequest>::iterator pos;
+    std::map<long, TgRequest>::iterator pos;
 
     omni_mutex_lock sync(*this);
     pos = asyn_poll_req_table.find(req_id);
 
-    if (pos == asyn_poll_req_table.end())
+    if(pos == asyn_poll_req_table.end())
     {
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous polling request ";
         desc << "with id = " << req_id << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
+        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
     }
     else
     {
@@ -295,16 +298,18 @@ void AsynReq::remove_request(long req_id)
 
 bool AsynReq::remove_cancelled_request(long req_id)
 {
-    std::map<long,TgRequest>::iterator pos;
+    std::map<long, TgRequest>::iterator pos;
 
     pos = asyn_poll_req_table.find(req_id);
 
     bool ret = true;
 
-    if (pos != asyn_poll_req_table.end())
+    if(pos != asyn_poll_req_table.end())
     {
-        if (pos->second.request->poll_response() == false)
+        if(pos->second.request->poll_response() == false)
+        {
             ret = false;
+        }
         else
         {
             CORBA::release(pos->second.request);
@@ -328,15 +333,15 @@ bool AsynReq::remove_cancelled_request(long req_id)
 //
 //-----------------------------------------------------------------------------
 
-void AsynReq::remove_request(Connection *dev,CORBA::Request_ptr req)
+void AsynReq::remove_request(Connection *dev, CORBA::Request_ptr req)
 {
-    std::multimap<Connection *,TgRequest>::iterator pos;
-    std::map<CORBA::Request_ptr,TgRequest>::iterator pos_req;
+    std::multimap<Connection *, TgRequest>::iterator pos;
+    std::map<CORBA::Request_ptr, TgRequest>::iterator pos_req;
 
     omni_mutex_lock sync(*this);
-    for (pos = cb_dev_table.lower_bound(dev);pos != cb_dev_table.upper_bound(dev);++pos)
+    for(pos = cb_dev_table.lower_bound(dev); pos != cb_dev_table.upper_bound(dev); ++pos)
     {
-        if (pos->second.request == req)
+        if(pos->second.request == req)
         {
             CORBA::release(pos->second.request);
             cb_dev_table.erase(pos);
@@ -345,11 +350,10 @@ void AsynReq::remove_request(Connection *dev,CORBA::Request_ptr req)
     }
 
     pos_req = cb_req_table.find(req);
-    if (pos_req != cb_req_table.end())
+    if(pos_req != cb_req_table.end())
     {
         cb_req_table.erase(pos_req);
     }
-
 }
 
 //+----------------------------------------------------------------------------
@@ -365,14 +369,16 @@ void AsynReq::remove_request(Connection *dev,CORBA::Request_ptr req)
 void AsynReq::mark_as_cancelled(long req_id)
 {
     omni_mutex_lock sync(*this);
-    std::map<long,TgRequest>::iterator pos;
+    std::map<long, TgRequest>::iterator pos;
 
     pos = asyn_poll_req_table.find(req_id);
 
-    if (pos != asyn_poll_req_table.end())
+    if(pos != asyn_poll_req_table.end())
     {
-        if (find(cancelled_request.begin(),cancelled_request.end(),req_id) == cancelled_request.end())
+        if(find(cancelled_request.begin(), cancelled_request.end(), req_id) == cancelled_request.end())
+        {
             cancelled_request.push_back(req_id);
+        }
     }
     else
     {
@@ -393,15 +399,17 @@ void AsynReq::mark_as_cancelled(long req_id)
 
 void AsynReq::mark_all_polling_as_cancelled()
 {
-    std::map<long,TgRequest>::iterator pos;
+    std::map<long, TgRequest>::iterator pos;
 
     omni_mutex_lock sync(*this);
-    for (pos = asyn_poll_req_table.begin();pos != asyn_poll_req_table.end();++pos)
+    for(pos = asyn_poll_req_table.begin(); pos != asyn_poll_req_table.end(); ++pos)
     {
         long id = pos->first;
-        if (find(cancelled_request.begin(),cancelled_request.end(),id) == cancelled_request.end())
+        if(find(cancelled_request.begin(), cancelled_request.end(), id) == cancelled_request.end())
+        {
             cancelled_request.push_back(id);
+        }
     }
 }
 
-} // End of tango namespace
+} // namespace Tango

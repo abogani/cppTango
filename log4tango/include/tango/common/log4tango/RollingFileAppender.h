@@ -31,18 +31,18 @@
 #include <tango/common/log4tango/Portability.h>
 #include <tango/common/log4tango/FileAppender.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // class RollingFileAppender (olls over the logfile)
 //-----------------------------------------------------------------------------
 class RollingFileAppender : public FileAppender
 {
- public:
-
-    RollingFileAppender(const std::string& name,
-                        const std::string& file_name,
-                        size_t max_fs = 10*1024*1024,
+  public:
+    RollingFileAppender(const std::string &name,
+                        const std::string &file_name,
+                        size_t max_fs = 10 * 1024 * 1024,
                         unsigned int max_bi = 1,
                         bool append = true,
                         mode_t mode = 00644);
@@ -51,15 +51,14 @@ class RollingFileAppender : public FileAppender
 
     virtual unsigned int get_max_backup_index() const;
 
-    virtual void set_maximum_file_size (size_t max_fs);
+    virtual void set_maximum_file_size(size_t max_fs);
 
     virtual size_t get_max_file_size() const;
 
     virtual void roll_over();
 
-protected:
-
-    virtual int _append (const LoggingEvent& event);
+  protected:
+    virtual int _append(const LoggingEvent &event);
 
     unsigned int _max_backup_index;
 

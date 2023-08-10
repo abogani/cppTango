@@ -9,23 +9,22 @@
 #undef SUITE_NAME
 #define SUITE_NAME ClassDevSignalTestSuite
 
-class ClassDevSignalTestSuite: public CxxTest::TestSuite
+class ClassDevSignalTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *device2, *dserver, *dbserver;
     string device1_name, device2_name, dserver_name, dbserver_name, refpath, outpath, file_name, ref_file, out_file;
     int loglevel, dsloglevel;
 
-public:
+  public:
     SUITE_NAME()
     {
         // output/reference file name
         file_name = "class_dev_signal.out";
 
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device2");
@@ -38,10 +37,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -54,28 +52,26 @@ public:
             dserver->ping();
             dbserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
 
-//
-// File names ------------------------------------------------------
-//
+        //
+        // File names ------------------------------------------------------
+        //
 
         ref_file = refpath + file_name;
         out_file = outpath + file_name;
         CmpTst::CompareTest::clean_on_startup(ref_file, out_file);
-
     }
 
     virtual ~SUITE_NAME()
     {
-
-//
-// Clean up --------------------------------------------------------
-//
+        //
+        // Clean up --------------------------------------------------------
+        //
 
         // clean up in case test suite terminates before logging level is restored to defaults
         if(CxxTest::TangoPrinter::is_restore_set("logging_level"))
@@ -177,9 +173,9 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
     void test_signal_handling(void)
     {
@@ -237,7 +233,9 @@ public:
         dout >> result;
         pid = atoi((*result).svalue[0].in());
         if(pid > 0)
+        {
             kill(pid, sig_num_int);
+        }
         std::this_thread::sleep_for(std::chrono::seconds(2));
 
         // set logging level back to defaults
@@ -276,7 +274,8 @@ public:
         CxxTest::TangoPrinter::restore_unset("class_signal_unregistered");
 #endif
     }
-// Test comparing input with output
+
+    // Test comparing input with output
 
     void test_comparing_input_with_output(void)
     {
@@ -288,20 +287,20 @@ public:
             v_s.push_back("Event heartbeat");
             v_s.push_back("Sub device property");
             v_s.push_back("Sleep for :");
-            CmpTst::CompareTest::out_remove_entries(out_file,v_s);
+            CmpTst::CompareTest::out_remove_entries(out_file, v_s);
 
-            map<string,string> prop_val_map;
+            map<string, string> prop_val_map;
             prop_val_map["timestamp"] = "10";
             prop_val_map["thread"] = "1";
             CmpTst::CompareTest::out_set_event_properties(out_file, prop_val_map);
 
-            map<string,string> key_val_map;
+            map<string, string> key_val_map;
             key_val_map["DEVICE1"] = device1_name;
             key_val_map["DEVICE2"] = device2_name;
             key_val_map["DSERVER"] = dserver_name;
             CmpTst::CompareTest::ref_replace_keywords(ref_file, key_val_map);
 
-            map<string,string> prefix_num_map;
+            map<string, string> prefix_num_map;
             prefix_num_map["thread = "] = "2";
             CmpTst::CompareTest::out_set_replace_numbers(out_file, prefix_num_map);
 

@@ -51,14 +51,16 @@ namespace Tango
 //
 //------------------------------------------------------------------------------------------------------------------
 
-DbClass::DbClass(std::string class_name, Database *class_dbase):ext(nullptr)
+DbClass::DbClass(std::string class_name, Database *class_dbase) :
+    ext(nullptr)
 {
     name = std::string(class_name);
     dbase = class_dbase;
     ext_dbase = true;
 }
 
-DbClass::DbClass(std::string class_name):ext(nullptr)
+DbClass::DbClass(std::string class_name) :
+    ext(nullptr)
 {
     name = std::string(class_name);
     db_ind = ApiUtil::instance()->get_db_ind();
@@ -75,9 +77,7 @@ DbClass::DbClass(std::string class_name):ext(nullptr)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-DbClass::~DbClass()
-{
-}
+DbClass::~DbClass() { }
 
 //---------------------------------------------------------------------------------------------------------------------
 //
@@ -91,26 +91,30 @@ DbClass::~DbClass()
 
 void DbClass::get_property(DbData &db_data)
 {
-//
-// Try to get db server cache in case we are called during a DS startup sequence
-//
+    //
+    // Try to get db server cache in case we are called during a DS startup sequence
+    //
 
     ApiUtil *au = ApiUtil::instance();
     DbServerCache *dsc;
-    if (au->in_server() == true)
+    if(au->in_server() == true)
     {
         Tango::Util *tg = Tango::Util::instance();
         dsc = tg->get_db_cache();
     }
     else
+    {
         dsc = NULL;
+    }
 
-//
-// Call DB (or cache)
-//
+    //
+    // Call DB (or cache)
+    //
 
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->get_class_property(name, db_data, dsc);
+    }
     else
     {
         (au->get_db_vect())[db_ind]->get_class_property(name, db_data);
@@ -129,43 +133,48 @@ void DbClass::get_property(DbData &db_data)
 
 void DbClass::put_property(const DbData &db_data)
 {
-
-//
-// Protect DS code againt a DB exception while the server is in its starting phase
-//
+    //
+    // Protect DS code againt a DB exception while the server is in its starting phase
+    //
 
     ApiUtil *au = ApiUtil::instance();
     bool forget_except = false;
-    if (au->in_server() == true)
+    if(au->in_server() == true)
     {
         Tango::Util *tg = Tango::Util::instance();
-        if (tg->is_svr_starting() == true)
+        if(tg->is_svr_starting() == true)
         {
-            if (db_data.size() >= 2)
+            if(db_data.size() >= 2)
             {
-                if ((db_data[0].name == POGO_TITLE) && (db_data[1].name == POGO_DESC))
+                if((db_data[0].name == POGO_TITLE) && (db_data[1].name == POGO_DESC))
+                {
                     forget_except = true;
+                }
             }
         }
     }
 
-//
-// Call DB
-//
+    //
+    // Call DB
+    //
 
     try
     {
-        if (ext_dbase == true)
+        if(ext_dbase == true)
+        {
             dbase->put_class_property(name, db_data);
+        }
         else
         {
             (au->get_db_vect())[db_ind]->put_class_property(name, db_data);
         }
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
-        if (forget_except == false)
+        if(forget_except == false)
+        {
             throw;
+        }
     }
 }
 
@@ -181,8 +190,10 @@ void DbClass::put_property(const DbData &db_data)
 
 void DbClass::delete_property(const DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->delete_class_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -202,8 +213,10 @@ void DbClass::delete_property(const DbData &db_data)
 
 void DbClass::get_attribute_property(DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->get_class_attribute_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -223,8 +236,10 @@ void DbClass::get_attribute_property(DbData &db_data)
 
 void DbClass::put_attribute_property(const DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->put_class_attribute_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -244,8 +259,10 @@ void DbClass::put_attribute_property(const DbData &db_data)
 
 void DbClass::delete_attribute_property(const DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->delete_class_attribute_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -265,8 +282,10 @@ void DbClass::delete_attribute_property(const DbData &db_data)
 
 void DbClass::get_pipe_property(DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->get_class_pipe_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -286,8 +305,10 @@ void DbClass::get_pipe_property(DbData &db_data)
 
 void DbClass::put_pipe_property(const DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->put_class_pipe_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -307,8 +328,10 @@ void DbClass::put_pipe_property(const DbData &db_data)
 
 void DbClass::delete_pipe_property(const DbData &db_data)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->delete_class_pipe_property(name, db_data);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -316,4 +339,4 @@ void DbClass::delete_pipe_property(const DbData &db_data)
     }
 }
 
-} // End of Tango namespace
+} // namespace Tango

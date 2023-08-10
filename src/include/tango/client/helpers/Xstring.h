@@ -25,29 +25,33 @@
 #include <sstream>
 #include <string>
 
-template<class T>   class XString{
-
-public:
-
-    static    T convertFromString(const std::string& s)
+template <class T>
+class XString
+{
+  public:
+    static T convertFromString(const std::string &s)
     {
         std::istringstream in(s);
         T x;
-        if (in >> x)
+        if(in >> x)
+        {
             return x;
+        }
         // some sort of error handling goes here...
         return 0;
     }
-//
-    static    std::string convertToString(const T & t)
+
+    //
+    static std::string convertToString(const T &t)
     {
-        std::ostringstream out ;
+        std::ostringstream out;
 
-        if (out << std::fixed << t   )
+        if(out << std::fixed << t)
+        {
             return out.str();
+        }
         // some sort of error handling goes here...
         return 0;
     }
-
 };
 #endif

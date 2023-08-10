@@ -38,10 +38,10 @@ namespace Tango
 PipeProperty::~PipeProperty() = default;
 
 PipeProperty::PipeProperty(const PipeProperty &) = default;
-PipeProperty & PipeProperty::operator=(const PipeProperty &) = default;
+PipeProperty &PipeProperty::operator=(const PipeProperty &) = default;
 
 PipeProperty::PipeProperty(PipeProperty &&) = default;
-PipeProperty & PipeProperty::operator=(PipeProperty &&) = default;
+PipeProperty &PipeProperty::operator=(PipeProperty &&) = default;
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -84,28 +84,28 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
     std::vector<Pipe *> &pi_list = cl_ptr->get_pipe_list();
     size_t nb_pipe = pi_list.size();
 
-//
-// Get class attribute(s) properties stored in DB. No need to implement a retry here (in case of db server restart)
-// because the db reconnection is forced by the get_property call executed during xxxClass construction
-// before we reach this code.
-//
+    //
+    // Get class attribute(s) properties stored in DB. No need to implement a retry here (in case of db server restart)
+    // because the db reconnection is forced by the get_property call executed during xxxClass construction
+    // before we reach this code.
+    //
 
-    if ((nb_pipe != 0) && (Tango::Util::instance()->use_db()))
+    if((nb_pipe != 0) && (Tango::Util::instance()->use_db()))
     {
         size_t i;
         Tango::DbData db_list;
         std::string &class_name = cl_ptr->get_name();
         size_t nb_db_requested_pipe = 0;
 
-//
-// Ask for class default prop in DB only for pipe with label or desc not already set to some user default value
-//
+        //
+        // Ask for class default prop in DB only for pipe with label or desc not already set to some user default value
+        //
 
-        for(i = 0;i < nb_pipe;i++)
+        for(i = 0; i < nb_pipe; i++)
         {
             Pipe *pi_ptr = pi_list[i];
             std::string &pi_name = pi_ptr->get_name();
-            if (pi_ptr->get_label() == pi_name || pi_ptr->get_desc() == DescNotSpec)
+            if(pi_ptr->get_label() == pi_name || pi_ptr->get_desc() == DescNotSpec)
             {
                 db_list.push_back(DbDatum(pi_name));
                 nb_db_requested_pipe++;
@@ -114,9 +114,9 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
 
         try
         {
-            tg->get_database()->get_class_pipe_property(class_name,db_list,tg->get_db_cache());
+            tg->get_database()->get_class_pipe_property(class_name, db_list, tg->get_db_cache());
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             std::stringstream ss;
             ss << "Can't get class pipe properties for class " << class_name;
@@ -124,12 +124,12 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
             TANGO_RETHROW_EXCEPTION(e, API_DatabaseAccess, ss.str());
         }
 
-//
-// Sort property for each pipe
-//
+        //
+        // Sort property for each pipe
+        //
 
         long ind = 0;
-        for (i = 0;i < nb_db_requested_pipe;i++)
+        for(i = 0; i < nb_db_requested_pipe; i++)
         {
             std::vector<PipeProperty> prop_list;
 
@@ -138,34 +138,35 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
             db_list[ind] >> nb_prop;
 
             ind++;
-            for (long j = 0;j < nb_prop;j++)
+            for(long j = 0; j < nb_prop; j++)
             {
-                if (db_list[ind].size() > 1)
+                if(db_list[ind].size() > 1)
                 {
                     std::string tmp(db_list[ind].value_string[0]);
                     long nb = db_list[ind].size();
-                    for (int k = 1;k < nb;k++)
+                    for(int k = 1; k < nb; k++)
                     {
                         tmp = tmp + " ";
                         tmp = tmp + db_list[ind].value_string[k];
                     }
-                    prop_list.push_back(PipeProperty(db_list[ind].name,tmp));
+                    prop_list.push_back(PipeProperty(db_list[ind].name, tmp));
                 }
                 else
-                    prop_list.push_back(PipeProperty(db_list[ind].name,db_list[ind].value_string[0]));
+                {
+                    prop_list.push_back(PipeProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                }
                 ind++;
             }
 
-            if (nb_prop != 0)
+            if(nb_prop != 0)
             {
-                pipe_prop_list.insert({pipe_name,prop_list});
+                pipe_prop_list.insert({pipe_name, prop_list});
             }
         }
     }
 
     TANGO_LOG_DEBUG << "Leaving MultiClassPipe::init_class_pipe" << std::endl;
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -186,9 +187,9 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
 
 std::vector<Tango::PipeProperty> &MultiClassPipe::get_prop_list(const std::string &pipe_name)
 {
-    std::map<std::string,std::vector<PipeProperty> >::iterator ite;
+    std::map<std::string, std::vector<PipeProperty>>::iterator ite;
     ite = pipe_prop_list.find(pipe_name);
-    if (ite == pipe_prop_list.end())
+    if(ite == pipe_prop_list.end())
     {
         std::stringstream ss;
         ss << "Pipe " << pipe_name << " not found in class pipe(s) properties" << std::ends;
@@ -199,4 +200,4 @@ std::vector<Tango::PipeProperty> &MultiClassPipe::get_prop_list(const std::strin
     return ite->second;
 }
 
-} // End of Tango namespace
+} // namespace Tango

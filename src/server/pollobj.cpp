@@ -36,7 +36,7 @@
 #include <tango/server/pollring_templ.h>
 
 #ifdef _TG_WINDOWS_
-#include <sys/types.h>
+  #include <sys/types.h>
 #endif /* _TG_WINDOWS_ */
 
 namespace Tango
@@ -105,7 +105,7 @@ void PollObj::insert_data(CORBA::Any *res, PollClock::time_point when, PollClock
 {
     omni_mutex_lock sync(*this);
 
-    ring.insert_data(res,when);
+    ring.insert_data(res, when);
     needed_time = needed;
 }
 
@@ -113,7 +113,7 @@ void PollObj::insert_data(Tango::AttributeValueList *res, PollClock::time_point 
 {
     omni_mutex_lock sync(*this);
 
-    ring.insert_data(res,when);
+    ring.insert_data(res, when);
     needed_time = needed;
 }
 
@@ -121,7 +121,7 @@ void PollObj::insert_data(Tango::AttributeValueList_3 *res, PollClock::time_poin
 {
     omni_mutex_lock sync(*this);
 
-    ring.insert_data(res,when);
+    ring.insert_data(res, when);
     needed_time = needed;
 }
 
@@ -129,7 +129,7 @@ void PollObj::insert_data(Tango::AttributeValueList_4 *res, PollClock::time_poin
 {
     omni_mutex_lock sync(*this);
 
-    ring.insert_data(res,when,true);
+    ring.insert_data(res, when, true);
     needed_time = needed;
 }
 
@@ -137,7 +137,7 @@ void PollObj::insert_data(Tango::AttributeValueList_5 *res, PollClock::time_poin
 {
     omni_mutex_lock sync(*this);
 
-    ring.insert_data(res,when,true);
+    ring.insert_data(res, when, true);
     needed_time = needed;
 }
 
@@ -157,16 +157,13 @@ void PollObj::insert_data(Tango::AttributeValueList_5 *res, PollClock::time_poin
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void PollObj::insert_except(Tango::DevFailed *res,
-                PollClock::time_point when,
-                PollClock::duration needed)
+void PollObj::insert_except(Tango::DevFailed *res, PollClock::time_point when, PollClock::duration needed)
 {
     omni_mutex_lock sync(*this);
 
-    ring.insert_except(res,when);
+    ring.insert_except(res, when);
     needed_time = needed;
 }
-
 
 //-------------------------------------------------------------------------------------------------------------------
 //
@@ -214,32 +211,40 @@ CORBA::Any *PollObj::get_last_cmd_result()
 
 Tango::AttributeValue &PollObj::get_last_attr_value(bool lock)
 {
-    if (lock == true)
+    if(lock == true)
+    {
         omni_mutex_lock sync(*this);
+    }
 
     return ring.get_last_attr_value();
 }
 
 Tango::AttributeValue_3 &PollObj::get_last_attr_value_3(bool lock)
 {
-    if (lock == true)
+    if(lock == true)
+    {
         omni_mutex_lock sync(*this);
+    }
 
     return ring.get_last_attr_value_3();
 }
 
 Tango::AttributeValue_4 &PollObj::get_last_attr_value_4(bool lock)
 {
-    if (lock == true)
+    if(lock == true)
+    {
         omni_mutex_lock sync(*this);
+    }
 
     return ring.get_last_attr_value_4();
 }
 
 Tango::AttributeValue_5 &PollObj::get_last_attr_value_5(bool lock)
 {
-    if (lock == true)
+    if(lock == true)
+    {
         omni_mutex_lock sync(*this);
+    }
 
     return ring.get_last_attr_value_5();
 }
@@ -279,18 +284,18 @@ void PollObj::update_upd(PollClock::duration new_upd)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void PollObj::get_cmd_history(long n,Tango::DevCmdHistoryList *ptr)
+void PollObj::get_cmd_history(long n, Tango::DevCmdHistoryList *ptr)
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_cmd_history(n,ptr);
+    ring.get_cmd_history(n, ptr);
 }
 
-void PollObj::get_cmd_history(long n,Tango::DevCmdHistory_4 *ptr,Tango::CmdArgType &loc_type)
+void PollObj::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdArgType &loc_type)
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_cmd_history(n,ptr,loc_type);
+    ring.get_cmd_history(n, ptr, loc_type);
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -309,55 +314,57 @@ void PollObj::get_cmd_history(long n,Tango::DevCmdHistory_4 *ptr,Tango::CmdArgTy
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void PollObj::get_attr_history(long n,Tango::DevAttrHistoryList *ptr,long attr_type)
+void PollObj::get_attr_history(long n, Tango::DevAttrHistoryList *ptr, long attr_type)
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_attr_history(n,ptr,attr_type);
+    ring.get_attr_history(n, ptr, attr_type);
 }
 
-void PollObj::get_attr_history(long n,Tango::DevAttrHistoryList_3 *ptr,long attr_type)
+void PollObj::get_attr_history(long n, Tango::DevAttrHistoryList_3 *ptr, long attr_type)
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_attr_history(n,ptr,attr_type);
+    ring.get_attr_history(n, ptr, attr_type);
 
-//
-// Add attribute name in case of the attribute failed when it was read.
-// (This info is not stored in ring in case of attribute reading failure)
-//
+    //
+    // Add attribute name in case of the attribute failed when it was read.
+    // (This info is not stored in ring in case of attribute reading failure)
+    //
 
-    for (long i = 0;i < n;i++)
+    for(long i = 0; i < n; i++)
     {
-        if ((*ptr)[i].attr_failed == true)
+        if((*ptr)[i].attr_failed == true)
         {
             (*ptr)[i].value.name = Tango::string_dup(name.c_str());
         }
     }
 }
 
-void PollObj::get_attr_history(long n,Tango::DevAttrHistory_4 *ptr,long attr_type,TANGO_UNUSED(AttrDataFormat attr_format))
+void PollObj::get_attr_history(long n,
+                               Tango::DevAttrHistory_4 *ptr,
+                               long attr_type,
+                               TANGO_UNUSED(AttrDataFormat attr_format))
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_attr_history(n,ptr,attr_type);
+    ring.get_attr_history(n, ptr, attr_type);
 }
 
-void PollObj::get_attr_history(long n,Tango::DevAttrHistory_5 *ptr,long attr_type,AttrDataFormat attr_format)
+void PollObj::get_attr_history(long n, Tango::DevAttrHistory_5 *ptr, long attr_type, AttrDataFormat attr_format)
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_attr_history(n,ptr,attr_type);
+    ring.get_attr_history(n, ptr, attr_type);
     ptr->data_format = attr_format;
     ptr->data_type = attr_type;
 }
 
-void PollObj::get_attr_history_43(long n,Tango::DevAttrHistoryList_3 *ptr,long attr_type)
+void PollObj::get_attr_history_43(long n, Tango::DevAttrHistoryList_3 *ptr, long attr_type)
 {
     omni_mutex_lock sync(*this);
 
-    ring.get_attr_history_43(n,ptr,attr_type);
+    ring.get_attr_history_43(n, ptr, attr_type);
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

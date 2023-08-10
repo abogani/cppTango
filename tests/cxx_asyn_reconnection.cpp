@@ -6,58 +6,54 @@
 #undef SUITE_NAME
 #define SUITE_NAME AsynReconnectionTestSuite
 
-class AsynReconnectionTestSuite: public CxxTest::TestSuite
+class AsynReconnectionTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1;
     string device1_name;
     string device1_instance_name;
 
-public:
+  public:
     SUITE_NAME() :
-    device1_instance_name{"test"} //TODO pass via cl
+        device1_instance_name{"test"} // TODO pass via cl
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         // locally defined (test suite scope) mandatory parameters
-        //localparam = CxxTest::TangoPrinter::get_param_loc("localparam","description of what localparam is");
+        // localparam = CxxTest::TangoPrinter::get_param_loc("localparam","description of what localparam is");
 
         // predefined mandatory parameters
         device1_name = CxxTest::TangoPrinter::get_param("device1");
 
         // predefined optional parameters
-        //CxxTest::TangoPrinter::get_param_opt("loop"); // loop parameter is then managed by the CXX framework itself
+        // CxxTest::TangoPrinter::get_param_opt("loop"); // loop parameter is then managed by the CXX framework itself
 
         // always add this line, otherwise arguments will not be parsed correctly
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
             device1 = new DeviceProxy(device1_name);
             device1->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
     {
-
-//
-// Clean up --------------------------------------------------------
-//
+        //
+        // Clean up --------------------------------------------------------
+        //
 
         // clean up in case test suite terminates before Server_Killed is restored to defaults
         if(CxxTest::TangoPrinter::is_restore_set("Server_Killed"))
@@ -87,11 +83,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test TestNormalWriteAttributeAsync
+    // Test TestNormalWriteAttributeAsync
 
     void test_TestNormalWriteAttributeAsynch()
     {
@@ -109,21 +105,23 @@ public:
 
             bool finish = false;
             long nb_not_arrived = 0;
-            while (finish == false)
+            while(finish == false)
             {
                 try
                 {
                     device1->write_attribute_reply(id);
                     finish = true;
                 }
-                catch (AsynReplyNotArrived&)
+                catch(AsynReplyNotArrived &)
                 {
                     finish = false;
                     TEST_LOG << "Attribute not yet written" << endl;
                     nb_not_arrived++;
                 }
-                if (finish == false)
+                if(finish == false)
+                {
                     std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
             }
 
             assert(nb_not_arrived >= 1);
@@ -135,15 +133,14 @@ public:
             Tango::Except::print_exception(e);
             exit(-1);
         }
-        catch (CORBA::Exception &ex)
+        catch(CORBA::Exception &ex)
         {
             Except::print_exception(ex);
             exit(-1);
         }
     }
 
-
-// Test TestWriteAttributeAsynchAfterReconnection
+    // Test TestWriteAttributeAsynchAfterReconnection
 
     void test_TestWriteAttributeAsynchAfterReconnection()
     {
@@ -167,21 +164,23 @@ public:
 
             bool finish = false;
             long nb_not_arrived = 0;
-            while (finish == false)
+            while(finish == false)
             {
                 try
                 {
                     device1->write_attribute_reply(id);
                     finish = true;
                 }
-                catch (AsynReplyNotArrived&)
+                catch(AsynReplyNotArrived &)
                 {
                     finish = false;
                     TEST_LOG << "Attribute not yet written" << endl;
                     nb_not_arrived++;
                 }
-                if (finish == false)
+                if(finish == false)
+                {
                     std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
             }
 
             assert(nb_not_arrived >= 1);
@@ -194,7 +193,7 @@ public:
 
             finish = false;
             nb_not_arrived = 0;
-            while (finish == false)
+            while(finish == false)
             {
                 try
                 {
@@ -202,21 +201,23 @@ public:
                     Tango::DevLong val;
                     *received >> val;
                     TEST_LOG << "attr_asyn_write attribute value = " << val << endl;
-                    assert( val == 444 );
+                    assert(val == 444);
                     finish = true;
                 }
-                catch (AsynReplyNotArrived&)
+                catch(AsynReplyNotArrived &)
                 {
                     finish = false;
                     TEST_LOG << "Attribute not yet read" << endl;
                     nb_not_arrived++;
                 }
-                if (finish == false)
+                if(finish == false)
+                {
                     std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
             }
             delete received;
 
-            assert ( nb_not_arrived >= 1);
+            assert(nb_not_arrived >= 1);
 
             TEST_LOG << "   Asynchronous read_attribute in polling mode --> OK" << endl;
 
@@ -227,7 +228,7 @@ public:
             Tango::Except::print_exception(e);
             exit(-1);
         }
-        catch (CORBA::Exception &ex)
+        catch(CORBA::Exception &ex)
         {
             Except::print_exception(ex);
             exit(-1);

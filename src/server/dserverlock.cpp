@@ -37,7 +37,6 @@
 
 #include <tango/tango.h>
 
-
 namespace Tango
 {
 
@@ -60,71 +59,72 @@ void DServer::lock_device(const Tango::DevVarLongStringArray *in_data)
     std::string dev_name(in_data->svalue[0]);
     int lock_validity = in_data->lvalue[0];
 
-    TANGO_LOG_DEBUG << "In lock_device command for device " << dev_name << ", lock validity = " << lock_validity << std::endl;
+    TANGO_LOG_DEBUG << "In lock_device command for device " << dev_name << ", lock validity = " << lock_validity
+                    << std::endl;
 
-//
-// Get client identification
-//
+    //
+    // Get client identification
+    //
 
     Tango::client_addr *cl = get_client_ident();
-    if (cl == NULL)
+    if(cl == NULL)
     {
         TANGO_THROW_EXCEPTION(API_CantGetClientIdent, "Cannot retrieve client identification");
     }
 
     TANGO_LOG_DEBUG << "Client identification = " << *cl << std::endl;
 
-    if (cl->client_ident == false)
+    if(cl->client_ident == false)
     {
-        TANGO_THROW_EXCEPTION(API_ClientTooOld, "Your client cannot lock devices. You are using a too old Tango release. Please, update to tango V7 or more");
+        TANGO_THROW_EXCEPTION(API_ClientTooOld,
+                              "Your client cannot lock devices. You are using a too old Tango release. Please, update "
+                              "to tango V7 or more");
     }
 
-//
-// Transform device name to lower case
-//
+    //
+    // Transform device name to lower case
+    //
 
     Tango::Util *tg = Tango::Util::instance();
 
     std::string local_dev_name(get_name());
-    transform(local_dev_name.begin(),local_dev_name.end(),local_dev_name.begin(),::tolower);
+    transform(local_dev_name.begin(), local_dev_name.end(), local_dev_name.begin(), ::tolower);
 
     std::string d_name_lower(dev_name);
-    transform(d_name_lower.begin(),d_name_lower.end(),d_name_lower.begin(),::tolower);
+    transform(d_name_lower.begin(), d_name_lower.end(), d_name_lower.begin(), ::tolower);
 
-//
-// Refuse to lock the admin device
-//
+    //
+    // Refuse to lock the admin device
+    //
 
-    if (d_name_lower == local_dev_name)
+    if(d_name_lower == local_dev_name)
     {
         TANGO_THROW_EXCEPTION(API_DeviceUnlockable, "Impossible to lock device server administration device");
     }
 
-//
-// Get device ptr
-//
+    //
+    // Get device ptr
+    //
 
     DeviceImpl *the_dev;
     the_dev = tg->get_device_by_name(dev_name);
 
-//
-// Refuse to lock database device
-//
+    //
+    // Refuse to lock database device
+    //
 
     std::string &cl_name = the_dev->get_device_class()->get_name();
-    if (::strcmp(cl_name.c_str(),DATABASE_CLASS) == 0)
+    if(::strcmp(cl_name.c_str(), DATABASE_CLASS) == 0)
     {
         TANGO_THROW_EXCEPTION(API_DeviceUnlockable, "Impossible to lock database device");
     }
 
-//
-// Mark the device as locked
-//
+    //
+    // Mark the device as locked
+    //
 
-    the_dev->lock(cl,lock_validity);
-
+    the_dev->lock(cl, lock_validity);
 }
-
 
 //+----------------------------------------------------------------------------
 //
@@ -142,44 +142,50 @@ Tango::DevLong DServer::un_lock_device(const Tango::DevVarLongStringArray *in_da
 
     TANGO_LOG_DEBUG << "In un_lock_device command for device " << in_data->svalue[0] << std::endl;
 
-//
-// Get client identification
-//
+    //
+    // Get client identification
+    //
 
     Tango::client_addr *cl = get_client_ident();
-    if (cl == NULL)
+    if(cl == NULL)
     {
         TANGO_THROW_EXCEPTION(API_CantGetClientIdent, "Cannot retrieve client identification");
     }
 
     TANGO_LOG_DEBUG << "Client identification = " << *cl << std::endl;
 
-    if ((cl->client_ident == false) && (in_data->lvalue[0] == 0))
+    if((cl->client_ident == false) && (in_data->lvalue[0] == 0))
     {
-        TANGO_THROW_EXCEPTION(API_ClientTooOld, "Your client cannot un-lock devices. You are using a too old Tango release. Please, update to tango V7 or more");
+        TANGO_THROW_EXCEPTION(API_ClientTooOld,
+                              "Your client cannot un-lock devices. You are using a too old Tango release. Please, "
+                              "update to tango V7 or more");
     }
 
-//
-// Get the device and unlock it
-//
+    //
+    // Get the device and unlock it
+    //
 
     DevLong ctr = 0;
     Tango::Util *tg = Tango::Util::instance();
 
-    for (unsigned int loop = 0;loop < in_data->svalue.length();++loop)
+    for(unsigned int loop = 0; loop < in_data->svalue.length(); ++loop)
     {
         std::string d_name(in_data->svalue[loop]);
 
-        if (d_name == get_name())
+        if(d_name == get_name())
+        {
             ctr = lock_ctr;
+        }
         else
         {
             DeviceImpl *the_dev = tg->get_device_by_name(d_name);
-            ctr = the_dev->unlock((bool)in_data->lvalue[0]);
+            ctr = the_dev->unlock((bool) in_data->lvalue[0]);
         }
 
-        if (loop > 0)
+        if(loop > 0)
+        {
             ctr = 0;
+        }
     }
 
     return ctr;
@@ -203,51 +209,55 @@ void DServer::re_lock_devices(const Tango::DevVarStringArray *dev_name_list)
     CORBA::ULong loop;
     CORBA::ULong nb_dev = dev_name_list->length();
 
-    for (loop = 0;loop < nb_dev;loop++)
+    for(loop = 0; loop < nb_dev; loop++)
+    {
         TANGO_LOG_DEBUG << "Device to re-lock: " << (*dev_name_list)[loop] << std::endl;
+    }
 
-//
-// Get client identification
-//
+    //
+    // Get client identification
+    //
 
     Tango::client_addr *cl = get_client_ident();
-    if (cl == NULL)
+    if(cl == NULL)
     {
         TANGO_THROW_EXCEPTION(API_CantGetClientIdent, "Cannot retrieve client identification");
     }
 
     TANGO_LOG_DEBUG << "Client identification = " << *cl << std::endl;
 
-    if (cl->client_ident == false)
+    if(cl->client_ident == false)
     {
-        TANGO_THROW_EXCEPTION(API_ClientTooOld, "Your client cannot re_lock devices. You are using a too old Tango release. Please, update to tango V7 or more");
+        TANGO_THROW_EXCEPTION(API_ClientTooOld,
+                              "Your client cannot re_lock devices. You are using a too old Tango release. Please, "
+                              "update to tango V7 or more");
     }
 
-//
-// ReLock the devices
-// If we have an error in this loop, memorize it and throw the exception at the
-// end of the loop
-//
+    //
+    // ReLock the devices
+    // If we have an error in this loop, memorize it and throw the exception at the
+    // end of the loop
+    //
 
     Tango::Util *tg = Tango::Util::instance();
 
     DevErrorList errors;
     long nb_error = 0;
 
-    for (loop = 0;loop < nb_dev;loop++)
+    for(loop = 0; loop < nb_dev; loop++)
     {
         std::string d_name((*dev_name_list)[loop]);
 
-//
-// Get device ptr
-//
+        //
+        // Get device ptr
+        //
 
         DeviceImpl *the_dev = NULL;
         try
         {
             the_dev = tg->get_device_by_name(d_name);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             errors.length(nb_error + 1);
             errors[nb_error].desc = Tango::string_dup(e.errors[0].desc.in());
@@ -257,15 +267,15 @@ void DServer::re_lock_devices(const Tango::DevVarStringArray *dev_name_list)
             nb_error++;
         }
 
-//
-// ReLock the device
-//
+        //
+        // ReLock the device
+        //
 
         try
         {
             the_dev->relock(cl);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             errors.length(nb_error + 1);
             errors[nb_error].desc = Tango::string_dup(e.errors[0].desc.in());
@@ -276,11 +286,11 @@ void DServer::re_lock_devices(const Tango::DevVarStringArray *dev_name_list)
         }
     }
 
-//
-// Throw the exception if we had one during the loop
-//
+    //
+    // Throw the exception if we had one during the loop
+    //
 
-    if (nb_error != 0)
+    if(nb_error != 0)
     {
         throw Tango::DevFailed(errors);
     }
@@ -302,9 +312,9 @@ Tango::DevVarLongStringArray *DServer::dev_lock_status(Tango::ConstDevString dev
 
     TANGO_LOG_DEBUG << "In dev_lock_status command for device " << dev_name << std::endl;
 
-//
-// Get the device and get its lock status
-//
+    //
+    // Get the device and get its lock status
+    //
 
     std::string d_name(dev_name);
 
@@ -313,5 +323,4 @@ Tango::DevVarLongStringArray *DServer::dev_lock_status(Tango::ConstDevString dev
     return the_dev->lock_status();
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

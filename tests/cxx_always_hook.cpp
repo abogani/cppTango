@@ -7,23 +7,22 @@
 #undef SUITE_NAME
 #define SUITE_NAME AlwaysHookTestSuite
 
-class AlwaysHookTestSuite: public CxxTest::TestSuite
+class AlwaysHookTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
     string device1_name, dserver_name, refpath, outpath, file_name, ref_file, out_file;
     int loglevel, dsloglevel;
 
-public:
+  public:
     SUITE_NAME()
     {
         // output/reference file name
         file_name = "always_hook.out";
 
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         dserver_name = "dserver/" + CxxTest::TangoPrinter::get_param("fulldsname");
@@ -34,10 +33,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -46,28 +44,26 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
 
-//
-// File names ------------------------------------------------------
-//
+        //
+        // File names ------------------------------------------------------
+        //
 
         ref_file = refpath + file_name;
         out_file = outpath + file_name;
         CmpTst::CompareTest::clean_on_startup(ref_file, out_file);
-
     }
 
     virtual ~SUITE_NAME()
     {
-
-//
-// Clean up --------------------------------------------------------
-//
+        //
+        // Clean up --------------------------------------------------------
+        //
 
         // clean up in case test suite terminates before logging level is restored to defaults
         if(CxxTest::TangoPrinter::is_restore_set("logging_level"))
@@ -128,11 +124,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test Tango device server signal features
+    // Test Tango device server signal features
 
     void test_checking_OILong_command_preceding_the_test(void)
     {
@@ -144,7 +140,7 @@ public:
         TS_ASSERT_EQUALS(lg_out, 20);
     }
 
-// Test changing logging level
+    // Test changing logging level
 
     void test_changing_logging_level(void)
     {
@@ -198,7 +194,7 @@ public:
         CxxTest::TangoPrinter::restore_unset("logging_target");
     }
 
-// Test comparing input with output
+    // Test comparing input with output
 
     void test_comparing_input_with_output(void)
     {
@@ -210,19 +206,19 @@ public:
             v_s.push_back("Event heartbeat");
             v_s.push_back("Sub device property");
             v_s.push_back("Sleep for :");
-            CmpTst::CompareTest::out_remove_entries(out_file,v_s);
+            CmpTst::CompareTest::out_remove_entries(out_file, v_s);
 
-            map<string,string> prop_val_map;
+            map<string, string> prop_val_map;
             prop_val_map["timestamp"] = "10";
             prop_val_map["thread"] = "1";
             CmpTst::CompareTest::out_set_event_properties(out_file, prop_val_map);
 
-            map<string,string> key_val_map;
+            map<string, string> key_val_map;
             key_val_map["DSERVER"] = dserver_name;
             key_val_map["DEVICE1"] = device1_name;
             CmpTst::CompareTest::ref_replace_keywords(ref_file, key_val_map);
 
-            map<string,string> prefix_num_map;
+            map<string, string> prefix_num_map;
             prefix_num_map["thread = "] = "2";
             CmpTst::CompareTest::out_set_replace_numbers(out_file, prefix_num_map);
 

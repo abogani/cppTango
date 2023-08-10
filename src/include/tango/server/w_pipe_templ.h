@@ -33,7 +33,6 @@
 #ifndef _W_PIPE_TPP
 #define _W_PIPE_TPP
 
-
 namespace Tango
 {
 
@@ -48,26 +47,26 @@ namespace Tango
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-WPipe &operator>>(WPipe &_dp,T &datum)
+WPipe &operator>>(WPipe &_dp, T &datum)
 {
     _dp.get_blob().operator>>(datum);
     return _dp;
 }
 
 template <typename T>
-WPipe &operator>>(WPipe &_dp,T *datum)
+WPipe &operator>>(WPipe &_dp, T *datum)
 {
     _dp.get_blob().operator>>(datum);
     return _dp;
 }
 
 template <typename T>
-WPipe &operator>>(WPipe &_dp,DataElement<T> &datum)
+WPipe &operator>>(WPipe &_dp, DataElement<T> &datum)
 {
     datum.name = _dp.get_blob().get_current_delt_name();
     _dp.get_blob().operator>>(datum.value);
     return _dp;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 #endif // _W_PIPE_TPP

@@ -56,19 +56,22 @@ using LockClock = std::chrono::steady_clock;
 
 struct LockThCmd
 {
-    bool cmd_pending;                   // The new command flag
-    LockCmdCode cmd_code;               // The command code
-    std::string dev_name;               // The device name
-    LockClock::duration lock_validity;  // The lock validity
-    bool suicide;                       // The suicide flag
+    bool cmd_pending;                  // The new command flag
+    LockCmdCode cmd_code;              // The command code
+    std::string dev_name;              // The device name
+    LockClock::duration lock_validity; // The lock validity
+    bool suicide;                      // The suicide flag
 };
 
 struct LockedDevice
 {
-    std::string dev_name;           // The locked device name
-    LockClock::duration validity;   // The locked device validity
+    std::string dev_name;         // The locked device name
+    LockClock::duration validity; // The locked device validity
 
-    bool operator<(const LockedDevice &arg) const {return validity < arg.validity;}
+    bool operator<(const LockedDevice &arg) const
+    {
+        return validity < arg.validity;
+    }
 };
 
 enum LockCmdType
@@ -88,10 +91,10 @@ enum LockCmdType
 
 class TangoMonitor;
 
-class LockThread: public omni_thread
+class LockThread : public omni_thread
 {
-public:
-    LockThread(LockThCmd &,TangoMonitor &,DeviceProxy *,const std::string &, LockClock::duration);
+  public:
+    LockThread(LockThCmd &, TangoMonitor &, DeviceProxy *, const std::string &, LockClock::duration);
 
     void run(void *);
 
@@ -102,21 +105,21 @@ public:
     void compute_sleep_time(bool);
     LockCmdType get_command();
 
-protected:
-    LockThCmd                &shared_cmd;
-    TangoMonitor            &p_mon;
+  protected:
+    LockThCmd &shared_cmd;
+    TangoMonitor &p_mon;
 
-    LockThCmd                local_cmd;
+    LockThCmd local_cmd;
     tango_optional<LockClock::duration> sleep;
 
-    std::vector<LockedDevice>    locked_devices;
-    std::vector<std::string>            re_lock_cmd_args;
+    std::vector<LockedDevice> locked_devices;
+    std::vector<std::string> re_lock_cmd_args;
     LockClock::duration period;
-    DeviceProxy                *admin_proxy;
+    DeviceProxy *admin_proxy;
 
     LockClock::time_point next_work;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _LOCKTHREAD_ */

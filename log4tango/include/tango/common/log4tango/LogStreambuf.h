@@ -36,40 +36,34 @@
 //-----------------------------------------------------------------------------
 #define kDEFAULT_BUFFER_SIZE 512
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // Class : LogStreamBuf
 //-----------------------------------------------------------------------------
 class LogStreamBuf : public std::streambuf
 {
-public:
+  public:
+    LogStreamBuf(Logger *logger, Level::Value level, bool filter = true, size_t bsize = kDEFAULT_BUFFER_SIZE);
 
-  LogStreamBuf (Logger* logger,
-                Level::Value level,
-                bool filter = true,
-                size_t bsize = kDEFAULT_BUFFER_SIZE);
+    virtual ~LogStreamBuf();
 
-  virtual ~LogStreamBuf();
+  protected:
+    virtual std::streamsize xsputn(const char *, std::streamsize);
 
-protected:
+    virtual int sync(void);
 
-   virtual std::streamsize xsputn (const char*, std::streamsize);
+  private:
+    int flush_buffer(void);
 
+    char *_buffer;
 
-   virtual int sync (void);
+    Logger *_logger;
 
-private:
+    Level::Value _level;
 
-  int flush_buffer (void);
-
-  char *_buffer;
-
-  Logger* _logger;
-
-  Level::Value _level;
-
-  bool _filter;
+    bool _filter;
 };
 
 } // namespace log4tango

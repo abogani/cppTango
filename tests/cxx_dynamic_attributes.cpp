@@ -6,19 +6,18 @@
 #undef SUITE_NAME
 #define SUITE_NAME DynamicAttributesTestSuite
 
-class DynamicAttributesTestSuite: public CxxTest::TestSuite
+class DynamicAttributesTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
     std::string device1_name;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         std::string dserver_name;
 
@@ -32,10 +31,9 @@ public:
         // always add this line, otherwise arguments will not be parsed correctly
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -44,20 +42,18 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
     {
-
-//
-// Clean up --------------------------------------------------------
-//
+        //
+        // Clean up --------------------------------------------------------
+        //
 
         // clean up in case test suite terminates before my_restore_point is restored to defaults
         if(CxxTest::TangoPrinter::is_restore_set("my_restore_point"))
@@ -88,11 +84,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test cppTango#1022
+    // Test cppTango#1022
 
     void test_CppTangoIssue1022()
     {
@@ -101,9 +97,9 @@ public:
             Tango::DeviceAttribute da = device1->read_attribute("Attr1");
             Tango::DevDouble double_val = -1.0;
             da >> double_val;
-            TS_ASSERT_EQUALS(double_val,0.0);
+            TS_ASSERT_EQUALS(double_val, 0.0);
         }
-        catch(const Tango::DevFailed& e)
+        catch(const Tango::DevFailed &e)
         {
             Tango::Except::print_exception(e);
             TS_ASSERT(false);
@@ -113,9 +109,9 @@ public:
         {
             Tango::DeviceData din;
             din << device1_name;
-            dserver->command_inout("DevRestart",din);
+            dserver->command_inout("DevRestart", din);
         }
-        catch(const Tango::DevFailed& e)
+        catch(const Tango::DevFailed &e)
         {
             Tango::Except::print_exception(e);
             TS_ASSERT(false);
@@ -126,9 +122,9 @@ public:
             Tango::DeviceAttribute da = device1->read_attribute("Attr1");
             Tango::DevDouble double_val = -1.0;
             da >> double_val;
-            TS_ASSERT_EQUALS(double_val,0.0);
+            TS_ASSERT_EQUALS(double_val, 0.0);
         }
-        catch(const Tango::DevFailed& e)
+        catch(const Tango::DevFailed &e)
         {
             Tango::Except::print_exception(e);
             TS_ASSERT(false);
@@ -138,9 +134,9 @@ public:
         {
             Tango::DeviceData din;
             din << device1_name;
-            dserver->command_inout("DevRestart",din);
+            dserver->command_inout("DevRestart", din);
         }
-        catch(const Tango::DevFailed& e)
+        catch(const Tango::DevFailed &e)
         {
             Tango::Except::print_exception(e);
             TS_ASSERT(false);
@@ -151,9 +147,9 @@ public:
             Tango::DeviceAttribute da = device1->read_attribute("Attr1");
             Tango::DevDouble double_val = -1.0;
             da >> double_val;
-            TS_ASSERT_EQUALS(double_val,0.0);
+            TS_ASSERT_EQUALS(double_val, 0.0);
         }
-        catch(const Tango::DevFailed& e)
+        catch(const Tango::DevFailed &e)
         {
             Tango::Except::print_exception(e);
             TS_ASSERT(false);

@@ -41,7 +41,8 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttributeExt &DeviceAttribute::DeviceAttributeExt::operator=(TANGO_UNUSED(const DeviceAttribute::DeviceAttributeExt &rval))
+DeviceAttribute::DeviceAttributeExt &
+    DeviceAttribute::DeviceAttributeExt::operator=(TANGO_UNUSED(const DeviceAttribute::DeviceAttributeExt &rval))
 {
     ext_state = rval.ext_state;
     return *this;
@@ -58,7 +59,8 @@ void DeviceAttribute::DeviceAttributeExt::deep_copy(TANGO_UNUSED(const DeviceAtt
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute():ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute() :
+    ext(new DeviceAttributeExt)
 {
     name = "Name not set";
     dim_x = 0;
@@ -83,7 +85,8 @@ DeviceAttribute::DeviceAttribute():ext(new DeviceAttributeExt)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const DeviceAttribute & source):ext(nullptr)
+DeviceAttribute::DeviceAttribute(const DeviceAttribute &source) :
+    ext(nullptr)
 {
     name = source.name;
     exceptions_flags = source.exceptions_flags;
@@ -114,7 +117,7 @@ DeviceAttribute::DeviceAttribute(const DeviceAttribute & source):ext(nullptr)
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if (source.ext.get() != NULL)
+    if(source.ext.get() != NULL)
     {
         ext.reset(new DeviceAttributeExt);
         *(ext.get()) = *(source.ext.get());
@@ -127,7 +130,8 @@ DeviceAttribute::DeviceAttribute(const DeviceAttribute & source):ext(nullptr)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(DeviceAttribute &&source):ext(nullptr)
+DeviceAttribute::DeviceAttribute(DeviceAttribute &&source) :
+    ext(nullptr)
 {
     name = std::move(source.name);
     exceptions_flags = source.exceptions_flags;
@@ -141,41 +145,69 @@ DeviceAttribute::DeviceAttribute(DeviceAttribute &&source):ext(nullptr)
     time = source.time;
     err_list = source.err_list;
 
-    if (source.LongSeq.operator->() != NULL)
+    if(source.LongSeq.operator->() != NULL)
+    {
         LongSeq = source.LongSeq._retn();
-    if (source.ShortSeq.operator->() != NULL)
+    }
+    if(source.ShortSeq.operator->() != NULL)
+    {
         ShortSeq = source.ShortSeq._retn();
-    if (source.DoubleSeq.operator->() != NULL)
+    }
+    if(source.DoubleSeq.operator->() != NULL)
+    {
         DoubleSeq = source.DoubleSeq._retn();
-    if (source.StringSeq.operator->() != NULL)
+    }
+    if(source.StringSeq.operator->() != NULL)
+    {
         StringSeq = source.StringSeq._retn();
-    if (source.FloatSeq.operator->() != NULL)
+    }
+    if(source.FloatSeq.operator->() != NULL)
+    {
         FloatSeq = source.FloatSeq._retn();
-    if (source.BooleanSeq.operator->() != NULL)
+    }
+    if(source.BooleanSeq.operator->() != NULL)
+    {
         BooleanSeq = source.BooleanSeq._retn();
-    if (source.UShortSeq.operator->() != NULL)
+    }
+    if(source.UShortSeq.operator->() != NULL)
+    {
         UShortSeq = source.UShortSeq._retn();
-    if (source.UCharSeq.operator->() != NULL)
+    }
+    if(source.UCharSeq.operator->() != NULL)
+    {
         UCharSeq = source.UCharSeq._retn();
-    if (source.Long64Seq.operator->() != NULL)
+    }
+    if(source.Long64Seq.operator->() != NULL)
+    {
         Long64Seq = source.Long64Seq._retn();
-    if (source.ULongSeq.operator->() != NULL)
+    }
+    if(source.ULongSeq.operator->() != NULL)
+    {
         ULongSeq = source.ULongSeq._retn();
-    if (source.ULong64Seq.operator->() != NULL)
+    }
+    if(source.ULong64Seq.operator->() != NULL)
+    {
         ULong64Seq = source.ULong64Seq._retn();
-    if (source.StateSeq.operator->() != NULL)
+    }
+    if(source.StateSeq.operator->() != NULL)
+    {
         StateSeq = source.StateSeq._retn();
-    if (source.EncodedSeq.operator->() != NULL)
+    }
+    if(source.EncodedSeq.operator->() != NULL)
+    {
         EncodedSeq = source.EncodedSeq._retn();
+    }
 
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if (source.ext.get() != NULL)
+    if(source.ext.get() != NULL)
+    {
         ext = std::move(source.ext);
+    }
 }
 
-void DeviceAttribute::deep_copy(const DeviceAttribute & source)
+void DeviceAttribute::deep_copy(const DeviceAttribute &source)
 {
     name = source.name;
     exceptions_flags = source.exceptions_flags;
@@ -206,13 +238,15 @@ void DeviceAttribute::deep_copy(const DeviceAttribute & source)
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if (source.ext.get() != NULL)
+    if(source.ext.get() != NULL)
     {
         ext.reset(new DeviceAttributeExt);
         ext.get()->deep_copy(*(source.ext.get()));
     }
     else
+    {
         ext.reset();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -232,10 +266,14 @@ AttributeDimension DeviceAttribute::get_r_dimension()
 
 long DeviceAttribute::get_nb_read()
 {
-    if (dim_y == 0)
+    if(dim_y == 0)
+    {
         return dim_x;
+    }
     else
+    {
         return dim_x * dim_y;
+    }
 }
 
 AttributeDimension DeviceAttribute::get_w_dimension()
@@ -249,10 +287,14 @@ AttributeDimension DeviceAttribute::get_w_dimension()
 
 long DeviceAttribute::get_nb_written()
 {
-    if (w_dim_y == 0)
+    if(w_dim_y == 0)
+    {
         return w_dim_x;
+    }
     else
+    {
         return w_dim_x * w_dim_y;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -261,9 +303,9 @@ long DeviceAttribute::get_nb_written()
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute & DeviceAttribute::operator=(const DeviceAttribute &rval)
+DeviceAttribute &DeviceAttribute::operator=(const DeviceAttribute &rval)
 {
-    if (this != &rval)
+    if(this != &rval)
     {
         name = rval.name;
         exceptions_flags = rval.exceptions_flags;
@@ -294,13 +336,15 @@ DeviceAttribute & DeviceAttribute::operator=(const DeviceAttribute &rval)
         d_state = rval.d_state;
         d_state_filled = rval.d_state_filled;
 
-        if (rval.ext.get() != NULL)
+        if(rval.ext.get() != NULL)
         {
             ext.reset(new DeviceAttributeExt);
             *(ext.get()) = *(rval.ext.get());
         }
         else
+        {
             ext.reset();
+        }
     }
 
     return *this;
@@ -312,7 +356,7 @@ DeviceAttribute & DeviceAttribute::operator=(const DeviceAttribute &rval)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute & DeviceAttribute::operator=(DeviceAttribute &&rval)
+DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
 {
     name = std::move(rval.name);
     exceptions_flags = rval.exceptions_flags;
@@ -326,85 +370,139 @@ DeviceAttribute & DeviceAttribute::operator=(DeviceAttribute &&rval)
     time = rval.time;
     err_list = rval.err_list;
 
-    if (rval.LongSeq.operator->() != NULL)
+    if(rval.LongSeq.operator->() != NULL)
+    {
         LongSeq = rval.LongSeq._retn();
+    }
     else
+    {
         LongSeq = nullptr;
+    }
 
-    if (rval.ShortSeq.operator->() != NULL)
+    if(rval.ShortSeq.operator->() != NULL)
+    {
         ShortSeq = rval.ShortSeq._retn();
+    }
     else
+    {
         ShortSeq = nullptr;
+    }
 
-    if (rval.DoubleSeq.operator->() != NULL)
+    if(rval.DoubleSeq.operator->() != NULL)
+    {
         DoubleSeq = rval.DoubleSeq._retn();
+    }
     else
+    {
         DoubleSeq = nullptr;
+    }
 
-    if (rval.StringSeq.operator->() != NULL)
+    if(rval.StringSeq.operator->() != NULL)
+    {
         StringSeq = rval.StringSeq._retn();
+    }
     else
+    {
         StringSeq = nullptr;
+    }
 
-    if (rval.FloatSeq.operator->() != NULL)
+    if(rval.FloatSeq.operator->() != NULL)
+    {
         FloatSeq = rval.FloatSeq._retn();
+    }
     else
+    {
         FloatSeq = nullptr;
+    }
 
-    if (rval.BooleanSeq.operator->() != NULL)
+    if(rval.BooleanSeq.operator->() != NULL)
+    {
         BooleanSeq = rval.BooleanSeq._retn();
+    }
     else
+    {
         BooleanSeq = nullptr;
+    }
 
-    if (rval.UShortSeq.operator->() != NULL)
+    if(rval.UShortSeq.operator->() != NULL)
+    {
         UShortSeq = rval.UShortSeq._retn();
+    }
     else
+    {
         UShortSeq = nullptr;
+    }
 
-    if (rval.UCharSeq.operator->() != NULL)
+    if(rval.UCharSeq.operator->() != NULL)
+    {
         UCharSeq = rval.UCharSeq._retn();
+    }
     else
+    {
         UCharSeq = nullptr;
+    }
 
-    if (rval.Long64Seq.operator->() != NULL)
+    if(rval.Long64Seq.operator->() != NULL)
+    {
         Long64Seq = rval.Long64Seq._retn();
+    }
     else
+    {
         Long64Seq = nullptr;
+    }
 
-    if (rval.ULongSeq.operator->() != NULL)
+    if(rval.ULongSeq.operator->() != NULL)
+    {
         ULongSeq = rval.ULongSeq._retn();
+    }
     else
+    {
         ULongSeq = nullptr;
+    }
 
-    if (rval.ULong64Seq.operator->() != NULL)
+    if(rval.ULong64Seq.operator->() != NULL)
+    {
         ULong64Seq = rval.ULong64Seq._retn();
+    }
     else
+    {
         ULong64Seq = nullptr;
+    }
 
-    if (rval.StateSeq.operator->() != NULL)
+    if(rval.StateSeq.operator->() != NULL)
+    {
         StateSeq = rval.StateSeq._retn();
+    }
     else
+    {
         StateSeq = nullptr;
+    }
 
-    if (rval.EncodedSeq.operator->() != NULL)
+    if(rval.EncodedSeq.operator->() != NULL)
+    {
         EncodedSeq = rval.EncodedSeq._retn();
+    }
     else
+    {
         EncodedSeq = nullptr;
+    }
 
     d_state = rval.d_state;
     d_state_filled = rval.d_state_filled;
 
-    if (rval.ext.get() != NULL)
+    if(rval.ext.get() != NULL)
     {
         ext = std::move(rval.ext);
     }
     else
+    {
         ext.reset();
+    }
 
     return *this;
 }
 
-void DeviceAttribute::init_common_class_members(const char * new_name, int x_dim = 1, int y_dim = 0)
+void DeviceAttribute::init_common_class_members(const char *new_name, int x_dim = 1, int y_dim = 0)
 {
     name = new_name;
     dim_x = x_dim;
@@ -425,8 +523,8 @@ void DeviceAttribute::init_common_class_members(const char * new_name, int x_dim
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, short datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, short datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     ShortSeq = new(DevVarShortArray);
@@ -435,8 +533,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, short datum)
     data_type = DEV_SHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, short datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, short datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     ShortSeq = new(DevVarShortArray);
@@ -451,8 +549,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, short datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     LongSeq = new(DevVarLongArray);
@@ -461,8 +559,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong datum)
     data_type = DEV_LONG;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, DevLong datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, DevLong datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     LongSeq = new(DevVarLongArray);
@@ -477,8 +575,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevLong datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong64 datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong64 datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     Long64Seq = new(DevVarLong64Array);
@@ -487,8 +585,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevLong64 datum)
     data_type = DEV_LONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, DevLong64 datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, DevLong64 datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     Long64Seq = new(DevVarLong64Array);
@@ -503,8 +601,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevLong64 datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, double datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, double datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     DoubleSeq = new(DevVarDoubleArray);
@@ -513,8 +611,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, double datum)
     data_type = DEV_DOUBLE;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, double datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, double datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     DoubleSeq = new(DevVarDoubleArray);
@@ -529,8 +627,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, double datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::string &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::string &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     StringSeq = new(DevVarStringArray);
@@ -539,8 +637,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::string 
     data_type = DEV_STRING;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::string &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::string &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     StringSeq = new(DevVarStringArray);
@@ -549,8 +647,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::string &datum)
     data_type = DEV_STRING;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const char *datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const char *datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     StringSeq = new(DevVarStringArray);
@@ -559,8 +657,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const char *datum)
     data_type = DEV_STRING;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const char *datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const char *datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     StringSeq = new(DevVarStringArray);
@@ -575,8 +673,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const char *datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, float datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, float datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     FloatSeq = new(DevVarFloatArray);
@@ -585,8 +683,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, float datum)
     data_type = DEV_FLOAT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, float datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, float datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     FloatSeq = new(DevVarFloatArray);
@@ -601,8 +699,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, float datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, bool datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, bool datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     BooleanSeq = new(DevVarBooleanArray);
@@ -611,8 +709,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, bool datum)
     data_type = DEV_BOOLEAN;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, bool datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, bool datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     BooleanSeq = new(DevVarBooleanArray);
@@ -627,8 +725,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, bool datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned short datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned short datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     UShortSeq = new(DevVarUShortArray);
@@ -637,8 +735,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned short dat
     data_type = DEV_USHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, unsigned short datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, unsigned short datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     UShortSeq = new(DevVarUShortArray);
@@ -653,8 +751,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, unsigned short datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned char datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned char datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     UCharSeq = new(DevVarCharArray);
@@ -663,8 +761,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, unsigned char datu
     data_type = DEV_UCHAR;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, unsigned char datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, unsigned char datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     UCharSeq = new(DevVarCharArray);
@@ -679,8 +777,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, unsigned char datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     ULongSeq = new(DevVarULongArray);
@@ -689,8 +787,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong datum)
     data_type = DEV_ULONG;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, DevULong datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, DevULong datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     ULongSeq = new(DevVarULongArray);
@@ -705,8 +803,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevULong datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong64 datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong64 datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     ULong64Seq = new(DevVarULong64Array);
@@ -715,8 +813,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevULong64 datum)
     data_type = DEV_ULONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, DevULong64 datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, DevULong64 datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     ULong64Seq = new(DevVarULong64Array);
@@ -731,8 +829,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevULong64 datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, DevState datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, DevState datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     StateSeq = new(DevVarStateArray);
@@ -741,8 +839,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, DevState datum)
     data_type = DEV_STATE;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, DevState datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, DevState datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     StateSeq = new(DevVarStateArray);
@@ -757,8 +855,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, DevState datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const DevEncoded &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const DevEncoded &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str());
     EncodedSeq = new(DevVarEncodedArray);
@@ -767,8 +865,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const DevEncoded &
     data_type = DEV_ENCODED;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const DevEncoded &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const DevEncoded &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name);
     EncodedSeq = new(DevVarEncodedArray);
@@ -783,8 +881,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const DevEncoded &datum)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<short> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<short> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     ShortSeq = new(DevVarShortArray);
@@ -792,8 +890,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_SHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<short> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<short> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     ShortSeq = new(DevVarShortArray);
@@ -801,8 +899,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<short> 
     data_type = DEV_SHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<short> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<short> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     ShortSeq = new(DevVarShortArray);
@@ -810,8 +908,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_SHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<short> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<short> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     ShortSeq = new(DevVarShortArray);
@@ -825,8 +923,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<short> 
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     LongSeq = new(DevVarLongArray);
@@ -834,8 +932,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_LONG;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     LongSeq = new(DevVarLongArray);
@@ -843,8 +941,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
     data_type = DEV_LONG;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     LongSeq = new(DevVarLongArray);
@@ -852,8 +950,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_LONG;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     LongSeq = new(DevVarLongArray);
@@ -867,8 +965,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong64> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong64> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     Long64Seq = new(DevVarLong64Array);
@@ -876,8 +974,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_LONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong64> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong64> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     Long64Seq = new(DevVarLong64Array);
@@ -885,8 +983,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
     data_type = DEV_LONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong64> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevLong64> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     Long64Seq = new(DevVarLong64Array);
@@ -894,8 +992,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_LONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong64> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong64> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     Long64Seq = new(DevVarLong64Array);
@@ -909,8 +1007,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevLong
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<double> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<double> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     DoubleSeq = new(DevVarDoubleArray);
@@ -918,8 +1016,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_DOUBLE;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     DoubleSeq = new(DevVarDoubleArray);
@@ -927,8 +1025,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double>
     data_type = DEV_DOUBLE;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<double> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<double> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     DoubleSeq = new(DevVarDoubleArray);
@@ -936,8 +1034,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_DOUBLE;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     DoubleSeq = new(DevVarDoubleArray);
@@ -951,8 +1049,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<double>
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<std::string> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<std::string> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     StringSeq = new(DevVarStringArray);
@@ -960,8 +1058,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_STRING;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::string> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::string> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     StringSeq = new(DevVarStringArray);
@@ -969,8 +1067,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::st
     data_type = DEV_STRING;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<std::string> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<std::string> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     StringSeq = new(DevVarStringArray);
@@ -978,8 +1076,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_STRING;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::string> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::string> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     StringSeq = new(DevVarStringArray);
@@ -993,8 +1091,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<std::st
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<float> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<float> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     FloatSeq = new(DevVarFloatArray);
@@ -1002,8 +1100,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_FLOAT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     FloatSeq = new(DevVarFloatArray);
@@ -1011,8 +1109,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> 
     data_type = DEV_FLOAT;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<float> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<float> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     FloatSeq = new(DevVarFloatArray);
@@ -1020,8 +1118,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_FLOAT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     FloatSeq = new(DevVarFloatArray);
@@ -1035,8 +1133,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<float> 
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<bool> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<bool> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     BooleanSeq = new(DevVarBooleanArray);
@@ -1044,8 +1142,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_BOOLEAN;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     BooleanSeq = new(DevVarBooleanArray);
@@ -1053,8 +1151,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &
     data_type = DEV_BOOLEAN;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<bool> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<bool> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     BooleanSeq = new(DevVarBooleanArray);
@@ -1062,8 +1160,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_BOOLEAN;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     BooleanSeq = new(DevVarBooleanArray);
@@ -1077,8 +1175,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<bool> &
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned short> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned short> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     UShortSeq = new(DevVarUShortArray);
@@ -1086,8 +1184,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_USHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned short> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned short> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     UShortSeq = new(DevVarUShortArray);
@@ -1095,8 +1193,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
     data_type = DEV_USHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned short> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned short> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     UShortSeq = new(DevVarUShortArray);
@@ -1104,8 +1202,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_USHORT;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned short> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned short> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     UShortSeq = new(DevVarUShortArray);
@@ -1119,8 +1217,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned char> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned char> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     UCharSeq = new(DevVarCharArray);
@@ -1128,8 +1226,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_UCHAR;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned char> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned char> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     UCharSeq = new(DevVarCharArray);
@@ -1137,8 +1235,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
     data_type = DEV_UCHAR;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned char> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<unsigned char> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     UCharSeq = new(DevVarCharArray);
@@ -1146,8 +1244,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_UCHAR;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned char> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigned char> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     UCharSeq = new(DevVarCharArray);
@@ -1161,8 +1259,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<unsigne
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     ULongSeq = new(DevVarULongArray);
@@ -1170,8 +1268,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_ULONG;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     ULongSeq = new(DevVarULongArray);
@@ -1179,8 +1277,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
     data_type = DEV_ULONG;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     ULongSeq = new(DevVarULongArray);
@@ -1188,8 +1286,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_ULONG;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     ULongSeq = new(DevVarULongArray);
@@ -1203,8 +1301,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong64> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong64> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     ULong64Seq = new(DevVarULong64Array);
@@ -1212,8 +1310,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_ULONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong64> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong64> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     ULong64Seq = new(DevVarULong64Array);
@@ -1221,8 +1319,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
     data_type = DEV_ULONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong64> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevULong64> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     ULong64Seq = new(DevVarULong64Array);
@@ -1230,8 +1328,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_ULONG64;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong64> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULong64> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     ULong64Seq = new(DevVarULong64Array);
@@ -1245,8 +1343,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevULon
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevState> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevState> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), datum.size());
     StateSeq = new(DevVarStateArray);
@@ -1254,8 +1352,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_STATE;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevState> &datum)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevState> &datum) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, datum.size());
     StateSeq = new(DevVarStateArray);
@@ -1263,8 +1361,8 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevStat
     data_type = DEV_STATE;
 }
 
-DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevState> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<DevState> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name.c_str(), x, y);
     StateSeq = new(DevVarStateArray);
@@ -1272,8 +1370,8 @@ DeviceAttribute::DeviceAttribute(const std::string &new_name, const std::vector<
     data_type = DEV_STATE;
 }
 
-DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevState> &datum, int x, int y)
-    : ext(new DeviceAttributeExt)
+DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevState> &datum, int x, int y) :
+    ext(new DeviceAttributeExt)
 {
     init_common_class_members(new_name, x, y);
     StateSeq = new(DevVarStateArray);
@@ -1287,9 +1385,7 @@ DeviceAttribute::DeviceAttribute(const char *new_name, const std::vector<DevStat
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttribute::~DeviceAttribute()
-{
-}
+DeviceAttribute::~DeviceAttribute() { }
 
 //-----------------------------------------------------------------------------
 //
@@ -1301,92 +1397,121 @@ bool DeviceAttribute::is_empty() const
 {
     ext->ext_state.reset(isempty_flag);
 
-    if (LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != NULL)
     {
-        if (LongSeq->length() != 0)
+        if(LongSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != NULL)
     {
-        if (ShortSeq->length() != 0)
+        if(ShortSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != NULL)
     {
-        if (DoubleSeq->length() != 0)
+        if(DoubleSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != NULL)
     {
-        if (StringSeq->length() != 0)
+        if(StringSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != NULL)
     {
-        if (FloatSeq->length() != 0)
+        if(FloatSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != NULL)
     {
-        if (BooleanSeq->length() != 0)
+        if(BooleanSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != NULL)
     {
-        if (UShortSeq->length() != 0)
+        if(UShortSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != NULL)
     {
-        if (UCharSeq->length() != 0)
+        if(UCharSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != NULL)
     {
-        if (Long64Seq->length() != 0)
+        if(Long64Seq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != NULL)
     {
-        if (ULongSeq->length() != 0)
+        if(ULongSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != NULL)
     {
-        if (ULong64Seq->length() != 0)
+        if(ULong64Seq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != NULL)
     {
-        if (StateSeq->length() != 0)
+        if(StateSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != NULL)
     {
-        if (EncodedSeq->length() != 0)
+        if(EncodedSeq->length() != 0)
+        {
             return false;
+        }
     }
 
-    if (d_state_filled == true)
+    if(d_state_filled == true)
+    {
         return false;
+    }
 
     ext->ext_state.set(isempty_flag);
 
-    if (exceptions_flags.test(isempty_flag))
+    if(exceptions_flags.test(isempty_flag))
     {
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDeviceAttribute, "cannot extract, no data in DeviceAttribute object ");
+        TANGO_THROW_API_EXCEPTION(
+            ApiDataExcept, API_EmptyDeviceAttribute, "cannot extract, no data in DeviceAttribute object ");
     }
     return true;
 }
@@ -1410,9 +1535,12 @@ int DeviceAttribute::get_type() const
 
 AttrDataFormat DeviceAttribute::get_data_format()
 {
-    if (exceptions_flags.test(unknown_format_flag) && (data_format == Tango::FMT_UNKNOWN))
+    if(exceptions_flags.test(unknown_format_flag) && (data_format == Tango::FMT_UNKNOWN))
     {
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDeviceAttribute, "Cannot returned data_type from DeviceAttribute object: Not initialised yet or too old device (< V7)");
+        TANGO_THROW_API_EXCEPTION(
+            ApiDataExcept,
+            API_EmptyDeviceAttribute,
+            "Cannot returned data_type from DeviceAttribute object: Not initialised yet or too old device (< V7)");
     }
     return data_format;
 }
@@ -1423,20 +1551,26 @@ AttrDataFormat DeviceAttribute::get_data_format()
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (short &datum)
+bool DeviceAttribute::operator>>(short &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
+        {
             datum = ShortSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1453,7 +1587,7 @@ bool DeviceAttribute::operator >> (short &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (short datum)
+void DeviceAttribute::operator<<(short datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1462,7 +1596,9 @@ void DeviceAttribute::operator << (short datum)
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
     if(data_type != DEV_ENUM)
-    {   data_type = DEV_SHORT;}
+    {
+        data_type = DEV_SHORT;
+    }
 
     DevVarShortArray *short_vararr = new(DevVarShortArray);
     short_vararr->length(1);
@@ -1478,20 +1614,26 @@ void DeviceAttribute::operator << (short datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevLong &datum)
+bool DeviceAttribute::operator>>(DevLong &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (LongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (LongSeq->length() != 0)
+        return false;
+    }
+
+    if(LongSeq.operator->() != NULL)
+    {
+        if(LongSeq->length() != 0)
+        {
             datum = LongSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1508,7 +1650,7 @@ bool DeviceAttribute::operator >> (DevLong &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevLong datum)
+void DeviceAttribute::operator<<(DevLong datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1516,7 +1658,7 @@ void DeviceAttribute::operator << (DevLong datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG;
+    data_type = Tango::DEV_LONG;
 
     DevVarLongArray *long_vararr = new(DevVarLongArray);
     long_vararr->length(1);
@@ -1532,20 +1674,26 @@ void DeviceAttribute::operator << (DevLong datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevLong64 &datum)
+bool DeviceAttribute::operator>>(DevLong64 &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (Long64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (Long64Seq->length() != 0)
+        return false;
+    }
+
+    if(Long64Seq.operator->() != NULL)
+    {
+        if(Long64Seq->length() != 0)
+        {
             datum = Long64Seq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1562,7 +1710,7 @@ bool DeviceAttribute::operator >> (DevLong64 &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevLong64 datum)
+void DeviceAttribute::operator<<(DevLong64 datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1570,7 +1718,7 @@ void DeviceAttribute::operator << (DevLong64 datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG64;
+    data_type = Tango::DEV_LONG64;
 
     DevVarLong64Array *long_vararr = new(DevVarLong64Array);
     long_vararr->length(1);
@@ -1586,20 +1734,26 @@ void DeviceAttribute::operator << (DevLong64 datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (double &datum)
+bool DeviceAttribute::operator>>(double &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (DoubleSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (DoubleSeq->length() != 0)
+        return false;
+    }
+
+    if(DoubleSeq.operator->() != NULL)
+    {
+        if(DoubleSeq->length() != 0)
+        {
             datum = DoubleSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1615,7 +1769,7 @@ bool DeviceAttribute::operator >> (double &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (double datum)
+void DeviceAttribute::operator<<(double datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1623,7 +1777,7 @@ void DeviceAttribute::operator << (double datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_DOUBLE;
+    data_type = Tango::DEV_DOUBLE;
 
     DevVarDoubleArray *double_vararr = new(DevVarDoubleArray);
     double_vararr->length(1);
@@ -1639,20 +1793,26 @@ void DeviceAttribute::operator << (double datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::string& datum)
+bool DeviceAttribute::operator>>(std::string &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (StringSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (StringSeq->length() != 0)
+        return false;
+    }
+
+    if(StringSeq.operator->() != NULL)
+    {
+        if(StringSeq->length() != 0)
+        {
             datum = StringSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1668,7 +1828,7 @@ bool DeviceAttribute::operator >> (std::string& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::string& datum)
+void DeviceAttribute::operator<<(const std::string &datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1676,7 +1836,7 @@ void DeviceAttribute::operator << (const std::string& datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STRING;
+    data_type = Tango::DEV_STRING;
 
     DevVarStringArray *string_vararr = new(DevVarStringArray);
     string_vararr->length(1);
@@ -1686,7 +1846,7 @@ void DeviceAttribute::operator << (const std::string& datum)
     del_mem(Tango::DEV_STRING);
 }
 
-void DeviceAttribute::operator << (DevString datum)
+void DeviceAttribute::operator<<(DevString datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1694,7 +1854,7 @@ void DeviceAttribute::operator << (DevString datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STRING;
+    data_type = Tango::DEV_STRING;
 
     DevVarStringArray *string_vararr = new(DevVarStringArray);
     string_vararr->length(1);
@@ -1704,7 +1864,7 @@ void DeviceAttribute::operator << (DevString datum)
     del_mem(Tango::DEV_STRING);
 }
 
-void DeviceAttribute::operator << (const char *datum)
+void DeviceAttribute::operator<<(const char *datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1712,7 +1872,7 @@ void DeviceAttribute::operator << (const char *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STRING;
+    data_type = Tango::DEV_STRING;
 
     DevVarStringArray *string_vararr = new(DevVarStringArray);
     string_vararr->length(1);
@@ -1728,20 +1888,26 @@ void DeviceAttribute::operator << (const char *datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (float &datum)
+bool DeviceAttribute::operator>>(float &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (FloatSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (FloatSeq->length() != 0)
+        return false;
+    }
+
+    if(FloatSeq.operator->() != NULL)
+    {
+        if(FloatSeq->length() != 0)
+        {
             datum = FloatSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1757,7 +1923,7 @@ bool DeviceAttribute::operator >> (float &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (float datum)
+void DeviceAttribute::operator<<(float datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1765,7 +1931,7 @@ void DeviceAttribute::operator << (float datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_FLOAT;
+    data_type = Tango::DEV_FLOAT;
 
     DevVarFloatArray *float_vararr = new(DevVarFloatArray);
     float_vararr->length(1);
@@ -1775,27 +1941,32 @@ void DeviceAttribute::operator << (float datum)
     del_mem(Tango::DEV_FLOAT);
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator >>(bool &) - extract a boolean from DeviceAttribute
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (bool &datum)
+bool DeviceAttribute::operator>>(bool &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (BooleanSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (BooleanSeq->length() != 0)
+        return false;
+    }
+
+    if(BooleanSeq.operator->() != NULL)
+    {
+        if(BooleanSeq->length() != 0)
+        {
             datum = BooleanSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1811,7 +1982,7 @@ bool DeviceAttribute::operator >> (bool &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (bool datum)
+void DeviceAttribute::operator<<(bool datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1819,7 +1990,7 @@ void DeviceAttribute::operator << (bool datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_BOOLEAN;
+    data_type = Tango::DEV_BOOLEAN;
 
     DevVarBooleanArray *bool_vararr = new(DevVarBooleanArray);
     bool_vararr->length(1);
@@ -1835,20 +2006,26 @@ void DeviceAttribute::operator << (bool datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (unsigned short &datum)
+bool DeviceAttribute::operator>>(unsigned short &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UShortSeq->length() != 0)
+        return false;
+    }
+
+    if(UShortSeq.operator->() != NULL)
+    {
+        if(UShortSeq->length() != 0)
+        {
             datum = UShortSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1864,7 +2041,7 @@ bool DeviceAttribute::operator >> (unsigned short &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (unsigned short datum)
+void DeviceAttribute::operator<<(unsigned short datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1872,7 +2049,7 @@ void DeviceAttribute::operator << (unsigned short datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_USHORT;
+    data_type = Tango::DEV_USHORT;
 
     DevVarUShortArray *ush_vararr = new(DevVarUShortArray);
     ush_vararr->length(1);
@@ -1888,20 +2065,26 @@ void DeviceAttribute::operator << (unsigned short datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (unsigned char &datum)
+bool DeviceAttribute::operator>>(unsigned char &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UCharSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UCharSeq->length() != 0)
+        return false;
+    }
+
+    if(UCharSeq.operator->() != NULL)
+    {
+        if(UCharSeq->length() != 0)
+        {
             datum = UCharSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1917,7 +2100,7 @@ bool DeviceAttribute::operator >> (unsigned char &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (unsigned char datum)
+void DeviceAttribute::operator<<(unsigned char datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1925,7 +2108,7 @@ void DeviceAttribute::operator << (unsigned char datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_UCHAR;
+    data_type = Tango::DEV_UCHAR;
 
     DevVarCharArray *uch_vararr = new(DevVarCharArray);
     uch_vararr->length(1);
@@ -1941,20 +2124,26 @@ void DeviceAttribute::operator << (unsigned char datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevULong &datum)
+bool DeviceAttribute::operator>>(DevULong &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULongSeq->length() != 0)
+        return false;
+    }
+
+    if(ULongSeq.operator->() != NULL)
+    {
+        if(ULongSeq->length() != 0)
+        {
             datum = ULongSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -1971,7 +2160,7 @@ bool DeviceAttribute::operator >> (DevULong &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevULong datum)
+void DeviceAttribute::operator<<(DevULong datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -1979,7 +2168,7 @@ void DeviceAttribute::operator << (DevULong datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG;
+    data_type = Tango::DEV_ULONG;
 
     DevVarULongArray *long_vararr = new(DevVarULongArray);
     long_vararr->length(1);
@@ -1995,20 +2184,26 @@ void DeviceAttribute::operator << (DevULong datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevULong64 &datum)
+bool DeviceAttribute::operator>>(DevULong64 &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULong64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULong64Seq->length() != 0)
+        return false;
+    }
+
+    if(ULong64Seq.operator->() != NULL)
+    {
+        if(ULong64Seq->length() != 0)
+        {
             datum = ULong64Seq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2025,7 +2220,7 @@ bool DeviceAttribute::operator >> (DevULong64 &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevULong64 datum)
+void DeviceAttribute::operator<<(DevULong64 datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2033,7 +2228,7 @@ void DeviceAttribute::operator << (DevULong64 datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG64;
+    data_type = Tango::DEV_ULONG64;
 
     DevVarULong64Array *long_vararr = new(DevVarULong64Array);
     long_vararr->length(1);
@@ -2049,28 +2244,34 @@ void DeviceAttribute::operator << (DevULong64 datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevState &datum)
+bool DeviceAttribute::operator>>(DevState &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
 
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
-    if (d_state_filled == true)
+    if(d_state_filled == true)
     {
         datum = d_state;
 
         return ret;
     }
 
-    if (StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != NULL)
     {
-        if (StateSeq->length() != 0)
+        if(StateSeq->length() != 0)
+        {
             datum = StateSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2087,7 +2288,7 @@ bool DeviceAttribute::operator >> (DevState &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevState datum)
+void DeviceAttribute::operator<<(DevState datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2095,7 +2296,7 @@ void DeviceAttribute::operator << (DevState datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STATE;
+    data_type = Tango::DEV_STATE;
 
     DevVarStateArray *state_vararr = new(DevVarStateArray);
     state_vararr->length(1);
@@ -2105,27 +2306,32 @@ void DeviceAttribute::operator << (DevState datum)
     del_mem(Tango::DEV_STATE);
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator >>(DevEncoded &) - extract a DevEncoded from DeviceAttribute
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevEncoded &datum)
+bool DeviceAttribute::operator>>(DevEncoded &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (EncodedSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (EncodedSeq->length() != 0)
+        return false;
+    }
+
+    if(EncodedSeq.operator->() != NULL)
+    {
+        if(EncodedSeq->length() != 0)
+        {
             datum = EncodedSeq[0];
+        }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2142,7 +2348,7 @@ bool DeviceAttribute::operator >> (DevEncoded &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevEncoded &datum)
+void DeviceAttribute::operator<<(const DevEncoded &datum)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2150,7 +2356,7 @@ void DeviceAttribute::operator << (const DevEncoded &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ENCODED;
+    data_type = Tango::DEV_ENCODED;
 
     DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
     enc_vararr->length(1);
@@ -2160,7 +2366,7 @@ void DeviceAttribute::operator << (const DevEncoded &datum)
     del_mem(Tango::DEV_ENCODED);
 }
 
-void DeviceAttribute::insert(char *&str,unsigned char *&ptr,unsigned int size)
+void DeviceAttribute::insert(char *&str, unsigned char *&ptr, unsigned int size)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2168,18 +2374,18 @@ void DeviceAttribute::insert(char *&str,unsigned char *&ptr,unsigned int size)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ENCODED;
+    data_type = Tango::DEV_ENCODED;
 
     DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
     enc_vararr->length(1);
     (*enc_vararr)[0].encoded_format = Tango::string_dup(str);
-    (*enc_vararr)[0].encoded_data.replace(size,size,(CORBA::Octet *)ptr);
+    (*enc_vararr)[0].encoded_data.replace(size, size, (CORBA::Octet *) ptr);
     EncodedSeq = enc_vararr;
 
     del_mem(Tango::DEV_ENCODED);
 }
 
-void DeviceAttribute::insert(const char *str,unsigned char *ptr,unsigned int size)
+void DeviceAttribute::insert(const char *str, unsigned char *ptr, unsigned int size)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2191,13 +2397,13 @@ void DeviceAttribute::insert(const char *str,unsigned char *ptr,unsigned int siz
     DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
     enc_vararr->length(1);
     (*enc_vararr)[0].encoded_format = Tango::string_dup(str);
-    (*enc_vararr)[0].encoded_data.replace(size,size,(CORBA::Octet *)ptr);
+    (*enc_vararr)[0].encoded_data.replace(size, size, (CORBA::Octet *) ptr);
     EncodedSeq = enc_vararr;
 
     del_mem(Tango::DEV_ENCODED);
 }
 
-void DeviceAttribute::insert(const std::string &str,std::vector<unsigned char> &array)
+void DeviceAttribute::insert(const std::string &str, std::vector<unsigned char> &array)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2205,7 +2411,7 @@ void DeviceAttribute::insert(const std::string &str,std::vector<unsigned char> &
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ENCODED;
+    data_type = Tango::DEV_ENCODED;
 
     DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
     enc_vararr->length(1);
@@ -2216,13 +2422,13 @@ void DeviceAttribute::insert(const std::string &str,std::vector<unsigned char> &
     del_mem(Tango::DEV_ENCODED);
 }
 
-void DeviceAttribute::insert(std::string &str,std::vector<unsigned char> &array)
+void DeviceAttribute::insert(std::string &str, std::vector<unsigned char> &array)
 {
     const std::string &tmp_str = str;
-    insert(tmp_str,array);
+    insert(tmp_str, array);
 }
 
-void DeviceAttribute::insert(const char *str,DevVarCharArray *array)
+void DeviceAttribute::insert(const char *str, DevVarCharArray *array)
 {
     dim_x = 1;
     dim_y = 0;
@@ -2230,12 +2436,12 @@ void DeviceAttribute::insert(const char *str,DevVarCharArray *array)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ENCODED;
+    data_type = Tango::DEV_ENCODED;
 
     DevVarEncodedArray *enc_vararr = new(DevVarEncodedArray);
     enc_vararr->length(1);
     (*enc_vararr)[0].encoded_format = Tango::string_dup(str);
-    (*enc_vararr)[0].encoded_data.replace(array->length(),array->length(),array->get_buffer());
+    (*enc_vararr)[0].encoded_data.replace(array->length(), array->length(), array->get_buffer());
     EncodedSeq = enc_vararr;
 
     del_mem(Tango::DEV_ENCODED);
@@ -2248,7 +2454,7 @@ void DeviceAttribute::insert(const char *str,DevVarCharArray *array)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<std::string> &datum)
+void DeviceAttribute::operator<<(const std::vector<std::string> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2256,9 +2462,9 @@ void DeviceAttribute::operator << (const std::vector<std::string> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STRING;
+    data_type = Tango::DEV_STRING;
 
-    if (StringSeq.operator->() == NULL)
+    if(StringSeq.operator->() == NULL)
     {
         DevVarStringArray *str_vararr = new(DevVarStringArray);
         StringSeq = str_vararr;
@@ -2268,7 +2474,7 @@ void DeviceAttribute::operator << (const std::vector<std::string> &datum)
     del_mem(Tango::DEV_STRING);
 }
 
-void DeviceAttribute::insert(const std::vector<std::string> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<std::string> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2281,27 +2487,31 @@ void DeviceAttribute::insert(const std::vector<std::string> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<std::string>& datum)
+bool DeviceAttribute::operator>>(std::vector<std::string> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (StringSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (StringSeq->length() != 0)
+        return false;
+    }
+
+    if(StringSeq.operator->() != NULL)
+    {
+        if(StringSeq->length() != 0)
         {
             datum.resize(StringSeq->length());
 
-            for (unsigned int i=0; i<StringSeq->length(); i++)
+            for(unsigned int i = 0; i < StringSeq->length(); i++)
             {
                 datum[i] = StringSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2311,7 +2521,6 @@ bool DeviceAttribute::operator >> (std::vector<std::string>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator <<(const std::vector<short>) -
@@ -2319,7 +2528,7 @@ bool DeviceAttribute::operator >> (std::vector<std::string>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<short> &datum)
+void DeviceAttribute::operator<<(const std::vector<short> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2329,9 +2538,11 @@ void DeviceAttribute::operator << (const std::vector<short> &datum)
     data_format = Tango::FMT_UNKNOWN;
 
     if(data_type != DEV_ENUM)
-    {   data_type = DEV_SHORT;}
+    {
+        data_type = DEV_SHORT;
+    }
 
-    if (ShortSeq.operator->() == NULL)
+    if(ShortSeq.operator->() == NULL)
     {
         DevVarShortArray *short_vararr = new(DevVarShortArray);
         ShortSeq = short_vararr;
@@ -2341,7 +2552,7 @@ void DeviceAttribute::operator << (const std::vector<short> &datum)
     del_mem(Tango::DEV_SHORT);
 }
 
-void DeviceAttribute::insert(std::vector<short> &datum,int x,int y)
+void DeviceAttribute::insert(std::vector<short> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2354,27 +2565,31 @@ void DeviceAttribute::insert(std::vector<short> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<short>& datum)
+bool DeviceAttribute::operator>>(std::vector<short> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
         {
             datum.resize(ShortSeq->length());
 
-            for (unsigned int i=0; i<ShortSeq->length(); i++)
+            for(unsigned int i = 0; i < ShortSeq->length(); i++)
             {
                 datum[i] = ShortSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2391,7 +2606,7 @@ bool DeviceAttribute::operator >> (std::vector<short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<DevLong> &datum)
+void DeviceAttribute::operator<<(const std::vector<DevLong> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2399,9 +2614,9 @@ void DeviceAttribute::operator << (const std::vector<DevLong> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG;
+    data_type = Tango::DEV_LONG;
 
-    if (LongSeq.operator->() == NULL)
+    if(LongSeq.operator->() == NULL)
     {
         DevVarLongArray *long_vararr = new(DevVarLongArray);
         LongSeq = long_vararr;
@@ -2411,7 +2626,7 @@ void DeviceAttribute::operator << (const std::vector<DevLong> &datum)
     del_mem(Tango::DEV_LONG);
 }
 
-void DeviceAttribute::insert(const std::vector<DevLong> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<DevLong> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2424,27 +2639,31 @@ void DeviceAttribute::insert(const std::vector<DevLong> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<DevLong>& datum)
+bool DeviceAttribute::operator>>(std::vector<DevLong> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (LongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (LongSeq->length() != 0)
+        return false;
+    }
+
+    if(LongSeq.operator->() != NULL)
+    {
+        if(LongSeq->length() != 0)
         {
             datum.resize(LongSeq->length());
 
-            for (unsigned int i=0; i<LongSeq->length(); i++)
+            for(unsigned int i = 0; i < LongSeq->length(); i++)
             {
                 datum[i] = LongSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2454,7 +2673,6 @@ bool DeviceAttribute::operator >> (std::vector<DevLong>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator <<(const std::vector<DevLong64>) -
@@ -2462,7 +2680,7 @@ bool DeviceAttribute::operator >> (std::vector<DevLong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<DevLong64> &datum)
+void DeviceAttribute::operator<<(const std::vector<DevLong64> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2470,9 +2688,9 @@ void DeviceAttribute::operator << (const std::vector<DevLong64> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG64;
+    data_type = Tango::DEV_LONG64;
 
-    if (Long64Seq.operator->() == NULL)
+    if(Long64Seq.operator->() == NULL)
     {
         DevVarLong64Array *long_vararr = new(DevVarLong64Array);
         Long64Seq = long_vararr;
@@ -2482,7 +2700,7 @@ void DeviceAttribute::operator << (const std::vector<DevLong64> &datum)
     del_mem(Tango::DEV_LONG64);
 }
 
-void DeviceAttribute::insert(const std::vector<DevLong64> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<DevLong64> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2495,27 +2713,31 @@ void DeviceAttribute::insert(const std::vector<DevLong64> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<DevLong64>& datum)
+bool DeviceAttribute::operator>>(std::vector<DevLong64> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (Long64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (Long64Seq->length() != 0)
+        return false;
+    }
+
+    if(Long64Seq.operator->() != NULL)
+    {
+        if(Long64Seq->length() != 0)
         {
             datum.resize(Long64Seq->length());
 
-            for (unsigned int i=0; i<Long64Seq->length(); i++)
+            for(unsigned int i = 0; i < Long64Seq->length(); i++)
             {
                 datum[i] = Long64Seq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2532,7 +2754,7 @@ bool DeviceAttribute::operator >> (std::vector<DevLong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<double> &datum)
+void DeviceAttribute::operator<<(const std::vector<double> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2540,9 +2762,9 @@ void DeviceAttribute::operator << (const std::vector<double> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_DOUBLE;
+    data_type = Tango::DEV_DOUBLE;
 
-    if (DoubleSeq.operator->() == NULL)
+    if(DoubleSeq.operator->() == NULL)
     {
         DevVarDoubleArray *double_vararr = new(DevVarDoubleArray);
         DoubleSeq = double_vararr;
@@ -2552,7 +2774,7 @@ void DeviceAttribute::operator << (const std::vector<double> &datum)
     del_mem(Tango::DEV_DOUBLE);
 }
 
-void DeviceAttribute::insert(const std::vector<double> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<double> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2565,27 +2787,31 @@ void DeviceAttribute::insert(const std::vector<double> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<double>& datum)
+bool DeviceAttribute::operator>>(std::vector<double> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (DoubleSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (DoubleSeq->length() != 0)
+        return false;
+    }
+
+    if(DoubleSeq.operator->() != NULL)
+    {
+        if(DoubleSeq->length() != 0)
         {
             datum.resize(DoubleSeq->length());
 
-            for (unsigned int i=0; i<DoubleSeq->length(); i++)
+            for(unsigned int i = 0; i < DoubleSeq->length(); i++)
             {
                 datum[i] = DoubleSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2595,7 +2821,6 @@ bool DeviceAttribute::operator >> (std::vector<double>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator <<(const std::vector<float>) -
@@ -2603,7 +2828,7 @@ bool DeviceAttribute::operator >> (std::vector<double>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<float> &datum)
+void DeviceAttribute::operator<<(const std::vector<float> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2611,9 +2836,9 @@ void DeviceAttribute::operator << (const std::vector<float> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_FLOAT;
+    data_type = Tango::DEV_FLOAT;
 
-    if (FloatSeq.operator->() == NULL)
+    if(FloatSeq.operator->() == NULL)
     {
         DevVarFloatArray *float_vararr = new(DevVarFloatArray);
         FloatSeq = float_vararr;
@@ -2623,7 +2848,7 @@ void DeviceAttribute::operator << (const std::vector<float> &datum)
     del_mem(Tango::DEV_FLOAT);
 }
 
-void DeviceAttribute::insert(const std::vector<float> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<float> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2636,27 +2861,31 @@ void DeviceAttribute::insert(const std::vector<float> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<float>& datum)
+bool DeviceAttribute::operator>>(std::vector<float> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (FloatSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (FloatSeq->length() != 0)
+        return false;
+    }
+
+    if(FloatSeq.operator->() != NULL)
+    {
+        if(FloatSeq->length() != 0)
         {
             datum.resize(FloatSeq->length());
 
-            for (unsigned int i=0; i<FloatSeq->length(); i++)
+            for(unsigned int i = 0; i < FloatSeq->length(); i++)
             {
                 datum[i] = FloatSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2666,7 +2895,6 @@ bool DeviceAttribute::operator >> (std::vector<float>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator <<(const std::vector<bool>) -
@@ -2674,7 +2902,7 @@ bool DeviceAttribute::operator >> (std::vector<float>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<bool> &datum)
+void DeviceAttribute::operator<<(const std::vector<bool> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2682,9 +2910,9 @@ void DeviceAttribute::operator << (const std::vector<bool> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_BOOLEAN;
+    data_type = Tango::DEV_BOOLEAN;
 
-    if (BooleanSeq.operator->() == NULL)
+    if(BooleanSeq.operator->() == NULL)
     {
         DevVarBooleanArray *bool_vararr = new(DevVarBooleanArray);
         BooleanSeq = bool_vararr;
@@ -2694,7 +2922,7 @@ void DeviceAttribute::operator << (const std::vector<bool> &datum)
     del_mem(Tango::DEV_BOOLEAN);
 }
 
-void DeviceAttribute::insert(const std::vector<bool> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<bool> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2707,27 +2935,31 @@ void DeviceAttribute::insert(const std::vector<bool> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<bool>& datum)
+bool DeviceAttribute::operator>>(std::vector<bool> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (BooleanSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (BooleanSeq->length() != 0)
+        return false;
+    }
+
+    if(BooleanSeq.operator->() != NULL)
+    {
+        if(BooleanSeq->length() != 0)
         {
             datum.resize(BooleanSeq->length());
 
-            for (unsigned int i=0; i<BooleanSeq->length(); i++)
+            for(unsigned int i = 0; i < BooleanSeq->length(); i++)
             {
                 datum[i] = BooleanSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2737,7 +2969,6 @@ bool DeviceAttribute::operator >> (std::vector<bool>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator <<(const std::vector<unsigned short>) -
@@ -2745,7 +2976,7 @@ bool DeviceAttribute::operator >> (std::vector<bool>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<unsigned short> &datum)
+void DeviceAttribute::operator<<(const std::vector<unsigned short> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2753,9 +2984,9 @@ void DeviceAttribute::operator << (const std::vector<unsigned short> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_USHORT;
+    data_type = Tango::DEV_USHORT;
 
-    if (UShortSeq.operator->() == NULL)
+    if(UShortSeq.operator->() == NULL)
     {
         DevVarUShortArray *ushort_vararr = new(DevVarUShortArray);
         UShortSeq = ushort_vararr;
@@ -2765,7 +2996,7 @@ void DeviceAttribute::operator << (const std::vector<unsigned short> &datum)
     del_mem(Tango::DEV_USHORT);
 }
 
-void DeviceAttribute::insert(const std::vector<unsigned short> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<unsigned short> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2778,27 +3009,31 @@ void DeviceAttribute::insert(const std::vector<unsigned short> &datum,int x,int 
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<unsigned short>& datum)
+bool DeviceAttribute::operator>>(std::vector<unsigned short> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UShortSeq->length() != 0)
+        return false;
+    }
+
+    if(UShortSeq.operator->() != NULL)
+    {
+        if(UShortSeq->length() != 0)
         {
             datum.resize(UShortSeq->length());
 
-            for (unsigned int i=0; i<UShortSeq->length(); i++)
+            for(unsigned int i = 0; i < UShortSeq->length(); i++)
             {
                 datum[i] = UShortSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2815,7 +3050,7 @@ bool DeviceAttribute::operator >> (std::vector<unsigned short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<unsigned char> &datum)
+void DeviceAttribute::operator<<(const std::vector<unsigned char> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2823,9 +3058,9 @@ void DeviceAttribute::operator << (const std::vector<unsigned char> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_UCHAR;
+    data_type = Tango::DEV_UCHAR;
 
-    if (UCharSeq.operator->() == NULL)
+    if(UCharSeq.operator->() == NULL)
     {
         DevVarUCharArray *uchar_vararr = new(DevVarUCharArray);
         UCharSeq = uchar_vararr;
@@ -2835,7 +3070,7 @@ void DeviceAttribute::operator << (const std::vector<unsigned char> &datum)
     del_mem(Tango::DEV_UCHAR);
 }
 
-void DeviceAttribute::insert(const std::vector<unsigned char> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<unsigned char> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2848,27 +3083,31 @@ void DeviceAttribute::insert(const std::vector<unsigned char> &datum,int x,int y
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<unsigned char>& datum)
+bool DeviceAttribute::operator>>(std::vector<unsigned char> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UCharSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UCharSeq->length() != 0)
+        return false;
+    }
+
+    if(UCharSeq.operator->() != NULL)
+    {
+        if(UCharSeq->length() != 0)
         {
             datum.resize(UCharSeq->length());
 
-            for (unsigned int i=0; i<UCharSeq->length(); i++)
+            for(unsigned int i = 0; i < UCharSeq->length(); i++)
             {
                 datum[i] = UCharSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2885,7 +3124,7 @@ bool DeviceAttribute::operator >> (std::vector<unsigned char>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<DevULong> &datum)
+void DeviceAttribute::operator<<(const std::vector<DevULong> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2893,9 +3132,9 @@ void DeviceAttribute::operator << (const std::vector<DevULong> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG;
+    data_type = Tango::DEV_ULONG;
 
-    if (ULongSeq.operator->() == NULL)
+    if(ULongSeq.operator->() == NULL)
     {
         DevVarULongArray *long_vararr = new(DevVarULongArray);
         ULongSeq = long_vararr;
@@ -2905,7 +3144,7 @@ void DeviceAttribute::operator << (const std::vector<DevULong> &datum)
     del_mem(Tango::DEV_ULONG);
 }
 
-void DeviceAttribute::insert(const std::vector<DevULong> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<DevULong> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2918,27 +3157,31 @@ void DeviceAttribute::insert(const std::vector<DevULong> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<DevULong>& datum)
+bool DeviceAttribute::operator>>(std::vector<DevULong> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULongSeq->length() != 0)
+        return false;
+    }
+
+    if(ULongSeq.operator->() != NULL)
+    {
+        if(ULongSeq->length() != 0)
         {
             datum.resize(ULongSeq->length());
 
-            for (unsigned int i=0; i< ULongSeq->length(); i++)
+            for(unsigned int i = 0; i < ULongSeq->length(); i++)
             {
                 datum[i] = ULongSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -2955,7 +3198,7 @@ bool DeviceAttribute::operator >> (std::vector<DevULong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<DevULong64> &datum)
+void DeviceAttribute::operator<<(const std::vector<DevULong64> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -2963,9 +3206,9 @@ void DeviceAttribute::operator << (const std::vector<DevULong64> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG64;
+    data_type = Tango::DEV_ULONG64;
 
-    if (ULong64Seq.operator->() == NULL)
+    if(ULong64Seq.operator->() == NULL)
     {
         DevVarULong64Array *long_vararr = new(DevVarULong64Array);
         ULong64Seq = long_vararr;
@@ -2975,7 +3218,7 @@ void DeviceAttribute::operator << (const std::vector<DevULong64> &datum)
     del_mem(Tango::DEV_ULONG64);
 }
 
-void DeviceAttribute::insert(const std::vector<DevULong64> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<DevULong64> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -2988,27 +3231,31 @@ void DeviceAttribute::insert(const std::vector<DevULong64> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<DevULong64>& datum)
+bool DeviceAttribute::operator>>(std::vector<DevULong64> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULong64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULong64Seq->length() != 0)
+        return false;
+    }
+
+    if(ULong64Seq.operator->() != NULL)
+    {
+        if(ULong64Seq->length() != 0)
         {
             datum.resize(ULong64Seq->length());
 
-            for (unsigned int i=0; i < ULong64Seq->length(); i++)
+            for(unsigned int i = 0; i < ULong64Seq->length(); i++)
             {
                 datum[i] = ULong64Seq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3025,7 +3272,7 @@ bool DeviceAttribute::operator >> (std::vector<DevULong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const std::vector<DevState> &datum)
+void DeviceAttribute::operator<<(const std::vector<DevState> &datum)
 {
     dim_x = datum.size();
     dim_y = 0;
@@ -3033,9 +3280,9 @@ void DeviceAttribute::operator << (const std::vector<DevState> &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STATE;
+    data_type = Tango::DEV_STATE;
 
-    if (StateSeq.operator->() == NULL)
+    if(StateSeq.operator->() == NULL)
     {
         DevVarStateArray *long_vararr = new(DevVarStateArray);
         StateSeq = long_vararr;
@@ -3045,7 +3292,7 @@ void DeviceAttribute::operator << (const std::vector<DevState> &datum)
     del_mem(Tango::DEV_STATE);
 }
 
-void DeviceAttribute::insert(const std::vector<DevState> &datum,int x,int y)
+void DeviceAttribute::insert(const std::vector<DevState> &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3058,13 +3305,15 @@ void DeviceAttribute::insert(const std::vector<DevState> &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (std::vector<DevState>& datum)
+bool DeviceAttribute::operator>>(std::vector<DevState> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     if(d_state_filled)
     {
@@ -3073,19 +3322,21 @@ bool DeviceAttribute::operator >> (std::vector<DevState>& datum)
         return true;
     }
 
-    if (StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != NULL)
     {
-        if (StateSeq->length() != 0)
+        if(StateSeq->length() != 0)
         {
             datum.resize(StateSeq->length());
 
-            for (unsigned int i=0; i<StateSeq->length(); i++)
+            for(unsigned int i = 0; i < StateSeq->length(); i++)
             {
                 datum[i] = StateSeq[i];
-                }
+            }
         }
         else
+        {
             return false;
+        }
     }
     else
     {
@@ -3095,7 +3346,6 @@ bool DeviceAttribute::operator >> (std::vector<DevState>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator >>(DevVarShortArray *) - extract a sequence of
@@ -3103,22 +3353,26 @@ bool DeviceAttribute::operator >> (std::vector<DevState>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarShortArray* &datum)
+bool DeviceAttribute::operator>>(DevVarShortArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
         {
             datum = ShortSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3135,22 +3389,26 @@ bool DeviceAttribute::operator >> (DevVarShortArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarLongArray* &datum)
+bool DeviceAttribute::operator>>(DevVarLongArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (LongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (LongSeq->length() != 0)
+        return false;
+    }
+
+    if(LongSeq.operator->() != NULL)
+    {
+        if(LongSeq->length() != 0)
         {
             datum = LongSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3167,22 +3425,26 @@ bool DeviceAttribute::operator >> (DevVarLongArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarDoubleArray* &datum)
+bool DeviceAttribute::operator>>(DevVarDoubleArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (DoubleSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (DoubleSeq->length() != 0)
+        return false;
+    }
+
+    if(DoubleSeq.operator->() != NULL)
+    {
+        if(DoubleSeq->length() != 0)
         {
             datum = DoubleSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3199,22 +3461,26 @@ bool DeviceAttribute::operator >> (DevVarDoubleArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarStringArray* &datum)
+bool DeviceAttribute::operator>>(DevVarStringArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (StringSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (StringSeq->length() != 0)
+        return false;
+    }
+
+    if(StringSeq.operator->() != NULL)
+    {
+        if(StringSeq->length() != 0)
         {
             datum = StringSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3224,7 +3490,6 @@ bool DeviceAttribute::operator >> (DevVarStringArray* &datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator >>(DevVarFloatArray *) - extract a sequence of
@@ -3232,22 +3497,26 @@ bool DeviceAttribute::operator >> (DevVarStringArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarFloatArray* &datum)
+bool DeviceAttribute::operator>>(DevVarFloatArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (FloatSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (FloatSeq->length() != 0)
+        return false;
+    }
+
+    if(FloatSeq.operator->() != NULL)
+    {
+        if(FloatSeq->length() != 0)
         {
             datum = FloatSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3264,22 +3533,26 @@ bool DeviceAttribute::operator >> (DevVarFloatArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarBooleanArray* &datum)
+bool DeviceAttribute::operator>>(DevVarBooleanArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (BooleanSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (BooleanSeq->length() != 0)
+        return false;
+    }
+
+    if(BooleanSeq.operator->() != NULL)
+    {
+        if(BooleanSeq->length() != 0)
         {
             datum = BooleanSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3289,7 +3562,6 @@ bool DeviceAttribute::operator >> (DevVarBooleanArray* &datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::operator >>(DevVarUShortArray *) - extract a sequence of
@@ -3297,22 +3569,26 @@ bool DeviceAttribute::operator >> (DevVarBooleanArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarUShortArray* &datum)
+bool DeviceAttribute::operator>>(DevVarUShortArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UShortSeq->length() != 0)
+        return false;
+    }
+
+    if(UShortSeq.operator->() != NULL)
+    {
+        if(UShortSeq->length() != 0)
         {
             datum = UShortSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3329,22 +3605,26 @@ bool DeviceAttribute::operator >> (DevVarUShortArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarCharArray* &datum)
+bool DeviceAttribute::operator>>(DevVarCharArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UCharSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UCharSeq->length() != 0)
+        return false;
+    }
+
+    if(UCharSeq.operator->() != NULL)
+    {
+        if(UCharSeq->length() != 0)
         {
             datum = UCharSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3361,22 +3641,26 @@ bool DeviceAttribute::operator >> (DevVarCharArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarLong64Array* &datum)
+bool DeviceAttribute::operator>>(DevVarLong64Array *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (Long64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (Long64Seq->length() != 0)
+        return false;
+    }
+
+    if(Long64Seq.operator->() != NULL)
+    {
+        if(Long64Seq->length() != 0)
         {
             datum = Long64Seq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3393,22 +3677,26 @@ bool DeviceAttribute::operator >> (DevVarLong64Array* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarULongArray* &datum)
+bool DeviceAttribute::operator>>(DevVarULongArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULongSeq->length() != 0)
+        return false;
+    }
+
+    if(ULongSeq.operator->() != NULL)
+    {
+        if(ULongSeq->length() != 0)
         {
             datum = ULongSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3425,22 +3713,26 @@ bool DeviceAttribute::operator >> (DevVarULongArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarULong64Array* &datum)
+bool DeviceAttribute::operator>>(DevVarULong64Array *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULong64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULong64Seq->length() != 0)
+        return false;
+    }
+
+    if(ULong64Seq.operator->() != NULL)
+    {
+        if(ULong64Seq->length() != 0)
         {
             datum = ULong64Seq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -3457,30 +3749,34 @@ bool DeviceAttribute::operator >> (DevVarULong64Array* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarStateArray* &datum)
+bool DeviceAttribute::operator>>(DevVarStateArray *&datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     if(d_state_filled)
     {
         Tango::DevState *tmp_ptr = new Tango::DevState[1];
         *tmp_ptr = d_state;
-        datum = new DevVarStateArray(1,1,tmp_ptr,true);
+        datum = new DevVarStateArray(1, 1, tmp_ptr, true);
         return true;
     }
 
-    if (StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != NULL)
     {
-        if (StateSeq->length() != 0)
+        if(StateSeq->length() != 0)
         {
             datum = StateSeq._retn();
         }
         else
+        {
             return false;
+        }
     }
     else
     {
@@ -3497,40 +3793,50 @@ bool DeviceAttribute::operator >> (DevVarStateArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::operator >> (DevVarEncodedArray* &datum)
+bool DeviceAttribute::operator>>(DevVarEncodedArray *&datum)
 {
     bool ret = true;
 
-    if (err_list.operator->() != NULL)
+    if(err_list.operator->() != NULL)
     {
-        if (err_list.in().length() != 0)
+        if(err_list.in().length() != 0)
         {
-            if (exceptions_flags.test(failed_flag))
+            if(exceptions_flags.test(failed_flag))
+            {
                 throw DevFailed(err_list.in());
+            }
             else
+            {
                 return false;
+            }
         }
     }
 
-    if (is_empty() == true)
-        return false;
-
-    if (EncodedSeq.operator->() != NULL)
+    if(is_empty() == true)
     {
-        if (EncodedSeq->length() != 0)
+        return false;
+    }
+
+    if(EncodedSeq.operator->() != NULL)
+    {
+        if(EncodedSeq->length() != 0)
         {
             datum = EncodedSeq._retn();
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
         ret = false;
 
-        if (exceptions_flags.test(wrongtype_flag))
+        if(exceptions_flags.test(wrongtype_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleAttrArgumentType, "Cannot extract, data in DeviceAttribute object is not an array of DevEncoded");
+            TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                      API_IncompatibleAttrArgumentType,
+                                      "Cannot extract, data in DeviceAttribute object is not an array of DevEncoded");
         }
     }
     return ret;
@@ -3544,7 +3850,7 @@ bool DeviceAttribute::operator >> (DevVarEncodedArray* &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarShortArray &datum)
+void DeviceAttribute::operator<<(const DevVarShortArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3552,16 +3858,18 @@ void DeviceAttribute::operator << (const DevVarShortArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_SHORT;
+    data_type = Tango::DEV_SHORT;
 
     ShortSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         ShortSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_SHORT);
 }
 
-void DeviceAttribute::insert(const DevVarShortArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarShortArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3576,7 +3884,7 @@ void DeviceAttribute::insert(const DevVarShortArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarShortArray *datum)
+void DeviceAttribute::operator<<(DevVarShortArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3584,14 +3892,14 @@ void DeviceAttribute::operator << (DevVarShortArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_SHORT;
+    data_type = Tango::DEV_SHORT;
 
     ShortSeq = datum;
 
     del_mem(Tango::DEV_SHORT);
 }
 
-void DeviceAttribute::insert(DevVarShortArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarShortArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3606,7 +3914,7 @@ void DeviceAttribute::insert(DevVarShortArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarLongArray &datum)
+void DeviceAttribute::operator<<(const DevVarLongArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3614,16 +3922,18 @@ void DeviceAttribute::operator << (const DevVarLongArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG;
+    data_type = Tango::DEV_LONG;
 
     LongSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         LongSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_LONG);
 }
 
-void DeviceAttribute::insert(const DevVarLongArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarLongArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3638,7 +3948,7 @@ void DeviceAttribute::insert(const DevVarLongArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarLongArray *datum)
+void DeviceAttribute::operator<<(DevVarLongArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3646,14 +3956,14 @@ void DeviceAttribute::operator << (DevVarLongArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG;
+    data_type = Tango::DEV_LONG;
 
     LongSeq = datum;
 
     del_mem(Tango::DEV_LONG);
 }
 
-void DeviceAttribute::insert(DevVarLongArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarLongArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3668,7 +3978,7 @@ void DeviceAttribute::insert(DevVarLongArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarDoubleArray &datum)
+void DeviceAttribute::operator<<(const DevVarDoubleArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3676,16 +3986,18 @@ void DeviceAttribute::operator << (const DevVarDoubleArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_DOUBLE;
+    data_type = Tango::DEV_DOUBLE;
 
     DoubleSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         DoubleSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_DOUBLE);
 }
 
-void DeviceAttribute::insert(const DevVarDoubleArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarDoubleArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3700,7 +4012,7 @@ void DeviceAttribute::insert(const DevVarDoubleArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarDoubleArray *datum)
+void DeviceAttribute::operator<<(DevVarDoubleArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3708,14 +4020,14 @@ void DeviceAttribute::operator << (DevVarDoubleArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_DOUBLE;
+    data_type = Tango::DEV_DOUBLE;
 
     DoubleSeq = datum;
 
     del_mem(Tango::DEV_DOUBLE);
 }
 
-void DeviceAttribute::insert(DevVarDoubleArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarDoubleArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3730,7 +4042,7 @@ void DeviceAttribute::insert(DevVarDoubleArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarStringArray &datum)
+void DeviceAttribute::operator<<(const DevVarStringArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3738,16 +4050,18 @@ void DeviceAttribute::operator << (const DevVarStringArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STRING;
+    data_type = Tango::DEV_STRING;
 
     StringSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         StringSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_STRING);
 }
 
-void DeviceAttribute::insert(const DevVarStringArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarStringArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3762,7 +4076,7 @@ void DeviceAttribute::insert(const DevVarStringArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarStringArray *datum)
+void DeviceAttribute::operator<<(DevVarStringArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3770,20 +4084,19 @@ void DeviceAttribute::operator << (DevVarStringArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STRING;
+    data_type = Tango::DEV_STRING;
 
     StringSeq = datum;
 
     del_mem(Tango::DEV_STRING);
 }
 
-void DeviceAttribute::insert(DevVarStringArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarStringArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
     dim_y = y;
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -3793,7 +4106,7 @@ void DeviceAttribute::insert(DevVarStringArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarFloatArray &datum)
+void DeviceAttribute::operator<<(const DevVarFloatArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3801,16 +4114,18 @@ void DeviceAttribute::operator << (const DevVarFloatArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_FLOAT;
+    data_type = Tango::DEV_FLOAT;
 
     FloatSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         FloatSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_FLOAT);
 }
 
-void DeviceAttribute::insert(const DevVarFloatArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarFloatArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3825,7 +4140,7 @@ void DeviceAttribute::insert(const DevVarFloatArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarFloatArray *datum)
+void DeviceAttribute::operator<<(DevVarFloatArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3833,14 +4148,14 @@ void DeviceAttribute::operator << (DevVarFloatArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_FLOAT;
+    data_type = Tango::DEV_FLOAT;
 
     FloatSeq = datum;
 
     del_mem(Tango::DEV_FLOAT);
 }
 
-void DeviceAttribute::insert(DevVarFloatArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarFloatArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3855,7 +4170,7 @@ void DeviceAttribute::insert(DevVarFloatArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarBooleanArray &datum)
+void DeviceAttribute::operator<<(const DevVarBooleanArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3863,16 +4178,18 @@ void DeviceAttribute::operator << (const DevVarBooleanArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_BOOLEAN;
+    data_type = Tango::DEV_BOOLEAN;
 
     BooleanSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         BooleanSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_BOOLEAN);
 }
 
-void DeviceAttribute::insert(const DevVarBooleanArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarBooleanArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3887,7 +4204,7 @@ void DeviceAttribute::insert(const DevVarBooleanArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarBooleanArray *datum)
+void DeviceAttribute::operator<<(DevVarBooleanArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3895,20 +4212,19 @@ void DeviceAttribute::operator << (DevVarBooleanArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_BOOLEAN;
+    data_type = Tango::DEV_BOOLEAN;
 
     BooleanSeq = datum;
 
     del_mem(Tango::DEV_BOOLEAN);
 }
 
-void DeviceAttribute::insert(DevVarBooleanArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarBooleanArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
     dim_y = y;
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -3918,7 +4234,7 @@ void DeviceAttribute::insert(DevVarBooleanArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarUShortArray &datum)
+void DeviceAttribute::operator<<(const DevVarUShortArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3926,16 +4242,18 @@ void DeviceAttribute::operator << (const DevVarUShortArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_USHORT;
+    data_type = Tango::DEV_USHORT;
 
     UShortSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         UShortSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_USHORT);
 }
 
-void DeviceAttribute::insert(const DevVarUShortArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarUShortArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -3950,7 +4268,7 @@ void DeviceAttribute::insert(const DevVarUShortArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarUShortArray *datum)
+void DeviceAttribute::operator<<(DevVarUShortArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -3958,20 +4276,19 @@ void DeviceAttribute::operator << (DevVarUShortArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_USHORT;
+    data_type = Tango::DEV_USHORT;
 
     UShortSeq = datum;
 
     del_mem(Tango::DEV_USHORT);
 }
 
-void DeviceAttribute::insert(DevVarUShortArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarUShortArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
     dim_y = y;
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -3981,7 +4298,7 @@ void DeviceAttribute::insert(DevVarUShortArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarCharArray &datum)
+void DeviceAttribute::operator<<(const DevVarCharArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -3989,16 +4306,18 @@ void DeviceAttribute::operator << (const DevVarCharArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_UCHAR;
+    data_type = Tango::DEV_UCHAR;
 
     UCharSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         UCharSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_UCHAR);
 }
 
-void DeviceAttribute::insert(const DevVarCharArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarCharArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4013,7 +4332,7 @@ void DeviceAttribute::insert(const DevVarCharArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarCharArray *datum)
+void DeviceAttribute::operator<<(DevVarCharArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -4021,14 +4340,14 @@ void DeviceAttribute::operator << (DevVarCharArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_UCHAR;
+    data_type = Tango::DEV_UCHAR;
 
     UCharSeq = datum;
 
     del_mem(Tango::DEV_UCHAR);
 }
 
-void DeviceAttribute::insert(DevVarCharArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarCharArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4043,7 +4362,7 @@ void DeviceAttribute::insert(DevVarCharArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarLong64Array &datum)
+void DeviceAttribute::operator<<(const DevVarLong64Array &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -4051,16 +4370,18 @@ void DeviceAttribute::operator << (const DevVarLong64Array &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG64;
+    data_type = Tango::DEV_LONG64;
 
     Long64Seq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         Long64Seq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_LONG64);
 }
 
-void DeviceAttribute::insert(const DevVarLong64Array &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarLong64Array &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4075,7 +4396,7 @@ void DeviceAttribute::insert(const DevVarLong64Array &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarLong64Array *datum)
+void DeviceAttribute::operator<<(DevVarLong64Array *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -4083,14 +4404,14 @@ void DeviceAttribute::operator << (DevVarLong64Array *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_LONG64;
+    data_type = Tango::DEV_LONG64;
 
     Long64Seq = datum;
 
     del_mem(Tango::DEV_LONG64);
 }
 
-void DeviceAttribute::insert(DevVarLong64Array *datum,int x,int y)
+void DeviceAttribute::insert(DevVarLong64Array *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4105,7 +4426,7 @@ void DeviceAttribute::insert(DevVarLong64Array *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarULongArray &datum)
+void DeviceAttribute::operator<<(const DevVarULongArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -4113,16 +4434,18 @@ void DeviceAttribute::operator << (const DevVarULongArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG;
+    data_type = Tango::DEV_ULONG;
 
     ULongSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         ULongSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_ULONG);
 }
 
-void DeviceAttribute::insert(const DevVarULongArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarULongArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4137,7 +4460,7 @@ void DeviceAttribute::insert(const DevVarULongArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarULongArray *datum)
+void DeviceAttribute::operator<<(DevVarULongArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -4145,14 +4468,14 @@ void DeviceAttribute::operator << (DevVarULongArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG;
+    data_type = Tango::DEV_ULONG;
 
     ULongSeq = datum;
 
     del_mem(Tango::DEV_ULONG);
 }
 
-void DeviceAttribute::insert(DevVarULongArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarULongArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4167,7 +4490,7 @@ void DeviceAttribute::insert(DevVarULongArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarULong64Array &datum)
+void DeviceAttribute::operator<<(const DevVarULong64Array &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -4175,16 +4498,18 @@ void DeviceAttribute::operator << (const DevVarULong64Array &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG64;
+    data_type = Tango::DEV_ULONG64;
 
     ULong64Seq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         ULong64Seq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_ULONG64);
 }
 
-void DeviceAttribute::insert(const DevVarULong64Array &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarULong64Array &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4199,7 +4524,7 @@ void DeviceAttribute::insert(const DevVarULong64Array &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarULong64Array *datum)
+void DeviceAttribute::operator<<(DevVarULong64Array *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -4207,14 +4532,14 @@ void DeviceAttribute::operator << (DevVarULong64Array *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_ULONG64;
+    data_type = Tango::DEV_ULONG64;
 
     ULong64Seq = datum;
 
     del_mem(Tango::DEV_ULONG64);
 }
 
-void DeviceAttribute::insert(DevVarULong64Array *datum,int x,int y)
+void DeviceAttribute::insert(DevVarULong64Array *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4229,7 +4554,7 @@ void DeviceAttribute::insert(DevVarULong64Array *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (const DevVarStateArray &datum)
+void DeviceAttribute::operator<<(const DevVarStateArray &datum)
 {
     dim_x = datum.length();
     dim_y = 0;
@@ -4237,16 +4562,18 @@ void DeviceAttribute::operator << (const DevVarStateArray &datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STATE;
+    data_type = Tango::DEV_STATE;
 
     StateSeq->length(datum.length());
-    for (unsigned int i = 0;i < datum.length();i++)
+    for(unsigned int i = 0; i < datum.length(); i++)
+    {
         StateSeq[i] = datum[i];
+    }
 
     del_mem(Tango::DEV_STATE);
 }
 
-void DeviceAttribute::insert(const DevVarStateArray &datum,int x,int y)
+void DeviceAttribute::insert(const DevVarStateArray &datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4261,7 +4588,7 @@ void DeviceAttribute::insert(const DevVarStateArray &datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-void DeviceAttribute::operator << (DevVarStateArray *datum)
+void DeviceAttribute::operator<<(DevVarStateArray *datum)
 {
     dim_x = datum->length();
     dim_y = 0;
@@ -4269,14 +4596,14 @@ void DeviceAttribute::operator << (DevVarStateArray *datum)
     w_dim_y = 0;
     quality = Tango::ATTR_VALID;
     data_format = Tango::FMT_UNKNOWN;
-    data_type=Tango::DEV_STATE;
+    data_type = Tango::DEV_STATE;
 
     StateSeq = datum;
 
     del_mem(Tango::DEV_STATE);
 }
 
-void DeviceAttribute::insert(DevVarStateArray *datum,int x,int y)
+void DeviceAttribute::insert(DevVarStateArray *datum, int x, int y)
 {
     *this << datum;
     dim_x = x;
@@ -4292,38 +4619,42 @@ void DeviceAttribute::insert(DevVarStateArray *datum,int x,int y)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract(char *&str,unsigned char *&data_ptr,unsigned int &data_size)
+bool DeviceAttribute::extract(char *&str, unsigned char *&data_ptr, unsigned int &data_size)
 {
-// check for available data
+    // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-// copy the read value to the vector
-
-    if (EncodedSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (EncodedSeq->length() != 0)
+        return false;
+    }
+
+    // copy the read value to the vector
+
+    if(EncodedSeq.operator->() != NULL)
+    {
+        if(EncodedSeq->length() != 0)
         {
             str = Tango::string_dup(EncodedSeq[0].encoded_format.in());
             data_size = EncodedSeq[0].encoded_data.length();
             data_ptr = EncodedSeq[0].encoded_data.get_buffer(true);
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
-// check the wrongtype_flag
+        // check the wrongtype_flag
         ret = check_wrong_type_exception();
     }
     return ret;
 }
 
-bool DeviceAttribute::extract(const char *&str,unsigned char *&data_ptr,unsigned int &data_size)
+bool DeviceAttribute::extract(const char *&str, unsigned char *&data_ptr, unsigned int &data_size)
 {
-    return extract(const_cast<char *&>(str),data_ptr,data_size);
+    return extract(const_cast<char *&>(str), data_ptr, data_size);
 }
 
 //-----------------------------------------------------------------------------
@@ -4335,9 +4666,9 @@ bool DeviceAttribute::extract(const char *&str,unsigned char *&data_ptr,unsigned
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract(std::string &str,std::vector<unsigned char> &dat)
+bool DeviceAttribute::extract(std::string &str, std::vector<unsigned char> &dat)
 {
-    return extract_read(str,dat);
+    return extract_read(str, dat);
 }
 
 //-----------------------------------------------------------------------------
@@ -4349,36 +4680,40 @@ bool DeviceAttribute::extract(std::string &str,std::vector<unsigned char> &dat)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::string &datum_str,std::vector<unsigned char> &datum)
+bool DeviceAttribute::extract_read(std::string &datum_str, std::vector<unsigned char> &datum)
 {
-// check for available data
+    // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-// copy the read value to the vector
-
-    if (EncodedSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (EncodedSeq->length() != 0)
+        return false;
+    }
+
+    // copy the read value to the vector
+
+    if(EncodedSeq.operator->() != NULL)
+    {
+        if(EncodedSeq->length() != 0)
         {
             datum_str = EncodedSeq[0].encoded_format;
 
             unsigned long length = EncodedSeq[0].encoded_data.length();
             datum.resize(length);
 
-             for (unsigned long i=0; i<length; i++)
-             {
-                 datum[i] = EncodedSeq[0].encoded_data[i];
-             }
+            for(unsigned long i = 0; i < length; i++)
+            {
+                datum[i] = EncodedSeq[0].encoded_data[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
-// check the wrongtype_flag
+        // check the wrongtype_flag
         ret = check_wrong_type_exception();
     }
     return ret;
@@ -4393,34 +4728,38 @@ bool DeviceAttribute::extract_read (std::string &datum_str,std::vector<unsigned 
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::string &datum_str,std::vector<unsigned char> &datum)
+bool DeviceAttribute::extract_set(std::string &datum_str, std::vector<unsigned char> &datum)
 {
-// check for available data
+    // check for available data
 
     bool ret = check_for_data();
-    if (ret == false)
-        return false;
-
-    if (EncodedSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (EncodedSeq->length() == 2)
+        return false;
+    }
+
+    if(EncodedSeq.operator->() != NULL)
+    {
+        if(EncodedSeq->length() == 2)
         {
             datum_str = EncodedSeq[1].encoded_format;
 
             unsigned long length = EncodedSeq[1].encoded_data.length();
             datum.resize(length);
 
-             for (unsigned long i=0; i<length; i++)
-             {
-                 datum[i] = EncodedSeq[1].encoded_data[i];
-             }
+            for(unsigned long i = 0; i < length; i++)
+            {
+                datum[i] = EncodedSeq[1].encoded_data[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
-// check the wrongtype_flag
+        // check the wrongtype_flag
         ret = check_wrong_type_exception();
     }
     return ret;
@@ -4434,30 +4773,34 @@ bool DeviceAttribute::extract_set (std::string &datum_str,std::vector<unsigned c
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<std::string>& datum)
+bool DeviceAttribute::extract_read(std::vector<std::string> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if (ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != NULL)
     {
-        if (StringSeq->length() != 0)
+        if(StringSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-            for (long i=0; i<length; i++)
+            for(long i = 0; i < length; i++)
             {
                 datum[i] = StringSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4475,31 +4818,35 @@ bool DeviceAttribute::extract_read (std::vector<std::string>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<std::string>& datum)
+bool DeviceAttribute::extract_set(std::vector<std::string> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (StringSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (StringSeq->length() != 0)
+        return false;
+    }
+
+    if(StringSeq.operator->() != NULL)
+    {
+        if(StringSeq->length() != 0)
         {
             // check the size of the setpoint values
-            int read_length = check_set_value_size (StringSeq->length());
+            int read_length = check_set_value_size(StringSeq->length());
 
             // copy the set point values to the vector
             datum.resize(StringSeq->length() - read_length);
             unsigned int k = 0;
-            for (unsigned int i=read_length; i<StringSeq->length(); i++, k++)
+            for(unsigned int i = read_length; i < StringSeq->length(); i++, k++)
             {
                 datum[k] = StringSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4509,7 +4856,6 @@ bool DeviceAttribute::extract_set (std::vector<std::string>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<short> &)
@@ -4518,30 +4864,34 @@ bool DeviceAttribute::extract_set (std::vector<std::string>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<short>& datum)
+bool DeviceAttribute::extract_read(std::vector<short> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != NULL)
     {
-        if (ShortSeq->length() != 0)
+        if(ShortSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = ShortSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = ShortSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4559,31 +4909,35 @@ bool DeviceAttribute::extract_read (std::vector<short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<short>& datum)
+bool DeviceAttribute::extract_set(std::vector<short> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ShortSeq->length() != 0)
+        return false;
+    }
+
+    if(ShortSeq.operator->() != NULL)
+    {
+        if(ShortSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (ShortSeq->length());
+            long read_length = check_set_value_size(ShortSeq->length());
 
             // copy the set point values to the vector
             datum.resize(ShortSeq->length() - read_length);
             unsigned int k = 0;
-             for (unsigned int i=read_length; i<ShortSeq->length(); i++, k++)
-             {
-                 datum[k] = ShortSeq[i];
-             }
+            for(unsigned int i = read_length; i < ShortSeq->length(); i++, k++)
+            {
+                datum[k] = ShortSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4593,7 +4947,6 @@ bool DeviceAttribute::extract_set (std::vector<short>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<DevLong> &)
@@ -4602,30 +4955,34 @@ bool DeviceAttribute::extract_set (std::vector<short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<DevLong>& datum)
+bool DeviceAttribute::extract_read(std::vector<DevLong> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != NULL)
     {
-        if (LongSeq->length() != 0)
+        if(LongSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = LongSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = LongSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4643,31 +5000,35 @@ bool DeviceAttribute::extract_read (std::vector<DevLong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<DevLong>& datum)
+bool DeviceAttribute::extract_set(std::vector<DevLong> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (LongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (LongSeq->length() != 0)
+        return false;
+    }
+
+    if(LongSeq.operator->() != NULL)
+    {
+        if(LongSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (LongSeq->length());
+            long read_length = check_set_value_size(LongSeq->length());
 
             // copy the set point values to the vector
             datum.resize(LongSeq->length() - read_length);
             unsigned int k = 0;
-             for (unsigned int i=read_length; i<LongSeq->length(); i++, k++)
-             {
-                 datum[k] = LongSeq[i];
-             }
+            for(unsigned int i = read_length; i < LongSeq->length(); i++, k++)
+            {
+                datum[k] = LongSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4685,30 +5046,34 @@ bool DeviceAttribute::extract_set (std::vector<DevLong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<double>& datum)
+bool DeviceAttribute::extract_read(std::vector<double> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != NULL)
     {
-        if (DoubleSeq->length() != 0)
+        if(DoubleSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = DoubleSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = DoubleSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4726,31 +5091,35 @@ bool DeviceAttribute::extract_read (std::vector<double>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<double>& datum)
+bool DeviceAttribute::extract_set(std::vector<double> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (DoubleSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (DoubleSeq->length() != 0)
+        return false;
+    }
+
+    if(DoubleSeq.operator->() != NULL)
+    {
+        if(DoubleSeq->length() != 0)
         {
             // check the size of the setpoint values
-            int read_length = check_set_value_size (DoubleSeq->length());
+            int read_length = check_set_value_size(DoubleSeq->length());
 
             // copy the set point values to the vector
             datum.resize(DoubleSeq->length() - read_length);
             unsigned int k = 0;
-             for (unsigned int i=read_length; i<DoubleSeq->length(); i++, k++)
-             {
-                 datum[k] = DoubleSeq[i];
-             }
+            for(unsigned int i = read_length; i < DoubleSeq->length(); i++, k++)
+            {
+                datum[k] = DoubleSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4760,8 +5129,6 @@ bool DeviceAttribute::extract_set (std::vector<double>& datum)
     return ret;
 }
 
-
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<float> &)
@@ -4770,30 +5137,34 @@ bool DeviceAttribute::extract_set (std::vector<double>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<float>& datum)
+bool DeviceAttribute::extract_read(std::vector<float> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != NULL)
     {
-        if (FloatSeq->length() != 0)
+        if(FloatSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = FloatSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = FloatSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4811,31 +5182,35 @@ bool DeviceAttribute::extract_read (std::vector<float>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<float>& datum)
+bool DeviceAttribute::extract_set(std::vector<float> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (FloatSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (FloatSeq->length() != 0)
+        return false;
+    }
+
+    if(FloatSeq.operator->() != NULL)
+    {
+        if(FloatSeq->length() != 0)
         {
             // check the size of the setpoint values
-            int read_length = check_set_value_size (FloatSeq->length());
+            int read_length = check_set_value_size(FloatSeq->length());
 
             // copy the set point values to the vector
             datum.resize(FloatSeq->length() - read_length);
             unsigned int k = 0;
-             for (unsigned int i=read_length; i<FloatSeq->length(); i++, k++)
-             {
-                 datum[k] = FloatSeq[i];
-             }
+            for(unsigned int i = read_length; i < FloatSeq->length(); i++, k++)
+            {
+                datum[k] = FloatSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4845,7 +5220,6 @@ bool DeviceAttribute::extract_set (std::vector<float>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<bool> &)
@@ -4854,30 +5228,34 @@ bool DeviceAttribute::extract_set (std::vector<float>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<bool>& datum)
+bool DeviceAttribute::extract_read(std::vector<bool> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != NULL)
     {
-        if (BooleanSeq->length() != 0)
+        if(BooleanSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = BooleanSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = BooleanSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4895,31 +5273,35 @@ bool DeviceAttribute::extract_read (std::vector<bool>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<bool>& datum)
+bool DeviceAttribute::extract_set(std::vector<bool> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (BooleanSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (BooleanSeq->length() != 0)
+        return false;
+    }
+
+    if(BooleanSeq.operator->() != NULL)
+    {
+        if(BooleanSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (BooleanSeq->length());
+            long read_length = check_set_value_size(BooleanSeq->length());
 
             // copy the set point values to the vector
             datum.resize(BooleanSeq->length() - read_length);
             unsigned int k = 0;
-         for (unsigned int i=read_length; i<BooleanSeq->length(); i++, k++)
-         {
-             datum[k] = BooleanSeq[i];
-         }
+            for(unsigned int i = read_length; i < BooleanSeq->length(); i++, k++)
+            {
+                datum[k] = BooleanSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4929,7 +5311,6 @@ bool DeviceAttribute::extract_set (std::vector<bool>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<unsigned short> &)
@@ -4938,30 +5319,34 @@ bool DeviceAttribute::extract_set (std::vector<bool>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<unsigned short>& datum)
+bool DeviceAttribute::extract_read(std::vector<unsigned short> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != NULL)
     {
-        if (UShortSeq->length() != 0)
+        if(UShortSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = UShortSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = UShortSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -4979,31 +5364,35 @@ bool DeviceAttribute::extract_read (std::vector<unsigned short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<unsigned short>& datum)
+bool DeviceAttribute::extract_set(std::vector<unsigned short> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UShortSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UShortSeq->length() != 0)
+        return false;
+    }
+
+    if(UShortSeq.operator->() != NULL)
+    {
+        if(UShortSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (UShortSeq->length());
+            long read_length = check_set_value_size(UShortSeq->length());
 
             // copy the set point values to the vector
             datum.resize(UShortSeq->length() - read_length);
             unsigned int k = 0;
-         for (unsigned int i=read_length; i<UShortSeq->length(); i++, k++)
-         {
-             datum[k] = UShortSeq[i];
-         }
+            for(unsigned int i = read_length; i < UShortSeq->length(); i++, k++)
+            {
+                datum[k] = UShortSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5021,30 +5410,34 @@ bool DeviceAttribute::extract_set (std::vector<unsigned short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<unsigned char>& datum)
+bool DeviceAttribute::extract_read(std::vector<unsigned char> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != NULL)
     {
-        if (UCharSeq->length() != 0)
+        if(UCharSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = UCharSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = UCharSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5062,31 +5455,35 @@ bool DeviceAttribute::extract_read (std::vector<unsigned char>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<unsigned char>& datum)
+bool DeviceAttribute::extract_set(std::vector<unsigned char> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (UCharSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (UCharSeq->length() != 0)
+        return false;
+    }
+
+    if(UCharSeq.operator->() != NULL)
+    {
+        if(UCharSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (UCharSeq->length());
+            long read_length = check_set_value_size(UCharSeq->length());
 
             // copy the set point values to the vector
             datum.resize(UCharSeq->length() - read_length);
             unsigned int k = 0;
-         for (unsigned int i=read_length; i<UCharSeq->length(); i++, k++)
-         {
-             datum[k] = UCharSeq[i];
-         }
+            for(unsigned int i = read_length; i < UCharSeq->length(); i++, k++)
+            {
+                datum[k] = UCharSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5096,7 +5493,6 @@ bool DeviceAttribute::extract_set (std::vector<unsigned char>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<DevLong64> &)
@@ -5105,30 +5501,34 @@ bool DeviceAttribute::extract_set (std::vector<unsigned char>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<DevLong64>& datum)
+bool DeviceAttribute::extract_read(std::vector<DevLong64> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != NULL)
     {
-        if (Long64Seq->length() != 0)
+        if(Long64Seq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = Long64Seq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = Long64Seq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5146,31 +5546,35 @@ bool DeviceAttribute::extract_read (std::vector<DevLong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<DevLong64>& datum)
+bool DeviceAttribute::extract_set(std::vector<DevLong64> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (Long64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (Long64Seq->length() != 0)
+        return false;
+    }
+
+    if(Long64Seq.operator->() != NULL)
+    {
+        if(Long64Seq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (Long64Seq->length());
+            long read_length = check_set_value_size(Long64Seq->length());
 
             // copy the set point values to the vector
             datum.resize(Long64Seq->length() - read_length);
             unsigned int k = 0;
-            for (unsigned int i=read_length; i<Long64Seq->length(); i++, k++)
+            for(unsigned int i = read_length; i < Long64Seq->length(); i++, k++)
             {
                 datum[k] = Long64Seq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5180,7 +5584,6 @@ bool DeviceAttribute::extract_set (std::vector<DevLong64>& datum)
     return ret;
 }
 
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<DevULong64> &)
@@ -5189,30 +5592,34 @@ bool DeviceAttribute::extract_set (std::vector<DevLong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<DevULong64>& datum)
+bool DeviceAttribute::extract_read(std::vector<DevULong64> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != NULL)
     {
-        if (ULong64Seq->length() != 0)
+        if(ULong64Seq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = ULong64Seq[i];
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = ULong64Seq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5230,31 +5637,35 @@ bool DeviceAttribute::extract_read (std::vector<DevULong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<DevULong64>& datum)
+bool DeviceAttribute::extract_set(std::vector<DevULong64> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULong64Seq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULong64Seq->length() != 0)
+        return false;
+    }
+
+    if(ULong64Seq.operator->() != NULL)
+    {
+        if(ULong64Seq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (ULong64Seq->length());
+            long read_length = check_set_value_size(ULong64Seq->length());
 
             // copy the set point values to the vector
             datum.resize(ULong64Seq->length() - read_length);
             unsigned int k = 0;
-            for (unsigned int i=read_length; i<ULong64Seq->length(); i++, k++)
+            for(unsigned int i = read_length; i < ULong64Seq->length(); i++, k++)
             {
                 datum[k] = ULong64Seq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5264,8 +5675,6 @@ bool DeviceAttribute::extract_set (std::vector<DevULong64>& datum)
     return ret;
 }
 
-
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<DevULong> &)
@@ -5274,30 +5683,34 @@ bool DeviceAttribute::extract_set (std::vector<DevULong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<DevULong>& datum)
+bool DeviceAttribute::extract_read(std::vector<DevULong> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != NULL)
     {
-        if (ULongSeq->length() != 0)
+        if(ULongSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = ULongSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = ULongSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5315,31 +5728,35 @@ bool DeviceAttribute::extract_read (std::vector<DevULong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<DevULong>& datum)
+bool DeviceAttribute::extract_set(std::vector<DevULong> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (ULongSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (ULongSeq->length() != 0)
+        return false;
+    }
+
+    if(ULongSeq.operator->() != NULL)
+    {
+        if(ULongSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (ULongSeq->length());
+            long read_length = check_set_value_size(ULongSeq->length());
 
             // copy the set point values to the vector
             datum.resize(ULongSeq->length() - read_length);
             unsigned int k = 0;
-            for (unsigned int i=read_length; i<ULongSeq->length(); i++, k++)
+            for(unsigned int i = read_length; i < ULongSeq->length(); i++, k++)
             {
                 datum[k] = ULongSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5349,8 +5766,6 @@ bool DeviceAttribute::extract_set (std::vector<DevULong>& datum)
     return ret;
 }
 
-
-
 //-----------------------------------------------------------------------------
 //
 // DeviceAttribute::extract_read(std::vector<DevState> &)
@@ -5359,30 +5774,34 @@ bool DeviceAttribute::extract_set (std::vector<DevULong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_read (std::vector<DevState>& datum)
+bool DeviceAttribute::extract_read(std::vector<DevState> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
+    if(ret == false)
+    {
         return false;
+    }
 
     // copy the read value to the vector
 
-    if (StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != NULL)
     {
-        if (StateSeq->length() != 0)
+        if(StateSeq->length() != 0)
         {
             long length = get_nb_read();
             datum.resize(length);
 
-             for (long i=0; i<length; i++)
-             {
-                 datum[i] = StateSeq[i];
-             }
+            for(long i = 0; i < length; i++)
+            {
+                datum[i] = StateSeq[i];
+            }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5400,31 +5819,35 @@ bool DeviceAttribute::extract_read (std::vector<DevState>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DeviceAttribute::extract_set (std::vector<DevState>& datum)
+bool DeviceAttribute::extract_set(std::vector<DevState> &datum)
 {
     // check for available data
 
     bool ret = check_for_data();
-    if ( ret == false)
-        return false;
-
-    if (StateSeq.operator->() != NULL)
+    if(ret == false)
     {
-        if (StateSeq->length() != 0)
+        return false;
+    }
+
+    if(StateSeq.operator->() != NULL)
+    {
+        if(StateSeq->length() != 0)
         {
             // check the size of the setpoint values
-            long read_length = check_set_value_size (StateSeq->length());
+            long read_length = check_set_value_size(StateSeq->length());
 
             // copy the set point values to the vector
             datum.resize(StateSeq->length() - read_length);
             unsigned int k = 0;
-            for (unsigned int i=read_length; i<StateSeq->length(); i++, k++)
+            for(unsigned int i = read_length; i < StateSeq->length(); i++, k++)
             {
                 datum[k] = StateSeq[i];
             }
         }
         else
+        {
             ret = false;
+        }
     }
     else
     {
@@ -5433,9 +5856,6 @@ bool DeviceAttribute::extract_set (std::vector<DevState>& datum)
     }
     return ret;
 }
-
-
-
 
 //+-------------------------------------------------------------------------
 //
@@ -5453,21 +5873,27 @@ bool DeviceAttribute::check_for_data()
 {
     ext->ext_state.reset();
 
-    if (err_list.operator->() != NULL)
+    if(err_list.operator->() != NULL)
     {
-        if (err_list.in().length() != 0)
+        if(err_list.in().length() != 0)
         {
             ext->ext_state.set(failed_flag);
 
-            if (exceptions_flags.test(failed_flag))
+            if(exceptions_flags.test(failed_flag))
+            {
                 throw DevFailed(err_list.in());
+            }
             else
+            {
                 return false;
+            }
         }
     }
 
-    if (is_empty() == true)
+    if(is_empty() == true)
+    {
         return false;
+    }
 
     return true;
 }
@@ -5489,9 +5915,12 @@ bool DeviceAttribute::check_wrong_type_exception()
 {
     ext->ext_state.set(wrongtype_flag);
 
-    if (exceptions_flags.test(wrongtype_flag))
+    if(exceptions_flags.test(wrongtype_flag))
     {
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleAttrArgumentType, "Cannot extract, data type in DeviceAttribute object is not coherent with the type provided to extraction method");
+        TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                  API_IncompatibleAttrArgumentType,
+                                  "Cannot extract, data type in DeviceAttribute object is not coherent with the type "
+                                  "provided to extraction method");
     }
 
     return false;
@@ -5515,27 +5944,27 @@ bool DeviceAttribute::check_wrong_type_exception()
 //----------------------------------------------------------------------------------------------------------------
 int DeviceAttribute::check_set_value_size(int seq_length)
 {
+    //
+    // check if the attribute data contains a set value
+    //
 
-//
-// check if the attribute data contains a set value
-//
-
-    if ( get_nb_written() == 0 )
+    if(get_nb_written() == 0)
     {
         // no set point available
 
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_NoSetValueAvailable, "Cannot extract, data from the DeviceAttribute object. No set value available");
-
+        TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                  API_NoSetValueAvailable,
+                                  "Cannot extract, data from the DeviceAttribute object. No set value available");
     }
 
-//
-// For Tango::WRITE attributes, the read and set value are identical! In this case the number of set values is the
-// same as the number of data elements in the returned sequence.
-//
+    //
+    // For Tango::WRITE attributes, the read and set value are identical! In this case the number of set values is the
+    // same as the number of data elements in the returned sequence.
+    //
 
-    if ( get_nb_written() == seq_length )
+    if(get_nb_written() == seq_length)
     {
-        return  0;
+        return 0;
     }
     else
     {
@@ -5559,32 +5988,58 @@ int DeviceAttribute::check_set_value_size(int seq_length)
 
 void DeviceAttribute::del_mem(int _data_type)
 {
-    if ((_data_type != Tango::DEV_STRING) && (StringSeq.operator->() != NULL))
-            delete StringSeq._retn();
-    if ((_data_type != Tango::DEV_LONG) && (LongSeq.operator->() != NULL))
-            delete LongSeq._retn();
-    if ((_data_type != Tango::DEV_SHORT) && (ShortSeq.operator->() != NULL))
-            delete ShortSeq._retn();
-    if ((_data_type != Tango::DEV_DOUBLE) && (DoubleSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_STRING) && (StringSeq.operator->() != NULL))
+    {
+        delete StringSeq._retn();
+    }
+    if((_data_type != Tango::DEV_LONG) && (LongSeq.operator->() != NULL))
+    {
+        delete LongSeq._retn();
+    }
+    if((_data_type != Tango::DEV_SHORT) && (ShortSeq.operator->() != NULL))
+    {
+        delete ShortSeq._retn();
+    }
+    if((_data_type != Tango::DEV_DOUBLE) && (DoubleSeq.operator->() != NULL))
+    {
         delete DoubleSeq._retn();
-    if ((_data_type != Tango::DEV_FLOAT) && (FloatSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_FLOAT) && (FloatSeq.operator->() != NULL))
+    {
         delete FloatSeq._retn();
-    if ((_data_type != Tango::DEV_BOOLEAN) && (BooleanSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_BOOLEAN) && (BooleanSeq.operator->() != NULL))
+    {
         delete BooleanSeq._retn();
-    if ((_data_type != Tango::DEV_USHORT) && (UShortSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_USHORT) && (UShortSeq.operator->() != NULL))
+    {
         delete UShortSeq._retn();
-    if ((_data_type != Tango::DEV_UCHAR) && (UCharSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_UCHAR) && (UCharSeq.operator->() != NULL))
+    {
         delete UCharSeq._retn();
-    if ((_data_type != Tango::DEV_LONG64) && (Long64Seq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_LONG64) && (Long64Seq.operator->() != NULL))
+    {
         delete Long64Seq._retn();
-    if ((_data_type != Tango::DEV_ULONG) && (ULongSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_ULONG) && (ULongSeq.operator->() != NULL))
+    {
         delete ULongSeq._retn();
-    if ((_data_type != Tango::DEV_ULONG64) && (ULong64Seq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_ULONG64) && (ULong64Seq.operator->() != NULL))
+    {
         delete ULong64Seq._retn();
-    if ((_data_type != Tango::DEV_STATE) && (StateSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_STATE) && (StateSeq.operator->() != NULL))
+    {
         delete StateSeq._retn();
-    if ((_data_type != Tango::DEV_ENCODED) && (EncodedSeq.operator->() != NULL))
+    }
+    if((_data_type != Tango::DEV_ENCODED) && (EncodedSeq.operator->() != NULL))
+    {
         delete EncodedSeq._retn();
+    }
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -5599,49 +6054,48 @@ void DeviceAttribute::del_mem(int _data_type)
 
 std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
 {
-
-    if (da.has_failed() == true)
+    if(da.has_failed() == true)
     {
         o_str << "Exception stored in DeviceAttribute object" << std::endl;
         Except::print_error_stack(da.err_list);
     }
     else
     {
-        if (da.is_empty_noexcept())
+        if(da.is_empty_noexcept())
         {
             o_str << "No data in DeviceAttribute object";
             return o_str;
         }
 
-//
-// Print date
-//
+        //
+        // Print date
+        //
 
-        if (da.time.tv_sec != 0)
+        if(da.time.tv_sec != 0)
         {
             std::tm tm = Tango_localtime(da.time.tv_sec);
-            o_str << std::put_time(&tm,"%c") << " (" << da.time.tv_sec << "," << da.time.tv_usec << " sec) : ";
+            o_str << std::put_time(&tm, "%c") << " (" << da.time.tv_sec << "," << da.time.tv_usec << " sec) : ";
         }
 
-//
-// print attribute name
-//
+        //
+        // print attribute name
+        //
 
         o_str << da.name;
 
-//
-// print dim_x and dim_y
-//
+        //
+        // print dim_x and dim_y
+        //
 
         o_str << " (dim_x = " << da.dim_x << ", dim_y = " << da.dim_y << ", ";
         o_str << "w_dim_x = " << da.w_dim_x << ", w_dim_y = " << da.w_dim_y << ", ";
 
-//
-// Print quality
-//
+        //
+        // Print quality
+        //
 
         o_str << "Data quality factor = ";
-        switch (da.quality)
+        switch(da.quality)
         {
         case Tango::ATTR_VALID:
             o_str << "VALID, ";
@@ -5664,52 +6118,80 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
             break;
         }
 
-//
-// Print data format
-//
+        //
+        // Print data format
+        //
 
         o_str << "Data format = " << da.data_format << ", ";
 
-//
-// Print data type
-//
+        //
+        // Print data type
+        //
 
-        o_str << "Data type = " << (CmdArgType)da.get_type() << ")" << std::endl;
+        o_str << "Data type = " << (CmdArgType) da.get_type() << ")" << std::endl;
 
-//
-// Print data (if valid)
-//
+        //
+        // Print data (if valid)
+        //
 
-        if (da.quality != Tango::ATTR_INVALID)
+        if(da.quality != Tango::ATTR_INVALID)
         {
-            if (da.LongSeq.operator->() != NULL)
+            if(da.LongSeq.operator->() != NULL)
+            {
                 o_str << *(da.LongSeq.operator->());
-            else if (da.Long64Seq.operator->() != NULL)
+            }
+            else if(da.Long64Seq.operator->() != NULL)
+            {
                 o_str << *(da.Long64Seq.operator->());
-            else if (da.ShortSeq.operator->() != NULL)
+            }
+            else if(da.ShortSeq.operator->() != NULL)
+            {
                 o_str << *(da.ShortSeq.operator->());
-            else if (da.DoubleSeq.operator->() != NULL)
+            }
+            else if(da.DoubleSeq.operator->() != NULL)
+            {
                 o_str << *(da.DoubleSeq.operator->());
-            else if (da.FloatSeq.operator->() != NULL)
+            }
+            else if(da.FloatSeq.operator->() != NULL)
+            {
                 o_str << *(da.FloatSeq.operator->());
-            else if (da.BooleanSeq.operator->() != NULL)
+            }
+            else if(da.BooleanSeq.operator->() != NULL)
+            {
                 o_str << *(da.BooleanSeq.operator->());
-            else if (da.UShortSeq.operator->() != NULL)
+            }
+            else if(da.UShortSeq.operator->() != NULL)
+            {
                 o_str << *(da.UShortSeq.operator->());
-            else if (da.UCharSeq.operator->() != NULL)
+            }
+            else if(da.UCharSeq.operator->() != NULL)
+            {
                 o_str << *(da.UCharSeq.operator->());
-            else if (da.StringSeq.operator->() != NULL)
+            }
+            else if(da.StringSeq.operator->() != NULL)
+            {
                 o_str << *(da.StringSeq.operator->());
-            else if (da.ULongSeq.operator->() != NULL)
+            }
+            else if(da.ULongSeq.operator->() != NULL)
+            {
                 o_str << *(da.ULongSeq.operator->());
-            else if (da.ULong64Seq.operator->() != NULL)
+            }
+            else if(da.ULong64Seq.operator->() != NULL)
+            {
                 o_str << *(da.ULong64Seq.operator->());
-            else if (da.StateSeq.operator->() != NULL)
+            }
+            else if(da.StateSeq.operator->() != NULL)
+            {
                 o_str << *(da.StateSeq.operator->());
-            else if (da.EncodedSeq.operator->() != NULL)
+            }
+            else if(da.EncodedSeq.operator->() != NULL)
+            {
                 o_str << *(da.EncodedSeq.operator->());
+            }
             else
+            {
                 o_str << DevStateName[da.d_state];
+            }
         }
     }
 
@@ -5722,10 +6204,10 @@ bool DeviceAttribute::is_empty_noexcept() const
     {
         return is_empty();
     }
-    catch (Tango::WrongData&)
+    catch(Tango::WrongData &)
     {
         return true;
     }
 }
 
-} // End of Tango namespace
+} // namespace Tango

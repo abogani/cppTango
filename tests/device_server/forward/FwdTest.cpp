@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest.cpp) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTest.cpp
@@ -35,11 +35,10 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #include "FwdTest.h"
 #include "FwdTestClass.h"
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest.cpp
 
 /**
@@ -65,11 +64,11 @@
 namespace FwdTest_ns
 {
 /*----- PROTECTED REGION ID(FwdTest::namespace_starting) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 
 //	static initializations
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::namespace_starting
 
 //--------------------------------------------------------
@@ -83,10 +82,10 @@ FwdTest::FwdTest(Tango::DeviceClass *cl, std::string &s)
  : TANGO_BASE_CLASS(cl, s.c_str())
 {
 	/*----- PROTECTED REGION ID(FwdTest::constructor_1) ENABLED START -----*/
-	/* clang-format on */
-	init_device();
+    /* clang-format on */
+    init_device();
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::constructor_1
 }
 //--------------------------------------------------------
@@ -94,10 +93,10 @@ FwdTest::FwdTest(Tango::DeviceClass *cl, const char *s)
  : TANGO_BASE_CLASS(cl, s)
 {
 	/*----- PROTECTED REGION ID(FwdTest::constructor_2) ENABLED START -----*/
-	/* clang-format on */
-	init_device();
+    /* clang-format on */
+    init_device();
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::constructor_2
 }
 //--------------------------------------------------------
@@ -105,10 +104,10 @@ FwdTest::FwdTest(Tango::DeviceClass *cl, const char *s, const char *d)
  : TANGO_BASE_CLASS(cl, s, d)
 {
 	/*----- PROTECTED REGION ID(FwdTest::constructor_3) ENABLED START -----*/
-	/* clang-format on */
-	init_device();
+    /* clang-format on */
+    init_device();
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::constructor_3
 }
 //--------------------------------------------------------
@@ -127,11 +126,11 @@ void FwdTest::delete_device()
 {
 	DEBUG_STREAM << "FwdTest::delete_device() " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(FwdTest::delete_device) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Delete device allocated objects
+    //	Delete device allocated objects
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::delete_device
 }
 
@@ -145,21 +144,21 @@ void FwdTest::init_device()
 {
 	DEBUG_STREAM << "FwdTest::init_device() create device " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(FwdTest::init_device_before) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Initialization before get_device_property() call
+    //	Initialization before get_device_property() call
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::init_device_before
 
 	//	No device property to be read from database
 
 	/*----- PROTECTED REGION ID(FwdTest::init_device) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	set_state(Tango::ON);
+    set_state(Tango::ON);
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::init_device
 }
 
@@ -174,11 +173,11 @@ void FwdTest::always_executed_hook()
 {
 	DEBUG_STREAM << "FwdTest::always_executed_hook()  " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(FwdTest::always_executed_hook) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	code always executed before all requests
+    //	code always executed before all requests
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::always_executed_hook
 }
 
@@ -192,11 +191,11 @@ void FwdTest::read_attr_hardware(TANGO_UNUSED(std::vector<long> &attr_list))
 {
 	DEBUG_STREAM << "FwdTest::read_attr_hardware(std::vector<long> &attr_list) entering... " << std::endl;
 	/*----- PROTECTED REGION ID(FwdTest::read_attr_hardware) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code
+    //	Add your own code
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::read_attr_hardware
 }
 
@@ -211,11 +210,11 @@ void FwdTest::read_attr_hardware(TANGO_UNUSED(std::vector<long> &attr_list))
 void FwdTest::add_dynamic_attributes()
 {
 	/*----- PROTECTED REGION ID(FwdTest::add_dynamic_attributes) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code to create and add dynamic attributes if any
+    //	Add your own code to create and add dynamic attributes if any
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::add_dynamic_attributes
 }
 
@@ -229,17 +228,17 @@ void FwdTest::add_dynamic_attributes()
 void FwdTest::add_dynamic_commands()
 {
 	/*----- PROTECTED REGION ID(FwdTest::add_dynamic_commands) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code to create and add dynamic commands if any
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code to create and add dynamic commands if any
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::add_dynamic_commands
 }
 
 /*----- PROTECTED REGION ID(FwdTest::namespace_ending) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 
 //	Additional Methods
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::namespace_ending
 } //	namespace

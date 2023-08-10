@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest.h) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTest.h
@@ -31,14 +31,12 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #ifndef FwdTest_H
 #define FwdTest_H
 
 #include <tango/tango.h>
 
-
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest.h
 
 #ifdef TANGO_LOG
@@ -60,22 +58,22 @@
 namespace FwdTest_ns
 {
 /*----- PROTECTED REGION ID(FwdTest::Additional Class Declarations) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 
 //	Additional Class Declarations
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Class Declarations
 
 class FwdTest : public TANGO_BASE_CLASS
 {
 
 /*----- PROTECTED REGION ID(FwdTest::Data Members) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-//	Add your own data members
+    //	Add your own data members
 
-	/* clang-format off */
+    /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Data Members
 
 
@@ -161,20 +159,20 @@ public:
 	void add_dynamic_commands();
 
 /*----- PROTECTED REGION ID(FwdTest::Additional Method prototypes) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-//	Additional Method prototypes
+    //	Additional Method prototypes
 
-	/* clang-format off */
+    /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Method prototypes
 };
 
 /*----- PROTECTED REGION ID(FwdTest::Additional Classes Definitions) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 
 //	Additional Classes Definitions
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Classes Definitions
 
 }	//	End of namespace

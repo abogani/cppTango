@@ -24,11 +24,9 @@
 
 void Tango::DServer::class_factory()
 {
+    //
+    // Create DevTestClass singleton and store it in DServer object
+    //
 
-//
-// Create DevTestClass singleton and store it in DServer object
-//
-
-	add_class(DevTestClass::init("DevTest"));
-
+    add_class(DevTestClass::init("DevTest"));
 }

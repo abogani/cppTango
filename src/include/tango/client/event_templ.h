@@ -31,11 +31,10 @@
 //
 //====================================================================================================================
 
-
 using namespace CORBA;
 
-namespace Tango {
-
+namespace Tango
+{
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -55,7 +54,7 @@ namespace Tango {
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-inline void EventConsumer::base_attr_to_device(const T *attr_value,DeviceAttribute *dev_attr)
+inline void EventConsumer::base_attr_to_device(const T *attr_value, DeviceAttribute *dev_attr)
 {
     dev_attr->name = attr_value->name;
     dev_attr->quality = attr_value->quality;
@@ -67,10 +66,10 @@ inline void EventConsumer::base_attr_to_device(const T *attr_value,DeviceAttribu
     dev_attr->err_list = new DevErrorList(attr_value->err_list);
     dev_attr->data_format = attr_value->data_format;
 
-    if (dev_attr->quality != Tango::ATTR_INVALID)
+    if(dev_attr->quality != Tango::ATTR_INVALID)
     {
-        att_union_to_device(&attr_value->zvalue,dev_attr);
+        att_union_to_device(&attr_value->zvalue, dev_attr);
     }
 }
 
-} /* End of Tango namespace */
+} // namespace Tango

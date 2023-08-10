@@ -51,22 +51,34 @@ namespace Tango
 
 class PipeProperty
 {
-public:
-    PipeProperty(const std::string &name,const std::string &value):prop_name(name),prop_value(value) {}
+  public:
+    PipeProperty(const std::string &name, const std::string &value) :
+        prop_name(name),
+        prop_value(value)
+    {
+    }
+
     ~PipeProperty();
 
     PipeProperty(const PipeProperty &);
-    PipeProperty & operator=(const PipeProperty &);
+    PipeProperty &operator=(const PipeProperty &);
 
     PipeProperty(PipeProperty &&);
-    PipeProperty & operator=(PipeProperty &&);
+    PipeProperty &operator=(PipeProperty &&);
 
-    const std::string &get_value() {return prop_value;}
-    const std::string &get_name() {return prop_name;}
+    const std::string &get_value()
+    {
+        return prop_value;
+    }
 
-private:
-    std::string            prop_name;
-    std::string            prop_value;
+    const std::string &get_name()
+    {
+        return prop_name;
+    }
+
+  private:
+    std::string prop_name;
+    std::string prop_value;
 };
 
 //=================================================================================================================
@@ -82,19 +94,19 @@ class DeviceClass;
 
 class MultiClassPipe
 {
-public:
+  public:
     MultiClassPipe();
     ~MultiClassPipe();
 
     void init_class_pipe(DeviceClass *);
 
     std::vector<Tango::PipeProperty> &get_prop_list(const std::string &);
-/*    PipeProperty &get_prop(const string &prop_name);*/
+    /*    PipeProperty &get_prop(const string &prop_name);*/
 
-protected:
-    std::map<std::string,std::vector<Tango::PipeProperty> >        pipe_prop_list;            // pipe_name - prop list
+  protected:
+    std::map<std::string, std::vector<Tango::PipeProperty>> pipe_prop_list; // pipe_name - prop list
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _CLASS_ATTRIBUTE_H

@@ -32,105 +32,124 @@
 #include <tango/tango.h>
 #include <tango/server/auto_tango_monitor.h>
 
-
 namespace Tango
 {
 
-    //---------------------------------------------------------------------------------------------------------------
-    //
-    // class :
-    //        AutoTangoMonitor
-    //
-    // description :
-    //        This class is only a helper class used to get a TangoMonitor object during its construction and to
-    //        it during its destruction. It makes developer life easier.
-    //
-    //---------------------------------------------------------------------------------------------------------------
-    AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceImpl *dev, bool force)
+//---------------------------------------------------------------------------------------------------------------
+//
+// class :
+//        AutoTangoMonitor
+//
+// description :
+//        This class is only a helper class used to get a TangoMonitor object during its construction and to
+//        it during its destruction. It makes developer life easier.
+//
+//---------------------------------------------------------------------------------------------------------------
+AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceImpl *dev, bool force)
+{
+    SerialModel ser = Util::instance()->get_serial_model();
+
+    switch(ser)
     {
-        SerialModel ser = Util::instance()->get_serial_model();
-
-        switch(ser)
-        {
-            case NO_SYNC:
-                if (force == true)
-                {
-                    mon = &(dev->only_one);
-                }
-                else
-                    mon = NULL;
-                break;
-
-            case BY_DEVICE:
-                mon = &(dev->only_one);
-                break;
-
-            case BY_CLASS:
-                mon = &(dev->device_class->only_one);
-                break;
-
-            case BY_PROCESS:
-                mon = &(Util::instance()->only_one);
-                break;
-        }
-        if (mon)
-            mon->get_monitor();
-
-    }
-
-    AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceClass *dev_cl)
-    {
-        SerialModel ser = Util::instance()->get_serial_model();
-
-        switch(ser)
-        {
-            case NO_SYNC:
-            case BY_DEVICE:
-                mon = NULL;
-                break;
-
-            case BY_CLASS:
-                mon = &(dev_cl->only_one);
-                mon->get_monitor();
-                break;
-
-            case BY_PROCESS:
-                mon = &(Util::instance()->only_one);
-                mon->get_monitor();
-                break;
-        }
-    }
-
-    AutoTangoMonitor::AutoTangoMonitor(Tango::TangoMonitor *m):mon(m)
-    {
-        if (mon)
-            mon->get_monitor();
-    }
-
-    AutoTangoMonitor::~AutoTangoMonitor() {if (mon)mon->rel_monitor();}
-
-    //---------------------------------------------------------------------------------------------------------------
-    //
-    // class :
-    //        NoSyncModelTangoMonitor
-    //
-    // description :
-    //        This class is only a helper class used to get a TangoMonitor object during its construction and to
-    //        it during its destruction only if the device server process is in NO_SYNC synchronisation model
-    //
-    //---------------------------------------------------------------------------------------------------------------
-    NoSyncModelTangoMonitor::NoSyncModelTangoMonitor(Tango::DeviceImpl *dev)
-    {
-        SerialModel ser = Util::instance()->get_serial_model();
-        if (ser == NO_SYNC)
+    case NO_SYNC:
+        if(force == true)
         {
             mon = &(dev->only_one);
-            mon->get_monitor();
         }
         else
+        {
             mon = NULL;
+        }
+        break;
+
+    case BY_DEVICE:
+        mon = &(dev->only_one);
+        break;
+
+    case BY_CLASS:
+        mon = &(dev->device_class->only_one);
+        break;
+
+    case BY_PROCESS:
+        mon = &(Util::instance()->only_one);
+        break;
     }
+    if(mon)
+    {
+        mon->get_monitor();
+    }
+}
 
-    NoSyncModelTangoMonitor::~NoSyncModelTangoMonitor() {if (mon)mon->rel_monitor();}
+AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceClass *dev_cl)
+{
+    SerialModel ser = Util::instance()->get_serial_model();
 
-} // End of Tango namespace
+    switch(ser)
+    {
+    case NO_SYNC:
+    case BY_DEVICE:
+        mon = NULL;
+        break;
+
+    case BY_CLASS:
+        mon = &(dev_cl->only_one);
+        mon->get_monitor();
+        break;
+
+    case BY_PROCESS:
+        mon = &(Util::instance()->only_one);
+        mon->get_monitor();
+        break;
+    }
+}
+
+AutoTangoMonitor::AutoTangoMonitor(Tango::TangoMonitor *m) :
+    mon(m)
+{
+    if(mon)
+    {
+        mon->get_monitor();
+    }
+}
+
+AutoTangoMonitor::~AutoTangoMonitor()
+{
+    if(mon)
+    {
+        mon->rel_monitor();
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------
+//
+// class :
+//        NoSyncModelTangoMonitor
+//
+// description :
+//        This class is only a helper class used to get a TangoMonitor object during its construction and to
+//        it during its destruction only if the device server process is in NO_SYNC synchronisation model
+//
+//---------------------------------------------------------------------------------------------------------------
+NoSyncModelTangoMonitor::NoSyncModelTangoMonitor(Tango::DeviceImpl *dev)
+{
+    SerialModel ser = Util::instance()->get_serial_model();
+    if(ser == NO_SYNC)
+    {
+        mon = &(dev->only_one);
+        mon->get_monitor();
+    }
+    else
+    {
+        mon = NULL;
+    }
+}
+
+NoSyncModelTangoMonitor::~NoSyncModelTangoMonitor()
+{
+    if(mon)
+    {
+        mon->rel_monitor();
+    }
+}
+
+} // namespace Tango

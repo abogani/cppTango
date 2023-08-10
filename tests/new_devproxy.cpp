@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if (argc != 2)
+    if(argc != 2)
     {
         TEST_LOG << "usage: %s device" << endl;
         exit(-1);
@@ -18,28 +18,25 @@ int main(int argc, char **argv)
 
         TEST_LOG << "new DeviceProxy does not throw exception" << endl;
     }
-        catch (CORBA::Exception &e)
-        {
-                  Except::print_exception(e);
+    catch(CORBA::Exception &e)
+    {
+        Except::print_exception(e);
         exit(1);
-        }
+    }
 
     TEST_LOG << endl << "Device IDL version : " << device->get_idl_version() << endl;
 
     try
     {
-//        device->ping();
+        //        device->ping();
         device->command_inout("Status");
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
     }
     TEST_LOG << "Ping successfull" << endl;
 
-//    sleep(1000);
-
-
-
+    //    sleep(1000);
 }

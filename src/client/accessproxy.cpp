@@ -35,7 +35,7 @@
 #include <sys/types.h>
 
 #ifndef _TG_WINDOWS_
-#include <pwd.h>
+  #include <pwd.h>
 #endif
 
 namespace Tango
@@ -52,50 +52,53 @@ namespace Tango
  * @Revision
  */
 
-
 //===============================================================
 /**
-*    Constructor for Access device proxy
-*
-*    @param devname    access device name
-*/
+ *    Constructor for Access device proxy
+ *
+ *    @param devname    access device name
+ */
 //===============================================================
 
-AccessProxy::AccessProxy(const std::string &devname) : DeviceProxy(devname,false),
-forced(false)
+AccessProxy::AccessProxy(const std::string &devname) :
+    DeviceProxy(devname, false),
+    forced(false)
 {
     real_ctor();
 }
 
-
-AccessProxy::AccessProxy(const char *devname) : DeviceProxy(devname,false),
-forced(false)
+AccessProxy::AccessProxy(const char *devname) :
+    DeviceProxy(devname, false),
+    forced(false)
 {
     real_ctor();
 }
 
 void AccessProxy::real_ctor()
 {
-//
-//    Check if forced mode
-//
+    //
+    //    Check if forced mode
+    //
     std::string super_tango;
 
-    int ret = get_env_var("SUPER_TANGO",super_tango);
-    if (ret == 0)
+    int ret = get_env_var("SUPER_TANGO", super_tango);
+    if(ret == 0)
     {
-        std::transform(super_tango.begin(),super_tango.end(),super_tango.begin(),::tolower);
-        if (super_tango == "true")
+        std::transform(super_tango.begin(), super_tango.end(), super_tango.begin(), ::tolower);
+        if(super_tango == "true")
+        {
             forced = true;
+        }
     }
 
-//
-//    Build device proxy and check if present.
-//
+    //
+    //    Build device proxy and check if present.
+    //
 
-    if (forced == false)
+    if(forced == false)
+    {
         ping();
-
+    }
 
     set_access_control(ACCESS_WRITE);
 }
@@ -110,26 +113,27 @@ void AccessProxy::real_ctor()
 
 AccessControlType AccessProxy::check_access_control(const std::string &devname)
 {
-    if (forced)
+    if(forced)
+    {
         return ACCESS_WRITE;
+    }
 
     bool multi_ip = true;
     bool two_tries = false;
 
     omni_mutex_lock oml(only_one);
 
-    while (two_tries == false)
+    while(two_tries == false)
     {
         try
         {
+            //
+            // If not already done, get user name.
+            // I am using the effective UID in order to allow applications using the seteuid(0) system call
+            // to change the effective user id and therefore to take someone else rights
+            //
 
-//
-// If not already done, get user name.
-// I am using the effective UID in order to allow applications using the seteuid(0) system call
-// to change the effective user id and therefore to take someone else rights
-//
-
-            if (user.empty() == true)
+            if(user.empty() == true)
             {
 #ifndef _TG_WINDOWS_
                 uid_t user_id = geteuid();
@@ -138,7 +142,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                 struct passwd *pw_ptr;
                 char buffer[__AC_BUFFER_SIZE];
 
-                if (getpwuid_r(user_id,&pw,buffer,sizeof(buffer),&pw_ptr) != 0)
+                if(getpwuid_r(user_id, &pw, buffer, sizeof(buffer), &pw_ptr) != 0)
                 {
                     std::cerr << "AccessProxy::check_access_control: Can't get the user UID !" << std::endl;
                     std::cerr << "Access right set to ACCESS_READ" << std::endl;
@@ -146,7 +150,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                     return ACCESS_READ;
                 }
 
-                if (pw_ptr == NULL)
+                if(pw_ptr == NULL)
                 {
                     std::cerr << "AccessProxy::check_access_control: Can't get the user UID !" << std::endl;
                     std::cerr << "Access right set to ACCESS_READ" << std::endl;
@@ -155,14 +159,14 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                 }
 
                 user = pw.pw_name;
-                std::transform(user.begin(),user.end(),user.begin(),::tolower);
+                std::transform(user.begin(), user.end(), user.begin(), ::tolower);
 #else
                 BOOL ret;
                 TCHAR buffer[128];
                 DWORD nb = 128;
 
-                ret = GetUserName(buffer,&nb);
-                if (ret == 0)
+                ret = GetUserName(buffer, &nb);
+                if(ret == 0)
                 {
                     std::cerr << "AccessProxy::check_access_control: Can't get the user name !" << std::endl;
                     std::cerr << "Access right set to ACCESS_READ" << std::endl;
@@ -170,15 +174,15 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                     return ACCESS_READ;
                 }
                 user = buffer;
-                std::transform(user.begin(),user.end(),user.begin(),::tolower);
+                std::transform(user.begin(), user.end(), user.begin(), ::tolower);
 #endif
             }
 
-//
-//    If not already done, get host address
-//
+            //
+            //    If not already done, get host address
+            //
 
-            if (host_ips.empty() == true)
+            if(host_ips.empty() == true)
             {
                 ApiUtil *au = ApiUtil::instance();
                 std::vector<std::string> adrs;
@@ -188,28 +192,36 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                 {
                     au->get_ip_from_if(adrs);
 
-//
-// Filter out local address and IP v6
-//
+                    //
+                    // Filter out local address and IP v6
+                    //
 
-                    for (unsigned int nb_adrs = 0;nb_adrs < adrs.size();nb_adrs++)
+                    for(unsigned int nb_adrs = 0; nb_adrs < adrs.size(); nb_adrs++)
                     {
                         std::string &tmp_host = adrs[nb_adrs];
-                        if (nb_adrs == 0)
+                        if(nb_adrs == 0)
+                        {
                             at_least_one = tmp_host;
+                        }
 
-                        if (tmp_host.find("127.") == 0) {}
-                        else if (tmp_host.find(":") != std::string::npos) {}
+                        if(tmp_host.find("127.") == 0)
+                        {
+                        }
+                        else if(tmp_host.find(":") != std::string::npos)
+                        {
+                        }
                         else
+                        {
                             host_ips.push_back(tmp_host);
+                        }
                     }
 
-                    if (host_ips.empty() == true)
+                    if(host_ips.empty() == true)
                     {
                         host_ips.push_back(at_least_one);
                     }
                 }
-                catch (DevFailed &)
+                catch(DevFailed &)
                 {
                     std::cerr << "AccessProxy::check_access_control: Can't get my IP address !" << std::endl;
                     std::cerr << "Access right set to ACCESS_READ" << std::endl;
@@ -218,23 +230,25 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                 }
             }
 
-//
-//    Check for user and host rights on specified device
-//
+            //
+            //    Check for user and host rights on specified device
+            //
 
-            DeviceData din,dout;
+            DeviceData din, dout;
             DevVarStringArray dvsa;
 
-            if (multi_ip == true)
+            if(multi_ip == true)
             {
                 dvsa.length(2 + host_ips.size());
                 dvsa[0] = Tango::string_dup(user.c_str());
                 dvsa[1] = Tango::string_dup(devname.c_str());
-                for (unsigned int i = 0;i < host_ips.size();i++)
+                for(unsigned int i = 0; i < host_ips.size(); i++)
+                {
                     dvsa[2 + i] = Tango::string_dup(host_ips[i].c_str());
+                }
                 din << dvsa;
 
-                dout = command_inout("GetAccessForMultiIp",din);
+                dout = command_inout("GetAccessForMultiIp", din);
             }
             else
             {
@@ -247,34 +261,38 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
 
                 din << dvsa;
 
-                dout = command_inout("GetAccess",din);
+                dout = command_inout("GetAccess", din);
             }
             std::string right;
             dout >> right;
-            if (right == "write")
+            if(right == "write")
+            {
                 return ACCESS_WRITE;
+            }
             else
+            {
                 return ACCESS_READ;
+            }
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
-            if (::strcmp(e.errors[0].reason.in(),API_CommandNotFound) == 0)
+            if(::strcmp(e.errors[0].reason.in(), API_CommandNotFound) == 0)
             {
                 multi_ip = false;
             }
-            else if (::strcmp(e.errors[0].reason.in(),API_DeviceNotExported) == 0)
+            else if(::strcmp(e.errors[0].reason.in(), API_DeviceNotExported) == 0)
             {
                 TANGO_RETHROW_EXCEPTION(e, API_CannotCheckAccessControl, "Cannot import Access Control device !");
             }
             else
+            {
                 throw;
+            }
         }
     }
 
     return ACCESS_READ;
 }
-
-
 
 //===============================================================
 /**
@@ -285,43 +303,49 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
  */
 //===============================================================
 
-bool AccessProxy::is_command_allowed(std::string &classname,const std::string &cmd)
+bool AccessProxy::is_command_allowed(std::string &classname, const std::string &cmd)
 {
     bool ret = false;
 
-//
-// Try to find allowed commands for device class in map
-//
+    //
+    // Try to find allowed commands for device class in map
+    //
 
-    std::map<std::string,std::vector<std::string> >::iterator pos;
+    std::map<std::string, std::vector<std::string>>::iterator pos;
     pos = allowed_cmd_table.find(classname);
 
-//
-//    If allowed commands for this class not already in map, get them
-//
+    //
+    //    If allowed commands for this class not already in map, get them
+    //
 
     std::vector<std::string> allowed;
-    if (pos == allowed_cmd_table.end())
-        get_allowed_commands(classname,allowed);
+    if(pos == allowed_cmd_table.end())
+    {
+        get_allowed_commands(classname, allowed);
+    }
     else
+    {
         allowed = pos->second;
+    }
 
-//
-//    If no cmd allowed returns false
-//
+    //
+    //    If no cmd allowed returns false
+    //
 
-    if (allowed.empty() == true)
+    if(allowed.empty() == true)
+    {
         ret = false;
+    }
 
-//
-//    Else, check is the one passed as argument is allowed
-//
+    //
+    //    Else, check is the one passed as argument is allowed
+    //
 
     else
     {
-        for (unsigned int i = 0;i < allowed.size();++i)
+        for(unsigned int i = 0; i < allowed.size(); ++i)
         {
-            if (TG_strcasecmp(allowed[i].c_str(),cmd.c_str()) == 0)
+            if(TG_strcasecmp(allowed[i].c_str(), cmd.c_str()) == 0)
             {
                 ret = true;
                 break;
@@ -332,29 +356,28 @@ bool AccessProxy::is_command_allowed(std::string &classname,const std::string &c
     return ret;
 }
 
-
 //===============================================================
 /**
  *    query access device to know allowed commands for the class
  */
 //===============================================================
 
-void AccessProxy::get_allowed_commands(const std::string &classname,std::vector<std::string> &allowed)
+void AccessProxy::get_allowed_commands(const std::string &classname, std::vector<std::string> &allowed)
 {
     try
     {
-        DeviceData    din,dout;
+        DeviceData din, dout;
         din << classname;
 
         dout = command_inout("GetAllowedCommands", din);
 
         dout >> allowed;
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         allowed.clear();
     }
-    allowed_cmd_table.insert(std::map<std::string,std::vector<std::string> >::value_type(classname, allowed));
+    allowed_cmd_table.insert(std::map<std::string, std::vector<std::string>>::value_type(classname, allowed));
 }
 
-} // End of Tango namespace
+} // namespace Tango

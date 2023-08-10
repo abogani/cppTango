@@ -47,19 +47,22 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-Pipe::Pipe(const std::string &_name,Tango::DispLevel _level,PipeWriteType _pwt)
-:name(_name),disp_level(_level),writable(_pwt),ext(new PipeExt)
+Pipe::Pipe(const std::string &_name, Tango::DispLevel _level, PipeWriteType _pwt) :
+    name(_name),
+    disp_level(_level),
+    writable(_pwt),
+    ext(new PipeExt)
 {
     lower_name = name;
-    std::transform(lower_name.begin(),lower_name.end(),lower_name.begin(),::tolower);
+    std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);
 
     pipe_serial_model = PIPE_BY_KERNEL;
 
     event_subscription = 0;
 
-//
-// Set lib default value for pipe label and desc
-//
+    //
+    // Set lib default value for pipe label and desc
+    //
 
     label = name;
     desc = DescNotSpec;
@@ -81,35 +84,37 @@ Pipe::Pipe(const std::string &_name,Tango::DispLevel _level,PipeWriteType _pwt)
 
 void Pipe::set_default_properties(const UserDefaultPipeProp &prop_list)
 {
+    //
+    // Init value in Pipe instance
+    //
 
-//
-// Init value in Pipe instance
-//
-
-    if ((prop_list.label.empty() == false) &&
-        (TG_strcasecmp(prop_list.label.c_str(),AlrmValueNotSpec) != 0) &&
-        (TG_strcasecmp(prop_list.label.c_str(),NotANumber) != 0))
+    if((prop_list.label.empty() == false) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
+       (TG_strcasecmp(prop_list.label.c_str(), NotANumber) != 0))
+    {
         label = prop_list.label;
+    }
 
-    if (prop_list.description.empty() == false &&
-        (TG_strcasecmp(prop_list.description.c_str(),AlrmValueNotSpec) != 0) &&
-        (TG_strcasecmp(prop_list.description.c_str(),NotANumber) != 0))
+    if(prop_list.description.empty() == false &&
+       (TG_strcasecmp(prop_list.description.c_str(), AlrmValueNotSpec) != 0) &&
+       (TG_strcasecmp(prop_list.description.c_str(), NotANumber) != 0))
+    {
         desc = prop_list.description;
+    }
 
-//
-// Memorize user default (if any) for case of user requesting a "return to user default"
-//
+    //
+    // Memorize user default (if any) for case of user requesting a "return to user default"
+    //
 
     user_def_prop.clear();
-    if (prop_list.label.empty() == false)
+    if(prop_list.label.empty() == false)
     {
-        PipeProperty pp("label",prop_list.label);
+        PipeProperty pp("label", prop_list.label);
         user_def_prop.push_back(pp);
     }
 
-    if (prop_list.description.empty() == false)
+    if(prop_list.description.empty() == false)
     {
-        PipeProperty pp("description",prop_list.description);
+        PipeProperty pp("description", prop_list.description);
         user_def_prop.push_back(pp);
     }
 }
@@ -129,11 +134,11 @@ void Pipe::set_default_properties(const UserDefaultPipeProp &prop_list)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void Pipe::set_upd_properties(const PipeConfig &new_conf,DeviceImpl *dev)
+void Pipe::set_upd_properties(const PipeConfig &new_conf, DeviceImpl *dev)
 {
-//
-// Backup current configuration (only label and description)
-//
+    //
+    // Backup current configuration (only label and description)
+    //
 
     PipeConfig old_conf = new_conf;
     old_conf.label = Tango::string_dup(label.c_str());
@@ -141,46 +146,44 @@ void Pipe::set_upd_properties(const PipeConfig &new_conf,DeviceImpl *dev)
 
     try
     {
-
-//
-// Set properties locally. In case of exception bring the backed-up values
-//
+        //
+        // Set properties locally. In case of exception bring the backed-up values
+        //
 
         std::vector<Attribute::AttPropDb> v_db;
-        set_properties(new_conf,dev,v_db);
+        set_properties(new_conf, dev, v_db);
 
-//
-// Update database
-//
+        //
+        // Update database
+        //
 
         try
         {
-            upd_database(v_db,dev->get_name());
+            upd_database(v_db, dev->get_name());
         }
         catch(DevFailed &)
         {
-
-//
-// In case of exception, try to store old properties in the database and inform the user about the error
-//
+            //
+            // In case of exception, try to store old properties in the database and inform the user about the error
+            //
 
             try
             {
                 v_db.clear();
-                set_properties(old_conf,dev,v_db);
-                upd_database(v_db,dev->get_name());
+                set_properties(old_conf, dev, v_db);
+                upd_database(v_db, dev->get_name());
             }
             catch(DevFailed &)
             {
-
-//
-// If the old values could not be restored, notify the user about possible database corruption
-//
+                //
+                // If the old values could not be restored, notify the user about possible database corruption
+                //
 
                 TangoSys_OMemStream o;
 
                 o << "Device " << dev->get_name() << "-> Pipe : " << name;
-                o << "\nDatabase error occurred whilst setting pipe properties. The database may be corrupted." << std::ends;
+                o << "\nDatabase error occurred whilst setting pipe properties. The database may be corrupted."
+                  << std::ends;
                 TANGO_THROW_EXCEPTION(API_CorruptedDatabase, o.str());
             }
 
@@ -190,7 +193,7 @@ void Pipe::set_upd_properties(const PipeConfig &new_conf,DeviceImpl *dev)
     catch(DevFailed &)
     {
         std::vector<Attribute::AttPropDb> v_db;
-        set_properties(old_conf,dev,v_db);
+        set_properties(old_conf, dev, v_db);
 
         throw;
     }
@@ -212,12 +215,11 @@ void Pipe::set_upd_properties(const PipeConfig &new_conf,DeviceImpl *dev)
 //
 //---------------------------------------------------------------------------------------------------------------------
 
-void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db,const std::string &dev_name)
+void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db, const std::string &dev_name)
 {
-
-//
-// Build info needed for the method upddating DB
-//
+    //
+    // Build info needed for the method upddating DB
+    //
 
     long prop_to_update = 0;
     long prop_to_delete = 0;
@@ -230,54 +232,54 @@ void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db,const std::strin
 
     std::vector<Attribute::AttPropDb>::iterator ite;
 
-//
-// A loop for each db action
-//
+    //
+    // A loop for each db action
+    //
 
-    for (ite = v_db.begin();ite != v_db.end();++ite)
+    for(ite = v_db.begin(); ite != v_db.end(); ++ite)
     {
-        switch (ite->dba)
+        switch(ite->dba)
         {
-            case Attribute::UPD:
-            {
-                DbDatum desc(ite->name);
-                desc << ite->db_value;
-                db_d.push_back(desc);
-                prop_to_update++;
-            }
-            break;
+        case Attribute::UPD:
+        {
+            DbDatum desc(ite->name);
+            desc << ite->db_value;
+            db_d.push_back(desc);
+            prop_to_update++;
+        }
+        break;
 
-            case Attribute::UPD_FROM_DB:
-            {
-                DbDatum desc(ite->name);
-                desc << ite->db_value_db;
-                db_d.push_back(desc);
-                prop_to_update++;
-            }
-            break;
+        case Attribute::UPD_FROM_DB:
+        {
+            DbDatum desc(ite->name);
+            desc << ite->db_value_db;
+            db_d.push_back(desc);
+            prop_to_update++;
+        }
+        break;
 
-            case Attribute::UPD_FROM_VECT_STR:
-            {
-                DbDatum desc(ite->name);
-                desc << ite->db_value_v_str;
-                db_d.push_back(desc);
-                prop_to_update++;
-            }
-            break;
+        case Attribute::UPD_FROM_VECT_STR:
+        {
+            DbDatum desc(ite->name);
+            desc << ite->db_value_v_str;
+            db_d.push_back(desc);
+            prop_to_update++;
+        }
+        break;
 
-            case Attribute::DEL:
-            {
-                DbDatum desc(ite->name);
-                db_del.push_back(desc);
-                prop_to_delete++;
-            }
-            break;
+        case Attribute::DEL:
+        {
+            DbDatum desc(ite->name);
+            db_del.push_back(desc);
+            prop_to_delete++;
+        }
+        break;
         }
     }
 
-//
-// Update database
-//
+    //
+    // Update database
+    //
 
     struct Attribute::CheckOneStrProp cosp;
     cosp.prop_to_delete = &prop_to_delete;
@@ -285,62 +287,62 @@ void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db,const std::strin
     cosp.db_d = &db_d;
     cosp.db_del = &db_del;
 
-//
-// Update db only if needed
-//
+    //
+    // Update db only if needed
+    //
 
-    if (*cosp.prop_to_update != 0)
+    if(*cosp.prop_to_update != 0)
     {
         TANGO_LOG_DEBUG << *cosp.prop_to_update << " properties to update in db" << std::endl;
         (*cosp.db_d)[0] << *cosp.prop_to_update;
-//for (const auto &elem: *cosp.db_d)
-//    TANGO_LOG << "prop_to_update name = " << elem.name << std::endl;
+        // for (const auto &elem: *cosp.db_d)
+        //     TANGO_LOG << "prop_to_update name = " << elem.name << std::endl;
 
         Tango::Util *tg = Tango::Util::instance();
 
-//
-// Implement a reconnection schema. The first exception received if the db server is down is a COMM_FAILURE exception.
-// Following exception received from following calls are TRANSIENT exception
-//
+        //
+        // Implement a reconnection schema. The first exception received if the db server is down is a COMM_FAILURE
+        // exception. Following exception received from following calls are TRANSIENT exception
+        //
 
         bool retry = true;
-        while (retry == true)
+        while(retry == true)
         {
             try
             {
-                tg->get_database()->put_device_pipe_property(dev_name,*cosp.db_d);
+                tg->get_database()->put_device_pipe_property(dev_name, *cosp.db_d);
                 retry = false;
             }
-            catch (CORBA::COMM_FAILURE &)
+            catch(CORBA::COMM_FAILURE &)
             {
                 tg->get_database()->reconnect(true);
             }
         }
     }
 
-    if (*cosp.prop_to_delete != 0)
+    if(*cosp.prop_to_delete != 0)
     {
         TANGO_LOG_DEBUG << *cosp.prop_to_delete << " properties to delete in db" << std::endl;
         (*cosp.db_del)[0] << *cosp.prop_to_delete;
-//for (const auto &elem: *cosp.db_del)
-//    TANGO_LOG << "prop_to_delete name = " << elem.name << std::endl;
+        // for (const auto &elem: *cosp.db_del)
+        //     TANGO_LOG << "prop_to_delete name = " << elem.name << std::endl;
 
         Tango::Util *tg = Tango::Util::instance();
 
-//
-// Implement a reconnection schema. The first exception received if the db server is down is a COMM_FAILURE exception.
-// Following exception received from following calls are TRANSIENT exception
-//
+        //
+        // Implement a reconnection schema. The first exception received if the db server is down is a COMM_FAILURE
+        // exception. Following exception received from following calls are TRANSIENT exception
+        //
 
         bool retry = true;
-        while (retry == true)
+        while(retry == true)
         {
             try
             {
-                tg->get_database()->delete_device_pipe_property(dev_name,*cosp.db_del);
+                tg->get_database()->delete_device_pipe_property(dev_name, *cosp.db_del);
                 retry = false;
             }
-            catch (CORBA::COMM_FAILURE &)
+            catch(CORBA::COMM_FAILURE &)
             {
                 tg->get_database()->reconnect(true);
             }
@@ -365,30 +367,29 @@ void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db,const std::strin
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void Pipe::set_properties(const Tango::PipeConfig &conf,DeviceImpl *dev,std::vector<Attribute::AttPropDb> &v_db)
+void Pipe::set_properties(const Tango::PipeConfig &conf, DeviceImpl *dev, std::vector<Attribute::AttPropDb> &v_db)
 {
-
-//
-// Check if the caller try to change "hard coded"properties. Throw exception in case of
-//
+    //
+    // Check if the caller try to change "hard coded"properties. Throw exception in case of
+    //
 
     std::string user_pipe_name(conf.name.in());
-    std::transform(user_pipe_name.begin(),user_pipe_name.end(),user_pipe_name.begin(),::tolower);
-    if (user_pipe_name != lower_name)
+    std::transform(user_pipe_name.begin(), user_pipe_name.end(), user_pipe_name.begin(), ::tolower);
+    if(user_pipe_name != lower_name)
     {
         TANGO_THROW_EXCEPTION(API_AttrNotAllowed, "Pipe name is not changeable at run time");
     }
 
-    if (conf.writable != writable)
+    if(conf.writable != writable)
     {
         TANGO_THROW_EXCEPTION(API_AttrNotAllowed, "Pipe writable property is not changeable at run time");
     }
 
-//
-// Copy only a sub-set of the new properties
-// For each "string" property, an empty string means returns to its default value which could be the library default
-// value or the user defined default value
-//
+    //
+    // Copy only a sub-set of the new properties
+    // For each "string" property, an empty string means returns to its default value which could be the library default
+    // value or the user defined default value
+    //
 
     Tango::DeviceClass *dev_class = dev->get_device_class();
 
@@ -398,15 +399,16 @@ void Pipe::set_properties(const Tango::PipeConfig &conf,DeviceImpl *dev,std::vec
     {
         def_class_prop = dev_class->get_class_pipe()->get_prop_list(name);
     }
-    catch (DevFailed &) {}
+    catch(DevFailed &)
+    {
+    }
 
-//
-// First the string properties
-//
+    //
+    // First the string properties
+    //
 
-    set_one_str_prop("description",conf.description,desc,v_db,def_user_prop,def_class_prop,DescNotSpec);
-    set_one_str_prop("label",conf.label,label,v_db,def_user_prop,def_class_prop,name.c_str());
-
+    set_one_str_prop("description", conf.description, desc, v_db, def_user_prop, def_class_prop, DescNotSpec);
+    set_one_str_prop("label", conf.label, label, v_db, def_user_prop, def_class_prop, name.c_str());
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -431,9 +433,13 @@ void Pipe::set_properties(const Tango::PipeConfig &conf,DeviceImpl *dev,std::vec
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &conf_val,
-                                 std::string &pipe_conf,std::vector<Attribute::AttPropDb> &v_db,std::vector<PipeProperty> &def_user_prop,
-                                std::vector<PipeProperty> &def_class_prop,const char *lib_def)
+void Pipe::set_one_str_prop(const char *prop_name,
+                            const CORBA::String_member &conf_val,
+                            std::string &pipe_conf,
+                            std::vector<Attribute::AttPropDb> &v_db,
+                            std::vector<PipeProperty> &def_user_prop,
+                            std::vector<PipeProperty> &def_class_prop,
+                            const char *lib_def)
 {
     Attribute::AttPropDb apd;
     apd.name = prop_name;
@@ -443,23 +449,22 @@ void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &co
     size_t nb_user = def_user_prop.size();
     size_t nb_class = def_class_prop.size();
 
-    user_defaults = prop_in_list(prop_name,usr_def_val,nb_user,def_user_prop);
-    class_defaults = prop_in_list(prop_name,class_def_val,nb_class,def_class_prop);
+    user_defaults = prop_in_list(prop_name, usr_def_val, nb_user, def_user_prop);
+    class_defaults = prop_in_list(prop_name, class_def_val, nb_class, def_class_prop);
 
-    if (TG_strcasecmp(conf_val,AlrmValueNotSpec) == 0)
+    if(TG_strcasecmp(conf_val, AlrmValueNotSpec) == 0)
     {
-
-//
-// Return to lib default. If something defined as user default or class default, put entry in DB to overwrite
-// these defaults
-//
+        //
+        // Return to lib default. If something defined as user default or class default, put entry in DB to overwrite
+        // these defaults
+        //
 
         std::string old_val = pipe_conf;
         pipe_conf = lib_def;
 
-        if (old_val != pipe_conf)
+        if(old_val != pipe_conf)
         {
-            if (user_defaults == true || class_defaults == true)
+            if(user_defaults == true || class_defaults == true)
             {
                 apd.dba = Attribute::UPD;
                 apd.db_value = pipe_conf;
@@ -472,26 +477,27 @@ void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &co
             }
         }
     }
-    else if (strlen(conf_val) == 0)
+    else if(strlen(conf_val) == 0)
     {
-
-//
-// Return to user default or lib default. If something defined as class default, put entry in DB in order to
-// overwrite this default value.
-//
+        //
+        // Return to user default or lib default. If something defined as class default, put entry in DB in order to
+        // overwrite this default value.
+        //
 
         std::string old_val = pipe_conf;
 
-        if (user_defaults == true)
+        if(user_defaults == true)
+        {
             pipe_conf = usr_def_val;
+        }
         else
         {
             pipe_conf = lib_def;
         }
 
-        if (old_val != pipe_conf)
+        if(old_val != pipe_conf)
         {
-            if (class_defaults == true)
+            if(class_defaults == true)
             {
                 apd.dba = Attribute::UPD;
                 apd.db_value = pipe_conf;
@@ -504,25 +510,28 @@ void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &co
             }
         }
     }
-    else if (TG_strcasecmp(conf_val,NotANumber) == 0)
+    else if(TG_strcasecmp(conf_val, NotANumber) == 0)
     {
-
-//
-// Return to class default or user default or lib default
-//
+        //
+        // Return to class default or user default or lib default
+        //
 
         std::string old_val = pipe_conf;
 
-        if (class_defaults == true)
+        if(class_defaults == true)
+        {
             pipe_conf = class_def_val;
-        else if (user_defaults == true)
+        }
+        else if(user_defaults == true)
+        {
             pipe_conf = usr_def_val;
+        }
         else
         {
             pipe_conf = lib_def;
         }
 
-        if (old_val != pipe_conf)
+        if(old_val != pipe_conf)
         {
             apd.dba = Attribute::DEL;
             v_db.push_back(apd);
@@ -530,24 +539,22 @@ void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &co
     }
     else
     {
-
-//
-// Set property
-//
+        //
+        // Set property
+        //
 
         std::string old_val = pipe_conf;
         pipe_conf = conf_val;
 
-        if (user_defaults == true && pipe_conf == usr_def_val)
+        if(user_defaults == true && pipe_conf == usr_def_val)
         {
+            //
+            // Property value is the same than the user default value
+            //
 
-//
-// Property value is the same than the user default value
-//
-
-            if (old_val != pipe_conf)
+            if(old_val != pipe_conf)
             {
-                if (class_defaults == true)
+                if(class_defaults == true)
                 {
                     apd.dba = Attribute::UPD;
                     apd.db_value = pipe_conf;
@@ -560,42 +567,39 @@ void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &co
                 }
             }
         }
-        else if (class_defaults == true && pipe_conf == class_def_val)
+        else if(class_defaults == true && pipe_conf == class_def_val)
         {
+            //
+            // Property value is the same than the class default value
+            //
 
-//
-// Property value is the same than the class default value
-//
-
-            if (old_val != pipe_conf)
+            if(old_val != pipe_conf)
             {
                 apd.dba = Attribute::DEL;
                 v_db.push_back(apd);
             }
         }
-            else if (class_defaults == false && TG_strcasecmp(pipe_conf.c_str(),lib_def) == 0)
+        else if(class_defaults == false && TG_strcasecmp(pipe_conf.c_str(), lib_def) == 0)
         {
+            //
+            // Property value is the same than the lib default value
+            //
 
-//
-// Property value is the same than the lib default value
-//
-
-            if (old_val != pipe_conf)
+            if(old_val != pipe_conf)
             {
                 apd.dba = Attribute::DEL;
                 v_db.push_back(apd);
             }
         }
-        else if (class_defaults == false && strcmp(prop_name,"label") == 0)
+        else if(class_defaults == false && strcmp(prop_name, "label") == 0)
         {
+            //
+            // Property Label: Property value is the same than the lib default value
+            //
 
-//
-// Property Label: Property value is the same than the lib default value
-//
-
-            if (old_val != pipe_conf)
+            if(old_val != pipe_conf)
             {
-                if (TG_strcasecmp(pipe_conf.c_str(),LabelNotSpec) == 0)
+                if(TG_strcasecmp(pipe_conf.c_str(), LabelNotSpec) == 0)
                 {
                     apd.dba = Attribute::DEL;
                     v_db.push_back(apd);
@@ -610,7 +614,7 @@ void Pipe::set_one_str_prop(const char *prop_name,const CORBA::String_member &co
         }
         else
         {
-            if (old_val != pipe_conf)
+            if(old_val != pipe_conf)
             {
                 apd.dba = Attribute::UPD;
                 apd.db_value = pipe_conf;
@@ -645,16 +649,18 @@ void Pipe::set_time()
 
 void Pipe::set_pipe_serial_model(PipeSerialModel ser_model)
 {
-    if (ser_model == Tango::PIPE_BY_USER)
+    if(ser_model == Tango::PIPE_BY_USER)
     {
         Tango::Util *tg = Tango::Util::instance();
-        if (tg->get_serial_model() != Tango::BY_DEVICE)
+        if(tg->get_serial_model() != Tango::BY_DEVICE)
         {
-            TANGO_THROW_EXCEPTION(API_PipeNotAllowed, "Pipe serial model by user is not allowed when the process is not in BY_DEVICE serialization model");
+            TANGO_THROW_EXCEPTION(
+                API_PipeNotAllowed,
+                "Pipe serial model by user is not allowed when the process is not in BY_DEVICE serialization model");
         }
     }
 
-    pipe_serial_model=ser_model;
+    pipe_serial_model = ser_model;
 }
 
 Pipe &Pipe::operator[](const std::string &_na)
@@ -678,52 +684,53 @@ Pipe &Pipe::operator[](const std::string &_na)
 //
 //---------------------------------------------------------------------------------------------------------------------
 
-
-void Pipe::fire_event(DeviceImpl *dev,DevFailed *except)
+void Pipe::fire_event(DeviceImpl *dev, DevFailed *except)
 {
     TANGO_LOG_DEBUG << "Pipe::fire_event() entering ..." << std::endl;
 
-//
-// Check if it is needed to send an event
-//
+    //
+    // Check if it is needed to send an event
+    //
 
-    if (! is_pipe_event_subscribed())
+    if(!is_pipe_event_subscribed())
     {
         return;
     }
 
-//
-// Get the event supplier, and simply return if not created
-//
+    //
+    // Get the event supplier, and simply return if not created
+    //
 
     ZmqEventSupplier *event_supplier_zmq = NULL;
 
     Tango::Util *tg = Util::instance();
     event_supplier_zmq = tg->get_zmq_event_supplier();
 
-    if (event_supplier_zmq == NULL)
+    if(event_supplier_zmq == NULL)
     {
         return;
     }
 
-//
-// Make sure the severity field is initialized (this field is never used!!)
-//
+    //
+    // Make sure the severity field is initialized (this field is never used!!)
+    //
 
     size_t err_nb = except->errors.length();
-    for (size_t loop = 0;loop < err_nb;loop++)
+    for(size_t loop = 0; loop < err_nb; loop++)
+    {
         (except->errors)[loop].severity = Tango::ERR;
+    }
 
-//
-// Create the structure used to send data to event system
-//
+    //
+    // Create the structure used to send data to event system
+    //
 
     EventSupplier::SuppliedEventData ad;
-    ::memset(&ad,0,sizeof(ad));
+    ::memset(&ad, 0, sizeof(ad));
 
-//
-// Fire event
-//
+    //
+    // Fire event
+    //
 
     std::vector<std::string> f_names;
     std::vector<double> f_data;
@@ -734,21 +741,21 @@ void Pipe::fire_event(DeviceImpl *dev,DevFailed *except)
     event_supplier_zmq->push_event(dev, event_type, f_names, f_data, f_names_lg, f_data_lg, ad, name, except, true);
 }
 
-void Pipe::fire_event(DeviceImpl *_dev,DevicePipeBlob *_dat,bool reuse_it)
+void Pipe::fire_event(DeviceImpl *_dev, DevicePipeBlob *_dat, bool reuse_it)
 {
     auto now = make_timeval(std::chrono::system_clock::now());
     fire_event(_dev, _dat, now, reuse_it);
 }
 
-void Pipe::fire_event(DeviceImpl *dev,DevicePipeBlob *p_data,const TangoTimestamp &t,bool reuse_it)
+void Pipe::fire_event(DeviceImpl *dev, DevicePipeBlob *p_data, const TangoTimestamp &t, bool reuse_it)
 {
     TANGO_LOG_DEBUG << "Pipe::fire_event() entering ..." << std::endl;
 
-//
-// Check if it is needed to send an event
-//
+    //
+    // Check if it is needed to send an event
+    //
 
-    if (! is_pipe_event_subscribed())
+    if(!is_pipe_event_subscribed())
     {
         p_data->reset_insert_ctr();
         DevVarPipeDataEltArray *tmp_ptr = p_data->get_insert_data();
@@ -756,16 +763,16 @@ void Pipe::fire_event(DeviceImpl *dev,DevicePipeBlob *p_data,const TangoTimestam
         return;
     }
 
-//
-// Get the event supplier, and simply return if not created
-//
+    //
+    // Get the event supplier, and simply return if not created
+    //
 
     ZmqEventSupplier *event_supplier_zmq = NULL;
 
     Tango::Util *tg = Util::instance();
     event_supplier_zmq = tg->get_zmq_event_supplier();
 
-    if (event_supplier_zmq == NULL)
+    if(event_supplier_zmq == NULL)
     {
         p_data->reset_insert_ctr();
         DevVarPipeDataEltArray *tmp_ptr = p_data->get_insert_data();
@@ -773,41 +780,43 @@ void Pipe::fire_event(DeviceImpl *dev,DevicePipeBlob *p_data,const TangoTimestam
         return;
     }
 
-//
-// Create the structure used to send data to event system
-//
+    //
+    // Create the structure used to send data to event system
+    //
 
     EventSupplier::SuppliedEventData ad;
-    ::memset(&ad,0,sizeof(ad));
+    ::memset(&ad, 0, sizeof(ad));
 
-//
-// Init the structure sent with the event
-//
+    //
+    // Init the structure sent with the event
+    //
 
     ad.pipe_val = new DevPipeData();
     ad.pipe_val->name = Tango::string_dup(name.c_str());
 
-    ::memset(&(ad.pipe_val->time),0,sizeof(ad.pipe_val->time));
+    ::memset(&(ad.pipe_val->time), 0, sizeof(ad.pipe_val->time));
     ad.pipe_val->time = make_TimeVal(t);
 
     const std::string &bl_name = p_data->get_name();
-    if (bl_name.size() != 0)
+    if(bl_name.size() != 0)
+    {
         ad.pipe_val->data_blob.name = bl_name.c_str();
+    }
 
     DevVarPipeDataEltArray *tmp_ptr = p_data->get_insert_data();
-    if (tmp_ptr == nullptr)
+    if(tmp_ptr == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_PipeNoDataElement, "No data in DevicePipeBlob!");
     }
 
-    CORBA::ULong max,len;
+    CORBA::ULong max, len;
     max = tmp_ptr->maximum();
     len = tmp_ptr->length();
-    ad.pipe_val->data_blob.blob_data.replace(max,len,tmp_ptr->get_buffer((CORBA::Boolean)true),true);
+    ad.pipe_val->data_blob.blob_data.replace(max, len, tmp_ptr->get_buffer((CORBA::Boolean) true), true);
 
-//
-// Fire event
-//
+    //
+    // Fire event
+    //
 
     std::vector<std::string> f_names;
     std::vector<double> f_data;
@@ -817,7 +826,7 @@ void Pipe::fire_event(DeviceImpl *dev,DevicePipeBlob *p_data,const TangoTimestam
     std::string event_type("pipe");
     event_supplier_zmq->push_event(dev, event_type, f_names, f_data, f_names_lg, f_data_lg, ad, name, NULL, true);
 
-    if (reuse_it == false)
+    if(reuse_it == false)
     {
         p_data->reset_insert_ctr();
         delete tmp_ptr;
@@ -834,4 +843,4 @@ bool Pipe::is_pipe_event_subscribed() const
     return delta_subscription < EVENT_RESUBSCRIBE_PERIOD;
 }
 
-} // End of Tango namespace
+} // namespace Tango

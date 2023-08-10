@@ -32,15 +32,15 @@
 #include <tango/tango.h>
 
 #ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4290)
+  #pragma warning(push)
+  #pragma warning(disable : 4290)
 #endif
 
 #include <omniORB4/internal/orbOptions.h>
 #include <omniORB4/callDescriptor.h>
 
 #ifdef _MSC_VER
-#pragma warning(pop)
+  #pragma warning(pop)
 #endif
 
 #include <stdlib.h>
@@ -50,48 +50,49 @@
 #include <tango/internal/net.h>
 
 #ifndef _TG_WINDOWS_
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
+  #include <unistd.h>
+  #include <netdb.h>
+  #include <sys/socket.h>
 #else
-#include <process.h>
-#include <tango/windows/coutbuf.h>
-#include <tango/windows/ntservice.h>
-#include <ws2tcpip.h>
+  #include <process.h>
+  #include <tango/windows/coutbuf.h>
+  #include <tango/windows/ntservice.h>
+  #include <ws2tcpip.h>
 #endif /* _TG_WINDOWS_ */
 
 #include <omniORB4/omniInterceptors.h>
 
-namespace {
+namespace
+{
 
-  /// Search the environment for the given OMNIORB variable
-  ///
-  /// Search order:
-  /// - ARGV
-  /// - Environment variable
-  /// - OMNIORB configuration file
-  Tango::tango_optional<std::string> get_omniorb_variable(int argc, char *argv[], const std::string &name)
-  {
+/// Search the environment for the given OMNIORB variable
+///
+/// Search order:
+/// - ARGV
+/// - Environment variable
+/// - OMNIORB configuration file
+Tango::tango_optional<std::string> get_omniorb_variable(int argc, char *argv[], const std::string &name)
+{
     //
     // First look at command line arg
     //
 
-    for (int i = 2;i < argc;i++)
+    for(int i = 2; i < argc; i++)
     {
-      std::string param = "-ORB" + name;
-      if (::strcmp(param.c_str(),argv[i]) == 0)
-      {
-        const char* value = argv[i + 1];
-        if(value == nullptr)
+        std::string param = "-ORB" + name;
+        if(::strcmp(param.c_str(), argv[i]) == 0)
         {
-          TangoSys_OMemStream o;
+            const char *value = argv[i + 1];
+            if(value == nullptr)
+            {
+                TangoSys_OMemStream o;
 
-          o << "Missing value for argument " << param << std::ends;
-          TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+                o << "Missing value for argument " << param << std::ends;
+                TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+            }
+
+            return Tango::detail::parse_hostname_from_CORBA_URI(value);
         }
-
-        return Tango::detail::parse_hostname_from_CORBA_URI(value);
-      }
     }
 
     //
@@ -100,9 +101,9 @@ namespace {
     Tango::DummyDeviceProxy d;
     std::string env_var;
     std::string param = "ORB" + name;
-    if (d.get_env_var(param.c_str(), env_var) == 0)
+    if(d.get_env_var(param.c_str(), env_var) == 0)
     {
-      return Tango::detail::parse_hostname_from_CORBA_URI(env_var);
+        return Tango::detail::parse_hostname_from_CORBA_URI(env_var);
     }
 
     //
@@ -115,38 +116,40 @@ namespace {
 
     std::string fname;
     bool found = false;
-    for (int i = 2;i < argc;i++)
+    for(int i = 2; i < argc; i++)
     {
-      if (::strcmp("-ORBconfigFile",argv[i]) == 0)
-      {
-        const char* value = argv[i + 1];
-        if(value == nullptr)
+        if(::strcmp("-ORBconfigFile", argv[i]) == 0)
         {
-          TangoSys_OMemStream o;
+            const char *value = argv[i + 1];
+            if(value == nullptr)
+            {
+                TangoSys_OMemStream o;
 
-          o << "Missing value for argument -ORBconfigFile" << std::ends;
-          TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+                o << "Missing value for argument -ORBconfigFile" << std::ends;
+                TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, o.str());
+            }
+            fname = value;
+
+            found = true;
+            break;
         }
-        fname = value;
-
-        found = true;
-        break;
-      }
     }
 
-    if (found == false)
+    if(found == false)
     {
-      Tango::DummyDeviceProxy d;
-      std::string env_var;
-      if (d.get_env_var("ORBconfigFile",env_var) == 0)
-      {
-        fname = env_var;
-        found = true;
-      }
+        Tango::DummyDeviceProxy d;
+        std::string env_var;
+        if(d.get_env_var("ORBconfigFile", env_var) == 0)
+        {
+            fname = env_var;
+            found = true;
+        }
     }
 
-    if (found == false)
-      fname = Tango::DEFAULT_OMNI_CONF_FILE;
+    if(found == false)
+    {
+        fname = Tango::DEFAULT_OMNI_CONF_FILE;
+    }
 
     //
     // Now, look into the file if it exist
@@ -155,50 +158,54 @@ namespace {
     std::string line;
     std::ifstream conf_file(fname.c_str());
 
-    if (conf_file.is_open())
+    if(conf_file.is_open())
     {
-      while (getline(conf_file,line))
-      {
-        if (line[0] == '#')
-          continue;
-
-        std::string::size_type pos = line.find(name);
-        if (pos != std::string::npos)
+        while(getline(conf_file, line))
         {
-          std::string::iterator ite = remove(line.begin(),line.end(),' ');
-          line.erase(ite,line.end());
+            if(line[0] == '#')
+            {
+                continue;
+            }
 
-          pos = line.find('=');
-          if (pos != std::string::npos)
-          {
-            std::string value = line.substr(pos+1);
-            if ((pos = value.find('#')) != std::string::npos)
-              value.erase(pos);
+            std::string::size_type pos = line.find(name);
+            if(pos != std::string::npos)
+            {
+                std::string::iterator ite = remove(line.begin(), line.end(), ' ');
+                line.erase(ite, line.end());
 
-            //
-            // Option found in file, extract host ip
-            //
-            auto ip = Tango::detail::parse_hostname_from_CORBA_URI(value);
-            conf_file.close();
+                pos = line.find('=');
+                if(pos != std::string::npos)
+                {
+                    std::string value = line.substr(pos + 1);
+                    if((pos = value.find('#')) != std::string::npos)
+                    {
+                        value.erase(pos);
+                    }
 
-            return ip;
-          }
+                    //
+                    // Option found in file, extract host ip
+                    //
+                    auto ip = Tango::detail::parse_hostname_from_CORBA_URI(value);
+                    conf_file.close();
+
+                    return ip;
+                }
+            }
         }
-      }
-      conf_file.close();
+        conf_file.close();
     }
     else
     {
-      if (fname != Tango::DEFAULT_OMNI_CONF_FILE)
-      {
-        std::stringstream ss;
-        ss << "Can't open omniORB configuration file (" << fname << ") to check " << name << "option" << std::endl;
-        TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, ss.str());
-      }
+        if(fname != Tango::DEFAULT_OMNI_CONF_FILE)
+        {
+            std::stringstream ss;
+            ss << "Can't open omniORB configuration file (" << fname << ") to check " << name << "option" << std::endl;
+            TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, ss.str());
+        }
     }
 
     return Tango::tango_optional<std::string>();
-  }
+}
 
 } // anonymous namespace
 
@@ -225,12 +232,14 @@ thread_local bool is_tango_library_thread = false;
 // NOTE: about omni_thread::key_t
 //+-------------------------------------------------------------------------------------------------------------------
 //    - an omni_thread::key_t is a unique process-wide identifier
-//                `--> an omni_thread::key_t must be instantiated by calling 'omni_thread::allocate_key' (thread safe static function).
+//                `--> an omni_thread::key_t must be instantiated by calling 'omni_thread::allocate_key' (thread safe
+//                static function).
 //                `--> once created, a key is usable by any thread in the process
 //    - the value associated with a key is unique (i.e.) and stored on a 'per omni_thread instance' basis
 //                `--> omni_thread::[set_value, get_value, remove_value] are NOT static member of the omni_thread
 //                `--> omni_thread::[set_value, get_value, remove_value] are NOT thread safe!
-//                `--> keys are unique but values are NOT - i.e., two different threads can have a different value associated to the same key
+//                `--> keys are unique but values are NOT - i.e., two different threads can have a different value
+//                associated to the same key
 //+-------------------------------------------------------------------------------------------------------------------
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -254,21 +263,21 @@ omni_thread::key_t Util::tssk_client_info = omni_thread::allocate_key();
 //
 //------------------------------------------------------------------------------------------------------------------
 
-Util *Util::init(int argc,char *argv[])
+Util *Util::init(int argc, char *argv[])
 {
-    if (_instance == NULL)
+    if(_instance == NULL)
     {
-        _instance = new Util(argc,argv);
+        _instance = new Util(argc, argv);
     }
     return _instance;
 }
 
 #ifdef _TG_WINDOWS_
-Util *Util::init(HINSTANCE hi,int nCmd)
+Util *Util::init(HINSTANCE hi, int nCmd)
 {
-    if (_instance == NULL)
+    if(_instance == NULL)
     {
-        _instance = new Util(hi,nCmd);
+        _instance = new Util(hi, nCmd);
     }
     return _instance;
 }
@@ -286,10 +295,12 @@ Util *Util::init(HINSTANCE hi,int nCmd)
 
 Util *Util::instance(bool exit)
 {
-    if (_instance == NULL)
+    if(_instance == NULL)
     {
-        if (exit == true)
+        if(exit == true)
+        {
             Util::print_err_message("Tango is not initialised !!!\nExiting");
+        }
         else
         {
             TANGO_THROW_EXCEPTION(API_UtilSingletonNotCreated, "Util singleton not created");
@@ -309,266 +320,298 @@ Util *Util::instance(bool exit)
 //-----------------------------------------------------------------------------
 
 #ifdef _TG_WINDOWS
-Util::Util(int argc,char *argv[]):cl_list_ptr(NULL),mon("Windows startup"),ext(new UtilExt),
-heartbeat_th(NULL),heartbeat_th_id(0),poll_mon("utils_poll"),poll_on(false),ser_model(BY_DEVICE),
-only_one("process"),nd_event_supplier(NULL),
-db_cache(NULL),inter(NULL),svr_starting(true),svr_stopping(false),poll_pool_size(ULONG_MAX),
-conf_needs_db_upd(false),ev_loop_func(NULL),shutdown_server(false),_dummy_thread(false),
-zmq_event_supplier(NULL),endpoint_specified(false),user_pub_hwm(-1),wattr_nan_allowed(false),
-polling_bef_9_def(false)
+Util::Util(int argc, char *argv[]) :
+    cl_list_ptr(NULL),
+    mon("Windows startup"),
+    ext(new UtilExt),
+    heartbeat_th(NULL),
+    heartbeat_th_id(0),
+    poll_mon("utils_poll"),
+    poll_on(false),
+    ser_model(BY_DEVICE),
+    only_one("process"),
+    nd_event_supplier(NULL),
+    db_cache(NULL),
+    inter(NULL),
+    svr_starting(true),
+    svr_stopping(false),
+    poll_pool_size(ULONG_MAX),
+    conf_needs_db_upd(false),
+    ev_loop_func(NULL),
+    shutdown_server(false),
+    _dummy_thread(false),
+    zmq_event_supplier(NULL),
+    endpoint_specified(false),
+    user_pub_hwm(-1),
+    wattr_nan_allowed(false),
+    polling_bef_9_def(false)
 #else
-Util::Util(int argc,char *argv[]):cl_list_ptr(NULL),ext(new UtilExt),
-heartbeat_th(NULL),heartbeat_th_id(0),poll_mon("utils_poll"),poll_on(false),ser_model(BY_DEVICE),
-only_one("process"),nd_event_supplier(NULL),
-db_cache(NULL),inter(NULL),svr_starting(true),svr_stopping(false),poll_pool_size(ULONG_MAX),
-conf_needs_db_upd(false),ev_loop_func(NULL),shutdown_server(false),_dummy_thread(false),
-zmq_event_supplier(NULL),endpoint_specified(false),user_pub_hwm(-1),wattr_nan_allowed(false),
-polling_bef_9_def(false)
+Util::Util(int argc, char *argv[]) :
+    cl_list_ptr(NULL),
+    ext(new UtilExt),
+    heartbeat_th(NULL),
+    heartbeat_th_id(0),
+    poll_mon("utils_poll"),
+    poll_on(false),
+    ser_model(BY_DEVICE),
+    only_one("process"),
+    nd_event_supplier(NULL),
+    db_cache(NULL),
+    inter(NULL),
+    svr_starting(true),
+    svr_stopping(false),
+    poll_pool_size(ULONG_MAX),
+    conf_needs_db_upd(false),
+    ev_loop_func(NULL),
+    shutdown_server(false),
+    _dummy_thread(false),
+    zmq_event_supplier(NULL),
+    endpoint_specified(false),
+    user_pub_hwm(-1),
+    wattr_nan_allowed(false),
+    polling_bef_9_def(false)
 #endif
 {
-    shared_data.cmd_pending=false;
-    shared_data.trigger=false;
+    shared_data.cmd_pending = false;
+    shared_data.trigger = false;
 
-//
-// Do the job
-//
+    //
+    // Do the job
+    //
 
-    effective_job(argc,argv);
+    effective_job(argc, argv);
     _constructed = true;
 
-//
-// For Windows, install a console handler to ignore LOGOFF event
-//
+    //
+    // For Windows, install a console handler to ignore LOGOFF event
+    //
 
 #ifdef _TG_WINDOWS_
     install_cons_handler();
 #endif
 }
 
-void Util::effective_job(int argc,char *argv[])
+void Util::effective_job(int argc, char *argv[])
 {
-
     try
     {
+        //
+        // Check server option
+        //
 
-//
-// Check server option
-//
-
-        if (argc < 2)
+        if(argc < 2)
         {
             print_usage(argv[0]);
         }
 
-//
-// Manage command line option (personal name and -v option)
-//
+        //
+        // Manage command line option (personal name and -v option)
+        //
 
-        check_args(argc,argv);
+        check_args(argc, argv);
 
-//
-// Create the signal object
-// It is necessary to create this object before the ORB is initialised.
-// Otherwise, threads created by thread started by the ORB_init will not have
-// the correct signal mask (set by the DServerSignal object) and the device
-// server signal feature will not work
-//
+        //
+        // Create the signal object
+        // It is necessary to create this object before the ORB is initialised.
+        // Otherwise, threads created by thread started by the ORB_init will not have
+        // the correct signal mask (set by the DServerSignal object) and the device
+        // server signal feature will not work
+        //
 
         DServerSignal::instance();
 
-//
-// Check if the user specified a endPoint on the command line or using one
-// env. variable
-// If true, extract the IP address from the end point and store it
-// for future use in the ZMQ publiher(s)
-//
+        //
+        // Check if the user specified a endPoint on the command line or using one
+        // env. variable
+        // If true, extract the IP address from the end point and store it
+        // for future use in the ZMQ publiher(s)
+        //
 
-        check_end_point_specified(argc,argv);
+        check_end_point_specified(argc, argv);
 
-//
-// Destroy the ORB created as a client (in case there is one)
-// Also destroy database objsect stored in the ApiUtil object. This is needed in case of CS running TAC
-// because the TAC device is stored in the db object and it references the destroyed ORB
-//
+        //
+        // Destroy the ORB created as a client (in case there is one)
+        // Also destroy database objsect stored in the ApiUtil object. This is needed in case of CS running TAC
+        // because the TAC device is stored in the db object and it references the destroyed ORB
+        //
 
         ApiUtil *au = Tango::ApiUtil::instance();
-        CORBA::ORB_var orb_clnt  = au->get_orb();
+        CORBA::ORB_var orb_clnt = au->get_orb();
         bool log_client_orb_deleted = false;
-        if (CORBA::is_nil(orb_clnt) == false)
+        if(CORBA::is_nil(orb_clnt) == false)
         {
             log_client_orb_deleted = true;
             orb_clnt->destroy();
             au->set_orb(CORBA::ORB::_nil());
 
             size_t nb_db = au->get_db_vect().size();
-            for (size_t ctr = 0;ctr < nb_db;ctr++)
+            for(size_t ctr = 0; ctr < nb_db; ctr++)
+            {
                 delete au->get_db_vect()[ctr];
+            }
             au->get_db_vect().clear();
         }
 
-//
-// Initialise CORBA ORB
-//
+        //
+        // Initialise CORBA ORB
+        //
 
 #ifdef _TG_WINDOWS_
-        WORD rel = MAKEWORD(2,2);
+        WORD rel = MAKEWORD(2, 2);
         WSADATA dat;
-        int err = WSAStartup(rel,&dat);
-        if (err != 0)
+        int err = WSAStartup(rel, &dat);
+        if(err != 0)
         {
             std::stringstream ss;
             ss << "WSAStartup function failed with error " << err;
             print_err_message(ss.str());
         }
 
-        if (LOBYTE(dat.wVersion) != 2 || HIBYTE(dat.wVersion) != 2)
+        if(LOBYTE(dat.wVersion) != 2 || HIBYTE(dat.wVersion) != 2)
         {
             WSACleanup();
             print_err_message("Could not find a usable version of Winsock.dll");
         }
 #endif
 
-        if (get_endpoint_specified() == true)
+        if(get_endpoint_specified() == true)
         {
-            const char *options[][2] = {
-                {"clientCallTimeOutPeriod",CLNT_TIMEOUT_STR},
-                {"serverCallTimeOutPeriod","5000"},
-                {"maxServerThreadPoolSize","100"},
-                {"threadPerConnectionUpperLimit","55"},
-                {"threadPerConnectionLowerLimit","50"},
-                {"supportCurrent","0"},
-                {"verifyObjectExistsAndType","0"},
-                {"maxGIOPConnectionPerServer",MAX_GIOP_PER_SERVER},
-                {"giopMaxMsgSize",MAX_TRANSFER_SIZE},
+            const char *options[][2] = {{"clientCallTimeOutPeriod", CLNT_TIMEOUT_STR},
+                                        {"serverCallTimeOutPeriod", "5000"},
+                                        {"maxServerThreadPoolSize", "100"},
+                                        {"threadPerConnectionUpperLimit", "55"},
+                                        {"threadPerConnectionLowerLimit", "50"},
+                                        {"supportCurrent", "0"},
+                                        {"verifyObjectExistsAndType", "0"},
+                                        {"maxGIOPConnectionPerServer", MAX_GIOP_PER_SERVER},
+                                        {"giopMaxMsgSize", MAX_TRANSFER_SIZE},
 #ifndef _TG_WINDOWS_
-                {"endPoint","giop:unix:"},
+                                        {"endPoint", "giop:unix:"},
 #endif
-                {"throwTransientOnTimeOut","1"},
-                {"exceptionIdInAny","0"},
-                {0,0}
-            };
+                                        {"throwTransientOnTimeOut", "1"},
+                                        {"exceptionIdInAny", "0"},
+                                        {0, 0}};
 
-            orb = CORBA::ORB_init(argc,argv,"omniORB4",options);
+            orb = CORBA::ORB_init(argc, argv, "omniORB4", options);
         }
         else
         {
-            const char *options[][2] = {
-                {"endPointPublish","all(addr)"},
-                {"clientCallTimeOutPeriod",CLNT_TIMEOUT_STR},
-                {"serverCallTimeOutPeriod","5000"},
-                {"maxServerThreadPoolSize","100"},
-                {"threadPerConnectionUpperLimit","55"},
-                {"threadPerConnectionLowerLimit","50"},
-                {"supportCurrent","0"},
-                {"verifyObjectExistsAndType","0"},
-                {"maxGIOPConnectionPerServer",MAX_GIOP_PER_SERVER},
-                {"giopMaxMsgSize",MAX_TRANSFER_SIZE},
+            const char *options[][2] = {{"endPointPublish", "all(addr)"},
+                                        {"clientCallTimeOutPeriod", CLNT_TIMEOUT_STR},
+                                        {"serverCallTimeOutPeriod", "5000"},
+                                        {"maxServerThreadPoolSize", "100"},
+                                        {"threadPerConnectionUpperLimit", "55"},
+                                        {"threadPerConnectionLowerLimit", "50"},
+                                        {"supportCurrent", "0"},
+                                        {"verifyObjectExistsAndType", "0"},
+                                        {"maxGIOPConnectionPerServer", MAX_GIOP_PER_SERVER},
+                                        {"giopMaxMsgSize", MAX_TRANSFER_SIZE},
 #ifndef _TG_WINDOWS_
-                {"endPoint","giop:tcp::"},
-                {"endPoint","giop:unix:"},
+                                        {"endPoint", "giop:tcp::"},
+                                        {"endPoint", "giop:unix:"},
 #endif
-                {"throwTransientOnTimeOut","1"},
-                {"exceptionIdInAny","0"},
-                {0,0}
-            };
+                                        {"throwTransientOnTimeOut", "1"},
+                                        {"exceptionIdInAny", "0"},
+                                        {0, 0}};
 
-            orb = CORBA::ORB_init(argc,argv,"omniORB4",options);
+            orb = CORBA::ORB_init(argc, argv, "omniORB4", options);
         }
 
-
-//
-// Init host name
-//
+        //
+        // Init host name
+        //
 
         init_host_name();
 
-//
-// Connect to the database
-//
+        //
+        // Connect to the database
+        //
 
-        if (_UseDb == true)
+        if(_UseDb == true)
         {
             connect_db();
 
-//
-// Display help message if requested by user. This is done after the process is
-// connected to the database becaue a call to the database server is done in the
-// display_help_message() method
-//
+            //
+            // Display help message if requested by user. This is done after the process is
+            // connected to the database becaue a call to the database server is done in the
+            // display_help_message() method
+            //
 
-            if (display_help == true)
+            if(display_help == true)
             {
                 display_help_message();
             }
         }
         else
         {
-             db = NULL;
+            db = NULL;
             ApiUtil *au = ApiUtil::instance();
             au->in_server(true);
         }
 
-//
-// Create the server CORBA objects
-//
+        //
+        // Create the server CORBA objects
+        //
 
         create_CORBA_objects();
 
-//
-// Initialize logging stuffs
-//
-        Logging::init(ds_name, (int)_tracelevel,  ((!_FileDb) && _UseDb), *db, this);
+        //
+        // Initialize logging stuffs
+        //
+        Logging::init(ds_name, (int) _tracelevel, ((!_FileDb) && _UseDb), *db, this);
 
-        if (log_client_orb_deleted)
+        if(log_client_orb_deleted)
         {
-            TANGO_LOG_INFO << "Client ORB was initialized in before the server ORB, all proxies must be invalidated" << std::endl;
+            TANGO_LOG_INFO << "Client ORB was initialized in before the server ORB, all proxies must be invalidated"
+                           << std::endl;
         }
         TANGO_LOG_DEBUG << "Connected to database" << std::endl;
-        if (get_db_cache() == NULL)
+        if(get_db_cache() == NULL)
+        {
             TANGO_LOG_DEBUG << "DbServerCache unavailable, will call db..." << std::endl;
+        }
 
-//
-// Check if the server is not already running somewhere else
-//
+        //
+        // Check if the server is not already running somewhere else
+        //
 
-        if ((_UseDb == true) && (_FileDb == false))
+        if((_UseDb == true) && (_FileDb == false))
+        {
             server_already_running();
+        }
 
-//
-// Get process PID and Tango version
-//
+        //
+        // Get process PID and Tango version
+        //
 
         misc_init();
 
-//
-// Automatically create the EventSupplier objects
-//
-// In the future this could be created only when the
-// first event is fired ...
-//
+        //
+        // Automatically create the EventSupplier objects
+        //
+        // In the future this could be created only when the
+        // first event is fired ...
+        //
 
         create_notifd_event_supplier();
         create_zmq_event_supplier();
 
-//
-// Create the heartbeat thread and start it
-//
+        //
+        // Create the heartbeat thread and start it
+        //
 
-        heartbeat_th = new PollThread(shared_data,poll_mon,true);
+        heartbeat_th = new PollThread(shared_data, poll_mon, true);
         heartbeat_th->start();
         heartbeat_th_id = heartbeat_th->id();
         TANGO_LOG_DEBUG << "Heartbeat thread Id = " << heartbeat_th_id << std::endl;
 
         TANGO_LOG_DEBUG << "Tango object singleton constructed" << std::endl;
-
     }
-    catch (CORBA::Exception &)
+    catch(CORBA::Exception &)
     {
         throw;
     }
-
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -582,10 +625,10 @@ void Util::effective_job(int argc,char *argv[])
 
 void Util::create_CORBA_objects()
 {
-
-//
-// Install an omniORB interceptors to store client name in blackbox and allocate a key for per thread specific storage
-//
+    //
+    // Install an omniORB interceptors to store client name in blackbox and allocate a key for per thread specific
+    // storage
+    //
 
     omni::omniInterceptors *intercep = omniORB::getInterceptors();
 
@@ -605,75 +648,78 @@ void Util::create_CORBA_objects()
     // ---------------------------------------------------------------------------
     omniCallDescriptor::addInterceptor(Tango::client_call_interceptor);
 
-    intercep->createThread.add([](omni::omniInterceptors::createThread_T::info_T &info)
-    {
-        // Mark this thread as a library thread. This will allow setting
-        // associated device name in SubDevDiag.
-        is_tango_library_thread = true;
-
-        // Try accessing the Tango-level thread creation/deletion interceptors.
-        // They may be optionally set by the application, otherwise the pointer
-        // will be null.
-        Interceptors* interceptors = nullptr;
-        try
+    intercep->createThread.add(
+        [](omni::omniInterceptors::createThread_T::info_T &info)
         {
-            Util* tg = Util::instance(false);
-            interceptors = tg->get_interceptors();
-        }
-        catch (const Tango::DevFailed&)
-        {
-            // Silently ignore all errors here. Util::instance will throw an
-            // exception if the global instance pointer was not yet set (and
-            // the constructor is still running). This could happen with the
-            // omniORB's socket-watching threads that start early during ORB
-            // initialization. Not calling the interceptors for such threads
-            // is fine since those threads never call user code directly.
-        }
+            // Mark this thread as a library thread. This will allow setting
+            // associated device name in SubDevDiag.
+            is_tango_library_thread = true;
 
-        if (interceptors != nullptr)
-        {
-            interceptors->create_thread();
-        }
+            // Try accessing the Tango-level thread creation/deletion interceptors.
+            // They may be optionally set by the application, otherwise the pointer
+            // will be null.
+            Interceptors *interceptors = nullptr;
+            try
+            {
+                Util *tg = Util::instance(false);
+                interceptors = tg->get_interceptors();
+            }
+            catch(const Tango::DevFailed &)
+            {
+                // Silently ignore all errors here. Util::instance will throw an
+                // exception if the global instance pointer was not yet set (and
+                // the constructor is still running). This could happen with the
+                // omniORB's socket-watching threads that start early during ORB
+                // initialization. Not calling the interceptors for such threads
+                // is fine since those threads never call user code directly.
+            }
 
-        // Run the thread and wait until it exists. This is mandatory.
-        info.run();
+            if(interceptors != nullptr)
+            {
+                interceptors->create_thread();
+            }
 
-        if (interceptors != nullptr)
-        {
-            interceptors->delete_thread();
-        }
-    });
+            // Run the thread and wait until it exists. This is mandatory.
+            info.run();
 
-//
-// Get some CORBA object references
-//
+            if(interceptors != nullptr)
+            {
+                interceptors->delete_thread();
+            }
+        });
+
+    //
+    // Get some CORBA object references
+    //
 
     CORBA::Object_var poaObj = orb->resolve_initial_references("RootPOA");
     PortableServer::POA_var root_poa = PortableServer::POA::_narrow(poaObj);
 
-//
-// If the database is not used, we must used the omniINSPOA poa in both cases of database on file or nodb
-// remember that when you have database on file you have _UseDb == true and  _FileDb == true
-//
+    //
+    // If the database is not used, we must used the omniINSPOA poa in both cases of database on file or nodb
+    // remember that when you have database on file you have _UseDb == true and  _FileDb == true
+    //
 
     PortableServer::POA_var nodb_poa;
-    if ((_UseDb == false) || (_FileDb == true))
+    if((_UseDb == false) || (_FileDb == true))
     {
         CORBA::Object_var poaInsObj = orb->resolve_initial_references("omniINSPOA");
         nodb_poa = PortableServer::POA::_narrow(poaInsObj);
     }
 
-//
-// Store POA. This is the same test but inverted
-//
+    //
+    // Store POA. This is the same test but inverted
+    //
 
-    if ((_UseDb == true) && (_FileDb == false))
+    if((_UseDb == true) && (_FileDb == false))
+    {
         _poa = PortableServer::POA::_duplicate(root_poa);
-    else if ((_UseDb == false) || (_FileDb == true))
+    }
+    else if((_UseDb == false) || (_FileDb == true))
+    {
         _poa = PortableServer::POA::_duplicate(nodb_poa);
+    }
 }
-
-
 
 #ifdef _TG_WINDOWS_
 //+-----------------------------------------------------------------------------------------------------------------
@@ -696,50 +742,66 @@ void Util::create_CORBA_objects()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-Util::Util(HINSTANCE hInst,int nCmdShow):cl_list_ptr(NULL),mon("Windows startup"),ext(new UtilExt),
-heartbeat_th(NULL),heartbeat_th_id(0),poll_mon("utils_poll"),poll_on(false),ser_model(BY_DEVICE),
-only_one("process"),nd_event_supplier(NULL),
-db_cache(NULL),inter(NULL),svr_starting(true),svr_stopping(false),poll_pool_size(ULONG_MAX),
-conf_needs_db_upd(false),ev_loop_func(NULL),shutdown_server(false),_dummy_thread(false),
-zmq_event_supplier(NULL),endpoint_specified(false),user_pub_hwm(-1),wattr_nan_allowed(false),
-polling_bef_9_def(false)
+Util::Util(HINSTANCE hInst, int nCmdShow) :
+    cl_list_ptr(NULL),
+    mon("Windows startup"),
+    ext(new UtilExt),
+    heartbeat_th(NULL),
+    heartbeat_th_id(0),
+    poll_mon("utils_poll"),
+    poll_on(false),
+    ser_model(BY_DEVICE),
+    only_one("process"),
+    nd_event_supplier(NULL),
+    db_cache(NULL),
+    inter(NULL),
+    svr_starting(true),
+    svr_stopping(false),
+    poll_pool_size(ULONG_MAX),
+    conf_needs_db_upd(false),
+    ev_loop_func(NULL),
+    shutdown_server(false),
+    _dummy_thread(false),
+    zmq_event_supplier(NULL),
+    endpoint_specified(false),
+    user_pub_hwm(-1),
+    wattr_nan_allowed(false),
+    polling_bef_9_def(false)
 {
-
-//
-// This method should be called from a Windows graphic program
-//
+    //
+    // This method should be called from a Windows graphic program
+    //
 
     _win = true;
 
-//
-// Some more init
-//
+    //
+    // Some more init
+    //
 
     shared_data.cmd_pending = false;
     shared_data.trigger = false;
 
-//
-// Build UNIX like command argument(s)
-//
+    //
+    // Build UNIX like command argument(s)
+    //
 
     build_argc_argv();
 
-//
-// Really do the job now
-//
+    //
+    // Really do the job now
+    //
 
-    effective_job(argc,argv);
+    effective_job(argc, argv);
 
-//
-// Store the nCmdShow parameter an mark the object has being completely
-// constructed. Usefull, in case one of the method previously called
-// failed, the orb variable (type ORB_var) is alaready destroyed therefore
-// releasing the orb pointer.
-//
+    //
+    // Store the nCmdShow parameter an mark the object has being completely
+    // constructed. Usefull, in case one of the method previously called
+    // failed, the orb variable (type ORB_var) is alaready destroyed therefore
+    // releasing the orb pointer.
+    //
 
     nCmd = nCmdShow;
     _constructed = true;
-
 }
 #endif
 
@@ -759,34 +821,33 @@ polling_bef_9_def(false)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::check_args(int argc,char *argv[])
+void Util::check_args(int argc, char *argv[])
 {
-
-//
-// Check command line argument
-//
+    //
+    // Check command line argument
+    //
 
     std::string first_arg(argv[1]);
     display_help = false;
 
-    if ((argc == 2) && (_UseDb == true))
+    if((argc == 2) && (_UseDb == true))
     {
-        if ((first_arg == "-?") || (first_arg == "-help") || (first_arg == "-h"))
+        if((first_arg == "-?") || (first_arg == "-help") || (first_arg == "-h"))
         {
             display_help = true;
         }
     }
 
-    if ((display_help == false) && (argv[1][0] == '-'))
+    if((display_help == false) && (argv[1][0] == '-'))
     {
         print_usage(argv[0]);
     }
     ds_instance_name = argv[1];
     char *tmp;
 #ifdef _TG_WINDOWS_
-    if ((tmp = strrchr(argv[0],'\\')) == 0)
+    if((tmp = strrchr(argv[0], '\\')) == 0)
     {
-        if ((tmp = strrchr(argv[0],'/')) == 0)
+        if((tmp = strrchr(argv[0], '/')) == 0)
         {
             ds_exec_name = argv[0];
         }
@@ -807,8 +868,10 @@ void Util::check_args(int argc,char *argv[])
     // the full path for a given filename.
     ds_unmodified_exec_name = argv[0];
 
-    if ((tmp = strrchr(argv[0],'/')) == 0)
+    if((tmp = strrchr(argv[0], '/')) == 0)
+    {
         ds_exec_name = argv[0];
+    }
     else
     {
         tmp++;
@@ -816,40 +879,41 @@ void Util::check_args(int argc,char *argv[])
     }
 #endif
 
-//
-// For Windows only. Remove the .exe after the executable name
-//
+    //
+    // For Windows only. Remove the .exe after the executable name
+    //
 
 #ifdef _TG_WINDOWS_
     std::string::size_type pos;
-    if ((pos = ds_exec_name.find('.')) != std::string::npos)
+    if((pos = ds_exec_name.find('.')) != std::string::npos)
     {
-        ds_exec_name.erase(pos,ds_exec_name.size());
+        ds_exec_name.erase(pos, ds_exec_name.size());
     }
 #endif /* _TG_WINDOWS_ */
 
-    if (argc > 2)
+    if(argc > 2)
     {
         long ind = 2;
         std::string dlist;
-        while (ind < argc)
+        while(ind < argc)
         {
-            if (argv[ind][0] == '-')
+            if(argv[ind][0] == '-')
             {
-                switch (argv[ind][1])
+                switch(argv[ind][1])
                 {
-
-//
-// The verbose option
-//
+                    //
+                    // The verbose option
+                    //
 
                 case 'v':
-                    if (strlen(argv[ind]) == 2)
+                    if(strlen(argv[ind]) == 2)
                     {
-                        if ((argc - 1)> ind)
+                        if((argc - 1) > ind)
                         {
-                            if (argv[ind + 1][0] == '-')
+                            if(argv[ind + 1][0] == '-')
+                            {
                                 set_trace_level(4);
+                            }
                             else
                             {
                                 std::cerr << "Unknown option " << argv[ind] << std::endl;
@@ -857,13 +921,15 @@ void Util::check_args(int argc,char *argv[])
                             }
                         }
                         else
+                        {
                             set_trace_level(4);
+                        }
                         ind++;
                     }
                     else
                     {
                         long level = atol(&(argv[ind][2]));
-                        if (level == 0)
+                        if(level == 0)
                         {
                             std::cerr << "Unknown option " << argv[ind] << std::endl;
                             print_usage(argv[0]);
@@ -876,101 +942,107 @@ void Util::check_args(int argc,char *argv[])
                     }
                     break;
 
-//
-// Device server without database
-//
+                    //
+                    // Device server without database
+                    //
 
                 case 'n':
-                    if (strcmp(argv[ind],"-nodb") != 0)
+                    if(strcmp(argv[ind], "-nodb") != 0)
                     {
                         std::cerr << "Unknown option " << argv[ind] << std::endl;
                         print_usage(argv[0]);
                     }
                     else
                     {
-                        if ( _FileDb )
+                        if(_FileDb)
+                        {
                             print_usage(argv[0]);
+                        }
                         _UseDb = false;
                         ind++;
 
-                        check_orb_endpoint(argc,argv);
+                        check_orb_endpoint(argc, argv);
                     }
                     break;
 
                 case 'f':
-                    if (strncmp(argv[ind],"-file=",6) != 0)
+                    if(strncmp(argv[ind], "-file=", 6) != 0)
                     {
                         std::cerr << "Unknown option " << argv[ind] << std::endl;
                         print_usage(argv[0]);
                     }
                     else
                     {
-                        if ( !_UseDb )
+                        if(!_UseDb)
+                        {
                             print_usage(argv[0]);
+                        }
                         Tango::Util::_FileDb = true;
                         database_file_name = argv[ind];
-                        database_file_name.erase(0,6);
+                        database_file_name.erase(0, 6);
 #ifdef _TG_WINDOWS_
-                        replace(database_file_name.begin(),
-                            database_file_name.end(),
-                            '\\','/');
+                        replace(database_file_name.begin(), database_file_name.end(), '\\', '/');
 #endif
                         TANGO_LOG_DEBUG << "File name = <" << database_file_name << ">" << std::endl;
                         ind++;
 
-//
-// Try to find the ORB endPoint option
-//
+                        //
+                        // Try to find the ORB endPoint option
+                        //
 
-                        check_orb_endpoint(argc,argv);
+                        check_orb_endpoint(argc, argv);
                     }
                     break;
 
-//
-// Device list (for device server without database)
-//
+                    //
+                    // Device list (for device server without database)
+                    //
 
                 case 'd':
-                    if (strcmp(argv[ind],"-dbg")==0)
+                    if(strcmp(argv[ind], "-dbg") == 0)
                     {
                         ind++;
                         break;
                     }
 
-                    if (strcmp(argv[ind],"-dlist") != 0)
+                    if(strcmp(argv[ind], "-dlist") != 0)
                     {
                         std::cerr << "Unknown option " << argv[ind] << std::endl;
                         print_usage(argv[0]);
                     }
                     else
                     {
-                        if (_UseDb == true)
+                        if(_UseDb == true)
+                        {
                             print_usage(argv[0]);
+                        }
 
                         ind++;
-                        if (ind == argc)
+                        if(ind == argc)
+                        {
                             print_usage(argv[0]);
+                        }
                         else
                         {
                             dlist = argv[ind];
 
-//
-// Extract each device name
-//
+                            //
+                            // Extract each device name
+                            //
 
                             std::string::size_type start = 0;
                             std::string str;
                             std::string::size_type pos;
-//vector<std::string> &list = get_cmd_line_name_list();
-                            std::vector<std::string>    dev_list;
+                            // vector<std::string> &list = get_cmd_line_name_list();
+                            std::vector<std::string> dev_list;
 
-                            while ((pos = dlist.find(',',start)) != std::string::npos)
+                            while((pos = dlist.find(',', start)) != std::string::npos)
                             {
-                                str = dlist.substr(start,pos - start);
+                                str = dlist.substr(start, pos - start);
                                 start = pos + 1;
                                 dev_list.push_back(str);
                             }
-                            if (start != dlist.size())
+                            if(start != dlist.size())
                             {
                                 str = dlist.substr(start);
                                 dev_list.push_back(str);
@@ -988,7 +1060,7 @@ void Util::check_args(int argc,char *argv[])
             }
             else
             {
-                if (strncmp(argv[ind - 1],"-v",2) == 0)
+                if(strncmp(argv[ind - 1], "-v", 2) == 0)
                 {
                     print_usage(argv[0]);
                 }
@@ -997,39 +1069,39 @@ void Util::check_args(int argc,char *argv[])
         }
     }
 
-//
-// Build server name
-//
+    //
+    // Build server name
+    //
 
-//    long ctr;
-//    for (ctr = 0;ctr < ds_exec_name.size();ctr++)
-//        ds_exec_name[ctr] = std::tolower(ds_exec_name[ctr]);
-//    for (ctr = 0;ctr < ds_instance_name.size();ctr++)
-//        ds_instance_name[ctr] = std::tolower(ds_instance_name[ctr]);
+    //    long ctr;
+    //    for (ctr = 0;ctr < ds_exec_name.size();ctr++)
+    //        ds_exec_name[ctr] = std::tolower(ds_exec_name[ctr]);
+    //    for (ctr = 0;ctr < ds_instance_name.size();ctr++)
+    //        ds_instance_name[ctr] = std::tolower(ds_instance_name[ctr]);
     ds_name = ds_exec_name;
     ds_name.append("/");
     ds_name.append(ds_instance_name);
 
-//
-// Check that the server name is not too long
-//
+    //
+    // Check that the server name is not too long
+    //
 
-    if (ds_name.size() > MaxServerNameLength)
+    if(ds_name.size() > MaxServerNameLength)
     {
         TangoSys_OMemStream o;
 
         o << "The device server name is too long! Max length is " << MaxServerNameLength << " characters" << std::ends;
-        print_err_message(o.str(),Tango::INFO);
+        print_err_message(o.str(), Tango::INFO);
     }
 
-//
-// If the server is the database server (DS started with _UseDb set to false but without the
-// nodb option), we need its port
-//
+    //
+    // If the server is the database server (DS started with _UseDb set to false but without the
+    // nodb option), we need its port
+    //
 
-    if ((_UseDb == false) && (svr_port_num.empty() == true))
+    if((_UseDb == false) && (svr_port_num.empty() == true))
     {
-        check_orb_endpoint(argc,argv);
+        check_orb_endpoint(argc, argv);
     }
 }
 
@@ -1049,21 +1121,20 @@ void Util::check_args(int argc,char *argv[])
 
 void Util::validate_sort(const std::vector<std::string> &dev_list)
 {
-
-    unsigned long i,j;
+    unsigned long i, j;
     std::vector<std::string> dev_no_class;
 
-//
-//  First, create a vector with device name in lower case letters without class name
-//
+    //
+    //  First, create a vector with device name in lower case letters without class name
+    //
 
-    for (i = 0;i < dev_list.size();i++)
+    for(i = 0; i < dev_list.size(); i++)
     {
         std::string tmp(dev_list[i]);
-        std::transform(tmp.begin(),tmp.end(),tmp.begin(),::tolower);
+        std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
 
         std::string::size_type pos = tmp.find("::");
-        if (pos == std::string::npos)
+        if(pos == std::string::npos)
         {
             dev_no_class.push_back(tmp);
         }
@@ -1074,52 +1145,55 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
         }
     }
 
-//
-// Check that the same device name is not used twice and check that their syntax is correct (2 / characters)
-//
+    //
+    // Check that the same device name is not used twice and check that their syntax is correct (2 / characters)
+    //
 
-    for (i = 0;i < dev_no_class.size();i++)
+    for(i = 0; i < dev_no_class.size(); i++)
     {
-        int nb_char = count(dev_no_class[i].begin(),dev_no_class[i].end(),'/');
-        if (nb_char != 2)
+        int nb_char = count(dev_no_class[i].begin(), dev_no_class[i].end(), '/');
+        if(nb_char != 2)
         {
             std::stringstream ss;
-            ss << "Device name " << dev_list[i] << " does not have the correct syntax (domain/family/member or ClassName::domain/family/member)";
+            ss << "Device name " << dev_list[i]
+               << " does not have the correct syntax (domain/family/member or ClassName::domain/family/member)";
             print_err_message(ss.str());
         }
-        for (j = 0;j < dev_no_class.size();j++)
+        for(j = 0; j < dev_no_class.size(); j++)
         {
-            if (i == j)
+            if(i == j)
+            {
                 continue;
+            }
             else
             {
-                if (dev_no_class[i] == dev_no_class[j])
+                if(dev_no_class[i] == dev_no_class[j])
                 {
-                    print_err_message("Each device must have different name",Tango::INFO);
+                    print_err_message("Each device must have different name", Tango::INFO);
                 }
             }
         }
     }
 
-//
-// Sort this device name list and store them in a map according to the class name. Command line device name
-// syntax is "ClassName::device_name" eg: MyClass::my/device/name
-//
+    //
+    // Sort this device name list and store them in a map according to the class name. Command line device name
+    // syntax is "ClassName::device_name" eg: MyClass::my/device/name
+    //
 
-    std::map<std::string,std::vector<std::string> > &the_map = get_cmd_line_name_list();
+    std::map<std::string, std::vector<std::string>> &the_map = get_cmd_line_name_list();
     std::string::size_type pos;
 
-    for (i = 0;i < dev_list.size();i++)
+    for(i = 0; i < dev_list.size(); i++)
     {
         pos = dev_list[i].find("::");
-        if (pos == std::string::npos)
+        if(pos == std::string::npos)
         {
-            std::map<std::string,std::vector<std::string> >::iterator ite = the_map.find(NoClass);
-            if (ite == the_map.end())
+            std::map<std::string, std::vector<std::string>>::iterator ite = the_map.find(NoClass);
+            if(ite == the_map.end())
             {
                 std::vector<std::string> v_s;
                 v_s.push_back(dev_list[i]);
-                the_map.insert(std::pair<std::string,std::vector<std::string> >(NoClass,v_s));
+                the_map.insert(std::pair<std::string, std::vector<std::string>>(NoClass, v_s));
             }
             else
             {
@@ -1128,16 +1202,16 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
         }
         else
         {
-            std::string cl_name = dev_list[i].substr(0,pos);
-            std::transform(cl_name.begin(),cl_name.end(),cl_name.begin(),::tolower);
+            std::string cl_name = dev_list[i].substr(0, pos);
+            std::transform(cl_name.begin(), cl_name.end(), cl_name.begin(), ::tolower);
 
-            std::map<std::string,std::vector<std::string> >::iterator ite = the_map.find(cl_name);
-            if (ite == the_map.end())
+            std::map<std::string, std::vector<std::string>>::iterator ite = the_map.find(cl_name);
+            if(ite == the_map.end())
             {
                 std::vector<std::string> v_s;
                 std::string d_name = dev_list[i].substr(pos + 2);
                 v_s.push_back(d_name);
-                the_map.insert(std::pair<std::string,std::vector<std::string> >(cl_name,v_s));
+                the_map.insert(std::pair<std::string, std::vector<std::string>>(cl_name, v_s));
             }
             else
             {
@@ -1161,19 +1235,18 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
 
 void Util::display_help_message()
 {
-
-//
-// Display device server usage string
-//
+    //
+    // Display device server usage string
+    //
 
     TangoSys_OMemStream o;
 
     o << "usage :  " << ds_exec_name << " instance_name [-v[trace level]]";
     o << " [-nodb [-dlist <device name list>]]";
 
-//
-// Try to get instance name from db
-//
+    //
+    // Try to get instance name from db
+    //
 
     std::string str("dserver/");
     str.append(ds_exec_name);
@@ -1186,32 +1259,34 @@ void Util::display_help_message()
         DbDatum received = db->get_device_member(str);
         received >> db_inst;
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         std::string reason(e.errors[0].reason.in());
-        if (reason == API_ReadOnlyMode)
-            o << "\n\nWarning: Control System configured with AccessControl but can't communicate with AccessControl server";
+        if(reason == API_ReadOnlyMode)
+        {
+            o << "\n\nWarning: Control System configured with AccessControl but can't communicate with AccessControl "
+                 "server";
+        }
         o << std::ends;
-        print_err_message(o.str(),Tango::INFO);
+        print_err_message(o.str(), Tango::INFO);
     }
 
-//
-// Add instance name list to message
-//
+    //
+    // Add instance name list to message
+    //
 
     o << "\nInstance name defined in database for server " << ds_exec_name << " :";
-    for (unsigned long i = 0;i < db_inst.size();i++)
+    for(unsigned long i = 0; i < db_inst.size(); i++)
     {
         o << "\n\t" << db_inst[i];
     }
     o << std::ends;
 
-//
-// Display message
-//
+    //
+    // Display message
+    //
 
-    print_err_message(o.str(),Tango::INFO);
-
+    print_err_message(o.str(), Tango::INFO);
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1235,7 +1310,7 @@ void Util::print_usage(char *serv_name)
     o << "usage :  " << serv_name << " instance_name [-v[trace level]]";
     o << " [-file=<file_name> | -nodb [-dlist <device name list>] ]" << std::ends;
 
-    print_err_message(o.str(),Tango::INFO);
+    print_err_message(o.str(), Tango::INFO);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -1251,42 +1326,49 @@ void Util::print_usage(char *serv_name)
 
 void Util::connect_db()
 {
+    //
+    // Try to create the Database object
+    //
 
-//
-// Try to create the Database object
-//
-
-    if (_daemon == true)
+    if(_daemon == true)
     {
         int connected = false;
-        while (connected == false)
+        while(connected == false)
         {
             try
             {
 #ifdef _TG_WINDOWS_
-                if (_service == true)
-                    db = new Database(orb.in(),
-                              ds_exec_name,
-                              ds_instance_name);
+                if(_service == true)
+                {
+                    db = new Database(orb.in(), ds_exec_name, ds_instance_name);
+                }
                 else
                 {
-                    if (_FileDb == false)
+                    if(_FileDb == false)
+                    {
                         db = new Database(orb.in());
+                    }
                     else
+                    {
                         db = new Database(database_file_name);
+                    }
                 }
 #else
-                if (_FileDb == false)
+                if(_FileDb == false)
+                {
                     db = new Database(orb.in());
+                }
                 else
+                {
                     db = new Database(database_file_name);
+                }
 #endif
                 db->set_tango_utils(this);
                 connected = true;
             }
-            catch (Tango::DevFailed &e)
+            catch(Tango::DevFailed &e)
             {
-                if (strcmp(e.errors[0].reason.in(),API_TangoHostNotSet) == 0)
+                if(strcmp(e.errors[0].reason.in(), API_TangoHostNotSet) == 0)
                 {
                     print_err_message(e.errors[0].desc.in());
                 }
@@ -1296,12 +1378,11 @@ void Util::connect_db()
                     std::this_thread::sleep_for(std::chrono::seconds(_sleep_between_connect));
                 }
             }
-            catch (CORBA::Exception &)
+            catch(CORBA::Exception &)
             {
                 TANGO_LOG_DEBUG << "Can't contact db server, will try later" << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(_sleep_between_connect));
             }
-
         }
     }
     else
@@ -1309,44 +1390,55 @@ void Util::connect_db()
         try
         {
 #ifdef _TG_WINDOWS_
-            if (_service == true)
-                db = new Database(orb.in(),
-                          ds_exec_name,
-                          ds_instance_name);
+            if(_service == true)
+            {
+                db = new Database(orb.in(), ds_exec_name, ds_instance_name);
+            }
             else
             {
-                if (_FileDb == false)
+                if(_FileDb == false)
+                {
                     db = new Database(orb.in());
+                }
                 else
+                {
                     db = new Database(database_file_name);
+                }
             }
 #else
-            if (_FileDb == false)
+            if(_FileDb == false)
+            {
                 db = new Database(orb.in());
+            }
             else
+            {
                 db = new Database(database_file_name);
+            }
 #endif
             db->set_tango_utils(this);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
-            if (e.errors.length() == 2)
+            if(e.errors.length() == 2)
             {
-                if (strcmp(e.errors[1].reason.in(),API_CantConnectToDatabase) == 0)
+                if(strcmp(e.errors[1].reason.in(), API_CantConnectToDatabase) == 0)
                 {
-
                     TangoSys_OMemStream o;
 
                     o << "Can't build connection to TANGO database server, exiting";
                     print_err_message(o.str());
                 }
                 else
+                {
                     print_err_message(e.errors[1].desc.in());
+                }
             }
             else
+            {
                 print_err_message(e.errors[0].desc.in());
+            }
         }
-        catch (CORBA::Exception &)
+        catch(CORBA::Exception &)
         {
             TangoSys_OMemStream o;
 
@@ -1355,7 +1447,7 @@ void Util::connect_db()
         }
     }
 
-    if (CORBA::is_nil(db->get_dbase()) && _FileDb != true)
+    if(CORBA::is_nil(db->get_dbase()) && _FileDb != true)
     {
         TangoSys_OMemStream o;
 
@@ -1363,51 +1455,56 @@ void Util::connect_db()
         print_err_message(o.str());
     }
 
-//
-// Set a timeout on the database device
-//
+    //
+    // Set a timeout on the database device
+    //
 
-    if (_FileDb == false)
+    if(_FileDb == false)
+    {
         db->set_timeout_millis(DB_TIMEOUT);
+    }
 
-//
-// Also copy this database object ptr into the ApiUtil object. Therefore,
-// the same database connection will be used also for DeviceProxy
-// object created within the server
-//
+    //
+    // Also copy this database object ptr into the ApiUtil object. Therefore,
+    // the same database connection will be used also for DeviceProxy
+    // object created within the server
+    //
 
     ApiUtil *au = ApiUtil::instance();
     au->get_db_vect().push_back(db);
     au->in_server(true);
 
-//
-// Try to create the db cache which will be used during the process
-// startup sequence
-// For servers with many devices and properties, this could take time
-// specially during a massive DS startup (after power cut for instance)
-// Filling the DS cache is a relatively heavy command for the DB server
-// Trying to minimize retry in this case could be a good idea.
-// Therefore, change DB device timeout to execute this command
-//
+    //
+    // Try to create the db cache which will be used during the process
+    // startup sequence
+    // For servers with many devices and properties, this could take time
+    // specially during a massive DS startup (after power cut for instance)
+    // Filling the DS cache is a relatively heavy command for the DB server
+    // Trying to minimize retry in this case could be a good idea.
+    // Therefore, change DB device timeout to execute this command
+    //
 
-    if (_FileDb == false)
+    if(_FileDb == false)
     {
         std::string &inst_name = get_ds_inst_name();
-        if (inst_name != "-?")
+        if(inst_name != "-?")
         {
             db->set_timeout_millis(DB_TIMEOUT * 4);
             set_svr_starting(false);
             try
             {
-                db_cache = new DbServerCache(db,get_ds_name(),get_host_name());
+                db_cache = new DbServerCache(db, get_ds_name(), get_host_name());
             }
-            catch (Tango::DevFailed &e)
+            catch(Tango::DevFailed &e)
             {
                 std::string base_desc(e.errors[0].desc.in());
-                if (base_desc.find("TRANSIENT_CallTimedout") != std::string::npos)
-                    std::cerr << "DB timeout while trying to fill the DB server cache. Will use traditional way" << std::endl;
+                if(base_desc.find("TRANSIENT_CallTimedout") != std::string::npos)
+                {
+                    std::cerr << "DB timeout while trying to fill the DB server cache. Will use traditional way"
+                              << std::endl;
+                }
             }
-            catch (...)
+            catch(...)
             {
                 std::cerr << "Unknown exception while trying to fill database cache..." << std::endl;
             }
@@ -1416,7 +1513,6 @@ void Util::connect_db()
         }
     }
 }
-
 
 void Util::reset_filedatabase()
 {
@@ -1439,10 +1535,9 @@ void Util::reset_filedatabase()
 
 void Util::misc_init()
 {
-
-//
-// Get PID
-//
+    //
+    // Get PID
+    //
 
     TangoSys_OMemStream o;
 
@@ -1455,42 +1550,44 @@ void Util::misc_init()
     o << pid << std::ends;
     pid_str = o.str();
 
-//
-// Convert Tango version number to string (for device export)
-//
+    //
+    // Convert Tango version number to string (for device export)
+    //
 
-    o.seekp(0,std::ios_base::beg);
+    o.seekp(0, std::ios_base::beg);
     o.clear();
     o << DevVersion << std::ends;
     version_str = o.str();
 
-//
-// Init server version to a default value
-//
+    //
+    // Init server version to a default value
+    //
 
     server_version = "x.y";
 
-//
-// Init text to be displayed on main window with a default value
-//
+    //
+    // Init text to be displayed on main window with a default value
+    //
 
 #ifdef _TG_WINDOWS_
     main_win_text = "TANGO collaboration\n";
     main_win_text = main_win_text + "http://www.tango-controls.org";
 #endif
 
-//
-// Check if the user has defined his own publisher hwm (for zmq event tuning)
-//
+    //
+    // Check if the user has defined his own publisher hwm (for zmq event tuning)
+    //
 
     std::string var;
-    if (ApiUtil::get_env_var("TANGO_DS_EVENT_BUFFER_HWM",var) == 0)
+    if(ApiUtil::get_env_var("TANGO_DS_EVENT_BUFFER_HWM", var) == 0)
     {
         int pub_hwm = -1;
         std::istringstream iss(var);
         iss >> pub_hwm;
-        if (iss)
+        if(iss)
+        {
             user_pub_hwm = pub_hwm;
+        }
     }
 }
 
@@ -1506,61 +1603,64 @@ void Util::misc_init()
 
 void Util::init_host_name()
 {
-
-//
-// Get the FQDN host name (Fully qualified domain name)
-// If it is not returned by the system call "gethostname",
-// try with the getnameinfo/getaddrinfo system calls providing
-// IP address obtained by calling ApiUtil::get_ip_from_if()
-//
-// All supported OS have the getaddrinfo() call
-//
+    //
+    // Get the FQDN host name (Fully qualified domain name)
+    // If it is not returned by the system call "gethostname",
+    // try with the getnameinfo/getaddrinfo system calls providing
+    // IP address obtained by calling ApiUtil::get_ip_from_if()
+    //
+    // All supported OS have the getaddrinfo() call
+    //
     char buffer[Tango::detail::TANGO_MAX_HOSTNAME_LEN];
-    if (gethostname(buffer, Tango::detail::TANGO_MAX_HOSTNAME_LEN) == 0)
+    if(gethostname(buffer, Tango::detail::TANGO_MAX_HOSTNAME_LEN) == 0)
     {
         hostname = buffer;
-        std::transform(hostname.begin(), hostname.end(), hostname.begin(), ::tolower);    // to retain consistency with getnameinfo() which always returns lowercase
+        std::transform(hostname.begin(),
+                       hostname.end(),
+                       hostname.begin(),
+                       ::tolower); // to retain consistency with getnameinfo() which always returns lowercase
 
         std::string::size_type pos = hostname.find('.');
 
-        if (pos == std::string::npos)
+        if(pos == std::string::npos)
         {
             struct addrinfo hints;
 
-            memset(&hints,0,sizeof(struct addrinfo));
+            memset(&hints, 0, sizeof(struct addrinfo));
 
-            hints.ai_family    = AF_UNSPEC;        // supports both IPv4 and IPv6
-            hints.ai_socktype  = SOCK_STREAM;
-            hints.ai_flags = AI_NUMERICHOST;    // inhibits resolution of node parameter if it is not a numeric network address
+            hints.ai_family = AF_UNSPEC; // supports both IPv4 and IPv6
+            hints.ai_socktype = SOCK_STREAM;
+            hints.ai_flags =
+                AI_NUMERICHOST; // inhibits resolution of node parameter if it is not a numeric network address
             hints.ai_flags |= AI_ADDRCONFIG;
 
-            struct addrinfo    *info, *ptr;
+            struct addrinfo *info, *ptr;
             char tmp_host[NI_MAXHOST];
             bool host_found = false;
-            std::vector<std::string>  host_names;
+            std::vector<std::string> host_names;
 
             ApiUtil *au = ApiUtil::instance();
             std::vector<std::string> ip_list;
-            au->get_ip_from_if(ip_list);    // returns a list of numeric network addresses
+            au->get_ip_from_if(ip_list); // returns a list of numeric network addresses
 
             for(size_t i = 0; i < ip_list.size() && !host_found; i++)
             {
-                if(getaddrinfo(ip_list[i].c_str(),NULL,&hints,&info) == 0)
+                if(getaddrinfo(ip_list[i].c_str(), NULL, &hints, &info) == 0)
                 {
                     ptr = info;
                     while(ptr != NULL)
                     {
-                        if(getnameinfo(ptr->ai_addr,ptr->ai_addrlen,tmp_host,NI_MAXHOST,NULL,0,NI_NAMEREQD) == 0)
+                        if(getnameinfo(ptr->ai_addr, ptr->ai_addrlen, tmp_host, NI_MAXHOST, NULL, 0, NI_NAMEREQD) == 0)
                         {
                             std::string myhost(tmp_host);
 #ifdef _TG_WINDOWS_
-//
-// On windows, getnameinfo may return name in uppercase letters
-//
-                            std::transform(myhost.begin(),myhost.end(),myhost.begin(),::tolower);
+                            //
+                            // On windows, getnameinfo may return name in uppercase letters
+                            //
+                            std::transform(myhost.begin(), myhost.end(), myhost.begin(), ::tolower);
 #endif
                             std::string::size_type pos = myhost.find('.');
-                            if (pos != std::string::npos)
+                            if(pos != std::string::npos)
                             {
                                 host_names.push_back(myhost);
                             }
@@ -1571,28 +1671,26 @@ void Util::init_host_name()
                 }
             }
 
-// Several cases to find out the real name of the network interface on which the server is running.
-// First be sure that we got at least one name from call(s) to getnameinfo()
-// Then, we have to know if the -ORBendPoint option was specified (command line/environment/config file)
-// If it was not, select the name which is the same than the computer hostname. If not found, select the first name
-// returned by getnameinfo()
-// If the endPoint option is used by the host name is not specified within the option (Db case for instance), do the
-// same than in previous case
-// If a host is specified in endPoint option:
-// If it is specified as a name, search for this name in the list returned by getnameinfo calls and select it
-// If it is specified as a IP address, search for this IP in ip_list vector and select this name in the result
-// of getnameinfo() call
+            // Several cases to find out the real name of the network interface on which the server is running.
+            // First be sure that we got at least one name from call(s) to getnameinfo()
+            // Then, we have to know if the -ORBendPoint option was specified (command line/environment/config file)
+            // If it was not, select the name which is the same than the computer hostname. If not found, select the
+            // first name returned by getnameinfo() If the endPoint option is used by the host name is not specified
+            // within the option (Db case for instance), do the same than in previous case If a host is specified in
+            // endPoint option: If it is specified as a name, search for this name in the list returned by getnameinfo
+            // calls and select it If it is specified as a IP address, search for this IP in ip_list vector and select
+            // this name in the result of getnameinfo() call
 
-            if (host_names.size() != 0)
+            if(host_names.size() != 0)
             {
-                if (get_endpoint_specified() == false)
+                if(get_endpoint_specified() == false)
                 {
                     bool found = false;
-                    for (size_t loop = 0;loop < host_names.size();loop++)
+                    for(size_t loop = 0; loop < host_names.size(); loop++)
                     {
                         std::string::size_type pos = host_names[loop].find('.');
-                        std::string canon = host_names[loop].substr(0,pos);
-                        if (hostname == canon)
+                        std::string canon = host_names[loop].substr(0, pos);
+                        if(hostname == canon)
                         {
                             found = true;
                             hostname = host_names[loop];
@@ -1600,20 +1698,22 @@ void Util::init_host_name()
                         }
                     }
 
-                    if (found == false)
+                    if(found == false)
+                    {
                         hostname = host_names[0];
+                    }
                 }
                 else
                 {
                     std::string &spec_ip = get_specified_ip();
-                    if (spec_ip.empty() == true)
+                    if(spec_ip.empty() == true)
                     {
                         bool found = false;
-                        for (size_t loop = 0;loop < host_names.size();loop++)
+                        for(size_t loop = 0; loop < host_names.size(); loop++)
                         {
                             std::string::size_type pos = host_names[loop].find('.');
-                            std::string canon = host_names[loop].substr(0,pos);
-                            if (hostname == canon)
+                            std::string canon = host_names[loop].substr(0, pos);
+                            if(hostname == canon)
                             {
                                 found = true;
                                 hostname = host_names[loop];
@@ -1621,41 +1721,49 @@ void Util::init_host_name()
                             }
                         }
 
-                        if (found == false)
+                        if(found == false)
+                        {
                             hostname = host_names[0];
+                        }
                     }
                     else
                     {
-                        int nb_dot = count(spec_ip.begin(),spec_ip.end(),'.');
-                        if (nb_dot == 3)
+                        int nb_dot = count(spec_ip.begin(), spec_ip.end(), '.');
+                        if(nb_dot == 3)
                         {
                             int ind = -1;
-                            for (int loop = 0;loop < (int)ip_list.size();loop++)
+                            for(int loop = 0; loop < (int) ip_list.size(); loop++)
                             {
-                                if (ip_list[loop] == spec_ip)
+                                if(ip_list[loop] == spec_ip)
                                 {
                                     ind = loop;
                                     break;
                                 }
                             }
 
-                            if (ind != -1 && (((int)host_names.size() - 1) >= ind))
+                            if(ind != -1 && (((int) host_names.size() - 1) >= ind))
+                            {
                                 hostname = host_names[ind];
+                            }
                         }
                         else
                         {
                             std::string::size_type pos = spec_ip.find('.');
                             std::string canon_spec;
-                            if (pos != std::string::npos)
-                                canon_spec = spec_ip.substr(0,pos);
+                            if(pos != std::string::npos)
+                            {
+                                canon_spec = spec_ip.substr(0, pos);
+                            }
                             else
+                            {
                                 canon_spec = spec_ip;
+                            }
 
-                            for (size_t loop = 0;loop < host_names.size();loop++)
+                            for(size_t loop = 0; loop < host_names.size(); loop++)
                             {
                                 std::string::size_type pos = host_names[loop].find('.');
-                                std::string canon = host_names[loop].substr(0,pos);
-                                if (canon_spec == canon)
+                                std::string canon = host_names[loop].substr(0, pos);
+                                if(canon_spec == canon)
                                 {
                                     hostname = host_names[loop];
                                     break;
@@ -1685,18 +1793,20 @@ void Util::init_host_name()
 
 void Util::create_notifd_event_supplier()
 {
-    if (_UseDb == true)
+    if(_UseDb == true)
     {
         try
         {
-            nd_event_supplier = NotifdEventSupplier::create(orb,ds_name,this);
+            nd_event_supplier = NotifdEventSupplier::create(orb, ds_name, this);
             nd_event_supplier->connect();
         }
-        catch (...)
+        catch(...)
         {
             nd_event_supplier = NULL;
-            if (_FileDb == true)
+            if(_FileDb == true)
+            {
                 std::cerr << "Can't create notifd event supplier. Notifd event not available" << std::endl;
+            }
         }
     }
     else
@@ -1721,15 +1831,16 @@ void Util::create_zmq_event_supplier()
     {
         zmq_event_supplier = ZmqEventSupplier::create(this);
     }
-    catch (...)
+    catch(...)
     {
         zmq_event_supplier = NULL;
-        if (_FileDb == true)
+        if(_FileDb == true)
+        {
             std::cerr << "Can't create zmq event supplier. Zmq event not available" << std::endl;
-            throw;
+        }
+        throw;
     }
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -1750,7 +1861,7 @@ void Util::create_zmq_event_supplier()
 Util::~Util()
 {
 #ifdef _TG_WINDOWS_
-    if (ds_window != NULL)
+    if(ds_window != NULL)
     {
         stop_all_polling_threads();
         stop_heartbeat_thread();
@@ -1758,16 +1869,17 @@ Util::~Util()
 
         unregister_server();
         get_dserver_device()->delete_devices();
-        if (_FileDb == true)
+        if(_FileDb == true)
+        {
             delete db;
+        }
         orb->shutdown(true);
-        //JM : 9.8.2005 : destroy() should be called at the exit of run()!
-        //orb->destroy();
-          Logging::cleanup();
+        // JM : 9.8.2005 : destroy() should be called at the exit of run()!
+        // orb->destroy();
+        Logging::cleanup();
     }
 #endif
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -1781,15 +1893,14 @@ Util::~Util()
 
 void Util::server_already_running()
 {
-
     TANGO_LOG_DEBUG << "Entering Util::server_already_running method" << std::endl;
 
-//
-// Build device name and try to import it from database or from cache if available
-//
+    //
+    // Build device name and try to import it from database or from cache if available
+    //
 
     std::string dev_name(DSDeviceDomain);
-    dev_name.append(1,'/');
+    dev_name.append(1, '/');
     dev_name.append(ds_name);
 
     Tango::Device_var dev;
@@ -1798,7 +1909,7 @@ void Util::server_already_running()
     {
         const Tango::DevVarLongStringArray *db_dev;
         CORBA::Any_var received;
-        if (db_cache != NULL)
+        if(db_cache != NULL)
         {
             db_dev = db_cache->import_adm_dev();
         }
@@ -1807,8 +1918,8 @@ void Util::server_already_running()
             CORBA::Any send;
             send <<= dev_name.c_str();
 
-            received = db->get_dbase()->command_inout("DbImportDevice",send);
-            if ((received.inout() >>= db_dev) == false)
+            received = db->get_dbase()->command_inout("DbImportDevice", send);
+            if((received.inout() >>= db_dev) == false)
             {
                 TangoSys_OMemStream o;
                 o << "Database error while trying to import " << dev_name << std::ends;
@@ -1817,11 +1928,11 @@ void Util::server_already_running()
             }
         }
 
-//
-// If the device is not imported, leave function
-//
+        //
+        // If the device is not imported, leave function
+        //
 
-        if ((db_dev->lvalue)[0] == 0)
+        if((db_dev->lvalue)[0] == 0)
         {
             TANGO_LOG_DEBUG << "Leaving Util::server_already_running method" << std::endl;
             return;
@@ -1829,88 +1940,94 @@ void Util::server_already_running()
 
         CORBA::Object_var obj = orb->string_to_object((db_dev->svalue)[1]);
 
-//
-// Try to narrow the reference to a Tango::Device object
-//
+        //
+        // Try to narrow the reference to a Tango::Device object
+        //
 
         dev = Tango::Device::_narrow(obj);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         TangoSys_OMemStream o;
 
         o << "The device server " << ds_name << " is not defined in database. Exiting!" << std::ends;
         print_err_message(o.str());
     }
-    catch (CORBA::TRANSIENT &)
+    catch(CORBA::TRANSIENT &)
     {
         TANGO_LOG_DEBUG << "Leaving Util::server_already_running method" << std::endl;
         return;
     }
-    catch (CORBA::OBJECT_NOT_EXIST &)
+    catch(CORBA::OBJECT_NOT_EXIST &)
     {
         TANGO_LOG_DEBUG << "Leaving Util::server_already_running method" << std::endl;
         return;
     }
-    catch (CORBA::NO_RESPONSE &)
+    catch(CORBA::NO_RESPONSE &)
     {
         print_err_message("This server is already running but is blocked!");
     }
-    catch (CORBA::COMM_FAILURE &)
+    catch(CORBA::COMM_FAILURE &)
     {
         TANGO_LOG_DEBUG << "Leaving Util::server_already_running method" << std::endl;
         return;
     }
 
-    if (CORBA::is_nil(dev))
+    if(CORBA::is_nil(dev))
     {
         TANGO_LOG_DEBUG << "Leaving Util::server_already_running method" << std::endl;
         return;
     }
 
-//
-// Now, get the device name from the server
-//
+    //
+    // Now, get the device name from the server
+    //
 
     try
     {
         CORBA::String_var n = dev->name();
         unsigned long ctr;
         char *tmp_ptr = n.inout();
-        for (ctr = 0;ctr < strlen(tmp_ptr);ctr++)
+        for(ctr = 0; ctr < strlen(tmp_ptr); ctr++)
+        {
             tmp_ptr[ctr] = tolower(tmp_ptr[ctr]);
-        for (ctr = 0;ctr < dev_name.length();ctr++)
+        }
+        for(ctr = 0; ctr < dev_name.length(); ctr++)
+        {
             dev_name[ctr] = tolower(dev_name[ctr]);
-        if (n.in() == dev_name)
+        }
+        if(n.in() == dev_name)
         {
             print_err_message("This server is already running, exiting!");
         }
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
-
-//
-// It is necessary to catch this exception because it is thrown by the print_err_message method under windows
-//
+        //
+        // It is necessary to catch this exception because it is thrown by the print_err_message method under windows
+        //
 
         throw;
     }
-    catch (CORBA::NO_RESPONSE &)
+    catch(CORBA::NO_RESPONSE &)
     {
         try
         {
             print_err_message("This server is already running but is blocked!");
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
             throw;
         }
     }
-    catch (CORBA::SystemException &) {}
-    catch (CORBA::Exception &) {}
+    catch(CORBA::SystemException &)
+    {
+    }
+    catch(CORBA::Exception &)
+    {
+    }
 
     TANGO_LOG_DEBUG << "Leaving Util::server_already_running method" << std::endl;
-
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1928,21 +2045,21 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
     is_tango_library_thread = true;
 
 #ifdef _TG_WINDOWS_
-    if (Util::_service == true)
+    if(Util::_service == true)
     {
         omni_thread::create_dummy();
         _dummy_thread = true;
     }
 
     omni_thread *th = omni_thread::self();
-    if (th == NULL)
+    if(th == NULL)
     {
         th = omni_thread::create_dummy();
         _dummy_thread = true;
     }
 #else
     omni_thread *th = omni_thread::self();
-    if (th == NULL)
+    if(th == NULL)
     {
         th = omni_thread::create_dummy();
         _dummy_thread = true;
@@ -1950,27 +2067,24 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
 #endif
 
 #ifdef _TG_WINDOWS_
-    if (with_window == true)
+    if(with_window == true)
     {
+        //
+        // Create device server windows
+        //
 
-//
-// Create device server windows
-//
+        ds_window = new W32Win(this, nCmd);
 
-        ds_window = new W32Win(this,nCmd);
-
-//
-// Change TANGO_LOG that it uses the graphical console window
-//
-
-
+        //
+        // Change TANGO_LOG that it uses the graphical console window
+        //
     }
-      else
+    else
     {
-            ds_window = 0;
-      }
+        ds_window = 0;
+    }
 
-    if (_win == true)
+    if(_win == true)
     {
         go = false;
 
@@ -1981,41 +2095,41 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
     {
 #endif /* WIN 32 */
 
-//
-// Initialise main class
-//
+        //
+        // Initialise main class
+        //
 
         DServerClass::init();
         DServer *dserver = get_dserver_device();
         dserver->server_init_hook();
 
-//
-// Configure polling from the polling properties.
-//
+        //
+        // Configure polling from the polling properties.
+        //
 
         polling_configure();
 
-//
-// Delete the db cache if it has been used
-//
+        //
+        // Delete the db cache if it has been used
+        //
 
-        if (db_cache != NULL)
+        if(db_cache != NULL)
         {
-        // extract sub device information before deleting cache!
+            // extract sub device information before deleting cache!
             get_sub_dev_diag().get_sub_devices_from_cache();
 
             delete db_cache;
             db_cache = NULL;
         }
 
-//
-// In case of process with forwarded attributes with root attribute inside this process as well
-//
+        //
+        // In case of process with forwarded attributes with root attribute inside this process as well
+        //
 
         RootAttRegistry &rar = get_root_att_reg();
-        if (rar.empty() == false && rar.is_root_dev_not_started_err() == true)
+        if(rar.empty() == false && rar.is_root_dev_not_started_err() == true)
         {
-            if (EventConsumer::keep_alive_thread != NULL)
+            if(EventConsumer::keep_alive_thread != NULL)
             {
                 ZmqEventConsumer *event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
                 EventConsumer::keep_alive_thread->fwd_not_conected_event(event_consumer);
@@ -2039,7 +2153,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
 //------------------------------------------------------------------------------------------------------------------
 void Util::server_perform_work()
 {
-    if (ev_loop_func != NULL)
+    if(ev_loop_func != NULL)
     {
         //
         // If the user has installed its own event management function, call it in a loop
@@ -2047,15 +2161,17 @@ void Util::server_perform_work()
 
         bool user_shutdown_server;
 
-        while (shutdown_server == false)
+        while(shutdown_server == false)
         {
-            if (is_svr_shutting_down() == false)
+            if(is_svr_shutting_down() == false)
             {
-                if (orb->work_pending())
+                if(orb->work_pending())
+                {
                     orb->perform_work();
+                }
 
                 user_shutdown_server = (*ev_loop_func)();
-                if (user_shutdown_server == true)
+                if(user_shutdown_server == true)
                 {
                     shutdown_ds();
                     shutdown_server = true;
@@ -2085,51 +2201,51 @@ void Util::server_perform_work()
 
 void Util::server_run()
 {
-
-//
-// The server is now started
-//
+    //
+    // The server is now started
+    //
 
 #ifndef _TG_WINDOWS_
     set_svr_starting(false);
 #else
-    if (_win == false)
+    if(_win == false)
+    {
         set_svr_starting(false);
+    }
 #endif
 
-//
-// For Windows in a non-MSDOS window, start the ORB in its own thread. The main
-// thread is used for windows management.
-//
+    //
+    // For Windows in a non-MSDOS window, start the ORB in its own thread. The main
+    // thread is used for windows management.
+    //
 
 #ifdef _TG_WINDOWS_
-    if (_win == true)
+    if(_win == true)
     {
-
         omni_mutex_lock syc(mon);
 
-//
-// Start the ORB thread (and loop)
-//
+        //
+        // Start the ORB thread (and loop)
+        //
 
         go = true;
         mon.signal();
     }
     else
     {
-        if (_service == true)
+        if(_service == true)
         {
             NTService *serv = NTService::instance();
             serv->statusUpdate(SERVICE_RUNNING);
-            if (serv->stopped_ == false)
+            if(serv->stopped_ == false)
             {
-                //JM : 9.8.2005 : destroy() should be called at the exit of run()!
+                // JM : 9.8.2005 : destroy() should be called at the exit of run()!
                 try
                 {
                     server_perform_work();
                     server_cleanup();
                 }
-                catch (CORBA::Exception &)
+                catch(CORBA::Exception &)
                 {
                     server_cleanup();
                     throw;
@@ -2140,13 +2256,13 @@ void Util::server_run()
         {
             TANGO_LOG << "Ready to accept request" << std::endl;
 
-            //JM : 9.8.2005 : destroy() should be called at the exit of run()!
+            // JM : 9.8.2005 : destroy() should be called at the exit of run()!
             try
             {
                 server_perform_work();
                 server_cleanup();
             }
-            catch (CORBA::Exception &)
+            catch(CORBA::Exception &)
             {
                 server_cleanup();
                 throw;
@@ -2156,13 +2272,13 @@ void Util::server_run()
 #else
     TANGO_LOG << "Ready to accept request" << std::endl;
 
-    //JM : 9.8.2005 : destroy() should be called at the exit of run()!
+    // JM : 9.8.2005 : destroy() should be called at the exit of run()!
     try
     {
         server_perform_work();
         server_cleanup();
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         server_cleanup();
         throw;
@@ -2184,23 +2300,23 @@ void Util::server_cleanup()
 {
 #ifndef _TG_WINDOWS_
 
-// uninstall the client call interceptor
-// see section 10.3 of the omniORB documentation - see also cppTango issue #865
-omniCallDescriptor::removeInterceptor(Tango::client_call_interceptor);
+    // uninstall the client call interceptor
+    // see section 10.3 of the omniORB documentation - see also cppTango issue #865
+    omniCallDescriptor::removeInterceptor(Tango::client_call_interceptor);
 
-//
-// Destroy the ORB
-//
-    if (_constructed == true)
+    //
+    // Destroy the ORB
+    //
+    if(_constructed == true)
     {
         orb->destroy();
         // JM : 8.9.2005 : mark as already destroyed
         _constructed = false;
     }
 #else
-    if (ds_window == NULL)
+    if(ds_window == NULL)
     {
-        if (_constructed == true)
+        if(_constructed == true)
         {
             orb->destroy();
             // JM : 8.9.2005 : mark as already destroyed
@@ -2209,8 +2325,10 @@ omniCallDescriptor::removeInterceptor(Tango::client_call_interceptor);
     }
 #endif
 
-    if (_dummy_thread == true)
+    if(_dummy_thread == true)
+    {
         omni_thread::release_dummy();
+    }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2232,48 +2350,49 @@ omniCallDescriptor::removeInterceptor(Tango::client_call_interceptor);
 
 std::vector<DeviceImpl *> &Util::get_device_list_by_class(const std::string &class_name)
 {
-
-    if (cl_list_ptr == NULL)
+    if(cl_list_ptr == NULL)
     {
         TANGO_THROW_EXCEPTION(API_DeviceNotFound, "It's too early to call this method. Devices are not created yet!");
     }
 
-//
-// Retrieve class list. Don't use the get_dserver_device() method followed by
-// the get_class_list(). In case of several classes embedded within
-// the same server and the use of this method in the object creation, it
-// will fail because the end of the dserver object creation is after the
-// end of the last server device creation.
-//
+    //
+    // Retrieve class list. Don't use the get_dserver_device() method followed by
+    // the get_class_list(). In case of several classes embedded within
+    // the same server and the use of this method in the object creation, it
+    // will fail because the end of the dserver object creation is after the
+    // end of the last server device creation.
+    //
 
     const std::vector<DeviceClass *> &tmp_cl_list = *cl_list_ptr;
 
-//
-// Check if the wanted class really exists
-//
+    //
+    // Check if the wanted class really exists
+    //
 
     int nb_class = tmp_cl_list.size();
     int i;
-    for (i = 0;i < nb_class;i++)
+    for(i = 0; i < nb_class; i++)
     {
-        if (tmp_cl_list[i]->get_name() == class_name)
+        if(tmp_cl_list[i]->get_name() == class_name)
+        {
             break;
+        }
     }
 
-//
-// Also check if it it the DServer class
-//
+    //
+    // Also check if it it the DServer class
+    //
 
-    if (TG_strcasecmp(class_name.c_str(), "DServer") == 0)
+    if(TG_strcasecmp(class_name.c_str(), "DServer") == 0)
     {
         return DServerClass::instance()->get_device_list();
     }
 
-//
-// Throw exception if the class is not found
-//
+    //
+    // Throw exception if the class is not found
+    //
 
-    if (i == nb_class)
+    if(i == nb_class)
     {
         TangoSys_OMemStream o;
         o << "Class " << class_name << " not found" << std::ends;
@@ -2309,53 +2428,53 @@ std::vector<DeviceImpl *> &Util::get_device_list_by_class(const char *class_name
 
 DeviceImpl *Util::get_device_by_name(const std::string &dev_name)
 {
-
     std::string dev_name_lower(dev_name);
-    std::transform(dev_name_lower.begin(),dev_name_lower.end(),dev_name_lower.begin(),::tolower);
+    std::transform(dev_name_lower.begin(), dev_name_lower.end(), dev_name_lower.begin(), ::tolower);
 
     DeviceImpl *ret_ptr = find_device_name_core(dev_name_lower);
 
-//
-// If the device is not found, may be the name we have received is an alias ?
-//
+    //
+    // If the device is not found, may be the name we have received is an alias ?
+    //
 
-    if (ret_ptr == NULL)
+    if(ret_ptr == NULL)
     {
         std::string d_name;
 
-        if (_UseDb == true)
+        if(_UseDb == true)
         {
             try
             {
-                db->get_device_alias(dev_name_lower,d_name);
+                db->get_device_alias(dev_name_lower, d_name);
             }
-            catch (Tango::DevFailed &) {}
+            catch(Tango::DevFailed &)
+            {
+            }
         }
 
-        if (d_name.size() != 0)
+        if(d_name.size() != 0)
         {
-            std::transform(d_name.begin(),d_name.end(),d_name.begin(),::tolower);
+            std::transform(d_name.begin(), d_name.end(), d_name.begin(), ::tolower);
 
             ret_ptr = find_device_name_core(d_name);
 
-//
-// If the name given to this method is a valid alias name, store the alias name in device object for possible
-// future call to this method (save some db calls)
-//
+            //
+            // If the name given to this method is a valid alias name, store the alias name in device object for
+            // possible future call to this method (save some db calls)
+            //
 
-            if (ret_ptr != NULL)
+            if(ret_ptr != NULL)
             {
                 ret_ptr->set_alias_name_lower(dev_name_lower);
             }
-
         }
     }
 
-//
-// Throw exception if the device is not found
-//
+    //
+    // Throw exception if the device is not found
+    //
 
-    if (ret_ptr == NULL)
+    if(ret_ptr == NULL)
     {
         TangoSys_OMemStream o;
         o << "Device " << dev_name << " not found" << std::ends;
@@ -2365,46 +2484,45 @@ DeviceImpl *Util::get_device_by_name(const std::string &dev_name)
     return ret_ptr;
 }
 
-
 DeviceImpl *Util::find_device_name_core(const std::string &dev_name)
 {
-//
-// Retrieve class list. Don't use the get_dserver_device() method followed by the get_class_list(). In case of several
-// classes embedded within the same server and the use of this method in the object creation, it will fail because the
-// end of the dserver object creation is after the end of the last server device creation.
-//
+    //
+    // Retrieve class list. Don't use the get_dserver_device() method followed by the get_class_list(). In case of
+    // several classes embedded within the same server and the use of this method in the object creation, it will fail
+    // because the end of the dserver object creation is after the end of the last server device creation.
+    //
 
     const std::vector<DeviceClass *> &tmp_cl_list = *cl_list_ptr;
     DeviceImpl *ret_ptr = NULL;
 
-//
-// Check if the wanted device exists in each class
-//
+    //
+    // Check if the wanted device exists in each class
+    //
 
     int nb_class = tmp_cl_list.size();
-    int i,j,nb_dev;
+    int i, j, nb_dev;
     bool found = false;
 
-    for (i = 0;i < nb_class;i++)
+    for(i = 0; i < nb_class; i++)
     {
         std::vector<DeviceImpl *> &dev_list = get_device_list_by_class(tmp_cl_list[i]->get_name());
         nb_dev = dev_list.size();
 
-        for (j = 0;j < nb_dev;j++)
+        for(j = 0; j < nb_dev; j++)
         {
             std::string name(dev_list[j]->get_name());
-            std::transform(name.begin(),name.end(),name.begin(),::tolower);
+            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-            if (name == dev_name)
+            if(name == dev_name)
             {
                 found = true;
                 ret_ptr = dev_list[j];
                 break;
             }
             std::string &alias_name = dev_list[j]->get_alias_name_lower();
-            if (alias_name.size() != 0)
+            if(alias_name.size() != 0)
             {
-                if (alias_name == dev_name)
+                if(alias_name == dev_name)
                 {
                     found = true;
                     ret_ptr = dev_list[j];
@@ -2412,30 +2530,32 @@ DeviceImpl *Util::find_device_name_core(const std::string &dev_name)
                 }
             }
         }
-        if (found == true)
+        if(found == true)
+        {
             break;
+        }
     }
 
-//
-// Check also the dserver device
-//
+    //
+    // Check also the dserver device
+    //
 
-    if (found == false && dev_name.find("dserver/") == 0)
+    if(found == false && dev_name.find("dserver/") == 0)
     {
         DServerClass *ds_class = DServerClass::instance();
         std::vector<DeviceImpl *> &devlist = ds_class->get_device_list();
         std::string name(devlist[0]->get_name());
-        std::transform(name.begin(),name.end(),name.begin(),::tolower);
-        if (name == dev_name)
+        std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+        if(name == dev_name)
         {
             ret_ptr = devlist[0];
             j--;
         }
     }
 
-//
-// Return to caller. The returned value is NULL if the device is not found
-//
+    //
+    // Return to caller. The returned value is NULL if the device is not found
+    //
 
     return ret_ptr;
 }
@@ -2459,9 +2579,8 @@ DeviceImpl *Util::get_device_by_name(const char *dev_name)
 
 DServer *Util::get_dserver_device()
 {
-    return (DServer *)((DServerClass::instance()->get_device_list())[0]);
+    return (DServer *) ((DServerClass::instance()->get_device_list())[0]);
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -2469,8 +2588,8 @@ DServer *Util::get_dserver_device()
 //        Util::get_device_list
 //
 // description :
-//        Helper method to get device list from a wild card. If no device is found, does not throw exception, just return
-//        an empty vector
+//        Helper method to get device list from a wild card. If no device is found, does not throw exception, just
+//        return an empty vector
 //
 // arguments :
 //         in :
@@ -2481,54 +2600,58 @@ DServer *Util::get_dserver_device()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-std::vector<DeviceImpl *> Util::get_device_list (const std::string& pattern)
+std::vector<DeviceImpl *> Util::get_device_list(const std::string &pattern)
 {
     TANGO_LOG_DEBUG << "In Util::get_device_list" << std::endl;
 
-// the returned list
-    std::vector<DeviceImpl*> dl(0);
+    // the returned list
+    std::vector<DeviceImpl *> dl(0);
 
-//
-// ------------------------------------------------------------------
-// CASE I: pattern does not contain any '*' char - it's a device name
-//
+    //
+    // ------------------------------------------------------------------
+    // CASE I: pattern does not contain any '*' char - it's a device name
+    //
 
-    if (pattern.find('*') == std::string::npos)
+    if(pattern.find('*') == std::string::npos)
     {
-        DeviceImpl* dev = 0;
+        DeviceImpl *dev = 0;
         try
         {
             dev = get_device_by_name(pattern);
         }
-        catch (Tango::DevFailed&) {}
+        catch(Tango::DevFailed &)
+        {
+        }
 
-//
-// add dev to the list
-//
+        //
+        // add dev to the list
+        //
 
-        if (dev)
+        if(dev)
+        {
             dl.push_back(dev);
+        }
 
         return dl;
     }
 
-//
-// for the two remaining cases, we need the list of all DeviceClasses.
-//
+    //
+    // for the two remaining cases, we need the list of all DeviceClasses.
+    //
 
-    const std::vector<DeviceClass*> dcl(*(get_class_list()));
+    const std::vector<DeviceClass *> dcl(*(get_class_list()));
 
-// a vector to store a given class' devices
-    std::vector<DeviceImpl*> temp_dl;
+    // a vector to store a given class' devices
+    std::vector<DeviceImpl *> temp_dl;
 
-//
-// ------------------------------------------------------------------
-// CASE II: pattern == "*" - return a list containing all devices
-//
+    //
+    // ------------------------------------------------------------------
+    // CASE II: pattern == "*" - return a list containing all devices
+    //
 
-    if (pattern == "*")
+    if(pattern == "*")
     {
-        for (unsigned int i = 0; i < dcl.size(); i++)
+        for(unsigned int i = 0; i < dcl.size(); i++)
         {
             temp_dl = dcl[i]->get_device_list();
             dl.insert(dl.end(), temp_dl.begin(), temp_dl.end());
@@ -2536,30 +2659,32 @@ std::vector<DeviceImpl *> Util::get_device_list (const std::string& pattern)
         return dl;
     }
 
-//
-// ------------------------------------------------------------------
-// CASE III: pattern contains at least one '*' char
-//
+    //
+    // ------------------------------------------------------------------
+    // CASE III: pattern contains at least one '*' char
+    //
 
     std::string::size_type pos;
     std::string::size_type last_pos = 0;
     std::string token;
     std::vector<std::string> tokens(0);
 
-//
-// build the token list
-//
+    //
+    // build the token list
+    //
 
     int done = 0;
     do
     {
         pos = pattern.find('*', last_pos);
-        if (pos != 0)
+        if(pos != 0)
         {
-            if (pos == std::string::npos)
+            if(pos == std::string::npos)
             {
-                if (last_pos >= pattern.size())
+                if(last_pos >= pattern.size())
+                {
                     break;
+                }
                 pos = pattern.size();
                 done = 1;
             }
@@ -2568,36 +2693,37 @@ std::vector<DeviceImpl *> Util::get_device_list (const std::string& pattern)
             tokens.push_back(token);
         }
         last_pos = pos + 1;
-    }
-    while (!done);
-// look for token(s) in device names
+    } while(!done);
+    // look for token(s) in device names
     unsigned int i, j, k;
     std::string dev_name;
-// for each DeviceClass...
-    for (i = 0; i < dcl.size(); i++)
+    // for each DeviceClass...
+    for(i = 0; i < dcl.size(); i++)
     {
-// ...get device list
+        // ...get device list
         temp_dl = dcl[i]->get_device_list();
-// for each device in in list...
-        for (j = 0; j < temp_dl.size(); j++)
+        // for each device in in list...
+        for(j = 0; j < temp_dl.size(); j++)
         {
-// get device name
+            // get device name
             dev_name = temp_dl[j]->get_name();
-// make sure each char is lower case
+            // make sure each char is lower case
             std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
-// then look for token(s) in device name
-// to be added to the list, device_name must contains
-// every token in the right order.
-            for (k = 0, pos = 0; k < tokens.size(); k++)
+            // then look for token(s) in device name
+            // to be added to the list, device_name must contains
+            // every token in the right order.
+            for(k = 0, pos = 0; k < tokens.size(); k++)
             {
                 pos = dev_name.find(tokens[k], pos);
-                if (pos == std::string::npos)
+                if(pos == std::string::npos)
+                {
                     break;
+                }
             }
-// if dev_name matches the pattern, add the device to the list
-            if (k == tokens.size())
+            // if dev_name matches the pattern, add the device to the list
+            if(k == tokens.size())
             {
-                TANGO_LOG_DEBUG << "Device "  << temp_dl[j]->get_name() << " match pattern" << std::endl;
+                TANGO_LOG_DEBUG << "Device " << temp_dl[j]->get_name() << " match pattern" << std::endl;
                 dl.push_back(temp_dl[j]);
             }
         }
@@ -2606,8 +2732,6 @@ std::vector<DeviceImpl *> Util::get_device_list (const std::string& pattern)
     TANGO_LOG_DEBUG << "Returning a device list containing " << dl.size() << " items" << std::endl;
     return dl;
 }
-
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -2621,25 +2745,24 @@ std::vector<DeviceImpl *> Util::get_device_list (const std::string& pattern)
 
 void Util::unregister_server()
 {
-
     TANGO_LOG_DEBUG << "Entering Util::unregister_server method" << std::endl;
 
-//
-// Mark all the devices belonging to this server as unexported
-//
+    //
+    // Mark all the devices belonging to this server as unexported
+    //
 
-    if ((_UseDb == true) && (_FileDb == false))
+    if((_UseDb == true) && (_FileDb == false))
     {
         try
         {
             db->unexport_server(ds_name);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             Except::print_exception(e);
             throw;
         }
-        catch (CORBA::Exception  &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             throw;
@@ -2647,7 +2770,6 @@ void Util::unregister_server()
     }
     TANGO_LOG_DEBUG << "Leaving Util::unregister_server method" << std::endl;
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -2665,19 +2787,19 @@ void Util::unregister_server()
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void Util::print_err_message(const char *err_mess,TANGO_UNUSED(Tango::MessBoxType type))
+void Util::print_err_message(const char *err_mess, TANGO_UNUSED(Tango::MessBoxType type))
 {
 #ifdef _TG_WINDOWS_
-    if (_win == true)
+    if(_win == true)
     {
-        switch (type)
+        switch(type)
         {
         case Tango::STOP:
-            MessageBox((HWND)NULL,err_mess,MessBoxTitle,MB_ICONSTOP);
+            MessageBox((HWND) NULL, err_mess, MessBoxTitle, MB_ICONSTOP);
             break;
 
         case Tango::INFO:
-            MessageBox((HWND)NULL,err_mess,MessBoxTitle,MB_ICONINFORMATION);
+            MessageBox((HWND) NULL, err_mess, MessBoxTitle, MB_ICONINFORMATION);
             break;
         }
         TANGO_THROW_EXCEPTION(API_StartupSequence, "Error in device server startup sequence");
@@ -2692,7 +2814,6 @@ void Util::print_err_message(const char *err_mess,TANGO_UNUSED(Tango::MessBoxTyp
     _exit(-1);
 #endif
 }
-
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -2709,7 +2830,6 @@ long Util::get_tango_lib_release()
     return _convert_tango_lib_release();
 }
 
-
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
@@ -2722,17 +2842,17 @@ long Util::get_tango_lib_release()
 
 void Util::clean_dyn_attr_prop()
 {
-    if (_UseDb)
+    if(_UseDb)
     {
         DbData send_data;
 
-        for (unsigned long loop = 0;loop < all_dyn_attr.size();loop++)
+        for(unsigned long loop = 0; loop < all_dyn_attr.size(); loop++)
         {
             DbDatum db_dat(all_dyn_attr[loop]);
             send_data.push_back(db_dat);
         }
 
-        db->delete_all_device_attribute_property(dyn_att_dev_name,send_data);
+        db->delete_all_device_attribute_property(dyn_att_dev_name, send_data);
     }
 }
 
@@ -2753,8 +2873,8 @@ void Util::clean_dyn_attr_prop()
 void Util::delete_restarting_device(const std::string &d_name)
 {
     std::vector<std::string>::iterator pos;
-    pos = remove(restarting_devices.begin(),restarting_devices.end(),d_name);
-    restarting_devices.erase(pos,restarting_devices.end());
+    pos = remove(restarting_devices.begin(), restarting_devices.end(), d_name);
+    restarting_devices.erase(pos, restarting_devices.end());
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2773,14 +2893,16 @@ void Util::delete_restarting_device(const std::string &d_name)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::get_cmd_line_name_list(const std::string &cl_name,std::vector<std::string> &name_list)
+void Util::get_cmd_line_name_list(const std::string &cl_name, std::vector<std::string> &name_list)
 {
-    std::string  local_cl_name(cl_name);
-    std::transform(local_cl_name.begin(),local_cl_name.end(),local_cl_name.begin(),::tolower);
+    std::string local_cl_name(cl_name);
+    std::transform(local_cl_name.begin(), local_cl_name.end(), local_cl_name.begin(), ::tolower);
 
-    std::map<std::string,std::vector<std::string> >::iterator pos = cmd_line_name_list.find(local_cl_name);
-    if (pos != cmd_line_name_list.end())
-        name_list.insert(name_list.end(),pos->second.begin(),pos->second.end());
+    std::map<std::string, std::vector<std::string>>::iterator pos = cmd_line_name_list.find(local_cl_name);
+    if(pos != cmd_line_name_list.end())
+    {
+        name_list.insert(name_list.end(), pos->second.begin(), pos->second.end());
+    }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2795,30 +2917,33 @@ void Util::get_cmd_line_name_list(const std::string &cl_name,std::vector<std::st
 
 void Util::validate_cmd_line_classes()
 {
-    std::map<std::string,std::vector<std::string> >::iterator pos;
+    std::map<std::string, std::vector<std::string>>::iterator pos;
 
-    for(pos = cmd_line_name_list.begin();pos != cmd_line_name_list.end();++pos)
+    for(pos = cmd_line_name_list.begin(); pos != cmd_line_name_list.end(); ++pos)
     {
-        if (pos->first == NoClass)
+        if(pos->first == NoClass)
+        {
             continue;
+        }
 
         bool found = false;
-        for (size_t loop = 0;loop < cl_list.size();loop++)
+        for(size_t loop = 0; loop < cl_list.size(); loop++)
         {
             std::string cl_name = cl_list[loop]->get_name();
-            std::transform(cl_name.begin(),cl_name.end(),cl_name.begin(),::tolower);
+            std::transform(cl_name.begin(), cl_name.end(), cl_name.begin(), ::tolower);
 
-            if (cl_name == pos->first)
+            if(cl_name == pos->first)
             {
                 found = true;
                 break;
             }
         }
 
-        if (found == false)
+        if(found == false)
         {
             std::stringstream ss;
-            ss << "Class name " << pos->first << " used on command line device declaration but this class is not embedded in DS process";
+            ss << "Class name " << pos->first
+               << " used on command line device declaration but this class is not embedded in DS process";
             TANGO_THROW_EXCEPTION(API_WrongCmdLineArgs, ss.str());
         }
     }
@@ -2841,21 +2966,21 @@ void Util::validate_cmd_line_classes()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::tango_host_from_fqan(const std::string &fqan,std::string &tg_host)
+void Util::tango_host_from_fqan(const std::string &fqan, std::string &tg_host)
 {
     std::string lower_fqan(fqan);
-    std::transform(lower_fqan.begin(),lower_fqan.end(),lower_fqan.begin(),::tolower);
+    std::transform(lower_fqan.begin(), lower_fqan.end(), lower_fqan.begin(), ::tolower);
 
-    std::string start = lower_fqan.substr(0,5);
-    if (start != "tango")
+    std::string start = lower_fqan.substr(0, 5);
+    if(start != "tango")
     {
         std::stringstream ss;
         ss << "The provided fqan (" << fqan << ") is not a valid Tango attribute name" << std::endl;
         TANGO_THROW_EXCEPTION(API_InvalidArgs, ss.str());
     }
 
-    std::string::size_type pos = lower_fqan.find('/',8);
-    tg_host = fqan.substr(8,pos - 8);
+    std::string::size_type pos = lower_fqan.find('/', 8);
+    tg_host = fqan.substr(8, pos - 8);
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2876,13 +3001,13 @@ void Util::tango_host_from_fqan(const std::string &fqan,std::string &tg_host)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::tango_host_from_fqan(const std::string &fqan,std::string &host,int &port)
+void Util::tango_host_from_fqan(const std::string &fqan, std::string &host, int &port)
 {
     std::string tmp_tg_host;
-    tango_host_from_fqan(fqan,tmp_tg_host);
+    tango_host_from_fqan(fqan, tmp_tg_host);
 
     std::string::size_type pos = tmp_tg_host.find(':');
-    host = tmp_tg_host.substr(0,pos);
+    host = tmp_tg_host.substr(0, pos);
 
     std::string tmp_port = tmp_tg_host.substr(pos + 1);
     std::stringstream ss;
@@ -2904,27 +3029,26 @@ void Util::tango_host_from_fqan(const std::string &fqan,std::string &host,int &p
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::check_end_point_specified(int argc,char *argv[])
+void Util::check_end_point_specified(int argc, char *argv[])
 {
-  {
-    const tango_optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
-    if(endpoint.has_value())
     {
-      set_endpoint_specified(true);
-      set_specified_ip(*endpoint);
+        const tango_optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
+        if(endpoint.has_value())
+        {
+            set_endpoint_specified(true);
+            set_specified_ip(*endpoint);
+        }
     }
-  }
 
-  {
-    const tango_optional<std::string> endpoint_publish = get_omniorb_variable(argc, argv, "endPointPublish");
-    if(endpoint_publish.has_value())
     {
-      set_endpoint_publish_specified(true);
-      set_endpoint_publish(*endpoint_publish);
+        const tango_optional<std::string> endpoint_publish = get_omniorb_variable(argc, argv, "endPointPublish");
+        if(endpoint_publish.has_value())
+        {
+            set_endpoint_publish_specified(true);
+            set_endpoint_publish(*endpoint_publish);
+        }
     }
-  }
 }
-
 
 #ifdef _TG_WINDOWS_
 //+------------------------------------------------------------------------------------------------------------------
@@ -2939,64 +3063,64 @@ void Util::check_end_point_specified(int argc,char *argv[])
 
 void Util::build_argc_argv()
 {
-
-//
-// Get command line
-//
+    //
+    // Get command line
+    //
 
     char *cmd_line = GetCommandLine();
 
-    int cnt=0;
+    int cnt = 0;
     char *tmp;
 
-//
-// First, count how many args we have. If the user type two spaces between args, we will have too many pointers
-// allocates but it is not a problem
-//
+    //
+    // First, count how many args we have. If the user type two spaces between args, we will have too many pointers
+    // allocates but it is not a problem
+    //
 
     int cmd_line_size = strlen(cmd_line);
-    for (int i = 0;i < cmd_line_size;i++)
+    for(int i = 0; i < cmd_line_size; i++)
     {
-        if (cmd_line[i] == ' ')
-                cnt++;
+        if(cmd_line[i] == ' ')
+        {
+            cnt++;
+        }
     }
 
-//
-// Allocate memory for argv
-//
+    //
+    // Allocate memory for argv
+    //
 
     argv = new char *[cnt + 1];
 
-//
-// If only one args, no parsing is necessary
-//
+    //
+    // If only one args, no parsing is necessary
+    //
 
-    if (cnt == 0)
+    if(cnt == 0)
     {
-            argv[0] = new char [cmd_line_size + 1];
-            strcpy(argv[0],cmd_line);
-            argc = 1;
+        argv[0] = new char[cmd_line_size + 1];
+        strcpy(argv[0], cmd_line);
+        argc = 1;
     }
     else
     {
+        //
+        // Get program name
+        //
 
-//
-// Get program name
-//
+        tmp = strtok(cmd_line, " ");
+        argv[0] = new char[strlen(tmp) + 1];
+        strcpy(argv[0], tmp);
 
-        tmp = strtok(cmd_line," ");
-        argv[0] = new char [strlen(tmp) + 1];
-        strcpy(argv[0],tmp);
-
-//
-// Get remaining args
-//
+        //
+        // Get remaining args
+        //
 
         int i = 1;
-        while ((tmp = strtok(NULL," ")) != NULL)
+        while((tmp = strtok(NULL, " ")) != NULL)
         {
-            argv[i] = new char [strlen(tmp) + 1];
-            strcpy(argv[i],tmp);
+            argv[i] = new char[strlen(tmp) + 1];
+            strcpy(argv[i], tmp);
             i++;
         }
         argc = i;
@@ -3020,13 +3144,13 @@ CoutBuf *Util::get_debug_object()
 
 BOOL CtrlHandler(DWORD fdwCtrlType)
 {
-    switch( fdwCtrlType )
+    switch(fdwCtrlType)
     {
-// Ignore logoff event!
+        // Ignore logoff event!
     case CTRL_LOGOFF_EVENT:
         return TRUE;
 
-// Pass all other signals to the next signal handler
+        // Pass all other signals to the next signal handler
     default:
         return FALSE;
     }
@@ -3034,10 +3158,11 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 
 void Util::install_cons_handler()
 {
-    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler,TRUE))
+    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler, TRUE))
+    {
         print_err_message("WARNING: Can't install the console handler");
+    }
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -3054,44 +3179,44 @@ void *Util::ORBWin32Loop::run_undetached(void *ptr)
 {
     is_tango_library_thread = true;
 
-//
-// Create the DServer object
-//
+    //
+    // Create the DServer object
+    //
 
     try
     {
         DServerClass::init();
     }
-    catch (std::bad_alloc)
+    catch(std::bad_alloc)
     {
-        MessageBox((HWND)NULL,"Memory error","Device creation failed",MB_ICONSTOP);
+        MessageBox((HWND) NULL, "Memory error", "Device creation failed", MB_ICONSTOP);
         ::exit(-1);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         std::string str(e.errors[0].desc.in());
         str = str + '\n';
         str = str + e.errors[0].origin.in();
-        MessageBox((HWND)NULL,str.c_str(),"Device creation failed",MB_ICONSTOP);
+        MessageBox((HWND) NULL, str.c_str(), "Device creation failed", MB_ICONSTOP);
         ::exit(-1);
     }
-    catch (CORBA::Exception &)
+    catch(CORBA::Exception &)
     {
-        MessageBox((HWND)NULL,"CORBA exception","Device creation failed",MB_ICONSTOP);
+        MessageBox((HWND) NULL, "CORBA exception", "Device creation failed", MB_ICONSTOP);
         ::exit(-1);
     }
 
-//
-// Configure polling from polling properties
-//
+    //
+    // Configure polling from polling properties
+    //
 
     util->polling_configure();
 
-//
-// Delete DB cache (if there is one)
-//
+    //
+    // Delete DB cache (if there is one)
+    //
 
-    if (util->db_cache != NULL)
+    if(util->db_cache != NULL)
     {
         // extract sub device information before deleting cache!
         util->get_sub_dev_diag().get_sub_devices_from_cache();
@@ -3102,9 +3227,9 @@ void *Util::ORBWin32Loop::run_undetached(void *ptr)
 
     util->set_svr_starting(false);
 
-//
-// Start the ORB
-//
+    //
+    // Start the ORB
+    //
 
     wait_for_go();
 
@@ -3124,17 +3249,16 @@ void Util::ORBWin32Loop::wait_for_go()
 }
 #endif /* _TG_WINDOWS_ */
 
-
 int TangoMonitor::wait(long nb_millis)
 {
-    unsigned long s,n;
+    unsigned long s, n;
 
-    unsigned long nb_sec,nb_nanos;
-    nb_sec = nb_millis / 1000 ;
+    unsigned long nb_sec, nb_nanos;
+    nb_sec = nb_millis / 1000;
     nb_nanos = (nb_millis - (nb_sec * 1000)) * 1000000;
 
-    omni_thread::get_time(&s,&n,nb_sec,nb_nanos);
-    return cond.timedwait(s,n);
+    omni_thread::get_time(&s, &n, nb_sec, nb_nanos);
+    return cond.timedwait(s, n);
 }
 
 void clear_att_dim(Tango::AttributeValue_3 &att_val)
@@ -3182,156 +3306,159 @@ long _convert_tango_lib_release()
     return ret;
 }
 
-std::ostream& operator<<(std::ostream& o_str, const CmdArgType& type)
+std::ostream &operator<<(std::ostream &o_str, const CmdArgType &type)
 {
     o_str << data_type_to_string(type);
     return o_str;
 }
-std::ostream& operator<<(std::ostream& o_str, const AttrDataFormat& format)
+
+std::ostream &operator<<(std::ostream &o_str, const AttrDataFormat &format)
 {
-    switch (format)
+    switch(format)
     {
-        case Tango::FMT_UNKNOWN:
-            o_str << "Unknown";
-            break;
+    case Tango::FMT_UNKNOWN:
+        o_str << "Unknown";
+        break;
 
-        case Tango::SCALAR :
-            o_str << "Scalar";
-            break;
+    case Tango::SCALAR:
+        o_str << "Scalar";
+        break;
 
-        case Tango::SPECTRUM :
-            o_str << "Spectrum";
-            break;
+    case Tango::SPECTRUM:
+        o_str << "Spectrum";
+        break;
 
-        case Tango::IMAGE :
-            o_str << "Image";
-            break;
+    case Tango::IMAGE:
+        o_str << "Image";
+        break;
 
-        default:
-            o_str << "Undefined Format " << static_cast<std::underlying_type_t<AttrDataFormat>>(format);
-            break;
-    }
-    return o_str;
-}
-std::ostream& operator<<(std::ostream& o_str, const AttrWriteType& writable)
-{
-    switch (writable)
-    {
-        case Tango::WRITE:
-            o_str << "Write";
-            break;
-
-        case Tango::READ:
-            o_str << "Read";
-            break;
-
-        case Tango::READ_WRITE:
-            o_str << "Read/Write";
-            break;
-
-        case Tango::READ_WITH_WRITE:
-            o_str << "Read with write";
-            break;
-
-        default:
-            o_str << "Undefined WriteType " << static_cast<std::underlying_type_t<AttrWriteType>>(writable);
-            break;
-    }
-    return o_str;
-}
-std::ostream& operator<<(std::ostream& o_str, const PipeWriteType& writable)
-{
-    switch (writable)
-    {
-        case Tango::PIPE_READ:
-            o_str << "Read";
-            break;
-
-        case Tango::PIPE_READ_WRITE:
-            o_str << "Read/Write";
-            break;
-
-        default:
-            o_str << "Undefined PipeWriteType " << static_cast<std::underlying_type_t<PipeWriteType>>(writable);
-            break;
+    default:
+        o_str << "Undefined Format " << static_cast<std::underlying_type_t<AttrDataFormat>>(format);
+        break;
     }
     return o_str;
 }
 
-std::ostream& operator<<(std::ostream& o_str, const DispLevel& level)
+std::ostream &operator<<(std::ostream &o_str, const AttrWriteType &writable)
 {
-    switch (level)
+    switch(writable)
     {
-        case DL_UNKNOWN :
-            o_str << "Unknown";
-            break;
+    case Tango::WRITE:
+        o_str << "Write";
+        break;
 
-        case OPERATOR:
-            o_str << "Operator";
-            break;
+    case Tango::READ:
+        o_str << "Read";
+        break;
 
-        case EXPERT:
-            o_str << "Expert";
-            break;
+    case Tango::READ_WRITE:
+        o_str << "Read/Write";
+        break;
 
-        default:
-            o_str << "Undefined Display Level " << static_cast<std::underlying_type_t<DispLevel>>(level);
-            break;
+    case Tango::READ_WITH_WRITE:
+        o_str << "Read with write";
+        break;
+
+    default:
+        o_str << "Undefined WriteType " << static_cast<std::underlying_type_t<AttrWriteType>>(writable);
+        break;
     }
     return o_str;
 }
 
-std::ostream& operator<<(std::ostream& o_str, const FwdAttError& fae)
+std::ostream &operator<<(std::ostream &o_str, const PipeWriteType &writable)
 {
-    switch (fae)
+    switch(writable)
     {
-        case FWD_WRONG_ATTR:
-            o_str << "Attribute not found in root device";
-            break;
+    case Tango::PIPE_READ:
+        o_str << "Read";
+        break;
 
-        case FWD_CONF_LOOP:
-            o_str << "Loop found in root attributes configuration";
-            break;
+    case Tango::PIPE_READ_WRITE:
+        o_str << "Read/Write";
+        break;
 
-        case FWD_WRONG_DEV:
-            o_str << "Wrong root device";
-            break;
-
-        case FWD_MISSING_ROOT:
-            o_str << "Missing or wrong root attribute definition";
-            break;
-
-        case FWD_ROOT_DEV_LOCAL_DEV:
-            o_str << "Root device is local device";
-            break;
-
-        case FWD_WRONG_SYNTAX:
-            o_str << "Wrong syntax in root attribute definition";
-            break;
-
-        case FWD_ROOT_DEV_NOT_STARTED:
-            o_str << "Root device not started yet. Polling (if any) for this attribute not available";
-            break;
-
-        case FWD_TOO_OLD_LOCAL_DEVICE:
-            o_str << "Local device too old (< IDL 5)";
-            break;
-
-        case FWD_TOO_OLD_ROOT_DEVICE:
-            o_str << "Root device too old (< IDL 5)";
-            break;
-
-        case FWD_DOUBLE_USED:
-        {
-            o_str << "Root attribute already used in this device server process for attribute ";
-            break;
-        }
-
-        default:
-            o_str << "Undefined ForwardAttributeError" << static_cast<std::underlying_type_t<FwdAttError>>(fae);
-            break;
+    default:
+        o_str << "Undefined PipeWriteType " << static_cast<std::underlying_type_t<PipeWriteType>>(writable);
+        break;
     }
     return o_str;
 }
 
-} // End of Tango namespace
+std::ostream &operator<<(std::ostream &o_str, const DispLevel &level)
+{
+    switch(level)
+    {
+    case DL_UNKNOWN:
+        o_str << "Unknown";
+        break;
+
+    case OPERATOR:
+        o_str << "Operator";
+        break;
+
+    case EXPERT:
+        o_str << "Expert";
+        break;
+
+    default:
+        o_str << "Undefined Display Level " << static_cast<std::underlying_type_t<DispLevel>>(level);
+        break;
+    }
+    return o_str;
+}
+
+std::ostream &operator<<(std::ostream &o_str, const FwdAttError &fae)
+{
+    switch(fae)
+    {
+    case FWD_WRONG_ATTR:
+        o_str << "Attribute not found in root device";
+        break;
+
+    case FWD_CONF_LOOP:
+        o_str << "Loop found in root attributes configuration";
+        break;
+
+    case FWD_WRONG_DEV:
+        o_str << "Wrong root device";
+        break;
+
+    case FWD_MISSING_ROOT:
+        o_str << "Missing or wrong root attribute definition";
+        break;
+
+    case FWD_ROOT_DEV_LOCAL_DEV:
+        o_str << "Root device is local device";
+        break;
+
+    case FWD_WRONG_SYNTAX:
+        o_str << "Wrong syntax in root attribute definition";
+        break;
+
+    case FWD_ROOT_DEV_NOT_STARTED:
+        o_str << "Root device not started yet. Polling (if any) for this attribute not available";
+        break;
+
+    case FWD_TOO_OLD_LOCAL_DEVICE:
+        o_str << "Local device too old (< IDL 5)";
+        break;
+
+    case FWD_TOO_OLD_ROOT_DEVICE:
+        o_str << "Root device too old (< IDL 5)";
+        break;
+
+    case FWD_DOUBLE_USED:
+    {
+        o_str << "Root attribute already used in this device server process for attribute ";
+        break;
+    }
+
+    default:
+        o_str << "Undefined ForwardAttributeError" << static_cast<std::underlying_type_t<FwdAttError>>(fae);
+        break;
+    }
+    return o_str;
+}
+
+} // namespace Tango

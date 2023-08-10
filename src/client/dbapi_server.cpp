@@ -41,7 +41,8 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-DbServer::DbServer(std::string server_name, Database *server_dbase):ext(nullptr)
+DbServer::DbServer(std::string server_name, Database *server_dbase) :
+    ext(nullptr)
 {
     name = std::string(server_name);
     dbase = server_dbase;
@@ -56,7 +57,8 @@ DbServer::DbServer(std::string server_name, Database *server_dbase):ext(nullptr)
 //
 //-----------------------------------------------------------------------------
 
-DbServer::DbServer(std::string server_name):ext(nullptr)
+DbServer::DbServer(std::string server_name) :
+    ext(nullptr)
 {
     name = std::string(server_name);
     db_ind = ApiUtil::instance()->get_db_ind();
@@ -71,9 +73,7 @@ DbServer::DbServer(std::string server_name):ext(nullptr)
 //
 //-----------------------------------------------------------------------------
 
-DbServer::~DbServer()
-{
-}
+DbServer::~DbServer() { }
 
 //-----------------------------------------------------------------------------
 //
@@ -84,8 +84,10 @@ DbServer::~DbServer()
 
 void DbServer::add_server(DbDevInfos &dev_infos)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->add_server(name, dev_infos);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -102,8 +104,10 @@ void DbServer::add_server(DbDevInfos &dev_infos)
 
 void DbServer::export_server(DbDevExportInfos &dev_export)
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->export_server(dev_export);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -120,8 +124,10 @@ void DbServer::export_server(DbDevExportInfos &dev_export)
 
 void DbServer::unexport_server()
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->unexport_server(name);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -138,8 +144,10 @@ void DbServer::unexport_server()
 
 void DbServer::delete_server()
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         dbase->delete_server(name);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -155,8 +163,10 @@ void DbServer::delete_server()
 
 DbServerInfo DbServer::get_server_info()
 {
-    if (ext_dbase == true)
+    if(ext_dbase == true)
+    {
         return dbase->get_server_info(name);
+    }
     else
     {
         ApiUtil *au = ApiUtil::instance();
@@ -164,4 +174,4 @@ DbServerInfo DbServer::get_server_info()
     }
 }
 
-} // End of Tango namespace
+} // namespace Tango

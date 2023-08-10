@@ -2,9 +2,9 @@
 
 using namespace std;
 
-int main(int argc,char *argv[])
+int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if(argc != 2)
     {
         cerr << "Usage: unlock <device name>" << endl;
         exit(-1);
@@ -23,11 +23,11 @@ int main(int argc,char *argv[])
         vs.push_back(dev_name);
         vector<Tango::DevLong> vl;
         vl.push_back(1L);
-        d_in.insert(vl,vs);
+        d_in.insert(vl, vs);
 
-        admin_dev.command_inout("UnLockDevice",d_in);
+        admin_dev.command_inout("UnLockDevice", d_in);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Tango::Except::print_exception(e);
     }

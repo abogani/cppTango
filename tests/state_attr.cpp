@@ -1,21 +1,21 @@
 #ifdef WIN32
-#include <process.h>
+  #include <process.h>
 #endif
 
 #include "common.h"
 
-#define STATE_LOG_MESSAGE    "State: Number of attribute(s) to read: "
+#define STATE_LOG_MESSAGE "State: Number of attribute(s) to read: "
 
-void start_logging(string &,string &);
-void stop_logging(string &,string &);
-int message_in_file(string &,string &,vector<string> &);
+void start_logging(string &, string &);
+void stop_logging(string &, string &);
+int message_in_file(string &, string &, vector<string> &);
 void build_f_name(string &);
 
 int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if ((argc == 1) || (argc > 3))
+    if((argc == 1) || (argc > 3))
     {
         TEST_LOG << "usage: %s device" << endl;
         exit(-1);
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     {
         device = new DeviceProxy(device_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(1);
@@ -35,27 +35,29 @@ int main(int argc, char **argv)
 
     TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
 
-
-    if (device->is_attribute_polled("state"))
+    if(device->is_attribute_polled("state"))
+    {
         device->stop_poll_attribute("state");
-    if (device->is_attribute_polled("status"))
+    }
+    if(device->is_attribute_polled("status"))
+    {
         device->stop_poll_attribute("status");
+    }
 
-//**************************************************************************
-//
-//            Check that state and status are defined as attr.
-//
-//**************************************************************************
+    //**************************************************************************
+    //
+    //            Check that state and status are defined as attr.
+    //
+    //**************************************************************************
 
-
-// First check that state and status are the last two attributes
+    // First check that state and status are the last two attributes
 
     AttributeInfoList *att_info;
     try
     {
         att_info = device->attribute_list_query();
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
         exit(-1);
@@ -66,8 +68,8 @@ int main(int argc, char **argv)
     TEST_LOG << (*att_info)[state_idx] << endl;
     TEST_LOG << (*att_info)[state_idx + 1] << endl;
 
-    assert( (*att_info)[state_idx].name == "State" );
-    assert( (*att_info)[state_idx + 1].name == "Status" );
+    assert((*att_info)[state_idx].name == "State");
+    assert((*att_info)[state_idx + 1].name == "Status");
 
     try
     {
@@ -75,11 +77,11 @@ int main(int argc, char **argv)
         AttributeInfo sta_ai = device->get_attribute_config(state_str);
         TEST_LOG << sta_ai << endl;
 
-        string status_str ("status");
+        string status_str("status");
         AttributeInfo status_ai = device->get_attribute_config(status_str);
         TEST_LOG << status_ai << endl;
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
         exit(-1);
@@ -87,8 +89,8 @@ int main(int argc, char **argv)
 
     TEST_LOG << "   State and Status defined as attribute --> OK" << endl;
 
-// Check that it is not possible to set the state/status attribute
-// config.
+    // Check that it is not possible to set the state/status attribute
+    // config.
 
     AttributeInfoList att_conf;
     att_conf.push_back((*att_info)[state_idx]);
@@ -99,12 +101,12 @@ int main(int argc, char **argv)
     {
         device->set_attribute_config(att_conf);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         failed = true;
     }
 
-    assert ( failed == true );
+    assert(failed == true);
 
     att_conf.clear();
     att_conf.push_back((*att_info)[state_idx + 1]);
@@ -115,23 +117,23 @@ int main(int argc, char **argv)
     {
         device->set_attribute_config(att_conf);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         failed = true;
-        }
+    }
 
-    assert ( failed == true );
+    assert(failed == true);
 
     delete att_info;
     TEST_LOG << "   State and Status attributes config not settable --> OK" << endl;
 
-//**************************************************************************
-//
-//    Getting state as attribute from device
-//
-//**************************************************************************
+    //**************************************************************************
+    //
+    //    Getting state as attribute from device
+    //
+    //**************************************************************************
 
-// Test reading state as an attribute without polling first
+    // Test reading state as an attribute without polling first
 
     device->set_source(Tango::DEV);
     string state_name("State");
@@ -142,36 +144,36 @@ int main(int argc, char **argv)
     {
         d = device->read_attribute(state_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
     }
 
-    assert( !d.is_empty() );
+    assert(!d.is_empty());
 
     d >> sta;
 
-    assert( sta == Tango::ON );
-    assert( d.get_type() == Tango::DEV_STATE );
-    assert( !d.is_empty() );
+    assert(sta == Tango::ON);
+    assert(d.get_type() == Tango::DEV_STATE);
+    assert(!d.is_empty());
 
     TEST_LOG << "Device state = " << DevStateName[sta] << endl;
 
-    assert( !d.is_empty() );
+    assert(!d.is_empty());
 
     d >> sta;
 
-    assert( sta == Tango::ON );
-    assert( d.get_type() == Tango::DEV_STATE );
+    assert(sta == Tango::ON);
+    assert(d.get_type() == Tango::DEV_STATE);
 
     TEST_LOG << "Device state = " << DevStateName[sta] << endl;
 
     // And we can also extract it again
     d >> sta;
 
-    assert( sta == Tango::ON );
-    assert( d.get_type() == Tango::DEV_STATE );
+    assert(sta == Tango::ON);
+    assert(d.get_type() == Tango::DEV_STATE);
 
     TEST_LOG << "Device state (again) = " << DevStateName[sta] << endl;
 
@@ -181,10 +183,10 @@ int main(int argc, char **argv)
     d >> states;
     TEST_LOG << "Number of extracted states = " << states.size() << endl;
 
-    assert( states.size() == 1 );
-    assert( states[0] == Tango::ON );
+    assert(states.size() == 1);
+    assert(states[0] == Tango::ON);
 
-// Read several attribute in on go including state
+    // Read several attribute in on go including state
 
     vector<string> names;
     names.push_back("state");
@@ -198,7 +200,7 @@ int main(int argc, char **argv)
         TEST_LOG << (*da)[0] << endl;
         (*da)[0] >> sta;
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
@@ -207,9 +209,9 @@ int main(int argc, char **argv)
     delete da;
     TEST_LOG << "Device state = " << DevStateName[sta] << endl;
 
-    assert ( sta == Tango::ON );
+    assert(sta == Tango::ON);
 
-// Test reading status as an attribute without polling first
+    // Test reading status as an attribute without polling first
 
     string status_name("Status");
     string status;
@@ -218,7 +220,7 @@ int main(int argc, char **argv)
     {
         d = device->read_attribute(status_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
@@ -230,9 +232,9 @@ int main(int argc, char **argv)
     string::size_type pos;
     pos = status.find("ON state");
 
-    assert (pos != string::npos);
+    assert(pos != string::npos);
 
-// Test reading state and status as attributes
+    // Test reading state and status as attributes
 
     status = "Not init";
     sta = Tango::UNKNOWN;
@@ -245,7 +247,7 @@ int main(int argc, char **argv)
     {
         da = device->read_attributes(names);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
@@ -259,31 +261,30 @@ int main(int argc, char **argv)
 
     pos = status.find("ON state");
 
-    assert (pos != string::npos);
-    assert (sta == Tango::ON );
+    assert(pos != string::npos);
+    assert(sta == Tango::ON);
     delete da;
 
     TEST_LOG << "   Reading State/Status as attributes from device --> OK" << endl;
 
+    //**************************************************************************
+    //
+    //    Getting state as attribute from cache
+    //
+    //**************************************************************************
 
-//**************************************************************************
-//
-//    Getting state as attribute from cache
-//
-//**************************************************************************
-
-    device->poll_attribute(state_name,1000);
-    device->poll_attribute("Status",1200);
+    device->poll_attribute(state_name, 1000);
+    device->poll_attribute("Status", 1200);
     device->set_source(Tango::CACHE);
 
 #ifdef VALGRIND
     std::this_thread::sleep_for(std::chrono::microseconds(3000000));
 #else
-#ifdef WIN32
+  #ifdef WIN32
     std::this_thread::sleep_for(std::chrono::seconds(2));
-#else
+  #else
     std::this_thread::sleep_for(std::chrono::microseconds(1200000));
-#endif
+  #endif
 #endif
 
     try
@@ -294,7 +295,7 @@ int main(int argc, char **argv)
 
         TEST_LOG << "Device state (from cache) = " << DevStateName[sta] << endl;
 
-        assert (sta == Tango::ON );
+        assert(sta == Tango::ON);
 
         sta = Tango::UNKNOWN;
         status = "Not init";
@@ -307,11 +308,10 @@ int main(int argc, char **argv)
         TEST_LOG << "Device state (from cache) = " << DevStateName[sta] << endl;
 
         pos = status.find("ON state");
-        assert (sta == Tango::ON);
-        assert (pos != string::npos);
-
+        assert(sta == Tango::ON);
+        assert(pos != string::npos);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         device->stop_poll_attribute(state_name);
         device->stop_poll_attribute("Status");
@@ -324,11 +324,11 @@ int main(int argc, char **argv)
 
     TEST_LOG << "   Reading State/Status as attributes from cache --> OK" << endl;
 
-//**************************************************************************
-//
-//    Getting state as attribute from cache_device
-//
-//**************************************************************************
+    //**************************************************************************
+    //
+    //    Getting state as attribute from cache_device
+    //
+    //**************************************************************************
 
     device->set_source(Tango::CACHE_DEV);
 
@@ -339,7 +339,7 @@ int main(int argc, char **argv)
         d >> sta;
 
         TEST_LOG << "Device state (from cache_dev) = " << DevStateName[sta] << endl;
-        assert (sta == Tango::ON);
+        assert(sta == Tango::ON);
 
         sta = Tango::UNKNOWN;
         status = "not init";
@@ -352,10 +352,10 @@ int main(int argc, char **argv)
         TEST_LOG << "Device state (from cache_dev) = " << DevStateName[sta] << endl;
         pos = status.find("ON state");
 
-        assert (sta == Tango::ON);
-        assert (pos != string::npos);
+        assert(sta == Tango::ON);
+        assert(pos != string::npos);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         device->stop_poll_attribute("Status");
         Except::print_exception(e);
@@ -365,13 +365,13 @@ int main(int argc, char **argv)
     delete da;
     TEST_LOG << "   Reading State/Status as attributes from cache_device --> OK" << endl;
 
-//**************************************************************************
-//
-//    Getting state as command from cache
-//
-//**************************************************************************
+    //**************************************************************************
+    //
+    //    Getting state as command from cache
+    //
+    //**************************************************************************
 
-    device->poll_attribute(state_name,1000);
+    device->poll_attribute(state_name, 1000);
     device->set_source(Tango::CACHE);
 
 #ifdef WIN32
@@ -388,7 +388,7 @@ int main(int argc, char **argv)
         dd >> sta;
 
         TEST_LOG << "Device state (as command from cache) = " << sta << endl;
-        assert (sta == Tango::ON);
+        assert(sta == Tango::ON);
 
         device->set_source(Tango::DEV);
 
@@ -397,7 +397,7 @@ int main(int argc, char **argv)
         dd >> sta;
 
         TEST_LOG << "Device state (as command from device) = " << sta << endl;
-        assert (sta == Tango::ON);
+        assert(sta == Tango::ON);
 
         sta = Tango::UNKNOWN;
         device->set_source(Tango::CACHE_DEV);
@@ -406,7 +406,7 @@ int main(int argc, char **argv)
         dd >> sta;
 
         TEST_LOG << "Device state (as command from cache-dev) = " << sta << endl;
-        assert (sta == Tango::ON);
+        assert(sta == Tango::ON);
 
         dd = device->command_inout("status");
         status = "Not set";
@@ -414,10 +414,10 @@ int main(int argc, char **argv)
 
         TEST_LOG << "Device status (as command from cache-dev) = " << status << endl;
         pos = status.find("ON state");
-        assert (pos != string::npos);
+        assert(pos != string::npos);
     }
 
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         device->stop_poll_attribute("Status");
         device->stop_poll_attribute("State");
@@ -430,11 +430,11 @@ int main(int argc, char **argv)
     device->stop_poll_attribute("Status");
     device->stop_poll_attribute("State");
 
-//**************************************************************************
-//
-//    Try to create an AttributeProxy for state and status
-//
-//**************************************************************************
+    //**************************************************************************
+    //
+    //    Try to create an AttributeProxy for state and status
+    //
+    //**************************************************************************
 
     try
     {
@@ -448,7 +448,7 @@ int main(int argc, char **argv)
         da = att_proxy.read();
         da >> sta;
 
-        assert (sta == Tango::ON);
+        assert(sta == Tango::ON);
 
         TEST_LOG << "   Reading State attribute with AttributeProxy object --> OK" << endl;
 
@@ -464,29 +464,31 @@ int main(int argc, char **argv)
         string::size_type pos;
         pos = status.find("ON state");
 
-        assert (pos != string::npos);
+        assert(pos != string::npos);
 
         TEST_LOG << "   Reading Status attribute with AttributeProxy object --> OK" << endl;
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
     }
 
-//**************************************************************************
-//
-//    Check state for alarmed and polled attribute(s)
-//
-//**************************************************************************
+    //**************************************************************************
+    //
+    //    Check state for alarmed and polled attribute(s)
+    //
+    //**************************************************************************
 
-    if (device->is_attribute_polled("SlowAttr"))
+    if(device->is_attribute_polled("SlowAttr"))
+    {
         device->stop_poll_attribute("SlowAttr");
+    }
 
     string adm_name = device->adm_name();
     string file_name;
     build_f_name(file_name);
-    start_logging(adm_name,file_name);
+    start_logging(adm_name, file_name);
 
     AttributeInfoListEx *att_conf2 = nullptr;
 
@@ -494,7 +496,7 @@ int main(int argc, char **argv)
     {
         DeviceAttribute da;
 
-// Set an alarm in the SlowAttr attribute
+        // Set an alarm in the SlowAttr attribute
 
         vector<string> att_conf_list;
         att_conf_list.push_back("SlowAttr");
@@ -504,14 +506,14 @@ int main(int argc, char **argv)
         (*att_conf2)[0].alarms.min_alarm = "6.6";
         device->set_attribute_config(*att_conf2);
 
-// Get device state with SlowAttr non-polled and polled
+        // Get device state with SlowAttr non-polled and polled
 
         da = device->read_attribute("State");
         Tango::DevState sta1 = device->state();
         TEST_LOG << "State = " << Tango::DevStateName[sta1] << endl;
 
-        device->poll_attribute("SlowAttr",1000);
-        device->poll_attribute("Long_attr",1000);
+        device->poll_attribute("SlowAttr", 1000);
+        device->poll_attribute("Long_attr", 1000);
 
         std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -527,69 +529,70 @@ int main(int argc, char **argv)
         Tango::DevState sta3 = device->state();
         TEST_LOG << "State = " << Tango::DevStateName[sta3] << endl;
 
-// Stop lib logging
+        // Stop lib logging
 
-        stop_logging(adm_name,file_name);
+        stop_logging(adm_name, file_name);
 
-        file_name.erase(0,6);
+        file_name.erase(0, 6);
         vector<string> mess_in_file;
         string base_message(STATE_LOG_MESSAGE);
-        int res = message_in_file(file_name,base_message,mess_in_file);
+        int res = message_in_file(file_name, base_message, mess_in_file);
         TEST_LOG << "File name = " << file_name << ", res = " << res << endl;
 
-        for (unsigned long loop = 0;loop < mess_in_file.size();loop++)
+        for(unsigned long loop = 0; loop < mess_in_file.size(); loop++)
+        {
             TEST_LOG << "Message in file = " << mess_in_file[loop] << endl;
+        }
 
-// Reset device server to its normal state
+        // Reset device server to its normal state
 
         (*att_conf2)[0].alarms.min_alarm = "NaN";
         device->set_attribute_config(*att_conf2);
         device->stop_poll_attribute("SlowAttr");
 
-// Check everything fine
+        // Check everything fine
 
-        assert (res == 0);
-        assert (mess_in_file.size() == 6);
+        assert(res == 0);
+        assert(mess_in_file.size() == 6);
 
-//
-// We should have 5 attributes to be read for the state computation:
-// DefUserAttr, DefClassUserAttr, DefClassAttr, LongAttr, SlowAttr
-//
+        //
+        // We should have 5 attributes to be read for the state computation:
+        // DefUserAttr, DefClassUserAttr, DefClassAttr, LongAttr, SlowAttr
+        //
 
         string mess = base_message + "5";
-        assert (mess_in_file[0].find(mess) != string::npos);
-        assert (mess_in_file[1].find(mess) != string::npos);
+        assert(mess_in_file[0].find(mess) != string::npos);
+        assert(mess_in_file[1].find(mess) != string::npos);
 
-//
-// Now, only 3 attributes
-// DefUserAttr, DefClassUserAttr, DefClassAttr
-//
+        //
+        // Now, only 3 attributes
+        // DefUserAttr, DefClassUserAttr, DefClassAttr
+        //
 
         mess = base_message + "3";
-        assert (mess_in_file[2].find(mess) != string::npos);
-        assert (mess_in_file[3].find(mess) != string::npos);
+        assert(mess_in_file[2].find(mess) != string::npos);
+        assert(mess_in_file[3].find(mess) != string::npos);
 
-//
-// Now, 4 attributes
-// DefUserAttr, DefClassUserAttr, DefClassAttr, Long_attr
-//
+        //
+        // Now, 4 attributes
+        // DefUserAttr, DefClassUserAttr, DefClassAttr, Long_attr
+        //
 
         mess = base_message + "4";
-        assert (mess_in_file[4].find(mess) != string::npos);
-        assert (mess_in_file[5].find(mess) != string::npos);
+        assert(mess_in_file[4].find(mess) != string::npos);
+        assert(mess_in_file[5].find(mess) != string::npos);
 
-        assert (sta1 == Tango::ALARM);
-        assert (sta2 == Tango::ALARM);
-        assert (sta3 == Tango::ALARM);
+        assert(sta1 == Tango::ALARM);
+        assert(sta2 == Tango::ALARM);
+        assert(sta3 == Tango::ALARM);
 
         TEST_LOG << "   Reading State with alarmed and polled attribute(s) --> OK" << endl;
-
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
 
-        stop_logging(adm_name,file_name);
+        stop_logging(adm_name, file_name);
         (*att_conf2)[0].alarms.min_alarm = "NaN";
         device->set_attribute_config(*att_conf2);
         device->stop_poll_attribute("SlowAttr");
@@ -600,7 +603,6 @@ int main(int argc, char **argv)
 
     delete device;
     return 0;
-
 }
 
 //**************************************************************************
@@ -622,18 +624,18 @@ void build_f_name(string &f_name)
     string tmp_name("/tmp/ds_");
     tmp_name = tmp_name + str.str();
 
-//  Check if the file already exist (Already happend in Windows)
+    //  Check if the file already exist (Already happend in Windows)
 
     fstream f_str;
     f_str.open(tmp_name.c_str());
-    if (f_str.is_open() == true)
+    if(f_str.is_open() == true)
     {
         tmp_name = tmp_name + "_1_";
         f_str.close();
     }
 
-    tmp_name.insert(0,"file::");
-//    TEST_LOG << "file_name = " << tmp_name << endl;
+    tmp_name.insert(0, "file::");
+    //    TEST_LOG << "file_name = " << tmp_name << endl;
     f_name = tmp_name;
 }
 
@@ -643,7 +645,7 @@ void build_f_name(string &f_name)
 //
 //**************************************************************************
 
-void start_logging(string &adm_dev_name,string &f_name)
+void start_logging(string &adm_dev_name, string &f_name)
 {
     try
     {
@@ -654,17 +656,17 @@ void start_logging(string &adm_dev_name,string &f_name)
         DeviceProxy adm_dev(adm_dev_name);
         DeviceData dd;
         dd << log_target;
-        adm_dev.command_inout("AddLoggingTarget",dd);
+        adm_dev.command_inout("AddLoggingTarget", dd);
 
         vector<string> log_level;
         log_level.push_back(adm_dev_name);
         vector<Tango::DevLong> log_level_long;
         log_level_long.push_back(LOG_DEBUG);
 
-        dd.insert(log_level_long,log_level);
-        adm_dev.command_inout("SetLoggingLevel",dd);
+        dd.insert(log_level_long, log_level);
+        adm_dev.command_inout("SetLoggingLevel", dd);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
     }
@@ -676,7 +678,7 @@ void start_logging(string &adm_dev_name,string &f_name)
 //
 //**************************************************************************
 
-void stop_logging(string &adm_dev_name,string &f_name)
+void stop_logging(string &adm_dev_name, string &f_name)
 {
     try
     {
@@ -687,17 +689,17 @@ void stop_logging(string &adm_dev_name,string &f_name)
         DeviceProxy adm_dev(adm_dev_name);
         DeviceData dd;
         dd << log_target;
-        adm_dev.command_inout("RemoveLoggingTarget",dd);
+        adm_dev.command_inout("RemoveLoggingTarget", dd);
 
         vector<string> log_level;
         log_level.push_back(adm_dev_name);
         vector<Tango::DevLong> log_level_long;
         log_level_long.push_back(LOG_WARN);
 
-        dd.insert(log_level_long,log_level);
-        adm_dev.command_inout("SetLoggingLevel",dd);
+        dd.insert(log_level_long, log_level);
+        adm_dev.command_inout("SetLoggingLevel", dd);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
     }
@@ -709,14 +711,14 @@ void stop_logging(string &adm_dev_name,string &f_name)
 //
 //**************************************************************************
 
-int message_in_file(string &f_name,string &mess,vector<string> &mess_occur)
+int message_in_file(string &f_name, string &mess, vector<string> &mess_occur)
 {
     ifstream inFile;
     string file_line;
     int ret = 0;
 
     inFile.open(f_name.c_str());
-    if (!inFile)
+    if(!inFile)
     {
         ret = -1;
         return ret;
@@ -724,11 +726,11 @@ int message_in_file(string &f_name,string &mess,vector<string> &mess_occur)
 
     string::size_type pos_env;
 
-    while (!inFile.eof())
+    while(!inFile.eof())
     {
-        getline(inFile,file_line);
+        getline(inFile, file_line);
 
-        if ((pos_env = file_line.find(mess)) != string::npos)
+        if((pos_env = file_line.find(mess)) != string::npos)
         {
             mess_occur.push_back(file_line);
         }

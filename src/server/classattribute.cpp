@@ -58,35 +58,41 @@ namespace Tango
 //
 //------------------------------------------------------------------------------------------------------------------
 
-AttrProperty::AttrProperty(const std::string &name,const std::string &value):attr_name(name),attr_value(value)
+AttrProperty::AttrProperty(const std::string &name, const std::string &value) :
+    attr_name(name),
+    attr_value(value)
 {
     attr_lg = 0;
 
-//
-// Property name in lower case letters
-//
+    //
+    // Property name in lower case letters
+    //
 
-    std::transform(attr_name.begin(),attr_name.end(),attr_name.begin(),::tolower);
+    std::transform(attr_name.begin(), attr_name.end(), attr_name.begin(), ::tolower);
 
-//
-// For data_type or data_format properties, also change property value to lowercase letters
-//
+    //
+    // For data_type or data_format properties, also change property value to lowercase letters
+    //
 
-    if ((attr_name == "data_type") || (attr_name == "data_format"))
-        std::transform(attr_value.begin(),attr_value.end(),attr_value.begin(),::tolower);
+    if((attr_name == "data_type") || (attr_name == "data_format"))
+    {
+        std::transform(attr_value.begin(), attr_value.end(), attr_value.begin(), ::tolower);
+    }
 }
 
-AttrProperty::AttrProperty(const std::string &name,long value):attr_name(name),attr_lg(value)
+AttrProperty::AttrProperty(const std::string &name, long value) :
+    attr_name(name),
+    attr_lg(value)
 {
 }
 
 AttrProperty::~AttrProperty() = default;
 
 AttrProperty::AttrProperty(const AttrProperty &) = default;
-AttrProperty & AttrProperty::operator=(const AttrProperty &) = default;
+AttrProperty &AttrProperty::operator=(const AttrProperty &) = default;
 
 AttrProperty::AttrProperty(AttrProperty &&) = default;
-AttrProperty & AttrProperty::operator=(AttrProperty &&) = default;
+AttrProperty &AttrProperty::operator=(AttrProperty &&) = default;
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -102,7 +108,7 @@ void AttrProperty::convert(const char *prop_name)
 {
     TangoSys_MemStream o;
     o << attr_value;
-    if (!(o >> attr_lg && o.eof()))
+    if(!(o >> attr_lg && o.eof()))
     {
         std::stringstream ss;
         ss << "Can't convert property value for property " << prop_name;
@@ -132,10 +138,11 @@ void AttrProperty::convert(const char *prop_name)
 MultiClassAttribute::~MultiClassAttribute()
 {
     long nb_attr = attr_list.size();
-    for (int i = 0;i < nb_attr;i++)
+    for(int i = 0; i < nb_attr; i++)
+    {
         delete attr_list[i];
+    }
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -167,7 +174,7 @@ MultiClassAttribute::MultiClassAttribute()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void MultiClassAttribute::init_class_attribute(const std::string &class_name,long base)
+void MultiClassAttribute::init_class_attribute(const std::string &class_name, long base)
 {
     TANGO_LOG_DEBUG << "Entering MultiClassAttribute::init_class_attribute" << std::endl;
     long i;
@@ -176,29 +183,35 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name,lon
     CORBA::Any send;
 
     long nb_attr;
-    if (base == 0)
+    if(base == 0)
+    {
         nb_attr = attr_list.size();
+    }
     else
+    {
         nb_attr = 1;
+    }
 
-//
-// Get class attribute(s) properties stored in DB. No need to implement a retry here (in case of db server restart)
-// because the db reconnection is forced by the get_property call executed during xxxClass construction
-// before we reach this code.
-//
+    //
+    // Get class attribute(s) properties stored in DB. No need to implement a retry here (in case of db server restart)
+    // because the db reconnection is forced by the get_property call executed during xxxClass construction
+    // before we reach this code.
+    //
 
-    if ((nb_attr != 0) && (Tango::Util::instance()->use_db()))
+    if((nb_attr != 0) && (Tango::Util::instance()->use_db()))
     {
         Tango::DbData db_list;
 
-        for(i = 0;i < nb_attr;i++)
+        for(i = 0; i < nb_attr; i++)
+        {
             db_list.push_back(DbDatum(attr_list[i + base]->get_name()));
+        }
 
         try
         {
-            tg->get_database()->get_class_attribute_property(class_name,db_list,tg->get_db_cache());
+            tg->get_database()->get_class_attribute_property(class_name, db_list, tg->get_db_cache());
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             TangoSys_OMemStream o;
             o << "Can't get class attribute properties for class " << class_name << std::ends;
@@ -206,12 +219,12 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name,lon
             TANGO_RETHROW_EXCEPTION(e, API_DatabaseAccess, o.str());
         }
 
-//
-// Sort property for each attribute and create a ClassAttribute object for each of them
-//
+        //
+        // Sort property for each attribute and create a ClassAttribute object for each of them
+        //
 
         long ind = 0;
-        for (i = 0;i < nb_attr;i++)
+        for(i = 0; i < nb_attr; i++)
         {
             std::vector<AttrProperty> prop_list;
 
@@ -220,37 +233,41 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name,lon
             db_list[ind] >> nb_prop;
 
             ind++;
-            for (long j = 0;j < nb_prop;j++)
+            for(long j = 0; j < nb_prop; j++)
             {
-                if (db_list[ind].size() > 1)
+                if(db_list[ind].size() > 1)
                 {
                     std::string tmp(db_list[ind].value_string[0]);
                     long nb = db_list[ind].size();
-                    for (int k = 1;k < nb;k++)
+                    for(int k = 1; k < nb; k++)
                     {
                         tmp = tmp + " ";
                         tmp = tmp + db_list[ind].value_string[k];
                     }
-                    prop_list.push_back(AttrProperty(db_list[ind].name,tmp));
+                    prop_list.push_back(AttrProperty(db_list[ind].name, tmp));
                 }
                 else
-                    prop_list.push_back(AttrProperty(db_list[ind].name,db_list[ind].value_string[0]));
+                {
+                    prop_list.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                }
                 ind++;
             }
 
-            if (nb_prop != 0)
+            if(nb_prop != 0)
             {
-//
-// Find this attribute in the attribute list
-//
+                //
+                // Find this attribute in the attribute list
+                //
 
                 unsigned int k;
-                for (k = 0;k < attr_list.size();k++)
+                for(k = 0; k < attr_list.size(); k++)
                 {
-                    if (attr_name == attr_list[k]->get_name())
+                    if(attr_name == attr_list[k]->get_name())
+                    {
                         break;
+                    }
                 }
-                if (k == attr_list.size())
+                if(k == attr_list.size())
                 {
                     TangoSys_OMemStream o;
                     o << "Attribute " << attr_name << " not found in class attribute(s)" << std::ends;
@@ -258,23 +275,22 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name,lon
                     TANGO_THROW_EXCEPTION(API_AttrNotFound, o.str());
                 }
 
-//
-// Add its class property list
-//
+                //
+                // Add its class property list
+                //
 
                 attr_list[k]->set_class_properties(prop_list);
             }
         }
     }
 
-      for (i = 0;i < nb_attr;i++)
+    for(i = 0; i < nb_attr; i++)
     {
         TANGO_LOG_DEBUG << *(attr_list[i + base]) << std::endl;
-      }
+    }
 
     TANGO_LOG_DEBUG << "Leaving MultiClassAttribute::init_class_attribute" << std::endl;
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -293,17 +309,16 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name,lon
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-
 Attr &MultiClassAttribute::get_attr(const std::string &attr_name)
 {
-//
-// Search for the wanted attribute in the attr_list vector from its name
-//
+    //
+    // Search for the wanted attribute in the attr_list vector from its name
+    //
 
-    auto pos = std::find_if(std::begin(attr_list), std::end(attr_list),
-                            [&attr_name](Attr* attr){ return attr->get_name() == attr_name; });
+    auto pos = std::find_if(
+        std::begin(attr_list), std::end(attr_list), [&attr_name](Attr *attr) { return attr->get_name() == attr_name; });
 
-    if (pos == attr_list.end())
+    if(pos == attr_list.end())
     {
         TangoSys_OMemStream o;
         o << "Attribute " << attr_name << " not found in class attribute(s)" << std::ends;
@@ -329,20 +344,18 @@ Attr &MultiClassAttribute::get_attr(const std::string &attr_name)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-
-void MultiClassAttribute::remove_attr(const std::string &attr_name,const std::string &cl_name)
+void MultiClassAttribute::remove_attr(const std::string &attr_name, const std::string &cl_name)
 {
     std::vector<Tango::Attr *>::iterator ite;
-    for (ite = attr_list.begin();ite != attr_list.end();++ite)
+    for(ite = attr_list.begin(); ite != attr_list.end(); ++ite)
     {
-        if (((*ite)->get_name() == attr_name) && ((*ite)->get_cl_name() == cl_name))
+        if(((*ite)->get_name() == attr_name) && ((*ite)->get_cl_name() == cl_name))
         {
             attr_list.erase(ite);
             break;
         }
     }
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -354,5 +367,4 @@ void MultiClassAttribute::remove_attr(const std::string &attr_name,const std::st
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
-} // End of Tango namespace
+} // namespace Tango

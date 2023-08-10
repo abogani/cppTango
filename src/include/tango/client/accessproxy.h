@@ -27,33 +27,35 @@
 
 #include <tango/tango.h>
 
-namespace Tango {
-
-#define        __AC_BUFFER_SIZE        1024
-
-class AccessProxy: public Tango::DeviceProxy
+namespace Tango
 {
-public:
+
+#define __AC_BUFFER_SIZE 1024
+
+class AccessProxy : public Tango::DeviceProxy
+{
+  public:
     AccessProxy(const std::string &);
     AccessProxy(const char *);
-    ~AccessProxy() {}
+
+    ~AccessProxy() { }
 
     AccessControlType check_access_control(const std::string &);
-    bool is_command_allowed(std::string &,const std::string &);
+    bool is_command_allowed(std::string &, const std::string &);
 
-protected:
-    std::string    user;
+  protected:
+    std::string user;
     std::vector<std::string> host_ips;
     bool forced;
-    std::map<std::string,std::vector<std::string> >     allowed_cmd_table;
+    std::map<std::string, std::vector<std::string>> allowed_cmd_table;
     omni_mutex only_one;
 
-    void get_allowed_commands(const std::string &,std::vector<std::string> &);
+    void get_allowed_commands(const std::string &, std::vector<std::string> &);
 
-private:
+  private:
     void real_ctor();
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _ACCESSPROXY_H */

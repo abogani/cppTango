@@ -55,17 +55,17 @@ enum DevIntrCmdCode
 
 struct _ShDevIntrTh
 {
-    bool            cmd_pending;    // The new command flag
-    DevIntrCmdCode    cmd_code;        // The command code
-    bool            th_running;        // Thread running flag
-    #if _MSC_VER >= 1900
-    #ifdef interface
+    bool cmd_pending;        // The new command flag
+    DevIntrCmdCode cmd_code; // The command code
+    bool th_running;         // Thread running flag
+#if _MSC_VER >= 1900
+  #ifdef interface
     #undef interface
-    #endif
-    #endif
-        DevIntr                 interface;              // Device interface
+  #endif
+#endif
+    DevIntr interface; // Device interface
 };
-typedef struct _ShDevIntrTh    ShDevIntrTh;
+typedef struct _ShDevIntrTh ShDevIntrTh;
 
 enum DevIntrCmdType
 {
@@ -86,10 +86,10 @@ enum DevIntrCmdType
 
 class TangoMonitor;
 
-class DevIntrThread: public omni_thread
+class DevIntrThread : public omni_thread
 {
-public:
-    DevIntrThread(ShDevIntrTh &,TangoMonitor &,DeviceImpl *);
+  public:
+    DevIntrThread(ShDevIntrTh &, TangoMonitor &, DeviceImpl *);
 
     void run(void *);
 
@@ -97,14 +97,14 @@ public:
     DevIntrCmdType get_command(DevLong);
     void push_event();
 
-protected:
-    ShDevIntrTh                &shared_data;
-    TangoMonitor            &p_mon;
-    DeviceImpl                *dev;
+  protected:
+    ShDevIntrTh &shared_data;
+    TangoMonitor &p_mon;
+    DeviceImpl *dev;
 
-    ShDevIntrTh                local_cmd;
+    ShDevIntrTh local_cmd;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _DINTRTHREAD_ */

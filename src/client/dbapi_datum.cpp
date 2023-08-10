@@ -42,14 +42,17 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-DbDatum::DbDatum(std::string p_name):ext(nullptr)
+DbDatum::DbDatum(std::string p_name) :
+    ext(nullptr)
 {
     name = p_name;
     value_size = 0;
     value_string.resize(0);
 }
 
-DbDatum::DbDatum(const char *p_name):name(p_name),ext(nullptr)
+DbDatum::DbDatum(const char *p_name) :
+    name(p_name),
+    ext(nullptr)
 {
     value_size = 0;
     value_string.resize(0);
@@ -61,7 +64,8 @@ DbDatum::DbDatum(const char *p_name):name(p_name),ext(nullptr)
 //
 //-----------------------------------------------------------------------------
 
-DbDatum::DbDatum():ext(nullptr)
+DbDatum::DbDatum() :
+    ext(nullptr)
 {
 }
 
@@ -71,9 +75,7 @@ DbDatum::DbDatum():ext(nullptr)
 //
 //-----------------------------------------------------------------------------
 
-DbDatum::~DbDatum()
-{
-}
+DbDatum::~DbDatum() { }
 
 //-----------------------------------------------------------------------------
 //
@@ -81,7 +83,8 @@ DbDatum::~DbDatum()
 //
 //-----------------------------------------------------------------------------
 
-DbDatum::DbDatum(const DbDatum &source):ext(new DbDatumExt)
+DbDatum::DbDatum(const DbDatum &source) :
+    ext(new DbDatumExt)
 {
     name = source.name;
     value_string = source.value_string;
@@ -116,9 +119,9 @@ DbDatum &DbDatum::operator=(const DbDatum &rval)
 
 bool DbDatum::is_empty()
 {
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "The DbDatum object is empty");
         }
@@ -136,7 +139,7 @@ bool DbDatum::is_empty()
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (bool datum)
+void DbDatum::operator<<(bool datum)
 {
     std::ostringstream ostream;
     ostream << std::boolalpha << datum;
@@ -154,43 +157,42 @@ void DbDatum::operator << (bool datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (bool &datum)
+bool DbDatum::operator>>(bool &datum)
 {
     bool ret;
 
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "Cannot extract short, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "Cannot extract short, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
+        std::transform(value_string[0].begin(), value_string[0].end(), value_string[0].begin(), ::tolower);
 
-        std::transform(value_string[0].begin(),
-              value_string[0].end(),
-              value_string[0].begin(),
-              ::tolower);
-
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> std::boolalpha >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a short");
+                TANGO_THROW_API_EXCEPTION(
+                    ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a short");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -198,7 +200,7 @@ bool DbDatum::operator >> (bool &datum)
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (short datum)
+void DbDatum::operator<<(short datum)
 {
     std::ostringstream ostream;
     ostream << datum;
@@ -216,33 +218,37 @@ void DbDatum::operator << (short datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (short &datum)const
+bool DbDatum::operator>>(short &datum) const
 {
     bool ret;
 
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "Cannot extract short, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "Cannot extract short, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
 
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a short");
+                TANGO_THROW_API_EXCEPTION(
+                    ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a short");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -254,10 +260,10 @@ bool DbDatum::operator >> (short &datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (unsigned char datum)
+void DbDatum::operator<<(unsigned char datum)
 {
     std::ostringstream ostream;
-    ostream << (short)datum; // to accept only numbers
+    ostream << (short) datum; // to accept only numbers
 
     value_string.resize(1);
     value_string[0] = std::string(ostream.str());
@@ -272,31 +278,36 @@ void DbDatum::operator << (unsigned char datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (unsigned char& datum)const
+bool DbDatum::operator>>(unsigned char &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not an unsigned short");
+                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                          API_IncompatibleArgumentType,
+                                          "Cannot extract, data in DbDatum is not an unsigned short");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -308,7 +319,7 @@ bool DbDatum::operator >> (unsigned char& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (unsigned short datum)
+void DbDatum::operator<<(unsigned short datum)
 {
     std::ostringstream ostream;
     ostream << datum;
@@ -326,31 +337,36 @@ void DbDatum::operator << (unsigned short datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (unsigned short& datum)const
+bool DbDatum::operator>>(unsigned short &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not an unsigned short");
+                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                          API_IncompatibleArgumentType,
+                                          "Cannot extract, data in DbDatum is not an unsigned short");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -362,7 +378,7 @@ bool DbDatum::operator >> (unsigned short& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (DevLong datum)
+void DbDatum::operator<<(DevLong datum)
 {
     std::ostringstream ostream;
     ostream << datum;
@@ -380,31 +396,36 @@ void DbDatum::operator << (DevLong datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (DevLong& datum)const
+bool DbDatum::operator>>(DevLong &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDbDatum, "cannot extract long, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDbDatum, "cannot extract long, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a DevLong (long 32 bits)");
+                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                          API_IncompatibleArgumentType,
+                                          "Cannot extract, data in DbDatum is not a DevLong (long 32 bits)");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -416,7 +437,7 @@ bool DbDatum::operator >> (DevLong& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (DevULong datum)
+void DbDatum::operator<<(DevULong datum)
 {
     std::ostringstream ostream;
     ostream << datum;
@@ -434,31 +455,36 @@ void DbDatum::operator << (DevULong datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (DevULong& datum)const
+bool DbDatum::operator>>(DevULong &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a DevULong (unsigned long 32 bits)");
+                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                          API_IncompatibleArgumentType,
+                                          "Cannot extract, data in DbDatum is not a DevULong (unsigned long 32 bits)");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -470,7 +496,7 @@ bool DbDatum::operator >> (DevULong& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (DevLong64 datum)
+void DbDatum::operator<<(DevLong64 datum)
 {
     std::ostringstream ostream;
     ostream << datum;
@@ -488,31 +514,36 @@ void DbDatum::operator << (DevLong64 datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (DevLong64 &datum)const
+bool DbDatum::operator>>(DevLong64 &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a DevLong64 (long 64 bits)");
+                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
+                                          API_IncompatibleArgumentType,
+                                          "Cannot extract, data in DbDatum is not a DevLong64 (long 64 bits)");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -524,7 +555,7 @@ bool DbDatum::operator >> (DevLong64 &datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (DevULong64 datum)
+void DbDatum::operator<<(DevULong64 datum)
 {
     std::ostringstream ostream;
     ostream << datum;
@@ -542,31 +573,37 @@ void DbDatum::operator << (DevULong64 datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (DevULong64 &datum)const
+bool DbDatum::operator>>(DevULong64 &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if (exceptions_flags.test(wrongtype_flag))
+            if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a DevULong64 (unsigned long 64 bits)");
+                TANGO_THROW_API_EXCEPTION(
+                    ApiDataExcept,
+                    API_IncompatibleArgumentType,
+                    "Cannot extract, data in DbDatum is not a DevULong64 (unsigned long 64 bits)");
             }
             ret = false;
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -578,7 +615,7 @@ bool DbDatum::operator >> (DevULong64 &datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (float datum)
+void DbDatum::operator<<(float datum)
 {
     std::ostringstream ostream;
     ostream << std::setprecision(TANGO_FLOAT_PRECISION) << datum;
@@ -596,40 +633,42 @@ void DbDatum::operator << (float datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (float& datum)const
+bool DbDatum::operator>>(float &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDbDatum, "cannot extract float, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDbDatum, "cannot extract float, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if ((TG_strcasecmp("nan",value_string[0].c_str()) == 0) ||
-                (TG_strcasecmp("-nan",value_string[0].c_str()) == 0))
+            if((TG_strcasecmp("nan", value_string[0].c_str()) == 0) ||
+               (TG_strcasecmp("-nan", value_string[0].c_str()) == 0))
             {
                 datum = std::numeric_limits<float>::quiet_NaN();
             }
-            else if (TG_strcasecmp("-inf",value_string[0].c_str()) == 0)
+            else if(TG_strcasecmp("-inf", value_string[0].c_str()) == 0)
             {
                 datum = -std::numeric_limits<float>::infinity();
             }
-            else if ((TG_strcasecmp("inf",value_string[0].c_str()) == 0) ||
-                     (TG_strcasecmp("+inf",value_string[0].c_str()) == 0))
+            else if((TG_strcasecmp("inf", value_string[0].c_str()) == 0) ||
+                    (TG_strcasecmp("+inf", value_string[0].c_str()) == 0))
             {
                 datum = std::numeric_limits<float>::infinity();
             }
-            else if (exceptions_flags.test(wrongtype_flag))
+            else if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a float");
+                TANGO_THROW_API_EXCEPTION(
+                    ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a float");
             }
             else
             {
@@ -637,7 +676,9 @@ bool DbDatum::operator >> (float& datum)const
             }
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -649,7 +690,7 @@ bool DbDatum::operator >> (float& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (double datum)
+void DbDatum::operator<<(double datum)
 {
     std::ostringstream ostream;
     ostream << std::setprecision(TANGO_FLOAT_PRECISION) << datum;
@@ -667,40 +708,42 @@ void DbDatum::operator << (double datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (double& datum)const
+bool DbDatum::operator>>(double &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract double, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract double, no data in DbDatum object ");
         }
         ret = false;
     }
     else
     {
-    std::istringstream istream(value_string[0]);
+        std::istringstream istream(value_string[0]);
         istream >> std::setprecision(TANGO_FLOAT_PRECISION) >> datum;
-        if (!istream)
+        if(!istream)
         {
-            if ((TG_strcasecmp("nan",value_string[0].c_str()) == 0) ||
-                (TG_strcasecmp("-nan",value_string[0].c_str()) == 0))
+            if((TG_strcasecmp("nan", value_string[0].c_str()) == 0) ||
+               (TG_strcasecmp("-nan", value_string[0].c_str()) == 0))
             {
                 datum = std::numeric_limits<double>::quiet_NaN();
             }
-            else if (TG_strcasecmp("-inf",value_string[0].c_str()) == 0)
+            else if(TG_strcasecmp("-inf", value_string[0].c_str()) == 0)
             {
                 datum = -std::numeric_limits<double>::infinity();
             }
-            else if ((TG_strcasecmp("inf",value_string[0].c_str()) == 0) ||
-                (TG_strcasecmp("+inf",value_string[0].c_str()) == 0))
+            else if((TG_strcasecmp("inf", value_string[0].c_str()) == 0) ||
+                    (TG_strcasecmp("+inf", value_string[0].c_str()) == 0))
             {
                 datum = std::numeric_limits<double>::infinity();
             }
-            else if (exceptions_flags.test(wrongtype_flag))
+            else if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a double");
+                TANGO_THROW_API_EXCEPTION(
+                    ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a double");
             }
             else
             {
@@ -708,11 +751,12 @@ bool DbDatum::operator >> (double& datum)const
             }
         }
         else
+        {
             ret = true;
+        }
     }
 
     return ret;
-
 }
 
 //-----------------------------------------------------------------------------
@@ -721,7 +765,7 @@ bool DbDatum::operator >> (double& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::string& datum)
+void DbDatum::operator<<(const std::string &datum)
 {
     value_string.resize(1);
     value_string[0] = datum;
@@ -735,14 +779,15 @@ void DbDatum::operator << (const std::string& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::string& datum)const
+bool DbDatum::operator>>(std::string &datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract string, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract string, no data in DbDatum object ");
         }
         ret = false;
     }
@@ -761,7 +806,7 @@ bool DbDatum::operator >> (std::string& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (char* datum)
+void DbDatum::operator<<(char *datum)
 {
     value_string.resize(1);
     value_string[0] = datum;
@@ -783,7 +828,7 @@ void DbDatum::operator << (char* datum)
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const char* datum)
+void DbDatum::operator<<(const char *datum)
 {
     value_string.resize(1);
     value_string[0] = datum;
@@ -805,14 +850,15 @@ void DbDatum::operator << (const char* datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (const char*& datum)const
+bool DbDatum::operator>>(const char *&datum) const
 {
     bool ret;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract string, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract string, no data in DbDatum object ");
         }
         ret = false;
     }
@@ -831,11 +877,11 @@ bool DbDatum::operator >> (const char*& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<short>& datum)
+void DbDatum::operator<<(const std::vector<short> &datum)
 {
     std::ostringstream ostream;
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << datum[i];
         value_string[i] = ostream.str();
@@ -852,35 +898,38 @@ void DbDatum::operator << (const std::vector<short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<short>& datum)const
+bool DbDatum::operator>>(std::vector<short> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract short vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract short vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.seekp (0); iostream.seekg(0); iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
+            iostream.clear();
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if (exceptions_flags.test(wrongtype_flag))
+                if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract short vector, elt number ";
-                    desc << i+1 << " is not a short" << std::ends;
+                    desc << i + 1 << " is not a short" << std::ends;
 
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
@@ -899,11 +948,11 @@ bool DbDatum::operator >> (std::vector<short>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<unsigned short>& datum)
+void DbDatum::operator<<(const std::vector<unsigned short> &datum)
 {
     std::ostringstream ostream;
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << datum[i];
         value_string[i] = ostream.str();
@@ -919,35 +968,38 @@ void DbDatum::operator << (const std::vector<unsigned short>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<unsigned short>& datum)const
+bool DbDatum::operator>>(std::vector<unsigned short> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.seekp (0); iostream.seekg(0); iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
+            iostream.clear();
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if (exceptions_flags.test(wrongtype_flag))
+                if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract unsigned short vector, elt number ";
-                    desc << i+1 << " is not an unsigned short" << std::ends;
+                    desc << i + 1 << " is not an unsigned short" << std::ends;
 
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
@@ -966,12 +1018,12 @@ bool DbDatum::operator >> (std::vector<unsigned short>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<DevLong>& datum)
+void DbDatum::operator<<(const std::vector<DevLong> &datum)
 {
     std::ostringstream ostream;
 
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << datum[i];
         value_string[i] = ostream.str();
@@ -987,35 +1039,38 @@ void DbDatum::operator << (const std::vector<DevLong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<DevLong>& datum)const
+bool DbDatum::operator>>(std::vector<DevLong> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract long vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract long vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.seekp (0); iostream.seekg(0); iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
+            iostream.clear();
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if (exceptions_flags.test(wrongtype_flag))
+                if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract long vector, elt number ";
-                    desc << i+1 << " is not a DevLong (long 32 bits)" << std::ends;
+                    desc << i + 1 << " is not a DevLong (long 32 bits)" << std::ends;
 
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
@@ -1034,12 +1089,12 @@ bool DbDatum::operator >> (std::vector<DevLong>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<DevULong>& datum)
+void DbDatum::operator<<(const std::vector<DevULong> &datum)
 {
     std::ostringstream ostream;
 
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << datum[i];
         value_string[i] = ostream.str();
@@ -1055,35 +1110,38 @@ void DbDatum::operator << (const std::vector<DevULong>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<DevULong>& datum)const
+bool DbDatum::operator>>(std::vector<DevULong> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.seekp (0); iostream.seekg(0); iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
+            iostream.clear();
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if (exceptions_flags.test(wrongtype_flag))
+                if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract unsigned long vector, elt number ";
-                    desc << i+1 << " is not a DevULong (unsigned long 32 bits)" << std::ends;
+                    desc << i + 1 << " is not a DevULong (unsigned long 32 bits)" << std::ends;
 
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
@@ -1102,12 +1160,12 @@ bool DbDatum::operator >> (std::vector<DevULong>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<DevLong64>& datum)
+void DbDatum::operator<<(const std::vector<DevLong64> &datum)
 {
     std::ostringstream ostream;
 
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << datum[i];
         value_string[i] = ostream.str();
@@ -1123,35 +1181,38 @@ void DbDatum::operator << (const std::vector<DevLong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<DevLong64>& datum)const
+bool DbDatum::operator>>(std::vector<DevLong64> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.seekp (0); iostream.seekg(0); iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
+            iostream.clear();
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if (exceptions_flags.test(wrongtype_flag))
+                if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract unsigned long vector, elt number ";
-                    desc << i+1 << " is not a DevLong64 (long 64 bits)" << std::ends;
+                    desc << i + 1 << " is not a DevLong64 (long 64 bits)" << std::ends;
 
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
@@ -1170,12 +1231,12 @@ bool DbDatum::operator >> (std::vector<DevLong64>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<DevULong64>& datum)
+void DbDatum::operator<<(const std::vector<DevULong64> &datum)
 {
     std::ostringstream ostream;
 
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << datum[i];
         value_string[i] = ostream.str();
@@ -1191,35 +1252,38 @@ void DbDatum::operator << (const std::vector<DevULong64>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<DevULong64>& datum)const
+bool DbDatum::operator>>(std::vector<DevULong64> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.seekp (0); iostream.seekg(0); iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
+            iostream.clear();
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if (exceptions_flags.test(wrongtype_flag))
+                if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract unsigned long vector, elt number ";
-                    desc << i+1 << " is not a DevULong64 (unsigned long 64 bits)" << std::ends;
+                    desc << i + 1 << " is not a DevULong64 (unsigned long 64 bits)" << std::ends;
 
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
@@ -1238,12 +1302,12 @@ bool DbDatum::operator >> (std::vector<DevULong64>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<float>& datum)
+void DbDatum::operator<<(const std::vector<float> &datum)
 {
     std::ostringstream ostream;
 
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << std::setprecision(TANGO_FLOAT_PRECISION) << datum[i];
         value_string[i] = ostream.str();
@@ -1259,48 +1323,52 @@ void DbDatum::operator << (const std::vector<float>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<float>& datum)const
+bool DbDatum::operator>>(std::vector<float> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract float vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract float vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.clear(); iostream.seekp(0); iostream.seekg(0);
+            iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
             iostream << value_string[i] << std::ends;
             iostream >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if ((TG_strcasecmp("nan",value_string[i].c_str()) == 0) ||
-                    (TG_strcasecmp("-nan",value_string[i].c_str()) == 0))
+                if((TG_strcasecmp("nan", value_string[i].c_str()) == 0) ||
+                   (TG_strcasecmp("-nan", value_string[i].c_str()) == 0))
                 {
                     datum[i] = std::numeric_limits<float>::quiet_NaN();
-                } else if (TG_strcasecmp("-inf",value_string[i].c_str()) == 0)
+                }
+                else if(TG_strcasecmp("-inf", value_string[i].c_str()) == 0)
                 {
                     datum[i] = -std::numeric_limits<float>::infinity();
                 }
-                else if ((TG_strcasecmp("inf",value_string[i].c_str()) == 0) ||
-                    (TG_strcasecmp("+inf",value_string[i].c_str()) == 0))
+                else if((TG_strcasecmp("inf", value_string[i].c_str()) == 0) ||
+                        (TG_strcasecmp("+inf", value_string[i].c_str()) == 0))
                 {
                     datum[i] = std::numeric_limits<float>::infinity();
                 }
-                else if (exceptions_flags.test(wrongtype_flag))
+                else if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract float vector, elt number ";
-                    desc << i+1 << " is not a float" << std::ends;
+                    desc << i + 1 << " is not a float" << std::ends;
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 else
@@ -1321,12 +1389,12 @@ bool DbDatum::operator >> (std::vector<float>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<double>& datum)
+void DbDatum::operator<<(const std::vector<double> &datum)
 {
     std::ostringstream ostream;
     value_string.resize(datum.size());
 
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         ostream << std::setprecision(TANGO_FLOAT_PRECISION) << datum[i];
         value_string[i] = ostream.str();
@@ -1343,48 +1411,52 @@ void DbDatum::operator << (const std::vector<double>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<double>& datum)const
+bool DbDatum::operator>>(std::vector<double> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract double vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract double vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
     }
     else
     {
-    std::stringstream iostream;
+        std::stringstream iostream;
 
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
-            iostream.clear(); iostream.seekp(0); iostream.seekg(0);
+            iostream.clear();
+            iostream.seekp(0);
+            iostream.seekg(0);
             iostream << value_string[i] << std::ends;
             iostream >> std::setprecision(TANGO_FLOAT_PRECISION) >> datum[i];
-            if (!iostream)
+            if(!iostream)
             {
-                if ((TG_strcasecmp("nan",value_string[i].c_str()) == 0) ||
-                    (TG_strcasecmp("-nan",value_string[i].c_str()) == 0))
+                if((TG_strcasecmp("nan", value_string[i].c_str()) == 0) ||
+                   (TG_strcasecmp("-nan", value_string[i].c_str()) == 0))
                 {
                     datum[i] = std::numeric_limits<double>::quiet_NaN();
-                } else if (TG_strcasecmp("-inf",value_string[i].c_str()) == 0)
+                }
+                else if(TG_strcasecmp("-inf", value_string[i].c_str()) == 0)
                 {
                     datum[i] = -std::numeric_limits<double>::infinity();
                 }
-                else if ((TG_strcasecmp("inf",value_string[i].c_str()) == 0) ||
-                         (TG_strcasecmp("+inf",value_string[i].c_str()) == 0))
+                else if((TG_strcasecmp("inf", value_string[i].c_str()) == 0) ||
+                        (TG_strcasecmp("+inf", value_string[i].c_str()) == 0))
                 {
                     datum[i] = std::numeric_limits<double>::infinity();
                 }
-                else if (exceptions_flags.test(wrongtype_flag))
+                else if(exceptions_flags.test(wrongtype_flag))
                 {
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract double vector, elt number ";
-                    desc << i+1 << " is not a double" << std::ends;
+                    desc << i + 1 << " is not a double" << std::ends;
                     TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 else
@@ -1404,10 +1476,10 @@ bool DbDatum::operator >> (std::vector<double>& datum)const
 //
 //-----------------------------------------------------------------------------
 
-void DbDatum::operator << (const std::vector<std::string>& datum)
+void DbDatum::operator<<(const std::vector<std::string> &datum)
 {
     value_string.resize(datum.size());
-    for (unsigned int i=0; i<datum.size(); i++)
+    for(unsigned int i = 0; i < datum.size(); i++)
     {
         value_string[i] = datum[i];
     }
@@ -1421,14 +1493,15 @@ void DbDatum::operator << (const std::vector<std::string>& datum)
 //
 //-----------------------------------------------------------------------------
 
-bool DbDatum::operator >> (std::vector<std::string>& datum)const
+bool DbDatum::operator>>(std::vector<std::string> &datum) const
 {
     bool ret = true;
-    if (value_string.size() == 0)
+    if(value_string.size() == 0)
     {
-        if (exceptions_flags.test(isempty_flag))
+        if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "cannot extract string vector, no data in DbDatum object ");
+            TANGO_THROW_API_EXCEPTION(
+                ApiDataExcept, API_EmptyDbDatum, "cannot extract string vector, no data in DbDatum object ");
         }
         datum.resize(0);
         ret = false;
@@ -1436,7 +1509,7 @@ bool DbDatum::operator >> (std::vector<std::string>& datum)const
     else
     {
         datum.resize(value_string.size());
-        for (unsigned int i=0; i<value_string.size(); i++)
+        for(unsigned int i = 0; i < value_string.size(); i++)
         {
             datum[i] = value_string[i];
         }
@@ -1445,4 +1518,4 @@ bool DbDatum::operator >> (std::vector<std::string>& datum)const
     return ret;
 }
 
-} // End of Tango namespace
+} // namespace Tango

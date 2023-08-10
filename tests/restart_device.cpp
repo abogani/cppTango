@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if ((argc < 3) || (argc > 4))
+    if((argc < 3) || (argc > 4))
     {
         TEST_LOG << "usage: restart_device device cmd" << endl;
         exit(-1);
@@ -23,13 +23,13 @@ int main(int argc, char **argv)
 
     string device_name = argv[1];
     string cmd_name = argv[2];
-    transform(cmd_name.begin(),cmd_name.end(),cmd_name.begin(),::tolower);
+    transform(cmd_name.begin(), cmd_name.end(), cmd_name.begin(), ::tolower);
 
     try
     {
         device = new DeviceProxy(device_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         return -1;
@@ -43,9 +43,11 @@ int main(int argc, char **argv)
         admin = new DeviceProxy(adm_name);
 
         DeviceData din;
-        if (cmd_name == "devrestart")
+        if(cmd_name == "devrestart")
+        {
             din << device_name;
-        else if (cmd_name == "addobjpolling")
+        }
+        else if(cmd_name == "addobjpolling")
         {
             vector<Tango::DevLong> vl;
             vector<string> vs;
@@ -55,9 +57,9 @@ int main(int argc, char **argv)
             vs.push_back("command");
             vs.push_back("state");
 
-            din.insert(vl,vs);
+            din.insert(vl, vs);
         }
-        else if (cmd_name == "remobjpolling")
+        else if(cmd_name == "remobjpolling")
         {
             vector<string> vs;
 
@@ -67,7 +69,7 @@ int main(int argc, char **argv)
 
             din << vs;
         }
-        else if (cmd_name == "updobjpollingperiod")
+        else if(cmd_name == "updobjpollingperiod")
         {
             vector<Tango::DevLong> vl;
             vector<string> vs;
@@ -77,9 +79,9 @@ int main(int argc, char **argv)
             vs.push_back("command");
             vs.push_back("state");
 
-            din.insert(vl,vs);
+            din.insert(vl, vs);
         }
-        else if (cmd_name == "addloggingtarget")
+        else if(cmd_name == "addloggingtarget")
         {
             vector<string> vs;
 
@@ -88,7 +90,7 @@ int main(int argc, char **argv)
 
             din << vs;
         }
-        else if (cmd_name == "removeloggingtarget")
+        else if(cmd_name == "removeloggingtarget")
         {
             vector<string> vs;
 
@@ -97,7 +99,7 @@ int main(int argc, char **argv)
 
             din << vs;
         }
-        else if (cmd_name == "setlogginglevel")
+        else if(cmd_name == "setlogginglevel")
         {
             vector<Tango::DevLong> vl;
             vector<string> vs;
@@ -105,22 +107,27 @@ int main(int argc, char **argv)
             vl.push_back(5);
             vs.push_back(device_name);
 
-            din.insert(vl,vs);
+            din.insert(vl, vs);
         }
         else
+        {
             return -1;
+        }
 
-        admin->command_inout(cmd_name,din);
+        admin->command_inout(cmd_name, din);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
-        if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) == 0)
+        if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) == 0)
+        {
             return 1;
+        }
         else
+        {
             return 2;
+        }
     }
 
     delete device;
     return 0;
-
 }

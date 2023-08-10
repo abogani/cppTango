@@ -6,19 +6,18 @@
 #undef SUITE_NAME
 #define SUITE_NAME ExceptionTestSuite
 
-class ExceptionTestSuite: public CxxTest::TestSuite
+class ExceptionTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
     string device1_name;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string dserver_name;
 
@@ -27,10 +26,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -39,12 +37,11 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -75,11 +72,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test throw exception command
+    // Test throw exception command
 
     void test_throw_exception_command(void)
     {
@@ -90,12 +87,13 @@ public:
         in_except.svalue[0] = "Test Exception";
         DeviceData din;
         din << in_except;
-        TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOThrow", din), Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Test Exception");
-                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::PANIC));
+        TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOThrow", din),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Test Exception");
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::PANIC));
     }
 
-// Test throw exception with several levels
+    // Test throw exception with several levels
 
     void test_throw_exception_with_several_levels(void)
     {
@@ -110,25 +108,27 @@ public:
         in_except.svalue[2] = "Test exception level 3";
         DeviceData din;
         din << in_except;
-        TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOReThrow", din), Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Test exception level 1");
-                TS_ASSERT_EQUALS(string(e.errors[1].reason.in()), "Test exception level 2");
-                TS_ASSERT_EQUALS(string(e.errors[2].reason.in()), "Test exception level 3");
-                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::PANIC);
-                TS_ASSERT_EQUALS(e.errors[1].severity, Tango::ERR);
-                TS_ASSERT_EQUALS(e.errors[2].severity, Tango::PANIC));
+        TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOReThrow", din),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Test exception level 1");
+                                TS_ASSERT_EQUALS(string(e.errors[1].reason.in()), "Test exception level 2");
+                                TS_ASSERT_EQUALS(string(e.errors[2].reason.in()), "Test exception level 3");
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::PANIC);
+                                TS_ASSERT_EQUALS(e.errors[1].severity, Tango::ERR);
+                                TS_ASSERT_EQUALS(e.errors[2].severity, Tango::PANIC));
     }
 
-// Test command not found exception
+    // Test command not found exception
 
     void test_command_not_found_exception(void)
     {
-        TS_ASSERT_THROWS_ASSERT(device1->command_inout("DevToto"), Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CommandNotFound);
-                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(device1->command_inout("DevToto"),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CommandNotFound);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
     }
 
-// Test command not allowed in this state exception
+    // Test command not allowed in this state exception
 
     void test_command_not_allowed_in_this_state_exception(void)
     {
@@ -140,21 +140,22 @@ public:
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOState", din));
         TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("State"));
         dout >> state_out;
-//        TEST_LOG << "----> STATE: " << state_out << endl;
+        //        TEST_LOG << "----> STATE: " << state_out << endl;
         TS_ASSERT_EQUALS(state_out, Tango::OFF);
 
         DevLong num = 1L;
         din << num;
-        TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOLong", din), Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CommandNotAllowed);
-                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(device1->command_inout("IOLong", din),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CommandNotAllowed);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         state_in = Tango::ON;
         din << state_in;
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOState", din));
         TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("State"));
         dout >> state_out;
-//        TEST_LOG << "----> STATE: " << state_out << endl;
+        //        TEST_LOG << "----> STATE: " << state_out << endl;
         TS_ASSERT_EQUALS(state_out, Tango::ON);
     }
 };

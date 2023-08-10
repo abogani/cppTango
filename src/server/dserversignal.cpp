@@ -36,7 +36,7 @@
 #include <tango/server/dserversignal.h>
 
 #ifndef _TG_WINDOWS_
-#include <errno.h>
+  #include <errno.h>
 #endif
 
 namespace Tango
@@ -49,7 +49,6 @@ std::string DServerSignal::sig_name[_NSIG];
 HANDLE DServerSignal::win_ev = NULL;
 int DServerSignal::win_signo = 0;
 #endif
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -64,20 +63,19 @@ int DServerSignal::win_signo = 0;
 
 DServerSignal *DServerSignal::instance()
 {
-    if (_instance == NULL)
+    if(_instance == NULL)
     {
         try
         {
             _instance = new DServerSignal();
         }
-        catch (std::bad_alloc &)
+        catch(std::bad_alloc &)
         {
             throw;
         }
     }
     return _instance;
 }
-
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -89,13 +87,14 @@ DServerSignal *DServerSignal::instance()
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-DServerSignal::DServerSignal():TangoMonitor("signal")
+DServerSignal::DServerSignal() :
+    TangoMonitor("signal")
 {
     TANGO_LOG_DEBUG << "Entering DServerSignal constructor" << std::endl;
 
-//
-// Set array of signal name
-//
+    //
+    // Set array of signal name
+    //
 
 #ifdef _TG_WINDOWS_
     sig_name[SIGINT] = "SIGINT";
@@ -131,30 +130,30 @@ DServerSignal::DServerSignal():TangoMonitor("signal")
     sig_name[SIGCONT] = "SIGCONT";
     sig_name[SIGTTIN] = "SIGTTIN";
     sig_name[SIGTTOU] = "SIGTTOU";
-    sig_name[SIGURG]  = "SIGURG";
-    sig_name[SIGSYS]  = "SIGSYS";
-#ifdef linux
+    sig_name[SIGURG] = "SIGURG";
+    sig_name[SIGSYS] = "SIGSYS";
+  #ifdef linux
     sig_name[SIGXCPU] = "SIGXCPU";
     sig_name[SIGXFSZ] = "SIGXFSZ";
-    sig_name[SIGCLD]  = "SIGCLD";
-    sig_name[SIGPWR]  = "SIGPWR";
-#else
-#ifdef __APPLE__
-    sig_name[SIGEMT]  = "SIGEMT";
+    sig_name[SIGCLD] = "SIGCLD";
+    sig_name[SIGPWR] = "SIGPWR";
+  #else
+    #ifdef __APPLE__
+    sig_name[SIGEMT] = "SIGEMT";
     sig_name[SIGINFO] = "SIGINFO";
-#else
-#ifdef __freebsd__
+    #else
+      #ifdef __freebsd__
     sig_name[SIGXCPU] = "SIGXCPU";
     sig_name[SIGXFSZ] = "SIGXFSZ";
-#endif /* __freebsd__ */
-#endif /* __APPLE__ */
-#endif /* linux */
-#endif /* _TG_WINDOWS_ */
+      #endif /* __freebsd__ */
+    #endif   /* __APPLE__ */
+  #endif     /* linux */
+#endif       /* _TG_WINDOWS_ */
 
     TangoSys_OMemStream o;
-    for (long i = 0;i < _NSIG;i++)
+    for(long i = 0; i < _NSIG; i++)
     {
-        if (sig_name[i].size() == 0)
+        if(sig_name[i].size() == 0)
         {
             o << i << std::ends;
             sig_name[i] = o.str();
@@ -167,11 +166,11 @@ DServerSignal::DServerSignal():TangoMonitor("signal")
     sig_to_remove = false;
 
 #ifndef _TG_WINDOWS_
-//
-// With Solaris/Linux, the SIGINT and SIGQUIT default actions are set to SIG_IGN for all processes started in the
-// background (POSIX requirement). Signal SIGINT is used by Tango in its signal management, reset the default action
-// to default
-//
+    //
+    // With Solaris/Linux, the SIGINT and SIGQUIT default actions are set to SIG_IGN for all processes started in the
+    // background (POSIX requirement). Signal SIGINT is used by Tango in its signal management, reset the default action
+    // to default
+    //
 
     struct sigaction sa;
 
@@ -179,50 +178,56 @@ DServerSignal::DServerSignal():TangoMonitor("signal")
     sa.sa_handler = SIG_DFL;
     sigemptyset(&sa.sa_mask);
 
-    if (sigaction(SIGINT,&sa,NULL) == -1)
+    if(sigaction(SIGINT, &sa, NULL) == -1)
+    {
         std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGINT to SIG_DFL" << std::endl;
+    }
 
-    if (sigaction(SIGQUIT,&sa,NULL) == -1)
+    if(sigaction(SIGQUIT, &sa, NULL) == -1)
+    {
         std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGQUIT to SIG_DFL" << std::endl;
+    }
 
-//
-// Block signals in thread other than the thread dedicated to signal
-//
+    //
+    // Block signals in thread other than the thread dedicated to signal
+    //
 
     sigset_t sigs_to_block;
     sigemptyset(&sigs_to_block);
 
     sigfillset(&sigs_to_block);
 
-    sigdelset(&sigs_to_block,SIGABRT);
-    sigdelset(&sigs_to_block,SIGKILL);
-    sigdelset(&sigs_to_block,SIGILL);
-    sigdelset(&sigs_to_block,SIGTRAP);
-    sigdelset(&sigs_to_block,SIGIOT);
-    sigdelset(&sigs_to_block,SIGFPE);
-    sigdelset(&sigs_to_block,SIGBUS);
-    sigdelset(&sigs_to_block,SIGSEGV);
-    sigdelset(&sigs_to_block,SIGSYS);
-    sigdelset(&sigs_to_block,SIGPIPE);
-    sigdelset(&sigs_to_block,SIGSTOP);
+    sigdelset(&sigs_to_block, SIGABRT);
+    sigdelset(&sigs_to_block, SIGKILL);
+    sigdelset(&sigs_to_block, SIGILL);
+    sigdelset(&sigs_to_block, SIGTRAP);
+    sigdelset(&sigs_to_block, SIGIOT);
+    sigdelset(&sigs_to_block, SIGFPE);
+    sigdelset(&sigs_to_block, SIGBUS);
+    sigdelset(&sigs_to_block, SIGSEGV);
+    sigdelset(&sigs_to_block, SIGSYS);
+    sigdelset(&sigs_to_block, SIGPIPE);
+    sigdelset(&sigs_to_block, SIGSTOP);
 
-    sigdelset(&sigs_to_block,SIGTSTP);
-    sigdelset(&sigs_to_block,SIGUSR1);
-    sigdelset(&sigs_to_block,SIGUSR2);
-    sigprocmask(SIG_BLOCK,&sigs_to_block,NULL);
-#else /* _TG_WINDOWS_ */
-    win_ev = CreateEvent(NULL,FALSE,FALSE,NULL);
+    sigdelset(&sigs_to_block, SIGTSTP);
+    sigdelset(&sigs_to_block, SIGUSR1);
+    sigdelset(&sigs_to_block, SIGUSR2);
+    sigprocmask(SIG_BLOCK, &sigs_to_block, NULL);
+#else  /* _TG_WINDOWS_ */
+    win_ev = CreateEvent(NULL, FALSE, FALSE, NULL);
 
     register_handler(SIGINT);
     register_handler(SIGTERM);
     register_handler(SIGABRT);
-    if (Util::_service == false)
+    if(Util::_service == false)
+    {
         register_handler(SIGBREAK);
+    }
 #endif /* _TG_WINDOWS_ */
 
-//
-// Start the thread dedicated to signal
-//
+    //
+    // Start the thread dedicated to signal
+    //
 
     sig_th = new ThSig(this);
     sig_th->start();
@@ -246,17 +251,16 @@ DServerSignal::DServerSignal():TangoMonitor("signal")
 //-----------------------------------------------------------------------------
 
 #if defined _TG_WINDOWS_
-void DServerSignal::register_class_signal(long signo,DeviceClass *cl_ptr)
+void DServerSignal::register_class_signal(long signo, DeviceClass *cl_ptr)
 #else
-void DServerSignal::register_class_signal(long signo,bool handler,DeviceClass *cl_ptr)
+void DServerSignal::register_class_signal(long signo, bool handler, DeviceClass *cl_ptr)
 #endif
 {
+    //
+    // Check signal validity
+    //
 
-//
-// Check signal validity
-//
-
-    if ((signo < 1) || (signo >= _NSIG))
+    if((signo < 1) || (signo >= _NSIG))
     {
         TangoSys_OMemStream o;
         o << "Signal number " << signo << " out of range" << std::ends;
@@ -264,7 +268,7 @@ void DServerSignal::register_class_signal(long signo,bool handler,DeviceClass *c
     }
 
 #ifndef _TG_WINDOWS_
-    if ((auto_signal(signo) == true) && (handler == true))
+    if((auto_signal(signo) == true) && (handler == true))
     {
         TangoSys_OMemStream o;
         o << "Signal " << sig_name[signo] << "is not authorized using your own handler" << std::ends;
@@ -272,31 +276,30 @@ void DServerSignal::register_class_signal(long signo,bool handler,DeviceClass *c
     }
 #endif
 
-//
-// If nothing is registered for this signal, install the OS signal handler
-//
+    //
+    // If nothing is registered for this signal, install the OS signal handler
+    //
 
-    if (auto_signal(signo) == false)
+    if(auto_signal(signo) == false)
     {
-        if ((reg_sig[signo].registered_devices.empty() == true) &&
-            (reg_sig[signo].registered_classes.empty() == true))
+        if((reg_sig[signo].registered_devices.empty() == true) && (reg_sig[signo].registered_classes.empty() == true))
         {
 #ifdef _TG_WINDOWS_
             register_handler(signo);
 #else
-            register_handler(signo,handler);
+            register_handler(signo, handler);
 #endif
         }
     }
 
-//
-// Check if class is already registered for this signal. If it is already done, leave method.
-// Otherwise, record class pointer
-//
+    //
+    // Check if class is already registered for this signal. If it is already done, leave method.
+    // Otherwise, record class pointer
+    //
 
-    std::vector<DeviceClass *>::iterator f = find_class(signo,cl_ptr);
+    std::vector<DeviceClass *>::iterator f = find_class(signo, cl_ptr);
 
-    if (f == reg_sig[signo].registered_classes.end())
+    if(f == reg_sig[signo].registered_classes.end())
     {
         reg_sig[signo].registered_classes.push_back(cl_ptr);
 #ifndef _TG_WINDOWS_
@@ -321,17 +324,18 @@ void DServerSignal::register_class_signal(long signo,bool handler,DeviceClass *c
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-std::vector<DeviceClass *>::iterator DServerSignal::find_class(long signo,DeviceClass *cl_ptr)
+std::vector<DeviceClass *>::iterator DServerSignal::find_class(long signo, DeviceClass *cl_ptr)
 {
     std::vector<DeviceClass *>::iterator p;
-    for (p = reg_sig[signo].registered_classes.begin();p < reg_sig[signo].registered_classes.end();++p)
+    for(p = reg_sig[signo].registered_classes.begin(); p < reg_sig[signo].registered_classes.end(); ++p)
     {
-        if ((*p) == cl_ptr)
+        if((*p) == cl_ptr)
+        {
             break;
+        }
     }
     return p;
 }
-
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -349,17 +353,16 @@ std::vector<DeviceClass *>::iterator DServerSignal::find_class(long signo,Device
 //------------------------------------------------------------------------------------------------------------------
 
 #ifdef _TG_WINDOWS_
-void DServerSignal::register_dev_signal(long signo,DeviceImpl *dev_ptr)
+void DServerSignal::register_dev_signal(long signo, DeviceImpl *dev_ptr)
 #else
-void DServerSignal::register_dev_signal(long signo,bool handler,DeviceImpl *dev_ptr)
+void DServerSignal::register_dev_signal(long signo, bool handler, DeviceImpl *dev_ptr)
 #endif
 {
+    //
+    // Check signal validity
+    //
 
-//
-// Check signal validity
-//
-
-    if ((signo < 1) || (signo >= _NSIG))
+    if((signo < 1) || (signo >= _NSIG))
     {
         TangoSys_OMemStream o;
         o << "Signal number " << signo << " out of range" << std::ends;
@@ -367,7 +370,7 @@ void DServerSignal::register_dev_signal(long signo,bool handler,DeviceImpl *dev_
     }
 
 #ifndef _TG_WINDOWS_
-    if ((auto_signal(signo) == true) && (handler == true))
+    if((auto_signal(signo) == true) && (handler == true))
     {
         TangoSys_OMemStream o;
         o << "Signal " << sig_name[signo] << "is not authorized using your own handler" << std::ends;
@@ -375,31 +378,30 @@ void DServerSignal::register_dev_signal(long signo,bool handler,DeviceImpl *dev_
     }
 #endif
 
-//
-// If nothing is registered for this signal, install the OS signal handler
-//
+    //
+    // If nothing is registered for this signal, install the OS signal handler
+    //
 
-    if (auto_signal(signo) == false)
+    if(auto_signal(signo) == false)
     {
-        if ((reg_sig[signo].registered_devices.empty() == true) &&
-            (reg_sig[signo].registered_classes.empty() == true))
+        if((reg_sig[signo].registered_devices.empty() == true) && (reg_sig[signo].registered_classes.empty() == true))
         {
-#ifdef  _TG_WINDOWS_
+#ifdef _TG_WINDOWS_
             register_handler(signo);
 #else
-            register_handler(signo,handler);
+            register_handler(signo, handler);
 #endif
         }
     }
 
-//
-// Check if devices is already registered for this signal. If it is already done, leave method.
-// Otherwise, record class pointer
-//
+    //
+    // Check if devices is already registered for this signal. If it is already done, leave method.
+    // Otherwise, record class pointer
+    //
 
-    std::vector<DeviceImpl *>::iterator f = find_device(signo,dev_ptr);
+    std::vector<DeviceImpl *>::iterator f = find_device(signo, dev_ptr);
 
-    if (f == reg_sig[signo].registered_devices.end())
+    if(f == reg_sig[signo].registered_devices.end())
     {
         reg_sig[signo].registered_devices.push_back(dev_ptr);
 #ifndef _TG_WINDOWS_
@@ -424,17 +426,18 @@ void DServerSignal::register_dev_signal(long signo,bool handler,DeviceImpl *dev_
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-std::vector<DeviceImpl *>::iterator DServerSignal::find_device(long signo,DeviceImpl *dev_ptr)
+std::vector<DeviceImpl *>::iterator DServerSignal::find_device(long signo, DeviceImpl *dev_ptr)
 {
     std::vector<DeviceImpl *>::iterator p;
-    for (p = reg_sig[signo].registered_devices.begin();p < reg_sig[signo].registered_devices.end();++p)
+    for(p = reg_sig[signo].registered_devices.begin(); p < reg_sig[signo].registered_devices.end(); ++p)
     {
-        if ((*p) == dev_ptr)
+        if((*p) == dev_ptr)
+        {
             break;
+        }
     }
     return p;
 }
-
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
@@ -451,41 +454,45 @@ std::vector<DeviceImpl *>::iterator DServerSignal::find_device(long signo,Device
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DServerSignal::unregister_class_signal(long signo,DeviceClass *cl_ptr)
+void DServerSignal::unregister_class_signal(long signo, DeviceClass *cl_ptr)
 {
+    //
+    // Check signal validity
+    //
 
-//
-// Check signal validity
-//
-
-    if ((signo < 1) || (signo >= _NSIG))
+    if((signo < 1) || (signo >= _NSIG))
     {
         TangoSys_OMemStream o;
         o << "Signal number " << signo << " out of range" << std::ends;
         TANGO_THROW_EXCEPTION(API_SignalOutOfRange, o.str());
     }
 
-//
-// Check if class is already registered for this signal. If it is already done, leave method.
-// Otherwise, record class pointer
-//
+    //
+    // Check if class is already registered for this signal. If it is already done, leave method.
+    // Otherwise, record class pointer
+    //
 
-    std::vector<DeviceClass *>::iterator f = find_class(signo,cl_ptr);
+    std::vector<DeviceClass *>::iterator f = find_class(signo, cl_ptr);
 
-    if (f == reg_sig[signo].registered_classes.end())
-            return;
-    else
-        reg_sig[signo].registered_classes.erase(f);
-
-//
-// If nothing is registered for this signal, unregister the OS signal handler and (eventually) the event handler
-//
-
-    if (auto_signal(signo) == false)
+    if(f == reg_sig[signo].registered_classes.end())
     {
-        if ((reg_sig[signo].registered_classes.empty() == true) &&
-                (reg_sig[signo].registered_devices.empty() == true))
-                unregister_handler(signo);
+        return;
+    }
+    else
+    {
+        reg_sig[signo].registered_classes.erase(f);
+    }
+
+    //
+    // If nothing is registered for this signal, unregister the OS signal handler and (eventually) the event handler
+    //
+
+    if(auto_signal(signo) == false)
+    {
+        if((reg_sig[signo].registered_classes.empty() == true) && (reg_sig[signo].registered_devices.empty() == true))
+        {
+            unregister_handler(signo);
+        }
     }
 }
 
@@ -504,46 +511,46 @@ void DServerSignal::unregister_class_signal(long signo,DeviceClass *cl_ptr)
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DServerSignal::unregister_dev_signal(long signo,DeviceImpl *dev_ptr)
+void DServerSignal::unregister_dev_signal(long signo, DeviceImpl *dev_ptr)
 {
+    //
+    // Check signal validity
+    //
 
-//
-// Check signal validity
-//
-
-    if ((signo < 1) || (signo >= _NSIG))
+    if((signo < 1) || (signo >= _NSIG))
     {
         TangoSys_OMemStream o;
         o << "Signal number " << signo << " out of range" << std::ends;
         TANGO_THROW_EXCEPTION(API_SignalOutOfRange, o.str());
     }
 
-//
-// Check if device is already registered for this signal. If yes, remove it.
-// Otherwise, leave method
-//
+    //
+    // Check if device is already registered for this signal. If yes, remove it.
+    // Otherwise, leave method
+    //
 
+    std::vector<DeviceImpl *>::iterator f = find_device(signo, dev_ptr);
 
-    std::vector<DeviceImpl *>::iterator f = find_device(signo,dev_ptr);
-
-    if (f == reg_sig[signo].registered_devices.end())
-        return;
-    else
-        reg_sig[signo].registered_devices.erase(f);
-
-//
-// If nothing is registered for this signal, unregister the OS signal handler and eventually the event handler
-//
-
-    if (auto_signal(signo) == false)
+    if(f == reg_sig[signo].registered_devices.end())
     {
-        if ((reg_sig[signo].registered_classes.empty() == true) &&
-                (reg_sig[signo].registered_devices.empty() == true))
-        {
-                unregister_handler(signo);
-        }
+        return;
+    }
+    else
+    {
+        reg_sig[signo].registered_devices.erase(f);
     }
 
+    //
+    // If nothing is registered for this signal, unregister the OS signal handler and eventually the event handler
+    //
+
+    if(auto_signal(signo) == false)
+    {
+        if((reg_sig[signo].registered_classes.empty() == true) && (reg_sig[signo].registered_devices.empty() == true))
+        {
+            unregister_handler(signo);
+        }
+    }
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -564,32 +571,35 @@ void DServerSignal::unregister_dev_signal(DeviceImpl *dev_ptr)
 {
     long i;
 
-    for (i = 0;i < _NSIG;i++)
+    for(i = 0; i < _NSIG; i++)
     {
+        //
+        // Check if device is registered for this signal. If yes, remove it. Otherwise, go to next signal
+        //
 
-//
-// Check if device is registered for this signal. If yes, remove it. Otherwise, go to next signal
-//
+        std::vector<DeviceImpl *>::iterator f = find_device(i, dev_ptr);
 
-        std::vector<DeviceImpl *>::iterator f = find_device(i,dev_ptr);
-
-        if (f == reg_sig[i].registered_devices.end())
-            continue;
-        else
-            reg_sig[i].registered_devices.erase(f);
-
-//
-// If nothing is registered for this signal, unregister the OS signal handler
-//
-
-        if (auto_signal(i) == false)
+        if(f == reg_sig[i].registered_devices.end())
         {
-            if ((reg_sig[i].registered_classes.empty() == true) &&
-                        (reg_sig[i].registered_devices.empty() == true))
-                    unregister_handler(i);
+            continue;
+        }
+        else
+        {
+            reg_sig[i].registered_devices.erase(f);
+        }
+
+        //
+        // If nothing is registered for this signal, unregister the OS signal handler
+        //
+
+        if(auto_signal(i) == false)
+        {
+            if((reg_sig[i].registered_classes.empty() == true) && (reg_sig[i].registered_devices.empty() == true))
+            {
+                unregister_handler(i);
+            }
         }
     }
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -610,32 +620,35 @@ void DServerSignal::unregister_class_signal(DeviceClass *cl_ptr)
 {
     long i;
 
-    for (i = 0;i < _NSIG;i++)
+    for(i = 0; i < _NSIG; i++)
     {
+        //
+        // Check if classes is registered for this signal. If yes, remove it. Otherwise, go to next signal
+        //
 
-//
-// Check if classes is registered for this signal. If yes, remove it. Otherwise, go to next signal
-//
+        std::vector<DeviceClass *>::iterator f = find_class(i, cl_ptr);
 
-        std::vector<DeviceClass *>::iterator f = find_class(i,cl_ptr);
-
-        if (f == reg_sig[i].registered_classes.end())
-            continue;
-        else
-            reg_sig[i].registered_classes.erase(f);
-
-//
-// If nothing is registered for this signal, unregister the OS signal handler
-//
-
-        if (auto_signal(i) == false)
+        if(f == reg_sig[i].registered_classes.end())
         {
-            if ((reg_sig[i].registered_classes.empty() == true) &&
-                        (reg_sig[i].registered_devices.empty() == true))
-                    unregister_handler(i);
+            continue;
+        }
+        else
+        {
+            reg_sig[i].registered_classes.erase(f);
+        }
+
+        //
+        // If nothing is registered for this signal, unregister the OS signal handler
+        //
+
+        if(auto_signal(i) == false)
+        {
+            if((reg_sig[i].registered_classes.empty() == true) && (reg_sig[i].registered_devices.empty() == true))
+            {
+                unregister_handler(i);
+            }
         }
     }
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -655,26 +668,26 @@ void DServerSignal::unregister_class_signal(DeviceClass *cl_ptr)
 #ifdef _TG_WINDOWS_
 void DServerSignal::register_handler(long signo)
 #else
-void DServerSignal::register_handler(long signo,bool handler)
+void DServerSignal::register_handler(long signo, bool handler)
 #endif
 {
     TANGO_LOG_DEBUG << "Installing OS signal handler for signal " << sig_name[signo] << std::endl;
 
 #ifdef _TG_WINDOWS_
-    if (::signal(signo, DServerSignal::main_sig_handler) == SIG_ERR)
+    if(::signal(signo, DServerSignal::main_sig_handler) == SIG_ERR)
     {
         TangoSys_OMemStream o;
         o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
         TANGO_THROW_EXCEPTION(API_CantInstallSignal, o.str());
     }
 #else
-    if (handler == true)
+    if(handler == true)
     {
         sigset_t sigs_to_unblock;
         sigemptyset(&sigs_to_unblock);
-        sigaddset(&sigs_to_unblock,signo);
+        sigaddset(&sigs_to_unblock, signo);
 
-        if (pthread_sigmask(SIG_UNBLOCK,&sigs_to_unblock,NULL) != 0)
+        if(pthread_sigmask(SIG_UNBLOCK, &sigs_to_unblock, NULL) != 0)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -687,7 +700,7 @@ void DServerSignal::register_handler(long signo,bool handler)
         sa.sa_handler = DServerSignal::main_sig_handler;
         sigemptyset(&sa.sa_mask);
 
-        if (sigaction((int)signo,&sa,0) == -1)
+        if(sigaction((int) signo, &sa, 0) == -1)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -705,11 +718,10 @@ void DServerSignal::register_handler(long signo,bool handler)
         sig_to_install = true;
         inst_sig = signo;
 
-        pthread_kill(sig_th->my_thread,SIGINT);
+        pthread_kill(sig_th->my_thread, SIGINT);
     }
 
 #endif
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -730,16 +742,15 @@ void DServerSignal::unregister_handler(long signo)
 {
     TANGO_LOG_DEBUG << "Removing OS signal handler for signal " << sig_name[signo] << std::endl;
 
-
 #ifdef _TG_WINDOWS_
-    if (::signal(signo, SIG_DFL) == SIG_ERR)
+    if(::signal(signo, SIG_DFL) == SIG_ERR)
     {
         TangoSys_OMemStream o;
         o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
         TANGO_THROW_EXCEPTION(API_CantInstallSignal, o.str());
     }
 #else
-    if (reg_sig[signo].own_handler == true)
+    if(reg_sig[signo].own_handler == true)
     {
         struct sigaction sa;
 
@@ -747,7 +758,7 @@ void DServerSignal::unregister_handler(long signo)
         sa.sa_handler = SIG_DFL;
         sigemptyset(&sa.sa_mask);
 
-        if (sigaction((int)signo,&sa,0) == -1)
+        if(sigaction((int) signo, &sa, 0) == -1)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -765,7 +776,7 @@ void DServerSignal::unregister_handler(long signo)
         sig_to_remove = true;
         rem_sig = signo;
 
-        pthread_kill(sig_th->my_thread,SIGINT);
+        pthread_kill(sig_th->my_thread, SIGINT);
     }
 
 #endif
@@ -776,7 +787,7 @@ pid_t DServerSignal::get_sig_thread_pid()
 {
     omni_mutex_lock syn(*this);
 
-    if (sig_th->my_pid == 0)
+    if(sig_th->my_pid == 0)
     {
         wait(1000);
     }
@@ -805,29 +816,29 @@ void DServerSignal::main_sig_handler(int signo)
 
     DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
 
-//
-// First, execute all the handlers installed at the class level
-//
+    //
+    // First, execute all the handlers installed at the class level
+    //
 
-    if (act_ptr->registered_classes.empty() == false)
+    if(act_ptr->registered_classes.empty() == false)
     {
         long nb_class = act_ptr->registered_classes.size();
-        for (long j = 0;j < nb_class;j++)
+        for(long j = 0; j < nb_class; j++)
         {
-            act_ptr->registered_classes[j]->signal_handler((long)signo);
+            act_ptr->registered_classes[j]->signal_handler((long) signo);
         }
     }
 
-//
-// Then, execute all the handlers installed at the device level
-//
+    //
+    // Then, execute all the handlers installed at the device level
+    //
 
-    if (act_ptr->registered_devices.empty() == false)
+    if(act_ptr->registered_devices.empty() == false)
     {
         long nb_dev = act_ptr->registered_devices.size();
-        for (long j = 0;j < nb_dev;j++)
+        for(long j = 0; j < nb_dev; j++)
         {
-            act_ptr->registered_devices[j]->signal_handler((long)signo);
+            act_ptr->registered_devices[j]->signal_handler((long) signo);
         }
     }
 }
@@ -841,4 +852,4 @@ void DServerSignal::main_sig_handler(int signo)
 }
 #endif
 
-} // End of Tango namespace
+} // namespace Tango

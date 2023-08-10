@@ -71,10 +71,10 @@
 
 #include <tango/tango.h>
 
-
 #include <tango/server/logcmds.h>
 
-namespace Tango {
+namespace Tango
+{
 
 //+-------------------------------------------------------------------------
 //
@@ -83,13 +83,13 @@ namespace Tango {
 // description :  Constructor for Command class AddLoggingTarget
 //
 //--------------------------------------------------------------------------
-AddLoggingTarget::AddLoggingTarget (const char *name,
-                              Tango::CmdArgType in,
-                              Tango::CmdArgType out,
-                    const std::string &in_desc)
- :  Command(name, in, out)
+AddLoggingTarget::AddLoggingTarget(const char *name,
+                                   Tango::CmdArgType in,
+                                   Tango::CmdArgType out,
+                                   const std::string &in_desc) :
+    Command(name, in, out)
 {
-  set_in_type_desc(const_cast<std::string&>(in_desc));
+    set_in_type_desc(const_cast<std::string &>(in_desc));
 }
 
 //+-------------------------------------------------------------------------
@@ -100,28 +100,28 @@ AddLoggingTarget::AddLoggingTarget (const char *name,
 //            the AddLoggingTarget command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *AddLoggingTarget::execute (DeviceImpl *device, const CORBA::Any &in_any)
+CORBA::Any *AddLoggingTarget::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
-
     TANGO_LOG_DEBUG << "AddLoggingTarget::execute(): arrived " << std::endl;
 
-//
-// Extract the input data
-//
+    //
+    // Extract the input data
+    //
     const DevVarStringArray *targets;
-    if ((in_any >>= targets) == false)
+    if((in_any >>= targets) == false)
     {
-        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarStringArray");
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
+                              "Imcompatible command argument type, expected type is : DevVarStringArray");
     }
 
-//
-// Call the concrete device method
-//
-  (static_cast<DServer *>(device))->add_logging_target(targets);
+    //
+    // Call the concrete device method
+    //
+    (static_cast<DServer *>(device))->add_logging_target(targets);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     CORBA::Any *ret = return_empty_any("AddLoggingTarget");
     return ret;
 }
@@ -133,13 +133,13 @@ CORBA::Any *AddLoggingTarget::execute (DeviceImpl *device, const CORBA::Any &in_
 // description :  Constructor for Command class RemoveLoggingTarget
 //
 //--------------------------------------------------------------------------
-RemoveLoggingTarget::RemoveLoggingTarget (const char *name,
-                                Tango::CmdArgType in,
-                                Tango::CmdArgType out,
-                                const std::string &in_desc)
- :  Command(name, in, out)
+RemoveLoggingTarget::RemoveLoggingTarget(const char *name,
+                                         Tango::CmdArgType in,
+                                         Tango::CmdArgType out,
+                                         const std::string &in_desc) :
+    Command(name, in, out)
 {
-  set_in_type_desc(const_cast<std::string&>(in_desc));
+    set_in_type_desc(const_cast<std::string &>(in_desc));
 }
 
 //+-------------------------------------------------------------------------
@@ -150,28 +150,28 @@ RemoveLoggingTarget::RemoveLoggingTarget (const char *name,
 //            the RemoveLoggingTarget command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *RemoveLoggingTarget::execute (DeviceImpl *device, const CORBA::Any &in_any)
+CORBA::Any *RemoveLoggingTarget::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
-
     TANGO_LOG_DEBUG << "RemoveLoggingTarget::execute(): arrived " << std::endl;
 
-//
-// Extract the input data
-//
+    //
+    // Extract the input data
+    //
     const DevVarStringArray *targets;
-    if ((in_any >>= targets) == false)
+    if((in_any >>= targets) == false)
     {
-        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarStringArray");
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
+                              "Imcompatible command argument type, expected type is : DevVarStringArray");
     }
 
-//
-// Call the concrete device method
-//
-  (static_cast<DServer *>(device))->remove_logging_target(targets);
+    //
+    // Call the concrete device method
+    //
+    (static_cast<DServer *>(device))->remove_logging_target(targets);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     CORBA::Any *ret = return_empty_any("RemoveLoggingTarget");
     return ret;
 }
@@ -183,15 +183,15 @@ CORBA::Any *RemoveLoggingTarget::execute (DeviceImpl *device, const CORBA::Any &
 // description :  Constructor for Command class GetLoggingTarget
 //
 //--------------------------------------------------------------------------
-GetLoggingTarget::GetLoggingTarget (const char *name,
-                                                                        Tango::CmdArgType in,
-                    Tango::CmdArgType out,
-                    const std::string &in_desc,
-                    const std::string &out_desc)
- :  Command(name, in, out)
+GetLoggingTarget::GetLoggingTarget(const char *name,
+                                   Tango::CmdArgType in,
+                                   Tango::CmdArgType out,
+                                   const std::string &in_desc,
+                                   const std::string &out_desc) :
+    Command(name, in, out)
 {
-  set_in_type_desc(const_cast<std::string&>(in_desc));
-  set_out_type_desc(const_cast<std::string&>(out_desc));
+    set_in_type_desc(const_cast<std::string &>(in_desc));
+    set_out_type_desc(const_cast<std::string &>(out_desc));
 }
 
 //+-------------------------------------------------------------------------
@@ -202,23 +202,23 @@ GetLoggingTarget::GetLoggingTarget (const char *name,
 //            the GetLoggingTarget command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *GetLoggingTarget::execute (DeviceImpl *device, const CORBA::Any &in_any)
+CORBA::Any *GetLoggingTarget::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
-
     TANGO_LOG_DEBUG << "GetLoggingTarget::execute(): arrived " << std::endl;
 
-//
-// Extract the input data
-//
-    const char* tmp_str;
-    if ((in_any >>= tmp_str) == false)
+    //
+    // Extract the input data
+    //
+    const char *tmp_str;
+    if((in_any >>= tmp_str) == false)
     {
-        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevString");
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
+                              "Imcompatible command argument type, expected type is : DevString");
     }
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     return insert((static_cast<DServer *>(device))->get_logging_target(std::string(tmp_str)));
 }
 
@@ -229,13 +229,13 @@ CORBA::Any *GetLoggingTarget::execute (DeviceImpl *device, const CORBA::Any &in_
 // description :  Constructor for Command class SetLoggingLevel
 //
 //--------------------------------------------------------------------------
-SetLoggingLevel::SetLoggingLevel   (const char *name,
-                                                                        Tango::CmdArgType in,
-                    Tango::CmdArgType out,
-                    const std::string &in_desc)
- :  Command(name, in, out)
+SetLoggingLevel::SetLoggingLevel(const char *name,
+                                 Tango::CmdArgType in,
+                                 Tango::CmdArgType out,
+                                 const std::string &in_desc) :
+    Command(name, in, out)
 {
-  set_in_type_desc(const_cast<std::string&>(in_desc));
+    set_in_type_desc(const_cast<std::string &>(in_desc));
 }
 
 //+-------------------------------------------------------------------------
@@ -246,28 +246,28 @@ SetLoggingLevel::SetLoggingLevel   (const char *name,
 //            the SetLoggingLevel command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *SetLoggingLevel::execute (DeviceImpl *device, const CORBA::Any &in_any)
+CORBA::Any *SetLoggingLevel::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
-
     TANGO_LOG_DEBUG << "SetLoggingLevel::execute(): arrived " << std::endl;
 
-//
-// Extract the input data
-//
+    //
+    // Extract the input data
+    //
     const DevVarLongStringArray *argin;
-    if ((in_any >>= argin) == false)
+    if((in_any >>= argin) == false)
     {
-        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarLongStringArray");
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
+                              "Imcompatible command argument type, expected type is : DevVarLongStringArray");
     }
 
-//
-// Call the concrete device method
-//
+    //
+    // Call the concrete device method
+    //
     (static_cast<DServer *>(device))->set_logging_level(argin);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     CORBA::Any *ret = return_empty_any("StartLogging");
     return ret;
 }
@@ -279,15 +279,15 @@ CORBA::Any *SetLoggingLevel::execute (DeviceImpl *device, const CORBA::Any &in_a
 // description :  Constructor for Command class GetLoggingLevel
 //
 //--------------------------------------------------------------------------
-GetLoggingLevel::GetLoggingLevel   (const char *name,
-                                                                        Tango::CmdArgType in,
-                    Tango::CmdArgType out,
-                    const std::string &in_desc,
-                    const std::string &out_desc)
- :  Command(name, in, out)
+GetLoggingLevel::GetLoggingLevel(const char *name,
+                                 Tango::CmdArgType in,
+                                 Tango::CmdArgType out,
+                                 const std::string &in_desc,
+                                 const std::string &out_desc) :
+    Command(name, in, out)
 {
-  set_in_type_desc(const_cast<std::string&>(in_desc));
-  set_out_type_desc(const_cast<std::string&>(out_desc));
+    set_in_type_desc(const_cast<std::string &>(in_desc));
+    set_out_type_desc(const_cast<std::string &>(out_desc));
 }
 
 //+-------------------------------------------------------------------------
@@ -298,25 +298,25 @@ GetLoggingLevel::GetLoggingLevel   (const char *name,
 //            the GetLoggingLevel command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *GetLoggingLevel::execute (DeviceImpl *device, const CORBA::Any &in_any)
+CORBA::Any *GetLoggingLevel::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
     TANGO_LOG_DEBUG << "GetLoggingLevel::execute(): arrived " << std::endl;
 
-//
-// Extract the input data
-//
+    //
+    // Extract the input data
+    //
     const DevVarStringArray *argin;
-    if ((in_any >>= argin) == false)
+    if((in_any >>= argin) == false)
     {
-        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarStringArray");
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
+                              "Imcompatible command argument type, expected type is : DevVarStringArray");
     }
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     return insert((static_cast<DServer *>(device))->get_logging_level(argin));
 }
-
 
 //+-------------------------------------------------------------------------
 //
@@ -325,12 +325,9 @@ CORBA::Any *GetLoggingLevel::execute (DeviceImpl *device, const CORBA::Any &in_a
 // description :  Constructor for Command class StopLogging
 //
 //--------------------------------------------------------------------------
-StopLogging::StopLogging(const char *name,
-                                                    Tango::CmdArgType in,
-              Tango::CmdArgType out)
- :  Command(name, in, out)
+StopLogging::StopLogging(const char *name, Tango::CmdArgType in, Tango::CmdArgType out) :
+    Command(name, in, out)
 {
-
 }
 
 //+-------------------------------------------------------------------------
@@ -341,18 +338,18 @@ StopLogging::StopLogging(const char *name,
 //            the StopLogging command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *StopLogging::execute (DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *StopLogging::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
     TANGO_LOG_DEBUG << "StopLogging::execute(): arrived " << std::endl;
 
-//
-// Call the concrete device method
-//
+    //
+    // Call the concrete device method
+    //
     (static_cast<DServer *>(device))->stop_logging();
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     CORBA::Any *ret = return_empty_any("StopLogging");
     return ret;
 }
@@ -364,12 +361,9 @@ CORBA::Any *StopLogging::execute (DeviceImpl *device, TANGO_UNUSED(const CORBA::
 // description :  Constructor for Command class StartLogging
 //
 //--------------------------------------------------------------------------
-StartLogging::StartLogging (const char *name,
-                                                      Tango::CmdArgType in,
-                Tango::CmdArgType out)
- : Command(name, in, out)
+StartLogging::StartLogging(const char *name, Tango::CmdArgType in, Tango::CmdArgType out) :
+    Command(name, in, out)
 {
-
 }
 
 //+-------------------------------------------------------------------------
@@ -380,18 +374,18 @@ StartLogging::StartLogging (const char *name,
 //            the StartLogging command of the DServerClass
 //
 //--------------------------------------------------------------------------
-CORBA::Any *StartLogging::execute (DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *StartLogging::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
     TANGO_LOG_DEBUG << "StartLogging::execute(): arrived " << std::endl;
 
-//
-// Call the concrete device method
-//
+    //
+    // Call the concrete device method
+    //
     (static_cast<DServer *>(device))->start_logging();
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
     CORBA::Any *ret = return_empty_any("StartLogging");
     return ret;
 }

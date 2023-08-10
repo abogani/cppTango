@@ -52,30 +52,29 @@ namespace Tango
 //
 //=============================================================================
 
-#if (defined (_TG_WINDOWS_) || (defined __APPLE__) || (defined __freebsd__))
-#define        _NSIG        NSIG
+#if(defined(_TG_WINDOWS_) || (defined __APPLE__) || (defined __freebsd__))
+  #define _NSIG NSIG
 #endif
-
 
 typedef struct
 {
-    std::vector <DeviceClass *>    registered_classes;
-    std::vector <DeviceImpl *>    registered_devices;
-    bool            own_handler;
-}
-DevSigAction;
+    std::vector<DeviceClass *> registered_classes;
+    std::vector<DeviceImpl *> registered_devices;
+    bool own_handler;
+} DevSigAction;
 
-class DServerSignal:public TangoMonitor
+class DServerSignal : public TangoMonitor
 {
-public :
+  public:
     static DServerSignal *instance();
-    ~DServerSignal() {}
+
+    ~DServerSignal() { }
 
 #ifndef _TG_WINDOWS_
     void register_class_signal(long, bool, DeviceClass *);
     void register_dev_signal(long, bool, DeviceImpl *);
 
-    void register_handler(long,bool);
+    void register_handler(long, bool);
     pid_t get_sig_thread_pid();
 #else
     void register_class_signal(long, DeviceClass *);
@@ -93,12 +92,19 @@ public :
 
     static void main_sig_handler(int);
 
-    class ThSig: public omni_thread
+    class ThSig : public omni_thread
     {
         DServerSignal *ds;
-    public:
-        ThSig(DServerSignal *d):ds(d),my_pid(0),th_data_created(false) {}
-        virtual ~ThSig() {}
+
+      public:
+        ThSig(DServerSignal *d) :
+            ds(d),
+            my_pid(0),
+            th_data_created(false)
+        {
+        }
+
+        virtual ~ThSig() { }
 
         TangoSys_Pid my_pid;
         bool th_data_created;
@@ -106,25 +112,29 @@ public :
         pthread_t my_thread;
 #endif
         void *run_undetached(void *);
-        void start() {start_undetached();}
+
+        void start()
+        {
+            start_undetached();
+        }
     };
     friend class ThSig;
     ThSig *sig_th;
 
-protected :
+  protected:
     DServerSignal();
-    static DevSigAction        reg_sig[_NSIG];
+    static DevSigAction reg_sig[_NSIG];
 
-    bool                sig_to_install;
-    bool                sig_to_remove;
-    int                inst_sig;
-    int                 rem_sig;
+    bool sig_to_install;
+    bool sig_to_remove;
+    int inst_sig;
+    int rem_sig;
 #ifdef _TG_WINDOWS_
-    static HANDLE            win_ev;
-    static int            win_signo;
+    static HANDLE win_ev;
+    static int win_signo;
 #endif
 
-private:
+  private:
     static DServerSignal *_instance;
     std::vector<DeviceImpl *>::iterator find_device(long, DeviceImpl *);
     std::vector<DeviceImpl *>::iterator find_delayed_device(long, DeviceImpl *);
@@ -135,26 +145,32 @@ private:
 #ifdef _TG_WINDOWS_
     static inline bool auto_signal(long s)
     {
-        if ((s==SIGINT) || (s==SIGTERM) || (s==SIGABRT) || (s==SIGBREAK))
+        if((s == SIGINT) || (s == SIGTERM) || (s == SIGABRT) || (s == SIGBREAK))
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 #else
     static inline bool auto_signal(long s)
     {
-        if ((s==SIGQUIT) || (s==SIGINT) || (s==SIGHUP) || (s==SIGTERM))
+        if((s == SIGQUIT) || (s == SIGINT) || (s == SIGHUP) || (s == SIGTERM))
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 #endif
 
-    static std::string             sig_name[_NSIG];
-
+    static std::string sig_name[_NSIG];
 };
 
 } // End of namespace Tango
-
 
 #endif

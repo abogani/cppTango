@@ -16,10 +16,9 @@
 //
 //-----------------------------------------------------------------------------
 
-IOSetAttr::IOSetAttr(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Tango::Command(name,in,out,in_desc,out_desc)
+IOSetAttr::IOSetAttr(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Tango::Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -40,16 +39,18 @@ IOSetAttr::IOSetAttr(const char *name,Tango::CmdArgType in,
 
 bool IOSetAttr::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if ((device->get_state() == Tango::ON) ||
-	    (device->get_state() == Tango::ALARM))
-		return(true);
-	else
-		return(false);
+    if((device->get_state() == Tango::ON) || (device->get_state() == Tango::ALARM))
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -66,20 +67,20 @@ bool IOSetAttr::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOSetAttr::execute(Tango::DeviceImpl *device,const CORBA::Any &in_any)
+CORBA::Any *IOSetAttr::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
 {
-  try {
-    Tango::DevLong theNumber;
-    extract(in_any,theNumber);
-    TANGO_LOG << "[IOSetAttr::execute] received number " << theNumber << std::endl;
-    DevTest *dev = static_cast<DevTest *>(device);
-    dev->set_attr_long(theNumber);
-    return insert();
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::DevLong theNumber;
+        extract(in_any, theNumber);
+        TANGO_LOG << "[IOSetAttr::execute] received number " << theNumber << std::endl;
+        DevTest *dev = static_cast<DevTest *>(device);
+        dev->set_attr_long(theNumber);
+        return insert();
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }

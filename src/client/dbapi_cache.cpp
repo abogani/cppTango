@@ -53,18 +53,17 @@ namespace Tango
 //
 //------------------------------------------------------------------------------------------------------------------
 
-DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::string &host)
+DbServerCache::DbServerCache(Database *db, const std::string &ds_name, const std::string &host)
 {
-
-//
-// Get all data from database
-//
+    //
+    // Get all data from database
+    //
 
     try
     {
-        received = db->fill_server_cache(ds_name,host);
+        received = db->fill_server_cache(ds_name, host);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         TANGO_LOG_DEBUG << "Got an exception while getting cache data from database !!" << std::endl;
         throw;
@@ -73,22 +72,22 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
     received.inout() >>= data_list;
     n_data = data_list->length();
 
-//
-// Extract the different blocks from the big list. First the stored procedure release nb
-// The release number is stored as:
-//        (major_number * 100) + minor_number
-// Ex: 1.9 -> 109
-//
+    //
+    // Extract the different blocks from the big list. First the stored procedure release nb
+    // The release number is stored as:
+    //        (major_number * 100) + minor_number
+    // Ex: 1.9 -> 109
+    //
 
     proc_release = 0;
     std::string proc_rel((*data_list)[0]);
-    if (proc_rel.find("release") != std::string::npos)
+    if(proc_rel.find("release") != std::string::npos)
     {
         std::string rel = proc_rel.substr(8);
         std::string::size_type pos = rel.find('.');
-        if (pos != std::string::npos)
+        if(pos != std::string::npos)
         {
-            std::string maj_str = rel.substr(0,pos);
+            std::string maj_str = rel.substr(0, pos);
             std::string min_str = rel.substr(pos + 1);
 
             int maj = atoi(maj_str.c_str());
@@ -98,20 +97,20 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
         }
     }
 
-//
-// First, the device server admin device parameters
-//
+    //
+    // First, the device server admin device parameters
+    //
 
     int start_idx = 0;
     int stop_idx = 0;
 
-    if (proc_release != 0)
+    if(proc_release != 0)
     {
         start_idx++;
         stop_idx++;
     }
 
-    if (n_data == 2 || n_data == 3)
+    if(n_data == 2 || n_data == 3)
     {
         imp_adm.first_idx = start_idx;
         imp_adm.last_idx = start_idx + 1;
@@ -128,12 +127,12 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
     imp_adm.first_idx = start_idx;
     imp_adm.last_idx = stop_idx;
 
-//
-// Event factory
-//
+    //
+    // Event factory
+    //
 
     start_idx = stop_idx + 1;
-    if (::strcmp((*data_list)[start_idx + 1],"Not Found") == 0)
+    if(::strcmp((*data_list)[start_idx + 1], "Not Found") == 0)
     {
         stop_idx = stop_idx + 2;
     }
@@ -144,12 +143,12 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
     imp_notifd_event.first_idx = start_idx;
     imp_notifd_event.last_idx = stop_idx;
 
-//
-// Server event
-//
+    //
+    // Server event
+    //
 
     start_idx = stop_idx + 1;
-    if (::strcmp((*data_list)[start_idx + 1],"Not Found") == 0)
+    if(::strcmp((*data_list)[start_idx + 1], "Not Found") == 0)
     {
         stop_idx = stop_idx + 2;
     }
@@ -160,60 +159,63 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
     imp_adm_event.first_idx = start_idx;
     imp_adm_event.last_idx = stop_idx;
 
-//
-// DServer class prop
-//
+    //
+    // DServer class prop
+    //
 
-    prop_indexes(start_idx,stop_idx,DServer_class_prop,data_list);
+    prop_indexes(start_idx, stop_idx, DServer_class_prop, data_list);
 
-//
-// Default prop
-//
+    //
+    // Default prop
+    //
 
-    prop_indexes(start_idx,stop_idx,Default_prop,data_list);
+    prop_indexes(start_idx, stop_idx, Default_prop, data_list);
 
-//
-// Admin device prop
-//
+    //
+    // Admin device prop
+    //
 
-    prop_indexes(start_idx,stop_idx,adm_dev_prop,data_list);
+    prop_indexes(start_idx, stop_idx, adm_dev_prop, data_list);
 
-//
-// Embedded classes number
-//
+    //
+    // Embedded classes number
+    //
 
     start_idx = stop_idx + 1;
     class_nb = ::atoi((*data_list)[start_idx + 1]);
-    stop_idx = stop_idx  + 2;
-    classes_idx = new ClassEltIdx [class_nb];
+    stop_idx = stop_idx + 2;
+    classes_idx = new ClassEltIdx[class_nb];
 
-    for (int cl_loop = 0;cl_loop < class_nb;cl_loop++)
+    for(int cl_loop = 0; cl_loop < class_nb; cl_loop++)
     {
+        //
+        // Embedded class prop
+        //
 
-//
-// Embedded class prop
-//
+        prop_indexes(start_idx, stop_idx, classes_idx[cl_loop].class_prop, data_list);
 
-        prop_indexes(start_idx,stop_idx,classes_idx[cl_loop].class_prop,data_list);
+        //
+        // Embedded class attribute prop
+        //
 
-//
-// Embedded class attribute prop
-//
+        prop_att_indexes(start_idx, stop_idx, classes_idx[cl_loop].class_att_prop, data_list);
 
-        prop_att_indexes(start_idx,stop_idx,classes_idx[cl_loop].class_att_prop,data_list);
+        //
+        // Embedded class pipe prop
+        //
 
-//
-// Embedded class pipe prop
-//
-
-        if (proc_release >= 109)
-            prop_pipe_indexes(start_idx,stop_idx,classes_idx[cl_loop].class_pipe_prop,data_list);
+        if(proc_release >= 109)
+        {
+            prop_pipe_indexes(start_idx, stop_idx, classes_idx[cl_loop].class_pipe_prop, data_list);
+        }
         else
+        {
             classes_idx[cl_loop].class_pipe_prop.atts_idx = NULL;
+        }
 
-//
-// Device list
-//
+        //
+        // Device list
+        //
 
         start_idx = stop_idx + 1;
         int nb_dev = ::atoi((*data_list)[start_idx + 1]);
@@ -222,46 +224,49 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
         classes_idx[cl_loop].dev_list.first_idx = start_idx;
         classes_idx[cl_loop].dev_list.last_idx = stop_idx;
         classes_idx[cl_loop].dev_nb = nb_dev;
-        classes_idx[cl_loop].devs_idx = new DevEltIdx [nb_dev];
+        classes_idx[cl_loop].devs_idx = new DevEltIdx[nb_dev];
 
-        for (int loop = 0;loop < nb_dev;loop++)
+        for(int loop = 0; loop < nb_dev; loop++)
         {
+            //
+            // Device properties
+            //
 
-//
-// Device properties
-//
+            prop_indexes(start_idx, stop_idx, classes_idx[cl_loop].devs_idx[loop].dev_prop, data_list);
 
-            prop_indexes(start_idx,stop_idx,classes_idx[cl_loop].devs_idx[loop].dev_prop,data_list);
+            //
+            // Device attribute properties
+            //
 
-//
-// Device attribute properties
-//
+            prop_att_indexes(start_idx, stop_idx, classes_idx[cl_loop].devs_idx[loop].dev_att_prop, data_list);
 
-            prop_att_indexes(start_idx,stop_idx,classes_idx[cl_loop].devs_idx[loop].dev_att_prop,data_list);
+            //
+            // Device pipe properties
+            //
 
-//
-// Device pipe properties
-//
-
-            if (proc_release >= 109)
-                prop_pipe_indexes(start_idx,stop_idx,classes_idx[cl_loop].devs_idx[loop].dev_pipe_prop,data_list);
+            if(proc_release >= 109)
+            {
+                prop_pipe_indexes(start_idx, stop_idx, classes_idx[cl_loop].devs_idx[loop].dev_pipe_prop, data_list);
+            }
             else
+            {
                 classes_idx[cl_loop].devs_idx[loop].dev_pipe_prop.atts_idx = NULL;
+            }
         }
     }
 
-//
-// Control System Service(s) property
-//
+    //
+    // Control System Service(s) property
+    //
 
-    prop_indexes(start_idx,stop_idx,ctrl_serv_prop,data_list);
+    prop_indexes(start_idx, stop_idx, ctrl_serv_prop, data_list);
 
-//
-// Tac device import info
-//
+    //
+    // Tac device import info
+    //
 
     start_idx = stop_idx + 1;
-    if (stop_idx == n_data)
+    if(stop_idx == n_data)
     {
         stop_idx = -1;
     }
@@ -271,7 +276,6 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
         imp_tac.first_idx = start_idx;
         imp_tac.last_idx = stop_idx;
     }
-
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -291,12 +295,16 @@ DbServerCache::DbServerCache(Database *db,const std::string &ds_name,const std::
 const DevVarLongStringArray *DbServerCache::import_adm_dev()
 {
     int last_index;
-    if (proc_release >= 109)
+    if(proc_release >= 109)
+    {
         last_index = 2;
+    }
     else
+    {
         last_index = 1;
+    }
 
-    if (imp_adm.last_idx == last_index)
+    if(imp_adm.last_idx == last_index)
     {
         TANGO_THROW_EXCEPTION("aaa", "bbb");
     }
@@ -307,8 +315,10 @@ const DevVarLongStringArray *DbServerCache::import_adm_dev()
     imp_adm_data.lvalue[0] = ::atoi((*data_list)[imp_adm.first_idx + 5]);
     imp_adm_data.lvalue[1] = ::atoi((*data_list)[imp_adm.last_idx]);
 
-    for (int loop = 0;loop < 5;loop++)
+    for(int loop = 0; loop < 5; loop++)
+    {
         imp_adm_data.svalue[loop] = Tango::string_dup((*data_list)[imp_adm.first_idx + loop]);
+    }
 
     return &imp_adm_data;
 }
@@ -329,7 +339,7 @@ const DevVarLongStringArray *DbServerCache::import_adm_dev()
 
 const DevVarLongStringArray *DbServerCache::import_notifd_event()
 {
-    if (imp_notifd_event.last_idx == imp_notifd_event.first_idx + 1)
+    if(imp_notifd_event.last_idx == imp_notifd_event.first_idx + 1)
     {
         TANGO_THROW_EXCEPTION("aaa", "bbb");
     }
@@ -340,8 +350,10 @@ const DevVarLongStringArray *DbServerCache::import_notifd_event()
     imp_notifd_event_data.lvalue[0] = ::atoi((*data_list)[imp_notifd_event.first_idx + 4]);
     imp_notifd_event_data.lvalue[1] = ::atoi((*data_list)[imp_notifd_event.last_idx]);
 
-    for (int loop = 0;loop < 4;loop++)
+    for(int loop = 0; loop < 4; loop++)
+    {
         imp_notifd_event_data.svalue[loop] = Tango::string_dup((*data_list)[imp_notifd_event.first_idx + loop]);
+    }
 
     return &imp_notifd_event_data;
 }
@@ -360,10 +372,9 @@ const DevVarLongStringArray *DbServerCache::import_notifd_event()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
 const DevVarLongStringArray *DbServerCache::import_adm_event()
 {
-    if (imp_adm_event.last_idx == imp_adm_event.first_idx + 1)
+    if(imp_adm_event.last_idx == imp_adm_event.first_idx + 1)
     {
         TANGO_THROW_EXCEPTION("aaa", "bbb");
     }
@@ -374,8 +385,10 @@ const DevVarLongStringArray *DbServerCache::import_adm_event()
     imp_adm_event_data.lvalue[0] = ::atoi((*data_list)[imp_adm_event.first_idx + 4]);
     imp_adm_event_data.lvalue[1] = ::atoi((*data_list)[imp_notifd_event.last_idx]);
 
-    for (int loop = 0;loop < 4;loop++)
+    for(int loop = 0; loop < 4; loop++)
+    {
         imp_adm_event_data.svalue[loop] = Tango::string_dup((*data_list)[imp_adm_event.first_idx + loop]);
+    }
 
     return &imp_adm_event_data;
 }
@@ -398,24 +411,23 @@ const DevVarLongStringArray *DbServerCache::import_adm_event()
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_class_property(DevVarStringArray *in_param)
 {
     int ret_length = 2;
 
-    if (TG_strcasecmp((*in_param)[0],"DServer") == 0)
+    if(TG_strcasecmp((*in_param)[0], "DServer") == 0)
     {
         ret_obj_prop.length(ret_length);
         ret_obj_prop[0] = Tango::string_dup("DServer");
 
-        get_obj_prop(in_param,DServer_class_prop);
+        get_obj_prop(in_param, DServer_class_prop);
     }
-    else if (TG_strcasecmp((*in_param)[0],"Default") == 0)
+    else if(TG_strcasecmp((*in_param)[0], "Default") == 0)
     {
         ret_obj_prop.length(ret_length);
         ret_obj_prop[0] = Tango::string_dup("Default");
 
-        get_obj_prop(in_param,Default_prop);
+        get_obj_prop(in_param, Default_prop);
     }
     else
     {
@@ -423,9 +435,9 @@ const DevVarStringArray *DbServerCache::get_class_property(DevVarStringArray *in
         ret_obj_prop[0] = Tango::string_dup((*in_param)[0]);
 
         int cl_idx = find_class((*in_param)[0]);
-        if (cl_idx != -1)
+        if(cl_idx != -1)
         {
-            get_obj_prop(in_param,classes_idx[cl_idx].class_prop);
+            get_obj_prop(in_param, classes_idx[cl_idx].class_prop);
         }
         else
         {
@@ -458,7 +470,7 @@ const DevVarStringArray *DbServerCache::get_class_property(DevVarStringArray *in
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DbServerCache::get_obj_prop(DevVarStringArray *in_param,PropEltIdx &obj,bool dev_prop)
+void DbServerCache::get_obj_prop(DevVarStringArray *in_param, PropEltIdx &obj, bool dev_prop)
 {
     int ret_length = 2;
     int found_prop = 0;
@@ -467,12 +479,12 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param,PropEltIdx &obj,boo
     int nb_wanted_prop = in_param->length() - 1;
     int obj_prop = obj.prop_nb;
 
-    for (int loop = 0;loop < nb_wanted_prop;loop++)
+    for(int loop = 0; loop < nb_wanted_prop; loop++)
     {
         int lo;
-        for (lo = 0;lo < obj_prop * 2;lo = lo + 2)
+        for(lo = 0; lo < obj_prop * 2; lo = lo + 2)
         {
-            if (TG_strcasecmp((*in_param)[loop + 1],(*data_list)[obj.props_idx[lo]]) == 0)
+            if(TG_strcasecmp((*in_param)[loop + 1], (*data_list)[obj.props_idx[lo]]) == 0)
             {
                 int old_ret_length = ret_length;
                 int nb_elt = obj.props_idx[lo + 1];
@@ -483,7 +495,7 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param,PropEltIdx &obj,boo
                 ret_obj_prop[old_ret_length] = Tango::string_dup((*in_param)[loop + 1]);
                 ret_obj_prop[old_ret_length + 1] = Tango::string_dup((*data_list)[obj.props_idx[lo] + 1]);
 
-                for (int k = 0;k < nb_elt;k++)
+                for(int k = 0; k < nb_elt; k++)
                 {
                     ret_obj_prop[old_ret_length + 2 + k] = Tango::string_dup((*data_list)[obj.props_idx[lo] + 2 + k]);
                 }
@@ -491,28 +503,31 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param,PropEltIdx &obj,boo
                 break;
             }
         }
-        if (lo >= (obj_prop * 2))
+        if(lo >= (obj_prop * 2))
         {
             int old_length = ret_length;
             ret_length = ret_length + 2;
-            if (dev_prop == true)
+            if(dev_prop == true)
+            {
                 ret_length++;
+            }
 
             ret_obj_prop.length(ret_length);
             ret_obj_prop[old_length] = Tango::string_dup((*in_param)[loop + 1]);
             ret_obj_prop[old_length + 1] = Tango::string_dup("0");
-            if (dev_prop == true)
+            if(dev_prop == true)
+            {
                 ret_obj_prop[old_length + 2] = Tango::string_dup(" ");
+            }
             found_prop++;
-
         }
     }
-    std::snprintf(n_prop_str, sizeof(n_prop_str),"%d",found_prop);
+    std::snprintf(n_prop_str, sizeof(n_prop_str), "%d", found_prop);
     ret_obj_prop[1] = Tango::string_dup(n_prop_str);
 
-//    TANGO_LOG_DEBUG << "DbCache --> Data returned for a get_obj_property for object " << (*in_param)[0] << std::endl;
-//    for (unsigned int ll=0;ll< ret_obj_prop.length();ll++)
-//        TANGO_LOG_DEBUG << "    DbCache --> Returned string = " << ret_obj_prop[ll] << std::endl;
+    //    TANGO_LOG_DEBUG << "DbCache --> Data returned for a get_obj_property for object " << (*in_param)[0] <<
+    //    std::endl; for (unsigned int ll=0;ll< ret_obj_prop.length();ll++)
+    //        TANGO_LOG_DEBUG << "    DbCache --> Returned string = " << ret_obj_prop[ll] << std::endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -533,18 +548,17 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param,PropEltIdx &obj,boo
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_dev_property(DevVarStringArray *in_param)
 {
     int ret_length = 2;
 
-//
-// There is a special case for the dserver admin device
-//
+    //
+    // There is a special case for the dserver admin device
+    //
 
-    if (TG_strncasecmp((*in_param)[0],"dserver/",8) == 0)
+    if(TG_strncasecmp((*in_param)[0], "dserver/", 8) == 0)
     {
-        if (adm_dev_prop.first_idx == -1)
+        if(adm_dev_prop.first_idx == -1)
         {
             TangoSys_OMemStream o;
             o << "Device " << (*in_param)[0] << " not found in DB cache" << std::ends;
@@ -554,13 +568,13 @@ const DevVarStringArray *DbServerCache::get_dev_property(DevVarStringArray *in_p
         ret_obj_prop.length(ret_length);
         ret_obj_prop[0] = Tango::string_dup((*in_param)[0]);
 
-        get_obj_prop(in_param,adm_dev_prop,true);
+        get_obj_prop(in_param, adm_dev_prop, true);
     }
     else
     {
-        int class_ind,dev_ind;
-        int res = find_dev_att((*in_param)[0],class_ind,dev_ind);
-        if (res == -1)
+        int class_ind, dev_ind;
+        int res = find_dev_att((*in_param)[0], class_ind, dev_ind);
+        if(res == -1)
         {
             TangoSys_OMemStream o;
             o << "Device " << (*in_param)[0] << " not found in DB cache" << std::ends;
@@ -572,13 +586,12 @@ const DevVarStringArray *DbServerCache::get_dev_property(DevVarStringArray *in_p
             ret_obj_prop.length(ret_length);
             ret_obj_prop[0] = Tango::string_dup((*in_param)[0]);
 
-            get_obj_prop(in_param,classes_idx[class_ind].devs_idx[dev_ind].dev_prop,true);
+            get_obj_prop(in_param, classes_idx[class_ind].devs_idx[dev_ind].dev_prop, true);
         }
     }
 
     return &ret_obj_prop;
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -595,18 +608,21 @@ const DevVarStringArray *DbServerCache::get_dev_property(DevVarStringArray *in_p
 //  with the device list
 //-----------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_dev_list(DevVarStringArray *in_param)
 {
     int cl_idx = find_class((*in_param)[1]);
-    if (cl_idx != -1)
+    if(cl_idx != -1)
     {
         ret_dev_list.length(classes_idx[cl_idx].dev_nb);
-        for (int loop = 0;loop < classes_idx[cl_idx].dev_nb;loop++)
+        for(int loop = 0; loop < classes_idx[cl_idx].dev_nb; loop++)
+        {
             ret_dev_list[loop] = Tango::string_dup((*data_list)[classes_idx[cl_idx].dev_list.first_idx + 2 + loop]);
+        }
     }
     else
+    {
         ret_dev_list.length(0);
+    }
 
     return &ret_dev_list;
 }
@@ -626,10 +642,12 @@ const DevVarStringArray *DbServerCache::get_dev_list(DevVarStringArray *in_param
 
 int DbServerCache::find_class(DevString cl_name)
 {
-    for (int loop = 0;loop < class_nb;loop++)
+    for(int loop = 0; loop < class_nb; loop++)
     {
-        if (TG_strcasecmp((*data_list)[classes_idx[loop].class_prop.first_idx],cl_name) == 0)
+        if(TG_strcasecmp((*data_list)[classes_idx[loop].class_prop.first_idx], cl_name) == 0)
+        {
             return loop;
+        }
     }
     return -1;
 }
@@ -650,7 +668,6 @@ int DbServerCache::find_class(DevString cl_name)
 //  with the class attribute properties
 //-----------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray *in_param)
 {
     char n_att_str[256];
@@ -659,27 +676,27 @@ const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray
     ret_obj_att_prop[0] = Tango::string_dup((*in_param)[0]);
 
     int cl_idx = find_class((*in_param)[0]);
-    if (cl_idx != -1)
+    if(cl_idx != -1)
     {
         int found_att = 0;
 
-//
-// The class is found
-//
+        //
+        // The class is found
+        //
 
         int wanted_att_nb = in_param->length() - 1;
         int class_att_nb = classes_idx[cl_idx].class_att_prop.att_nb;
-        for (int loop = 0;loop < wanted_att_nb;loop++)
+        for(int loop = 0; loop < wanted_att_nb; loop++)
         {
             int ll;
-            for (ll = 0;ll < class_att_nb;ll++)
+            for(ll = 0; ll < class_att_nb; ll++)
             {
-                if (TG_strcasecmp((*in_param)[loop + 1],(*data_list)[classes_idx[cl_idx].class_att_prop.atts_idx[ll]]) == 0)
+                if(TG_strcasecmp((*in_param)[loop + 1],
+                                 (*data_list)[classes_idx[cl_idx].class_att_prop.atts_idx[ll]]) == 0)
                 {
-
-//
-// The attribute is found, copy all its properties
-//
+                    //
+                    // The attribute is found, copy all its properties
+                    //
 
                     int att_index = classes_idx[cl_idx].class_att_prop.atts_idx[ll];
                     int nb_prop = ::atoi((*data_list)[att_index + 1]);
@@ -687,7 +704,7 @@ const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray
                     int nb_to_copy = 0;
                     int tmp_idx = att_index + 2;
                     nb_to_copy = 2;
-                    for (int k = 0;k < nb_prop;k++)
+                    for(int k = 0; k < nb_prop; k++)
                     {
                         nb_elt = ::atoi((*data_list)[tmp_idx + 1]);
                         tmp_idx = tmp_idx + nb_elt + 2;
@@ -696,13 +713,15 @@ const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray
 
                     int old_length = ret_obj_att_prop.length();
                     ret_obj_att_prop.length(old_length + nb_to_copy);
-                    for (int j = 0;j < nb_to_copy;j++)
+                    for(int j = 0; j < nb_to_copy; j++)
+                    {
                         ret_obj_att_prop[old_length + j] = Tango::string_dup((*data_list)[att_index + j]);
+                    }
                     found_att++;
                     break;
                 }
             }
-            if (ll == class_att_nb)
+            if(ll == class_att_nb)
             {
                 found_att++;
                 int old_length = ret_obj_att_prop.length();
@@ -711,7 +730,7 @@ const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray
                 ret_obj_att_prop[old_length + 1] = Tango::string_dup("0");
             }
         }
-        std::snprintf(n_att_str, sizeof(n_att_str),"%d",found_att);
+        std::snprintf(n_att_str, sizeof(n_att_str), "%d", found_att);
         ret_obj_att_prop[1] = Tango::string_dup(n_att_str);
     }
     else
@@ -722,9 +741,9 @@ const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray
         TANGO_THROW_EXCEPTION(DB_ClassNotFoundInCache, o.str());
     }
 
-//    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_class_att_property for class " << (*in_param)[0] << std::endl;
-//    for (unsigned int ll=0;ll< ret_obj_att_prop.length();ll++)
-//        TANGO_LOG_DEBUG << "    DbCache --> Returned object att prop = " << ret_obj_att_prop[ll] << std::endl;
+    //    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_class_att_property for class " << (*in_param)[0] <<
+    //    std::endl; for (unsigned int ll=0;ll< ret_obj_att_prop.length();ll++)
+    //        TANGO_LOG_DEBUG << "    DbCache --> Returned object att prop = " << ret_obj_att_prop[ll] << std::endl;
 
     return &ret_obj_att_prop;
 }
@@ -745,7 +764,6 @@ const DevVarStringArray *DbServerCache::get_class_att_property(DevVarStringArray
 //  with the device attribute properties
 //-----------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *in_param)
 {
     int found_att = 0;
@@ -754,19 +772,20 @@ const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *
     ret_obj_att_prop.length(2);
     ret_obj_att_prop[0] = Tango::string_dup((*in_param)[0]);
 
-    int class_ind,dev_ind;
+    int class_ind, dev_ind;
 
-    int ret_value = find_dev_att((*in_param)[0],class_ind,dev_ind);
-    if (ret_value != -1)
+    int ret_value = find_dev_att((*in_param)[0], class_ind, dev_ind);
+    if(ret_value != -1)
     {
         int wanted_att_nb = in_param->length() - 1;
         int dev_att_nb = classes_idx[class_ind].devs_idx[dev_ind].dev_att_prop.att_nb;
-        for (int loop = 0;loop < wanted_att_nb;loop++)
+        for(int loop = 0; loop < wanted_att_nb; loop++)
         {
             int ll;
-            for (ll = 0;ll < dev_att_nb;ll++)
+            for(ll = 0; ll < dev_att_nb; ll++)
             {
-                if (TG_strcasecmp((*in_param)[loop + 1],(*data_list)[classes_idx[class_ind].devs_idx[dev_ind].dev_att_prop.atts_idx[ll]]) == 0)
+                if(TG_strcasecmp((*in_param)[loop + 1],
+                                 (*data_list)[classes_idx[class_ind].devs_idx[dev_ind].dev_att_prop.atts_idx[ll]]) == 0)
                 {
                     int att_index = classes_idx[class_ind].devs_idx[dev_ind].dev_att_prop.atts_idx[ll];
                     int nb_prop = ::atoi((*data_list)[att_index + 1]);
@@ -774,7 +793,7 @@ const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *
                     int nb_to_copy = 0;
                     int tmp_idx = att_index + 2;
                     nb_to_copy = 2;
-                    for (int k = 0;k < nb_prop;k++)
+                    for(int k = 0; k < nb_prop; k++)
                     {
                         nb_elt = ::atoi((*data_list)[tmp_idx + 1]);
                         tmp_idx = tmp_idx + nb_elt + 2;
@@ -783,13 +802,15 @@ const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *
 
                     int old_length = ret_obj_att_prop.length();
                     ret_obj_att_prop.length(old_length + nb_to_copy);
-                    for (int j = 0;j < nb_to_copy;j++)
+                    for(int j = 0; j < nb_to_copy; j++)
+                    {
                         ret_obj_att_prop[old_length + j] = Tango::string_dup((*data_list)[att_index + j]);
+                    }
                     found_att++;
                     break;
                 }
             }
-            if (ll == dev_att_nb)
+            if(ll == dev_att_nb)
             {
                 found_att++;
                 int old_length = ret_obj_att_prop.length();
@@ -799,12 +820,12 @@ const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *
                 ret_obj_att_prop[old_length + 1] = Tango::string_dup("0");
             }
         }
-        std::snprintf(n_att_str, sizeof(n_att_str),"%d",found_att);
+        std::snprintf(n_att_str, sizeof(n_att_str), "%d", found_att);
         ret_obj_att_prop[1] = Tango::string_dup(n_att_str);
     }
     else
     {
-        if (TG_strncasecmp("dserver/",(*in_param)[0],8) != 0)
+        if(TG_strncasecmp("dserver/", (*in_param)[0], 8) != 0)
         {
             TangoSys_OMemStream o;
             o << "Device " << (*in_param)[0] << " not found in DB cache" << std::ends;
@@ -813,14 +834,14 @@ const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *
         }
         else
         {
-            std::snprintf(n_att_str, sizeof(n_att_str),"%d",found_att);
+            std::snprintf(n_att_str, sizeof(n_att_str), "%d", found_att);
             ret_obj_att_prop[1] = Tango::string_dup(n_att_str);
         }
     }
 
-//    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_dev_att_property for device " << (*in_param)[0] << std::endl;
-//    for (unsigned int ll=0;ll< ret_obj_att_prop.length();ll++)
-//        TANGO_LOG_DEBUG << "    DbCache --> Returned object att prop = " << ret_obj_att_prop[ll] << std::endl;
+    //    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_dev_att_property for device " << (*in_param)[0] <<
+    //    std::endl; for (unsigned int ll=0;ll< ret_obj_att_prop.length();ll++)
+    //        TANGO_LOG_DEBUG << "    DbCache --> Returned object att prop = " << ret_obj_att_prop[ll] << std::endl;
 
     return &ret_obj_att_prop;
 }
@@ -846,13 +867,13 @@ const DevVarStringArray *DbServerCache::get_dev_att_property(DevVarStringArray *
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-int DbServerCache::find_dev_att(DevString dev_name,int &class_ind,int &dev_ind)
+int DbServerCache::find_dev_att(DevString dev_name, int &class_ind, int &dev_ind)
 {
-    for (int loop = 0;loop < class_nb;loop++)
+    for(int loop = 0; loop < class_nb; loop++)
     {
-        for (int ll = 0;ll < classes_idx[loop].dev_nb;ll++)
+        for(int ll = 0; ll < classes_idx[loop].dev_nb; ll++)
         {
-            if (TG_strcasecmp((*data_list)[classes_idx[loop].dev_list.first_idx + 2 + ll],dev_name) == 0)
+            if(TG_strcasecmp((*data_list)[classes_idx[loop].dev_list.first_idx + 2 + ll], dev_name) == 0)
             {
                 class_ind = loop;
                 dev_ind = ll;
@@ -883,13 +904,14 @@ int DbServerCache::find_dev_att(DevString dev_name,int &class_ind,int &dev_ind)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-int DbServerCache::find_obj(DevString obj_name,int &obj_ind)
+int DbServerCache::find_obj(DevString obj_name, int &obj_ind)
 {
-
-    if (ctrl_serv_prop.first_idx == -1)
+    if(ctrl_serv_prop.first_idx == -1)
+    {
         return -1;
+    }
 
-    if (TG_strcasecmp((*data_list)[ctrl_serv_prop.first_idx],obj_name) == 0)
+    if(TG_strcasecmp((*data_list)[ctrl_serv_prop.first_idx], obj_name) == 0)
     {
         obj_ind = ctrl_serv_prop.first_idx;
         return 0;
@@ -910,32 +932,44 @@ int DbServerCache::find_obj(DevString obj_name,int &obj_ind)
 
 DbServerCache::~DbServerCache()
 {
-    delete [] DServer_class_prop.props_idx;
-    delete [] Default_prop.props_idx;
-    delete [] adm_dev_prop.props_idx;
-    delete [] ctrl_serv_prop.props_idx;
+    delete[] DServer_class_prop.props_idx;
+    delete[] Default_prop.props_idx;
+    delete[] adm_dev_prop.props_idx;
+    delete[] ctrl_serv_prop.props_idx;
 
-    for (int cl_loop = 0;cl_loop < class_nb;cl_loop++)
+    for(int cl_loop = 0; cl_loop < class_nb; cl_loop++)
     {
-        if (classes_idx[cl_loop].class_prop.props_idx != NULL)
-            delete [] classes_idx[cl_loop].class_prop.props_idx;
-        if (classes_idx[cl_loop].class_att_prop.atts_idx != NULL)
-            delete [] classes_idx[cl_loop].class_att_prop.atts_idx;
-        if (classes_idx[cl_loop].class_pipe_prop.atts_idx != NULL)
-            delete [] classes_idx[cl_loop].class_pipe_prop.atts_idx;
-
-        for (int dev_loop = 0;dev_loop < classes_idx[cl_loop].dev_nb;dev_loop++)
+        if(classes_idx[cl_loop].class_prop.props_idx != NULL)
         {
-            if (classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx != NULL)
-                delete [] classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx;
-            if (classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx != NULL)
-                delete [] classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx;
-            if (classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx != NULL)
-                delete [] classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx;
+            delete[] classes_idx[cl_loop].class_prop.props_idx;
         }
-        delete [] classes_idx[cl_loop].devs_idx;
+        if(classes_idx[cl_loop].class_att_prop.atts_idx != NULL)
+        {
+            delete[] classes_idx[cl_loop].class_att_prop.atts_idx;
+        }
+        if(classes_idx[cl_loop].class_pipe_prop.atts_idx != NULL)
+        {
+            delete[] classes_idx[cl_loop].class_pipe_prop.atts_idx;
+        }
+
+        for(int dev_loop = 0; dev_loop < classes_idx[cl_loop].dev_nb; dev_loop++)
+        {
+            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx != NULL)
+            {
+                delete[] classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx;
+            }
+            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx != NULL)
+            {
+                delete[] classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx;
+            }
+            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx != NULL)
+            {
+                delete[] classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx;
+            }
+        }
+        delete[] classes_idx[cl_loop].devs_idx;
     }
-    delete [] classes_idx;
+    delete[] classes_idx;
 }
 
 //-----------------------------------------------------------------------------
@@ -954,11 +988,11 @@ DbServerCache::~DbServerCache()
 //                 obj : Structure where all object parameters must be stored
 //-----------------------------------------------------------------------------
 
-void DbServerCache::prop_indexes(int &start,int &stop,PropEltIdx &obj,const DevVarStringArray *list)
+void DbServerCache::prop_indexes(int &start, int &stop, PropEltIdx &obj, const DevVarStringArray *list)
 {
     start = stop + 1;
     int nb_prop = atoi((*list)[start + 1]);
-    if (nb_prop == 0)
+    if(nb_prop == 0)
     {
         stop = start + 1;
         obj.last_idx = stop;
@@ -971,7 +1005,7 @@ void DbServerCache::prop_indexes(int &start,int &stop,PropEltIdx &obj,const DevV
 
     int id = 0;
     obj.props_idx = new int[nb_prop * 2];
-    for (int loop = 0;loop < nb_prop;loop++)
+    for(int loop = 0; loop < nb_prop; loop++)
     {
         obj.props_idx[id++] = stop + 1;
         int nb_elt = atoi((*list)[stop + 2]);
@@ -1004,11 +1038,11 @@ void DbServerCache::prop_indexes(int &start,int &stop,PropEltIdx &obj,const DevV
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void DbServerCache::prop_att_indexes(int &start,int &stop,AttPropEltIdx &obj,const DevVarStringArray *list)
+void DbServerCache::prop_att_indexes(int &start, int &stop, AttPropEltIdx &obj, const DevVarStringArray *list)
 {
     start = stop + 1;
     int nb_att = atoi((*list)[start + 1]);
-    if (nb_att == 0)
+    if(nb_att == 0)
     {
         stop = start + 1;
         obj.last_idx = stop;
@@ -1023,19 +1057,21 @@ void DbServerCache::prop_att_indexes(int &start,int &stop,AttPropEltIdx &obj,con
     obj.atts_idx = new int[nb_att];
     stop = start + 2;
 
-    for (int ll = 0;ll < nb_att;ll++)
+    for(int ll = 0; ll < nb_att; ll++)
     {
         obj.atts_idx[id++] = stop;
         int nb_prop = atoi((*list)[stop + 1]);
         stop = stop + 2;
 
-        for (int loop = 0;loop < nb_prop;loop++)
+        for(int loop = 0; loop < nb_prop; loop++)
         {
             int nb_elt = atoi((*list)[stop + 1]);
             stop = stop + nb_elt + 2;
         }
-        if (ll == (nb_att - 1))
+        if(ll == (nb_att - 1))
+        {
             stop--;
+        }
     }
 
     obj.last_idx = stop;
@@ -1061,11 +1097,11 @@ void DbServerCache::prop_att_indexes(int &start,int &stop,AttPropEltIdx &obj,con
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DbServerCache::prop_pipe_indexes(int &start,int &stop,AttPropEltIdx &obj,const DevVarStringArray *list)
+void DbServerCache::prop_pipe_indexes(int &start, int &stop, AttPropEltIdx &obj, const DevVarStringArray *list)
 {
     start = stop + 1;
     int nb_att = atoi((*list)[start + 1]);
-    if (nb_att == 0)
+    if(nb_att == 0)
     {
         stop = start + 1;
         obj.last_idx = stop;
@@ -1080,19 +1116,21 @@ void DbServerCache::prop_pipe_indexes(int &start,int &stop,AttPropEltIdx &obj,co
     obj.atts_idx = new int[nb_att];
     stop = start + 2;
 
-    for (int ll = 0;ll < nb_att;ll++)
+    for(int ll = 0; ll < nb_att; ll++)
     {
         obj.atts_idx[id++] = stop;
         int nb_prop = atoi((*list)[stop + 1]);
         stop = stop + 2;
 
-        for (int loop = 0;loop < nb_prop;loop++)
+        for(int loop = 0; loop < nb_prop; loop++)
         {
             int nb_elt = atoi((*list)[stop + 1]);
             stop = stop + nb_elt + 2;
         }
-        if (ll == (nb_att - 1))
+        if(ll == (nb_att - 1))
+        {
             stop--;
+        }
     }
 
     obj.last_idx = stop;
@@ -1117,12 +1155,11 @@ void DbServerCache::prop_pipe_indexes(int &start,int &stop,AttPropEltIdx &obj,co
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_obj_property(DevVarStringArray *in_param)
 {
     int obj_ind;
-    int res = find_obj((*in_param)[0],obj_ind);
-    if (res == -1)
+    int res = find_obj((*in_param)[0], obj_ind);
+    if(res == -1)
     {
         TangoSys_OMemStream o;
         o << "Object " << (*in_param)[0] << " not found in DB cache" << std::ends;
@@ -1136,7 +1173,7 @@ const DevVarStringArray *DbServerCache::get_obj_property(DevVarStringArray *in_p
         ret_obj_prop.length(ret_length);
         ret_obj_prop[0] = Tango::string_dup((*in_param)[0]);
 
-        get_obj_prop(in_param,ctrl_serv_prop,true);
+        get_obj_prop(in_param, ctrl_serv_prop, true);
     }
 
     return &ret_obj_prop;
@@ -1160,24 +1197,22 @@ const DevVarStringArray *DbServerCache::get_obj_property(DevVarStringArray *in_p
 //
 //------------------------------------------------------------------------------------------------------------------
 
-
 const DevVarStringArray *DbServerCache::get_device_property_list(DevVarStringArray *in_param)
 {
+    //
+    // There is a special case for the dserver admin device
+    //
 
-//
-// There is a special case for the dserver admin device
-//
-
-    if (TG_strncasecmp((*in_param)[0],"dserver/",8) == 0)
+    if(TG_strncasecmp((*in_param)[0], "dserver/", 8) == 0)
     {
         ret_prop_list.length(0);
-        get_obj_prop_list(in_param,adm_dev_prop);
+        get_obj_prop_list(in_param, adm_dev_prop);
     }
     else
     {
-        int class_ind,dev_ind;
-        int res = find_dev_att((*in_param)[0],class_ind,dev_ind);
-        if (res == -1)
+        int class_ind, dev_ind;
+        int res = find_dev_att((*in_param)[0], class_ind, dev_ind);
+        if(res == -1)
         {
             TangoSys_OMemStream o;
             o << "Device " << (*in_param)[0] << " not found in DB cache" << std::ends;
@@ -1187,7 +1222,7 @@ const DevVarStringArray *DbServerCache::get_device_property_list(DevVarStringArr
         else
         {
             ret_prop_list.length(0);
-            get_obj_prop_list(in_param,classes_idx[class_ind].devs_idx[dev_ind].dev_prop);
+            get_obj_prop_list(in_param, classes_idx[class_ind].devs_idx[dev_ind].dev_prop);
         }
     }
 
@@ -1212,27 +1247,26 @@ const DevVarStringArray *DbServerCache::get_device_property_list(DevVarStringArr
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param,PropEltIdx &obj)
+void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param, PropEltIdx &obj)
 {
+    //
+    // First analyse the wildcard
+    //
 
-//
-// First analyse the wildcard
-//
-
-    bool before = false,after = false,wildcard_used;
+    bool before = false, after = false, wildcard_used;
     std::string before_str;
     std::string after_str;
     std::string wildcard((*in_param)[1]);
 
-    std::transform(wildcard.begin(),wildcard.end(),wildcard.begin(),::tolower);
+    std::transform(wildcard.begin(), wildcard.end(), wildcard.begin(), ::tolower);
 
     std::string::size_type pos = wildcard.find('*');
-    if (pos != std::string::npos)
+    if(pos != std::string::npos)
     {
         wildcard_used = true;
-        if (pos == 0)
+        if(pos == 0)
         {
-            if (wildcard.size() == 1)
+            if(wildcard.size() == 1)
             {
                 before = false;
                 after = false;
@@ -1247,9 +1281,11 @@ void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param,PropEltIdx &ob
         else
         {
             before = true;
-            before_str = wildcard.substr(0,pos);
-            if (pos == wildcard.size() - 1)
+            before_str = wildcard.substr(0, pos);
+            if(pos == wildcard.size() - 1)
+            {
                 after = false;
+            }
             else
             {
                 after = true;
@@ -1258,78 +1294,89 @@ void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param,PropEltIdx &ob
         }
     }
     else
+    {
         wildcard_used = false;
+    }
 
     int ret_length = 1;
     int obj_prop = obj.prop_nb;
 
     int lo;
-    std::string::size_type pos_after,pos_before;
+    std::string::size_type pos_after, pos_before;
 
-//
-// A loop on each prop.
-//
+    //
+    // A loop on each prop.
+    //
 
-    for (lo = 0;lo < obj_prop * 2;lo = lo + 2)
+    for(lo = 0; lo < obj_prop * 2; lo = lo + 2)
     {
-
-//
-// Check according to the user wildcard, if we have to returned this property name
-// Note: The property name is case independant
-//
+        //
+        // Check according to the user wildcard, if we have to returned this property name
+        // Note: The property name is case independant
+        //
 
         bool store = false;
-        if (wildcard_used == true)
+        if(wildcard_used == true)
         {
-            if (before == false)
+            if(before == false)
             {
-                if (after == false)
+                if(after == false)
+                {
                     store = true;
+                }
                 else
                 {
                     std::string tmp_name((*data_list)[obj.props_idx[lo]]);
-                    std::transform(tmp_name.begin(),tmp_name.end(),tmp_name.begin(),::tolower);
+                    std::transform(tmp_name.begin(), tmp_name.end(), tmp_name.begin(), ::tolower);
 
                     pos_after = tmp_name.rfind(after_str);
-                    if ((pos_after != std::string::npos) && (pos_after == (tmp_name.size() - after_str.size())))
+                    if((pos_after != std::string::npos) && (pos_after == (tmp_name.size() - after_str.size())))
+                    {
                         store = true;
+                    }
                 }
             }
             else
             {
                 std::string tmp_name((*data_list)[obj.props_idx[lo]]);
-                std::transform(tmp_name.begin(),tmp_name.end(),tmp_name.begin(),::tolower);
+                std::transform(tmp_name.begin(), tmp_name.end(), tmp_name.begin(), ::tolower);
 
-                if (after == false)
+                if(after == false)
                 {
                     pos_before = tmp_name.find(before_str);
-                    if ((pos_before != std::string::npos) && (pos_before == 0))
+                    if((pos_before != std::string::npos) && (pos_before == 0))
+                    {
                         store = true;
+                    }
                 }
                 else
                 {
                     pos_before = tmp_name.find(before_str);
                     pos_after = tmp_name.rfind(after_str);
-                    if ((pos_before != std::string::npos) && (pos_before == 0) &&
-                        (pos_after != std::string::npos) && (pos_after == (tmp_name.size() - after_str.size())))
+                    if((pos_before != std::string::npos) && (pos_before == 0) && (pos_after != std::string::npos) &&
+                       (pos_after == (tmp_name.size() - after_str.size())))
+                    {
                         store = true;
+                    }
                 }
             }
         }
         else
         {
             std::string tmp_name((*data_list)[obj.props_idx[lo]]);
-            std::transform(tmp_name.begin(),tmp_name.end(),tmp_name.begin(),::tolower);
+            std::transform(tmp_name.begin(), tmp_name.end(), tmp_name.begin(), ::tolower);
 
-            if (tmp_name == wildcard)
+            if(tmp_name == wildcard)
+            {
                 store = true;
+            }
         }
 
-//
-// Store the property name if decided
-//
+        //
+        // Store the property name if decided
+        //
 
-        if (store == true)
+        if(store == true)
         {
             ret_prop_list.length(ret_length);
             ret_prop_list[ret_length - 1] = Tango::string_dup((*data_list)[obj.props_idx[lo]]);
@@ -1354,21 +1401,20 @@ void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param,PropEltIdx &ob
 
 const DevVarLongStringArray *DbServerCache::import_tac_dev(const std::string &tac_dev)
 {
+    //
+    // Throw exception if no info in cache
+    //
 
-//
-// Throw exception if no info in cache
-//
-
-    if (imp_tac.last_idx == -1 || imp_tac.first_idx >= (int)data_list->length())
+    if(imp_tac.last_idx == -1 || imp_tac.first_idx >= (int) data_list->length())
     {
         TANGO_THROW_EXCEPTION(API_DatabaseCacheAccess, "No TAC device in Db cache");
     }
 
-//
-// Throw exception if the device in cache is not the requested one
-//
+    //
+    // Throw exception if the device in cache is not the requested one
+    //
 
-    if (tac_dev.size() != strlen((*data_list)[imp_tac.first_idx]))
+    if(tac_dev.size() != strlen((*data_list)[imp_tac.first_idx]))
     {
         TANGO_THROW_EXCEPTION(API_DatabaseCacheAccess, "Device not available from cache");
     }
@@ -1376,19 +1422,19 @@ const DevVarLongStringArray *DbServerCache::import_tac_dev(const std::string &ta
     std::string local_tac_dev(tac_dev);
     std::string cache_tac_dev((*data_list)[imp_tac.first_idx]);
 
-    std::transform(local_tac_dev.begin(),local_tac_dev.end(),local_tac_dev.begin(),::tolower);
-    std::transform(cache_tac_dev.begin(),cache_tac_dev.end(),cache_tac_dev.begin(),::tolower);
+    std::transform(local_tac_dev.begin(), local_tac_dev.end(), local_tac_dev.begin(), ::tolower);
+    std::transform(cache_tac_dev.begin(), cache_tac_dev.end(), cache_tac_dev.begin(), ::tolower);
 
-    if (local_tac_dev != cache_tac_dev)
+    if(local_tac_dev != cache_tac_dev)
     {
         TANGO_THROW_EXCEPTION(API_DatabaseCacheAccess, "Device not available from cache");
     }
 
-//
-// Throw exception if the device is not found in DB
-//
+    //
+    // Throw exception if the device is not found in DB
+    //
 
-    if (::strcmp((*data_list)[imp_tac.first_idx + 1],"Not Found") == 0)
+    if(::strcmp((*data_list)[imp_tac.first_idx + 1], "Not Found") == 0)
     {
         TangoSys_OMemStream o;
         o << "Device " << tac_dev << " not defined in database" << std::ends;
@@ -1396,9 +1442,9 @@ const DevVarLongStringArray *DbServerCache::import_tac_dev(const std::string &ta
         TANGO_THROW_EXCEPTION(DB_DeviceNotDefined, o.str());
     }
 
-//
-// Return cache data
-//
+    //
+    // Return cache data
+    //
 
     imp_tac_data.lvalue.length(2);
     imp_tac_data.svalue.length(5);
@@ -1406,8 +1452,10 @@ const DevVarLongStringArray *DbServerCache::import_tac_dev(const std::string &ta
     imp_tac_data.lvalue[0] = ::atoi((*data_list)[imp_tac.first_idx + 5]);
     imp_tac_data.lvalue[1] = ::atoi((*data_list)[imp_tac.last_idx - 1]);
 
-    for (int loop = 0;loop < 5;loop++)
+    for(int loop = 0; loop < 5; loop++)
+    {
         imp_tac_data.svalue[loop] = Tango::string_dup((*data_list)[imp_tac.first_idx + loop]);
+    }
 
     return &imp_tac_data;
 }
@@ -1432,14 +1480,14 @@ const DevVarLongStringArray *DbServerCache::import_tac_dev(const std::string &ta
 
 const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArray *in_param)
 {
+    //
+    // Throw exception if stored procedure does not support pipe
+    //
 
-//
-// Throw exception if stored procedure does not support pipe
-//
-
-    if (proc_release < 109)
+    if(proc_release < 109)
     {
-        std::string mess("Your database stored procedure is too old to support pipe. Please update to stored procedure release 1.9 or more");
+        std::string mess("Your database stored procedure is too old to support pipe. Please update to stored procedure "
+                         "release 1.9 or more");
         TANGO_THROW_EXCEPTION(DB_TooOldStoredProc, mess);
     }
 
@@ -1450,26 +1498,25 @@ const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArra
     ret_obj_pipe_prop[0] = Tango::string_dup((*in_param)[0]);
 
     int cl_idx = find_class((*in_param)[0]);
-    if (cl_idx != -1)
+    if(cl_idx != -1)
     {
-
-//
-// The class is found
-//
+        //
+        // The class is found
+        //
 
         int wanted_pipe_nb = in_param->length() - 1;
         int class_pipe_nb = classes_idx[cl_idx].class_pipe_prop.att_nb;
-        for (int loop = 0;loop < wanted_pipe_nb;loop++)
+        for(int loop = 0; loop < wanted_pipe_nb; loop++)
         {
             int ll;
-            for (ll = 0;ll < class_pipe_nb;ll++)
+            for(ll = 0; ll < class_pipe_nb; ll++)
             {
-                if (TG_strcasecmp((*in_param)[loop + 1],(*data_list)[classes_idx[cl_idx].class_pipe_prop.atts_idx[ll]]) == 0)
+                if(TG_strcasecmp((*in_param)[loop + 1],
+                                 (*data_list)[classes_idx[cl_idx].class_pipe_prop.atts_idx[ll]]) == 0)
                 {
-
-//
-// The pipe is found, copy all its properties
-//
+                    //
+                    // The pipe is found, copy all its properties
+                    //
 
                     int pipe_index = classes_idx[cl_idx].class_pipe_prop.atts_idx[ll];
                     int nb_prop = ::atoi((*data_list)[pipe_index + 1]);
@@ -1477,7 +1524,7 @@ const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArra
                     int nb_to_copy = 0;
                     int tmp_idx = pipe_index + 2;
                     nb_to_copy = 2;
-                    for (int k = 0;k < nb_prop;k++)
+                    for(int k = 0; k < nb_prop; k++)
                     {
                         nb_elt = ::atoi((*data_list)[tmp_idx + 1]);
                         tmp_idx = tmp_idx + nb_elt + 2;
@@ -1486,13 +1533,15 @@ const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArra
 
                     int old_length = ret_obj_pipe_prop.length();
                     ret_obj_pipe_prop.length(old_length + nb_to_copy);
-                    for (int j = 0;j < nb_to_copy;j++)
+                    for(int j = 0; j < nb_to_copy; j++)
+                    {
                         ret_obj_pipe_prop[old_length + j] = Tango::string_dup((*data_list)[pipe_index + j]);
+                    }
                     found_pipe++;
                     break;
                 }
             }
-            if (ll == class_pipe_nb)
+            if(ll == class_pipe_nb)
             {
                 found_pipe++;
                 int old_length = ret_obj_pipe_prop.length();
@@ -1501,7 +1550,7 @@ const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArra
                 ret_obj_pipe_prop[old_length + 1] = Tango::string_dup("0");
             }
         }
-        std::snprintf(n_pipe_str, sizeof(n_pipe_str),"%d",found_pipe);
+        std::snprintf(n_pipe_str, sizeof(n_pipe_str), "%d", found_pipe);
         ret_obj_pipe_prop[1] = Tango::string_dup(n_pipe_str);
     }
     else
@@ -1512,9 +1561,9 @@ const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArra
         TANGO_THROW_EXCEPTION(DB_ClassNotFoundInCache, o.str());
     }
 
-//    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_class_pipe_property for class " << (*in_param)[0] << std::endl;
-//    for (unsigned int ll=0;ll< ret_obj_pipe_prop.length();ll++)
-//        TANGO_LOG_DEBUG << "    DbCache --> Returned object pipe prop = " << ret_obj_pipe_prop[ll] << std::endl;
+    //    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_class_pipe_property for class " << (*in_param)[0] <<
+    //    std::endl; for (unsigned int ll=0;ll< ret_obj_pipe_prop.length();ll++)
+    //        TANGO_LOG_DEBUG << "    DbCache --> Returned object pipe prop = " << ret_obj_pipe_prop[ll] << std::endl;
 
     return &ret_obj_pipe_prop;
 }
@@ -1539,14 +1588,14 @@ const DevVarStringArray *DbServerCache::get_class_pipe_property(DevVarStringArra
 
 const DevVarStringArray *DbServerCache::get_dev_pipe_property(DevVarStringArray *in_param)
 {
+    //
+    // Throw exception if stored procedure does not support pipe
+    //
 
-//
-// Throw exception if stored procedure does not support pipe
-//
-
-    if (proc_release < 109)
+    if(proc_release < 109)
     {
-        std::string mess("Your database stored procedure is too old to support pipe. Please update to stored procedure release 1.9 or more");
+        std::string mess("Your database stored procedure is too old to support pipe. Please update to stored procedure "
+                         "release 1.9 or more");
         TANGO_THROW_EXCEPTION(DB_TooOldStoredProc, mess);
     }
 
@@ -1556,19 +1605,21 @@ const DevVarStringArray *DbServerCache::get_dev_pipe_property(DevVarStringArray 
     ret_obj_pipe_prop.length(2);
     ret_obj_pipe_prop[0] = Tango::string_dup((*in_param)[0]);
 
-    int class_ind,dev_ind;
+    int class_ind, dev_ind;
 
-    int ret_value = find_dev_att((*in_param)[0],class_ind,dev_ind);
-    if (ret_value != -1)
+    int ret_value = find_dev_att((*in_param)[0], class_ind, dev_ind);
+    if(ret_value != -1)
     {
         int wanted_pipe_nb = in_param->length() - 1;
         int dev_pipe_nb = classes_idx[class_ind].devs_idx[dev_ind].dev_pipe_prop.att_nb;
-        for (int loop = 0;loop < wanted_pipe_nb;loop++)
+        for(int loop = 0; loop < wanted_pipe_nb; loop++)
         {
             int ll;
-            for (ll = 0;ll < dev_pipe_nb;ll++)
+            for(ll = 0; ll < dev_pipe_nb; ll++)
             {
-                if (TG_strcasecmp((*in_param)[loop + 1],(*data_list)[classes_idx[class_ind].devs_idx[dev_ind].dev_pipe_prop.atts_idx[ll]]) == 0)
+                if(TG_strcasecmp((*in_param)[loop + 1],
+                                 (*data_list)[classes_idx[class_ind].devs_idx[dev_ind].dev_pipe_prop.atts_idx[ll]]) ==
+                   0)
                 {
                     int pipe_index = classes_idx[class_ind].devs_idx[dev_ind].dev_pipe_prop.atts_idx[ll];
                     int nb_prop = ::atoi((*data_list)[pipe_index + 1]);
@@ -1576,7 +1627,7 @@ const DevVarStringArray *DbServerCache::get_dev_pipe_property(DevVarStringArray 
                     int nb_to_copy = 0;
                     int tmp_idx = pipe_index + 2;
                     nb_to_copy = 2;
-                    for (int k = 0;k < nb_prop;k++)
+                    for(int k = 0; k < nb_prop; k++)
                     {
                         nb_elt = ::atoi((*data_list)[tmp_idx + 1]);
                         tmp_idx = tmp_idx + nb_elt + 2;
@@ -1585,13 +1636,15 @@ const DevVarStringArray *DbServerCache::get_dev_pipe_property(DevVarStringArray 
 
                     int old_length = ret_obj_pipe_prop.length();
                     ret_obj_pipe_prop.length(old_length + nb_to_copy);
-                    for (int j = 0;j < nb_to_copy;j++)
+                    for(int j = 0; j < nb_to_copy; j++)
+                    {
                         ret_obj_pipe_prop[old_length + j] = Tango::string_dup((*data_list)[pipe_index + j]);
+                    }
                     found_pipe++;
                     break;
                 }
             }
-            if (ll == dev_pipe_nb)
+            if(ll == dev_pipe_nb)
             {
                 found_pipe++;
                 int old_length = ret_obj_pipe_prop.length();
@@ -1601,12 +1654,12 @@ const DevVarStringArray *DbServerCache::get_dev_pipe_property(DevVarStringArray 
                 ret_obj_pipe_prop[old_length + 1] = Tango::string_dup("0");
             }
         }
-        std::snprintf(n_pipe_str, sizeof(n_pipe_str),"%d",found_pipe);
+        std::snprintf(n_pipe_str, sizeof(n_pipe_str), "%d", found_pipe);
         ret_obj_pipe_prop[1] = Tango::string_dup(n_pipe_str);
     }
     else
     {
-        if (TG_strncasecmp("dserver/",(*in_param)[0],8) != 0)
+        if(TG_strncasecmp("dserver/", (*in_param)[0], 8) != 0)
         {
             TangoSys_OMemStream o;
             o << "Device " << (*in_param)[0] << " not found in DB cache" << std::ends;
@@ -1615,16 +1668,16 @@ const DevVarStringArray *DbServerCache::get_dev_pipe_property(DevVarStringArray 
         }
         else
         {
-            std::snprintf(n_pipe_str, sizeof(n_pipe_str),"%d",found_pipe);
+            std::snprintf(n_pipe_str, sizeof(n_pipe_str), "%d", found_pipe);
             ret_obj_pipe_prop[1] = Tango::string_dup(n_pipe_str);
         }
     }
 
-//    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_dev_pipe_property for device " << (*in_param)[0] << std::endl;
-//    for (unsigned int ll=0;ll< ret_obj_pipe_prop.length();ll++)
-//        TANGO_LOG_DEBUG << "    DbCache --> Returned object pipe prop = " << ret_obj_pipe_prop[ll] << std::endl;
+    //    TANGO_LOG_DEBUG << "DbCache --> Returned data for a get_dev_pipe_property for device " << (*in_param)[0] <<
+    //    std::endl; for (unsigned int ll=0;ll< ret_obj_pipe_prop.length();ll++)
+    //        TANGO_LOG_DEBUG << "    DbCache --> Returned object pipe prop = " << ret_obj_pipe_prop[ll] << std::endl;
 
     return &ret_obj_pipe_prop;
 }
 
-} // End of Tango namespace
+} // namespace Tango

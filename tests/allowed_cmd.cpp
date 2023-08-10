@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if ((argc == 1) || (argc > 3))
+    if((argc == 1) || (argc > 3))
     {
         TEST_LOG << "usage: %s device" << endl;
         exit(-1);
@@ -26,36 +26,41 @@ int main(int argc, char **argv)
     {
         device = new DeviceProxy(device_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(-1);
     }
 
-// Try an allowed command on the device
+    // Try an allowed command on the device
 
-    DeviceData din,dout;
-    din << (Tango::DevFloat)2.0;
+    DeviceData din, dout;
+    din << (Tango::DevFloat) 2.0;
 
     try
     {
-        dout = device->command_inout("IOFloat",din);
+        dout = device->command_inout("IOFloat", din);
         Tango::DevFloat val;
         dout >> val;
 
-        if (val != 4.0)
+        if(val != 4.0)
+        {
             return -1;
+        }
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
-//        Except::print_exception(e);
-        if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) == 0)
+        //        Except::print_exception(e);
+        if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) == 0)
+        {
             return 1;
+        }
         else
+        {
             return 2;
+        }
     }
 
     delete device;
     return 0;
-
 }

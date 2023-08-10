@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if (argc != 4)
+    if(argc != 4)
     {
         TEST_LOG << "usage: copy_devproxy <device1> <device2> <device3>" << endl;
         exit(-1);
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     {
         device = new DeviceProxy(device1_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(1);
@@ -28,18 +28,16 @@ int main(int argc, char **argv)
 
     try
     {
-
-// Test copy constructor
+        // Test copy constructor
 
         DeviceProxy dev2(*device);
 
-        assert (dev2.name() == device1_name);
+        assert(dev2.name() == device1_name);
 #ifndef COMPAT
-        assert (dev2.get_idl_version() == 5);
+        assert(dev2.get_idl_version() == 5);
 #endif
-
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
         exit(-1);
@@ -47,16 +45,16 @@ int main(int argc, char **argv)
 
     TEST_LOG << "   Copy constructor --> OK" << endl;
 
-// Test assignement operator
+    // Test assignement operator
 
     DeviceProxy dev2(device2_name);
     DeviceProxy dev3(device3_name);
 
     dev3 = *device;
 
-    assert (dev3.name() == device1_name);
+    assert(dev3.name() == device1_name);
 #ifndef COMPAT
-    assert (dev3.get_idl_version() == 5);
+    assert(dev3.get_idl_version() == 5);
 #endif
 
     TEST_LOG << "   Assignement operator --> OK" << endl;

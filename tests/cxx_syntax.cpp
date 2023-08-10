@@ -7,19 +7,18 @@
 #undef SUITE_NAME
 #define SUITE_NAME SyntaxTestSuite
 
-class SyntaxTestSuite: public CxxTest::TestSuite
+class SyntaxTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *device2;
     string device1_name, device2_name, tango_host, device_alias, attribute_alias;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device2");
@@ -28,10 +27,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -41,12 +39,11 @@ public:
             ApiUtil *api = ApiUtil::instance();
             api->get_env_var("TANGO_HOST", tango_host);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -65,11 +62,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Helper functions
+    // Helper functions
 
     unsigned int check_proxy(string name)
     {
@@ -80,12 +77,16 @@ public:
             DeviceProxy dev(name);
             ret = 2;
         }
-        catch (DevFailed &e)
+        catch(DevFailed &e)
         {
-            if (strcmp(e.errors[0].reason.in(),API_WrongDeviceNameSyntax) == 0)
+            if(strcmp(e.errors[0].reason.in(), API_WrongDeviceNameSyntax) == 0)
+            {
                 ret = 0;
+            }
             else
+            {
                 ret = 1;
+            }
         }
 
         return ret;
@@ -100,20 +101,26 @@ public:
             AttributeProxy attr(name);
             ret = 3;
         }
-        catch (DevFailed &e)
+        catch(DevFailed &e)
         {
-            if (strcmp(e.errors[0].reason.in(),API_WrongAttributeNameSyntax) == 0)
+            if(strcmp(e.errors[0].reason.in(), API_WrongAttributeNameSyntax) == 0)
+            {
                 ret = 0;
-            else if (strcmp(e.errors[0].reason.in(),API_UnsupportedAttribute) == 0)
+            }
+            else if(strcmp(e.errors[0].reason.in(), API_UnsupportedAttribute) == 0)
+            {
                 ret = 1;
+            }
             else
+            {
                 ret = 2;
+            }
         }
 
         return ret;
     }
 
-// Check device name syntax when creating DeviceProxy instance
+    // Check device name syntax when creating DeviceProxy instance
 
     void test_check_device_name_syntax_when_creating_DeviceProxy_instance(void)
     {
@@ -145,7 +152,7 @@ public:
         TS_ASSERT_EQUALS(check_proxy("//" + tango_host + "/my_alias"), 1u);
     }
 
-// Connect to a device via its alias as my_alias
+    // Connect to a device via its alias as my_alias
 
     void test_connect_to_a_device_via_its_alias_as_my_alias(void)
     {
@@ -163,7 +170,7 @@ public:
         TS_ASSERT_EQUALS(prop_val, 25);
     }
 
-// Connect to a device via its alias as host:port/my_alias
+    // Connect to a device via its alias as host:port/my_alias
 
     void test_connect_to_a_device_via_its_alias_as_host_port_my_alias(void)
     {
@@ -182,14 +189,14 @@ public:
         TS_ASSERT_EQUALS(prop_val, 25);
     }
 
-// Connect to a device via its classic name
+    // Connect to a device via its classic name
 
     void test_connect_to_a_device_via_its_classic_name(void)
     {
         TS_ASSERT_EQUALS(check_proxy(device1_name), 2u);
     }
 
-// Check attribute name syntax when creating AttributeProxy instance
+    // Check attribute name syntax when creating AttributeProxy instance
 
     void test_check_attribute_name_syntax_when_creating_AttributeProxy_instance(void)
     {
@@ -222,7 +229,7 @@ public:
         TS_ASSERT_EQUALS(attr_check_proxy("//" + tango_host + "/my_alias"), 2u);
     }
 
-// Connect to an attribute via its alias as attribute_alias
+    // Connect to an attribute via its alias as attribute_alias
 
     void test_connect_to_an_attribute_via_its_alias_as_attribute_alias(void)
     {
@@ -233,7 +240,7 @@ public:
         delete attribute;
     }
 
-// Connect to an attribute via its alias as host:port/attribute_alias
+    // Connect to an attribute via its alias as host:port/attribute_alias
 
     void test_connect_to_an_attribute_via_its_alias_as_host_port_attribute_alias(void)
     {
@@ -245,7 +252,7 @@ public:
         delete attribute;
     }
 
-// Check alias call
+    // Check alias call
 
     void test_check_alias_call(void)
     {
@@ -256,21 +263,22 @@ public:
 
         DeviceProxy *device2 = nullptr;
         TS_ASSERT_THROWS_NOTHING(device2 = new DeviceProxy(device2_name));
-        TS_ASSERT_THROWS_ASSERT(device2->alias(), Tango::DevFailed &e,
-                        TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), DB_AliasNotDefined);
-                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(device2->alias(),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), DB_AliasNotDefined);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
         delete device2;
     }
 
-  void test_IDL_version_check()
-  {
-    using Tango::detail::IDLVersionIsTooOld;
+    void test_IDL_version_check()
+    {
+        using Tango::detail::IDLVersionIsTooOld;
 
-    TS_ASSERT(IDLVersionIsTooOld(1, 2));
-    TS_ASSERT(!IDLVersionIsTooOld(1, 1));
+        TS_ASSERT(IDLVersionIsTooOld(1, 2));
+        TS_ASSERT(!IDLVersionIsTooOld(1, 1));
 
-    TS_ASSERT(!IDLVersionIsTooOld(0, 1));
-    TS_ASSERT(!IDLVersionIsTooOld(0, 0));
-  }
+        TS_ASSERT(!IDLVersionIsTooOld(0, 1));
+        TS_ASSERT(!IDLVersionIsTooOld(0, 0));
+    }
 };
 #endif // SyntaxTestSuite_h

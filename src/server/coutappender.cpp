@@ -74,32 +74,37 @@
 
 namespace Tango
 {
-  CoutAppender::CoutAppender (const std::string& name)
-    : log4tango::LayoutAppender(name)
-  {
-    //no-op ctor
-  }
+CoutAppender::CoutAppender(const std::string &name) :
+    log4tango::LayoutAppender(name)
+{
+    // no-op ctor
+}
 
-  CoutAppender::~CoutAppender ()
-  {
-    //no-op dtor
-  }
+CoutAppender::~CoutAppender()
+{
+    // no-op dtor
+}
 
-  int CoutAppender::_append (const log4tango::LoggingEvent& event)
-  {
+int CoutAppender::_append(const log4tango::LoggingEvent &event)
+{
 #ifdef _TG_WINDOWS_
     CoutBuf *dbg_win;
-    try {
-      dbg_win = Util::instance(false)->get_debug_object();
-    } catch (...) {
-      dbg_win = 0;
+    try
+    {
+        dbg_win = Util::instance(false)->get_debug_object();
     }
-    if (dbg_win)
-      dbg_win->dbg_out(get_layout().format(event).c_str());
+    catch(...)
+    {
+        dbg_win = 0;
+    }
+    if(dbg_win)
+    {
+        dbg_win->dbg_out(get_layout().format(event).c_str());
+    }
     else
 #endif
-      ::printf("%s\n", get_layout().format(event).c_str());
+        ::printf("%s\n", get_layout().format(event).c_str());
     return 0;
-  }
+}
 
-} // namespace tango
+} // namespace Tango

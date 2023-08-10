@@ -9,38 +9,36 @@
 #undef SUITE_NAME
 #define SUITE_NAME MemAttrTestSuite
 
-class MemAttrTestSuite: public CxxTest::TestSuite
+class MemAttrTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1;
     string device1_name;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
 
         CxxTest::TangoPrinter::validate_args();
 
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
             device1 = new DeviceProxy(device1_name);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -74,19 +72,19 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test one memorized attribute which fails during init command
+    // Test one memorized attribute which fails during init command
 
     void test_One_memorized_attribute_failing_during_init_cmd(void)
     {
         DeviceAttribute short_attr_w("Short_attr_w", static_cast<DevShort>(10));
         TS_ASSERT_THROWS_NOTHING(device1->write_attribute(short_attr_w));
-//
-// Ask the attribute to throw exception during any write call
-//
+        //
+        // Ask the attribute to throw exception during any write call
+        //
 
         DeviceData din;
         vector<short> v_s;
@@ -95,16 +93,16 @@ public:
 
         din << v_s;
 
-        device1->command_inout("IOAttrThrowEx",din);
+        device1->command_inout("IOAttrThrowEx", din);
 
-//
-// Execute init command
-//
+        //
+        // Execute init command
+        //
         device1->command_inout("Init");
 
-//
-// Get device state and status
-//
+        //
+        // Get device state and status
+        //
 
         Tango::DevState ds = device1->state();
         TS_ASSERT_EQUALS(ds, Tango::ALARM);
@@ -115,21 +113,21 @@ public:
         string sub_status = d_status.substr(pos);
         TS_ASSERT_EQUALS(sub_status, STATUS_MEM_FAILED);
 
-//
-// Try to read the attribute
-//
+        //
+        // Try to read the attribute
+        //
 
         DeviceAttribute read_da = device1->read_attribute("Short_attr_w");
         short s_val;
-        TS_ASSERT_THROWS_ASSERT(read_da >> s_val, Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Aaaa");
-                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR);
-                TS_ASSERT_EQUALS(string(e.errors[1].reason.in()), API_MemAttFailedDuringInit);
-                                TS_ASSERT_EQUALS(e.errors[1].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(
+            read_da >> s_val, Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Aaaa");
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR);
+            TS_ASSERT_EQUALS(string(e.errors[1].reason.in()), API_MemAttFailedDuringInit);
+            TS_ASSERT_EQUALS(e.errors[1].severity, Tango::ERR));
 
-//
-// Ask attribute not to throw exception any more
-//
+        //
+        // Ask attribute not to throw exception any more
+        //
 
         v_s.clear();
         v_s.push_back(4);
@@ -137,20 +135,20 @@ public:
 
         din << v_s;
 
-        device1->command_inout("IOAttrThrowEx",din);
+        device1->command_inout("IOAttrThrowEx", din);
 
-//
-// Write the attribute
-//
+        //
+        // Write the attribute
+        //
 
         short val = 10;
-        Tango::DeviceAttribute da("Short_attr_w",val);
+        Tango::DeviceAttribute da("Short_attr_w", val);
 
         device1->write_attribute(da);
 
-//
-// Get device state and status
-//
+        //
+        // Get device state and status
+        //
 
         ds = device1->state();
         TS_ASSERT_EQUALS(ds, Tango::ON);
@@ -158,9 +156,9 @@ public:
         d_status = device1->status();
         TS_ASSERT_EQUALS(d_status, STATUS_ON);
 
-//
-// Read the attribute
-//
+        //
+        // Read the attribute
+        //
 
         DeviceAttribute read_da_2 = device1->read_attribute("Short_attr_w");
         short s_val_2;
@@ -168,16 +166,16 @@ public:
         TS_ASSERT_EQUALS(s_val_2, 10);
     }
 
-/*
- * Test for changing min and max alarm threshold of a  memorized attribute
- * with neither min_ nor max_value specified. Such scenario used to fail
- * (#401), with misleading error message claiming that memorized value
- * is above new limit.
- */
+    /*
+     * Test for changing min and max alarm threshold of a  memorized attribute
+     * with neither min_ nor max_value specified. Such scenario used to fail
+     * (#401), with misleading error message claiming that memorized value
+     * is above new limit.
+     */
 
     void test_change_max_alarm_threshold_of_memorized_attribute()
     {
-        const char* attr_name = "Short_attr_w";
+        const char *attr_name = "Short_attr_w";
         const DevShort attr_value = 20;
 
         unset_attribute_min_max_value(attr_name);
@@ -187,13 +185,13 @@ public:
 
         auto config = device1->get_attribute_config(attr_name);
         config.alarms.max_alarm = std::to_string(attr_value + 1);
-        AttributeInfoListEx config_in = { config };
+        AttributeInfoListEx config_in = {config};
         TS_ASSERT_THROWS_NOTHING(device1->set_attribute_config(config_in));
     }
 
     void test_change_min_alarm_threshold_of_memorized_attribute()
     {
-        const char* attr_name = "Short_attr_w";
+        const char *attr_name = "Short_attr_w";
         const DevShort attr_value = -20;
 
         unset_attribute_min_max_value(attr_name);
@@ -203,16 +201,16 @@ public:
 
         auto config = device1->get_attribute_config(attr_name);
         config.alarms.min_alarm = std::to_string(attr_value - 1);
-        AttributeInfoListEx config_in = { config };
+        AttributeInfoListEx config_in = {config};
         TS_ASSERT_THROWS_NOTHING(device1->set_attribute_config(config_in));
     }
 
-    void unset_attribute_min_max_value(const char* attr_name)
+    void unset_attribute_min_max_value(const char *attr_name)
     {
         auto config = device1->get_attribute_config(attr_name);
         config.min_value = AlrmValueNotSpec;
         config.max_value = AlrmValueNotSpec;
-        AttributeInfoListEx config_in = { config };
+        AttributeInfoListEx config_in = {config};
         TS_ASSERT_THROWS_NOTHING(device1->set_attribute_config(config_in));
     }
 };

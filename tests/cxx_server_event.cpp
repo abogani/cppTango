@@ -9,50 +9,53 @@
 #undef SUITE_NAME
 #define SUITE_NAME ServerEventTestSuite
 
-class ServerEventTestSuite : public CxxTest::TestSuite {
-protected:
+class ServerEventTestSuite : public CxxTest::TestSuite
+{
+  protected:
     DeviceProxy *device1, *device2;
     string device1_name, device2_name, device1_instance_name, device2_instance_name;
     DevLong eve_id;
 
-public:
-    SUITE_NAME():
-            device1_instance_name{"test"},//TODO pass via cl
-            device2_instance_name{"test2"}
-            {
-
-//
-// Arguments check -------------------------------------------------
-//
+  public:
+    SUITE_NAME() :
+        device1_instance_name{"test"}, // TODO pass via cl
+        device2_instance_name{"test2"}
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device20");
 
         CxxTest::TangoPrinter::validate_args();
 
+        //
+        // Initialization --------------------------------------------------
+        //
 
-//
-// Initialization --------------------------------------------------
-//
-
-        try {
+        try
+        {
             device1 = new DeviceProxy(device1_name);
             device2 = new DeviceProxy(device2_name);
 
-            //TODO start server 2 and set fallback point
+            // TODO start server 2 and set fallback point
             CxxTest::TangoPrinter::start_server(device2_instance_name);
             CxxTest::TangoPrinter::restore_set("test2/debian8/20 started.");
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
-    virtual ~SUITE_NAME() {
-        if (CxxTest::TangoPrinter::is_restore_set("test2/debian8/20 started."))
+    virtual ~SUITE_NAME()
+    {
+        if(CxxTest::TangoPrinter::is_restore_set("test2/debian8/20 started."))
+        {
             CxxTest::TangoPrinter::kill_server();
+        }
 
         CxxTest::TangoPrinter::start_server(device1_instance_name);
 
@@ -60,24 +63,26 @@ public:
         delete device2;
     }
 
-    static SUITE_NAME *createSuite() {
+    static SUITE_NAME *createSuite()
+    {
         return new SUITE_NAME();
     }
 
-    static void destroySuite(SUITE_NAME *suite) {
+    static void destroySuite(SUITE_NAME *suite)
+    {
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-//
-// Ask the device server to subscribe to an event
-//
-    void test_device_server_subscribe_to_event(void) {
+    //
+    // Ask the device server to subscribe to an event
+    //
+    void test_device_server_subscribe_to_event(void)
+    {
         TEST_LOG << endl << "new DeviceProxy(" << device1->name() << ") returned" << endl << endl;
-
 
         vector<string> vs{device2_name, "Short_attr", "periodic"};
 
@@ -87,13 +92,12 @@ public:
         dd_out >> eve_id;
     }
 
+    //
+    // Wait for event to be executed
+    //
 
-
-//
-// Wait for event to be executed
-//
-
-    void test_wait_event(void) {
+    void test_wait_event(void)
+    {
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
         DeviceData da;
@@ -106,10 +110,11 @@ public:
         TS_ASSERT_LESS_THAN_EQUALS(cb, 4);
     }
 
-//
-// Ask server to unsubsribe from event
-//
-    void test_server_unsubscribes_from_event(void) {
+    //
+    // Ask server to unsubsribe from event
+    //
+    void test_server_unsubscribes_from_event(void)
+    {
         DeviceData dd_un;
         dd_un << eve_id;
 
@@ -144,13 +149,10 @@ public:
         CountingCallBack<Tango::EventData> callback{};
 
         int subscription{};
-        TS_ASSERT_THROWS_NOTHING(subscription = device1->subscribe_event(
-            attribute_name,
-            Tango::USER_EVENT,
-            &callback));
+        TS_ASSERT_THROWS_NOTHING(subscription = device1->subscribe_event(attribute_name, Tango::USER_EVENT, &callback));
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
-        callback.wait_for([&](){ return callback.invocation_count() >= 2; });
+        callback.wait_for([&]() { return callback.invocation_count() >= 2; });
         TS_ASSERT_EQUALS(2, callback.invocation_count());
         TS_ASSERT_EQUALS(0, callback.error_count());
 
@@ -162,13 +164,13 @@ public:
         CxxTest::TangoPrinter::start_server(new_instance_name);
         // std::this_thread::sleep_for(std::chrono::seconds(EVENT_HEARTBEAT_PERIOD)); // Wait for reconnection
 
-        callback.wait_for([&](){ return callback.invocation_count() >= 5; });
+        callback.wait_for([&]() { return callback.invocation_count() >= 5; });
         TS_ASSERT_EQUALS(4, callback.invocation_count());
         TS_ASSERT_EQUALS(1, callback.error_count());
 
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOPushEvent"));
 
-        callback.wait_for([&](){ return callback.invocation_count() >= 6; });
+        callback.wait_for([&]() { return callback.invocation_count() >= 6; });
         TS_ASSERT_EQUALS(5, callback.invocation_count());
         TS_ASSERT_EQUALS(1, callback.error_count());
 

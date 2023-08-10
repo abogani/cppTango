@@ -18,13 +18,17 @@
 
 const int NODATA = -9999;
 
-class EventCallback: public Tango::CallBack
+class EventCallback : public Tango::CallBack
 {
-public:
-    EventCallback(): cb_executed(0),cb_err(0)
-    {}
-    ~EventCallback()
-    {}
+  public:
+    EventCallback() :
+        cb_executed(0),
+        cb_err(0)
+    {
+    }
+
+    ~EventCallback() { }
+
     void push_event(Tango::EventData *ed);
 
     int cb_executed;
@@ -33,7 +37,7 @@ public:
 
 void EventCallback::push_event(Tango::EventData *ed)
 {
-    if (0 == ed->err)
+    if(0 == ed->err)
     {
         cb_executed++;
     }
@@ -74,7 +78,7 @@ int main(int argc, char *argv[])
     const vector<string> filters;
     EventCallback *eventCallback = new EventCallback();
 
-    if (argc != 2)
+    if(argc != 2)
     {
         TEST_LOG << "usage: event_lock <device>" << std::endl;
         exit(-1);
@@ -98,7 +102,7 @@ int main(int argc, char *argv[])
         TEST_LOG << "   Device locked and subscribed to one change event --> OK" << std::endl;
 
         int cnt = 0;
-        while (cnt < 3)
+        while(cnt < 3)
         {
             dev->command_inout("IOIncValue");
             std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -108,19 +112,19 @@ int main(int argc, char *argv[])
         dev->unlock();
         TEST_LOG << "   Device unlocked --> OK" << std::endl;
 
-        if (eventID != NODATA)
+        if(eventID != NODATA)
         {
             dev->unsubscribe_event(eventID);
         }
 
         dev->stop_poll_attribute(att_name);
     }
-    catch (Tango::DevFailed &ex)
+    catch(Tango::DevFailed &ex)
     {
         Tango::Except::print_exception(ex);
         assert(false);
     }
-    catch (...)
+    catch(...)
     {
         TEST_LOG << "Unknown exception....." << std::endl;
         assert(false);
@@ -155,7 +159,8 @@ georg@taco10:/home/projekte/tango/Tests/ExitCrashProblem> ExitCrashProblemClient
 [main] subscribe_event done.
 
 [main] locking the device ...
-[main] new locking status: Device sys/tg_test/1 is locked by CPP or Python client with PID 17831 from host giop:tcp:[::ffff:172.25.2.10]:18156
+[main] new locking status: Device sys/tg_test/1 is locked by CPP or Python client with PID 17831 from host
+giop:tcp:[::ffff:172.25.2.10]:18156
 
 [main] still alive. Waiting for a long_scalar event  [exiting after 3 trials] ...
 [EventCallback::push_event] entering  ...

@@ -47,7 +47,7 @@
 #define _CLASS_ATTRIBUTE_H
 
 #include <tango/tango.h>
-//#include <attrdesc.h>
+// #include <attrdesc.h>
 #include <functional>
 
 namespace Tango
@@ -66,32 +66,49 @@ namespace Tango
 
 class AttrProperty
 {
-public:
-    AttrProperty(const std::string &name,const std::string &value);
-    AttrProperty(const std::string &name,long value);
+  public:
+    AttrProperty(const std::string &name, const std::string &value);
+    AttrProperty(const std::string &name, long value);
     ~AttrProperty();
 
     AttrProperty(const AttrProperty &);
-    AttrProperty & operator=(const AttrProperty &);
+    AttrProperty &operator=(const AttrProperty &);
 
     AttrProperty(AttrProperty &&);
-    AttrProperty & operator=(AttrProperty &&);
+    AttrProperty &operator=(AttrProperty &&);
 
-    std::string &get_value() {return attr_value;}
-    std::string const &get_value() const {return attr_value;}
-    long get_lg_value()const {return attr_lg;}
-    std::string &get_name() {return attr_name;}
-    std::string const &get_name() const {return attr_name;}
+    std::string &get_value()
+    {
+        return attr_value;
+    }
+
+    std::string const &get_value() const
+    {
+        return attr_value;
+    }
+
+    long get_lg_value() const
+    {
+        return attr_lg;
+    }
+
+    std::string &get_name()
+    {
+        return attr_name;
+    }
+
+    std::string const &get_name() const
+    {
+        return attr_name;
+    }
 
     void convert(const char *);
 
-
-private:
-    std::string            attr_name;
-    std::string            attr_value;
-    long            attr_lg;
+  private:
+    std::string attr_name;
+    std::string attr_value;
+    long attr_lg;
 };
-
 
 //=============================================================================
 //
@@ -105,23 +122,26 @@ private:
 //
 //=============================================================================
 
-
 class MultiClassAttribute
 {
-public:
+  public:
     MultiClassAttribute();
     ~MultiClassAttribute();
 
-    void init_class_attribute(const std::string &class_name,long base = 0);
+    void init_class_attribute(const std::string &class_name, long base = 0);
 
-    std::vector<Tango::Attr *> &get_attr_list() {return attr_list;}
+    std::vector<Tango::Attr *> &get_attr_list()
+    {
+        return attr_list;
+    }
+
     Attr &get_attr(const std::string &attr_name);
-    void remove_attr(const std::string &,const std::string &);
+    void remove_attr(const std::string &, const std::string &);
 
-protected:
-    std::vector<Tango::Attr *>            attr_list;
+  protected:
+    std::vector<Tango::Attr *> attr_list;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _CLASS_ATTRIBUTE_H

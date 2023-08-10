@@ -6,18 +6,17 @@
 #undef SUITE_NAME
 #define SUITE_NAME AttrWriteTestSuite
 
-class AttrWriteTestSuite: public CxxTest::TestSuite
+class AttrWriteTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string device1_name, dserver_name;
 
@@ -26,10 +25,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -38,12 +36,11 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -62,55 +59,56 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test some exception cases
+    // Test some exception cases
 
     void test_some_exception_cases(void)
     {
         DevShort sh = 10;
         DevLong lg = 1000;
         DevUShort us = 42;
-        DeviceAttribute toto("toto", "test_string"),
-                short_attr_w("Short_attr_w", sh), short_attr_w2("Short_attr_w", sh),
-                short_attr("Short_attr", sh),
-                long_attr_w("Long_attr_w", lg);
+        DeviceAttribute toto("toto", "test_string"), short_attr_w("Short_attr_w", sh),
+            short_attr_w2("Short_attr_w", sh), short_attr("Short_attr", sh), long_attr_w("Long_attr_w", lg);
         vector<DeviceAttribute> attributes;
         DeviceAttribute short_attr_wrong_type("Short_attr_w", us);
 
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_attribute(short_attr_wrong_type),
+            Tango::DevFailed & e,
+            TS_ASSERT(string(e.errors[0].reason.in()) == "API_IncompatibleAttrDataType" &&
+                      string(e.errors[0].desc.in()).find("expected Tango::DevVarShortArray") != string::npos &&
+                      string(e.errors[0].desc.in()).find("found Tango::DevVarUShortArray") != string::npos &&
+                      e.errors[0].severity == Tango::ERR));
 
-        TS_ASSERT_THROWS_ASSERT(device1->write_attribute(short_attr_wrong_type), Tango::DevFailed &e,
-                        TS_ASSERT(string(e.errors[0].reason.in()) == "API_IncompatibleAttrDataType"
-                                && string(e.errors[0].desc.in()).find("expected Tango::DevVarShortArray") != string::npos
-                                && string(e.errors[0].desc.in()).find("found Tango::DevVarUShortArray") != string::npos
-                                && e.errors[0].severity == Tango::ERR));
-
-        TS_ASSERT_THROWS_ASSERT(device1->write_attribute(toto), Tango::DevFailed &e,
-                        TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrNotFound);
-                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(device1->write_attribute(toto),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrNotFound);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         // WARNING:
         // the copy constructor used by push_back() removes memory from the copied object;
         // unless fixed, the original object cannot be used in further tests
         attributes.push_back(short_attr_w);
         attributes.push_back(toto);
-        TS_ASSERT_THROWS_ASSERT(device1->write_attributes(attributes), Tango::NamedDevFailedList &e,
-                        TS_ASSERT_EQUALS(string(e.err_list[0].err_stack[0].reason.in()), API_AttrNotFound);
-                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(device1->write_attributes(attributes),
+                                Tango::NamedDevFailedList & e,
+                                TS_ASSERT_EQUALS(string(e.err_list[0].err_stack[0].reason.in()), API_AttrNotFound);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         attributes.clear();
         attributes.push_back(short_attr_w2);
         attributes.push_back(short_attr);
         attributes.push_back(long_attr_w);
-        TS_ASSERT_THROWS_ASSERT(device1->write_attributes(attributes), Tango::NamedDevFailedList &e,
-                        TS_ASSERT_EQUALS(string(e.err_list[0].err_stack[0].reason.in()), API_AttrNotWritable);
-                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
-
+        TS_ASSERT_THROWS_ASSERT(device1->write_attributes(attributes),
+                                Tango::NamedDevFailedList & e,
+                                TS_ASSERT_EQUALS(string(e.err_list[0].err_stack[0].reason.in()), API_AttrNotWritable);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
     }
 
-// Write some scalar attributes
+    // Write some scalar attributes
 
     void test_write_some_scalar_attributes(void)
     {
@@ -122,14 +120,10 @@ public:
         DevBoolean bl = false;
         DevUShort ush = 1234;
         DevUChar uch = 233;
-        DeviceAttribute short_attr_w("Short_attr_w", sh),
-                long_attr_w("Long_attr_w", lg),
-                double_attr_w("Double_attr_w", db),
-                string_attr_w("String_attr_w", str),
-                float_attr_w("Float_attr_w", fl),
-                boolean_attr_w("Boolean_attr_w", bl),
-                ushort_attr_w("UShort_attr_w", ush),
-                uchar_attr_w("UChar_attr_w", uch);
+        DeviceAttribute short_attr_w("Short_attr_w", sh), long_attr_w("Long_attr_w", lg),
+            double_attr_w("Double_attr_w", db), string_attr_w("String_attr_w", str), float_attr_w("Float_attr_w", fl),
+            boolean_attr_w("Boolean_attr_w", bl), ushort_attr_w("UShort_attr_w", ush),
+            uchar_attr_w("UChar_attr_w", uch);
         vector<string> attributes_str;
         attributes_str.push_back("Short_attr_w");
         attributes_str.push_back("Long_attr_w");
@@ -167,7 +161,7 @@ public:
         TS_ASSERT_EQUALS(str, "Hello world");
         attributes[4] >> fl;
         TS_ASSERT_EQUALS(attributes[4].name, "Float_attr_w");
-        TS_ASSERT_DELTA(fl,10.22,0.001); // floating point comparison
+        TS_ASSERT_DELTA(fl, 10.22, 0.001); // floating point comparison
         attributes[5] >> bl;
         TS_ASSERT_EQUALS(attributes[5].name, "Boolean_attr_w");
         TS_ASSERT_EQUALS(bl, false);
@@ -186,7 +180,7 @@ public:
         TS_ASSERT_THROWS_NOTHING(device1->write_attributes(attributes));
     }
 
-// Short_attr_w, String_attr_w and Boolean_attr_w are memorized attributes
+    // Short_attr_w, String_attr_w and Boolean_attr_w are memorized attributes
 
     void test_memorized_attributes(void)
     {
@@ -215,6 +209,5 @@ public:
         TS_ASSERT_EQUALS(attributes[2].name, "Boolean_attr_w");
         TS_ASSERT_EQUALS(bl, false);
     }
-
 };
 #endif // AttrWriteTestSuite_h

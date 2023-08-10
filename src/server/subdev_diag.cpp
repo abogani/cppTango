@@ -39,7 +39,7 @@ namespace Tango
 
 namespace
 {
-    thread_local std::string thread_local_device_name = "No associated device name!";
+thread_local std::string thread_local_device_name = "No associated device name!";
 }
 
 //+----------------------------------------------------------------------------
@@ -62,7 +62,6 @@ SubDevDiag::~SubDevDiag()
     sub_device_startup_map.clear();
 }
 
-
 //+----------------------------------------------------------------------------
 //
 // method :         SubDevDiag::set_associated_device()
@@ -78,7 +77,7 @@ void SubDevDiag::set_associated_device(std::string dev_name)
 {
     TANGO_LOG_DEBUG << "SubDevDiag::set_associated_device() entering ... ";
     // Setting a subdevice name is only allowed from the library threads.
-    if (is_tango_library_thread)
+    if(is_tango_library_thread)
     {
         thread_local_device_name = std::move(dev_name);
     }
@@ -99,7 +98,7 @@ std::string SubDevDiag::get_associated_device()
 {
     TANGO_LOG_DEBUG << "SubDevDiag::get_associated_device() entering ... " << std::endl;
     std::string dev_name{};
-    if (is_tango_library_thread)
+    if(is_tango_library_thread)
     {
         dev_name = thread_local_device_name;
     }
@@ -119,27 +118,25 @@ std::string SubDevDiag::get_associated_device()
 //
 //-----------------------------------------------------------------------------
 
-void SubDevDiag::register_sub_device (std::string dev_name, std::string sub_dev_name)
+void SubDevDiag::register_sub_device(std::string dev_name, std::string sub_dev_name)
 {
-    TANGO_LOG_DEBUG << "SubDevDiag::register_sub_device() dev_name = " << dev_name
-          << " sub_dev_name = "<< sub_dev_name << std::endl;
+    TANGO_LOG_DEBUG << "SubDevDiag::register_sub_device() dev_name = " << dev_name << " sub_dev_name = " << sub_dev_name
+                    << std::endl;
 
     bool found = false;
 
     // be sure that all names are lower case letters
-    std::transform(dev_name.begin(), dev_name.end(),
-                   dev_name.begin(), ::tolower);
-    std::transform(sub_dev_name.begin(), sub_dev_name.end(),
-                   sub_dev_name.begin(), ::tolower);
+    std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
+    std::transform(sub_dev_name.begin(), sub_dev_name.end(), sub_dev_name.begin(), ::tolower);
 
     // lock the sub device map
     omni_mutex_lock l(sub_dev_map_mutex);
 
     // Find whether a sub device list for the device is already available
-    std::map<std::string,SubDeviceList>::iterator ipos;
+    std::map<std::string, SubDeviceList>::iterator ipos;
     ipos = sub_device_map.find(dev_name);
 
-    if (ipos == sub_device_map.end())
+    if(ipos == sub_device_map.end())
     {
         // device not known, add a new sub device
         sub_device_map[dev_name].sub_devices.push_back(sub_dev_name);
@@ -148,16 +145,16 @@ void SubDevDiag::register_sub_device (std::string dev_name, std::string sub_dev_
     else
     {
         // Check whether the sub device name is alreay in the list
-        for (unsigned int i=0; i<ipos->second.sub_devices.size(); i++ )
+        for(unsigned int i = 0; i < ipos->second.sub_devices.size(); i++)
         {
-            if (ipos->second.sub_devices[i] == sub_dev_name)
+            if(ipos->second.sub_devices[i] == sub_dev_name)
             {
                 // Name is already in the list
                 found = true;
                 break;
             }
         }
-        if ( found == false)
+        if(found == false)
         {
             // name is not in the list, add the sub device
             ipos->second.sub_devices.push_back(sub_dev_name);
@@ -176,22 +173,21 @@ void SubDevDiag::register_sub_device (std::string dev_name, std::string sub_dev_
 //
 //-----------------------------------------------------------------------------
 
-void SubDevDiag::remove_sub_devices (std::string dev_name)
+void SubDevDiag::remove_sub_devices(std::string dev_name)
 {
     TANGO_LOG_DEBUG << "SubDevDiag::remove_sub_device() dev_name = " << dev_name << std::endl;
 
     // be sure that all names are lower case letters
-    std::transform(dev_name.begin(), dev_name.end(),
-                   dev_name.begin(), ::tolower);
+    std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
 
     // lock the sub device map
     omni_mutex_lock l(sub_dev_map_mutex);
 
     // remove the list of sub devices for a device
-    std::map<std::string,SubDeviceList>::iterator ipos;
+    std::map<std::string, SubDeviceList>::iterator ipos;
     ipos = sub_device_map.find(dev_name);
 
-    if (ipos != sub_device_map.end())
+    if(ipos != sub_device_map.end())
     {
         sub_device_map.erase(ipos);
     }
@@ -245,29 +241,35 @@ Tango::DevVarStringArray *SubDevDiag::get_sub_devices()
 
     try
     {
-        std::map<std::string,SubDeviceList>::iterator ipos;
-        for (ipos = sub_device_map.begin(); ipos != sub_device_map.end(); ++ipos)
+        std::map<std::string, SubDeviceList>::iterator ipos;
+        for(ipos = sub_device_map.begin(); ipos != sub_device_map.end(); ++ipos)
         {
-            for (unsigned int i=0; i<ipos->second.sub_devices.size(); i++)
+            for(unsigned int i = 0; i < ipos->second.sub_devices.size(); i++)
             {
-                if ( ipos->first.empty() )
+                if(ipos->first.empty())
+                {
                     tmp = ipos->second.sub_devices[i];
+                }
                 else
+                {
                     tmp = ipos->first + " " + ipos->second.sub_devices[i];
+                }
 
-                sub_dev_list.push_back (tmp);
+                sub_dev_list.push_back(tmp);
             }
         }
 
         ret = new Tango::DevVarStringArray(DefaultMaxSeq);
         ret->length(sub_dev_list.size());
-        for (unsigned int k = 0; k<sub_dev_list.size(); k++)
+        for(unsigned int k = 0; k < sub_dev_list.size(); k++)
+        {
             (*ret)[k] = Tango::string_dup(sub_dev_list[k].c_str());
+        }
 
-        return(ret);
+        return (ret);
     }
 
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
@@ -308,41 +310,40 @@ void SubDevDiag::store_sub_devices()
 
     // loop over the sub device map
 
-    std::map<std::string,SubDeviceList>::iterator ipos;
-    for (ipos = sub_device_map.begin(); ipos != sub_device_map.end(); ++ipos)
+    std::map<std::string, SubDeviceList>::iterator ipos;
+    for(ipos = sub_device_map.begin(); ipos != sub_device_map.end(); ++ipos)
     {
         // Check whether the list was modified
-        if ( ipos->second.modified == true )
+        if(ipos->second.modified == true)
         {
             // Check whether for modifications compared to
             // the list read into db_cache during startup
 
             // check the number of sub devices
-            if ( ipos->second.sub_devices.size() ==
-                sub_device_startup_map[ipos->first].sub_devices.size() )
+            if(ipos->second.sub_devices.size() == sub_device_startup_map[ipos->first].sub_devices.size())
             {
                 // find sub device names in the start-up list
                 bool is_equal = true;
-                for ( unsigned int i=0; i<ipos->second.sub_devices.size(); i++ )
+                for(unsigned int i = 0; i < ipos->second.sub_devices.size(); i++)
                 {
                     bool found = false;
-                    for ( unsigned int k=0; k<sub_device_startup_map[ipos->first].sub_devices.size(); k++ )
+                    for(unsigned int k = 0; k < sub_device_startup_map[ipos->first].sub_devices.size(); k++)
                     {
-                        if (ipos->second.sub_devices[i] == sub_device_startup_map[ipos->first].sub_devices[k])
+                        if(ipos->second.sub_devices[i] == sub_device_startup_map[ipos->first].sub_devices[k])
                         {
                             found = true;
                             break;
                         }
                     }
 
-                    if ( found == false )
+                    if(found == false)
                     {
                         is_equal = false;
                         break;
                     }
                 }
 
-                if ( is_equal == true )
+                if(is_equal == true)
                 {
                     // sub device names are equal to the names
                     // read from the database at server start-up.
@@ -353,13 +354,10 @@ void SubDevDiag::store_sub_devices()
                 }
             }
 
-
-
-
             // write the sub device list as device property
             try
             {
-                DbDatum list ("__SubDevices");
+                DbDatum list("__SubDevices");
                 DbData db_data;
                 list << ipos->second.sub_devices;
                 db_data.push_back(list);
@@ -368,23 +366,25 @@ void SubDevDiag::store_sub_devices()
                 // In the database server itself or any server
                 // running without a database the database object is
                 // not initialised.
-                if ( Tango::Util::instance()->use_db() )
+                if(Tango::Util::instance()->use_db())
                 {
-                    if ( ipos->first.empty() )
+                    if(ipos->first.empty())
                     {
                         DServer *adm_dev = tg->get_dserver_device();
-                        tg->get_database()->put_device_property (adm_dev->get_name(), db_data);
+                        tg->get_database()->put_device_property(adm_dev->get_name(), db_data);
                     }
                     else
                     {
-                        tg->get_database()->put_device_property (ipos->first, db_data);
+                        tg->get_database()->put_device_property(ipos->first, db_data);
                     }
                 }
 
                 // clear the modification flag
                 ipos->second.modified = false;
             }
-            catch (Tango::DevFailed &) {}
+            catch(Tango::DevFailed &)
+            {
+            }
         }
     }
 }
@@ -409,30 +409,28 @@ void SubDevDiag::get_sub_devices_from_cache()
     {
         db_cache = tg->get_db_cache();
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
         db_cache = NULL;
     }
 
-    if (db_cache != NULL)
+    if(db_cache != NULL)
     {
         // get the name of the admin device
         DServer *adm_dev = tg->get_dserver_device();
         std::string adm_name = adm_dev->get_name();
         // be sure that all names are lower case letters
-        std::transform(adm_name.begin(), adm_name.end(),
-                       adm_name.begin(), ::tolower);
+        std::transform(adm_name.begin(), adm_name.end(), adm_name.begin(), ::tolower);
 
         // get all devices served
         std::vector<DeviceImpl *> dev_list = tg->get_device_list("*");
 
-        for (unsigned int k=0; k<dev_list.size(); k++)
+        for(unsigned int k = 0; k < dev_list.size(); k++)
         {
             std::string dev_name = dev_list[k]->get_name();
             // be sure that all names are lower case letters
-            std::transform(dev_name.begin(), dev_name.end(),
-                           dev_name.begin(), ::tolower);
+            std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
 
             DevVarStringArray *property_names = new DevVarStringArray;
             property_names->length(2);
@@ -442,16 +440,18 @@ void SubDevDiag::get_sub_devices_from_cache()
             try
             {
                 const DevVarStringArray *property_values = db_cache->get_dev_property(property_names);
-                if ( atol((*property_values)[3]) > 0 )
+                if(atol((*property_values)[3]) > 0)
                 {
                     // if the device is the admin device, set dev_name to ""
                     // to have the same syntax as in the dynamically created
                     // sub device map.
 
-                    if ( dev_name == adm_name )
+                    if(dev_name == adm_name)
+                    {
                         dev_name = "";
+                    }
 
-                    for (unsigned int i=4; i<property_values->length(); i++)
+                    for(unsigned int i = 4; i < property_values->length(); i++)
                     {
                         sub_device_startup_map[dev_name].sub_devices.push_back((*property_values)[i].in());
                     }
@@ -467,7 +467,9 @@ void SubDevDiag::get_sub_devices_from_cache()
         }
     }
     else
+    {
         std::cerr << "No database cache found to initialise sub device map!" << std::endl;
+    }
 }
 
-} // End of Tango namespace
+} // namespace Tango

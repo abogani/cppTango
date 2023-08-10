@@ -32,26 +32,24 @@
 
 namespace Tango
 {
-  class TangoRollingFileAppender : public log4tango::RollingFileAppender
-    {
-        public:
-            /**
-             *
-             **/
-            TangoRollingFileAppender (const std::string& name,
-                                const std::string& fileName,
-                                size_t maxFileSize);
-            /**
-             *
-             **/
-            virtual ~TangoRollingFileAppender ();
+class TangoRollingFileAppender : public log4tango::RollingFileAppender
+{
+  public:
+    /**
+     *
+     **/
+    TangoRollingFileAppender(const std::string &name, const std::string &fileName, size_t maxFileSize);
+    /**
+     *
+     **/
+    virtual ~TangoRollingFileAppender();
 
-      /**
-             *
-             **/
-      virtual bool isValid (void) const;
-    };
+    /**
+     *
+     **/
+    virtual bool isValid(void) const;
+};
 
-} // namespace tango
+} // namespace Tango
 
 #endif // _LOG4TANGO_TANGO_ROLLING_FILE_APPENDER_H_

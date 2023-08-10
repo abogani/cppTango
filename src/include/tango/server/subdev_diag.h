@@ -42,7 +42,7 @@ namespace Tango
 
 class SubDevDiag
 {
-private:
+  private:
     // Type definition and map to keep the
     // list of accessed sub devices in a device server.
 
@@ -50,21 +50,21 @@ private:
     // and its sub devices.
     typedef struct sub_dev_list
     {
-        bool modified;               // was the list modified?
+        bool modified;                        // was the list modified?
         std::vector<std::string> sub_devices; // list of sub devices
     } SubDeviceList;
 
     // map and mutex to keep a list of sub devices per device
-    std::map<std::string,SubDeviceList> sub_device_map;
-    omni_mutex                     sub_dev_map_mutex;
+    std::map<std::string, SubDeviceList> sub_device_map;
+    omni_mutex sub_dev_map_mutex;
 
     // map to keep a list of sub devices per device as read from
     // the database cache
-    std::map<std::string,SubDeviceList> sub_device_startup_map;
+    std::map<std::string, SubDeviceList> sub_device_startup_map;
 
-public:
+  public:
     // Constructor
-    SubDevDiag() {}
+    SubDevDiag() { }
 
     // destructor to free map data
     ~SubDevDiag();
@@ -79,10 +79,10 @@ public:
 
     // Register a sub device for an associated device
     // in the list of sub devices of the device server
-    void register_sub_device (std::string dev_name, std::string sub_dev_name);
+    void register_sub_device(std::string dev_name, std::string sub_dev_name);
 
     // Remove all sub devices for a device of the server
-    void remove_sub_devices (std::string dev_name);
+    void remove_sub_devices(std::string dev_name);
 
     // Remove all sub devices
     void remove_sub_devices();
@@ -97,6 +97,6 @@ public:
     void get_sub_devices_from_cache();
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* SUBDEV_DIAG */

@@ -43,8 +43,9 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-DeviceDataHistory::DeviceDataHistory()
-    : DeviceData(), ext_hist(nullptr)
+DeviceDataHistory::DeviceDataHistory() :
+    DeviceData(),
+    ext_hist(nullptr)
 {
     fail = false;
     err = new DevErrorList();
@@ -52,8 +53,8 @@ DeviceDataHistory::DeviceDataHistory()
     ref_ctr_ptr = NULL;
 }
 
-DeviceDataHistory::DeviceDataHistory(int n, int *ref, DevCmdHistoryList *ptr)
-    : ext_hist(nullptr)
+DeviceDataHistory::DeviceDataHistory(int n, int *ref, DevCmdHistoryList *ptr) :
+    ext_hist(nullptr)
 {
     ref_ctr_ptr = ref;
     seq_ptr = ptr;
@@ -66,8 +67,9 @@ DeviceDataHistory::DeviceDataHistory(int n, int *ref, DevCmdHistoryList *ptr)
     err = &((*ptr)[n].errors);
 }
 
-DeviceDataHistory::DeviceDataHistory(const DeviceDataHistory &source)
-    : DeviceData(source), ext_hist(nullptr)
+DeviceDataHistory::DeviceDataHistory(const DeviceDataHistory &source) :
+    DeviceData(source),
+    ext_hist(nullptr)
 {
     fail = source.fail;
     time = source.time;
@@ -75,20 +77,21 @@ DeviceDataHistory::DeviceDataHistory(const DeviceDataHistory &source)
 
     seq_ptr = source.seq_ptr;
     ref_ctr_ptr = source.ref_ctr_ptr;
-    if (ref_ctr_ptr != NULL)
+    if(ref_ctr_ptr != NULL)
     {
         (*ref_ctr_ptr)++;
     }
 
-    if (source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != NULL)
     {
         ext_hist.reset(new DeviceDataHistoryExt);
         *(ext_hist.get()) = *(source.ext_hist.get());
     }
 }
 
-DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source)
-    : DeviceData(std::move(source)), ext_hist(nullptr)
+DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source) :
+    DeviceData(std::move(source)),
+    ext_hist(nullptr)
 {
     fail = source.fail;
     time = source.time;
@@ -97,7 +100,7 @@ DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source)
     seq_ptr = source.seq_ptr;
     ref_ctr_ptr = source.ref_ctr_ptr;
 
-    if (source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != NULL)
     {
         ext_hist = std::move(source.ext_hist);
     }
@@ -115,21 +118,19 @@ DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source)
 
 DeviceDataHistory::~DeviceDataHistory()
 {
-    if (seq_ptr != NULL)
+    if(seq_ptr != NULL)
     {
         any._retn();
         err._retn();
 
         (*ref_ctr_ptr)--;
-        if (*ref_ctr_ptr == 0)
+        if(*ref_ctr_ptr == 0)
         {
             delete seq_ptr;
             delete ref_ctr_ptr;
         }
     }
-
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -139,28 +140,26 @@ DeviceDataHistory::~DeviceDataHistory()
 
 DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
 {
-
-    if (this != &rval)
+    if(this != &rval)
     {
-
-//
-// Assignement of DeviceData class members first
-//
+        //
+        // Assignement of DeviceData class members first
+        //
 
         this->DeviceData::operator=(rval);
 
-//
-// Then, assignement of DeviceDataHistory members
-//
+        //
+        // Then, assignement of DeviceDataHistory members
+        //
 
         fail = rval.fail;
         time = rval.time;
         err = rval.err;
 
-        if (ref_ctr_ptr != NULL)
+        if(ref_ctr_ptr != NULL)
         {
             (*ref_ctr_ptr)--;
-            if (*ref_ctr_ptr == 0)
+            if(*ref_ctr_ptr == 0)
             {
                 delete seq_ptr;
                 delete ref_ctr_ptr;
@@ -171,7 +170,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
         ref_ctr_ptr = rval.ref_ctr_ptr;
         (*ref_ctr_ptr)++;
 
-        if (rval.ext_hist.get() != NULL)
+        if(rval.ext_hist.get() != NULL)
         {
             ext_hist.reset(new DeviceDataHistoryExt);
             *(ext_hist.get()) = *(rval.ext_hist.get());
@@ -193,46 +192,45 @@ DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
 
 DeviceDataHistory &DeviceDataHistory::operator=(DeviceDataHistory &&rval)
 {
-
-//
-// Assignement of DeviceData class members first
-//
+    //
+    // Assignement of DeviceData class members first
+    //
 
     this->DeviceData::operator=(std::move(rval));
 
-//
-// Then, assignement of DeviceDataHistory members
-//
+    //
+    // Then, assignement of DeviceDataHistory members
+    //
 
     fail = rval.fail;
     time = rval.time;
     err = rval.err._retn();
 
-//
-// Decrement old ctr
-//
-    if (ref_ctr_ptr != NULL)
+    //
+    // Decrement old ctr
+    //
+    if(ref_ctr_ptr != NULL)
     {
         (*ref_ctr_ptr)--;
-        if (*ref_ctr_ptr == 0)
+        if(*ref_ctr_ptr == 0)
         {
             delete seq_ptr;
             delete ref_ctr_ptr;
         }
     }
 
-//
-// Copy ctr (but don't increment it) and ptr
-//
+    //
+    // Copy ctr (but don't increment it) and ptr
+    //
 
     seq_ptr = rval.seq_ptr;
     ref_ctr_ptr = rval.ref_ctr_ptr;
 
-//
-// Extension class
-//
+    //
+    // Extension class
+    //
 
-    if (rval.ext_hist.get() != NULL)
+    if(rval.ext_hist.get() != NULL)
     {
         ext_hist = std::move(rval.ext_hist);
     }
@@ -255,49 +253,48 @@ DeviceDataHistory &DeviceDataHistory::operator=(DeviceDataHistory &&rval)
 
 std::ostream &operator<<(std::ostream &o_str, const DeviceDataHistory &dh)
 {
-
-//
-// First, print date
-//
+    //
+    // First, print date
+    //
 
     std::tm tm = Tango_localtime(dh.time.tv_sec);
-    o_str << std::put_time(&tm,"%c") << " (" << dh.time.tv_sec << "," << std::setw(6) << std::setfill('0') << dh.time.tv_usec << " sec) : ";
+    o_str << std::put_time(&tm, "%c") << " (" << dh.time.tv_sec << "," << std::setw(6) << std::setfill('0')
+          << dh.time.tv_usec << " sec) : ";
 
+    //
+    // Print data or error stack
+    //
 
-//
-// Print data or error stack
-//
-
-    if (dh.fail == true)
+    if(dh.fail == true)
     {
         unsigned int nb_err = dh.err.in().length();
-        for (unsigned long i = 0; i < nb_err; i++)
+        for(unsigned long i = 0; i < nb_err; i++)
         {
             o_str << "Tango error stack" << std::endl;
             o_str << "Severity = ";
-            switch ((dh.err.in())[i].severity)
+            switch((dh.err.in())[i].severity)
             {
-                case Tango::WARN :
-                    o_str << "WARNING ";
-                    break;
+            case Tango::WARN:
+                o_str << "WARNING ";
+                break;
 
-                case Tango::ERR :
-                    o_str << "ERROR ";
-                    break;
+            case Tango::ERR:
+                o_str << "ERROR ";
+                break;
 
-                case Tango::PANIC :
-                    o_str << "PANIC ";
-                    break;
+            case Tango::PANIC:
+                o_str << "PANIC ";
+                break;
 
-                default :
-                    o_str << "Unknown severity code";
-                    break;
+            default:
+                o_str << "Unknown severity code";
+                break;
             }
             o_str << std::endl;
             o_str << "Error reason = " << (dh.err.in())[i].reason.in() << std::endl;
             o_str << "Desc : " << (dh.err.in())[i].desc.in() << std::endl;
             o_str << "Origin : " << (dh.err.in())[i].origin.in();
-            if (i != nb_err - 1)
+            if(i != nb_err - 1)
             {
                 o_str << std::endl;
             }
@@ -317,15 +314,16 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceDataHistory &dh)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttributeHistory::DeviceAttributeHistory()
-    : DeviceAttribute(), ext_hist(nullptr)
+DeviceAttributeHistory::DeviceAttributeHistory() :
+    DeviceAttribute(),
+    ext_hist(nullptr)
 {
     fail = false;
     err_list = new DevErrorList();
 }
 
-DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_var &seq)
-    : ext_hist(nullptr)
+DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_var &seq) :
+    ext_hist(nullptr)
 {
     fail = seq[n].attr_failed;
 
@@ -363,118 +361,117 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_var &se
 
     CORBA::ULong max, len;
 
-    if ((fail == false) && (quality != Tango::ATTR_INVALID))
+    if((fail == false) && (quality != Tango::ATTR_INVALID))
     {
         CORBA::TypeCode_var ty = seq[n].value.value.type();
         CORBA::TypeCode_var ty_alias = ty->content_type();
         CORBA::TypeCode_var ty_seq = ty_alias->content_type();
-        switch (ty_seq->kind())
+        switch(ty_seq->kind())
         {
-            case tk_long:
-                seq[n].value.value >>= tmp_seq_lo;
-                max = tmp_seq_lo->maximum();
-                len = tmp_seq_lo->length();
-                tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
-                LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
-                break;
+        case tk_long:
+            seq[n].value.value >>= tmp_seq_lo;
+            max = tmp_seq_lo->maximum();
+            len = tmp_seq_lo->length();
+            tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
+            LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
+            break;
 
-            case tk_longlong:
-                seq[n].value.value >>= tmp_seq_lolo;
-                max = tmp_seq_lolo->maximum();
-                len = tmp_seq_lolo->length();
-                tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_lolo))->get_buffer((CORBA::Boolean) true);
-                Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
-                break;
+        case tk_longlong:
+            seq[n].value.value >>= tmp_seq_lolo;
+            max = tmp_seq_lolo->maximum();
+            len = tmp_seq_lolo->length();
+            tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_lolo))->get_buffer((CORBA::Boolean) true);
+            Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
+            break;
 
-            case tk_short:
-                seq[n].value.value >>= tmp_seq_sh;
-                max = tmp_seq_sh->maximum();
-                len = tmp_seq_sh->length();
-                tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
-                ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
-                break;
+        case tk_short:
+            seq[n].value.value >>= tmp_seq_sh;
+            max = tmp_seq_sh->maximum();
+            len = tmp_seq_sh->length();
+            tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
+            ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
+            break;
 
-            case tk_double:
-                seq[n].value.value >>= tmp_seq_db;
-                max = tmp_seq_db->maximum();
-                len = tmp_seq_db->length();
-                tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
-                DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
-                break;
+        case tk_double:
+            seq[n].value.value >>= tmp_seq_db;
+            max = tmp_seq_db->maximum();
+            len = tmp_seq_db->length();
+            tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
+            DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
+            break;
 
-            case tk_string:
-                seq[n].value.value >>= tmp_seq_str;
-                max = tmp_seq_str->maximum();
-                len = tmp_seq_str->length();
-                tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
-                StringSeq = new DevVarStringArray(max, len, tmp_str, true);
-                break;
+        case tk_string:
+            seq[n].value.value >>= tmp_seq_str;
+            max = tmp_seq_str->maximum();
+            len = tmp_seq_str->length();
+            tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
+            StringSeq = new DevVarStringArray(max, len, tmp_str, true);
+            break;
 
-            case tk_float:
-                seq[n].value.value >>= tmp_seq_fl;
-                max = tmp_seq_fl->maximum();
-                len = tmp_seq_fl->length();
-                tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
-                FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
-                break;
+        case tk_float:
+            seq[n].value.value >>= tmp_seq_fl;
+            max = tmp_seq_fl->maximum();
+            len = tmp_seq_fl->length();
+            tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
+            FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
+            break;
 
-            case tk_boolean:
-                seq[n].value.value >>= tmp_seq_boo;
-                max = tmp_seq_boo->maximum();
-                len = tmp_seq_boo->length();
-                tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
-                BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
-                break;
+        case tk_boolean:
+            seq[n].value.value >>= tmp_seq_boo;
+            max = tmp_seq_boo->maximum();
+            len = tmp_seq_boo->length();
+            tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
+            BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
+            break;
 
-            case tk_ushort:
-                seq[n].value.value >>= tmp_seq_ush;
-                max = tmp_seq_ush->maximum();
-                len = tmp_seq_ush->length();
-                tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
-                UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
-                break;
+        case tk_ushort:
+            seq[n].value.value >>= tmp_seq_ush;
+            max = tmp_seq_ush->maximum();
+            len = tmp_seq_ush->length();
+            tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
+            UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
+            break;
 
-            case tk_octet:
-                seq[n].value.value >>= tmp_seq_uch;
-                max = tmp_seq_uch->maximum();
-                len = tmp_seq_uch->length();
-                tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
-                UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
-                break;
+        case tk_octet:
+            seq[n].value.value >>= tmp_seq_uch;
+            max = tmp_seq_uch->maximum();
+            len = tmp_seq_uch->length();
+            tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
+            UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
+            break;
 
-            case tk_ulong:
-                seq[n].value.value >>= tmp_seq_ulo;
-                max = tmp_seq_ulo->maximum();
-                len = tmp_seq_ulo->length();
-                tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
-                ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
-                break;
+        case tk_ulong:
+            seq[n].value.value >>= tmp_seq_ulo;
+            max = tmp_seq_ulo->maximum();
+            len = tmp_seq_ulo->length();
+            tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
+            ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
+            break;
 
-            case tk_ulonglong:
-                seq[n].value.value >>= tmp_seq_ulolo;
-                max = tmp_seq_ulolo->maximum();
-                len = tmp_seq_ulolo->length();
-                tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_ulolo))->get_buffer((CORBA::Boolean) true);
-                ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
-                break;
+        case tk_ulonglong:
+            seq[n].value.value >>= tmp_seq_ulolo;
+            max = tmp_seq_ulolo->maximum();
+            len = tmp_seq_ulolo->length();
+            tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_ulolo))->get_buffer((CORBA::Boolean) true);
+            ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
+            break;
 
-            case tk_enum:
-                seq[n].value.value >>= tmp_seq_state;
-                max = tmp_seq_state->maximum();
-                len = tmp_seq_state->length();
-                tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
-                StateSeq = new DevVarStateArray(max, len, tmp_state, true);
-                break;
+        case tk_enum:
+            seq[n].value.value >>= tmp_seq_state;
+            max = tmp_seq_state->maximum();
+            len = tmp_seq_state->length();
+            tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
+            StateSeq = new DevVarStateArray(max, len, tmp_state, true);
+            break;
 
-            default:
-                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+        default:
+            TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
     }
-
 }
 
-DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_3_var &seq)
-    : ext_hist(nullptr)
+DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_3_var &seq) :
+    ext_hist(nullptr)
 {
     fail = seq[n].attr_failed;
 
@@ -514,138 +511,138 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_3_var &
 
     CORBA::ULong max, len;
 
-    if ((fail == false) && (quality != Tango::ATTR_INVALID))
+    if((fail == false) && (quality != Tango::ATTR_INVALID))
     {
         CORBA::TypeCode_var ty = seq[n].value.value.type();
         CORBA::TypeCode_var ty_alias = ty->content_type();
         CORBA::TypeCode_var ty_seq = ty_alias->content_type();
-        switch (ty_seq->kind())
+        switch(ty_seq->kind())
         {
-            case tk_long:
-                seq[n].value.value >>= tmp_seq_lo;
-                max = tmp_seq_lo->maximum();
-                len = tmp_seq_lo->length();
-                tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
-                LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
-                break;
+        case tk_long:
+            seq[n].value.value >>= tmp_seq_lo;
+            max = tmp_seq_lo->maximum();
+            len = tmp_seq_lo->length();
+            tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
+            LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
+            break;
 
-            case tk_longlong:
-                seq[n].value.value >>= tmp_seq_lolo;
-                max = tmp_seq_lolo->maximum();
-                len = tmp_seq_lolo->length();
-                tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_lolo))->get_buffer((CORBA::Boolean) true);
-                Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
-                break;
+        case tk_longlong:
+            seq[n].value.value >>= tmp_seq_lolo;
+            max = tmp_seq_lolo->maximum();
+            len = tmp_seq_lolo->length();
+            tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_lolo))->get_buffer((CORBA::Boolean) true);
+            Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
+            break;
 
-            case tk_short:
-                seq[n].value.value >>= tmp_seq_sh;
-                max = tmp_seq_sh->maximum();
-                len = tmp_seq_sh->length();
-                tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
-                ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
-                break;
+        case tk_short:
+            seq[n].value.value >>= tmp_seq_sh;
+            max = tmp_seq_sh->maximum();
+            len = tmp_seq_sh->length();
+            tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
+            ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
+            break;
 
-            case tk_double:
-                seq[n].value.value >>= tmp_seq_db;
-                max = tmp_seq_db->maximum();
-                len = tmp_seq_db->length();
-                tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
-                DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
-                break;
+        case tk_double:
+            seq[n].value.value >>= tmp_seq_db;
+            max = tmp_seq_db->maximum();
+            len = tmp_seq_db->length();
+            tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
+            DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
+            break;
 
-            case tk_string:
-                seq[n].value.value >>= tmp_seq_str;
-                max = tmp_seq_str->maximum();
-                len = tmp_seq_str->length();
-                tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
-                StringSeq = new DevVarStringArray(max, len, tmp_str, true);
-                break;
+        case tk_string:
+            seq[n].value.value >>= tmp_seq_str;
+            max = tmp_seq_str->maximum();
+            len = tmp_seq_str->length();
+            tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
+            StringSeq = new DevVarStringArray(max, len, tmp_str, true);
+            break;
 
-            case tk_float:
-                seq[n].value.value >>= tmp_seq_fl;
-                max = tmp_seq_fl->maximum();
-                len = tmp_seq_fl->length();
-                tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
-                FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
-                break;
+        case tk_float:
+            seq[n].value.value >>= tmp_seq_fl;
+            max = tmp_seq_fl->maximum();
+            len = tmp_seq_fl->length();
+            tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
+            FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
+            break;
 
-            case tk_boolean:
-                seq[n].value.value >>= tmp_seq_boo;
-                max = tmp_seq_boo->maximum();
-                len = tmp_seq_boo->length();
-                tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
-                BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
-                break;
+        case tk_boolean:
+            seq[n].value.value >>= tmp_seq_boo;
+            max = tmp_seq_boo->maximum();
+            len = tmp_seq_boo->length();
+            tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
+            BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
+            break;
 
-            case tk_ushort:
-                seq[n].value.value >>= tmp_seq_ush;
-                max = tmp_seq_ush->maximum();
-                len = tmp_seq_ush->length();
-                tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
-                UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
-                break;
+        case tk_ushort:
+            seq[n].value.value >>= tmp_seq_ush;
+            max = tmp_seq_ush->maximum();
+            len = tmp_seq_ush->length();
+            tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
+            UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
+            break;
 
-            case tk_octet:
-                seq[n].value.value >>= tmp_seq_uch;
-                max = tmp_seq_uch->maximum();
-                len = tmp_seq_uch->length();
-                tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
-                UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
-                break;
+        case tk_octet:
+            seq[n].value.value >>= tmp_seq_uch;
+            max = tmp_seq_uch->maximum();
+            len = tmp_seq_uch->length();
+            tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
+            UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
+            break;
 
-            case tk_ulong:
-                seq[n].value.value >>= tmp_seq_ulo;
-                max = tmp_seq_ulo->maximum();
-                len = tmp_seq_ulo->length();
-                tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
-                ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
-                break;
+        case tk_ulong:
+            seq[n].value.value >>= tmp_seq_ulo;
+            max = tmp_seq_ulo->maximum();
+            len = tmp_seq_ulo->length();
+            tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
+            ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
+            break;
 
-            case tk_ulonglong:
-                seq[n].value.value >>= tmp_seq_ulolo;
-                max = tmp_seq_ulolo->maximum();
-                len = tmp_seq_ulolo->length();
-                tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_ulolo))->get_buffer((CORBA::Boolean) true);
-                ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
-                break;
+        case tk_ulonglong:
+            seq[n].value.value >>= tmp_seq_ulolo;
+            max = tmp_seq_ulolo->maximum();
+            len = tmp_seq_ulolo->length();
+            tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_ulolo))->get_buffer((CORBA::Boolean) true);
+            ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
+            break;
 
-            case tk_enum:
-                seq[n].value.value >>= tmp_seq_state;
-                max = tmp_seq_state->maximum();
-                len = tmp_seq_state->length();
-                tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
-                StateSeq = new DevVarStateArray(max, len, tmp_state, true);
-                break;
+        case tk_enum:
+            seq[n].value.value >>= tmp_seq_state;
+            max = tmp_seq_state->maximum();
+            len = tmp_seq_state->length();
+            tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
+            StateSeq = new DevVarStateArray(max, len, tmp_state, true);
+            break;
 
-            default:
-                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+        default:
+            TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
     }
-
 }
 
-DeviceAttributeHistory::DeviceAttributeHistory(const DeviceAttributeHistory &source)
-    : DeviceAttribute(source), ext_hist(nullptr)
+DeviceAttributeHistory::DeviceAttributeHistory(const DeviceAttributeHistory &source) :
+    DeviceAttribute(source),
+    ext_hist(nullptr)
 {
     fail = source.fail;
 
-    if (source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != NULL)
     {
         ext_hist.reset(new DeviceAttributeHistoryExt);
         *(ext_hist.get()) = *(source.ext_hist.get());
     }
 }
 
-DeviceAttributeHistory::DeviceAttributeHistory(DeviceAttributeHistory &&source)
-    : DeviceAttribute(std::move(source)), ext_hist(nullptr)
+DeviceAttributeHistory::DeviceAttributeHistory(DeviceAttributeHistory &&source) :
+    DeviceAttribute(std::move(source)),
+    ext_hist(nullptr)
 {
     fail = source.fail;
 
-    if (source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != NULL)
     {
         ext_hist = std::move(source.ext_hist);
     }
-
 }
 
 //-----------------------------------------------------------------------------
@@ -654,10 +651,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(DeviceAttributeHistory &&source)
 //
 //-----------------------------------------------------------------------------
 
-DeviceAttributeHistory::~DeviceAttributeHistory()
-{
-}
-
+DeviceAttributeHistory::~DeviceAttributeHistory() { }
 
 //-----------------------------------------------------------------------------
 //
@@ -667,22 +661,21 @@ DeviceAttributeHistory::~DeviceAttributeHistory()
 
 DeviceAttributeHistory &DeviceAttributeHistory::operator=(const DeviceAttributeHistory &rval)
 {
-
-    if (this != &rval)
+    if(this != &rval)
     {
-//
-// First, assignement of DeviceAttribute class members
-//
+        //
+        // First, assignement of DeviceAttribute class members
+        //
 
         this->DeviceAttribute::operator=(rval);
 
-//
-// Then, assignement of DeviceAttributeHistory members
-//
+        //
+        // Then, assignement of DeviceAttributeHistory members
+        //
 
         fail = rval.fail;
 
-        if (rval.ext_hist.get() != NULL)
+        if(rval.ext_hist.get() != NULL)
         {
             ext_hist.reset(new DeviceAttributeHistoryExt);
             *(ext_hist.get()) = *(rval.ext_hist.get());
@@ -698,20 +691,19 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(const DeviceAttributeH
 
 DeviceAttributeHistory &DeviceAttributeHistory::operator=(DeviceAttributeHistory &&rval)
 {
-
-//
-// First, assignement of DeviceAttribute class members
-//
+    //
+    // First, assignement of DeviceAttribute class members
+    //
 
     this->DeviceAttribute::operator=(std::move(rval));
 
-//
-// Then, assignement of DeviceAttributeHistory members
-//
+    //
+    // Then, assignement of DeviceAttributeHistory members
+    //
 
     fail = rval.fail;
 
-    if (rval.ext_hist.get() != NULL)
+    if(rval.ext_hist.get() != NULL)
     {
         ext_hist = std::move(rval.ext_hist);
     }
@@ -734,96 +726,97 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(DeviceAttributeHistory
 
 std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
 {
-//
-// Print date
-//
+    //
+    // Print date
+    //
 
-    if (dah.time.tv_sec != 0)
+    if(dah.time.tv_sec != 0)
     {
         std::tm tm = Tango_localtime(dah.time.tv_sec);
-        o_str << std::put_time(&tm,"%c") << " (" << dah.time.tv_sec << "," << std::setw(6) << std::setfill('0') << dah.time.tv_usec << " sec) : ";
+        o_str << std::put_time(&tm, "%c") << " (" << dah.time.tv_sec << "," << std::setw(6) << std::setfill('0')
+              << dah.time.tv_usec << " sec) : ";
     }
 
-//
-// print attribute name
-//
+    //
+    // print attribute name
+    //
 
     o_str << dah.name;
 
-//
-// print dim_x and dim_y
-//
+    //
+    // print dim_x and dim_y
+    //
 
     o_str << " (dim_x = " << dah.dim_x << ", dim_y = " << dah.dim_y << ", ";
 
-//
-// print write dim_x and dim_y
-//
+    //
+    // print write dim_x and dim_y
+    //
 
     o_str << "w_dim_x = " << dah.w_dim_x << ", w_dim_y = " << dah.w_dim_y << ", ";
 
-//
-// Print quality
-//
+    //
+    // Print quality
+    //
 
     o_str << "Data quality factor = ";
-    switch (dah.quality)
+    switch(dah.quality)
     {
-        case Tango::ATTR_VALID:
-            o_str << "VALID)" << std::endl;
-            break;
+    case Tango::ATTR_VALID:
+        o_str << "VALID)" << std::endl;
+        break;
 
-        case Tango::ATTR_INVALID:
-            o_str << "INVALID)";
-            break;
+    case Tango::ATTR_INVALID:
+        o_str << "INVALID)";
+        break;
 
-        case Tango::ATTR_ALARM:
-            o_str << "ALARM)" << std::endl;
-            break;
+    case Tango::ATTR_ALARM:
+        o_str << "ALARM)" << std::endl;
+        break;
 
-        case Tango::ATTR_CHANGING:
-            o_str << "CHANGING)" << std::endl;
-            break;
+    case Tango::ATTR_CHANGING:
+        o_str << "CHANGING)" << std::endl;
+        break;
 
-        case Tango::ATTR_WARNING:
-            o_str << "WARNING) " << std::endl;
-            break;
+    case Tango::ATTR_WARNING:
+        o_str << "WARNING) " << std::endl;
+        break;
     }
 
-//
-// Print data (if valid) or error stack
-//
+    //
+    // Print data (if valid) or error stack
+    //
 
-    if (dah.fail == true)
+    if(dah.fail == true)
     {
         unsigned int nb_err = dah.err_list.in().length();
-        for (unsigned long i = 0; i < nb_err; i++)
+        for(unsigned long i = 0; i < nb_err; i++)
         {
             o_str << "Tango error stack" << std::endl;
             o_str << "Severity = ";
-            switch (dah.err_list.in()[i].severity)
+            switch(dah.err_list.in()[i].severity)
             {
-                case Tango::WARN :
-                    o_str << "WARNING ";
-                    break;
+            case Tango::WARN:
+                o_str << "WARNING ";
+                break;
 
-                case Tango::ERR :
-                    o_str << "ERROR ";
-                    break;
+            case Tango::ERR:
+                o_str << "ERROR ";
+                break;
 
-                case Tango::PANIC :
-                    o_str << "PANIC ";
-                    break;
+            case Tango::PANIC:
+                o_str << "PANIC ";
+                break;
 
-                default :
-                    o_str << "Unknown severity code";
-                    break;
+            default:
+                o_str << "Unknown severity code";
+                break;
             }
             o_str << std::endl;
             o_str << "Error reason = " << dah.err_list.in()[i].reason.in() << std::endl;
             o_str << "Desc : " << dah.err_list.in()[i].desc.in() << std::endl;
             o_str << "Origin : " << dah.err_list.in()[i].origin.in();
-            if (i != nb_err - 1)
+            if(i != nb_err - 1)
             {
                 o_str << std::endl;
             }
@@ -831,59 +824,59 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
     }
     else
     {
-        if (dah.quality != Tango::ATTR_INVALID)
+        if(dah.quality != Tango::ATTR_INVALID)
         {
-            if (dah.is_empty_noexcept() == true)
+            if(dah.is_empty_noexcept() == true)
             {
                 o_str << "No data in DeviceData object";
             }
             else
             {
-                if (dah.LongSeq.operator->() != NULL)
+                if(dah.LongSeq.operator->() != NULL)
                 {
                     o_str << *(dah.LongSeq.operator->());
                 }
-                else if (dah.ShortSeq.operator->() != NULL)
+                else if(dah.ShortSeq.operator->() != NULL)
                 {
                     o_str << *(dah.ShortSeq.operator->());
                 }
-                else if (dah.DoubleSeq.operator->() != NULL)
+                else if(dah.DoubleSeq.operator->() != NULL)
                 {
                     o_str << *(dah.DoubleSeq.operator->());
                 }
-                else if (dah.FloatSeq.operator->() != NULL)
+                else if(dah.FloatSeq.operator->() != NULL)
                 {
                     o_str << *(dah.FloatSeq.operator->());
                 }
-                else if (dah.BooleanSeq.operator->() != NULL)
+                else if(dah.BooleanSeq.operator->() != NULL)
                 {
                     o_str << *(dah.BooleanSeq.operator->());
                 }
-                else if (dah.UShortSeq.operator->() != NULL)
+                else if(dah.UShortSeq.operator->() != NULL)
                 {
                     o_str << *(dah.UShortSeq.operator->());
                 }
-                else if (dah.UCharSeq.operator->() != NULL)
+                else if(dah.UCharSeq.operator->() != NULL)
                 {
                     o_str << *(dah.UCharSeq.operator->());
                 }
-                else if (dah.Long64Seq.operator->() != NULL)
+                else if(dah.Long64Seq.operator->() != NULL)
                 {
                     o_str << *(dah.Long64Seq.operator->());
                 }
-                else if (dah.ULongSeq.operator->() != NULL)
+                else if(dah.ULongSeq.operator->() != NULL)
                 {
                     o_str << *(dah.ULongSeq.operator->());
                 }
-                else if (dah.ULong64Seq.operator->() != NULL)
+                else if(dah.ULong64Seq.operator->() != NULL)
                 {
                     o_str << *(dah.ULong64Seq.operator->());
                 }
-                else if (dah.StateSeq.operator->() != NULL)
+                else if(dah.StateSeq.operator->() != NULL)
                 {
                     o_str << *(dah.StateSeq.operator->());
                 }
-                else if (dah.EncodedSeq.operator->() != NULL)
+                else if(dah.EncodedSeq.operator->() != NULL)
                 {
                     o_str << *(dah.EncodedSeq.operator->());
                 }
@@ -898,4 +891,4 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
     return o_str;
 }
 
-} // End of Tango namepsace
+} // namespace Tango

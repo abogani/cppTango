@@ -38,25 +38,25 @@
 #include <algorithm>
 
 #ifdef _TG_WINDOWS_
-#include <sys/types.h>
+  #include <sys/types.h>
 #endif /* _TG_WINDOWS_ */
 
 namespace Tango
 {
 
-void Attribute::set_value(Tango::DevString *p_data_str,Tango::DevUChar *p_data,long size,bool release)
+void Attribute::set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data, long size, bool release)
 {
-    if (p_data_str == NULL || p_data == NULL)
+    if(p_data_str == NULL || p_data == NULL)
     {
         TangoSys_OMemStream o;
         o << "Data pointer for attribute " << name << " is NULL!" << std::ends;
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    if (release == false)
+    if(release == false)
     {
         enc_help.encoded_format = Tango::string_dup(*p_data_str);
-        enc_help.encoded_data.replace(size,size,p_data,false);
+        enc_help.encoded_data.replace(size, size, p_data, false);
 
         set_value(&enc_help);
     }
@@ -64,38 +64,38 @@ void Attribute::set_value(Tango::DevString *p_data_str,Tango::DevUChar *p_data,l
     {
         DevEncoded *enc_ptr = new DevEncoded;
         enc_ptr->encoded_format = Tango::string_dup(*p_data_str);
-        delete [] *p_data_str;
-        enc_ptr->encoded_data.replace(size,size,p_data,true);
+        delete[] *p_data_str;
+        enc_ptr->encoded_data.replace(size, size, p_data, true);
 
-        set_value(enc_ptr,1,0,true);
+        set_value(enc_ptr, 1, 0, true);
     }
 }
 
 void Attribute::set_value(Tango::EncodedAttribute *attr)
 {
-    CHECK_PTR(attr,name);
+    CHECK_PTR(attr, name);
 
-    Tango::DevString *f    = attr->get_format();
-    Tango::DevUChar  *d    = attr->get_data();
-    long              size = attr->get_size();
+    Tango::DevString *f = attr->get_format();
+    Tango::DevUChar *d = attr->get_data();
+    long size = attr->get_size();
 
-    if( *f==NULL )
+    if(*f == NULL)
     {
         TangoSys_OMemStream o;
         o << "DevEncoded format for attribute " << name << " not specified" << std::ends;
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    if( size==0 || !d )
+    if(size == 0 || !d)
     {
         TangoSys_OMemStream o;
         o << "DevEncoded data for attribute " << name << " not specified" << std::ends;
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    set_value(f,d,size,false);
+    set_value(f, d, size, false);
 
-    if (attr->get_exclusion() == true)
+    if(attr->get_exclusion() == true)
     {
         set_user_attr_mutex(attr->get_mutex());
     }
@@ -103,21 +103,23 @@ void Attribute::set_value(Tango::EncodedAttribute *attr)
 
 //---------------------------------------------------------------------------
 
-void Attribute::set_value_date_quality(Tango::DevString *p_data_str,Tango::DevUChar *p_data,long size,time_t t,
-                    Tango::AttrQuality qual,
-                    bool release)
+void Attribute::set_value_date_quality(
+    Tango::DevString *p_data_str, Tango::DevUChar *p_data, long size, time_t t, Tango::AttrQuality qual, bool release)
 {
-    set_value(p_data_str,p_data,size,release);
-    set_quality(qual,false);
+    set_value(p_data_str, p_data, size, release);
+    set_quality(qual, false);
     set_date(t);
 }
 
-void Attribute::set_value_date_quality(Tango::DevString *p_data_str,Tango::DevUChar *p_data,long size,const TangoTimestamp &t,
-                    Tango::AttrQuality qual,
-                    bool release)
+void Attribute::set_value_date_quality(Tango::DevString *p_data_str,
+                                       Tango::DevUChar *p_data,
+                                       long size,
+                                       const TangoTimestamp &t,
+                                       Tango::AttrQuality qual,
+                                       bool release)
 {
-    set_value(p_data_str,p_data,size,release);
-    set_quality(qual,false);
+    set_value(p_data_str, p_data, size, release);
+    set_quality(qual, false);
     set_date(t);
 }
-} // End of Tango namespace
+} // namespace Tango

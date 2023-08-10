@@ -35,24 +35,37 @@
 #include <tango/tango.h>
 
 #ifdef _TG_WINDOWS_
-#include <sys/types.h>
+  #include <sys/types.h>
 #endif
 
 namespace Tango
 {
 
-class FwdAttribute: public WAttribute
+class FwdAttribute : public WAttribute
 {
-public:
-    FwdAttribute(std::vector<AttrProperty> &,Attr &,const std::string &,long);
+  public:
+    FwdAttribute(std::vector<AttrProperty> &, Attr &, const std::string &, long);
     ~FwdAttribute();
 
-    virtual bool is_fwd_att() {return true;}
-    std::string &get_fwd_dev_name() {return fwd_dev_name;}
-    std::string &get_fwd_att_name() {return fwd_att_name;}
+    virtual bool is_fwd_att()
+    {
+        return true;
+    }
+
+    std::string &get_fwd_dev_name()
+    {
+        return fwd_dev_name;
+    }
+
+    std::string &get_fwd_att_name()
+    {
+        return fwd_att_name;
+    }
 
     void set_att_config(const Tango::AttributeConfig_5 &);
-    void set_att_config(const Tango::AttributeConfig_3 &) {}
+
+    void set_att_config(const Tango::AttributeConfig_3 &) { }
+
     void set_att_config(AttributeInfoEx *);
 
     void upd_att_config_base(const char *);
@@ -60,32 +73,35 @@ public:
     void upd_att_config(const Tango::AttributeConfig_3 &);
 
     void upd_att_label(const char *);
-    bool new_att_conf(const Tango::AttributeConfig_3 *,const Tango::AttributeConfig_5 *);
+    bool new_att_conf(const Tango::AttributeConfig_3 *, const Tango::AttributeConfig_5 *);
 
-    Attr_Value &get_root_ptr() {return r_val;}
+    Attr_Value &get_root_ptr()
+    {
+        return r_val;
+    }
 
-    template<typename T>
-    void set_local_attribute(DeviceAttribute &, T* &);
+    template <typename T>
+    void set_local_attribute(DeviceAttribute &, T *&);
 
-    template<typename T,typename V>
-    void propagate_writen_data(DeviceAttribute &da,WAttribute &attr,T *&,V *&);
+    template <typename T, typename V>
+    void propagate_writen_data(DeviceAttribute &da, WAttribute &attr, T *&, V *&);
 
-    template<typename T>
-    bool new_att_conf_base(const T&);
+    template <typename T>
+    bool new_att_conf_base(const T &);
 
     DevAttrHistory_5 *read_root_att_history(long n);
-    AttributeValueList_5 *write_read_root_att(AttributeValueList_4&);
+    AttributeValueList_5 *write_read_root_att(AttributeValueList_4 &);
 
-protected:
-    void convert_event_prop(const std::string &,double *);
+  protected:
+    void convert_event_prop(const std::string &, double *);
 
-    std::string                fwd_dev_name;                    // Root dev name for fwd attribute
-    std::string                fwd_att_name;                    // Root att name for fwd attribute
+    std::string fwd_dev_name; // Root dev name for fwd attribute
+    std::string fwd_att_name; // Root att name for fwd attribute
 
-    AttrQuality         qual;
-    Attr_Value            r_val;
+    AttrQuality qual;
+    Attr_Value r_val;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _FWDATTRIBUTE_H

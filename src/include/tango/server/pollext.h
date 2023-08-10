@@ -61,67 +61,76 @@ namespace Tango
 //
 //=============================================================================
 
-#define __CHECK_DIM() \
-    if ((x == 0) || (y == 0)) \
-    { \
+#define __CHECK_DIM()                                                                               \
+    if((x == 0) || (y == 0))                                                                        \
+    {                                                                                               \
         TANGO_THROW_EXCEPTION(API_AttrOptProp, "X or Y dimension cannot be 0 for image attribute"); \
-    } \
-    else \
-        (void)0
+    }                                                                                               \
+    else                                                                                            \
+        (void) 0
 
-#define __CHECK_DIM_X() \
-    if (x == 0) \
-    { \
+#define __CHECK_DIM_X()                                                                                    \
+    if(x == 0)                                                                                             \
+    {                                                                                                      \
         TANGO_THROW_EXCEPTION(API_AttrOptProp, "X dimension cannot be 0 for spectrum or image attribute"); \
-    } \
-    else \
-        (void)0
+    }                                                                                                      \
+    else                                                                                                   \
+        (void) 0
 
 template <typename T>
 class AttrData
 {
-public:
-    const T             *ptr;
-    Tango::AttrQuality    qual;
-    long                x;
-    long                y;
-    bool                release;
-    DevErrorList        err;
+  public:
+    const T *ptr;
+    Tango::AttrQuality qual;
+    long x;
+    long y;
+    bool release;
+    DevErrorList err;
 
-    long                wr_x;
-    long                wr_y;
-    const T             *wr_ptr;
+    long wr_x;
+    long wr_y;
+    const T *wr_ptr;
 
     AttrData(const T *);
-    AttrData(const T *,Tango::AttrQuality);
-    AttrData(const T *,Tango::AttrQuality,bool);
-    AttrData(const T *,const T *);
-    AttrData(const T *,const T *,Tango::AttrQuality);
-    AttrData(const T *,const T *,Tango::AttrQuality,bool);
+    AttrData(const T *, Tango::AttrQuality);
+    AttrData(const T *, Tango::AttrQuality, bool);
+    AttrData(const T *, const T *);
+    AttrData(const T *, const T *, Tango::AttrQuality);
+    AttrData(const T *, const T *, Tango::AttrQuality, bool);
 
-// For spectrum
+    // For spectrum
 
-    AttrData(const T *,long);
-    AttrData(const T *,long,Tango::AttrQuality);
-    AttrData(const T *,long,Tango::AttrQuality,bool);
-    AttrData(const T *,long,const T *,long);
-    AttrData(const T *,long,const T *,long,Tango::AttrQuality);
-    AttrData(const T *,long,const T *,long,Tango::AttrQuality,bool);
+    AttrData(const T *, long);
+    AttrData(const T *, long, Tango::AttrQuality);
+    AttrData(const T *, long, Tango::AttrQuality, bool);
+    AttrData(const T *, long, const T *, long);
+    AttrData(const T *, long, const T *, long, Tango::AttrQuality);
+    AttrData(const T *, long, const T *, long, Tango::AttrQuality, bool);
 
-// For image
+    // For image
 
-    AttrData(const T *,long,long);
-    AttrData(const T *,long,long,Tango::AttrQuality);
-    AttrData(const T *,long,long,Tango::AttrQuality,bool);
-    AttrData(const T *,long,long,const T *,long,long);
-    AttrData(const T *,long,long,const T *,long,long,Tango::AttrQuality);
-    AttrData(const T *,long,long,const T *,long,long,Tango::AttrQuality,bool);
+    AttrData(const T *, long, long);
+    AttrData(const T *, long, long, Tango::AttrQuality);
+    AttrData(const T *, long, long, Tango::AttrQuality, bool);
+    AttrData(const T *, long, long, const T *, long, long);
+    AttrData(const T *, long, long, const T *, long, long, Tango::AttrQuality);
+    AttrData(const T *, long, long, const T *, long, long, Tango::AttrQuality, bool);
 
-// For error
+    // For error
 
-    AttrData(DevErrorList &e): ptr(NULL),x(0),y(0),release(false),err(e),wr_x(0),wr_y(0),wr_ptr(NULL) {}
+    AttrData(DevErrorList &e) :
+        ptr(NULL),
+        x(0),
+        y(0),
+        release(false),
+        err(e),
+        wr_x(0),
+        wr_y(0),
+        wr_ptr(NULL)
+    {
+    }
 };
-
 
 //=============================================================================
 //
@@ -143,284 +152,300 @@ public:
  */
 
 template <typename T>
-class TimedAttrData:public Tango::AttrData<T>
+class TimedAttrData : public Tango::AttrData<T>
 {
-public:
+  public:
+    /**@name Miscellaneous constructors for scalar attribute
+     */
+    //@{
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     * The attribute quality factor will be set to ATTR_VALID
+     *
+     * @param p_data Pointer to the attribute value
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, const TangoTimestamp &when);
 
-/**@name Miscellaneous constructors for scalar attribute
- */
-//@{
-/**
- * Create a new TimedAttrData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- * The attribute quality factor will be set to ATTR_VALID
- *
- * @param p_data Pointer to the attribute value
- * @param when The date
- */
-    TimedAttrData(const T *p_data,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
+     * The attribute quality factor will be set to ATTR_VALID
+     *
+     * @param p_data Pointer to the attribute value
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, const T *p_wr_data, const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
- * The attribute quality factor will be set to ATTR_VALID
- *
- * @param p_data Pointer to the attribute value
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param when The date
- */
-    TimedAttrData(const T *p_data,const T *p_wr_data,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     *
+     * @param p_data Pointer to the attribute value
+     * @param qual The attribute quality factor
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, Tango::AttrQuality qual, const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- *
- * @param p_data Pointer to the attribute value
- * @param qual The attribute quality factor
- * @param when The date
- */
-    TimedAttrData(const T *p_data,Tango::AttrQuality qual,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
+     *
+     * @param p_data Pointer to the attribute value
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param qual The attribute quality factor
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, const T *p_wr_data, Tango::AttrQuality qual, const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
- *
- * @param p_data Pointer to the attribute value
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param qual The attribute quality factor
- * @param when The date
- */
-    TimedAttrData(const T *p_data,const T *p_wr_data,Tango::AttrQuality qual,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * @param p_data Pointer to the attribute value
+     * @param qual The attribute quality factor
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, Tango::AttrQuality qual, bool rel, const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object.
- *
- * @param p_data Pointer to the attribute value
- * @param qual The attribute quality factor
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
- * @param when The date
- */
-    TimedAttrData(const T *p_data,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * @param p_data Pointer to the attribute value
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param qual The attribute quality factor
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters must be
+     * freed
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, const T *p_wr_data, Tango::AttrQuality qual, bool rel, const TangoTimestamp &when);
+    //@}
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * @param p_data Pointer to the attribute value
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param qual The attribute quality factor
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters must be freed
- * @param when The date
- */
-    TimedAttrData(const T *p_data,const T *p_wr_data,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
-//@}
+    // For spectrum
 
+    /**@name Miscellaneous constructors for spectrum attribute
+     */
+    //@{
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     * The attribute quality factor will be set to ATTR_VALID
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, const TangoTimestamp &when);
 
-// For spectrum
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
+     * The attribute quality factor will be set to ATTR_VALID
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param x_wr The attribute written part x length
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, const T *p_wr_data, long x_wr, const TangoTimestamp &when);
 
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param qual The attribute quality factor
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, Tango::AttrQuality qual, const TangoTimestamp &when);
 
-/**@name Miscellaneous constructors for spectrum attribute
- */
-//@{
-/**
- * Create a new TimedAttrData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- * The attribute quality factor will be set to ATTR_VALID
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param x_wr The attribute written part x length
+     * @param qual The attribute quality factor
+     * @param when The date
+     */
+    TimedAttrData(
+        const T *p_data, long x, const T *p_wr_data, long x_wr, Tango::AttrQuality qual, const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
- * The attribute quality factor will be set to ATTR_VALID
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param x_wr The attribute written part x length
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param qual The attribute quality factor
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, Tango::AttrQuality qual, bool rel, const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param qual The attribute quality factor
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,Tango::AttrQuality qual,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param x_wr The attribute written part x length
+     * @param qual The attribute quality factor
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters must be
+     * freed
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data,
+                  long x,
+                  const T *p_wr_data,
+                  long x_wr,
+                  Tango::AttrQuality qual,
+                  bool rel,
+                  const TangoTimestamp &when);
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param x_wr The attribute written part x length
- * @param qual The attribute quality factor
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,Tango::AttrQuality qual,const TangoTimestamp &when);
+    //@}
 
-/**
- * Create a new TimedAttrData object.
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param qual The attribute quality factor
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    // For image
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param x_wr The attribute written part x length
- * @param qual The attribute quality factor
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters must be freed
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    /**@name Miscellaneous constructors for image attribute
+     */
+    //@{
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     * The attribute quality factor will be set to ATTR_VALID
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param y The attribute y length
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, long y, const TangoTimestamp &when);
 
-//@}
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
+     * The attribute quality factor will be set to ATTR_VALID
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param y The attribute y length
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param x_wr The attribute written part x length
+     * @param y_wr The attribute written part y length
+     * @param when The date
+     */
+    TimedAttrData(
+        const T *p_data, long x, long y, const T *p_wr_data, long x_wr, long y_wr, const TangoTimestamp &when);
 
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param y The attribute y length
+     * @param qual The attribute quality factor
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, long y, Tango::AttrQuality qual, const TangoTimestamp &when);
 
-// For image
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param y The attribute y length
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param x_wr The attribute written part x length
+     * @param y_wr The attribute written part y length
+     * @param qual The attribute quality factor
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data,
+                  long x,
+                  long y,
+                  const T *p_wr_data,
+                  long x_wr,
+                  long y_wr,
+                  Tango::AttrQuality qual,
+                  const TangoTimestamp &when);
 
+    /**
+     * Create a new TimedAttrData object.
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param y The attribute y length
+     * @param qual The attribute quality factor
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data, long x, long y, Tango::AttrQuality qual, bool rel, const TangoTimestamp &when);
 
-/**@name Miscellaneous constructors for image attribute
- */
-//@{
-/**
- * Create a new TimedAttrData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- * The attribute quality factor will be set to ATTR_VALID
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param y The attribute y length
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,long y,const TangoTimestamp &when);
+    /**
+     * Create a new TimedAttrData object for a R/W attribute.
+     *
+     * @param p_data Pointer to the attribute value
+     * @param x The attribute x length
+     * @param y The attribute y length
+     * @param p_wr_data Pointer to the written part of the attribute value
+     * @param x_wr The attribute written part x length
+     * @param y_wr The attribute written part y length
+     * @param qual The attribute quality factor
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> abd <i>p_wr_data</i> parameters must be
+     * freed
+     * @param when The date
+     */
+    TimedAttrData(const T *p_data,
+                  long x,
+                  long y,
+                  const T *p_wr_data,
+                  long x_wr,
+                  long y_wr,
+                  Tango::AttrQuality qual,
+                  bool rel,
+                  const TangoTimestamp &when);
+    //@}
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
- * The attribute quality factor will be set to ATTR_VALID
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param y The attribute y length
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param x_wr The attribute written part x length
- * @param y_wr The attribute written part y length
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,const TangoTimestamp &when);
+    // For error
 
-/**
- * Create a new TimedAttrData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param y The attribute y length
- * @param qual The attribute quality factor
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,long y,Tango::AttrQuality qual,const TangoTimestamp &when);
+    /**@name Miscellaneous constructors for errors
+     */
+    //@{
+    /**
+     * Create a new TimedAttrData object for errors.
+     *
+     * The created TimedAttrData is used to store attribute errors
+     * in the attribute history stack
+     *
+     * @param errs The error stack
+     * @param when The date
+     */
+    TimedAttrData(DevErrorList &errs, const TangoTimestamp &when);
+    //@}
 
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * The memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters will not be freed
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param y The attribute y length
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param x_wr The attribute written part x length
- * @param y_wr The attribute written part y length
- * @param qual The attribute quality factor
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,Tango::AttrQuality qual,const TangoTimestamp &when);
-
-/**
- * Create a new TimedAttrData object.
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param y The attribute y length
- * @param qual The attribute quality factor
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,long y,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
-
-/**
- * Create a new TimedAttrData object for a R/W attribute.
- *
- * @param p_data Pointer to the attribute value
- * @param x The attribute x length
- * @param y The attribute y length
- * @param p_wr_data Pointer to the written part of the attribute value
- * @param x_wr The attribute written part x length
- * @param y_wr The attribute written part y length
- * @param qual The attribute quality factor
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> abd <i>p_wr_data</i> parameters must be freed
- * @param when The date
- */
-    TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
-//@}
-
-
-
-// For error
-
-
-/**@name Miscellaneous constructors for errors
- */
-//@{
-/**
- * Create a new TimedAttrData object for errors.
- *
- * The created TimedAttrData is used to store attribute errors
- * in the attribute history stack
- *
- * @param errs The error stack
- * @param when The date
- */
-    TimedAttrData(DevErrorList &errs,const TangoTimestamp &when);
-//@}
-
-/// @privatesection
+    /// @privatesection
     std::chrono::system_clock::time_point tp;
-
 };
-
 
 //=============================================================================
 //
@@ -447,49 +472,56 @@ public:
 template <typename T>
 class AttrHistoryStack
 {
-public:
-
-/**
- * Store a new element in the stack
- *
- * This method stores a new element in the stack
- *
- * @param elt The new element
- */
+  public:
+    /**
+     * Store a new element in the stack
+     *
+     * This method stores a new element in the stack
+     *
+     * @param elt The new element
+     */
     void push(TimedAttrData<T> const &elt);
 
-/**
- * Get stack depth
- *
- * @return The stack depth
- */
-    size_t length() {return hist.size();}
+    /**
+     * Get stack depth
+     *
+     * @return The stack depth
+     */
+    size_t length()
+    {
+        return hist.size();
+    }
 
-/**
- * Reserve memory for stack elements
- *
- * @param nb The stack element number
- */
-    void length(long nb) {hist.reserve(nb);}
+    /**
+     * Reserve memory for stack elements
+     *
+     * @param nb The stack element number
+     */
+    void length(long nb)
+    {
+        hist.reserve(nb);
+    }
 
-/**
- * Clear the stack
- */
-    void clear() {hist.clear();}
+    /**
+     * Clear the stack
+     */
+    void clear()
+    {
+        hist.clear();
+    }
 
-/**
- * Get stack data
- *
- * @return The stack itself
- */
-    std::vector<TimedAttrData<T> > &get_data();
+    /**
+     * Get stack data
+     *
+     * @return The stack itself
+     */
+    std::vector<TimedAttrData<T>> &get_data();
 
-/// @privatesection
-    AttrHistoryStack() {}
+    /// @privatesection
+    AttrHistoryStack() { }
 
-    std::vector<Tango::TimedAttrData<T> >    hist;
+    std::vector<Tango::TimedAttrData<T>> hist;
 };
-
 
 //=============================================================================
 //
@@ -499,7 +531,6 @@ public:
 //               command polling buffer
 //
 //=============================================================================
-
 
 //=============================================================================
 //
@@ -522,52 +553,56 @@ public:
 template <typename T>
 class TimedCmdData
 {
-public:
+  public:
+    /**@name Constructors
+     * Miscellaneous constructors
+     */
+    //@{
+    /**
+     * Create a new TimedCmdData object.
+     *
+     * The memory pointed to by the <i>p_data</i> parameter will not be freed
+     *
+     * @param p_data Pointer to the command result data
+     * @param when The date
+     */
+    TimedCmdData(T *p_data, const TangoTimestamp &when);
 
-/**@name Constructors
- * Miscellaneous constructors
- */
-//@{
-/**
- * Create a new TimedCmdData object.
- *
- * The memory pointed to by the <i>p_data</i> parameter will not be freed
- *
- * @param p_data Pointer to the command result data
- * @param when The date
- */
-    TimedCmdData(T *p_data,const TangoTimestamp &when);
+    /**
+     * Create a new TimedCmdData object with memory management.
+     *
+     * @param p_data Pointer to the command result data
+     * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
+     * @param when The date
+     */
+    TimedCmdData(T *p_data, bool rel, const TangoTimestamp &when);
 
-/**
- * Create a new TimedCmdData object with memory management.
- *
- * @param p_data Pointer to the command result data
- * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
- * @param when The date
- */
-    TimedCmdData(T *p_data,bool rel,const TangoTimestamp &when);
+    /**
+     * Create a new TimedCmdData object for errors.
+     *
+     * The created TimedCmdData is used to store command errors
+     * in the command history stack
+     *
+     * @param errs The error stack
+     * @param when The date
+     */
+    TimedCmdData(DevErrorList errs, const TangoTimestamp &when) :
+        ptr(NULL),
+        err(errs),
+        tp(when),
+        release(false)
+    {
+    }
 
-/**
- * Create a new TimedCmdData object for errors.
- *
- * The created TimedCmdData is used to store command errors
- * in the command history stack
- *
- * @param errs The error stack
- * @param when The date
- */
-    TimedCmdData(DevErrorList errs,const TangoTimestamp &when): ptr(NULL),err(errs),tp(when),release(false) {}
-//@}
+    //@}
 
-/// @privatesection
+    /// @privatesection
 
-    T                *ptr;
-    DevErrorList    err;
+    T *ptr;
+    DevErrorList err;
     std::chrono::system_clock::time_point tp;
-    bool            release;
-
+    bool release;
 };
-
 
 //=============================================================================
 //
@@ -580,7 +615,6 @@ public:
 //            buffer
 //
 //=============================================================================
-
 
 /**
  * This class is a used to pass a command result history when the user
@@ -595,51 +629,58 @@ public:
 template <typename T>
 class CmdHistoryStack
 {
-public:
-
-/**
- * Store a new element in the stack
- *
- * This method stores a new element in the stack
- *
- * @param elt The new element
- */
+  public:
+    /**
+     * Store a new element in the stack
+     *
+     * This method stores a new element in the stack
+     *
+     * @param elt The new element
+     */
     void push(Tango::TimedCmdData<T> const &elt);
 
-/**
- * Get stack depth
- *
- * @return The stack depth
- */
-    size_t length() {return hist.size();}
+    /**
+     * Get stack depth
+     *
+     * @return The stack depth
+     */
+    size_t length()
+    {
+        return hist.size();
+    }
 
-/**
- * Reserve memory for stack elements
- *
- * @param nb The stack element number
- */
-    void length(long nb) {hist.reserve(nb);}
+    /**
+     * Reserve memory for stack elements
+     *
+     * @param nb The stack element number
+     */
+    void length(long nb)
+    {
+        hist.reserve(nb);
+    }
 
-/**
- * Clear the stack
- */
-    void clear() {hist.clear();}
+    /**
+     * Clear the stack
+     */
+    void clear()
+    {
+        hist.clear();
+    }
 
-/**
- * Get stack data
- *
- * @return The stack itself
- */
-    std::vector<TimedCmdData<T> > &get_data();
+    /**
+     * Get stack data
+     *
+     * @return The stack itself
+     */
+    std::vector<TimedCmdData<T>> &get_data();
 
-/// @privatesection
+    /// @privatesection
 
-    CmdHistoryStack() {}
+    CmdHistoryStack() { }
 
-    std::vector<Tango::TimedCmdData<T> >    hist;
+    std::vector<Tango::TimedCmdData<T>> hist;
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _POLLOBJ_ */

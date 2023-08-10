@@ -50,8 +50,8 @@ namespace Tango
 
 void DevIntr::get_interface(DeviceImpl *dev)
 {
-    build_cmd_interfaces(dev,cmds);
-    build_att_interfaces(dev,atts);
+    build_cmd_interfaces(dev, cmds);
+    build_att_interfaces(dev, atts);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -70,12 +70,11 @@ void DevIntr::get_interface(DeviceImpl *dev)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void DevIntr::build_cmd_interfaces(DeviceImpl *dev,std::vector<CmdIntr> &cmds)
+void DevIntr::build_cmd_interfaces(DeviceImpl *dev, std::vector<CmdIntr> &cmds)
 {
-
-//
-// Get commands interface at class and device levels
-//
+    //
+    // Get commands interface at class and device levels
+    //
 
     cmds.clear();
 
@@ -85,7 +84,7 @@ void DevIntr::build_cmd_interfaces(DeviceImpl *dev,std::vector<CmdIntr> &cmds)
 
     cmds.reserve(nb_cmd);
 
-    for(size_t loop = 0;loop < cmd_class;loop++)
+    for(size_t loop = 0; loop < cmd_class; loop++)
     {
         CmdIntr ci;
         Command *cmd_ptr = (dev->get_device_class()->get_command_list())[loop];
@@ -95,7 +94,7 @@ void DevIntr::build_cmd_interfaces(DeviceImpl *dev,std::vector<CmdIntr> &cmds)
         cmds.push_back(ci);
     }
 
-    for(size_t loop = 0;loop < cmd_dev;loop++)
+    for(size_t loop = 0; loop < cmd_dev; loop++)
     {
         CmdIntr ci;
         Command *cmd_ptr = (dev->get_local_command_list())[loop];
@@ -105,12 +104,11 @@ void DevIntr::build_cmd_interfaces(DeviceImpl *dev,std::vector<CmdIntr> &cmds)
         cmds.push_back(ci);
     }
 
-//
-// Sort this list
-//
+    //
+    // Sort this list
+    //
 
-    sort(cmds.begin(),cmds.end());
-
+    sort(cmds.begin(), cmds.end());
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -129,23 +127,22 @@ void DevIntr::build_cmd_interfaces(DeviceImpl *dev,std::vector<CmdIntr> &cmds)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void DevIntr::build_att_interfaces(DeviceImpl *dev,std::vector<AttrIntr> &atts)
+void DevIntr::build_att_interfaces(DeviceImpl *dev, std::vector<AttrIntr> &atts)
 {
-
-//
-// Get attribute(s) interface
-//
+    //
+    // Get attribute(s) interface
+    //
 
     atts.clear();
 
     size_t nb_attr = dev->get_device_attr()->get_attribute_list().size();
     atts.reserve(nb_attr);
 
-    for (size_t loop = 0;loop < nb_attr;loop++)
+    for(size_t loop = 0; loop < nb_attr; loop++)
     {
         AttrIntr ai;
         Attribute *att_ptr = (dev->get_device_attr()->get_attribute_list())[loop];
-        ai.name  = att_ptr->get_name_lower();
+        ai.name = att_ptr->get_name_lower();
         ai.writable = att_ptr->get_writable();
         ai.data_type = att_ptr->get_data_type();
         ai.data_format = att_ptr->get_data_format();
@@ -153,7 +150,7 @@ void DevIntr::build_att_interfaces(DeviceImpl *dev,std::vector<AttrIntr> &atts)
         ai.max_y = att_ptr->get_max_dim_y();
         ai.enum_labels = att_ptr->get_enum_labels();
 
-        if (ai.writable == READ_WRITE || ai.writable == WRITE)
+        if(ai.writable == READ_WRITE || ai.writable == WRITE)
         {
             WAttribute *w_att_ptr = static_cast<WAttribute *>(att_ptr);
             ai.mem = w_att_ptr->get_memorized();
@@ -169,12 +166,11 @@ void DevIntr::build_att_interfaces(DeviceImpl *dev,std::vector<AttrIntr> &atts)
         atts.push_back(ai);
     }
 
-//
-// Sort the list
-//
+    //
+    // Sort the list
+    //
 
-    sort(atts.begin(),atts.end());
-
+    sort(atts.begin(), atts.end());
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -197,27 +193,30 @@ void DevIntr::build_att_interfaces(DeviceImpl *dev,std::vector<AttrIntr> &atts)
 bool DevIntr::has_changed(DeviceImpl *dev)
 {
     bool ret = false;
-//
-// First, check for commands
-//
+    //
+    // First, check for commands
+    //
 
     std::vector<CmdIntr> v_ci;
-    build_cmd_interfaces(dev,v_ci);
+    build_cmd_interfaces(dev, v_ci);
 
-    if (v_ci != cmds)
+    if(v_ci != cmds)
+    {
         ret = true;
+    }
     else
     {
-
-//
-// Check attributes
-//
+        //
+        // Check attributes
+        //
 
         std::vector<AttrIntr> v_ai;
-        build_att_interfaces(dev,v_ai);
+        build_att_interfaces(dev, v_ai);
 
-        if (v_ai != atts)
+        if(v_ai != atts)
+        {
             ret = true;
+        }
     }
 
     return ret;
@@ -243,16 +242,22 @@ bool DevIntr::has_changed(DeviceImpl *dev)
 bool DevIntr::CmdIntr::operator==(const struct CmdIntr &rhs) const
 {
     bool ret = true;
-    if (name != rhs.name)
+    if(name != rhs.name)
+    {
         ret = false;
+    }
     else
     {
-        if (in_type != rhs.in_type)
+        if(in_type != rhs.in_type)
+        {
             ret = false;
+        }
         else
         {
-            if (out_type != rhs.out_type)
+            if(out_type != rhs.out_type)
+            {
                 ret = false;
+            }
         }
     }
     return ret;
@@ -261,44 +266,64 @@ bool DevIntr::CmdIntr::operator==(const struct CmdIntr &rhs) const
 bool DevIntr::AttrIntr::operator==(const struct AttrIntr &rhs) const
 {
     bool ret = true;
-    if (name != rhs.name)
+    if(name != rhs.name)
+    {
         ret = false;
+    }
     else
     {
-        if (writable != rhs.writable)
+        if(writable != rhs.writable)
+        {
             ret = false;
+        }
         else
         {
-            if (data_type != rhs.data_type)
+            if(data_type != rhs.data_type)
+            {
                 ret = false;
+            }
             else
             {
-                if (data_format != rhs.data_format)
+                if(data_format != rhs.data_format)
+                {
                     ret = false;
+                }
                 else
                 {
-                    if (max_x != rhs.max_x)
+                    if(max_x != rhs.max_x)
+                    {
                         ret = false;
+                    }
                     else
                     {
-                        if (max_y != rhs.max_y)
+                        if(max_y != rhs.max_y)
+                        {
                             ret = false;
+                        }
                         else
                         {
-                            if (mem != rhs.mem)
+                            if(mem != rhs.mem)
+                            {
                                 ret = false;
+                            }
                             else
                             {
-                                if (mem_init != rhs.mem_init)
+                                if(mem_init != rhs.mem_init)
+                                {
                                     ret = false;
+                                }
                                 else
                                 {
-                                    if (writable_attr_name != rhs.writable_attr_name)
+                                    if(writable_attr_name != rhs.writable_attr_name)
+                                    {
                                         ret = false;
+                                    }
                                     else
                                     {
-                                        if (enum_labels.size() != rhs.enum_labels.size())
+                                        if(enum_labels.size() != rhs.enum_labels.size())
+                                        {
                                             ret = false;
+                                        }
                                     }
                                 }
                             }
@@ -311,4 +336,4 @@ bool DevIntr::AttrIntr::operator==(const struct AttrIntr &rhs) const
     return ret;
 }
 
-} // End of Tango namespace
+} // namespace Tango

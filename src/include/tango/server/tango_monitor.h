@@ -32,7 +32,6 @@
 #ifndef _TANGO_MONITOR_H
 #define _TANGO_MONITOR_H
 
-
 namespace Tango
 {
 
@@ -47,39 +46,74 @@ namespace Tango
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-class TangoMonitor: public omni_mutex
+class TangoMonitor : public omni_mutex
 {
-public :
-    TangoMonitor(const char *na):_timeout(DEFAULT_TIMEOUT),cond(this),
-            locking_thread(NULL),locked_ctr(0),name(na) {}
-    TangoMonitor():_timeout(DEFAULT_TIMEOUT),cond(this),locking_thread(NULL),
-            locked_ctr(0),name("unknown") {}
-    ~TangoMonitor() {}
+  public:
+    TangoMonitor(const char *na) :
+        _timeout(DEFAULT_TIMEOUT),
+        cond(this),
+        locking_thread(NULL),
+        locked_ctr(0),
+        name(na)
+    {
+    }
+
+    TangoMonitor() :
+        _timeout(DEFAULT_TIMEOUT),
+        cond(this),
+        locking_thread(NULL),
+        locked_ctr(0),
+        name("unknown")
+    {
+    }
+
+    ~TangoMonitor() { }
 
     void get_monitor();
     void rel_monitor();
 
-    void timeout(long new_to) {_timeout = new_to;}
-    long timeout() {return _timeout;}
+    void timeout(long new_to)
+    {
+        _timeout = new_to;
+    }
 
-    void wait() {cond.wait();}
+    long timeout()
+    {
+        return _timeout;
+    }
+
+    void wait()
+    {
+        cond.wait();
+    }
+
     int wait(long);
 
-    void signal() {cond.signal();}
+    void signal()
+    {
+        cond.signal();
+    }
 
     int get_locking_thread_id();
     long get_locking_ctr();
-    std::string &get_name() {return name;}
-    void set_name(const std::string &na) {name = na;}
 
-private :
-    long             _timeout;
-    omni_condition     cond;
-    omni_thread        *locking_thread;
-    long            locked_ctr;
-    std::string             name;
+    std::string &get_name()
+    {
+        return name;
+    }
+
+    void set_name(const std::string &na)
+    {
+        name = na;
+    }
+
+  private:
+    long _timeout;
+    omni_condition cond;
+    omni_thread *locking_thread;
+    long locked_ctr;
+    std::string name;
 };
-
 
 //--------------------------------------------------------------------------------------------------------------------
 //
@@ -89,13 +123,16 @@ private :
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-
 inline int TangoMonitor::get_locking_thread_id()
 {
-    if (locking_thread != NULL)
+    if(locking_thread != NULL)
+    {
         return locking_thread->id();
+    }
     else
+    {
         return 0;
+    }
 }
 
 inline long TangoMonitor::get_locking_ctr()
@@ -121,13 +158,14 @@ inline void TangoMonitor::get_monitor()
 
     omni_mutex_lock synchronized(*this);
 
-    TANGO_LOG_DEBUG << "In get_monitor() " << name << ", thread = " << th->id() << ", ctr = " << locked_ctr << std::endl;
+    TANGO_LOG_DEBUG << "In get_monitor() " << name << ", thread = " << th->id() << ", ctr = " << locked_ctr
+                    << std::endl;
 
-    if (locked_ctr == 0)
+    if(locked_ctr == 0)
     {
         locking_thread = th;
     }
-    else if (th != locking_thread)
+    else if(th != locking_thread)
     {
         while(locked_ctr > 0)
         {
@@ -135,10 +173,11 @@ inline void TangoMonitor::get_monitor()
             int interupted;
 
             interupted = wait(_timeout);
-            if (interupted == false)
+            if(interupted == false)
             {
                 TANGO_LOG_DEBUG << "TIME OUT for thread " << th->id() << std::endl;
-                TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Not able to acquire serialization (dev, class or process) monitor");
+                TANGO_THROW_EXCEPTION(API_CommandTimedOut,
+                                      "Not able to acquire serialization (dev, class or process) monitor");
             }
         }
         locking_thread = th;
@@ -150,7 +189,6 @@ inline void TangoMonitor::get_monitor()
 
     locked_ctr++;
 }
-
 
 //--------------------------------------------------------------------------------------------------------------------
 //
@@ -168,12 +206,15 @@ inline void TangoMonitor::rel_monitor()
     omni_thread *th = omni_thread::self();
     omni_mutex_lock synchronized(*this);
 
-    TANGO_LOG_DEBUG << "In rel_monitor() " << name << ", ctr = " << locked_ctr << ", thread = " << th->id() << std::endl;
-    if ((locked_ctr == 0) || (th != locking_thread))
+    TANGO_LOG_DEBUG << "In rel_monitor() " << name << ", ctr = " << locked_ctr << ", thread = " << th->id()
+                    << std::endl;
+    if((locked_ctr == 0) || (th != locking_thread))
+    {
         return;
+    }
 
     locked_ctr--;
-    if (locked_ctr == 0)
+    if(locked_ctr == 0)
     {
         TANGO_LOG_DEBUG << "Signalling !" << std::endl;
         locking_thread = NULL;
@@ -181,7 +222,6 @@ inline void TangoMonitor::rel_monitor()
     }
 }
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* TANGO_MONITOR */

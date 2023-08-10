@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTestClass.h) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTestClass.h
@@ -35,59 +35,77 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #ifndef FwdTestClass_H
 #define FwdTestClass_H
 
 #include <tango/tango.h>
 #include "FwdTest.h"
 
-
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass.h
 
 
 namespace FwdTest_ns
 {
 /*----- PROTECTED REGION ID(FwdTestClass::classes for dynamic creation) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 
-class FwdAttrScaSh: public Tango::FwdAttr
+class FwdAttrScaSh : public Tango::FwdAttr
 {
-public:
-    FwdAttrScaSh(const std::string &_n):FwdAttr(_n) {}
-	~FwdAttrScaSh() {}
+  public:
+    FwdAttrScaSh(const std::string &_n) :
+        FwdAttr(_n)
+    {
+    }
+
+    ~FwdAttrScaSh() { }
 };
 
-class FwdAttrScaStr: public Tango::FwdAttr
+class FwdAttrScaStr : public Tango::FwdAttr
 {
-public:
-	FwdAttrScaStr(const std::string &_n):FwdAttr(_n) {}
-	~FwdAttrScaStr() {}
+  public:
+    FwdAttrScaStr(const std::string &_n) :
+        FwdAttr(_n)
+    {
+    }
+
+    ~FwdAttrScaStr() { }
 };
 
-class FwdAttrSpecDb: public Tango::FwdAttr
+class FwdAttrSpecDb : public Tango::FwdAttr
 {
-public:
-    FwdAttrSpecDb(const std::string &_n):FwdAttr(_n) {}
-	~FwdAttrSpecDb() {}
+  public:
+    FwdAttrSpecDb(const std::string &_n) :
+        FwdAttr(_n)
+    {
+    }
+
+    ~FwdAttrSpecDb() { }
 };
 
-class FwdAttrImaStr: public Tango::FwdAttr
+class FwdAttrImaStr : public Tango::FwdAttr
 {
-public:
-    FwdAttrImaStr(const std::string &_n):FwdAttr(_n) {}
-	~FwdAttrImaStr() {}
+  public:
+    FwdAttrImaStr(const std::string &_n) :
+        FwdAttr(_n)
+    {
+    }
+
+    ~FwdAttrImaStr() { }
 };
 
-class FwdAttrScaSta: public Tango::FwdAttr
+class FwdAttrScaSta : public Tango::FwdAttr
 {
-public:
-	FwdAttrScaSta(const std::string &_n):FwdAttr(_n) {}
-	~FwdAttrScaSta() {}
+  public:
+    FwdAttrScaSta(const std::string &_n) :
+        FwdAttr(_n)
+    {
+    }
+
+    ~FwdAttrScaSta() { }
 };
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass::classes for dynamic creation
 
 /**
@@ -101,9 +119,9 @@ class FwdTestClass : public Tango::DeviceClass
 #endif
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::Additional DServer data members) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::Additional DServer data members
 
 	public:

@@ -48,20 +48,20 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
 #ifndef _TG_WINDOWS_
     sigset_t sigs_to_catch;
 
-//
-// Catch main signals
-//
+    //
+    // Catch main signals
+    //
 
     sigemptyset(&sigs_to_catch);
 
-    sigaddset(&sigs_to_catch,SIGINT);
-    sigaddset(&sigs_to_catch,SIGTERM);
-    sigaddset(&sigs_to_catch,SIGHUP);
-    sigaddset(&sigs_to_catch,SIGQUIT);
+    sigaddset(&sigs_to_catch, SIGINT);
+    sigaddset(&sigs_to_catch, SIGTERM);
+    sigaddset(&sigs_to_catch, SIGHUP);
+    sigaddset(&sigs_to_catch, SIGQUIT);
 
-//
-// Init thread id and pid (for linux !!)
-//
+    //
+    // Init thread id and pid (for linux !!)
+    //
 
     my_thread = pthread_self();
     {
@@ -73,66 +73,68 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
 
     int signo = 0;
 
-//
-// The infinite loop
-//
+    //
+    // The infinite loop
+    //
 
     while(1)
     {
 #ifndef _TG_WINDOWS_
-        int ret = sigwait(&sigs_to_catch,&signo);
+        int ret = sigwait(&sigs_to_catch, &signo);
         // sigwait() under linux might return an errno number without initialising the
         // signo variable. Do a ckeck here to avoid problems!!!
-       if ( ret != 0 )
-       {
-           TANGO_LOG_DEBUG << "Signal thread awaken on error " << ret << std::endl;
-           continue;
-       }
+        if(ret != 0)
+        {
+            TANGO_LOG_DEBUG << "Signal thread awaken on error " << ret << std::endl;
+            continue;
+        }
 
-       TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
+        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
 
-       if (signo == SIGHUP)
-           continue;
+        if(signo == SIGHUP)
+        {
+            continue;
+        }
 #else
-       WaitForSingleObject(ds->win_ev,INFINITE);
-       signo = ds->win_signo;
+        WaitForSingleObject(ds->win_ev, INFINITE);
+        signo = ds->win_signo;
 
-       TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
+        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
 #endif
 
 #ifndef _TG_WINDOWS_
 
-//
-// Add a new signal to catch in the mask
-//
+        //
+        // Add a new signal to catch in the mask
+        //
 
         {
             omni_mutex_lock sy(*ds);
-            if (signo == SIGINT)
+            if(signo == SIGINT)
             {
                 bool job_done = false;
 
-                if (ds->sig_to_install == true)
+                if(ds->sig_to_install == true)
                 {
                     ds->sig_to_install = false;
-                    sigaddset(&sigs_to_catch,ds->inst_sig);
+                    sigaddset(&sigs_to_catch, ds->inst_sig);
                     TANGO_LOG_DEBUG << "signal " << ds->inst_sig << " installed" << std::endl;
                     job_done = true;
                 }
 
-//
-// Remove a signal from the catched one
-//
+                //
+                // Remove a signal from the catched one
+                //
 
-                if (ds->sig_to_remove == true)
+                if(ds->sig_to_remove == true)
                 {
                     ds->sig_to_remove = false;
-                    sigdelset(&sigs_to_catch,ds->rem_sig);
+                    sigdelset(&sigs_to_catch, ds->rem_sig);
                     TANGO_LOG_DEBUG << "signal " << ds->rem_sig << " removed" << std::endl;
                     job_done = true;
                 }
 
-                if (job_done == true)
+                if(job_done == true)
                 {
                     ds->signal();
                     continue;
@@ -143,41 +145,41 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
 
         DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
 
-//
-// First, execute all the handlers installed at the class level
-//
+        //
+        // First, execute all the handlers installed at the class level
+        //
 
-        if (act_ptr->registered_classes.empty() == false)
+        if(act_ptr->registered_classes.empty() == false)
         {
             long nb_class = act_ptr->registered_classes.size();
-            for (long j = 0;j < nb_class;j++)
+            for(long j = 0; j < nb_class; j++)
             {
-                act_ptr->registered_classes[j]->signal_handler((long)signo);
+                act_ptr->registered_classes[j]->signal_handler((long) signo);
             }
         }
 
-//
-// Then, execute all the handlers installed at the device level
-//
+        //
+        // Then, execute all the handlers installed at the device level
+        //
 
-        if (act_ptr->registered_devices.empty() == false)
+        if(act_ptr->registered_devices.empty() == false)
         {
             long nb_dev = act_ptr->registered_devices.size();
-            for (long j = 0;j < nb_dev;j++)
+            for(long j = 0; j < nb_dev; j++)
             {
-                act_ptr->registered_devices[j]->signal_handler((long)signo);
+                act_ptr->registered_devices[j]->signal_handler((long) signo);
             }
         }
 
-//
-// For the automatically installed signal, unregister servers from database,
-// destroy the ORB and exit
-//
+        //
+        // For the automatically installed signal, unregister servers from database,
+        // destroy the ORB and exit
+        //
 
-        if (auto_signal(signo) == true)
+        if(auto_signal(signo) == true)
         {
             Tango::Util *tg = Tango::Util::instance();
-            if (tg != NULL)
+            if(tg != NULL)
             {
                 try
                 {
@@ -191,11 +193,9 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
                 }
             }
         }
-
     }
 
     return NULL;
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

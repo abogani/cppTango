@@ -6,23 +6,24 @@
 #undef SUITE_NAME
 #define SUITE_NAME CmdTypesTestSuite
 
-class CmdTypesTestSuite: public CxxTest::TestSuite
+class CmdTypesTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1;
 
-public:
-
+  public:
     enum Color
     {
-        red, green, blue
+        red,
+        green,
+        blue
     };
+
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string device1_name;
 
@@ -32,22 +33,20 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
             device1 = new DeviceProxy(device1_name);
             device1->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -65,22 +64,18 @@ public:
         delete suite;
     }
 
+    void setUp(void) { }
 
-    void setUp(void)
+    void tearDown(void) { }
+
+    //
+    // Tests -------------------------------------------------------
+    //
+
+    // Test Scalar Short
+
+    void test_Scalar_Short(void)
     {
-    }
-
-    void tearDown(void)
-    {
-    }
-
-//
-// Tests -------------------------------------------------------
-//
-
-// Test Scalar Short
-
-    void test_Scalar_Short(void) {
         DeviceAttribute da;
 #ifndef COMPAT
         TS_ASSERT_EQUALS(da.get_data_format(), Tango::FMT_UNKNOWN);
@@ -89,9 +84,9 @@ public:
         try
         {
             da = device1->read_attribute("Short_attr");
-            TS_ASSERT_EQUALS(1,1);
+            TS_ASSERT_EQUALS(1, 1);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -114,10 +109,10 @@ public:
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
 #endif
-//        TEST_LOG << "   Scalar short --> OK" << endl;
+        //        TEST_LOG << "   Scalar short --> OK" << endl;
     }
 
-// Test Scalar Short 2
+    // Test Scalar Short 2
 
     void test_Scalar_Short_DevEncoded_2__loop(void)
     {
@@ -130,7 +125,7 @@ public:
         {
             da = device1->read_attribute("Short_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -144,10 +139,10 @@ public:
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
 #endif
-//        TEST_LOG << "   Scalar short --> OK" << endl;
+        //        TEST_LOG << "   Scalar short --> OK" << endl;
     }
 
-// Test SCALAR long
+    // Test SCALAR long
 
     void test_Scalar_Long__loop(void)
     {
@@ -159,7 +154,7 @@ public:
         {
             da = device1->read_attribute("Long_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -175,8 +170,7 @@ public:
 #endif
     }
 
-
-// Test SCALAR double
+    // Test SCALAR double
 
     void test_Scalar_Double__loop(void)
     {
@@ -185,7 +179,7 @@ public:
         {
             da = device1->read_attribute("Double_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -195,7 +189,7 @@ public:
         TS_ASSERT_EQUALS(db, 3.2);
     }
 
-// Test SCALAR string
+    // Test SCALAR string
 
     void test_Scalar_String__loop(void)
     {
@@ -204,7 +198,7 @@ public:
         {
             da = device1->read_attribute("String_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -214,7 +208,7 @@ public:
         TS_ASSERT_EQUALS(str, "test_string");
     }
 
-// Test SCALAR float
+    // Test SCALAR float
 
     void test_Scalar_Float__loop(void)
     {
@@ -226,14 +220,14 @@ public:
             da >> db;
             TS_ASSERT_EQUALS(db, 4.5);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
     }
 
-// Test SCALAR boolean
+    // Test SCALAR boolean
 
     void test_Scalar_Boolean__loop(void)
     {
@@ -242,7 +236,7 @@ public:
         {
             da = device1->read_attribute("Boolean_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -252,7 +246,7 @@ public:
         TS_ASSERT(db);
     }
 
-// Test SCALAR unsigned short
+    // Test SCALAR unsigned short
 
     void test_Scalar_Unsigned_Short__loop(void)
     {
@@ -261,7 +255,7 @@ public:
         {
             da = device1->read_attribute("UShort_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -271,7 +265,7 @@ public:
         TS_ASSERT_EQUALS(db, 111);
     }
 
-// Test SCALAR unsigned char
+    // Test SCALAR unsigned char
 
     void test_Scalar_Unsigned_Char__loop(void)
     {
@@ -280,7 +274,7 @@ public:
         {
             da = device1->read_attribute("UChar_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -290,7 +284,7 @@ public:
         TS_ASSERT_EQUALS(db, 88);
     }
 
-// Test SCALAR long 64 bits
+    // Test SCALAR long 64 bits
 
     void test_Scalar_Long64__loop(void)
     {
@@ -299,7 +293,7 @@ public:
         {
             da = device1->read_attribute("Long64_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -316,7 +310,7 @@ public:
 #endif
     }
 
-// Test SCALAR unsigned long
+    // Test SCALAR unsigned long
 
     void test_Scalar_Unsigned_Long__loop(void)
     {
@@ -325,7 +319,7 @@ public:
         {
             da = device1->read_attribute("ULong_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -337,7 +331,7 @@ public:
         TS_ASSERT_EQUALS(data_type, Tango::DEV_ULONG);
     }
 
-// Test SCALAR unsigned long 64 bits
+    // Test SCALAR unsigned long 64 bits
 
     void test_Scalar_Unsigned_Long64__loop(void)
     {
@@ -346,7 +340,7 @@ public:
         {
             da = device1->read_attribute("ULong64_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -358,7 +352,7 @@ public:
         TS_ASSERT_EQUALS(data_type, Tango::DEV_ULONG64);
     }
 
-// Test SCALAR state
+    // Test SCALAR state
 
     void test_Scalar_State__loop(void)
     {
@@ -370,7 +364,7 @@ public:
         {
             da = device1->read_attribute("State_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -387,7 +381,7 @@ public:
 #endif
     }
 
-// Test SCALAR DevEncoded
+    // Test SCALAR DevEncoded
 
 #ifndef COMPAT
     void test_Scalar_DevEncoded__loop(void)
@@ -397,7 +391,7 @@ public:
         {
             da = device1->read_attribute("Encoded_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -408,10 +402,10 @@ public:
 
         TS_ASSERT_EQUALS(std::string(lo.encoded_format.in()), "Which format?");
         TS_ASSERT_EQUALS(data_type, Tango::DEV_ENCODED);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-#endif
+  #endif
         TS_ASSERT_EQUALS(lo.encoded_data.length(), 4u);
         TS_ASSERT_EQUALS(lo.encoded_data[0], 97);
         TS_ASSERT_EQUALS(lo.encoded_data[1], 98);
@@ -419,21 +413,21 @@ public:
         TS_ASSERT_EQUALS(lo.encoded_data[3], 100);
     }
 
-// Test SCALAR DevEncoded (JPEG)
+    // Test SCALAR DevEncoded (JPEG)
 
     void test_Scalar_DevEncoded_JPEG__loop(void)
     {
         DeviceAttribute da;
         EncodedAttribute att;
-        int width,height;
+        int width, height;
         unsigned char *gray8;
-#ifdef TANGO_USE_JPEG
+  #ifdef TANGO_USE_JPEG
         try
         {
             da = device1->read_attribute("Encoded_image");
-            att.decode_gray8( &da, &width, &height, &gray8 );
+            att.decode_gray8(&da, &width, &height, &gray8);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -442,20 +436,20 @@ public:
         TS_ASSERT_EQUALS(width, 256);
         TS_ASSERT_EQUALS(height, 256);
         // Check a pixel (margin of 4 levels for jpeg loss)
-        TS_ASSERT_LESS_THAN_EQUALS (124, gray8[128+128*256]);
-        TS_ASSERT_LESS_THAN_EQUALS(gray8[128+128*256], 132);
+        TS_ASSERT_LESS_THAN_EQUALS(124, gray8[128 + 128 * 256]);
+        TS_ASSERT_LESS_THAN_EQUALS(gray8[128 + 128 * 256], 132);
 
-                delete [] gray8;
-#else
-                da = device1->read_attribute("Encoded_image");
-                TS_ASSERT_THROWS_ASSERT(att.decode_gray8( &da, &width, &height, &gray8 ), Tango::DevFailed &e,
-                    TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDeviceAttribute));
-#endif
-
+        delete[] gray8;
+  #else
+        da = device1->read_attribute("Encoded_image");
+        TS_ASSERT_THROWS_ASSERT(att.decode_gray8(&da, &width, &height, &gray8),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDeviceAttribute));
+  #endif
     }
 #endif
 
-// Thirteen in one go
+    // Thirteen in one go
 
     void test_Thirteen_in_one_call__loop(void)
     {
@@ -484,7 +478,7 @@ public:
         {
             received = device1->read_attributes(names);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -535,13 +529,11 @@ public:
         delete received;
     }
 
+    //
+    //---------------------------------------------------------------------------------------------
+    //
 
-//
-//---------------------------------------------------------------------------------------------
-//
-
-
-// Test SPECTRUM short
+    // Test SPECTRUM short
 
     void test_Spectrum_Short__loop(void)
     {
@@ -550,7 +542,7 @@ public:
         {
             da = device1->read_attribute("Short_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -569,7 +561,7 @@ public:
         TS_ASSERT_EQUALS(sh[3], 40);
     }
 
-// Test SPECTRUM long
+    // Test SPECTRUM long
 
     void test_Spectrum_Long__loop(void)
     {
@@ -578,7 +570,7 @@ public:
         {
             da = device1->read_attribute("Long_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -598,7 +590,7 @@ public:
         TS_ASSERT_EQUALS(lo[9], 9);
     }
 
-// Test SPECTRUM double
+    // Test SPECTRUM double
 
     void test_Spectrum_Double__loop(void)
     {
@@ -607,7 +599,7 @@ public:
         {
             da = device1->read_attribute("Double_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -622,7 +614,7 @@ public:
         TS_ASSERT_EQUALS(data_type, Tango::DEV_DOUBLE);
     }
 
-// Test SPECTRUM string
+    // Test SPECTRUM string
 
     void test_Spectrum_String__loop(void)
     {
@@ -631,7 +623,7 @@ public:
         {
             da = device1->read_attribute("String_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -644,7 +636,7 @@ public:
         TS_ASSERT_EQUALS(str[1], "Hello universe");
     }
 
-// Test SPECTRUM float
+    // Test SPECTRUM float
 
     void test_Spectrum_Float__loop(void)
     {
@@ -653,7 +645,7 @@ public:
         {
             da = device1->read_attribute("Float_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -667,7 +659,7 @@ public:
         TS_ASSERT_EQUALS(sh[2], 16.5);
     }
 
-// Test SPECTRUM boolean
+    // Test SPECTRUM boolean
 
     void test_Spectrum_Boolean__loop(void)
     {
@@ -676,7 +668,7 @@ public:
         {
             da = device1->read_attribute("Boolean_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -696,7 +688,7 @@ public:
         TS_ASSERT(sh[4]);
     }
 
-// Test SPECTRUM unsigned short
+    // Test SPECTRUM unsigned short
 
     void test_Spectrum_Unsigned_Short__loop(void)
     {
@@ -705,7 +697,7 @@ public:
         {
             da = device1->read_attribute("UShort_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -718,7 +710,7 @@ public:
         TS_ASSERT_EQUALS(sh[1], 444u);
     }
 
-// Test SPECTRUM unsigned char
+    // Test SPECTRUM unsigned char
 
     void test_Spectrum_Unsigned_Char__loop(void)
     {
@@ -727,7 +719,7 @@ public:
         {
             da = device1->read_attribute("UChar_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -744,7 +736,7 @@ public:
         TS_ASSERT_EQUALS(sh[5], 12);
     }
 
-// Test SPECTRUM long 64 bits
+    // Test SPECTRUM long 64 bits
 
     void test_Spectrum_Long64__loop(void)
     {
@@ -753,7 +745,7 @@ public:
         {
             da = device1->read_attribute("Long64_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -768,7 +760,7 @@ public:
         TS_ASSERT_EQUALS(lo[3], 0);
     }
 
-// Test SPECTRUM unsigned long
+    // Test SPECTRUM unsigned long
 
     void test_Spectrum_Unsigned_Long__loop(void)
     {
@@ -777,7 +769,7 @@ public:
         {
             da = device1->read_attribute("ULong_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -792,7 +784,7 @@ public:
         TS_ASSERT_EQUALS(lo[3], 0u);
     }
 
-// Test SPECTRUM unsigned long 64 bits
+    // Test SPECTRUM unsigned long 64 bits
 
     void test_Spectrum_Unsigned_Long64__loop(void)
     {
@@ -801,7 +793,7 @@ public:
         {
             da = device1->read_attribute("ULong64_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -816,7 +808,7 @@ public:
         TS_ASSERT_EQUALS(lo[3], 0u);
     }
 
-// Test SPECTRUM state
+    // Test SPECTRUM state
 
     void test_Spectrum_State__loop(void)
     {
@@ -825,7 +817,7 @@ public:
         {
             da = device1->read_attribute("State_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -839,12 +831,11 @@ public:
         TS_ASSERT_EQUALS(lo[2], Tango::UNKNOWN);
     }
 
-//
-//-----------------------------------------------------------------------------------------
-//
+    //
+    //-----------------------------------------------------------------------------------------
+    //
 
-
-// Test SPECTRUM short (DevVarShortArray)
+    // Test SPECTRUM short (DevVarShortArray)
 
     void test_Spectrum_Short_DevVarShortArray__loop(void)
     {
@@ -853,7 +844,7 @@ public:
         {
             da = device1->read_attribute("Short_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -868,7 +859,7 @@ public:
         delete sh;
     }
 
-// Test SPECTRUM long
+    // Test SPECTRUM long
 
     void test_Spectrum_Long_DevVarLongArray__loop(void)
     {
@@ -877,7 +868,7 @@ public:
         {
             da = device1->read_attribute("Long_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -892,7 +883,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM double
+    // Test SPECTRUM double
 
     void test_Spectrum_Double_DevVarDoubleArray__loop(void)
     {
@@ -901,7 +892,7 @@ public:
         {
             da = device1->read_attribute("Double_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -914,7 +905,7 @@ public:
         delete db;
     }
 
-// Test SPECTRUM string
+    // Test SPECTRUM string
 
     void test_Spectrum_String_DevVarStringArray__loop(void)
     {
@@ -923,7 +914,7 @@ public:
         {
             da = device1->read_attribute("String_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -936,7 +927,7 @@ public:
         delete str;
     }
 
-// Test SPECTRUM float
+    // Test SPECTRUM float
 
     void test_Spectrum_Float_DevVarFloatArray__loop(void)
     {
@@ -945,7 +936,7 @@ public:
         {
             da = device1->read_attribute("Float_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -959,7 +950,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM boolean
+    // Test SPECTRUM boolean
 
     void test_Spectrum_Boolean_DevVarBooleanArray__loop(void)
     {
@@ -968,7 +959,7 @@ public:
         {
             da = device1->read_attribute("Boolean_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -987,7 +978,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM unsigned short
+    // Test SPECTRUM unsigned short
 
     void test_Spectrum_Unsigned_Short_DevVarUShortArray__loop(void)
     {
@@ -996,7 +987,7 @@ public:
         {
             da = device1->read_attribute("UShort_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1009,7 +1000,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM unsigned char
+    // Test SPECTRUM unsigned char
 
     void test_Spectrum_Unsigned_Char_DevVarUCharArray__loop(void)
     {
@@ -1018,7 +1009,7 @@ public:
         {
             da = device1->read_attribute("UChar_spec_attr");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1035,7 +1026,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM long 64 bits
+    // Test SPECTRUM long 64 bits
 
     void test_Spectrum_Long64_DevVarLong64Array__loop(void)
     {
@@ -1044,7 +1035,7 @@ public:
         {
             da = device1->read_attribute("Long64_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1061,7 +1052,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM unsigned long
+    // Test SPECTRUM unsigned long
 
     void test_Spectrum_Unsigned_Long_DevVarULongArray__loop(void)
     {
@@ -1070,7 +1061,7 @@ public:
         {
             da = device1->read_attribute("ULong_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1087,7 +1078,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM unsigned long 64 bits
+    // Test SPECTRUM unsigned long 64 bits
 
     void test_Spectrum_Unsigned_Long64_DevVarULong64Array__loop(void)
     {
@@ -1096,7 +1087,7 @@ public:
         {
             da = device1->read_attribute("ULong64_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1113,7 +1104,7 @@ public:
         delete lo;
     }
 
-// Test SPECTRUM state
+    // Test SPECTRUM state
 
     void test_Spectrum_State_DevVarStateArray__loop(void)
     {
@@ -1122,7 +1113,7 @@ public:
         {
             da = device1->read_attribute("State_spec_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1141,7 +1132,7 @@ public:
         delete lo;
     }
 
-// Test IMAGE short
+    // Test IMAGE short
 
     void test_Image_Short_DevVarShortArray__loop(void)
     {
@@ -1150,7 +1141,7 @@ public:
         {
             da = device1->read_attribute("Short_ima_attr_rw");
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
@@ -1167,7 +1158,7 @@ public:
         delete lo;
     }
 
-// Test exception on attribute data format unknown
+    // Test exception on attribute data format unknown
 
     void test_Exception_Error_for_unknown_attribute_data_format(void)
     {
@@ -1180,7 +1171,7 @@ public:
         {
             db.get_data_format();
         }
-        catch (Tango::DevFailed&)
+        catch(Tango::DevFailed &)
         {
             except = true;
         }
@@ -1194,7 +1185,7 @@ public:
 #endif
     }
 
-// Test DeviceAttribute get_type method after constructor call
+    // Test DeviceAttribute get_type method after constructor call
     void test_DeviceAttribute_get_type_after_constructor_call(void)
     {
         string attr_name = "MyAttrName";
@@ -1211,7 +1202,7 @@ public:
         TS_ASSERT_EQUALS(da_enum2.get_type(), DEV_ENUM);
 
         vector<short> my_short_vector;
-        for (short i = 0; i < 10; i++)
+        for(short i = 0; i < 10; i++)
         {
             my_short_vector.push_back(i);
             my_short_vector.push_back(-i);
@@ -1226,7 +1217,7 @@ public:
         DeviceAttribute da_short_vec4(attr_name, my_short_vector, 10, 2);
         TS_ASSERT_EQUALS(da_short_vec4.get_type(), DEV_SHORT);
 
-        vector <Color> my_enum_vector;
+        vector<Color> my_enum_vector;
         my_enum_vector.push_back(red);
         my_enum_vector.push_back(blue);
         my_enum_vector.push_back(red);
@@ -1243,10 +1234,9 @@ public:
         TS_ASSERT_EQUALS(da_enum_vec4.get_type(), DEV_ENUM);
     }
 
-// Test DeviceAttribute get_type method after short or enum insertion
+    // Test DeviceAttribute get_type method after short or enum insertion
     void test_DeviceAttribute_get_type_after_short_or_enum_insertion(void)
     {
-
         DeviceAttribute da;
         TS_ASSERT_EQUALS(da.get_type(), DATA_TYPE_UNKNOWN);
         short my_short = 42;
@@ -1261,7 +1251,7 @@ public:
         TS_ASSERT_EQUALS(da.get_type(), DEV_ENUM);
 
         vector<short> my_short_vector;
-        for (short i = 0; i < 10; i++)
+        for(short i = 0; i < 10; i++)
         {
             my_short_vector.push_back(i);
             my_short_vector.push_back(-i);
@@ -1276,7 +1266,7 @@ public:
         da2 << my_short_vector;
         TS_ASSERT_EQUALS(da2.get_type(), DEV_SHORT);
 
-        vector <Color> my_enum_vector;
+        vector<Color> my_enum_vector;
         my_enum_vector.push_back(red);
         my_enum_vector.push_back(blue);
         my_enum_vector.push_back(red);
@@ -1285,6 +1275,5 @@ public:
         da2 << my_enum_vector;
         TS_ASSERT_EQUALS(da2.get_type(), DEV_ENUM);
     }
-
 };
 #endif // CmdTypesTestSuite_h

@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if (argc == 1)
+    if(argc == 1)
     {
         TEST_LOG << "usage: %s device" << std::endl;
         exit(-1);
@@ -16,39 +16,36 @@ int main(int argc, char **argv)
     {
         device = new DeviceProxy(device_name);
     }
-    catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
         Except::print_exception(e);
         exit(1);
     }
 
-
     try
     {
-
-// Send a command in fire and forget mode
+        // Send a command in fire and forget mode
 
         long id;
 
-//        char key;
-//        TEST_LOG << "Hit any key : ";
-//        cin >> key;
+        //        char key;
+        //        TEST_LOG << "Hit any key : ";
+        //        cin >> key;
 
-        id = device->command_inout_asynch("State",true);
+        id = device->command_inout_asynch("State", true);
 
-        assert (id == 0);
+        assert(id == 0);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
         exit(-1);
     }
-    catch (CORBA::Exception &ex)
+    catch(CORBA::Exception &ex)
     {
         Except::print_exception(ex);
         exit(-1);
     }
-
 
     delete device;
 

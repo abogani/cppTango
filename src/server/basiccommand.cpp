@@ -49,11 +49,10 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-DevStatusCmd::DevStatusCmd(const char *name,Tango::CmdArgType in,Tango::CmdArgType out)
-:Command(name,in,out)
+DevStatusCmd::DevStatusCmd(const char *name, Tango::CmdArgType in, Tango::CmdArgType out) :
+    Command(name, in, out)
 {
 }
-
 
 //+--------------------------------------------------------------------------------------------------------------
 //
@@ -67,29 +66,32 @@ DevStatusCmd::DevStatusCmd(const char *name,Tango::CmdArgType in,Tango::CmdArgTy
 
 CORBA::Any *DevStatusCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-
     TANGO_LOG_DEBUG << "DevStatus::execute(): arrived " << std::endl;
 
-//
-// return status string as Any
-//
+    //
+    // return status string as Any
+    //
 
     CORBA::Any *out_any = NULL;
     try
     {
         out_any = new CORBA::Any();
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
 
     try
     {
-        if (device->is_alarm_state_forced() == true)
+        if(device->is_alarm_state_forced() == true)
+        {
             (*out_any) <<= device->DeviceImpl::dev_status();
+        }
         else
+        {
             (*out_any) <<= device->dev_status();
+        }
     }
     catch(...)
     {
@@ -99,7 +101,6 @@ CORBA::Any *DevStatusCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::
 
     TANGO_LOG_DEBUG << "Leaving DevStatus::execute()" << std::endl;
     return out_any;
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -112,8 +113,8 @@ CORBA::Any *DevStatusCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-DevStateCmd::DevStateCmd(const char *name,Tango::CmdArgType in, Tango::CmdArgType out)
-:Command(name,in,out)
+DevStateCmd::DevStateCmd(const char *name, Tango::CmdArgType in, Tango::CmdArgType out) :
+    Command(name, in, out)
 {
 }
 
@@ -129,30 +130,32 @@ DevStateCmd::DevStateCmd(const char *name,Tango::CmdArgType in, Tango::CmdArgTyp
 
 CORBA::Any *DevStateCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-
     TANGO_LOG_DEBUG << "DevState::execute(): arrived" << std::endl;
 
-//
-// return state as Any
-//
+    //
+    // return state as Any
+    //
 
     CORBA::Any *out_any = NULL;
     try
     {
         out_any = new CORBA::Any();
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
 
     try
     {
-        if (device->is_alarm_state_forced() == true)
+        if(device->is_alarm_state_forced() == true)
+        {
             (*out_any) <<= device->DeviceImpl::dev_state();
+        }
         else
+        {
             (*out_any) <<= device->dev_state();
-
+        }
     }
     catch(...)
     {
@@ -174,8 +177,8 @@ CORBA::Any *DevStateCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 //
 //------------------------------------------------------------------------------------------------------------------
 
-DevInitCmd::DevInitCmd(const char *name,Tango::CmdArgType in, Tango::CmdArgType out)
-:Command(name,in,out)
+DevInitCmd::DevInitCmd(const char *name, Tango::CmdArgType in, Tango::CmdArgType out) :
+    Command(name, in, out)
 {
 }
 
@@ -198,9 +201,9 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
 {
     TANGO_LOG_DEBUG << "Init::execute(): arrived" << std::endl;
 
-//
-// Get device interface only if necessary (some client(s) listening on device interface change event)
-//
+    //
+    // Get device interface only if necessary (some client(s) listening on device interface change event)
+    //
 
     ZmqEventSupplier *event_supplier_zmq = nullptr;
     event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
@@ -208,20 +211,20 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
 
     bool ev_client = false;
 
-    if (event_supplier_zmq != nullptr)
+    if(event_supplier_zmq != nullptr)
     {
         ev_client = event_supplier_zmq->any_dev_intr_client(device);
     }
 
-    if (device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client == true)
+    if(device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client == true)
     {
         di.get_interface(device);
         device->disable_intr_change_ev();
     }
 
-//
-// Init device
-//
+    //
+    // Init device
+    //
 
     Tango::Util *tg = nullptr;
 
@@ -231,49 +234,56 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
         tg = Tango::Util::instance();
 
         // clean the sub-device list for this device
-        tg->get_sub_dev_diag().remove_sub_devices (device->get_name());
+        tg->get_sub_dev_diag().remove_sub_devices(device->get_name());
         tg->get_sub_dev_diag().set_associated_device(device->get_name());
 
         device->delete_device();
         device->init_device();
 
-//
-// Re-configure polling in device on which the Init cmd been done is the admin device but only if the Init is not
-// called during the DS startup sequence
-//
+        //
+        // Re-configure polling in device on which the Init cmd been done is the admin device but only if the Init is
+        // not called during the DS startup sequence
+        //
 
         DeviceImpl *admin_dev = NULL;
         try
         {
             admin_dev = tg->get_dserver_device();
         }
-        catch (Tango::DevFailed &) {}
+        catch(Tango::DevFailed &)
+        {
+        }
 
-        if (admin_dev == device)
+        if(admin_dev == device)
+        {
             tg->polling_configure();
+        }
 
-//
-// Apply memorized values for memorized attributes (if any). For Py DS, if some attributes are memorized,
-// the write_attributes call will take the Python lock
-//
+        //
+        // Apply memorized values for memorized attributes (if any). For Py DS, if some attributes are memorized,
+        // the write_attributes call will take the Python lock
+        //
 
         Tango::DeviceClass *dc = device->get_device_class();
         std::vector<Tango::DeviceImpl *> dev_v = dc->get_device_list();
         unsigned int loop;
-        for (loop = 0;loop < dev_v.size();loop++)
+        for(loop = 0; loop < dev_v.size(); loop++)
         {
-            if (dev_v[loop] == device)
+            if(dev_v[loop] == device)
+            {
                 break;
+            }
         }
-        if (loop != dev_v.size())
-            dc->set_memorized_values(false,loop,true);
+        if(loop != dev_v.size())
+        {
+            dc->set_memorized_values(false, loop, true);
+        }
         else
         {
             TANGO_THROW_EXCEPTION(API_DeviceNotFound, "Can't find new device in device list");
         }
-
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         device->enable_intr_change_ev();
 
@@ -287,14 +297,14 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
         TANGO_RETHROW_EXCEPTION(e, API_InitThrowsException, o.str());
     }
 
-//
-// Check if device interface has changed and eventually fire device interface change event
-//
+    //
+    // Check if device interface has changed and eventually fire device interface change event
+    //
 
-    if (device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client == true)
+    if(device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client == true)
     {
         device->enable_intr_change_ev();
-        if (di.has_changed(device) == true)
+        if(di.has_changed(device) == true)
         {
             Device_5Impl *dev_5 = static_cast<Device_5Impl *>(device);
             DevCmdInfoList_2 *cmds_list = dev_5->command_list_query_2();
@@ -304,17 +314,16 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
             dvsa[0] = Tango::string_dup(AllAttr_3);
             AttributeConfigList_5 *atts_list = dev_5->get_attribute_config_5(dvsa);
 
-            event_supplier_zmq->push_dev_intr_change_event(device,false,cmds_list,atts_list);
+            event_supplier_zmq->push_dev_intr_change_event(device, false, cmds_list, atts_list);
         }
     }
 
-//
-// return to the caller
-//
+    //
+    // return to the caller
+    //
 
     CORBA::Any *ret = return_empty_any("InitCmd");
     return ret;
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

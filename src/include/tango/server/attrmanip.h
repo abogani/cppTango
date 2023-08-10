@@ -42,27 +42,31 @@ namespace Tango
 
 class AttrManip
 {
-    friend std::ostream &operator<<(std::ostream &,const AttrManip&);
+    friend std::ostream &operator<<(std::ostream &, const AttrManip &);
     friend void execute_manip(std::ostream &, const std::string &str);
 
-public:
-    AttrManip(const char *f):format(f) {
-    std::transform(format.begin(),format.end(),format.begin(),::tolower);
+  public:
+    AttrManip(const char *f) :
+        format(f)
+    {
+        std::transform(format.begin(), format.end(), format.begin(), ::tolower);
     }
 
-    AttrManip(const std::string &str):format(str) {
-    std::transform(format.begin(),format.end(),format.begin(),::tolower);
+    AttrManip(const std::string &str) :
+        format(str)
+    {
+        std::transform(format.begin(), format.end(), format.begin(), ::tolower);
     }
 
-  inline const std::string& to_string (void) const {
-    return format;
-  }
+    inline const std::string &to_string(void) const
+    {
+        return format;
+    }
 
-private:
+  private:
     std::string format;
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif

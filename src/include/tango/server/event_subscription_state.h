@@ -48,6 +48,6 @@ struct DeviceEventSubscriptionState
 };
 
 using ServerEventSubscriptionState = std::map<std::string, DeviceEventSubscriptionState>;
-}
+} // namespace Tango
 
 #endif

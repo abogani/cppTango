@@ -28,40 +28,46 @@
 #include <tango/common/log4tango/Portability.h>
 #include <tango/common/log4tango/LayoutAppender.h>
 
-namespace log4tango {
-
-LayoutAppender::LayoutAppender(const std::string& name)
-  : Appender(name), _layout(new DefaultLayoutType())
+namespace log4tango
 {
-  // no-op
+
+LayoutAppender::LayoutAppender(const std::string &name) :
+    Appender(name),
+    _layout(new DefaultLayoutType())
+{
+    // no-op
 }
 
 LayoutAppender::~LayoutAppender()
 {
-  if (_layout) {
-    delete _layout;
-    _layout = 0;
-  }
-}
-
-bool LayoutAppender::requires_layout (void) const
-{
-  return true;
-}
-
-void LayoutAppender::set_layout (Layout* layout)
-{
-  if (layout != _layout) {
-    if (_layout) {
-      delete _layout;
-      _layout = 0;
+    if(_layout)
+    {
+        delete _layout;
+        _layout = 0;
     }
-    _layout = (layout == 0) ? new DefaultLayoutType() : layout;
-  }
 }
 
-Layout& LayoutAppender::get_layout (void) {
-  return *_layout;
+bool LayoutAppender::requires_layout(void) const
+{
+    return true;
+}
+
+void LayoutAppender::set_layout(Layout *layout)
+{
+    if(layout != _layout)
+    {
+        if(_layout)
+        {
+            delete _layout;
+            _layout = 0;
+        }
+        _layout = (layout == 0) ? new DefaultLayoutType() : layout;
+    }
+}
+
+Layout &LayoutAppender::get_layout(void)
+{
+    return *_layout;
 }
 
 } // namespace log4tango

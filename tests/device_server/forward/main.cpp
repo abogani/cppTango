@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest::main.cpp) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 //=============================================================================
 //
 // file :        main.cpp
@@ -37,48 +37,48 @@
 
 // Check if crash reporting is used.
 #if defined(ENABLE_CRASH_REPORT)
-#  include <crashreporting/crash_report.h>
+  #include <crashreporting/crash_report.h>
 #else
-#  define DECLARE_CRASH_HANDLER
-#  define INSTALL_CRASH_HANDLER
+  #define DECLARE_CRASH_HANDLER
+  #define INSTALL_CRASH_HANDLER
 #endif
 
 DECLARE_CRASH_HANDLER
 
-int main(int argc,char *argv[])
+int main(int argc, char *argv[])
 {
-	INSTALL_CRASH_HANDLER
-	try
-	{
-		// Initialise the device server
-		//----------------------------------------
-		Tango::Util *tg = Tango::Util::init(argc,argv);
+    INSTALL_CRASH_HANDLER
+    try
+    {
+        // Initialise the device server
+        //----------------------------------------
+        Tango::Util *tg = Tango::Util::init(argc, argv);
 
-		// Create the device server singleton
-		//	which will create everything
-		//----------------------------------------
-		tg->server_init(false);
+        // Create the device server singleton
+        //	which will create everything
+        //----------------------------------------
+        tg->server_init(false);
 
-		// Run the endless loop
-		//----------------------------------------
-		std::cout << "Ready to accept request" << std::endl;
-		tg->server_run();
-	}
-	catch (std::bad_alloc &)
-	{
-		std::cout << "Can't allocate memory to store device object !!!" << std::endl;
-		std::cout << "Exiting" << std::endl;
-	}
-	catch (CORBA::Exception &e)
-	{
-		Tango::Except::print_exception(e);
+        // Run the endless loop
+        //----------------------------------------
+        std::cout << "Ready to accept request" << std::endl;
+        tg->server_run();
+    }
+    catch(std::bad_alloc &)
+    {
+        std::cout << "Can't allocate memory to store device object !!!" << std::endl;
+        std::cout << "Exiting" << std::endl;
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
 
-		std::cout << "Received a CORBA_Exception" << std::endl;
-		std::cout << "Exiting" << std::endl;
-	}
-	Tango::Util::instance()->server_cleanup();
-	return(0);
+        std::cout << "Received a CORBA_Exception" << std::endl;
+        std::cout << "Exiting" << std::endl;
+    }
+    Tango::Util::instance()->server_cleanup();
+    return (0);
 }
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::main.cpp

@@ -6,18 +6,17 @@
 #undef SUITE_NAME
 #define SUITE_NAME SeqVecTestSuite
 
-class SeqVecTestSuite: public CxxTest::TestSuite
+class SeqVecTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string device1_name;
 
@@ -25,22 +24,20 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
             device1 = new DeviceProxy(device1_name);
             device1->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -58,11 +55,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test IOSeqVecChar
+    // Test IOSeqVecChar
 
     void test_IOSeqVecChar(void)
     {
@@ -84,7 +81,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecShort
+    // Test IOSeqVecShort
 
     void test_IOSeqVecShort(void)
     {
@@ -107,7 +104,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecLong
+    // Test IOSeqVecLong
 
     void test_IOSeqVecLong(void)
     {
@@ -127,7 +124,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecFloat
+    // Test IOSeqVecFloat
 
     void test_IOSeqVecFloat(void)
     {
@@ -149,7 +146,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecDouble
+    // Test IOSeqVecDouble
 
     void test_IOSeqVecDouble(void)
     {
@@ -170,7 +167,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecUShort
+    // Test IOSeqVecUShort
 
     void test_IOSeqVecUShort(void)
     {
@@ -195,7 +192,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecULong
+    // Test IOSeqVecULong
 
     void test_IOSeqVecULong(void)
     {
@@ -216,7 +213,7 @@ public:
         TS_ASSERT_EQUALS(input, output);
     }
 
-// Test IOSeqVecString
+    // Test IOSeqVecString
 
     void test_IOSeqVecString(void)
     {

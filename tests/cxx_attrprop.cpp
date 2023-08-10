@@ -6,44 +6,40 @@
 #undef SUITE_NAME
 #define SUITE_NAME AttrPropTestSuite
 
-class AttrPropTestSuite: public CxxTest::TestSuite
+class AttrPropTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string device1_name;
 
         // user arguments, obtained from the command line sequentially
         device1_name = CxxTest::TangoPrinter::get_param("device1");
 
-
         // always add this line, otherwise arguments will not be parsed correctly
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
             device1 = new DeviceProxy(device1_name);
             device1->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -61,16 +57,16 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test AttrProp template specialization for all Tango types
+    // Test AttrProp template specialization for all Tango types
 
     void test_AttrProp_template_specialization_for_all_Tango_types(void)
     {
         // Would it make sense to make AttrProp instantiated for string compile?
-//        AttrProp<string> aps;
+        //        AttrProp<string> aps;
 
         AttrProp<DevBoolean> apbool;
         AttrProp<DevDouble> apdb;
@@ -86,18 +82,18 @@ public:
         AttrProp<DevULong64> apulg64;
         AttrProp<DevUShort> apush;
 
-//        char * abc = "abc";
-//        DevString def;// = "def";
-//        AttrProp<DevString> aps(DevString("aaa"));
-//        AttrProp<string> aps;
-//        aps = def;//"Hello world";
-//        aps = "Hello world";
-//        AttrProp<DevString> aps2(string("Hai"));
-//        MultiAttrProp<DevString> map;
-//        AttrProp<short> apsh(2);
+        //        char * abc = "abc";
+        //        DevString def;// = "def";
+        //        AttrProp<DevString> aps(DevString("aaa"));
+        //        AttrProp<string> aps;
+        //        aps = def;//"Hello world";
+        //        aps = "Hello world";
+        //        AttrProp<DevString> aps2(string("Hai"));
+        //        MultiAttrProp<DevString> map;
+        //        AttrProp<short> apsh(2);
     }
 
-// Test AttrProp template specialization for all Tango types
+    // Test AttrProp template specialization for all Tango types
 
     void test_DoubleAttrProp_template_specialization_for_all_Tango_types(void)
     {
@@ -116,7 +112,7 @@ public:
         DoubleAttrProp<DevUShort> dapush;
     }
 
-// Test MultiAttrProp template specialization for all Tango types
+    // Test MultiAttrProp template specialization for all Tango types
 
     void test_MultiAttrProp_template_specialization_for_all_Tango_types(void)
     {

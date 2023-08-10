@@ -2,8 +2,7 @@
 
 int main()
 {
-
-// Test empty
+    // Test empty
 
     DeviceData da;
     long lo;
@@ -12,12 +11,10 @@ int main()
     flags.reset(DeviceData::isempty_flag);
     da.exceptions(flags);
 
-
     bool ret = da >> lo;
-    assert ( ret == false );
+    assert(ret == false);
 
     TEST_LOG << "   Extraction from empty object --> OK" << endl;
-
 
     flags.set(DeviceData::isempty_flag);
     da.exceptions(flags);
@@ -27,14 +24,14 @@ int main()
         da >> lo;
         assert(false);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
     }
 
     TEST_LOG << "   Extraction from empty object (exception) --> OK" << endl;
     flags.reset();
 
-// Test wrong type
+    // Test wrong type
 
     DeviceData db;
     long l = 2;
@@ -43,7 +40,7 @@ int main()
     float fl;
 
     ret = db >> fl;
-    assert ( ret == false );
+    assert(ret == false);
 
     TEST_LOG << "   Extraction with wrong type --> OK" << endl;
 
@@ -55,15 +52,15 @@ int main()
         db >> fl;
         assert(false);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
     }
 
     TEST_LOG << "   Extraction with wrong type (exception) --> OK" << endl;
 
-// Test assignement operator
+    // Test assignement operator
 
-    DeviceData dd,dd_c;
+    DeviceData dd, dd_c;
     vector<string> v_str;
     v_str.push_back("abc");
     v_str.push_back("def");
@@ -74,12 +71,12 @@ int main()
     vector<string> out;
     dd_c >> out;
 
-    assert( out[0] == "abc");
-    assert( out[1] == "def");
+    assert(out[0] == "abc");
+    assert(out[1] == "def");
 
     TEST_LOG << "   assignement operator --> OK" << endl;
 
-// Test copy constructor
+    // Test copy constructor
 
     DeviceData d;
     double db2 = 3.45;
@@ -90,11 +87,11 @@ int main()
     double db_out;
     dc >> db_out;
 
-    assert( db_out == db2 );
+    assert(db_out == db2);
 
     TEST_LOG << "   Copy constructor --> OK" << endl;
 
-// Test move assignement (if available)
+    // Test move assignement (if available)
 
     DeviceData ma;
     float fl_move = 3.0;

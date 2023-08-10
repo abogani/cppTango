@@ -54,57 +54,61 @@ namespace Tango
 //
 //----------------------------------------------------------------------------------------------------------------
 
-template <typename T,typename V>
-void Device_3Impl::set_attribute_config_3_local(const T &new_conf,TANGO_UNUSED(const V &dummy_arg),
-                                                bool fwd_cb,int caller_idl)
+template <typename T, typename V>
+void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
+                                                TANGO_UNUSED(const V &dummy_arg),
+                                                bool fwd_cb,
+                                                int caller_idl)
 {
     TANGO_LOG_DEBUG << "Entering Device_3Impl::set_attribute_config_3_local" << std::endl;
 
-//
-// Return exception if the device does not have any attribute
-//
+    //
+    // Return exception if the device does not have any attribute
+    //
 
     long nb_dev_attr = dev_attr->get_attr_nb();
-    if (nb_dev_attr == 0)
+    if(nb_dev_attr == 0)
     {
         TANGO_THROW_EXCEPTION(API_AttrNotFound, "The device does not have any attribute");
     }
 
-//
-// Get some event related data
-//
+    //
+    // Get some event related data
+    //
 
     EventSupplier *event_supplier_nd = NULL;
     EventSupplier *event_supplier_zmq = NULL;
 
     Tango::Util *tg = Tango::Util::instance();
 
-//
-// Update attribute config first locally then in database
-//
+    //
+    // Update attribute config first locally then in database
+    //
 
     long nb_attr = new_conf.length();
     long i;
 
     EventSupplier::SuppliedEventData ad;
-    ::memset(&ad,0,sizeof(ad));
+    ::memset(&ad, 0, sizeof(ad));
 
     try
     {
-        for (i = 0;i < nb_attr;i++)
+        for(i = 0; i < nb_attr; i++)
         {
             Attribute &attr = dev_attr->get_attr_by_name(new_conf[i].name);
             bool old_alarm = attr.is_alarmed().any();
 
-//
-// Special case for forwarded attributes
-//
+            //
+            // Special case for forwarded attributes
+            //
 
-            if (attr.is_fwd_att() == true)
+            if(attr.is_fwd_att() == true)
             {
                 FwdAttribute &fwd_attr = static_cast<FwdAttribute &>(attr);
-                if (fwd_cb == true)
+                if(fwd_cb == true)
+                {
                     fwd_attr.set_att_config(new_conf[i]);
+                }
                 else
                 {
                     fwd_attr.upd_att_config_base(new_conf[i].label.in());
@@ -113,40 +117,48 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,TANGO_UNUSED(c
             }
             else
             {
-                attr.set_upd_properties(new_conf[i],device_name);
+                attr.set_upd_properties(new_conf[i], device_name);
             }
 
-//
-// In case the attribute quality factor was set to ALARM, reset it to VALID
-//
+            //
+            // In case the attribute quality factor was set to ALARM, reset it to VALID
+            //
 
-            if ((attr.get_quality() == Tango::ATTR_ALARM) &&
-                (old_alarm == true) &&
-                (attr.is_alarmed().any() == false))
+            if((attr.get_quality() == Tango::ATTR_ALARM) && (old_alarm == true) && (attr.is_alarmed().any() == false))
+            {
                 attr.set_quality(Tango::ATTR_VALID);
+            }
 
-//
-// Send the event
-//
+            //
+            // Send the event
+            //
 
-            if (attr.use_notifd_event() == true)
+            if(attr.use_notifd_event() == true)
+            {
                 event_supplier_nd = tg->get_notifd_event_supplier();
+            }
             else
+            {
                 event_supplier_nd = NULL;
+            }
 
-            if (attr.use_zmq_event() == true)
+            if(attr.use_zmq_event() == true)
+            {
                 event_supplier_zmq = tg->get_zmq_event_supplier();
+            }
             else
+            {
                 event_supplier_zmq = NULL;
+            }
 
-            if ((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
+            if((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
             {
                 std::string tmp_name(new_conf[i].name);
 
-//
-// The event data has to be the new attribute conf which could be different than the one we received (in case some
-// of the parameters are reset to lib/user/class default value)
-//
+                //
+                // The event data has to be the new attribute conf which could be different than the one we received (in
+                // case some of the parameters are reset to lib/user/class default value)
+                //
 
                 V mod_conf;
                 attr.get_prop(mod_conf);
@@ -158,114 +170,137 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,TANGO_UNUSED(c
                 AttributeConfig_3 *tmp_conf_ptr;
                 AttributeConfig_5 *tmp_conf_ptr5;
 
-                if (get_dev_idl_version() > 4)
+                if(get_dev_idl_version() > 4)
                 {
                     std::vector<int> cl_lib = attr.get_client_lib(ATTR_CONF_EVENT);
 
-                    if (caller_idl <= 4)
+                    if(caller_idl <= 4)
                     {
+                        //
+                        // Even if device is IDL 5, the change has been done from one old client (IDL4) thus with
+                        // AttributeConfig_3. If a new client is listening to event, don't forget to send it.
+                        //
 
-//
-// Even if device is IDL 5, the change has been done from one old client (IDL4) thus with AttributeConfig_3.
-// If a new client is listening to event, don't forget to send it.
-//
-
-                        for (size_t i = 0;i < cl_lib.size();i++)
+                        for(size_t i = 0; i < cl_lib.size(); i++)
                         {
-                            if (cl_lib[i] == 5)
+                            if(cl_lib[i] == 5)
                             {
-                                attr.AttributeConfig_3_2_AttributeConfig_5(mod_conf,conf5);
+                                attr.AttributeConfig_3_2_AttributeConfig_5(mod_conf, conf5);
                                 attr.add_config_5_specific(conf5);
                                 tmp_conf_ptr5 = &conf5;
 
-                                ::memcpy(&(ad.attr_conf_5),&(tmp_conf_ptr5),sizeof(V *));
+                                ::memcpy(&(ad.attr_conf_5), &(tmp_conf_ptr5), sizeof(V *));
                             }
                             else
                             {
-                                ::memcpy(&(ad.attr_conf_3),&(tmp_ptr),sizeof(V *));
+                                ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *));
                             }
 
-                            if (event_supplier_nd != NULL)
-                                event_supplier_nd->push_att_conf_events(this,ad,(Tango::DevFailed *)NULL,tmp_name);
-                            if (event_supplier_zmq != NULL)
-                                event_supplier_zmq->push_att_conf_events(this,ad,(Tango::DevFailed *)NULL,tmp_name);
+                            if(event_supplier_nd != NULL)
+                            {
+                                event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                            }
+                            if(event_supplier_zmq != NULL)
+                            {
+                                event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                            }
 
-                            if (cl_lib[i] == 5)
+                            if(cl_lib[i] == 5)
+                            {
                                 ad.attr_conf_5 = NULL;
+                            }
                             else
+                            {
                                 ad.attr_conf_3 = NULL;
+                            }
                         }
                     }
                     else
                     {
-                        for (size_t i = 0;i < cl_lib.size();i++)
+                        for(size_t i = 0; i < cl_lib.size(); i++)
                         {
-                            if (cl_lib[i] < 5)
+                            if(cl_lib[i] < 5)
                             {
-                                attr.AttributeConfig_5_2_AttributeConfig_3(mod_conf,conf3);
+                                attr.AttributeConfig_5_2_AttributeConfig_3(mod_conf, conf3);
                                 tmp_conf_ptr = &conf3;
 
-                                ::memcpy(&(ad.attr_conf_3),&(tmp_conf_ptr),sizeof(V *));
+                                ::memcpy(&(ad.attr_conf_3), &(tmp_conf_ptr), sizeof(V *));
                             }
                             else
                             {
-                                ::memcpy(&(ad.attr_conf_5),&(tmp_ptr),sizeof(V *));
+                                ::memcpy(&(ad.attr_conf_5), &(tmp_ptr), sizeof(V *));
                             }
 
-                            if (event_supplier_nd != NULL)
-                                event_supplier_nd->push_att_conf_events(this,ad,(Tango::DevFailed *)NULL,tmp_name);
-                            if (event_supplier_zmq != NULL)
-                                event_supplier_zmq->push_att_conf_events(this,ad,(Tango::DevFailed *)NULL,tmp_name);
+                            if(event_supplier_nd != NULL)
+                            {
+                                event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                            }
+                            if(event_supplier_zmq != NULL)
+                            {
+                                event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                            }
 
-                            if (cl_lib[i] == 5)
+                            if(cl_lib[i] == 5)
+                            {
                                 ad.attr_conf_5 = NULL;
+                            }
                             else
+                            {
                                 ad.attr_conf_3 = NULL;
+                            }
                         }
                     }
                 }
                 else
                 {
-                    ::memcpy(&(ad.attr_conf_3),&(tmp_ptr),sizeof(V *));
+                    ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *));
 
-                    if (event_supplier_nd != NULL)
-                        event_supplier_nd->push_att_conf_events(this,ad,(Tango::DevFailed *)NULL,tmp_name);
-                    if (event_supplier_zmq != NULL)
-                        event_supplier_zmq->push_att_conf_events(this,ad,(Tango::DevFailed *)NULL,tmp_name);
+                    if(event_supplier_nd != NULL)
+                    {
+                        event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                    }
+                    if(event_supplier_zmq != NULL)
+                    {
+                        event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                    }
+                }
+            }
+        }
+    }
+    catch(Tango::DevFailed &e)
+    {
+        //
+        // Re build the list of "alarmable" attribute
+        //
+
+        dev_attr->get_alarm_list().clear();
+        for(long j = 0; j < nb_dev_attr; j++)
+        {
+            Attribute &att = dev_attr->get_attr_by_ind(j);
+            if(att.is_alarmed().any() == true)
+            {
+                if(att.get_writable() != Tango::WRITE)
+                {
+                    dev_attr->get_alarm_list().push_back(j);
                 }
             }
         }
 
-    }
-    catch (Tango::DevFailed &e)
-    {
-
-//
-// Re build the list of "alarmable" attribute
-//
-
-        dev_attr->get_alarm_list().clear();
-        for (long j = 0;j < nb_dev_attr;j++)
-        {
-            Attribute &att = dev_attr->get_attr_by_ind(j);
-            if (att.is_alarmed().any() == true)
-            {
-                if (att.get_writable() != Tango::WRITE)
-                    dev_attr->get_alarm_list().push_back(j);
-            }
-        }
-
-//
-// Change the exception reason flag
-//
+        //
+        // Change the exception reason flag
+        //
 
         TangoSys_OMemStream o;
 
         o << e.errors[0].reason;
-        if (i != 0)
+        if(i != 0)
+        {
             o << "\nAll previous attribute(s) have been successfully updated";
-        if (i != (nb_attr - 1))
+        }
+        if(i != (nb_attr - 1))
+        {
             o << "\nAll remaining attribute(s) have not been updated";
+        }
         o << std::ends;
 
         std::string s = o.str();
@@ -273,31 +308,33 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,TANGO_UNUSED(c
         throw;
     }
 
-//
-// Re build the list of "alarmable" attribute
-//
+    //
+    // Re build the list of "alarmable" attribute
+    //
 
     dev_attr->get_alarm_list().clear();
-    for (i = 0;i < nb_dev_attr;i++)
+    for(i = 0; i < nb_dev_attr; i++)
     {
         Tango::Attribute &attr = dev_attr->get_attr_by_ind(i);
         Tango::AttrWriteType w_type = attr.get_writable();
-        if (attr.is_alarmed().any() == true)
+        if(attr.is_alarmed().any() == true)
         {
-            if (w_type != Tango::WRITE)
+            if(w_type != Tango::WRITE)
+            {
                 dev_attr->get_alarm_list().push_back(i);
+            }
         }
     }
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving Device_3Impl::set_attribute_config_3_local" << std::endl;
 }
 
 template <typename T>
-inline void Device_3Impl::error_from_devfailed(T &back,DevFailed &e,const char *na)
+inline void Device_3Impl::error_from_devfailed(T &back, DevFailed &e, const char *na)
 {
     back.err_list = e.errors;
     back.quality = ATTR_INVALID;
@@ -306,7 +343,7 @@ inline void Device_3Impl::error_from_devfailed(T &back,DevFailed &e,const char *
 }
 
 template <typename T>
-inline void Device_3Impl::error_from_errorlist(T &back,DevErrorList &e,const char *na)
+inline void Device_3Impl::error_from_errorlist(T &back, DevErrorList &e, const char *na)
 {
     back.err_list = e;
     back.quality = ATTR_INVALID;
@@ -315,7 +352,7 @@ inline void Device_3Impl::error_from_errorlist(T &back,DevErrorList &e,const cha
 }
 
 template <typename T>
-inline void Device_3Impl::one_error(T &back,const char *reas,const char *ori,std::string &mess,Attribute &att)
+inline void Device_3Impl::one_error(T &back, const char *reas, const char *ori, std::string &mess, Attribute &att)
 {
     back.err_list.length(1);
 
@@ -330,7 +367,7 @@ inline void Device_3Impl::one_error(T &back,const char *reas,const char *ori,std
 }
 
 template <typename T>
-inline void Device_3Impl::one_error(T &back,const char *reas,const char *ori,std::string &mess,const char *na)
+inline void Device_3Impl::one_error(T &back, const char *reas, const char *ori, std::string &mess, const char *na)
 {
     back.err_list.length(1);
 
@@ -344,8 +381,8 @@ inline void Device_3Impl::one_error(T &back,const char *reas,const char *ori,std
     clear_att_dim(back);
 }
 
-template <typename T,typename V>
-inline void Device_3Impl::init_polled_out_data(T &back,V &att_val)
+template <typename T, typename V>
+inline void Device_3Impl::init_polled_out_data(T &back, V &att_val)
 {
     back.quality = att_val.quality;
     back.time = att_val.time;
@@ -355,15 +392,14 @@ inline void Device_3Impl::init_polled_out_data(T &back,V &att_val)
 }
 
 template <typename T>
-inline void Device_3Impl::init_out_data(T &back,Attribute &att,AttrWriteType &w_type)
+inline void Device_3Impl::init_out_data(T &back, Attribute &att, AttrWriteType &w_type)
 {
     back.time = att.get_when();
     back.quality = att.get_quality();
     back.name = Tango::string_dup(att.get_name().c_str());
     back.r_dim.dim_x = att.get_x();
     back.r_dim.dim_y = att.get_y();
-    if ((w_type == Tango::READ_WRITE) ||
-        (w_type == Tango::READ_WITH_WRITE))
+    if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
     {
         WAttribute &assoc_att = dev_attr->get_w_attr_by_ind(att.get_assoc_ind());
         back.w_dim.dim_x = assoc_att.get_w_dim_x();
@@ -371,7 +407,7 @@ inline void Device_3Impl::init_out_data(T &back,Attribute &att,AttrWriteType &w_
     }
     else
     {
-        if ( w_type == Tango::WRITE)
+        if(w_type == Tango::WRITE)
         {
             // for write only attributes read and set value are the same!
             back.w_dim.dim_x = att.get_x();
@@ -387,7 +423,7 @@ inline void Device_3Impl::init_out_data(T &back,Attribute &att,AttrWriteType &w_
 }
 
 template <typename T>
-inline void Device_3Impl::init_out_data_quality(T &back,Attribute &att,AttrQuality qual)
+inline void Device_3Impl::init_out_data_quality(T &back, Attribute &att, AttrQuality qual)
 {
     back.time = att.get_when();
     back.quality = qual;
@@ -424,6 +460,6 @@ inline void Device_3Impl::base_status2attr(T &back)
     back.w_dim.dim_y = 0;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* DEVICE_3_TPP */

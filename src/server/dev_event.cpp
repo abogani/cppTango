@@ -39,7 +39,6 @@ namespace Tango
 
 //////////////////// Push user event methods!!! //////////////////////////////////////
 
-
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
@@ -58,17 +57,20 @@ namespace Tango
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::push_event(const std::string &attr_name, const std::vector<std::string> &filt_names,const std::vector<double> &filt_vals,DevFailed *except)
+void DeviceImpl::push_event(const std::string &attr_name,
+                            const std::vector<std::string> &filt_names,
+                            const std::vector<double> &filt_vals,
+                            DevFailed *except)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // push the event
-    attr.fire_event (filt_names,filt_vals,except);
+    attr.fire_event(filt_names, filt_vals, except);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -91,42 +93,51 @@ void DeviceImpl::push_event(const std::string &attr_name, const std::vector<std:
 //                          client. Default value is false.
 //
 //--------------------------------------------------------------------------------------------------------------------
-void DeviceImpl::push_event (const std::string &attr_name,const std::vector<std::string> &filt_names,const std::vector<double> &filt_vals,
-                 Tango::DevString *p_str, Tango::DevUChar *p_data, long size , bool release)
+void DeviceImpl::push_event(const std::string &attr_name,
+                            const std::vector<std::string> &filt_names,
+                            const std::vector<double> &filt_vals,
+                            Tango::DevString *p_str,
+                            Tango::DevUChar *p_data,
+                            long size,
+                            bool release)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // set the attribute value
-    attr.set_value (p_str,p_data, size, release);
+    attr.set_value(p_str, p_data, size, release);
     // push the event
-    attr.fire_event(filt_names,filt_vals);
+    attr.fire_event(filt_names, filt_vals);
 }
 
-void DeviceImpl::push_event (const std::string &attr_name,const std::vector<std::string> &filt_names,const std::vector<double> &filt_vals,
-                 Tango::DevString *p_str_data,Tango::DevUChar *p_data,long size, const TangoTimestamp &t, Tango::AttrQuality qual,
-                 bool release)
+void DeviceImpl::push_event(const std::string &attr_name,
+                            const std::vector<std::string> &filt_names,
+                            const std::vector<double> &filt_vals,
+                            Tango::DevString *p_str_data,
+                            Tango::DevUChar *p_data,
+                            long size,
+                            const TangoTimestamp &t,
+                            Tango::AttrQuality qual,
+                            bool release)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // set the attribute value
-    attr.set_value_date_quality (p_str_data,p_data, size,t, qual, release);
+    attr.set_value_date_quality(p_str_data, p_data, size, t, qual, release);
     // push the event
-    attr.fire_event(filt_names,filt_vals);
+    attr.fire_event(filt_names, filt_vals);
 }
 
 //////////////////// Push change event methods!!! //////////////////////////////////////
-
-
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -146,15 +157,14 @@ void DeviceImpl::push_event (const std::string &attr_name,const std::vector<std:
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::set_change_event  (const std::string &attr_name, bool implemented, bool detect)
+void DeviceImpl::set_change_event(const std::string &attr_name, bool implemented, bool detect)
 {
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
-    attr.set_change_event (implemented, detect);
+    attr.set_change_event(implemented, detect);
 }
-
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -179,48 +189,50 @@ void DeviceImpl::push_change_event(const std::string &attr_name, DevFailed *exce
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // push the event
-    attr.fire_change_event (except);
+    attr.fire_change_event(except);
 }
 
-void DeviceImpl::push_change_event (const std::string &attr_name, Tango::DevString *p_str_data, Tango::DevUChar *p_data, long size, bool release)
+void DeviceImpl::push_change_event(
+    const std::string &attr_name, Tango::DevString *p_str_data, Tango::DevUChar *p_data, long size, bool release)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // set the attribute value
-    attr.set_value (p_str_data, p_data, size, release);
+    attr.set_value(p_str_data, p_data, size, release);
     // push the event
     attr.fire_change_event();
 }
 
-void DeviceImpl::push_change_event (const std::string &attr_name, Tango::DevString *p_str_data,Tango::DevUChar *p_data,long size,
-                                              const TangoTimestamp &t, Tango::AttrQuality qual,
-                                              bool release)
+void DeviceImpl::push_change_event(const std::string &attr_name,
+                                   Tango::DevString *p_str_data,
+                                   Tango::DevUChar *p_data,
+                                   long size,
+                                   const TangoTimestamp &t,
+                                   Tango::AttrQuality qual,
+                                   bool release)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // set the attribute value
-    attr.set_value_date_quality (p_str_data,p_data, size, t, qual, release);
+    attr.set_value_date_quality(p_str_data, p_data, size, t, qual, release);
     // push the event
     attr.fire_change_event();
 }
-
 
 //////////////////// Push change archive methods!!! //////////////////////////////////////
-
-
 
 //+---------------------------------------------------------------------------------------------------------------
 //
@@ -240,15 +252,14 @@ void DeviceImpl::push_change_event (const std::string &attr_name, Tango::DevStri
 //
 //----------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::set_archive_event  (const std::string &attr_name, bool implemented, bool detect)
+void DeviceImpl::set_archive_event(const std::string &attr_name, bool implemented, bool detect)
 {
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
-    attr.set_archive_event (implemented, detect);
+    attr.set_archive_event(implemented, detect);
 }
-
 
 //+----------------------------------------------------------------------------------------------------------------
 //
@@ -273,44 +284,48 @@ void DeviceImpl::push_archive_event(const std::string &attr_name, DevFailed *exc
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // push the event
-    attr.fire_archive_event (except);
+    attr.fire_archive_event(except);
 }
 
-void DeviceImpl::push_archive_event (const std::string &attr_name, Tango::DevString *p_str_data, Tango::DevUChar *p_data, long size, bool release)
+void DeviceImpl::push_archive_event(
+    const std::string &attr_name, Tango::DevString *p_str_data, Tango::DevUChar *p_data, long size, bool release)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // set the attribute value
-    attr.set_value (p_str_data,p_data, size, release);
+    attr.set_value(p_str_data, p_data, size, release);
     // push the event
     attr.fire_archive_event();
 }
 
-void DeviceImpl::push_archive_event (const std::string &attr_name, Tango::DevString *p_str_data, Tango::DevUChar *p_data,long size,
-                                              const TangoTimestamp &t, Tango::AttrQuality qual,
-                                              bool release)
+void DeviceImpl::push_archive_event(const std::string &attr_name,
+                                    Tango::DevString *p_str_data,
+                                    Tango::DevUChar *p_data,
+                                    long size,
+                                    const TangoTimestamp &t,
+                                    Tango::AttrQuality qual,
+                                    bool release)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
     // set the attribute value
-    attr.set_value_date_quality (p_str_data, p_data, size, t, qual, release);
+    attr.set_value_date_quality(p_str_data, p_data, size, t, qual, release);
     // push the event
     attr.fire_archive_event();
 }
-
 
 //+---------------------------------------------------------------------------------------------------------------
 //
@@ -327,13 +342,13 @@ void DeviceImpl::push_archive_event (const std::string &attr_name, Tango::DevStr
 //
 //----------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::set_data_ready_event  (const std::string &attr_name, bool implemented)
+void DeviceImpl::set_data_ready_event(const std::string &attr_name, bool implemented)
 {
     // search the attribute from the attribute list
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr           = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
-    attr.set_data_ready_event (implemented);
+    attr.set_data_ready_event(implemented);
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -351,47 +366,52 @@ void DeviceImpl::set_data_ready_event  (const std::string &attr_name, bool imple
 //
 //----------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::push_data_ready_event (const std::string &attr_name, Tango::DevLong ctr)
+void DeviceImpl::push_data_ready_event(const std::string &attr_name, Tango::DevLong ctr)
 {
-
     Tango::Util *tg = Tango::Util::instance();
 
-// get the tango synchronisation monitor
+    // get the tango synchronisation monitor
 
     Tango::AutoTangoMonitor synch(this);
 
-// search the attribute from the attribute list to check that it exist
+    // search the attribute from the attribute list to check that it exist
 
     Tango::MultiAttribute *attr_list = get_device_attr();
-    Tango::Attribute &attr = attr_list->get_attr_by_name (attr_name.c_str());
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
 
-//
-// Get event suppliers
-//
+    //
+    // Get event suppliers
+    //
 
     EventSupplier *event_supplier_nd = NULL;
     EventSupplier *event_supplier_zmq = NULL;
 
-    if (attr.use_notifd_event() == true)
-        event_supplier_nd = tg->get_notifd_event_supplier();
-    if (attr.use_zmq_event() == true)
-        event_supplier_zmq = tg->get_zmq_event_supplier();
-
-    if ((event_supplier_nd == NULL) && (event_supplier_zmq == NULL))
-        return;
-
-//
-// Push the event
-//
-
-    if (event_supplier_nd != NULL)
+    if(attr.use_notifd_event() == true)
     {
-        event_supplier_nd->push_att_data_ready_event(this,attr_name,attr.get_data_type(),ctr);
+        event_supplier_nd = tg->get_notifd_event_supplier();
+    }
+    if(attr.use_zmq_event() == true)
+    {
+        event_supplier_zmq = tg->get_zmq_event_supplier();
     }
 
-    if (event_supplier_zmq != NULL)
+    if((event_supplier_nd == NULL) && (event_supplier_zmq == NULL))
     {
-        event_supplier_zmq->push_att_data_ready_event(this,attr_name,attr.get_data_type(),ctr);
+        return;
+    }
+
+    //
+    // Push the event
+    //
+
+    if(event_supplier_nd != NULL)
+    {
+        event_supplier_nd->push_att_data_ready_event(this, attr_name, attr.get_data_type(), ctr);
+    }
+
+    if(event_supplier_zmq != NULL)
+    {
+        event_supplier_zmq->push_att_data_ready_event(this, attr_name, attr.get_data_type(), ctr);
     }
 }
 
@@ -416,10 +436,10 @@ void DeviceImpl::push_pipe_event(const std::string &pipe_name, DevFailed *except
     Tango::AutoTangoMonitor synch(this);
 
     // search the pipe from the attribute list
-    Tango::Pipe &pi = get_device_class()->get_pipe_by_name(pipe_name,device_name_lower);
+    Tango::Pipe &pi = get_device_class()->get_pipe_by_name(pipe_name, device_name_lower);
 
     // push the event
-    pi.fire_event(this,except);
+    pi.fire_event(this, except);
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -437,16 +457,16 @@ void DeviceImpl::push_pipe_event(const std::string &pipe_name, DevFailed *except
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::push_pipe_event (const std::string &pipe_name,Tango::DevicePipeBlob *p_data,bool reuse_it)
+void DeviceImpl::push_pipe_event(const std::string &pipe_name, Tango::DevicePipeBlob *p_data, bool reuse_it)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the pipe from the pipe list
-    Tango::Pipe &pi = get_device_class()->get_pipe_by_name(pipe_name,device_name_lower);
+    Tango::Pipe &pi = get_device_class()->get_pipe_by_name(pipe_name, device_name_lower);
 
     // push the event
-    pi.fire_event(this,p_data,reuse_it);
+    pi.fire_event(this, p_data, reuse_it);
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -465,17 +485,19 @@ void DeviceImpl::push_pipe_event (const std::string &pipe_name,Tango::DevicePipe
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::push_pipe_event (const std::string &pipe_name, Tango::DevicePipeBlob *p_data,const TangoTimestamp &t,bool reuse_it)
+void DeviceImpl::push_pipe_event(const std::string &pipe_name,
+                                 Tango::DevicePipeBlob *p_data,
+                                 const TangoTimestamp &t,
+                                 bool reuse_it)
 {
     // get the tango synchroisation monitor
     Tango::AutoTangoMonitor synch(this);
 
     // search the pipe from the pipe list
-    Tango::Pipe &pi = get_device_class()->get_pipe_by_name (pipe_name,device_name_lower);
+    Tango::Pipe &pi = get_device_class()->get_pipe_by_name(pipe_name, device_name_lower);
 
     // push the event
-    pi.fire_event(this,p_data,t,reuse_it);
+    pi.fire_event(this, p_data, t, reuse_it);
 }
 
-
-} // End of Tango namespace
+} // namespace Tango

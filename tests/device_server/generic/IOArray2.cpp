@@ -16,10 +16,9 @@
 //
 //-----------------------------------------------------------------------------
 
-IOArray2::IOArray2(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Command(name,in,out,in_desc,out_desc)
+IOArray2::IOArray2(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -40,15 +39,18 @@ IOArray2::IOArray2(const char *name,Tango::CmdArgType in,
 
 bool IOArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -65,32 +67,31 @@ bool IOArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IOArray2::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-  try {
-    Tango::DevVarShortArray *argout;
-    short *data_ptr;
-    long data_length;
-
-    DevTest *dev = static_cast<DevTest *>(device);
-    (dev->get_short_array())[0] = 100;
-    (dev->get_short_array())[1] = 200;
-
-    data_ptr = dev->get_short_array();
-    data_length = 2;
-
-    argout = dev->create_DevVarShortArray(data_ptr,data_length);
-
-    return insert(argout);
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::DevVarShortArray *argout;
+        short *data_ptr;
+        long data_length;
+
+        DevTest *dev = static_cast<DevTest *>(device);
+        (dev->get_short_array())[0] = 100;
+        (dev->get_short_array())[1] = 200;
+
+        data_ptr = dev->get_short_array();
+        data_length = 2;
+
+        argout = dev->create_DevVarShortArray(data_ptr, data_length);
+
+        return insert(argout);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }
-
 
 //+----------------------------------------------------------------------------
 //
@@ -107,12 +108,11 @@ CORBA::Any *IOArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA
 //
 //-----------------------------------------------------------------------------
 
-IOPollArray2::IOPollArray2(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Command(name,in,out,in_desc,out_desc)
+IOPollArray2::IOPollArray2(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Command(name, in, out, in_desc, out_desc)
 {
-	num = 0;
+    num = 0;
 }
 
 //+----------------------------------------------------------------------------
@@ -132,15 +132,18 @@ IOPollArray2::IOPollArray2(const char *name,Tango::CmdArgType in,
 
 bool IOPollArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -157,39 +160,39 @@ bool IOPollArray2::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORB
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOPollArray2::execute(Tango::DeviceImpl *device,TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IOPollArray2::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-  try {
-    Tango::DevVarShortArray *argout;
-    short *data_ptr;
-    long data_length;
-
-    DevTest *dev = static_cast<DevTest *>(device);
-    num++;
-    if ((num % 2) == 0)
+    try
     {
-    	(dev->get_short_array())[0] = 100;
-    	(dev->get_short_array())[1] = 200;
-TANGO_LOG << "Value are 100,200" << std::endl;
+        Tango::DevVarShortArray *argout;
+        short *data_ptr;
+        long data_length;
+
+        DevTest *dev = static_cast<DevTest *>(device);
+        num++;
+        if((num % 2) == 0)
+        {
+            (dev->get_short_array())[0] = 100;
+            (dev->get_short_array())[1] = 200;
+            TANGO_LOG << "Value are 100,200" << std::endl;
+        }
+        else
+        {
+            (dev->get_short_array())[0] = 300;
+            (dev->get_short_array())[1] = 400;
+            TANGO_LOG << "Value are 300,400" << std::endl;
+        }
+
+        data_ptr = dev->get_short_array();
+        data_length = 2;
+
+        argout = dev->create_DevVarShortArray(data_ptr, data_length);
+
+        return insert(argout);
     }
-    else
+    catch(CORBA::Exception &e)
     {
-        (dev->get_short_array())[0] = 300;
-	(dev->get_short_array())[1] = 400;
-TANGO_LOG << "Value are 300,400" << std::endl;
-    }
-
-    data_ptr = dev->get_short_array();
-    data_length = 2;
-
-    argout = dev->create_DevVarShortArray(data_ptr,data_length);
-
-    return insert(argout);
-  }
-  catch (CORBA::Exception &e)
-    {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::Except::print_exception(e);
+        throw;
     }
 }

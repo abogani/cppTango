@@ -29,43 +29,45 @@
 #ifndef _COUT_APPENDER_H_
 #define _COUT_APPENDER_H_
 
-
-namespace Tango {
+namespace Tango
+{
 
 class CoutAppender : public log4tango::LayoutAppender
 {
-public:
-  /**
-   *
-   **/
-  CoutAppender (const std::string& name);
+  public:
+    /**
+     *
+     **/
+    CoutAppender(const std::string &name);
 
-  /**
-   *
-   **/
-  virtual ~CoutAppender ();
+    /**
+     *
+     **/
+    virtual ~CoutAppender();
 
-  /**
-   *
-   **/
-  inline virtual bool reopen() {
-    return true;
-  }
+    /**
+     *
+     **/
+    inline virtual bool reopen()
+    {
+        return true;
+    }
 
-  /**
-   *
-   **/
-  inline virtual void close() {
-    //no-op
-  }
+    /**
+     *
+     **/
+    inline virtual void close()
+    {
+        // no-op
+    }
 
-protected:
-  /**
-   *
-   **/
-  virtual int _append (const log4tango::LoggingEvent& event);
+  protected:
+    /**
+     *
+     **/
+    virtual int _append(const log4tango::LoggingEvent &event);
 };
 
-} // namespace tango
+} // namespace Tango
 
 #endif // _COUT_APPENDER_H_

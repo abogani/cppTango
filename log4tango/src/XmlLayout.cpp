@@ -34,32 +34,34 @@
 #include <sstream>
 #include <string>
 
-namespace log4tango {
+namespace log4tango
+{
 
-  XMLLayout::XMLLayout()
-  {
+XMLLayout::XMLLayout()
+{
     // no-op
-  }
+}
 
-  XMLLayout::~XMLLayout()
-  {
+XMLLayout::~XMLLayout()
+{
     // no-op
-  }
+}
 
-  std::string XMLLayout::format (const LoggingEvent& event)
-  {
-    auto id = []() -> std::string {
-      std::ostringstream out;
-      out << std::this_thread::get_id();
-      return out.str();
+std::string XMLLayout::format(const LoggingEvent &event)
+{
+    auto id = []() -> std::string
+    {
+        std::ostringstream out;
+        out << std::this_thread::get_id();
+        return out.str();
     };
 
-    auto ts = [](const LoggingEvent& event) -> std::string {
-      std::ostringstream out;
-      auto ts_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-        event.timestamp.time_since_epoch()).count();
-      out << ts_ms;
-      return out.str();
+    auto ts = [](const LoggingEvent &event) -> std::string
+    {
+        std::ostringstream out;
+        auto ts_ms = std::chrono::duration_cast<std::chrono::milliseconds>(event.timestamp.time_since_epoch()).count();
+        out << ts_ms;
+        return out.str();
     };
 
     std::string buf;
@@ -79,6 +81,6 @@ namespace log4tango {
     buf.append("]]></log4j:NDC>\r\n");
     buf.append("</log4j:event>\r\n\r\n");
     return buf;
-  }
+}
 
 } // namespace log4tango

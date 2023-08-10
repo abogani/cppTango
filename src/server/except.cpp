@@ -53,60 +53,60 @@ omni_mutex Except::the_mutex;
 
 void Except::print_exception(const CORBA::Exception &e)
 {
-
     const CORBA::SystemException *se;
 
-//
-// For a CORBA::SystemException, use the OB function
-//
+    //
+    // For a CORBA::SystemException, use the OB function
+    //
 
-    if ((se = dynamic_cast<const CORBA::SystemException *>(&e)) != NULL)
+    if((se = dynamic_cast<const CORBA::SystemException *>(&e)) != NULL)
     {
         Tango::Except::the_mutex.lock();
         std::cerr << print_CORBA_SystemException(se) << std::endl;
         Tango::Except::the_mutex.unlock();
     }
 
-//
-// If it is a CORBA::UserException
-//
+    //
+    // If it is a CORBA::UserException
+    //
 
-    else if (dynamic_cast<const CORBA::UserException *>(&e) != NULL)
+    else if(dynamic_cast<const CORBA::UserException *>(&e) != NULL)
     {
         const Tango::DevFailed *te;
         const Tango::NamedDevFailedList *mdf;
 
-//
-// Print the Tango::NamedDevFailedList exception contents
-//
+        //
+        // Print the Tango::NamedDevFailedList exception contents
+        //
 
-        if ((mdf = dynamic_cast<const Tango::NamedDevFailedList *>(&e)) != NULL)
+        if((mdf = dynamic_cast<const Tango::NamedDevFailedList *>(&e)) != NULL)
         {
             std::cerr << "Tango NamedDevFailedList exception" << std::endl;
-            for (unsigned long i = 0;i < mdf->err_list.size();i++)
+            for(unsigned long i = 0; i < mdf->err_list.size(); i++)
             {
                 std::cerr << "   Exception for object " << mdf->err_list[i].name << std::endl;
-                std::cerr << "   Index of object in call (starting at 0) = " << mdf->err_list[i].idx_in_call << std::endl;
-                for (unsigned long j =0;j < mdf->err_list[i].err_stack.length();j++)
+                std::cerr << "   Index of object in call (starting at 0) = " << mdf->err_list[i].idx_in_call
+                          << std::endl;
+                for(unsigned long j = 0; j < mdf->err_list[i].err_stack.length(); j++)
                 {
                     std::cerr << "       Severity = ";
-                    switch (mdf->err_list[i].err_stack[j].severity)
+                    switch(mdf->err_list[i].err_stack[j].severity)
                     {
-                        case Tango::WARN :
-                            std::cerr << "WARNING ";
-                            break;
+                    case Tango::WARN:
+                        std::cerr << "WARNING ";
+                        break;
 
-                        case Tango::ERR :
-                            std::cerr << "ERROR ";
-                            break;
+                    case Tango::ERR:
+                        std::cerr << "ERROR ";
+                        break;
 
-                        case Tango::PANIC :
-                            std::cerr << "PANIC ";
-                            break;
+                    case Tango::PANIC:
+                        std::cerr << "PANIC ";
+                        break;
 
-                        default :
-                            std::cerr << "Unknown severity code";
-                            break;
+                    default:
+                        std::cerr << "Unknown severity code";
+                        break;
                     }
                     std::cerr << std::endl;
                     std::cerr << "       Error reason = " << mdf->err_list[i].err_stack[j].reason.in() << std::endl;
@@ -115,26 +115,26 @@ void Except::print_exception(const CORBA::Exception &e)
                 }
             }
             std::cerr << "   Summary exception" << std::endl;
-            for (unsigned long j =0;j < mdf->errors.length();j++)
+            for(unsigned long j = 0; j < mdf->errors.length(); j++)
             {
                 std::cerr << "       Severity = ";
-                switch (mdf->errors[j].severity)
+                switch(mdf->errors[j].severity)
                 {
-                    case Tango::WARN :
-                        std::cerr << "WARNING ";
-                        break;
+                case Tango::WARN:
+                    std::cerr << "WARNING ";
+                    break;
 
-                    case Tango::ERR :
-                        std::cerr << "ERROR ";
-                        break;
+                case Tango::ERR:
+                    std::cerr << "ERROR ";
+                    break;
 
-                    case Tango::PANIC :
-                        std::cerr << "PANIC ";
-                        break;
+                case Tango::PANIC:
+                    std::cerr << "PANIC ";
+                    break;
 
-                    default :
-                        std::cerr << "Unknown severity code";
-                        break;
+                default:
+                    std::cerr << "Unknown severity code";
+                    break;
                 }
                 std::cerr << std::endl;
                 std::cerr << "       Error reason = " << mdf->errors[j].reason.in() << std::endl;
@@ -142,36 +142,35 @@ void Except::print_exception(const CORBA::Exception &e)
                 std::cerr << "       Origin : " << mdf->errors[j].origin.in() << std::endl;
                 std::cerr << std::endl;
             }
-
         }
 
-//
-// Print the Tango::DevFailed exception contents
-//
+        //
+        // Print the Tango::DevFailed exception contents
+        //
 
-        else if ((te = dynamic_cast<const Tango::DevFailed *>(&e)) != NULL)
+        else if((te = dynamic_cast<const Tango::DevFailed *>(&e)) != NULL)
         {
-            for (unsigned long i =0;i < te->errors.length();i++)
+            for(unsigned long i = 0; i < te->errors.length(); i++)
             {
                 std::cerr << "Tango exception" << std::endl;
                 std::cerr << "Severity = ";
-                switch (te->errors[i].severity)
+                switch(te->errors[i].severity)
                 {
-                    case Tango::WARN :
-                        std::cerr << "WARNING ";
-                        break;
+                case Tango::WARN:
+                    std::cerr << "WARNING ";
+                    break;
 
-                    case Tango::ERR :
-                        std::cerr << "ERROR ";
-                        break;
+                case Tango::ERR:
+                    std::cerr << "ERROR ";
+                    break;
 
-                    case Tango::PANIC :
-                        std::cerr << "PANIC ";
-                        break;
+                case Tango::PANIC:
+                    std::cerr << "PANIC ";
+                    break;
 
-                    default :
-                        std::cerr << "Unknown severity code";
-                        break;
+                default:
+                    std::cerr << "Unknown severity code";
+                    break;
                 }
                 std::cerr << std::endl;
                 std::cerr << "Error reason = " << te->errors[i].reason.in() << std::endl;
@@ -181,9 +180,9 @@ void Except::print_exception(const CORBA::Exception &e)
             }
         }
 
-//
-// For an unknown CORBA::UserException
-//
+        //
+        // For an unknown CORBA::UserException
+        //
 
         else
         {
@@ -191,15 +190,14 @@ void Except::print_exception(const CORBA::Exception &e)
         }
     }
 
-//
-// For an unknown exception type
-//
+    //
+    // For an unknown exception type
+    //
 
     else
     {
         std::cerr << "Unknown exception type !!!!!!" << std::endl;
     }
-
 }
 
 //+----------------------------------------------------------------------------
@@ -235,209 +233,281 @@ char *Except::print_CORBA_SystemException(const CORBA::SystemException *e)
     const CORBA::OBJECT_NOT_EXIST *not_ex;
     const CORBA::INV_POLICY *pol;
 
-//
-// It seems that omniORB for Win32 is not compiled with the RTTI enabled
-// (/GR option). We can't use dynamic_casting here.
-// We are using CORBA _downcast() method !!!
-//
+    //
+    // It seems that omniORB for Win32 is not compiled with the RTTI enabled
+    // (/GR option). We can't use dynamic_casting here.
+    // We are using CORBA _downcast() method !!!
+    //
 
-    if (CORBA::UNKNOWN::_downcast(e) != 0)
+    if(CORBA::UNKNOWN::_downcast(e) != 0)
     {
-        ::strcpy(mess,"UNKNOWN CORBA system exception");
+        ::strcpy(mess, "UNKNOWN CORBA system exception");
     }
-    else if ((bad = CORBA::BAD_PARAM::_downcast(e)) != 0)
+    else if((bad = CORBA::BAD_PARAM::_downcast(e)) != 0)
     {
-        ::strcpy(mess,"BAD_PARAM CORBA system exception: ");
+        ::strcpy(mess, "BAD_PARAM CORBA system exception: ");
         const char *err_msg = bad->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((mem = CORBA::NO_MEMORY::_downcast(e)) != 0)
-    {
-        ::strcpy(mess,"NO_MEMORY CORBA system exception: ");
-        const char *err_msg = mem->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((lim = CORBA::IMP_LIMIT::_downcast(e)) != 0)
-    {
-        ::strcpy(mess,"IMP_LIMIT CORBA system exception: ");
-        const char *tmp = lim->NP_minorString();
-        if (tmp == NULL)
+        if(err_msg == NULL)
         {
-            ::strcat(mess,"Unknown minor code: ");
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((mem = CORBA::NO_MEMORY::_downcast(e)) != 0)
+    {
+        ::strcpy(mess, "NO_MEMORY CORBA system exception: ");
+        const char *err_msg = mem->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((lim = CORBA::IMP_LIMIT::_downcast(e)) != 0)
+    {
+        ::strcpy(mess, "IMP_LIMIT CORBA system exception: ");
+        const char *tmp = lim->NP_minorString();
+        if(tmp == NULL)
+        {
+            ::strcat(mess, "Unknown minor code: ");
             TangoSys_MemStream st;
             st << std::hex << lim->minor() << std::dec << std::ends;
             std::string s = st.str();
-            ::strcat(mess,s.c_str());
+            ::strcat(mess, s.c_str());
         }
         else
-            ::strcat(mess,tmp);
-    }
-    else if ((comm = CORBA::COMM_FAILURE::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"COMM_FAILURE CORBA system exception: ");
-        const char *tmp = comm->NP_minorString();
-        if (tmp == NULL)
         {
-            ::strcat(mess,"Unknown minor code: ");
+            ::strcat(mess, tmp);
+        }
+    }
+    else if((comm = CORBA::COMM_FAILURE::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "COMM_FAILURE CORBA system exception: ");
+        const char *tmp = comm->NP_minorString();
+        if(tmp == NULL)
+        {
+            ::strcat(mess, "Unknown minor code: ");
             TangoSys_MemStream st;
             st << std::hex << comm->minor() << std::dec << std::ends;
 
             std::string s = st.str();
-            ::strcat(mess,s.c_str());
+            ::strcat(mess, s.c_str());
         }
         else
-            ::strcat(mess,tmp);
-    }
-    else if ((inv = CORBA::INV_OBJREF::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"INV_OBJREF CORBA system exception: ");
-        const char *err_msg = inv->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((perm = CORBA::NO_PERMISSION::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"NO_PERMISSION CORBA system exception: ");
-        const char *err_msg = perm->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((inter = CORBA::INTERNAL::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"INTERNAL CORBA system exception: ");
-        const char *err_msg = inter->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((mar = CORBA::MARSHAL::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"MARSHAL CORBA system exception: ");
-        const char *err_msg = mar->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((ini = CORBA::INITIALIZE::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"INITIALIZE CORBA system exception: ");
-        const char *err_msg = ini->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((impl = CORBA::NO_IMPLEMENT::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"NO_IMPLEMENT CORBA system exception: ");
-        const char *err_msg = impl->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((type = CORBA::BAD_TYPECODE::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"BAD_TYPECODE CORBA system exception: ");
-        const char *err_msg = type->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((op = CORBA::BAD_OPERATION::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"BAD_OPERATION CORBA system exception: ");
-        const char *err_msg = op->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((res = CORBA::NO_RESOURCES::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"NO_RESOURCES CORBA system exception: ");
-        const char *err_msg = res->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((resp = CORBA::NO_RESPONSE::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"NO_RESPONSE CORBA system exception: ");
-        const char *err_msg = resp->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((inv_ord = CORBA::BAD_INV_ORDER::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"BAD_INV_ORDER CORBA system exception: ");
-        const char *err_msg = inv_ord->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
-        else
-            ::strcat(mess,err_msg);
-    }
-    else if ((tra = CORBA::TRANSIENT::_downcast(e)) != NULL)
-    {
-        ::strcpy(mess,"TRANSIENT CORBA system exception: ");
-        const char *tmp = tra->NP_minorString();
-        if (tmp == NULL)
         {
-            ::strcat(mess,"Unknown minor code: ");
+            ::strcat(mess, tmp);
+        }
+    }
+    else if((inv = CORBA::INV_OBJREF::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "INV_OBJREF CORBA system exception: ");
+        const char *err_msg = inv->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((perm = CORBA::NO_PERMISSION::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "NO_PERMISSION CORBA system exception: ");
+        const char *err_msg = perm->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((inter = CORBA::INTERNAL::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "INTERNAL CORBA system exception: ");
+        const char *err_msg = inter->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((mar = CORBA::MARSHAL::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "MARSHAL CORBA system exception: ");
+        const char *err_msg = mar->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((ini = CORBA::INITIALIZE::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "INITIALIZE CORBA system exception: ");
+        const char *err_msg = ini->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((impl = CORBA::NO_IMPLEMENT::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "NO_IMPLEMENT CORBA system exception: ");
+        const char *err_msg = impl->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((type = CORBA::BAD_TYPECODE::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "BAD_TYPECODE CORBA system exception: ");
+        const char *err_msg = type->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((op = CORBA::BAD_OPERATION::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "BAD_OPERATION CORBA system exception: ");
+        const char *err_msg = op->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((res = CORBA::NO_RESOURCES::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "NO_RESOURCES CORBA system exception: ");
+        const char *err_msg = res->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((resp = CORBA::NO_RESPONSE::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "NO_RESPONSE CORBA system exception: ");
+        const char *err_msg = resp->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((inv_ord = CORBA::BAD_INV_ORDER::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "BAD_INV_ORDER CORBA system exception: ");
+        const char *err_msg = inv_ord->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(mess, err_msg);
+        }
+    }
+    else if((tra = CORBA::TRANSIENT::_downcast(e)) != NULL)
+    {
+        ::strcpy(mess, "TRANSIENT CORBA system exception: ");
+        const char *tmp = tra->NP_minorString();
+        if(tmp == NULL)
+        {
+            ::strcat(mess, "Unknown minor code: ");
             TangoSys_MemStream st;
             st << std::hex << tra->minor() << std::dec << std::ends;
 
             std::string s = st.str();
-            ::strcat(mess,s.c_str());
+            ::strcat(mess, s.c_str());
         }
         else
-            ::strcat(mess,tmp);
+        {
+            ::strcat(mess, tmp);
+        }
     }
-    else if ((adap = CORBA::OBJ_ADAPTER::_downcast(e)) != NULL)
+    else if((adap = CORBA::OBJ_ADAPTER::_downcast(e)) != NULL)
     {
-        ::strcpy(mess,"OBJ_ADAPTER CORBA system exception: ");
+        ::strcpy(mess, "OBJ_ADAPTER CORBA system exception: ");
         const char *err_msg = adap->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
         else
-            ::strcat(mess,err_msg);
+        {
+            ::strcat(mess, err_msg);
+        }
     }
-    else if ((not_ex = CORBA::OBJECT_NOT_EXIST::_downcast(e)) != NULL)
+    else if((not_ex = CORBA::OBJECT_NOT_EXIST::_downcast(e)) != NULL)
     {
-        ::strcpy(mess,"OBJECT_NOT_EXIST CORBA system exception: ");
+        ::strcpy(mess, "OBJECT_NOT_EXIST CORBA system exception: ");
         const char *err_msg = not_ex->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
         else
-            ::strcat(mess,err_msg);
+        {
+            ::strcat(mess, err_msg);
+        }
     }
-    else if ((pol = CORBA::INV_POLICY::_downcast(e)) != NULL)
+    else if((pol = CORBA::INV_POLICY::_downcast(e)) != NULL)
     {
-        ::strcpy(mess,"INV_POLICY CORBA system exception: ");
+        ::strcpy(mess, "INV_POLICY CORBA system exception: ");
         const char *err_msg = pol->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(mess,"ORB has returned NULL pointer !");
+        if(err_msg == NULL)
+        {
+            ::strcat(mess, "ORB has returned NULL pointer !");
+        }
         else
-            ::strcat(mess,err_msg);
+        {
+            ::strcat(mess, err_msg);
+        }
     }
     else
-        ::strcpy(mess,"CORBA unknown system exception !!!!!!!!");
+    {
+        ::strcpy(mess, "CORBA unknown system exception !!!!!!!!");
+    }
 
     return mess;
 }
@@ -456,8 +526,7 @@ char *Except::print_CORBA_SystemException(const CORBA::SystemException *e)
 //
 //-----------------------------------------------------------------------------
 
-char *Except::print_CORBA_SystemException_r(const CORBA::SystemException *e,
-                                          char * error_msg)
+char *Except::print_CORBA_SystemException_r(const CORBA::SystemException *e, char *error_msg)
 {
     const CORBA::BAD_PARAM *bad;
     const CORBA::NO_MEMORY *mem;
@@ -479,209 +548,281 @@ char *Except::print_CORBA_SystemException_r(const CORBA::SystemException *e,
     const CORBA::OBJECT_NOT_EXIST *not_ex;
     const CORBA::INV_POLICY *pol;
 
-//
-// It seems that omniORB for Win32 is not compiled with the RTTI enabled
-// (/GR option). We can't use dynamic_casting here.
-// We are using CORBA _downcast() method !!!
-//
+    //
+    // It seems that omniORB for Win32 is not compiled with the RTTI enabled
+    // (/GR option). We can't use dynamic_casting here.
+    // We are using CORBA _downcast() method !!!
+    //
 
-    if (CORBA::UNKNOWN::_downcast(e) != 0)
+    if(CORBA::UNKNOWN::_downcast(e) != 0)
     {
-        ::strcpy(error_msg,"UNKNOWN CORBA system exception");
+        ::strcpy(error_msg, "UNKNOWN CORBA system exception");
     }
-    else if ((bad = CORBA::BAD_PARAM::_downcast(e)) != 0)
+    else if((bad = CORBA::BAD_PARAM::_downcast(e)) != 0)
     {
-        ::strcpy(error_msg,"BAD_PARAM CORBA system exception: ");
+        ::strcpy(error_msg, "BAD_PARAM CORBA system exception: ");
         const char *err_msg = bad->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((mem = CORBA::NO_MEMORY::_downcast(e)) != 0)
-    {
-        ::strcpy(error_msg,"NO_MEMORY CORBA system exception: ");
-        const char *err_msg = mem->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((lim = CORBA::IMP_LIMIT::_downcast(e)) != 0)
-    {
-        ::strcpy(error_msg,"IMP_LIMIT CORBA system exception: ");
-        const char *tmp = lim->NP_minorString();
-        if (tmp == NULL)
+        if(err_msg == NULL)
         {
-            ::strcat(error_msg,"Unknown minor code: ");
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((mem = CORBA::NO_MEMORY::_downcast(e)) != 0)
+    {
+        ::strcpy(error_msg, "NO_MEMORY CORBA system exception: ");
+        const char *err_msg = mem->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((lim = CORBA::IMP_LIMIT::_downcast(e)) != 0)
+    {
+        ::strcpy(error_msg, "IMP_LIMIT CORBA system exception: ");
+        const char *tmp = lim->NP_minorString();
+        if(tmp == NULL)
+        {
+            ::strcat(error_msg, "Unknown minor code: ");
             TangoSys_MemStream st;
             st << std::hex << lim->minor() << std::dec << std::ends;
             std::string s = st.str();
-            ::strcat(error_msg,s.c_str());
+            ::strcat(error_msg, s.c_str());
         }
         else
-            ::strcat(error_msg,tmp);
-    }
-    else if ((comm = CORBA::COMM_FAILURE::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"COMM_FAILURE CORBA system exception: ");
-        const char *tmp = comm->NP_minorString();
-        if (tmp == NULL)
         {
-            ::strcat(error_msg,"Unknown minor code: ");
+            ::strcat(error_msg, tmp);
+        }
+    }
+    else if((comm = CORBA::COMM_FAILURE::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "COMM_FAILURE CORBA system exception: ");
+        const char *tmp = comm->NP_minorString();
+        if(tmp == NULL)
+        {
+            ::strcat(error_msg, "Unknown minor code: ");
             TangoSys_MemStream st;
             st << std::hex << comm->minor() << std::dec << std::ends;
 
             std::string s = st.str();
-            ::strcat(error_msg,s.c_str());
+            ::strcat(error_msg, s.c_str());
         }
         else
-            ::strcat(error_msg,tmp);
-    }
-    else if ((inv = CORBA::INV_OBJREF::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"INV_OBJREF CORBA system exception: ");
-        const char *err_msg = inv->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((perm = CORBA::NO_PERMISSION::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"NO_PERMISSION CORBA system exception: ");
-        const char *err_msg = perm->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((inter = CORBA::INTERNAL::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"INTERNAL CORBA system exception: ");
-        const char *err_msg = inter->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((mar = CORBA::MARSHAL::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"MARSHAL CORBA system exception: ");
-        const char *err_msg = mar->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((ini = CORBA::INITIALIZE::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"INITIALIZE CORBA system exception: ");
-        const char *err_msg = ini->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((impl = CORBA::NO_IMPLEMENT::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"NO_IMPLEMENT CORBA system exception: ");
-        const char *err_msg = impl->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((type = CORBA::BAD_TYPECODE::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"BAD_TYPECODE CORBA system exception: ");
-        const char *err_msg = type->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((op = CORBA::BAD_OPERATION::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"BAD_OPERATION CORBA system exception: ");
-        const char *err_msg = op->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((res = CORBA::NO_RESOURCES::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"NO_RESOURCES CORBA system exception: ");
-        const char *err_msg = res->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((resp = CORBA::NO_RESPONSE::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"NO_RESPONSE CORBA system exception: ");
-        const char *err_msg = resp->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((inv_ord = CORBA::BAD_INV_ORDER::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"BAD_INV_ORDER CORBA system exception: ");
-        const char *err_msg = inv_ord->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
-        else
-            ::strcat(error_msg,err_msg);
-    }
-    else if ((tra = CORBA::TRANSIENT::_downcast(e)) != NULL)
-    {
-        ::strcpy(error_msg,"TRANSIENT CORBA system exception: ");
-        const char *tmp = tra->NP_minorString();
-        if (tmp == NULL)
         {
-            ::strcat(error_msg,"Unknown minor code: ");
+            ::strcat(error_msg, tmp);
+        }
+    }
+    else if((inv = CORBA::INV_OBJREF::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "INV_OBJREF CORBA system exception: ");
+        const char *err_msg = inv->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((perm = CORBA::NO_PERMISSION::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "NO_PERMISSION CORBA system exception: ");
+        const char *err_msg = perm->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((inter = CORBA::INTERNAL::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "INTERNAL CORBA system exception: ");
+        const char *err_msg = inter->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((mar = CORBA::MARSHAL::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "MARSHAL CORBA system exception: ");
+        const char *err_msg = mar->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((ini = CORBA::INITIALIZE::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "INITIALIZE CORBA system exception: ");
+        const char *err_msg = ini->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((impl = CORBA::NO_IMPLEMENT::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "NO_IMPLEMENT CORBA system exception: ");
+        const char *err_msg = impl->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((type = CORBA::BAD_TYPECODE::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "BAD_TYPECODE CORBA system exception: ");
+        const char *err_msg = type->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((op = CORBA::BAD_OPERATION::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "BAD_OPERATION CORBA system exception: ");
+        const char *err_msg = op->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((res = CORBA::NO_RESOURCES::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "NO_RESOURCES CORBA system exception: ");
+        const char *err_msg = res->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((resp = CORBA::NO_RESPONSE::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "NO_RESPONSE CORBA system exception: ");
+        const char *err_msg = resp->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((inv_ord = CORBA::BAD_INV_ORDER::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "BAD_INV_ORDER CORBA system exception: ");
+        const char *err_msg = inv_ord->NP_minorString();
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
+        else
+        {
+            ::strcat(error_msg, err_msg);
+        }
+    }
+    else if((tra = CORBA::TRANSIENT::_downcast(e)) != NULL)
+    {
+        ::strcpy(error_msg, "TRANSIENT CORBA system exception: ");
+        const char *tmp = tra->NP_minorString();
+        if(tmp == NULL)
+        {
+            ::strcat(error_msg, "Unknown minor code: ");
             TangoSys_MemStream st;
             st << std::hex << tra->minor() << std::dec << std::ends;
 
             std::string s = st.str();
-            ::strcat(error_msg,s.c_str());
+            ::strcat(error_msg, s.c_str());
         }
         else
-            ::strcat(error_msg,tmp);
+        {
+            ::strcat(error_msg, tmp);
+        }
     }
-    else if ((adap = CORBA::OBJ_ADAPTER::_downcast(e)) != NULL)
+    else if((adap = CORBA::OBJ_ADAPTER::_downcast(e)) != NULL)
     {
-        ::strcpy(error_msg,"OBJ_ADAPTER CORBA system exception: ");
+        ::strcpy(error_msg, "OBJ_ADAPTER CORBA system exception: ");
         const char *err_msg = adap->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
         else
-            ::strcat(error_msg,err_msg);
+        {
+            ::strcat(error_msg, err_msg);
+        }
     }
-    else if ((not_ex = CORBA::OBJECT_NOT_EXIST::_downcast(e)) != NULL)
+    else if((not_ex = CORBA::OBJECT_NOT_EXIST::_downcast(e)) != NULL)
     {
-        ::strcpy(error_msg,"OBJECT_NOT_EXIST CORBA system exception: ");
+        ::strcpy(error_msg, "OBJECT_NOT_EXIST CORBA system exception: ");
         const char *err_msg = not_ex->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
         else
-            ::strcat(error_msg,err_msg);
+        {
+            ::strcat(error_msg, err_msg);
+        }
     }
-    else if ((pol = CORBA::INV_POLICY::_downcast(e)) != NULL)
+    else if((pol = CORBA::INV_POLICY::_downcast(e)) != NULL)
     {
-        ::strcpy(error_msg,"INV_POLICY CORBA system exception: ");
+        ::strcpy(error_msg, "INV_POLICY CORBA system exception: ");
         const char *err_msg = pol->NP_minorString();
-        if ( err_msg == NULL )
-            ::strcat(error_msg,"ORB has returned NULL pointer !");
+        if(err_msg == NULL)
+        {
+            ::strcat(error_msg, "ORB has returned NULL pointer !");
+        }
         else
-            ::strcat(error_msg,err_msg);
+        {
+            ::strcat(error_msg, err_msg);
+        }
     }
     else
-        ::strcpy(error_msg,"CORBA unknown system exception !!!!!!!!");
+    {
+        ::strcpy(error_msg, "CORBA unknown system exception !!!!!!!!");
+    }
 
     return error_msg;
 }
@@ -698,28 +839,27 @@ char *Except::print_CORBA_SystemException_r(const CORBA::SystemException *e,
 
 void Except::print_error_stack(const Tango::DevErrorList &e)
 {
-
-    for (unsigned long i = 0;i < e.length();i++)
+    for(unsigned long i = 0; i < e.length(); i++)
     {
         std::cerr << "Tango error stack" << std::endl;
         std::cerr << "Severity = ";
-        switch (e[i].severity)
+        switch(e[i].severity)
         {
-            case Tango::WARN :
-                std::cerr << "WARNING ";
-                break;
+        case Tango::WARN:
+            std::cerr << "WARNING ";
+            break;
 
-            case Tango::ERR :
-                std::cerr << "ERROR ";
-                break;
+        case Tango::ERR:
+            std::cerr << "ERROR ";
+            break;
 
-            case Tango::PANIC :
-                std::cerr << "PANIC ";
-                break;
+        case Tango::PANIC:
+            std::cerr << "PANIC ";
+            break;
 
-            default :
-                std::cerr << "Unknown severity code";
-                break;
+        default:
+            std::cerr << "Unknown severity code";
+            break;
         }
         std::cerr << std::endl;
         std::cerr << "Error reason = " << e[i].reason.in() << std::endl;
@@ -740,7 +880,7 @@ void Except::print_error_stack(const Tango::DevErrorList &e)
 //
 //-----------------------------------------------------------------------------
 
-void Except::throw_exception(const CORBA::SystemException &c_ex,const char *origin)
+void Except::throw_exception(const CORBA::SystemException &c_ex, const char *origin)
 {
     Tango::DevErrorList errors(1);
 
@@ -756,14 +896,14 @@ void Except::throw_exception(const CORBA::SystemException &c_ex,const char *orig
     throw Tango::DevFailed(errors);
 }
 
-void Except::throw_exception(const CORBA::SystemException &c_ex,char *origin)
+void Except::throw_exception(const CORBA::SystemException &c_ex, char *origin)
 {
     Tango::DevErrorList errors(1);
 
     errors.length(1);
     errors[0].severity = Tango::ERR;
     errors[0].origin = Tango::string_dup(origin);
-    delete [] origin;
+    delete[] origin;
     errors[0].reason = Tango::string_dup(API_CorbaSysException);
     Tango::Except::the_mutex.lock();
     char *tmp = print_CORBA_SystemException(&c_ex);
@@ -773,7 +913,7 @@ void Except::throw_exception(const CORBA::SystemException &c_ex,char *origin)
     throw Tango::DevFailed(errors);
 }
 
-void Except::throw_exception(const CORBA::SystemException &c_ex,const std::string &origin)
+void Except::throw_exception(const CORBA::SystemException &c_ex, const std::string &origin)
 {
     Tango::DevErrorList errors(1);
 
@@ -789,25 +929,28 @@ void Except::throw_exception(const CORBA::SystemException &c_ex,const std::strin
     throw Tango::DevFailed(errors);
 }
 
-void Except::throw_named_exception(Tango::DeviceImpl *d,long ind,const char *reason,
-                   const char *desc,const char *origin,Tango::ErrSeverity sever)
+void Except::throw_named_exception(
+    Tango::DeviceImpl *d, long ind, const char *reason, const char *desc, const char *origin, Tango::ErrSeverity sever)
 {
-    throw_named_exception(d->get_device_attr()->get_attr_by_ind(ind).get_name().c_str(),
-                          reason,desc,origin,sever);
+    throw_named_exception(d->get_device_attr()->get_attr_by_ind(ind).get_name().c_str(), reason, desc, origin, sever);
 }
 
-void Except::throw_named_exception(Tango::DeviceImpl *d,std::vector<long> &ind_atts,const char *reason,
-                   const char *desc,const char *origin,Tango::ErrSeverity sever)
+void Except::throw_named_exception(Tango::DeviceImpl *d,
+                                   std::vector<long> &ind_atts,
+                                   const char *reason,
+                                   const char *desc,
+                                   const char *origin,
+                                   Tango::ErrSeverity sever)
 {
     std::vector<std::string> vs;
 
     std::vector<long>::iterator ite;
-    for (ite = ind_atts.begin();ite != ind_atts.end();++ite)
+    for(ite = ind_atts.begin(); ite != ind_atts.end(); ++ite)
     {
         vs.push_back(d->get_device_attr()->get_attr_by_ind(*ite).get_name());
     }
 
-    throw_named_exception(vs,reason,desc,origin,sever);
+    throw_named_exception(vs, reason, desc, origin, sever);
 }
 
 //+----------------------------------------------------------------------------
@@ -829,17 +972,17 @@ bool Except::compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2)
     // check the length of the exception stack
 
     unsigned long nb_err = ex1.errors.length();
-    if ( nb_err != ex2.errors.length() )
+    if(nb_err != ex2.errors.length())
     {
         return false;
     }
 
     // check all exceptions in the stack
 
-    for (unsigned long i=0; i<nb_err; i++)
+    for(unsigned long i = 0; i < nb_err; i++)
     {
         // check the severity
-        if ( ex1.errors[i].severity != ex2.errors[i].severity )
+        if(ex1.errors[i].severity != ex2.errors[i].severity)
         {
             return false;
         }
@@ -847,7 +990,7 @@ bool Except::compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2)
         // check the origin
         std::string org1 = ex1.errors[i].origin.in();
         std::string org2 = ex2.errors[i].origin.in();
-        if ( org1 != org2 )
+        if(org1 != org2)
         {
             return false;
         }
@@ -855,7 +998,7 @@ bool Except::compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2)
         // check the reason
         std::string re1 = ex1.errors[i].reason.in();
         std::string re2 = ex2.errors[i].reason.in();
-        if ( re1 != re2 )
+        if(re1 != re2)
         {
             return false;
         }
@@ -863,7 +1006,7 @@ bool Except::compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2)
         // check the description
         std::string desc1 = ex1.errors[i].desc.in();
         std::string desc2 = ex2.errors[i].desc.in();
-        if ( desc1 != desc2 )
+        if(desc1 != desc2)
         {
             return false;
         }
@@ -872,4 +1015,4 @@ bool Except::compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2)
     return true;
 }
 
-} // End of Tango namespace
+} // namespace Tango

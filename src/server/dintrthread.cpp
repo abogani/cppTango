@@ -49,8 +49,10 @@ namespace Tango
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-DevIntrThread::DevIntrThread(ShDevIntrTh &cmd,TangoMonitor &m,DeviceImpl *_d):
-shared_data(cmd),p_mon(m),dev(_d)
+DevIntrThread::DevIntrThread(ShDevIntrTh &cmd, TangoMonitor &m, DeviceImpl *_d) :
+    shared_data(cmd),
+    p_mon(m),
+    dev(_d)
 {
     shared_data.cmd_pending = false;
 }
@@ -67,20 +69,19 @@ shared_data(cmd),p_mon(m),dev(_d)
 
 void DevIntrThread::run(TANGO_UNUSED(void *ptr))
 {
-
-//
-// The main loop
-//
+    //
+    // The main loop
+    //
 
     bool exit = false;
 
     try
     {
-        while (exit == false)
+        while(exit == false)
         {
             DevIntrCmdType received = get_command(DEV_INTR_THREAD_SLEEP_TIME);
 
-            switch (received)
+            switch(received)
             {
             case DEV_INTR_COMMAND:
                 execute_cmd();
@@ -91,9 +92,11 @@ void DevIntrThread::run(TANGO_UNUSED(void *ptr))
                 {
                     push_event();
                 }
-                catch (Tango::DevFailed &e)
+                catch(Tango::DevFailed &e)
                 {
-                    std::cerr << "Received a DevFailed exception while trying to push the device interface change event!!!" << std::endl;
+                    std::cerr
+                        << "Received a DevFailed exception while trying to push the device interface change event!!!"
+                        << std::endl;
                     std::cerr << e.errors[0].desc.in() << std::endl;
                 }
                 exit = true;
@@ -107,11 +110,11 @@ void DevIntrThread::run(TANGO_UNUSED(void *ptr))
         }
         omni_thread::exit();
     }
-    catch (omni_thread_fatal &)
+    catch(omni_thread_fatal &)
     {
-        std::cerr << "OUPS !! A omni thread fatal exception in a device interface change event thread!!!!!!!!" << std::endl;
+        std::cerr << "OUPS !! A omni thread fatal exception in a device interface change event thread!!!!!!!!"
+                  << std::endl;
     }
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -137,27 +140,29 @@ DevIntrCmdType DevIntrThread::get_command(DevLong tout)
     omni_mutex_lock sync(p_mon);
     DevIntrCmdType ret;
 
-//
-// Wait on monitor
-//
+    //
+    // Wait on monitor
+    //
 
-    if (shared_data.cmd_pending == false)
+    if(shared_data.cmd_pending == false)
     {
         TANGO_LOG_DEBUG << "DevIntrThread:: Going to wait on monitor" << std::endl;
         p_mon.wait(tout);
     }
 
-//
-// Test if it is a new command. If yes, copy its data locally
-//
+    //
+    // Test if it is a new command. If yes, copy its data locally
+    //
 
-    if (shared_data.cmd_pending == true)
+    if(shared_data.cmd_pending == true)
     {
         local_cmd = shared_data;
         ret = DEV_INTR_COMMAND;
     }
     else
+    {
         ret = DEV_INTR_TIME_OUT;
+    }
 
     return ret;
 }
@@ -176,30 +181,29 @@ void DevIntrThread::execute_cmd()
 {
     bool need_exit = false;
 
-    switch (local_cmd.cmd_code)
+    switch(local_cmd.cmd_code)
     {
+        //
+        // A new rest
+        //
 
-//
-// A new rest
-//
-
-        case Tango::DEV_INTR_SLEEP :
-        {
-            break;
-        }
-
-//
-// Ask locking thread to exit
-//
-
-        case Tango::DEV_INTR_EXIT :
-            need_exit = true;
-            break;
+    case Tango::DEV_INTR_SLEEP:
+    {
+        break;
     }
 
-//
-// Inform requesting thread that the work is done
-//
+        //
+        // Ask locking thread to exit
+        //
+
+    case Tango::DEV_INTR_EXIT:
+        need_exit = true;
+        break;
+    }
+
+    //
+    // Inform requesting thread that the work is done
+    //
 
     {
         omni_mutex_lock sync(p_mon);
@@ -207,11 +211,11 @@ void DevIntrThread::execute_cmd()
         p_mon.signal();
     }
 
-//
-// If the command was an exit one, do it now
-//
+    //
+    // If the command was an exit one, do it now
+    //
 
-    if (need_exit == true)
+    if(need_exit == true)
     {
         {
             omni_mutex_lock sync(p_mon);
@@ -235,9 +239,9 @@ void DevIntrThread::push_event()
 {
     TANGO_LOG_DEBUG << "Device interface change event thread pushing event!" << std::endl;
 
-    AutoTangoMonitor sync(dev,true);
+    AutoTangoMonitor sync(dev, true);
 
-    if (shared_data.interface.has_changed(dev) == true)
+    if(shared_data.interface.has_changed(dev) == true)
     {
         TANGO_LOG_DEBUG << "Device interface has changed" << std::endl;
 
@@ -250,8 +254,8 @@ void DevIntrThread::push_event()
         AttributeConfigList_5 *atts_list = dev_5->get_attribute_config_5(dvsa);
 
         ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
-        event_supplier_zmq->push_dev_intr_change_event(dev,false,cmds_list,atts_list);
+        event_supplier_zmq->push_dev_intr_change_event(dev, false, cmds_list, atts_list);
     }
 }
 
-} // End of Tango namespace
+} // namespace Tango

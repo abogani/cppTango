@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest::ClassFactory.cpp) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 //=============================================================================
 //
 // file :        ClassFactory.cpp
@@ -39,15 +39,15 @@
 
 //	Add class header files if needed
 
-
 /**
  *	Create FwdTest Class singleton and store it in DServer object.
  */
 
 void Tango::DServer::class_factory()
 {
-	//	Add method class init if needed
-	add_class(FwdTest_ns::FwdTestClass::init("FwdTest"));
+    //	Add method class init if needed
+    add_class(FwdTest_ns::FwdTestClass::init("FwdTest"));
 }
-	/* clang-format off */
+
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::ClassFactory.cpp

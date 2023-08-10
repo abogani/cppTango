@@ -6,36 +6,37 @@
 #undef SUITE_NAME
 #define SUITE_NAME FwdAttTestSuite
 
-class FwdAttTestSuite: public CxxTest::TestSuite
+class FwdAttTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     class EventCallBack : public Tango::CallBack
     {
-    public:
-        EventCallBack(FwdAttTestSuite *) {}
-        void push_event(Tango::EventData*);
+      public:
+        EventCallBack(FwdAttTestSuite *) { }
 
-        int         cb_executed;
-        int         cb_err;
-        DevShort     val;
-        string        ev_name;
+        void push_event(Tango::EventData *);
+
+        int cb_executed;
+        int cb_err;
+        DevShort val;
+        string ev_name;
     };
 
-    DeviceProxy             *device1,*device2,*fwd_device;
-    string                     device1_name,device2_name;
-    AttributeInfoListEx     *confs_root_init;
-    AttributeInfoListEx     *confs_init;
-    AttributeInfoListEx     *confs_root;
-    AttributeInfoListEx     *confs;
-    string                     fwd_device_name;
-    DeviceProxy             *root_admin,*ad;
+    DeviceProxy *device1, *device2, *fwd_device;
+    string device1_name, device2_name;
+    AttributeInfoListEx *confs_root_init;
+    AttributeInfoListEx *confs_init;
+    AttributeInfoListEx *confs_root;
+    AttributeInfoListEx *confs;
+    string fwd_device_name;
+    DeviceProxy *root_admin, *ad;
 
-public:
+  public:
     SUITE_NAME()
     {
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string full_ds_name;
 
@@ -48,10 +49,9 @@ public:
         // always add this line, otherwise arguments will not be parsed correctly
         CxxTest::TangoPrinter::validate_args();
 
-
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         confs_init = NULL;
         confs_root_init = NULL;
@@ -85,19 +85,19 @@ public:
             att_r.push_back("short_attr_rw");
             confs_root_init = device1->get_attribute_config_ex(att_r);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             cerr << "cxx_fwd_att.cpp test suite - DevFailed exception" << endl;
             Except::print_exception(e);
             string reason(e.errors[0].reason);
-            if (reason == API_AttrNotFound)
+            if(reason == API_AttrNotFound)
             {
                 string status = fwd_device->status();
                 TEST_LOG << "Forward device status = " << status << endl;
             }
             exit(-1);
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             cerr << "cxx_fwd_att.cpp test suite - CORBA exception" << endl;
             Except::print_exception(e);
@@ -113,14 +113,15 @@ public:
 
             Tango::DbDatum fwd_att("fwd_short_rw");
             Tango::DbDatum root_att(RootAttrPropName);
-            fwd_att << (short)1;
-            string r_name = device1_name + "/short_attr_rw";;
+            fwd_att << (short) 1;
+            string r_name = device1_name + "/short_attr_rw";
+            ;
             root_att << r_name;
             Tango::DbData dd;
             dd.push_back(fwd_att);
             dd.push_back(root_att);
 
-            db.put_device_attribute_property(fwd_device_name,dd);
+            db.put_device_attribute_property(fwd_device_name, dd);
         }
 
         if(CxxTest::TangoPrinter::is_restore_set("poll_root"))
@@ -137,7 +138,9 @@ public:
             {
                 root_admin->command_inout("RemObjPolling", din);
             }
-            catch (Tango::DevFailed&) {}
+            catch(Tango::DevFailed &)
+            {
+            }
         }
 
         (*confs_init)[0].label = "";
@@ -168,11 +171,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test some error case in forwarded attribute configuration
+    // Test some error case in forwarded attribute configuration
 
     void test_error_case_in_forwarded_attribute_configuration()
     {
@@ -180,7 +183,7 @@ public:
 
         Tango::DbDatum fwd_att("fwd_short_rw");
         Tango::DbDatum root_att(RootAttrPropName);
-        fwd_att << (short)1;
+        fwd_att << (short) 1;
         root_att << "devtest/10/short_attr_rw";
         Tango::DbData dd;
         dd.push_back(fwd_att);
@@ -188,7 +191,7 @@ public:
 
         // A wrong root attribute configuration in db (wrong name syntax)
 
-        db.put_device_attribute_property(fwd_device_name,dd);
+        db.put_device_attribute_property(fwd_device_name, dd);
         CxxTest::TangoPrinter::restore_set("fwd_att_conf");
 
         ad->command_inout("RestartServer");
@@ -206,7 +209,7 @@ public:
         string r_name(fwd_device_name);
         r_name = r_name + "/short_attr_rw";
         dd[1] << r_name;
-        db.put_device_attribute_property(fwd_device_name,dd);
+        db.put_device_attribute_property(fwd_device_name, dd);
 
         ad->command_inout("RestartServer");
         std::this_thread::sleep_for(std::chrono::seconds(4));
@@ -221,7 +224,7 @@ public:
         // A wrong root attribute configuration in db (unknown root device)
 
         dd[1] << "a/b/c/short_attr_rw";
-        db.put_device_attribute_property(fwd_device_name,dd);
+        db.put_device_attribute_property(fwd_device_name, dd);
 
         ad->command_inout("RestartServer");
         std::this_thread::sleep_for(std::chrono::seconds(4));
@@ -238,7 +241,7 @@ public:
         r_name = device1_name;
         r_name = r_name + "/short_attr_rw";
         dd[1] << r_name;
-        db.put_device_attribute_property(fwd_device_name,dd);
+        db.put_device_attribute_property(fwd_device_name, dd);
 
         ad->command_inout("RestartServer");
         std::this_thread::sleep_for(std::chrono::seconds(4));
@@ -252,8 +255,7 @@ public:
         CxxTest::TangoPrinter::restore_unset("fwd_att_conf");
     }
 
-
-// Test attribute reading
+    // Test attribute reading
 
     void test_reading_forwarded_attribute(void)
     {
@@ -312,15 +314,14 @@ public:
         TS_ASSERT_EQUALS(v_str[2], "Not initialised");
     }
 
-// Test attribute writing
+    // Test attribute writing
 
     void test_writing_forwarded_attribute(void)
     {
+        // First writable attribute
 
-// First writable attribute
-
-        Tango::DevShort sh=33;
-        DeviceAttribute da_sh("fwd_short_rw",sh);
+        Tango::DevShort sh = 33;
+        DeviceAttribute da_sh("fwd_short_rw", sh);
         fwd_device->write_attribute(da_sh);
 
         Tango::DeviceAttribute da_sh_read = fwd_device->read_attribute("fwd_short_rw");
@@ -337,10 +338,10 @@ public:
         TS_ASSERT_EQUALS(v_sh_read[0], 33);
         TS_ASSERT_EQUALS(v_sh_read[1], 33);
 
-// Second writable attribute
+        // Second writable attribute
 
         string str("Hello");
-        DeviceAttribute da_str("fwd_string_w",str);
+        DeviceAttribute da_str("fwd_string_w", str);
         fwd_device->write_attribute(da_str);
 
         Tango::DeviceAttribute da_str_read = fwd_device->read_attribute("fwd_string_w");
@@ -355,11 +356,11 @@ public:
 
         TS_ASSERT_EQUALS(str_read_root, "Hello");
 
-// Third writable attribute
+        // Third writable attribute
 
         vector<string> v_str;
         v_str.push_back("Tango");
-        DeviceAttribute da_v_str("fwd_ima_string_rw",v_str,1,1);
+        DeviceAttribute da_v_str("fwd_ima_string_rw", v_str, 1, 1);
         fwd_device->write_attribute(da_v_str);
 
         Tango::DeviceAttribute da_v_str_read = fwd_device->read_attribute("fwd_ima_string_rw");
@@ -381,15 +382,14 @@ public:
         TS_ASSERT_EQUALS(v_str_read_root[2], "Tango");
     }
 
-// Test data propagation
+    // Test data propagation
 
     void test_data_propagation(void)
     {
+        // First writable attribute
 
-// First writable attribute
-
-        Tango::DevShort sh=44;
-        DeviceAttribute da_sh("short_attr_rw",sh);
+        Tango::DevShort sh = 44;
+        DeviceAttribute da_sh("short_attr_rw", sh);
         device1->write_attribute(da_sh);
 
         Tango::DeviceAttribute da_sh_read = fwd_device->read_attribute("fwd_short_rw");
@@ -398,10 +398,10 @@ public:
 
         TS_ASSERT_EQUALS(sh_read, 44);
 
-// Second writable attribute
+        // Second writable attribute
 
         string str("Hola");
-        DeviceAttribute da_str("string_attr_w2",str);
+        DeviceAttribute da_str("string_attr_w2", str);
         device1->write_attribute(da_str);
 
         Tango::DeviceAttribute da_str_read = fwd_device->read_attribute("fwd_string_w");
@@ -410,11 +410,11 @@ public:
 
         TS_ASSERT_EQUALS(str_read, "Hola");
 
-// Third writable attribute
+        // Third writable attribute
 
         vector<string> v_str;
         v_str.push_back("Samba");
-        DeviceAttribute da_v_str("string_ima_attr_rw",v_str,1,1);
+        DeviceAttribute da_v_str("string_ima_attr_rw", v_str, 1, 1);
         device2->write_attribute(da_v_str);
 
         Tango::DeviceAttribute da_v_str_read = fwd_device->read_attribute("fwd_ima_string_rw");
@@ -427,7 +427,7 @@ public:
         TS_ASSERT_EQUALS(v_str_read[2], "Samba");
     }
 
-// Test attribute configuration
+    // Test attribute configuration
 
     void test_attribute_configuration()
     {
@@ -442,7 +442,7 @@ public:
         TS_ASSERT_EQUALS((*confs)[0].name, "fwd_short_rw");
         string tango_host(getenv("TANGO_HOST"));
         string local_root_base("tango://");
-        local_root_base = local_root_base + tango_host + "/" +device1_name;
+        local_root_base = local_root_base + tango_host + "/" + device1_name;
         string local_root = local_root_base + "/short_attr_rw";
         TEST_LOG << (*confs)[0].root_attr_name << "==" << local_root << endl;
         TS_ASSERT_EQUALS((*confs)[0].root_attr_name, local_root);
@@ -530,7 +530,7 @@ public:
         delete confs;
     }
 
-// Test attribute configuration propagation
+    // Test attribute configuration propagation
 
     void test_attribute_configuration_propagation()
     {
@@ -560,7 +560,7 @@ public:
         delete confs_root;
     }
 
-// Label is local
+    // Label is local
 
     void test_label_is_local()
     {
@@ -589,12 +589,12 @@ public:
         delete confs_root;
     }
 
-// Try a write_read on a fwd attribute
+    // Try a write_read on a fwd attribute
 
     void test_write_read_on_forwarded_attribute()
     {
-        Tango::DevShort sh=22;
-        DeviceAttribute da_sh("fwd_short_rw",sh);
+        Tango::DevShort sh = 22;
+        DeviceAttribute da_sh("fwd_short_rw", sh);
         DeviceAttribute da_read = fwd_device->write_read_attribute(da_sh);
         Tango::DevShort read_sh;
         da_read >> read_sh;
@@ -608,7 +608,7 @@ public:
         TS_ASSERT_EQUALS(sh_root, 22);
     }
 
-// Polling and forwarded attribute
+    // Polling and forwarded attribute
 
     void test_polling_on_a_forwarded_attribute()
     {
@@ -633,9 +633,10 @@ public:
         attr_poll.svalue[1] = "attribute";
         attr_poll.svalue[2] = "fwd_short_rw";
         din << attr_poll;
-        TS_ASSERT_THROWS_ASSERT(ad->command_inout("AddObjPolling",din), Tango::DevFailed &e,
-                        TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_NotSupportedFeature);
-                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(ad->command_inout("AddObjPolling", din),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_NotSupportedFeature);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         // Start polling on root device
 
@@ -661,18 +662,18 @@ public:
 
         vector<DeviceAttributeHistory> *hist = nullptr;
 
-         TS_ASSERT_THROWS_NOTHING(hist = fwd_device->attribute_history("fwd_short_rw",5));
+        TS_ASSERT_THROWS_NOTHING(hist = fwd_device->attribute_history("fwd_short_rw", 5));
 
-         for (int i = 0;i < 5;i++)
-         {
+        for(int i = 0; i < 5; i++)
+        {
             bool fail = (*hist)[i].has_failed();
             TS_ASSERT(!fail);
 
             DevShort hist_val;
             (*hist)[i] >> hist_val;
             TS_ASSERT_EQUALS(hist_val, 22);
-         }
-         delete hist;
+        }
+        delete hist;
 
         // Stop polling
 
@@ -692,13 +693,12 @@ public:
         // Read data from cache when polling on root attribute is stopped fails
 
         DeviceAttribute da_fail = fwd_device->read_attribute("fwd_short_rw");
-        TS_ASSERT_THROWS_ASSERT(da_fail >> ds, Tango::DevFailed &e,
-                        TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrNotPolled);
-                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
-
+        TS_ASSERT_THROWS_ASSERT(
+            da_fail >> ds, Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttrNotPolled);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
     }
 
-// Events and forwarded attributes
+    // Events and forwarded attributes
 
     void test_event_on_a_forwarded_attribute()
     {
@@ -710,16 +710,17 @@ public:
         fwd_device->set_source(CACHE_DEV);
         try
         {
-            fwd_device->subscribe_event("fwd_short_rw",Tango::PERIODIC_EVENT,&cb);
+            fwd_device->subscribe_event("fwd_short_rw", Tango::PERIODIC_EVENT, &cb);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             Tango::Except::print_exception(e);
         }
 
-        TS_ASSERT_THROWS_ASSERT(fwd_device->subscribe_event("fwd_short_rw",Tango::PERIODIC_EVENT,&cb),Tango::DevFailed &e,
-                            TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttributePollingNotStarted);
-                            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(fwd_device->subscribe_event("fwd_short_rw", Tango::PERIODIC_EVENT, &cb),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_AttributePollingNotStarted);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         // Start polling on root device and subscribe
 
@@ -734,7 +735,7 @@ public:
         attr_poll.svalue[2] = "short_attr_rw";
         din << attr_poll;
         TS_ASSERT_THROWS_NOTHING(root_admin->command_inout("AddObjPolling", din));
-        TS_ASSERT_THROWS_NOTHING(eve_id = fwd_device->subscribe_event("fwd_short_rw",Tango::PERIODIC_EVENT,&cb));
+        TS_ASSERT_THROWS_NOTHING(eve_id = fwd_device->subscribe_event("fwd_short_rw", Tango::PERIODIC_EVENT, &cb));
 
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
@@ -762,7 +763,7 @@ public:
         CxxTest::TangoPrinter::restore_unset("poll_root");
     }
 
-// Locking and forwarded attributes
+    // Locking and forwarded attributes
 
     void test_locking_device_with_forwarded_attribute()
     {
@@ -820,14 +821,15 @@ public:
     }
 };
 
-void FwdAttTestSuite::EventCallBack::push_event(Tango::EventData* event_data)
+void FwdAttTestSuite::EventCallBack::push_event(Tango::EventData *event_data)
 {
     cb_executed++;
     ev_name = event_data->attr_name;
     try
     {
-        TEST_LOG << "EventCallBack::push_event(): called attribute " << event_data->attr_name << " event " << event_data->event << endl;
-        if (!event_data->err)
+        TEST_LOG << "EventCallBack::push_event(): called attribute " << event_data->attr_name << " event "
+                 << event_data->event << endl;
+        if(!event_data->err)
         {
             *(event_data->attr_value) >> val;
         }
@@ -836,7 +838,7 @@ void FwdAttTestSuite::EventCallBack::push_event(Tango::EventData* event_data)
             cb_err++;
         }
     }
-    catch (...)
+    catch(...)
     {
         TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
     }

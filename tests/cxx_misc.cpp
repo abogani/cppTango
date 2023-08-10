@@ -6,20 +6,19 @@
 #undef SUITE_NAME
 #define SUITE_NAME MiscTestSuite
 
-class MiscTestSuite: public CxxTest::TestSuite
+class MiscTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *dserver;
     string device1_name, full_ds_name, server_host, doc_url, dev_type;
     DevLong server_version;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         string dserver_name;
 
@@ -33,9 +32,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -44,12 +43,11 @@ public:
             device1->ping();
             dserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -82,11 +80,11 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test DevState and DevStatus commnds
+    // Test DevState and DevStatus commnds
 
     void test_DevState_and_DevStatus_commands(void)
     {
@@ -102,7 +100,7 @@ public:
         TS_ASSERT_EQUALS(state, Tango::ON);
     }
 
-// Test DevRestart commnd
+    // Test DevRestart commnd
 
     void test_DevRestart_command(void)
     {
@@ -122,7 +120,7 @@ public:
         TS_ASSERT_EQUALS(state_out, Tango::ON);
     }
 
-// Test name, description, state and status CORBA attributes
+    // Test name, description, state and status CORBA attributes
 
     void test_name_description_state_and_status_read_as_CORBA_attributes(void)
     {
@@ -142,14 +140,14 @@ public:
         TS_ASSERT_EQUALS(state, Tango::ON);
     }
 
-// Ping the device
+    // Ping the device
 
     void test_ping_the_device(void)
     {
         TS_ASSERT_THROWS_NOTHING(device1->ping());
     }
 
-// Test info call
+    // Test info call
 
     void test_info_call(void)
     {

@@ -37,39 +37,38 @@ namespace Tango
 
 void execute_manip(std::ostream &o_str, const std::string &manip)
 {
+    //
+    // Set the ostream according to the manipulator
+    //
 
-//
-// Set the ostream according to the manipulator
-//
-
-    if (manip == "fixed")
+    if(manip == "fixed")
     {
-        o_str.setf(std::ios::fixed,std::ios::floatfield);
+        o_str.setf(std::ios::fixed, std::ios::floatfield);
         return;
     }
-    else if (manip == "scientific")
+    else if(manip == "scientific")
     {
-        o_str.setf(std::ios::scientific,std::ios::floatfield);
+        o_str.setf(std::ios::scientific, std::ios::floatfield);
         return;
     }
-    else if (manip == "uppercase")
+    else if(manip == "uppercase")
     {
         o_str.setf(std::ios::uppercase);
         return;
     }
-    else if (manip == "showpoint")
+    else if(manip == "showpoint")
     {
         o_str.setf(std::ios::showpoint);
         return;
     }
-    else if (manip == "showpos")
+    else if(manip == "showpos")
     {
         o_str.setf(std::ios::showpos);
         return;
     }
-    else if (manip.substr(0,13) == "setprecision(")
+    else if(manip.substr(0, 13) == "setprecision(")
     {
-        std::string num_str = manip.substr(13,manip.size() - 14);
+        std::string num_str = manip.substr(13, manip.size() - 14);
         TangoSys_MemStream o;
         long num;
         o << num_str;
@@ -77,9 +76,9 @@ void execute_manip(std::ostream &o_str, const std::string &manip)
 
         o_str.precision(num);
     }
-    else if (manip.substr(0,5) == "setw(")
+    else if(manip.substr(0, 5) == "setw(")
     {
-        std::string num_str = manip.substr(5,manip.size() - 6);
+        std::string num_str = manip.substr(5, manip.size() - 6);
         TangoSys_MemStream o;
         long num;
         o << num_str;
@@ -89,31 +88,29 @@ void execute_manip(std::ostream &o_str, const std::string &manip)
     }
 }
 
-std::ostream &operator<<(std::ostream &o_str,const AttrManip &manip)
+std::ostream &operator<<(std::ostream &o_str, const AttrManip &manip)
 {
-
-//
-// Extract each manipulator (; separated) and call the execute_manip for each one
-//
+    //
+    // Extract each manipulator (; separated) and call the execute_manip for each one
+    //
 
     std::string::size_type start = 0;
     std::string str;
     std::string::size_type pos;
 
-    while ((pos = manip.format.find(';',start)) != std::string::npos)
+    while((pos = manip.format.find(';', start)) != std::string::npos)
     {
-        str = manip.format.substr(start,pos - start);
+        str = manip.format.substr(start, pos - start);
         start = pos + 1;
-        execute_manip(o_str,str);
-
+        execute_manip(o_str, str);
     }
-    if (start != manip.format.size())
+    if(start != manip.format.size())
     {
         str = manip.format.substr(start);
-        execute_manip(o_str,str);
+        execute_manip(o_str, str);
     }
 
     return o_str;
 }
 
-} // End of tango namespace
+} // namespace Tango

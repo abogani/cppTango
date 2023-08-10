@@ -37,22 +37,22 @@
 
 namespace Tango
 {
-  TangoRollingFileAppender::TangoRollingFileAppender(const std::string& name,
-                                                     const std::string& fileName,
-                                                     size_t maxFileSize)
-    : log4tango::RollingFileAppender(name, fileName, maxFileSize * 1024)
-  {
+TangoRollingFileAppender::TangoRollingFileAppender(const std::string &name,
+                                                   const std::string &fileName,
+                                                   size_t maxFileSize) :
+    log4tango::RollingFileAppender(name, fileName, maxFileSize * 1024)
+{
     // no-op
-  }
+}
 
-  TangoRollingFileAppender::~TangoRollingFileAppender()
-  {
+TangoRollingFileAppender::~TangoRollingFileAppender()
+{
     // no-op
-  }
+}
 
-  bool TangoRollingFileAppender::isValid (void) const
-  {
+bool TangoRollingFileAppender::isValid(void) const
+{
     return (_fd < 0) ? false : true;
-  }
+}
 
-} // namespace tango
+} // namespace Tango

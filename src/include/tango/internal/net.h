@@ -5,7 +5,7 @@
 #include <string>
 
 #ifndef _TG_WINDOWS_
-#include <unistd.h>
+  #include <unistd.h>
 #endif
 
 namespace Tango
@@ -21,7 +21,6 @@ constexpr std::size_t TANGO_MAX_HOSTNAME_LEN{MAXHOSTNAMELEN + 1};
 constexpr std::size_t TANGO_MAX_HOSTNAME_LEN{256};
 #endif
 
-
 /// @brief Return true if the given endpoint is a valid IPv4 address
 bool is_ip_address(const std::string &endpoint);
 
@@ -32,7 +31,7 @@ std::vector<std::string> resolve_hostname_address(const std::string &hostname);
 std::string qualify_host_address(std::string name, const std::string &port);
 
 /// Returns the port from `something:port`
-std::string get_port_from_endpoint(const std::string& endpoint);
+std::string get_port_from_endpoint(const std::string &endpoint);
 
 /// Returns the name and port from `tcp://$name:$port
 void split_endpoint(const std::string &endpoint, std::string &name, std::string &port);
@@ -42,7 +41,7 @@ void split_endpoint(const std::string &endpoint, std::string &name, std::string 
 /// Returns `myhost` when given giop:tcp:myhost:12345.
 ///
 /// As specified by omniORB both port and hostname can be empty.
-std::string parse_hostname_from_CORBA_URI(const std::string& input);
+std::string parse_hostname_from_CORBA_URI(const std::string &input);
 
 } // namespace detail
 } // namespace Tango

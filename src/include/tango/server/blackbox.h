@@ -36,7 +36,7 @@
 
 #include <tango/tango.h>
 #ifdef _TG_WINDOWS_
-#include <winsock.h>
+  #include <winsock.h>
 #endif
 #include <time.h>
 #include <omniORB4/omniInterceptors.h>
@@ -46,7 +46,7 @@
 namespace Tango
 {
 
-#define        IP_ADDR_BUFFER_SIZE        80
+#define IP_ADDR_BUFFER_SIZE 80
 
 // client call interceptor for remote calls
 // will be removed once omniORB 4.3 is adopted
@@ -76,34 +76,38 @@ CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::i
 // However, for the moment, we only use it for local calls. It will also be used for remote ones once we adopt ominitORB
 // 4.3. See also cppTango issue #865 for details.
 ///==================================================================================================================
-void client_call_interceptor(omniCallDescriptor* d, omniServant* s);
+void client_call_interceptor(omniCallDescriptor *d, omniServant *s);
 
-class client_addr: public omni_thread::value_t
+class client_addr : public omni_thread::value_t
 {
-public:
-    client_addr() {
-        client_ip[0]='\0';
+  public:
+    client_addr()
+    {
+        client_ip[0] = '\0';
         ::memset(java_ident, 0, sizeof(DevULong64) * 2);
     }
-    client_addr(const char *addr) {
-        strcpy(client_ip,addr);
+
+    client_addr(const char *addr)
+    {
+        strcpy(client_ip, addr);
     }
-    ~client_addr() {}
+
+    ~client_addr() { }
 
     client_addr(const client_addr &);
-    client_addr & operator=(const client_addr &);
+    client_addr &operator=(const client_addr &);
     bool operator==(const client_addr &);
     bool operator!=(const client_addr &);
 
-    bool            client_ident = false;
-    char            client_ip[IP_ADDR_BUFFER_SIZE];
-    LockerLanguage        client_lang = LockerLanguage::CPP;
-    TangoSys_Pid        client_pid = 0;
-    std::string        java_main_class;
-    DevULong64        java_ident[2];
+    bool client_ident = false;
+    char client_ip[IP_ADDR_BUFFER_SIZE];
+    LockerLanguage client_lang = LockerLanguage::CPP;
+    TangoSys_Pid client_pid = 0;
+    std::string java_main_class;
+    DevULong64 java_ident[2];
 
     int client_ip_2_client_name(std::string &) const;
-    friend std::ostream &operator<<(std::ostream &o_str,const client_addr &ca);
+    friend std::ostream &operator<<(std::ostream &o_str, const client_addr &ca);
 };
 
 //==================================================================================================================
@@ -115,7 +119,7 @@ public:
 //
 //==================================================================================================================
 
-#define     DEFAULT_ATTR_NB        10
+#define DEFAULT_ATTR_NB 10
 
 enum BlackBoxElt_ReqType
 {
@@ -181,31 +185,31 @@ enum BlackBoxElt_OpType
 
 class BlackBoxElt
 {
-public:
+  public:
     BlackBoxElt();
     ~BlackBoxElt();
 
-    BlackBoxElt_ReqType        req_type;
-    BlackBoxElt_AttrType    attr_type;
-    BlackBoxElt_OpType        op_type;
-    std::string                    cmd_name;
-    std::vector<std::string>            attr_names;
+    BlackBoxElt_ReqType req_type;
+    BlackBoxElt_AttrType attr_type;
+    BlackBoxElt_OpType op_type;
+    std::string cmd_name;
+    std::vector<std::string> attr_names;
     std::chrono::system_clock::time_point when;
-    char                    host_ip_str[IP_ADDR_BUFFER_SIZE];
-    DevSource                source;
+    char host_ip_str[IP_ADDR_BUFFER_SIZE];
+    DevSource source;
 
-    bool                    client_ident;
-    LockerLanguage            client_lang;
-    TangoSys_Pid            client_pid;
-    std::string                    java_main_class;
+    bool client_ident;
+    LockerLanguage client_lang;
+    TangoSys_Pid client_pid;
+    std::string java_main_class;
 };
 
-inline bool operator<(const BlackBoxElt &,const BlackBoxElt &)
+inline bool operator<(const BlackBoxElt &, const BlackBoxElt &)
 {
     return true;
 }
 
-inline bool operator==(const BlackBoxElt &,const BlackBoxElt &)
+inline bool operator==(const BlackBoxElt &, const BlackBoxElt &)
 {
     return true;
 }
@@ -221,51 +225,53 @@ inline bool operator==(const BlackBoxElt &,const BlackBoxElt &)
 
 class BlackBox
 {
-public:
+  public:
     BlackBox();
     BlackBox(long);
 
     void insert_corba_attr(BlackBoxElt_AttrType);
-    void insert_cmd(const char *,long vers=1,DevSource=Tango::DEV);
-    void insert_attr(const Tango::DevVarStringArray &,long vers=1,DevSource=Tango::DEV);
-    void insert_attr(const Tango::DevVarStringArray &,const ClntIdent &,long vers=1,DevSource=Tango::DEV);
-    void insert_attr(const char *,const ClntIdent &,long);
-    void insert_attr(const Tango::AttributeValueList &,long vers=1);
-    void insert_attr(const Tango::AttributeValueList_4 &,const ClntIdent &,long vers);
-    void insert_attr(const Tango::DevPipeData &,const ClntIdent &,long vers);
-    void insert_wr_attr(const Tango::AttributeValueList_4 &,const Tango::DevVarStringArray &,const ClntIdent &,long vers);
+    void insert_cmd(const char *, long vers = 1, DevSource = Tango::DEV);
+    void insert_attr(const Tango::DevVarStringArray &, long vers = 1, DevSource = Tango::DEV);
+    void insert_attr(const Tango::DevVarStringArray &, const ClntIdent &, long vers = 1, DevSource = Tango::DEV);
+    void insert_attr(const char *, const ClntIdent &, long);
+    void insert_attr(const Tango::AttributeValueList &, long vers = 1);
+    void insert_attr(const Tango::AttributeValueList_4 &, const ClntIdent &, long vers);
+    void insert_attr(const Tango::DevPipeData &, const ClntIdent &, long vers);
+    void insert_wr_attr(const Tango::AttributeValueList_4 &,
+                        const Tango::DevVarStringArray &,
+                        const ClntIdent &,
+                        long vers);
     void insert_op(BlackBoxElt_OpType);
-    void insert_op(BlackBoxElt_OpType,const ClntIdent &);
+    void insert_op(BlackBoxElt_OpType, const ClntIdent &);
 
-    void insert_cmd_nl(const char *,long,DevSource);
-    void insert_cmd_cl_ident(const char *,const ClntIdent &,long vers=1,DevSource=Tango::DEV);
-    void add_cl_ident(const ClntIdent &,client_addr *);
+    void insert_cmd_nl(const char *, long, DevSource);
+    void insert_cmd_cl_ident(const char *, const ClntIdent &, long vers = 1, DevSource = Tango::DEV);
+    void add_cl_ident(const ClntIdent &, client_addr *);
     void update_client_host(client_addr *);
 
     Tango::DevVarStringArray *read(long);
 
-private:
-
+  private:
     void inc_indexes();
     void get_client_host();
     void build_info_as_str(long);
     std::string timestamp_unix_to_str(const std::chrono::system_clock::time_point &);
     void add_source(long);
     void insert_op_nl(BlackBoxElt_OpType);
-    void insert_attr_nl(const Tango::AttributeValueList &,long);
+    void insert_attr_nl(const Tango::AttributeValueList &, long);
     void insert_attr_nl_4(const Tango::AttributeValueList_4 &);
-    void insert_attr_wr_nl(const Tango::AttributeValueList_4 &,const Tango::DevVarStringArray &,long);
+    void insert_attr_wr_nl(const Tango::AttributeValueList_4 &, const Tango::DevVarStringArray &, long);
 
-    std::vector<BlackBoxElt>    box;
-    long                insert_elt;
-    long                nb_elt;
-    long                max_elt;
+    std::vector<BlackBoxElt> box;
+    long insert_elt;
+    long nb_elt;
+    long max_elt;
 
-    omni_mutex            sync;
+    omni_mutex sync;
 
-    std::string                elt_str;
+    std::string elt_str;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _BLACKBOX_ */

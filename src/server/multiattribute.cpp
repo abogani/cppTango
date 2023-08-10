@@ -40,14 +40,15 @@
 #include <functional>
 #include <algorithm>
 
-namespace {
+namespace
+{
 
-   auto find_property(std::vector<Tango::AttrProperty>& cont, std::string name)
-   {
-       return std::find_if(std::begin(cont), std::end(cont),
-                           [&name](Tango::AttrProperty& attr){ return attr.get_name() == name; });
-   }
+auto find_property(std::vector<Tango::AttrProperty> &cont, std::string name)
+{
+    return std::find_if(
+        std::begin(cont), std::end(cont), [&name](Tango::AttrProperty &attr) { return attr.get_name() == name; });
 }
+} // namespace
 
 namespace Tango
 {
@@ -56,25 +57,22 @@ namespace Tango
 // Define the optional attribute name and default value
 //
 
-static OptAttrProp Tango_OptAttrProp[] = {
-    {"label",LabelNotSpec},
-    {"description",DescNotSpec},
-    {"unit",UnitNotSpec},
-    {"standard_unit",StdUnitNotSpec},
-    {"display_unit",DispUnitNotSpec},
-    {"format",FormatNotSpec_FL},
-    {"min_value",AlrmValueNotSpec},
-    {"max_value",AlrmValueNotSpec},
-    {"min_alarm",AlrmValueNotSpec},
-    {"max_alarm",AlrmValueNotSpec},
-    {"writable_attr_name",AssocWritNotSpec},
-    {"min_warning",AlrmValueNotSpec},
-    {"max_warning",AlrmValueNotSpec},
-    {"delta_t","0"},
-    {"delta_val",AlrmValueNotSpec},
-    {"root_attr_name",AssocWritNotSpec}
-};
-
+static OptAttrProp Tango_OptAttrProp[] = {{"label", LabelNotSpec},
+                                          {"description", DescNotSpec},
+                                          {"unit", UnitNotSpec},
+                                          {"standard_unit", StdUnitNotSpec},
+                                          {"display_unit", DispUnitNotSpec},
+                                          {"format", FormatNotSpec_FL},
+                                          {"min_value", AlrmValueNotSpec},
+                                          {"max_value", AlrmValueNotSpec},
+                                          {"min_alarm", AlrmValueNotSpec},
+                                          {"max_alarm", AlrmValueNotSpec},
+                                          {"writable_attr_name", AssocWritNotSpec},
+                                          {"min_warning", AlrmValueNotSpec},
+                                          {"max_warning", AlrmValueNotSpec},
+                                          {"delta_t", "0"},
+                                          {"delta_val", AlrmValueNotSpec},
+                                          {"root_attr_name", AssocWritNotSpec}};
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -92,55 +90,63 @@ static OptAttrProp Tango_OptAttrProp[] = {
 //
 //------------------------------------------------------------------------------------------------------------------
 
-MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_class_ptr,DeviceImpl *dev)
-:ext(new MultiAttribute::MultiAttributeExt)
+MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_class_ptr, DeviceImpl *dev) :
+    ext(new MultiAttribute::MultiAttributeExt)
 {
     long i;
     TANGO_LOG_DEBUG << "Entering MultiAttribute class constructor for device " << dev_name << std::endl;
 
-//
-// Retrieve attr name list
-//
+    //
+    // Retrieve attr name list
+    //
 
     std::vector<Attr *> &tmp_attr_list = dev_class_ptr->get_class_attr()->get_attr_list();
     long nb_attr = tmp_attr_list.size();
 
-//
-// Get device attribute properties
-// No need to implement a retry here (in case of db server restart) because the db reconnection
-// is forced by the get_property call executed during xxxClass construction before we reach this code.
-//
+    //
+    // Get device attribute properties
+    // No need to implement a retry here (in case of db server restart) because the db reconnection
+    // is forced by the get_property call executed during xxxClass construction before we reach this code.
+    //
 
     TANGO_LOG_DEBUG << nb_attr << " attribute(s)" << std::endl;
 
-    if (nb_attr != 0)
+    if(nb_attr != 0)
     {
         Tango::Util *tg = Tango::Util::instance();
         Tango::DbData db_list;
 
-        if (tg->use_db())
+        if(tg->use_db())
         {
-            for (i = 0;i < nb_attr;i++)
+            for(i = 0; i < nb_attr; i++)
+            {
                 db_list.push_back(DbDatum(tmp_attr_list[i]->get_name()));
+            }
 
-//
-// On some small and old computers, this request could take time if at the same time some other processes also access
-// the device attribute properties table. This has been experimented at ESRF. Increase timeout to cover this case
-//
-
+            //
+            // On some small and old computers, this request could take time if at the same time some other processes
+            // also access the device attribute properties table. This has been experimented at ESRF. Increase timeout
+            // to cover this case
+            //
 
             int old_db_timeout = 0;
-            if (!tg->use_file_db())
+            if(!tg->use_file_db())
+            {
                 old_db_timeout = tg->get_database()->get_timeout_millis();
+            }
             try
             {
-                if (old_db_timeout != 0)
+                if(old_db_timeout != 0)
+                {
                     tg->get_database()->set_timeout_millis(6000);
-                tg->get_database()->get_device_attribute_property(dev_name,db_list,tg->get_db_cache());
-                if (old_db_timeout != 0)
+                }
+                tg->get_database()->get_device_attribute_property(dev_name, db_list, tg->get_db_cache());
+                if(old_db_timeout != 0)
+                {
                     tg->get_database()->set_timeout_millis(old_db_timeout);
+                }
             }
-            catch (Tango::DevFailed &)
+            catch(Tango::DevFailed &)
             {
                 TANGO_LOG_DEBUG << "Exception while accessing database" << std::endl;
 
@@ -152,90 +158,91 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
             }
         }
 
-//
-// Build property list for each attribute
-//
+        //
+        // Build property list for each attribute
+        //
 
         long ind = 0;
         std::vector<std::string> rem_att_name;
         std::vector<std::string> rem_att_cl_name;
         int sub = 0;
 
-        for (i = 0;i < nb_attr;i++)
+        for(i = 0; i < nb_attr; i++)
         {
-
-//
-// Get attribute class properties
-//
+            //
+            // Get attribute class properties
+            //
 
             Attr &attr = dev_class_ptr->get_class_attr()->get_attr(tmp_attr_list[i]->get_name());
             std::vector<AttrProperty> &class_prop = attr.get_class_properties();
             std::vector<AttrProperty> &def_user_prop = attr.get_user_default_properties();
 
-//
-// If the attribute has some properties defined at device level, build a vector of these properties
-//
+            //
+            // If the attribute has some properties defined at device level, build a vector of these properties
+            //
 
             std::vector<AttrProperty> dev_prop;
 
-            if (tg->use_db())
+            if(tg->use_db())
             {
                 long nb_prop = 0;
                 db_list[ind] >> nb_prop;
                 ind++;
 
-                for (long j = 0;j < nb_prop;j++)
+                for(long j = 0; j < nb_prop; j++)
                 {
-                    if (db_list[ind].size() > 1)
+                    if(db_list[ind].size() > 1)
                     {
                         std::string tmp(db_list[ind].value_string[0]);
                         long nb = db_list[ind].size();
-                        for (int k = 1;k < nb;k++)
+                        for(int k = 1; k < nb; k++)
                         {
                             tmp = tmp + ",";
                             tmp = tmp + db_list[ind].value_string[k];
                         }
-                        dev_prop.push_back(AttrProperty(db_list[ind].name,tmp));
+                        dev_prop.push_back(AttrProperty(db_list[ind].name, tmp));
                     }
                     else
-                        dev_prop.push_back(AttrProperty(db_list[ind].name,db_list[ind].value_string[0]));
+                    {
+                        dev_prop.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                    }
                     ind++;
                 }
             }
 
-//
-// Concatenate these two attribute properties levels
-//
+            //
+            // Concatenate these two attribute properties levels
+            //
 
             std::vector<AttrProperty> prop_list;
             bool fwd_ok = true;
-            concat(dev_prop,class_prop,prop_list);
+            concat(dev_prop, class_prop, prop_list);
 
-            if (attr.is_fwd() == false)
+            if(attr.is_fwd() == false)
             {
-                add_user_default(prop_list,def_user_prop);
-                add_default(prop_list,dev_name,attr.get_name(),attr.get_type());
+                add_user_default(prop_list, def_user_prop);
+                add_default(prop_list, dev_name, attr.get_name(), attr.get_type());
             }
             else
             {
                 FwdAttr &fwdattr = static_cast<FwdAttr &>(attr);
-                fwd_ok = fwdattr.validate_fwd_att(prop_list,dev_name);
+                fwd_ok = fwdattr.validate_fwd_att(prop_list, dev_name);
                 dev->set_with_fwd_att(true);
-                if (fwd_ok == true)
+                if(fwd_ok == true)
                 {
                     try
                     {
-                        fwdattr.get_root_conf(dev_name,dev);
-                        fwdattr.remove_useless_prop(prop_list,dev_name,this);
-                        add_user_default(prop_list,def_user_prop);
-                        add_default(prop_list,dev_name,attr.get_name(),attr.get_type());
+                        fwdattr.get_root_conf(dev_name, dev);
+                        fwdattr.remove_useless_prop(prop_list, dev_name, this);
+                        add_user_default(prop_list, def_user_prop);
+                        add_default(prop_list, dev_name, attr.get_name(), attr.get_type());
                     }
-                    catch (Tango::DevFailed &)
+                    catch(Tango::DevFailed &)
                     {
                         fwd_ok = false;
 
-                        add_user_default(prop_list,def_user_prop);
-                        add_default(prop_list,dev_name,attr.get_name(),attr.get_type());
+                        add_user_default(prop_list, def_user_prop);
+                        add_default(prop_list, dev_name, attr.get_name(), attr.get_type());
 
                         std::vector<DeviceImpl::FwdWrongConf> &fwd_wrong_conf = dev->get_fwd_att_wrong_conf();
                         DeviceImpl::FwdWrongConf fwc;
@@ -244,7 +251,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
                         fwc.fae = fwdattr.get_err_kind();
                         fwd_wrong_conf.push_back(fwc);
 
-                        if (fwc.fae == FWD_ROOT_DEV_NOT_STARTED)
+                        if(fwc.fae == FWD_ROOT_DEV_NOT_STARTED)
                         {
                             rem_att_name.push_back(fwdattr.get_name());
                             rem_att_cl_name.push_back(fwdattr.get_cl_name());
@@ -262,87 +269,88 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
                 }
             }
 
-//
-// Create an Attribute instance
-//
+            //
+            // Create an Attribute instance
+            //
 
-            if (fwd_ok == true)
+            if(fwd_ok == true)
             {
-                if ((attr.get_writable() == Tango::WRITE) ||
-                    (attr.get_writable() == Tango::READ_WRITE))
+                if((attr.get_writable() == Tango::WRITE) || (attr.get_writable() == Tango::READ_WRITE))
                 {
-                    if (attr.is_fwd() == true)
+                    if(attr.is_fwd() == true)
                     {
-                        Attribute * new_attr = new FwdAttribute(prop_list,attr,dev_name,i);
+                        Attribute *new_attr = new FwdAttribute(prop_list, attr, dev_name, i);
                         add_attr(new_attr);
                     }
                     else
                     {
-                        Attribute * new_attr = new WAttribute(prop_list, attr, dev_name, i);
+                        Attribute *new_attr = new WAttribute(prop_list, attr, dev_name, i);
                         add_attr(new_attr);
                     }
                 }
                 else
                 {
-                    if (attr.is_fwd() == true)
+                    if(attr.is_fwd() == true)
                     {
-                        Attribute * new_attr = new FwdAttribute(prop_list, attr, dev_name, i);
+                        Attribute *new_attr = new FwdAttribute(prop_list, attr, dev_name, i);
                         add_attr(new_attr);
                     }
                     else
                     {
-                        Attribute * new_attr = new Attribute(prop_list, attr, dev_name, i);
+                        Attribute *new_attr = new Attribute(prop_list, attr, dev_name, i);
                         add_attr(new_attr);
                     }
                 }
 
-//
-// If it is writable, add it to the writable attribute list
-//
+                //
+                // If it is writable, add it to the writable attribute list
+                //
 
                 Tango::AttrWriteType w_type = attr_list[i - sub]->get_writable();
-                if ((w_type == Tango::WRITE) ||
-                    (w_type == Tango::READ_WRITE))
+                if((w_type == Tango::WRITE) || (w_type == Tango::READ_WRITE))
                 {
                     writable_attr_list.push_back(i - sub);
                 }
 
-//
-// If one of the alarm properties is defined, add it to the alarmed attribute list
-//
+                //
+                // If one of the alarm properties is defined, add it to the alarmed attribute list
+                //
 
-                if (attr_list[i - sub]->is_alarmed().any() == true)
+                if(attr_list[i - sub]->is_alarmed().any() == true)
                 {
-                    if (w_type != Tango::WRITE)
+                    if(w_type != Tango::WRITE)
+                    {
                         alarm_attr_list.push_back(i - sub);
+                    }
                 }
 
                 TANGO_LOG_DEBUG << *(attr_list[i - sub]) << std::endl;
             }
             else
+            {
                 sub++;
+            }
         }
 
-//
-// Remove attdesc entry in class object for forwarded attribute with root device not started
-//
+        //
+        // Remove attdesc entry in class object for forwarded attribute with root device not started
+        //
 
-//        for (unsigned int loop = 0;loop < rem_att_name.size();loop++)
-//        {
-//            dev_class_ptr->get_class_attr()->remove_attr(rem_att_name[loop],rem_att_cl_name[loop]);
-//        }
-
+        //        for (unsigned int loop = 0;loop < rem_att_name.size();loop++)
+        //        {
+        //            dev_class_ptr->get_class_attr()->remove_attr(rem_att_name[loop],rem_att_cl_name[loop]);
+        //        }
     }
 
-//
-// For each attribute, check if the writable_attr_name is set and in this case, check if the associated attribute
-// exists and is writable
-//
+    //
+    // For each attribute, check if the writable_attr_name is set and in this case, check if the associated attribute
+    // exists and is writable
+    //
 
     nb_attr = attr_list.size();
-    for (i = 0;i < nb_attr;i++)
+    for(i = 0; i < nb_attr; i++)
     {
-        check_associated(i,dev_name);
+        check_associated(i, dev_name);
     }
 
     TANGO_LOG_DEBUG << "Leaving MultiAttribute class constructor" << std::endl;
@@ -361,8 +369,10 @@ MultiAttribute::MultiAttribute(const std::string &dev_name,DeviceClass *dev_clas
 
 MultiAttribute::~MultiAttribute()
 {
-    for(unsigned long i = 0;i < attr_list.size();i++)
+    for(unsigned long i = 0; i < attr_list.size(); i++)
+    {
         delete attr_list[i];
+    }
     ext->attr_map.clear();
 }
 
@@ -384,34 +394,38 @@ MultiAttribute::~MultiAttribute()
 //
 //------------------------------------------------------------------------------------------------------------------
 
-
 void MultiAttribute::concat(const std::vector<AttrProperty> &dev_prop,
                             const std::vector<AttrProperty> &class_prop,
                             std::vector<AttrProperty> &result)
 {
-
-//
-// Copy all device properties
-//
+    //
+    // Copy all device properties
+    //
 
     unsigned long i;
-    for (i = 0;i < dev_prop.size();i++)
+    for(i = 0; i < dev_prop.size(); i++)
+    {
         result.push_back(dev_prop[i]);
+    }
 
-//
-// Add class properties if they have not been redefined at the device level
-//
+    //
+    // Add class properties if they have not been redefined at the device level
+    //
 
     std::vector<AttrProperty> tmp_result = result;
     unsigned long nb_class_check = class_prop.size();
-    for (i = 0;i < nb_class_check;i++)
+    for(i = 0; i < nb_class_check; i++)
     {
         auto pos = find_property(tmp_result, class_prop[i].get_name());
 
-        if (pos != tmp_result.end())
+        if(pos != tmp_result.end())
+        {
             continue;
+        }
         else
+        {
             result.push_back(class_prop[i]);
+        }
     }
 }
 
@@ -431,21 +445,22 @@ void MultiAttribute::concat(const std::vector<AttrProperty> &dev_prop,
 //
 //--------------------------------------------------------------------------
 
-void MultiAttribute::add_default(std::vector<AttrProperty> &prop_list, TANGO_UNUSED(const std::string &dev_name),
-                 const std::string &att_name,long att_data_type)
+void MultiAttribute::add_default(std::vector<AttrProperty> &prop_list,
+                                 TANGO_UNUSED(const std::string &dev_name),
+                                 const std::string &att_name,
+                                 long att_data_type)
 {
-
-//
-// Overwrite the label attribute property in order to be set to the attribute name
-//
+    //
+    // Overwrite the label attribute property in order to be set to the attribute name
+    //
 
     Tango_OptAttrProp[0].default_value = att_name.c_str();
 
-//
-// Also overwrite the format attribute property according to attribute data type
-//
+    //
+    // Also overwrite the format attribute property according to attribute data type
+    //
 
-    switch (att_data_type)
+    switch(att_data_type)
     {
     case DEV_SHORT:
     case DEV_LONG:
@@ -478,19 +493,21 @@ void MultiAttribute::add_default(std::vector<AttrProperty> &prop_list, TANGO_UNU
         break;
     }
 
-    long nb_opt_prop = sizeof(Tango_OptAttrProp)/sizeof(OptAttrProp);
+    long nb_opt_prop = sizeof(Tango_OptAttrProp) / sizeof(OptAttrProp);
 
-//
-// For all the optional attribute properties, search in the already built vector of attributes if they are defined.
-// If yes, continue. Otherwise, add a new property with the default value
-//
+    //
+    // For all the optional attribute properties, search in the already built vector of attributes if they are defined.
+    // If yes, continue. Otherwise, add a new property with the default value
+    //
 
-    for (long i = 0;i < nb_opt_prop;i++)
+    for(long i = 0; i < nb_opt_prop; i++)
     {
         auto pos = find_property(prop_list, Tango_OptAttrProp[i].name);
 
-        if (pos == prop_list.end())
-            prop_list.push_back(AttrProperty(Tango_OptAttrProp[i].name,Tango_OptAttrProp[i].default_value));
+        if(pos == prop_list.end())
+        {
+            prop_list.push_back(AttrProperty(Tango_OptAttrProp[i].name, Tango_OptAttrProp[i].default_value));
+        }
     }
 }
 
@@ -509,22 +526,26 @@ void MultiAttribute::add_default(std::vector<AttrProperty> &prop_list, TANGO_UNU
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void MultiAttribute::add_user_default(std::vector<AttrProperty> &prop_list,const std::vector<AttrProperty> &user_default)
+void MultiAttribute::add_user_default(std::vector<AttrProperty> &prop_list,
+                                      const std::vector<AttrProperty> &user_default)
 {
-
-//
-// Add default user properties if they have not been defined in the database
-//
+    //
+    // Add default user properties if they have not been defined in the database
+    //
 
     long nb_user = user_default.size();
-    for (int i = 0;i < nb_user;i++)
+    for(int i = 0; i < nb_user; i++)
     {
         auto pos = find_property(prop_list, user_default[i].get_name());
 
-        if (pos != prop_list.end())
+        if(pos != prop_list.end())
+        {
             continue;
+        }
         else
+        {
             prop_list.push_back(user_default[i]);
+        }
     }
 }
 
@@ -546,22 +567,22 @@ void MultiAttribute::add_user_default(std::vector<AttrProperty> &prop_list,const
 
 void MultiAttribute::check_associated(long index, const std::string &dev_name)
 {
-    Attribute& attribute = *attr_list[index];
+    Attribute &attribute = *attr_list[index];
     const AttrWriteType write_type = attribute.get_writable();
 
-    if (write_type != Tango::READ_WITH_WRITE && write_type != Tango::READ_WRITE)
+    if(write_type != Tango::READ_WITH_WRITE && write_type != Tango::READ_WRITE)
     {
         return;
     }
 
-    std::string& assoc_name = attribute.get_assoc_name();
+    std::string &assoc_name = attribute.get_assoc_name();
 
     long assoc_index = 0;
     try
     {
         assoc_index = get_attr_ind_by_name(assoc_name.c_str());
     }
-    catch (const DevFailed&)
+    catch(const DevFailed &)
     {
         TangoSys_OMemStream o;
         o << "Device --> " << dev_name;
@@ -571,10 +592,10 @@ void MultiAttribute::check_associated(long index, const std::string &dev_name)
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str().c_str());
     }
 
-    Attribute& assoc_attribute = *attr_list[assoc_index];
+    Attribute &assoc_attribute = *attr_list[assoc_index];
     const AttrWriteType assoc_write_type = assoc_attribute.get_writable();
 
-    if (assoc_write_type != Tango::WRITE && assoc_write_type != Tango::READ_WRITE)
+    if(assoc_write_type != Tango::WRITE && assoc_write_type != Tango::READ_WRITE)
     {
         TangoSys_OMemStream o;
         o << "Device --> " << dev_name;
@@ -584,7 +605,7 @@ void MultiAttribute::check_associated(long index, const std::string &dev_name)
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str().c_str());
     }
 
-    if (attribute.get_data_type() != assoc_attribute.get_data_type())
+    if(attribute.get_data_type() != assoc_attribute.get_data_type())
     {
         TangoSys_OMemStream o;
         o << "Device --> " << dev_name;
@@ -623,14 +644,13 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
     size_t nb_attr = attr_list.size();
     bool vector_cleared = false;
 
-    for (size_t i = 0;i < nb_attr;i++)
+    for(size_t i = 0; i < nb_attr; i++)
     {
+        //
+        // Check for enumerated attribute
+        //
 
-//
-// Check for enumerated attribute
-//
-
-        if (attr_list[i]->get_data_type() == DEV_ENUM && detail::IDLVersionIsTooOld(idl_version, 5))
+        if(attr_list[i]->get_data_type() == DEV_ENUM && detail::IDLVersionIsTooOld(idl_version, 5))
         {
             try
             {
@@ -640,22 +660,22 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
 
                 TANGO_THROW_EXCEPTION(API_NotSupportedFeature, ss.str());
             }
-            catch (Tango::DevFailed &e)
+            catch(Tango::DevFailed &e)
             {
-                attr_list[i]->add_startup_exception("enum_labels",e);
+                attr_list[i]->add_startup_exception("enum_labels", e);
             }
         }
 
-//
-// Chek for forwarded attribute
-// If IDL < 5, on top of setting wrongly configured attribute in device, remove the root att from
-// root attribute registry
-//
+        //
+        // Chek for forwarded attribute
+        // If IDL < 5, on top of setting wrongly configured attribute in device, remove the root att from
+        // root attribute registry
+        //
 
-        if (attr_list[i]->is_fwd_att() == true && detail::IDLVersionIsTooOld(idl_version, 5))
+        if(attr_list[i]->is_fwd_att() == true && detail::IDLVersionIsTooOld(idl_version, 5))
         {
             std::vector<DeviceImpl::FwdWrongConf> &fwd_wrong_conf = dev->get_fwd_att_wrong_conf();
-            if (vector_cleared == false)
+            if(vector_cleared == false)
             {
                 fwd_wrong_conf.clear();
                 vector_cleared = true;
@@ -669,7 +689,7 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
             fwd_wrong_conf.push_back(fwc);
 
             RootAttRegistry &fdp = Util::instance()->get_root_att_reg();
-            fdp.remove_root_att(fwd_attr->get_fwd_dev_name(),fwd_attr->get_fwd_att_name());
+            fdp.remove_root_att(fwd_attr->get_fwd_dev_name(), fwd_attr->get_fwd_att_name());
         }
     }
 }
@@ -690,34 +710,34 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void MultiAttribute::add_attribute(const std::string &dev_name,DeviceClass *dev_class_ptr,long index)
+void MultiAttribute::add_attribute(const std::string &dev_name, DeviceClass *dev_class_ptr, long index)
 {
     TANGO_LOG_DEBUG << "Entering MultiAttribute::add_attribute" << std::endl;
 
-//
-// Retrieve device class attribute list
-//
+    //
+    // Retrieve device class attribute list
+    //
 
     std::vector<Attr *> &tmp_attr_list = dev_class_ptr->get_class_attr()->get_attr_list();
 
-//
-// Get device attribute properties
-// No need to implement a retry here (in case of db server restart) because the db reconnection
-// is forced by the get_property call executed during xxxClass construction before we reach this code.
-//
+    //
+    // Get device attribute properties
+    // No need to implement a retry here (in case of db server restart) because the db reconnection
+    // is forced by the get_property call executed during xxxClass construction before we reach this code.
+    //
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::DbData db_list;
 
-    if (tg->use_db())
+    if(tg->use_db())
     {
         db_list.push_back(DbDatum(tmp_attr_list[index]->get_name()));
 
         try
         {
-            tg->get_database()->get_device_attribute_property(dev_name,db_list,tg->get_db_cache());
+            tg->get_database()->get_device_attribute_property(dev_name, db_list, tg->get_db_cache());
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             TangoSys_OMemStream o;
             o << "Can't get device attribute properties for device " << dev_name << std::ends;
@@ -726,133 +746,134 @@ void MultiAttribute::add_attribute(const std::string &dev_name,DeviceClass *dev_
         }
     }
 
-//
-// Get attribute class properties
-//
+    //
+    // Get attribute class properties
+    //
 
     Attr &attr = dev_class_ptr->get_class_attr()->get_attr(tmp_attr_list[index]->get_name());
     std::vector<AttrProperty> &class_prop = attr.get_class_properties();
     std::vector<AttrProperty> &def_user_prop = attr.get_user_default_properties();
 
-//
-// If the attribute has some properties defined at device level, build a vector of these properties
-//
+    //
+    // If the attribute has some properties defined at device level, build a vector of these properties
+    //
 
     std::vector<AttrProperty> dev_prop;
 
-    if (tg->use_db())
+    if(tg->use_db())
     {
         long ind = 0;
         long nb_prop = 0;
         db_list[ind] >> nb_prop;
         ind++;
 
-        for (long j = 0;j < nb_prop;j++)
+        for(long j = 0; j < nb_prop; j++)
         {
-            if (db_list[ind].size() > 1)
+            if(db_list[ind].size() > 1)
             {
                 std::string tmp(db_list[ind].value_string[0]);
                 long nb = db_list[ind].size();
-                for (int k = 1;k < nb;k++)
+                for(int k = 1; k < nb; k++)
                 {
                     tmp = tmp + ",";
                     tmp = tmp + db_list[ind].value_string[k];
                 }
-                dev_prop.push_back(AttrProperty(db_list[ind].name,tmp));
+                dev_prop.push_back(AttrProperty(db_list[ind].name, tmp));
             }
             else
-                dev_prop.push_back(AttrProperty(db_list[ind].name,
-                                db_list[ind].value_string[0]));
+            {
+                dev_prop.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+            }
             ind++;
         }
     }
 
-//
-// Concatenate these two attribute properties levels
-//
+    //
+    // Concatenate these two attribute properties levels
+    //
 
     std::vector<AttrProperty> prop_list;
-    concat(dev_prop,class_prop,prop_list);
-    add_user_default(prop_list,def_user_prop);
-    add_default(prop_list,dev_name,attr.get_name(),attr.get_type());
+    concat(dev_prop, class_prop, prop_list);
+    add_user_default(prop_list, def_user_prop);
+    add_default(prop_list, dev_name, attr.get_name(), attr.get_type());
 
-//
-// Create an Attribute instance and insert it in the attribute list. If the device implement IDL 3
-// (with state and status as attributes), add it at the end of the list but before state and status.
-//
+    //
+    // Create an Attribute instance and insert it in the attribute list. If the device implement IDL 3
+    // (with state and status as attributes), add it at the end of the list but before state and status.
+    //
 
     bool idl_3 = false;
     std::vector<Attribute *>::iterator ite;
-    if ((attr_list.back())->get_name() == "Status")
+    if((attr_list.back())->get_name() == "Status")
     {
         idl_3 = true;
         ite = attr_list.end();
         ite = ite - 2;
     }
 
-    if ((attr.get_writable() == Tango::WRITE) ||
-        (attr.get_writable() == Tango::READ_WRITE))
+    if((attr.get_writable() == Tango::WRITE) || (attr.get_writable() == Tango::READ_WRITE))
     {
-        if (idl_3 == false)
+        if(idl_3 == false)
         {
-            Attribute * new_attr = new WAttribute(prop_list,attr,dev_name,index);
+            Attribute *new_attr = new WAttribute(prop_list, attr, dev_name, index);
             add_attr(new_attr);
             index = attr_list.size() - 1;
         }
         else
         {
-            Attribute * new_attr = new WAttribute(prop_list,attr,dev_name,index);
-            attr_list.insert(ite,new_attr);
+            Attribute *new_attr = new WAttribute(prop_list, attr, dev_name, index);
+            attr_list.insert(ite, new_attr);
             index = attr_list.size() - 3;
-            ext->put_attribute_in_map(new_attr,index);
+            ext->put_attribute_in_map(new_attr, index);
             ext->increment_state_and_status_indexes();
         }
     }
     else
     {
-        if (idl_3 == false)
+        if(idl_3 == false)
         {
-            Attribute * new_attr = new Attribute(prop_list,attr,dev_name,index);
+            Attribute *new_attr = new Attribute(prop_list, attr, dev_name, index);
             add_attr(new_attr);
             index = attr_list.size() - 1;
         }
         else
         {
-            Attribute * new_attr = new Attribute(prop_list,attr,dev_name,index);
-            attr_list.insert(ite,new_attr);
+            Attribute *new_attr = new Attribute(prop_list, attr, dev_name, index);
+            attr_list.insert(ite, new_attr);
             index = attr_list.size() - 3;
-            ext->put_attribute_in_map(new_attr,index);
+            ext->put_attribute_in_map(new_attr, index);
             ext->increment_state_and_status_indexes();
         }
     }
 
-//
-// If it is writable, add it to the writable attribute list
-//
+    //
+    // If it is writable, add it to the writable attribute list
+    //
 
     Tango::AttrWriteType w_type = attr_list[index]->get_writable();
-    if ((w_type == Tango::WRITE) ||
-        (w_type == Tango::READ_WRITE))
+    if((w_type == Tango::WRITE) || (w_type == Tango::READ_WRITE))
     {
         writable_attr_list.push_back(index);
     }
 
-//
-// If one of the alarm properties is defined, add it to the alarmed attribute list
-//
+    //
+    // If one of the alarm properties is defined, add it to the alarmed attribute list
+    //
 
-    if (attr_list[index]->is_alarmed().any() == true)
+    if(attr_list[index]->is_alarmed().any() == true)
     {
-        if (w_type != Tango::WRITE)
+        if(w_type != Tango::WRITE)
+        {
             alarm_attr_list.push_back(index);
+        }
     }
 
-//
-// Check if the writable_attr_name property is set and in this case, check if the associated attribute exists and is
-// writable
-//
+    //
+    // Check if the writable_attr_name property is set and in this case, check if the associated attribute exists and is
+    // writable
+    //
 
-    check_associated(index,dev_name);
+    check_associated(index, dev_name);
 
     TANGO_LOG_DEBUG << "Leaving MultiAttribute::add_attribute" << std::endl;
 }
@@ -873,35 +894,38 @@ void MultiAttribute::add_attribute(const std::string &dev_name,DeviceClass *dev_
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void MultiAttribute::add_fwd_attribute(const std::string &dev_name,DeviceClass *dev_class_ptr,long index, Attr *new_attr)
+void MultiAttribute::add_fwd_attribute(const std::string &dev_name,
+                                       DeviceClass *dev_class_ptr,
+                                       long index,
+                                       Attr *new_attr)
 {
     TANGO_LOG_DEBUG << "Entering MultiAttribute::add_fwd_attribute" << std::endl;
 
-//
-// Retrieve device class attribute list
-//
+    //
+    // Retrieve device class attribute list
+    //
 
     std::vector<Attr *> &tmp_attr_list = dev_class_ptr->get_class_attr()->get_attr_list();
 
-//
-// Get attribute class properties
-//
+    //
+    // Get attribute class properties
+    //
 
     Attr &attr = dev_class_ptr->get_class_attr()->get_attr(tmp_attr_list[index]->get_name());
     std::vector<AttrProperty> &def_user_prop = attr.get_user_default_properties();
 
-//
-// Concatenate these two attribute properties levels
-//
+    //
+    // Concatenate these two attribute properties levels
+    //
 
     std::vector<AttrProperty> prop_list;
-    add_user_default(prop_list,def_user_prop);
-    add_default(prop_list,dev_name,attr.get_name(),attr.get_type());
+    add_user_default(prop_list, def_user_prop);
+    add_default(prop_list, dev_name, attr.get_name(), attr.get_type());
 
-//
-// Validate and register the root attribute configuration
-//
-    if (new_attr->is_fwd() == true)
+    //
+    // Validate and register the root attribute configuration
+    //
+    if(new_attr->is_fwd() == true)
     {
         Tango::FwdAttr *fwd_attr = (Tango::FwdAttr *) new_attr;
         // If forwarded attribute is dynamically created and was constructed without specifying
@@ -909,14 +933,14 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,DeviceClass *
         // prior to calling validate_fwd_att()
         std::vector<AttrProperty> dev_prop;
         Tango::Util *tg = Tango::Util::instance();
-        if (tg->use_db() && (fwd_attr->get_full_root_att()==RootAttNotDef))
+        if(tg->use_db() && (fwd_attr->get_full_root_att() == RootAttNotDef))
         {
             Tango::DbData db_list;
             db_list.push_back(DbDatum(fwd_attr->get_name()));
-            tg->get_database()->get_device_attribute_property(dev_name,db_list,tg->get_db_cache());
-            for (unsigned int ind=0 ; ind<db_list.size() ; ind++)
+            tg->get_database()->get_device_attribute_property(dev_name, db_list, tg->get_db_cache());
+            for(unsigned int ind = 0; ind < db_list.size(); ind++)
             {
-                if (db_list[ind].name == RootAttrPropName)
+                if(db_list[ind].name == RootAttrPropName)
                 {
                     dev_prop.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
                     break;
@@ -931,9 +955,9 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,DeviceClass *
         Tango::DeviceImpl *device = tg->get_device_by_name(dev_name);
         try
         {
-            fwd_attr->get_root_conf(dev_name,device);
+            fwd_attr->get_root_conf(dev_name, device);
         }
-        catch (...)
+        catch(...)
         {
             // If any error add this attribute to the device list of wrong configured attributes
             DeviceImpl::FwdWrongConf fwc;
@@ -945,46 +969,47 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,DeviceClass *
         }
     }
 
-//
-// Create an Attribute instance and insert it in the attribute list. If the device implement IDL 3
-// (with state and status as attributes), add it at the end of the list but before state and status.
-//
+    //
+    // Create an Attribute instance and insert it in the attribute list. If the device implement IDL 3
+    // (with state and status as attributes), add it at the end of the list but before state and status.
+    //
 
     std::vector<Attribute *>::iterator ite;
     ite = attr_list.end() - 2;
 
-    Attribute * new_fwd_attr = new FwdAttribute(prop_list,*new_attr,dev_name,index);
-    attr_list.insert(ite,new_fwd_attr);
+    Attribute *new_fwd_attr = new FwdAttribute(prop_list, *new_attr, dev_name, index);
+    attr_list.insert(ite, new_fwd_attr);
     index = attr_list.size() - 3;
-    ext->put_attribute_in_map(new_fwd_attr,index);
+    ext->put_attribute_in_map(new_fwd_attr, index);
     ext->increment_state_and_status_indexes();
 
-//
-// If it is writable, add it to the writable attribute list
-//
+    //
+    // If it is writable, add it to the writable attribute list
+    //
 
     Tango::AttrWriteType w_type = attr_list[index]->get_writable();
-    if ((w_type == Tango::WRITE) ||
-        (w_type == Tango::READ_WRITE))
+    if((w_type == Tango::WRITE) || (w_type == Tango::READ_WRITE))
     {
         writable_attr_list.push_back(index);
     }
 
-//
-// If one of the alarm properties is defined, add it to the alarmed attribute list
-//
+    //
+    // If one of the alarm properties is defined, add it to the alarmed attribute list
+    //
 
-    if (attr_list[index]->is_alarmed().any() == true)
+    if(attr_list[index]->is_alarmed().any() == true)
     {
-        if (w_type != Tango::WRITE)
+        if(w_type != Tango::WRITE)
+        {
             alarm_attr_list.push_back(index);
+        }
     }
 
-//
-// Check if the writable_attr_name property is set and in this case, check if the associated attribute exists and is
-// writable
-//
-    check_associated(index,dev_name);
+    //
+    // Check if the writable_attr_name property is set and in this case, check if the associated attribute exists and is
+    // writable
+    //
+    check_associated(index, dev_name);
 
     TANGO_LOG_DEBUG << "Leaving MultiAttribute::add_fwd_attribute" << std::endl;
 }
@@ -1005,19 +1030,19 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,DeviceClass *
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void MultiAttribute::remove_attribute(const std::string &attr_name,bool update_idx)
+void MultiAttribute::remove_attribute(const std::string &attr_name, bool update_idx)
 {
     TANGO_LOG_DEBUG << "Entering MultiAttribute::remove_attribute" << std::endl;
 
-//
-// Get attribute index in vector
-//
+    //
+    // Get attribute index in vector
+    //
 
     long att_index = get_attr_ind_by_name(attr_name.c_str());
 
-//
-// Remove the attribute from the main vector
-//
+    //
+    // Remove the attribute from the main vector
+    //
 
     Attribute *att = attr_list[att_index];
 
@@ -1028,50 +1053,52 @@ void MultiAttribute::remove_attribute(const std::string &attr_name,bool update_i
     ext->attr_map.erase(att->get_name_lower());
     delete att;
     std::vector<Tango::Attribute *>::iterator pos = attr_list.begin();
-    advance(pos,att_index);
+    advance(pos, att_index);
     pos = attr_list.erase(pos);
 
-// Update all the att_index_in_vector indexes for the attributes following the one which has been deleted
-    for (std::vector<Tango::Attribute *>::iterator tmp_pos = pos ;tmp_pos != attr_list.end();++tmp_pos)
+    // Update all the att_index_in_vector indexes for the attributes following the one which has been deleted
+    for(std::vector<Tango::Attribute *>::iterator tmp_pos = pos; tmp_pos != attr_list.end(); ++tmp_pos)
     {
-        std::string & attr_name_lower = (*tmp_pos)->get_name_lower();
+        std::string &attr_name_lower = (*tmp_pos)->get_name_lower();
         ext->attr_map[attr_name_lower].att_index_in_vector--;
     }
 
-    if (update_idx == true)
+    if(update_idx == true)
     {
-// This attribute has been removed from the class attributes list
-// In devices attributes lists for this class, update all the indexes to
-// MultiClassAttribute vector for the attributes which are following (in MultiClassAttribute vector) the one
-// which has been deleted
-// This is a 2 steps process:
-// 1 - Update indexes in local device
-// 2 - Update indexes in remaining device(s) belonging to the same class
-// Update indexes in local device
+        // This attribute has been removed from the class attributes list
+        // In devices attributes lists for this class, update all the indexes to
+        // MultiClassAttribute vector for the attributes which are following (in MultiClassAttribute vector) the one
+        // which has been deleted
+        // This is a 2 steps process:
+        // 1 - Update indexes in local device
+        // 2 - Update indexes in remaining device(s) belonging to the same class
+        // Update indexes in local device
         for(std::vector<Tango::Attribute *>::iterator pos_it = attr_list.begin(); pos_it != attr_list.end(); pos_it++)
         {
             long idx = (*pos_it)->get_attr_idx();
-            if (idx > old_idx)
+            if(idx > old_idx)
             {
                 (*pos_it)->set_attr_idx(idx - 1);
             }
         }
-//  Update indexes in remaining device(s) belonging to the same class
+        //  Update indexes in remaining device(s) belonging to the same class
         Tango::Util *tg = Tango::Util::instance();
         std::vector<DeviceImpl *> &dev_list = tg->get_device_list_by_class(dev_class_name);
 
         std::vector<DeviceImpl *>::iterator dev_ite;
-        for (dev_ite = dev_list.begin();dev_ite != dev_list.end();++dev_ite)
+        for(dev_ite = dev_list.begin(); dev_ite != dev_list.end(); ++dev_ite)
         {
-            if (*dev_ite == the_dev)
+            if(*dev_ite == the_dev)
+            {
                 continue;
+            }
 
-            MultiAttribute * dev_multi_attr = (*dev_ite)->get_device_attr();
+            MultiAttribute *dev_multi_attr = (*dev_ite)->get_device_attr();
             std::vector<Attribute *> &dev_att_list = dev_multi_attr->get_attribute_list();
-            for (unsigned int i = 0;i < dev_att_list.size()-2 /* ignore state and status */ ;++i)
+            for(unsigned int i = 0; i < dev_att_list.size() - 2 /* ignore state and status */; ++i)
             {
                 long idx = dev_att_list[i]->get_attr_idx();
-                if (idx > old_idx)
+                if(idx > old_idx)
                 {
                     dev_att_list[i]->set_attr_idx(idx - 1);
                 }
@@ -1079,49 +1106,50 @@ void MultiAttribute::remove_attribute(const std::string &attr_name,bool update_i
         }
     }
 
-//
-// Clear the writable attribute index vector and rebuild it. This is necessary because this vector containd index in
-// the main attribute list which has been modified
-//
+    //
+    // Clear the writable attribute index vector and rebuild it. This is necessary because this vector containd index in
+    // the main attribute list which has been modified
+    //
 
     writable_attr_list.clear();
-    for (unsigned long i = 0;i < attr_list.size();i++)
+    for(unsigned long i = 0; i < attr_list.size(); i++)
     {
         Tango::AttrWriteType w_type = attr_list[i]->get_writable();
-        if ((w_type == Tango::WRITE) || (w_type == Tango::READ_WRITE))
+        if((w_type == Tango::WRITE) || (w_type == Tango::READ_WRITE))
         {
             writable_attr_list.push_back(i);
         }
     }
 
-//
-// Do the same for the alarmed attribute for the same reason
-//
+    //
+    // Do the same for the alarmed attribute for the same reason
+    //
 
     alarm_attr_list.clear();
-    for (unsigned long i = 0;i < attr_list.size();i++)
+    for(unsigned long i = 0; i < attr_list.size(); i++)
     {
-        if (attr_list[i]->is_alarmed().any() == true)
+        if(attr_list[i]->is_alarmed().any() == true)
         {
             Tango::AttrWriteType w_type = attr_list[i]->get_writable();
-            if (w_type != Tango::WRITE)
+            if(w_type != Tango::WRITE)
+            {
                 alarm_attr_list.push_back(i);
+            }
         }
     }
 
-//
-// Check the associated attributes
-//
+    //
+    // Check the associated attributes
+    //
 
     std::string default_dev_name("a/b/c");
-    for (unsigned long i = 0;i < attr_list.size();i++)
+    for(unsigned long i = 0; i < attr_list.size(); i++)
     {
-        check_associated(i,default_dev_name);
+        check_associated(i, default_dev_name);
     }
 
     TANGO_LOG_DEBUG << "Leaving MultiAttribute::remove_attribute" << std::endl;
 }
-
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
@@ -1142,9 +1170,9 @@ void MultiAttribute::remove_attribute(const std::string &attr_name,bool update_i
 
 Attribute &MultiAttribute::get_attr_by_name(const char *attr_name)
 {
-    Attribute * attr = 0;
+    Attribute *attr = 0;
     std::string st(attr_name);
-    std::transform(st.begin(),st.end(),st.begin(),::tolower);
+    std::transform(st.begin(), st.end(), st.begin(), ::tolower);
     try
     {
         attr = ext->attr_map.at(st).att_ptr;
@@ -1179,9 +1207,9 @@ Attribute &MultiAttribute::get_attr_by_name(const char *attr_name)
 
 WAttribute &MultiAttribute::get_w_attr_by_name(const char *attr_name)
 {
-    Attribute * attr = 0;
+    Attribute *attr = 0;
     std::string st(attr_name);
-    std::transform(st.begin(),st.end(),st.begin(),::tolower);
+    std::transform(st.begin(), st.end(), st.begin(), ::tolower);
     try
     {
         attr = ext->attr_map.at(st).att_ptr;
@@ -1195,8 +1223,7 @@ WAttribute &MultiAttribute::get_w_attr_by_name(const char *attr_name)
         TANGO_THROW_EXCEPTION(API_AttrNotFound, o.str());
     }
 
-    if ((attr->get_writable() != Tango::WRITE) &&
-        (attr->get_writable() != Tango::READ_WRITE))
+    if((attr->get_writable() != Tango::WRITE) && (attr->get_writable() != Tango::READ_WRITE))
     {
         TANGO_LOG_DEBUG << "MultiAttribute::get_attr_by_name throwing exception" << std::endl;
         TangoSys_OMemStream o;
@@ -1229,7 +1256,7 @@ long MultiAttribute::get_attr_ind_by_name(const char *attr_name)
     long i;
     std::string st(attr_name);
 
-    std::transform(st.begin(),st.end(),st.begin(),::tolower);
+    std::transform(st.begin(), st.end(), st.begin(), ::tolower);
     try
     {
         i = ext->attr_map.at(st).att_index_in_vector;
@@ -1261,32 +1288,35 @@ long MultiAttribute::get_attr_ind_by_name(const char *attr_name)
 bool MultiAttribute::check_alarm()
 {
     unsigned long i;
-    bool ret,tmp_ret;
+    bool ret, tmp_ret;
 
     tmp_ret = false;
     ret = false;
-    for (i = 0;i < alarm_attr_list.size();i++)
+    for(i = 0; i < alarm_attr_list.size(); i++)
     {
         Tango::AttrQuality qua = (get_attr_by_ind(alarm_attr_list[i])).get_quality();
-        if (ret == false)
+        if(ret == false)
         {
-            if (qua == Tango::ATTR_ALARM)
+            if(qua == Tango::ATTR_ALARM)
+            {
                 ret = true;
+            }
         }
-        if (qua != Tango::ATTR_INVALID)
+        if(qua != Tango::ATTR_INVALID)
         {
-
-//
-// If the attribute is polled, the check_alarm method has already been called when the polling thread has read the
-// attribute.
-//
+            //
+            // If the attribute is polled, the check_alarm method has already been called when the polling thread has
+            // read the attribute.
+            //
 
             Attribute &att = get_attr_by_ind(alarm_attr_list[i]);
-            if (att.is_polled() == false)
+            if(att.is_polled() == false)
             {
                 tmp_ret = check_alarm(alarm_attr_list[i]);
-                if (tmp_ret == true)
+                if(tmp_ret == true)
+                {
                     ret = true;
+                }
             }
         }
     }
@@ -1312,19 +1342,19 @@ void MultiAttribute::read_alarm(std::string &status)
 {
     unsigned long i;
 
-    for (i = 0;i < alarm_attr_list.size();i++)
+    for(i = 0; i < alarm_attr_list.size(); i++)
     {
         Attribute &att = get_attr_by_ind(alarm_attr_list[i]);
 
-//
-// Add a message for low level alarm
-//
+        //
+        // Add a message for low level alarm
+        //
 
-        if (att.is_min_alarm() == true)
+        if(att.is_min_alarm() == true)
         {
             std::string &attr_label = att.get_label();
             std::string str;
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = "\nAlarm : Value too low for attribute ";
                 str = str + att.get_name();
@@ -1337,15 +1367,15 @@ void MultiAttribute::read_alarm(std::string &status)
             status = status + str;
         }
 
-//
-// Add a message for high level alarm
-//
+        //
+        // Add a message for high level alarm
+        //
 
-        else if (att.is_max_alarm() == true)
+        else if(att.is_max_alarm() == true)
         {
             std::string &attr_label = att.get_label();
             std::string str;
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = "\nAlarm : Value too high for attribute ";
                 str = str + att.get_name();
@@ -1358,15 +1388,15 @@ void MultiAttribute::read_alarm(std::string &status)
             status = status + str;
         }
 
-//
-// Add a message for rds alarm
-//
+        //
+        // Add a message for rds alarm
+        //
 
-        if (att.is_rds_alarm() == true)
+        if(att.is_rds_alarm() == true)
         {
             std::string &attr_label = att.get_label();
             std::string str;
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = "\nAlarm : Read too Different than Set (RDS) for attribute ";
                 str = str + att.get_name();
@@ -1379,15 +1409,15 @@ void MultiAttribute::read_alarm(std::string &status)
             status = status + str;
         }
 
-//
-// Add a message for min warning
-//
+        //
+        // Add a message for min warning
+        //
 
-        if (att.is_min_warning() == true)
+        if(att.is_min_warning() == true)
         {
             std::string &attr_label = att.get_label();
             std::string str;
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = "\nWarning : Value too low for attribute ";
                 str = str + att.get_name();
@@ -1400,15 +1430,15 @@ void MultiAttribute::read_alarm(std::string &status)
             status = status + str;
         }
 
-//
-// Add a message for max warning
-//
+        //
+        // Add a message for max warning
+        //
 
-        else if (att.is_max_warning() == true)
+        else if(att.is_max_warning() == true)
         {
             std::string &attr_label = att.get_label();
             std::string str;
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = "\nWarning : Value too high for attribute ";
                 str = str + att.get_name();
@@ -1420,7 +1450,6 @@ void MultiAttribute::read_alarm(std::string &status)
             }
             status = status + str;
         }
-
     }
 }
 
@@ -1439,56 +1468,56 @@ AttributeEventSubscriptionStates MultiAttribute::get_event_subscription_states()
     AttributeEventSubscriptionStates result{};
     result.reserve(attr_list.size());
 
-    for (auto& attribute : attr_list)
+    for(auto &attribute : attr_list)
     {
-        auto& att = *attribute;
+        auto &att = *attribute;
 
         AttributeEventSubscriptionState events{};
         bool filled = false;
 
-        if (att.change_event_subscribed())
+        if(att.change_event_subscribed())
         {
             events.change_event_clients = att.get_client_lib(CHANGE_EVENT);
             filled = true;
         }
 
-        if (att.quality_event_subscribed())
+        if(att.quality_event_subscribed())
         {
             events.has_quality_event_clients = true;
             filled = true;
         }
 
-        if (att.periodic_event_subscribed())
+        if(att.periodic_event_subscribed())
         {
             events.periodic_event_clients = att.get_client_lib(PERIODIC_EVENT);
             filled = true;
         }
 
-        if (att.archive_event_subscribed())
+        if(att.archive_event_subscribed())
         {
             events.archive_event_clients = att.get_client_lib(ARCHIVE_EVENT);
             filled = true;
         }
 
-        if (att.user_event_subscribed())
+        if(att.user_event_subscribed())
         {
             events.user_event_clients = att.get_client_lib(USER_EVENT);
             filled = true;
         }
 
-        if (att.attr_conf_event_subscribed())
+        if(att.attr_conf_event_subscribed())
         {
             events.attr_conf_event_clients = att.get_client_lib(ATTR_CONF_EVENT);
             filled = true;
         }
 
-        if (att.data_ready_event_subscribed())
+        if(att.data_ready_event_subscribed())
         {
             events.has_data_ready_event_clients = true;
             filled = true;
         }
 
-        if (filled)
+        if(filled)
         {
             events.attribute_name = att.get_name();
             events.has_zmq_event_channel = att.use_zmq_event();
@@ -1514,60 +1543,60 @@ AttributeEventSubscriptionStates MultiAttribute::get_event_subscription_states()
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void MultiAttribute::set_event_subscription_states(const AttributeEventSubscriptionStates& eve)
+void MultiAttribute::set_event_subscription_states(const AttributeEventSubscriptionStates &eve)
 {
-    for (const auto& events : eve)
+    for(const auto &events : eve)
     {
-        Tango::Attribute& att = get_attr_by_name(events.attribute_name.c_str());
+        Tango::Attribute &att = get_attr_by_name(events.attribute_name.c_str());
 
         omni_mutex_lock oml(EventSupplier::get_event_mutex());
 
-        for (const auto& client_version : events.change_event_clients)
+        for(const auto &client_version : events.change_event_clients)
         {
             att.set_change_event_sub(client_version);
             att.set_client_lib(client_version, CHANGE_EVENT);
         }
 
-        for (const auto& client_version : events.periodic_event_clients)
+        for(const auto &client_version : events.periodic_event_clients)
         {
             att.set_periodic_event_sub(client_version);
             att.set_client_lib(client_version, PERIODIC_EVENT);
         }
 
-        for (const auto& client_version : events.archive_event_clients)
+        for(const auto &client_version : events.archive_event_clients)
         {
             att.set_archive_event_sub(client_version);
             att.set_client_lib(client_version, ARCHIVE_EVENT);
         }
 
-        for (const auto& client_version : events.attr_conf_event_clients)
+        for(const auto &client_version : events.attr_conf_event_clients)
         {
             att.set_att_conf_event_sub(client_version);
             att.set_client_lib(client_version, ATTR_CONF_EVENT);
         }
 
-        for (const auto& client_version : events.user_event_clients)
+        for(const auto &client_version : events.user_event_clients)
         {
             att.set_user_event_sub(client_version);
             att.set_client_lib(client_version, USER_EVENT);
         }
 
-        if (events.has_quality_event_clients)
+        if(events.has_quality_event_clients)
         {
             att.set_quality_event_sub();
         }
 
-        if (events.has_data_ready_event_clients)
+        if(events.has_data_ready_event_clients)
         {
             att.set_data_ready_event_sub();
         }
 
-        if (events.has_notifd_event_channel)
+        if(events.has_notifd_event_channel)
         {
             att.set_use_notifd_event();
         }
 
-        if (events.has_zmq_event_channel)
+        if(events.has_zmq_event_channel)
         {
             att.set_use_zmq_event();
         }
@@ -1606,75 +1635,75 @@ void MultiAttribute::add_write_value(Attribute &att)
     Tango::DevVarULong64Array *ulg64_write_val;
     Tango::DevVarStateArray *state_write_val;
 
-    switch (att.get_data_type())
+    switch(att.get_data_type())
     {
-    case Tango::DEV_SHORT :
-    case Tango::DEV_ENUM :
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
         sh_write_val = assoc_att.get_last_written_sh();
         att.add_write_value(sh_write_val);
         break;
 
-    case Tango::DEV_LONG :
+    case Tango::DEV_LONG:
         lg_write_val = assoc_att.get_last_written_lg();
         att.add_write_value(lg_write_val);
         break;
 
-    case Tango::DEV_LONG64 :
+    case Tango::DEV_LONG64:
         lg64_write_val = assoc_att.get_last_written_lg64();
         att.add_write_value(lg64_write_val);
         break;
 
-    case Tango::DEV_DOUBLE :
+    case Tango::DEV_DOUBLE:
         db_write_val = assoc_att.get_last_written_db();
         att.add_write_value(db_write_val);
         break;
 
-    case Tango::DEV_STRING :
+    case Tango::DEV_STRING:
         str_write_val = assoc_att.get_last_written_str();
         att.add_write_value(str_write_val);
         break;
 
-    case Tango::DEV_FLOAT :
+    case Tango::DEV_FLOAT:
         fl_write_val = assoc_att.get_last_written_fl();
         att.add_write_value(fl_write_val);
         break;
 
-    case Tango::DEV_BOOLEAN :
+    case Tango::DEV_BOOLEAN:
         boo_write_val = assoc_att.get_last_written_boo();
         att.add_write_value(boo_write_val);
         break;
 
-    case Tango::DEV_USHORT :
+    case Tango::DEV_USHORT:
         ush_write_val = assoc_att.get_last_written_ush();
         att.add_write_value(ush_write_val);
         break;
 
-    case Tango::DEV_UCHAR :
+    case Tango::DEV_UCHAR:
         uch_write_val = assoc_att.get_last_written_uch();
         att.add_write_value(uch_write_val);
         break;
 
-    case Tango::DEV_ULONG :
+    case Tango::DEV_ULONG:
         ulg_write_val = assoc_att.get_last_written_ulg();
         att.add_write_value(ulg_write_val);
         break;
 
-    case Tango::DEV_ULONG64 :
+    case Tango::DEV_ULONG64:
         ulg64_write_val = assoc_att.get_last_written_ulg64();
         att.add_write_value(ulg64_write_val);
         break;
 
-    case Tango::DEV_STATE :
+    case Tango::DEV_STATE:
         state_write_val = assoc_att.get_last_written_state();
         att.add_write_value(state_write_val);
         break;
 
-    case Tango::DEV_ENCODED :
-        {
-            DevEncoded &enc_write_val = assoc_att.get_last_written_encoded();
-            att.add_write_value(enc_write_val);
-            break;
-        }
+    case Tango::DEV_ENCODED:
+    {
+        DevEncoded &enc_write_val = assoc_att.get_last_written_encoded();
+        att.add_write_value(enc_write_val);
+        break;
+    }
     }
 }
 
@@ -1696,10 +1725,9 @@ bool MultiAttribute::is_att_quality_alarmed()
 
     ret = false;
 
-    for (i = 0;i < attr_list.size();i++)
+    for(i = 0; i < attr_list.size(); i++)
     {
-        if ((attr_list[i]->get_quality() == Tango::ATTR_ALARM) ||
-            (attr_list[i]->get_quality() == Tango::ATTR_WARNING))
+        if((attr_list[i]->get_quality() == Tango::ATTR_ALARM) || (attr_list[i]->get_quality() == Tango::ATTR_WARNING))
         {
             ret = true;
             break;
@@ -1708,7 +1736,6 @@ bool MultiAttribute::is_att_quality_alarmed()
 
     return ret;
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -1722,28 +1749,30 @@ bool MultiAttribute::is_att_quality_alarmed()
 
 void MultiAttribute::add_alarmed_quality_factor(std::string &status)
 {
-    unsigned long i,j;
+    unsigned long i, j;
 
-    for (i = 0;i < attr_list.size();i++)
+    for(i = 0; i < attr_list.size(); i++)
     {
         bool found = false;
-        for (j = 0;j < alarm_attr_list.size();j++)
+        for(j = 0; j < alarm_attr_list.size(); j++)
         {
-            if (alarm_attr_list[j] == (long)i)
+            if(alarm_attr_list[j] == (long) i)
             {
                 found = true;
                 break;
             }
         }
-        if (found == true)
+        if(found == true)
+        {
             continue;
+        }
 
-        if (attr_list[i]->get_quality() == Tango::ATTR_ALARM)
+        if(attr_list[i]->get_quality() == Tango::ATTR_ALARM)
         {
             std::string &attr_label = attr_list[i]->get_label();
             std::string str("\nAlarm : Quality factor set to ALARM for attribute ");
 
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = str + attr_list[i]->get_name();
             }
@@ -1753,12 +1782,12 @@ void MultiAttribute::add_alarmed_quality_factor(std::string &status)
             }
             status = status + str;
         }
-        else if (attr_list[i]->get_quality() == Tango::ATTR_WARNING)
+        else if(attr_list[i]->get_quality() == Tango::ATTR_WARNING)
         {
             std::string &attr_label = attr_list[i]->get_label();
             std::string str("\nWarning : Quality factor set to WARNING for attribute ");
 
-            if (attr_label == LabelNotSpec)
+            if(attr_label == LabelNotSpec)
             {
                 str = str + attr_list[i]->get_name();
             }
@@ -1787,7 +1816,7 @@ void MultiAttribute::add_alarmed_quality_factor(std::string &status)
 void MultiAttribute::add_attr(Attribute *att)
 {
     attr_list.push_back(att);
-    ext->put_attribute_in_map(att,attr_list.size() - 1);
+    ext->put_attribute_in_map(att, attr_list.size() - 1);
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1806,44 +1835,47 @@ void MultiAttribute::add_attr(Attribute *att)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void MultiAttribute::update(const Attribute &att,const std::string &dev_name)
+void MultiAttribute::update(const Attribute &att, const std::string &dev_name)
 {
     long ind = get_attr_ind_by_name(att.get_name().c_str());
 
-//
-// If it is writable, add it to the writable attribute list if not there already
-//
+    //
+    // If it is writable, add it to the writable attribute list if not there already
+    //
 
     Tango::AttrWriteType w_type = att.get_writable();
-    if ((w_type == Tango::WRITE) ||
-        (w_type == Tango::READ_WRITE))
+    if((w_type == Tango::WRITE) || (w_type == Tango::READ_WRITE))
     {
         std::vector<long>::iterator pos;
-        pos = find(writable_attr_list.begin(),writable_attr_list.end(),ind);
-        if (pos == writable_attr_list.end())
-            writable_attr_list.push_back(ind);
-    }
-
-//
-// If one of the alarm properties is defined, add it to the alarmed attribute list
-//
-
-    if (att.is_alarmed().any() == true)
-    {
-        if (w_type != Tango::WRITE)
+        pos = find(writable_attr_list.begin(), writable_attr_list.end(), ind);
+        if(pos == writable_attr_list.end())
         {
-            std::vector<long>::iterator pos;
-            pos = find(alarm_attr_list.begin(),alarm_attr_list.end(),ind);
-            if (pos == alarm_attr_list.end())
-                alarm_attr_list.push_back(ind);
+            writable_attr_list.push_back(ind);
         }
     }
 
-//
-// If if there is one associated att
-//
+    //
+    // If one of the alarm properties is defined, add it to the alarmed attribute list
+    //
 
-    check_associated(ind,dev_name);
+    if(att.is_alarmed().any() == true)
+    {
+        if(w_type != Tango::WRITE)
+        {
+            std::vector<long>::iterator pos;
+            pos = find(alarm_attr_list.begin(), alarm_attr_list.end(), ind);
+            if(pos == alarm_attr_list.end())
+            {
+                alarm_attr_list.push_back(ind);
+            }
+        }
+    }
+
+    //
+    // If if there is one associated att
+    //
+
+    check_associated(ind, dev_name);
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1868,11 +1900,11 @@ bool MultiAttribute::is_opt_prop(const std::string &prop_name)
 {
     bool ret = false;
 
-    long nb_opt_prop = sizeof(Tango_OptAttrProp)/sizeof(OptAttrProp);
+    long nb_opt_prop = sizeof(Tango_OptAttrProp) / sizeof(OptAttrProp);
 
-    for (long i = 0;i < nb_opt_prop;i++)
+    for(long i = 0; i < nb_opt_prop; i++)
     {
-        if (prop_name == Tango_OptAttrProp[i].name)
+        if(prop_name == Tango_OptAttrProp[i].name)
         {
             ret = true;
             break;
@@ -1882,4 +1914,4 @@ bool MultiAttribute::is_opt_prop(const std::string &prop_name)
     return ret;
 }
 
-} // End of Tango namespace
+} // namespace Tango

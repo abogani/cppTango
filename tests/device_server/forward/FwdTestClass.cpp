@@ -1,5 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTestClass.cpp) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTestClass.cpp
@@ -35,10 +35,9 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #include "FwdTestClass.h"
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass.cpp
 
 //-------------------------------------------------------------------
@@ -84,9 +83,9 @@ FwdTestClass::FwdTestClass(std::string &s):Tango::DeviceClass(s)
 	write_class_property();
 
 	/*----- PROTECTED REGION ID(FwdTestClass::constructor) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::constructor
 
 	TANGO_LOG_INFO << "Leaving FwdTestClass constructor" << std::endl;
@@ -101,9 +100,9 @@ FwdTestClass::FwdTestClass(std::string &s):Tango::DeviceClass(s)
 FwdTestClass::~FwdTestClass()
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::destructor) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::destructor
 
 	_instance = NULL;
@@ -283,11 +282,11 @@ void FwdTestClass::write_class_property()
 void FwdTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::device_factory_before) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code
+    //	Add your own code
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::device_factory_before
 
 	//	Create devices and add it into the device list
@@ -315,11 +314,11 @@ void FwdTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 	}
 
 	/*----- PROTECTED REGION ID(FwdTestClass::device_factory_after) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code
+    //	Add your own code
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::device_factory_after
 }
 //--------------------------------------------------------
@@ -332,40 +331,40 @@ void FwdTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::attribute_factory_before) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	FwdAttrScaSh	*att1 = new FwdAttrScaSh("fwd_short_rw");
-	Tango::UserDefaultFwdAttrProp	att1_prop;
-	att1_prop.set_label("Gasp a fwd attribute");
-	att1->set_default_properties(att1_prop);
-	att_list.push_back(att1);
+    FwdAttrScaSh *att1 = new FwdAttrScaSh("fwd_short_rw");
+    Tango::UserDefaultFwdAttrProp att1_prop;
+    att1_prop.set_label("Gasp a fwd attribute");
+    att1->set_default_properties(att1_prop);
+    att_list.push_back(att1);
 
-	FwdAttrScaStr	*att2 = new FwdAttrScaStr("fwd_string_w");
-	att_list.push_back(att2);
+    FwdAttrScaStr *att2 = new FwdAttrScaStr("fwd_string_w");
+    att_list.push_back(att2);
 
-	FwdAttrSpecDb	*att3 = new FwdAttrSpecDb("fwd_spec_double");
-	att_list.push_back(att3);
+    FwdAttrSpecDb *att3 = new FwdAttrSpecDb("fwd_spec_double");
+    att_list.push_back(att3);
 
-	FwdAttrImaStr	*att4 = new FwdAttrImaStr("fwd_ima_string_rw");
-	att_list.push_back(att4);
+    FwdAttrImaStr *att4 = new FwdAttrImaStr("fwd_ima_string_rw");
+    att_list.push_back(att4);
 
-	FwdAttrScaSta	*att5 = new FwdAttrScaSta("fwd_state");
-	att_list.push_back(att5);
+    FwdAttrScaSta *att5 = new FwdAttrScaSta("fwd_state");
+    att_list.push_back(att5);
 
-	FwdAttrScaStr	*att6 = new FwdAttrScaStr("fwd_string_rw");
-	att_list.push_back(att6);
+    FwdAttrScaStr *att6 = new FwdAttrScaStr("fwd_string_rw");
+    att_list.push_back(att6);
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::attribute_factory_before
 
 	//	Create a list of static attributes
 	create_static_attribute_list(get_class_attr()->get_attr_list());
 	/*----- PROTECTED REGION ID(FwdTestClass::attribute_factory_after) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code
+    //	Add your own code
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::attribute_factory_after
 }
 //--------------------------------------------------------
@@ -378,14 +377,14 @@ void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 void FwdTestClass::pipe_factory()
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::pipe_factory_before) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::pipe_factory_before
 	/*----- PROTECTED REGION ID(FwdTestClass::pipe_factory_after) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::pipe_factory_after
 }
 //--------------------------------------------------------
@@ -398,20 +397,20 @@ void FwdTestClass::pipe_factory()
 void FwdTestClass::command_factory()
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::command_factory_before) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code
+    //	Add your own code
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::command_factory_before
 
 
 	/*----- PROTECTED REGION ID(FwdTestClass::command_factory_after) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	//	Add your own code
+    //	Add your own code
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::command_factory_after
 }
 
@@ -439,9 +438,9 @@ void FwdTestClass::create_static_attribute_list(std::vector<Tango::Attr *> &att_
 	TANGO_LOG_INFO << defaultAttList.size() << " attributes in default list" << std::endl;
 
 	/*----- PROTECTED REGION ID(FwdTestClass::create_static_att_list) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::create_static_att_list
 }
 
@@ -482,9 +481,9 @@ void FwdTestClass::erase_dynamic_attributes(const Tango::DevVarStringArray *devl
 		}
 	}
 	/*----- PROTECTED REGION ID(FwdTestClass::erase_dynamic_attributes) ENABLED START -----*/
-	/* clang-format on */
+    /* clang-format on */
 
-	/* clang-format off */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::erase_dynamic_attributes
 }
 
@@ -506,8 +505,8 @@ Tango::Attr *FwdTestClass::get_attr_object_by_name(std::vector<Tango::Attr *> &a
 
 
 /*----- PROTECTED REGION ID(FwdTestClass::Additional Methods) ENABLED START -----*/
-	/* clang-format on */
+/* clang-format on */
 
-	/* clang-format off */
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass::Additional Methods
 } //	namespace

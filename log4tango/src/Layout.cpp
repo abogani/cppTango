@@ -31,28 +31,19 @@
 #include <tango/common/log4tango/Layout.h>
 #include <chrono>
 
-namespace log4tango {
+namespace log4tango
+{
 
-std::string Layout::format (const LoggingEvent& event)
+std::string Layout::format(const LoggingEvent &event)
 {
     const char sep = ' ';
 
     std::ostringstream message;
 
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(
-        event.timestamp.time_since_epoch()).count();
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(event.timestamp.time_since_epoch()).count();
 
-    message << seconds
-            << sep
-            << "[" << event.thread_id << "]"
-            << sep
-            << Level::get_name(event.level)
-            << sep
-            << '(' << event.file_path << ':' << event.line_number << ')'
-            << sep
-            << event.logger_name
-            << sep
-            << event.message
+    message << seconds << sep << "[" << event.thread_id << "]" << sep << Level::get_name(event.level) << sep << '('
+            << event.file_path << ':' << event.line_number << ')' << sep << event.logger_name << sep << event.message
             << std::ends;
 
     return message.str();

@@ -61,14 +61,14 @@ bool TestCppTango1022::is_DoubleAttr_allowed(TANGO_UNUSED(Tango::AttReqType type
 {
 	//	Not any excluded states for DoubleAttr attribute in Write access.
 	/*----- PROTECTED REGION ID(TestCppTango1022::DoubleAttrStateAllowed_WRITE) ENABLED START -----*/
-	/* clang-format on */
-	/* clang-format off */
+    /* clang-format on */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::DoubleAttrStateAllowed_WRITE
 
 	//	Not any excluded states for DoubleAttr attribute in read access.
 	/*----- PROTECTED REGION ID(TestCppTango1022::DoubleAttrStateAllowed_READ) ENABLED START -----*/
-	/* clang-format on */
-	/* clang-format off */
+    /* clang-format on */
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::DoubleAttrStateAllowed_READ
 	return true;
 }

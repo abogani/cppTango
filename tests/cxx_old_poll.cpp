@@ -6,55 +6,59 @@
 
 #include "cxx_common.h"
 
-#define BASIC_NB_POLL        16u
+#define BASIC_NB_POLL 16u
 #define TEST_CLASS "devTest"
 
 #undef SUITE_NAME
 #define SUITE_NAME OldPollTestSuite__loop
 
-typedef enum {
+typedef enum
+{
     FIRST_EXCEPT = 0,
     SECOND_EXCEPT,
     FIRST_DATA,
     SECOND_DATA
 } AttrResult;
 
-typedef enum {
+typedef enum
+{
     EXCEPT = 0,
     FIRST_STR,
     SECOND_STR
 } CmdResult;
 
-void split_string(string &, char, vector <string> &);
+void split_string(string &, char, vector<string> &);
 
 void stop_poll_att_no_except(DeviceProxy *, const char *);
 
 void stop_poll_cmd_no_except(DeviceProxy *, const char *);
 
-void del_device_no_error(Database &, string&);
+void del_device_no_error(Database &, string &);
 
-class OldPollTestSuite__loop : public CxxTest::TestSuite {
-protected:
+class OldPollTestSuite__loop : public CxxTest::TestSuite
+{
+  protected:
     DeviceProxy *device;
     string device_name, device2_name, alias_name, serv_name, admin_dev_name, inst_name;
     string new_dev, new_dev1_th2, new_dev2_th2, new_dev1_th3;
-    vector <string> ref_polling_pool_conf;
+    vector<string> ref_polling_pool_conf;
 
     int hist_depth;
 
-public:
-    SUITE_NAME() : admin_dev_name{"dserver/"},
-                   inst_name{"debian8"},//TODO pass from cmd
-                   new_dev{"test/debian8/77"},
-                   new_dev1_th2{"test/debian8/800"},
-                   new_dev2_th2{"test/debian8/801"},
-                   new_dev1_th3{"test/debian8/9000"},
-                   ref_polling_pool_conf{1, "test/debian8/10,test/debian8/11"},
-                   hist_depth{10} {
-
-//
-// Arguments check -------------------------------------------------
-//
+  public:
+    SUITE_NAME() :
+        admin_dev_name{"dserver/"},
+        inst_name{"debian8"}, // TODO pass from cmd
+        new_dev{"test/debian8/77"},
+        new_dev1_th2{"test/debian8/800"},
+        new_dev2_th2{"test/debian8/801"},
+        new_dev1_th3{"test/debian8/9000"},
+        ref_polling_pool_conf{1, "test/debian8/10,test/debian8/11"},
+        hist_depth{10}
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device2");
@@ -65,21 +69,23 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
+        //
+        // Initialization --------------------------------------------------
+        //
 
-//
-// Initialization --------------------------------------------------
-//
-
-        try {
+        try
+        {
             device = new DeviceProxy(device_name);
             device->ping();
         }
-        catch (const CORBA::Exception &e) {
+        catch(const CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
 
-        try {
+        try
+        {
             device->poll_command("IOPollStr1", 500);
             device->poll_command("IOPollArray2", 500);
             device->poll_command("IOExcept", 2000);
@@ -97,7 +103,8 @@ public:
             device->poll_attribute("State_spec_attr_rw", 500);
             device->poll_attribute("Encoded_attr", 500);
         }
-        catch (const CORBA::Exception &e) {
+        catch(const CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
@@ -107,22 +114,25 @@ public:
         TEST_LOG << "Done." << endl;
     }
 
-    virtual ~SUITE_NAME() {
+    virtual ~SUITE_NAME()
+    {
+        //
+        // Clean up --------------------------------------------------------
+        //
+        //    TEST_LOG << "Device name = " << device_name << endl;
+        //    TEST_LOG << "Kill device name = " << kill_device_name << endl;
 
-//
-// Clean up --------------------------------------------------------
-//
-//    TEST_LOG << "Device name = " << device_name << endl;
-//    TEST_LOG << "Kill device name = " << kill_device_name << endl;
-
-
-        if (CxxTest::TangoPrinter::is_restore_set("dev1_source_cache"))
+        if(CxxTest::TangoPrinter::is_restore_set("dev1_source_cache"))
+        {
             device->set_source(Tango::CACHE_DEV);
+        }
 
-        if (CxxTest::TangoPrinter::is_restore_set("dev2_poll_PollLong_attr_1000"))
+        if(CxxTest::TangoPrinter::is_restore_set("dev2_poll_PollLong_attr_1000"))
+        {
             stop_poll_att_no_except(new DeviceProxy(device2_name), "PollLong_attr");
+        }
 
-//    TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
+        //    TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
         stop_poll_cmd_no_except(device, "IOPollStr1");
         stop_poll_cmd_no_except(device, "IOArray1");
         stop_poll_cmd_no_except(device, "IOPollArray2");
@@ -147,49 +157,65 @@ public:
         stop_poll_att_no_except(device, "slow_actuator");
         stop_poll_att_no_except(device, "fast_actuator");
 
-        if (CxxTest::TangoPrinter::is_restore_set("reset_device_server"))
+        if(CxxTest::TangoPrinter::is_restore_set("reset_device_server"))
+        {
             reset_device_server();
+        }
 
         delete device;
     }
 
-    static SUITE_NAME *createSuite() {
+    static SUITE_NAME *createSuite()
+    {
         return new SUITE_NAME();
     }
 
-    static void destroySuite(SUITE_NAME *suite) {
+    static void destroySuite(SUITE_NAME *suite)
+    {
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-    void test_read_command_history_string(void) {
+    void test_read_command_history_string(void)
+    {
         auto d_hist = device->command_history("IOPollStr1", hist_depth);
 
         TSM_ASSERT_LESS_THAN("Not enough data in the polling buffer, restart later", 4u, d_hist->size());
 
         CmdResult cr;
 
-        if ((*d_hist)[0].has_failed() == true) {
+        if((*d_hist)[0].has_failed() == true)
+        {
             cr = EXCEPT;
-        } else {
+        }
+        else
+        {
             string str;
             (*d_hist)[0] >> str;
-            if (str[0] == 'E')
+            if(str[0] == 'E')
+            {
                 cr = FIRST_STR;
+            }
             else
+            {
                 cr = SECOND_STR;
+            }
         }
 
-        for (size_t i = 0; i < d_hist->size(); i++) {
+        for(size_t i = 0; i < d_hist->size(); i++)
+        {
             string str;
-            if ((*d_hist)[i].has_failed() == false)
+            if((*d_hist)[i].has_failed() == false)
+            {
                 (*d_hist)[i] >> str;
+            }
 
             TEST_LOG << "Command failed = " << (*d_hist)[i].has_failed() << endl;
-            if ((*d_hist)[i].has_failed() == false) {
+            if((*d_hist)[i].has_failed() == false)
+            {
                 (*d_hist)[i] >> str;
                 TEST_LOG << "Value = " << str << endl;
             }
@@ -202,69 +228,72 @@ public:
         DevErrorList del;
         string simple_str;
 
-        switch (cr) {
-            case EXCEPT:
-                TS_ASSERT((*d_hist)[0].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[0].get_err_stack().length(), 1u);
-                del = (*d_hist)[0].get_err_stack();
-                TS_ASSERT_EQUALS(std::string(del[0].desc.in()), "www");
+        switch(cr)
+        {
+        case EXCEPT:
+            TS_ASSERT((*d_hist)[0].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[0].get_err_stack().length(), 1u);
+            del = (*d_hist)[0].get_err_stack();
+            TS_ASSERT_EQUALS(std::string(del[0].desc.in()), "www");
 
-                (*d_hist)[1] >> simple_str;
-                TS_ASSERT(!(*d_hist)[1].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[1].get_err_stack().length(), 0u);
-                TS_ASSERT_EQUALS(simple_str,"Even value from IOPollStr1");
+            (*d_hist)[1] >> simple_str;
+            TS_ASSERT(!(*d_hist)[1].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[1].get_err_stack().length(), 0u);
+            TS_ASSERT_EQUALS(simple_str, "Even value from IOPollStr1");
 
-                (*d_hist)[2] >> simple_str;
-                TS_ASSERT(!(*d_hist)[2].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[2].get_err_stack().length(), 0u);
-                TS_ASSERT_EQUALS(simple_str, "Odd value from IOPollStr1");
-                break;
+            (*d_hist)[2] >> simple_str;
+            TS_ASSERT(!(*d_hist)[2].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[2].get_err_stack().length(), 0u);
+            TS_ASSERT_EQUALS(simple_str, "Odd value from IOPollStr1");
+            break;
 
-            case FIRST_STR:
-                (*d_hist)[0] >> simple_str;
-                TS_ASSERT(!(*d_hist)[0].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[0].get_err_stack().length(), 0u);
-                TS_ASSERT_EQUALS(simple_str, "Even value from IOPollStr1");
+        case FIRST_STR:
+            (*d_hist)[0] >> simple_str;
+            TS_ASSERT(!(*d_hist)[0].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[0].get_err_stack().length(), 0u);
+            TS_ASSERT_EQUALS(simple_str, "Even value from IOPollStr1");
 
-                (*d_hist)[1] >> simple_str;
-                TS_ASSERT(!(*d_hist)[1].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[1].get_err_stack().length(), 0u);
-                TS_ASSERT_EQUALS(simple_str, "Odd value from IOPollStr1");
+            (*d_hist)[1] >> simple_str;
+            TS_ASSERT(!(*d_hist)[1].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[1].get_err_stack().length(), 0u);
+            TS_ASSERT_EQUALS(simple_str, "Odd value from IOPollStr1");
 
-                TS_ASSERT((*d_hist)[2].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[2].get_err_stack().length(), 1u);
-                del = (*d_hist)[2].get_err_stack();
-                TS_ASSERT_EQUALS(std::string(del[0].desc.in()), "www");
-                break;
+            TS_ASSERT((*d_hist)[2].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[2].get_err_stack().length(), 1u);
+            del = (*d_hist)[2].get_err_stack();
+            TS_ASSERT_EQUALS(std::string(del[0].desc.in()), "www");
+            break;
 
-            case SECOND_STR:
-                (*d_hist)[0] >> simple_str;
-                TS_ASSERT(!(*d_hist)[0].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[0].get_err_stack().length(), 0u);
-                TS_ASSERT_EQUALS(simple_str, "Odd value from IOPollStr1");
+        case SECOND_STR:
+            (*d_hist)[0] >> simple_str;
+            TS_ASSERT(!(*d_hist)[0].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[0].get_err_stack().length(), 0u);
+            TS_ASSERT_EQUALS(simple_str, "Odd value from IOPollStr1");
 
-                TS_ASSERT((*d_hist)[1].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[1].get_err_stack().length(), 1u);
-                del = (*d_hist)[1].get_err_stack();
-                TS_ASSERT_EQUALS(std::string(del[0].desc.in()), "www");
+            TS_ASSERT((*d_hist)[1].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[1].get_err_stack().length(), 1u);
+            del = (*d_hist)[1].get_err_stack();
+            TS_ASSERT_EQUALS(std::string(del[0].desc.in()), "www");
 
-                (*d_hist)[2] >> simple_str;
-                TS_ASSERT(!(*d_hist)[2].has_failed());
-                TS_ASSERT_EQUALS((*d_hist)[2].get_err_stack().length(), 0u);
-                TS_ASSERT_EQUALS(simple_str, "Even value from IOPollStr1");
-                break;
+            (*d_hist)[2] >> simple_str;
+            TS_ASSERT(!(*d_hist)[2].has_failed());
+            TS_ASSERT_EQUALS((*d_hist)[2].get_err_stack().length(), 0u);
+            TS_ASSERT_EQUALS(simple_str, "Even value from IOPollStr1");
+            break;
         }
 
         delete d_hist;
     }
 
-    void test_command_history_array(void) {
+    void test_command_history_array(void)
+    {
         auto d_hist = device->command_history("IOPollArray2", hist_depth);
 
         TSM_ASSERT_LESS_THAN("Not enough data in the polling buffer, restart later", 4u, d_hist->size());
 
         short first_val_first_rec = 0;
-        for (size_t i = 0; i < d_hist->size(); i++) {
+        for(size_t i = 0; i < d_hist->size(); i++)
+        {
             vector<short> vect;
             (*d_hist)[i] >> vect;
 
@@ -275,25 +304,37 @@ public:
             TEST_LOG << "Error stack depth = " << (*d_hist)[i].get_err_stack().length() << endl;
             TEST_LOG << endl;
 
-            if (i == 0)
+            if(i == 0)
+            {
                 first_val_first_rec = vect[0];
+            }
 
             TS_ASSERT(!(*d_hist)[i].has_failed());
             TS_ASSERT_EQUALS((*d_hist)[i].get_err_stack().length(), 0u);
-            if (i != 0) {
-                if (first_val_first_rec == 100) {
-                    if ((i % 2) == 0) {
+            if(i != 0)
+            {
+                if(first_val_first_rec == 100)
+                {
+                    if((i % 2) == 0)
+                    {
                         TS_ASSERT_EQUALS(vect[0], 100);
                         TS_ASSERT_EQUALS(vect[1], 200);
-                    } else {
+                    }
+                    else
+                    {
                         TS_ASSERT_EQUALS(vect[0], 300);
                         TS_ASSERT_EQUALS(vect[1], 400);
                     }
-                } else {
-                    if ((i % 2) == 0) {
+                }
+                else
+                {
+                    if((i % 2) == 0)
+                    {
                         TS_ASSERT_EQUALS(vect[0], 300);
                         TS_ASSERT_EQUALS(vect[1], 400);
-                    } else {
+                    }
+                    else
+                    {
                         TS_ASSERT_EQUALS(vect[0], 100);
                         TS_ASSERT_EQUALS(vect[1], 200);
                     }
@@ -303,10 +344,12 @@ public:
         delete d_hist;
     }
 
-    void test_command_history_with_exception(void) {
+    void test_command_history_with_exception(void)
+    {
         auto d_hist = device->command_history("IOExcept", hist_depth);
 
-        for (size_t i = 0; i < d_hist->size(); i++) {
+        for(size_t i = 0; i < d_hist->size(); i++)
+        {
             TEST_LOG << "Command failed = " << (*d_hist)[i].has_failed() << endl;
             TimeVal &t = (*d_hist)[i].get_date();
             TEST_LOG << "Date : " << t.tv_sec << " sec, " << t.tv_usec << " usec" << endl;
@@ -320,11 +363,12 @@ public:
         delete d_hist;
     }
 
-
-    void test_command_history_for_state(void) {
+    void test_command_history_for_state(void)
+    {
         auto d_hist = device->command_history("State", hist_depth);
 
-        for (size_t i = 0; i < d_hist->size(); i++) {
+        for(size_t i = 0; i < d_hist->size(); i++)
+        {
             TEST_LOG << (*d_hist)[i] << endl;
 
             TS_ASSERT(!(*d_hist)[i].has_failed());
@@ -336,10 +380,12 @@ public:
         delete d_hist;
     }
 
-    void test_command_history_for_status(void) {
+    void test_command_history_for_status(void)
+    {
         auto d_hist = device->command_history("Status", hist_depth);
 
-        for (size_t i = 0; i < d_hist->size(); i++) {
+        for(size_t i = 0; i < d_hist->size(); i++)
+        {
             TEST_LOG << (*d_hist)[i] << endl;
 
             TS_ASSERT(!(*d_hist)[i].has_failed());
@@ -351,20 +397,24 @@ public:
         delete d_hist;
     }
 
-    void test_command_history_DevEncoded(void) {
+    void test_command_history_DevEncoded(void)
+    {
         auto d_hist = device->command_history("OEncoded", hist_depth);
 
         TSM_ASSERT_LESS_THAN("Not enough data in the polling buffer, restart later", 4u, d_hist->size());
 
         unsigned char first_val_enc = 0;
-        for (size_t i = 0; i < d_hist->size(); i++) {
+        for(size_t i = 0; i < d_hist->size(); i++)
+        {
             DevEncoded the_enc;
             (*d_hist)[i] >> the_enc;
 
             TEST_LOG << "Command failed = " << (*d_hist)[i].has_failed() << endl;
             TEST_LOG << "Encoded_format = " << the_enc.encoded_format << endl;
-            for (unsigned int ii = 0; ii < the_enc.encoded_data.length(); ++ii)
+            for(unsigned int ii = 0; ii < the_enc.encoded_data.length(); ++ii)
+            {
                 TEST_LOG << "Encoded_data = " << (int) the_enc.encoded_data[ii] << endl;
+            }
             TimeVal &t = (*d_hist)[i].get_date();
             TEST_LOG << "Date : " << t.tv_sec << " sec, " << t.tv_usec << " usec" << endl;
             TEST_LOG << "Error stack depth = " << (*d_hist)[i].get_err_stack().length() << endl;
@@ -373,30 +423,41 @@ public:
             TS_ASSERT(!(*d_hist)[i].has_failed());
             TS_ASSERT_EQUALS((*d_hist)[i].get_err_stack().length(), 0u);
 
-            if (i == 0)
+            if(i == 0)
+            {
                 first_val_enc = the_enc.encoded_data[0];
+            }
 
-            if ((i % 2) == 0) {
-                if (first_val_enc == 11) {
+            if((i % 2) == 0)
+            {
+                if(first_val_enc == 11)
+                {
                     TS_ASSERT_EQUALS(std::string(the_enc.encoded_format), "Odd - OEncoded format");
                     TS_ASSERT_EQUALS(the_enc.encoded_data.length(), 2u);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[0], 11);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[1], 21);
-                } else {
+                }
+                else
+                {
                     TS_ASSERT_EQUALS(std::string(the_enc.encoded_format), "Even - OEncoded format");
                     TS_ASSERT_EQUALS(the_enc.encoded_data[0], 10);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[1], 20);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[2], 30);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[3], 40);
                 }
-            } else {
-                if (first_val_enc == 11) {
+            }
+            else
+            {
+                if(first_val_enc == 11)
+                {
                     TS_ASSERT_EQUALS(std::string(the_enc.encoded_format), "Even - OEncoded format");
                     TS_ASSERT_EQUALS(the_enc.encoded_data[0], 10);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[1], 20);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[2], 30);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[3], 40);
-                } else {
+                }
+                else
+                {
                     TS_ASSERT_EQUALS(std::string(the_enc.encoded_format), "Odd - OEncoded format");
                     TS_ASSERT_EQUALS(the_enc.encoded_data.length(), 2u);
                     TS_ASSERT_EQUALS(the_enc.encoded_data[0], 11);
@@ -407,7 +468,8 @@ public:
         delete d_hist;
     }
 
-    void test_attribute_history_for_long(void) {
+    void test_attribute_history_for_long(void)
+    {
         auto a_hist = device->attribute_history("PollLong_attr", hist_depth);
 
         DevLong first_val;
@@ -416,7 +478,8 @@ public:
         (*a_hist)[0] >> lo;
         first_val = lo;
 
-        for (size_t i = 0; i < a_hist->size(); i++) {
+        for(size_t i = 0; i < a_hist->size(); i++)
+        {
             (*a_hist)[i] >> lo;
 
             TEST_LOG << "Attribute failed = " << (*a_hist)[i].has_failed() << endl;
@@ -432,16 +495,25 @@ public:
             TS_ASSERT_EQUALS((*a_hist)[i].get_dim_x(), 1);
             TS_ASSERT_EQUALS((*a_hist)[i].get_dim_y(), 0);
 
-            if (first_val == 5555) {
-                if ((i % 2) == 0) {
+            if(first_val == 5555)
+            {
+                if((i % 2) == 0)
+                {
                     TS_ASSERT_EQUALS(lo, 5555);
-                } else {
+                }
+                else
+                {
                     TS_ASSERT_EQUALS(lo, 6666);
                 }
-            } else {
-                if ((i % 2) == 0) {
+            }
+            else
+            {
+                if((i % 2) == 0)
+                {
                     TS_ASSERT_EQUALS(lo, 6666);
-                } else {
+                }
+                else
+                {
                     TS_ASSERT_EQUALS(lo, 5555);
                 }
             }
@@ -449,38 +521,56 @@ public:
         delete a_hist;
     }
 
-    void test_attribute_history_for_strings_spectrum(void) {
+    void test_attribute_history_for_strings_spectrum(void)
+    {
         auto a_hist = device->attribute_history("PollString_spec_attr", hist_depth);
 
         string first_string;
         AttrResult ar;
 
-        vector <string> str;
+        vector<string> str;
 
-        if ((*a_hist)[0].has_failed() == true) {
-            if (::strcmp(((*a_hist)[0].get_err_stack())[0].reason.in(), "aaaa") == 0)
+        if((*a_hist)[0].has_failed() == true)
+        {
+            if(::strcmp(((*a_hist)[0].get_err_stack())[0].reason.in(), "aaaa") == 0)
+            {
                 ar = FIRST_EXCEPT;
+            }
             else
+            {
                 ar = SECOND_EXCEPT;
-        } else {
+            }
+        }
+        else
+        {
             (*a_hist)[0] >> str;
-            if (str.size() == 2)
+            if(str.size() == 2)
+            {
                 ar = FIRST_DATA;
+            }
             else
+            {
                 ar = SECOND_DATA;
+            }
         }
 
-        for (size_t i = 0; i < a_hist->size(); i++) {
+        for(size_t i = 0; i < a_hist->size(); i++)
+        {
             TEST_LOG << "Attribute failed = " << (*a_hist)[i].has_failed() << endl;
             TimeVal &t = (*a_hist)[i].get_date();
             TEST_LOG << "Date : " << t.tv_sec << " sec, " << t.tv_usec << " usec" << endl;
-            if ((*a_hist)[i].has_failed() == false) {
+            if((*a_hist)[i].has_failed() == false)
+            {
                 (*a_hist)[i] >> str;
                 TEST_LOG << "Value = " << str[0];
-                if (str.size() == 2)
+                if(str.size() == 2)
+                {
                     TEST_LOG << ", Value = " << str[1];
+                }
                 TEST_LOG << endl;
-            } else {
+            }
+            else
+            {
                 TEST_LOG << "Error stack depth = " << (*a_hist)[i].get_err_stack().length() << endl;
                 TEST_LOG << "Error level 0 reason = " << ((*a_hist)[i].get_err_stack())[0].reason << endl;
                 TEST_LOG << "Error level 0 desc = " << ((*a_hist)[i].get_err_stack())[0].desc << endl;
@@ -488,99 +578,101 @@ public:
             TEST_LOG << endl;
         }
 
-        switch (ar) {
-            case FIRST_EXCEPT:
-                TS_ASSERT((*a_hist)[0].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[0].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].desc.in()), "bbb");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].reason.in()), "aaaa");
+        switch(ar)
+        {
+        case FIRST_EXCEPT:
+            TS_ASSERT((*a_hist)[0].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[0].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].desc.in()), "bbb");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].reason.in()), "aaaa");
 
-                TS_ASSERT((*a_hist)[1].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[1].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].desc.in()), "yyy");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].reason.in()), "xxx");
+            TS_ASSERT((*a_hist)[1].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[1].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].desc.in()), "yyy");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].reason.in()), "xxx");
 
-                (*a_hist)[2] >> str;
-                TS_ASSERT_EQUALS(str.size(), 2u);
-                TS_ASSERT_EQUALS(str[0], "Hello world");
-                TS_ASSERT_EQUALS(str[1], "Hello universe");
+            (*a_hist)[2] >> str;
+            TS_ASSERT_EQUALS(str.size(), 2u);
+            TS_ASSERT_EQUALS(str[0], "Hello world");
+            TS_ASSERT_EQUALS(str[1], "Hello universe");
 
-                (*a_hist)[3] >> str;
-                TS_ASSERT_EQUALS(str.size(), 1u);
-                TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
-                break;
+            (*a_hist)[3] >> str;
+            TS_ASSERT_EQUALS(str.size(), 1u);
+            TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
+            break;
 
-            case SECOND_EXCEPT:
-                TS_ASSERT((*a_hist)[0].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[0].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].desc.in()), "yyy");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].reason.in()), "xxx");
+        case SECOND_EXCEPT:
+            TS_ASSERT((*a_hist)[0].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[0].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].desc.in()), "yyy");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[0].get_err_stack())[0].reason.in()), "xxx");
 
-                (*a_hist)[1] >> str;
-                TS_ASSERT_EQUALS(str.size(), 2u);
-                TS_ASSERT_EQUALS(str[0], "Hello world");
-                TS_ASSERT_EQUALS(str[1], "Hello universe");
+            (*a_hist)[1] >> str;
+            TS_ASSERT_EQUALS(str.size(), 2u);
+            TS_ASSERT_EQUALS(str[0], "Hello world");
+            TS_ASSERT_EQUALS(str[1], "Hello universe");
 
-                (*a_hist)[2] >> str;
-                TS_ASSERT_EQUALS(str.size(), 1u);
-                TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
+            (*a_hist)[2] >> str;
+            TS_ASSERT_EQUALS(str.size(), 1u);
+            TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
 
-                TS_ASSERT((*a_hist)[3].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[3].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].desc.in()), "bbb");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].reason.in()), "aaaa");
-                break;
+            TS_ASSERT((*a_hist)[3].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[3].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].desc.in()), "bbb");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].reason.in()), "aaaa");
+            break;
 
-            case FIRST_DATA:
-                (*a_hist)[0] >> str;
-                TS_ASSERT_EQUALS(str.size(), 2u);
-                TS_ASSERT_EQUALS(str[0], "Hello world");
-                TS_ASSERT_EQUALS(str[1], "Hello universe");
+        case FIRST_DATA:
+            (*a_hist)[0] >> str;
+            TS_ASSERT_EQUALS(str.size(), 2u);
+            TS_ASSERT_EQUALS(str[0], "Hello world");
+            TS_ASSERT_EQUALS(str[1], "Hello universe");
 
-                (*a_hist)[1] >> str;
-                TS_ASSERT_EQUALS(str.size(), 1u);
-                TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
+            (*a_hist)[1] >> str;
+            TS_ASSERT_EQUALS(str.size(), 1u);
+            TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
 
-                TS_ASSERT((*a_hist)[2].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[2].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].desc.in()), "bbb");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].reason.in()), "aaaa");
+            TS_ASSERT((*a_hist)[2].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[2].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].desc.in()), "bbb");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].reason.in()), "aaaa");
 
-                TS_ASSERT((*a_hist)[3].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[3].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].desc.in()), "yyy");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].reason.in()), "xxx");
-                break;
+            TS_ASSERT((*a_hist)[3].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[3].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].desc.in()), "yyy");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[3].get_err_stack())[0].reason.in()), "xxx");
+            break;
 
-            case SECOND_DATA:
-                (*a_hist)[0] >> str;
-                TS_ASSERT_EQUALS(str.size(), 1u);
-                TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
+        case SECOND_DATA:
+            (*a_hist)[0] >> str;
+            TS_ASSERT_EQUALS(str.size(), 1u);
+            TS_ASSERT_EQUALS(str[0], "Hello Grenoble");
 
-                TS_ASSERT((*a_hist)[1].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[1].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].desc.in()), "bbb");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].reason.in()), "aaaa");
+            TS_ASSERT((*a_hist)[1].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[1].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].desc.in()), "bbb");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[1].get_err_stack())[0].reason.in()), "aaaa");
 
-                TS_ASSERT((*a_hist)[2].has_failed());
-                TS_ASSERT_EQUALS((*a_hist)[2].get_err_stack().length(), 1u);
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].desc.in()), "yyy");
-                TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].reason.in()), "xxx");
+            TS_ASSERT((*a_hist)[2].has_failed());
+            TS_ASSERT_EQUALS((*a_hist)[2].get_err_stack().length(), 1u);
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].desc.in()), "yyy");
+            TS_ASSERT_EQUALS(std::string(((*a_hist)[2].get_err_stack())[0].reason.in()), "xxx");
 
-                (*a_hist)[3] >> str;
-                TS_ASSERT_EQUALS(str.size(), 2u);
-                TS_ASSERT_EQUALS(str[0], "Hello world");
-                TS_ASSERT_EQUALS(str[1], "Hello universe");
-                break;
+            (*a_hist)[3] >> str;
+            TS_ASSERT_EQUALS(str.size(), 2u);
+            TS_ASSERT_EQUALS(str[0], "Hello world");
+            TS_ASSERT_EQUALS(str[1], "Hello universe");
+            break;
         }
         delete a_hist;
     }
 
-    void test_attribute_history_for_dev_encoded(void) {
+    void test_attribute_history_for_dev_encoded(void)
+    {
         auto enc_hist = device->attribute_history("Encoded_attr", hist_depth);
 
-        for (size_t i = 0; i < enc_hist->size(); i++) {
-
+        for(size_t i = 0; i < enc_hist->size(); i++)
+        {
             TEST_LOG << "Value = " << (*enc_hist)[i] << endl;
             TEST_LOG << endl;
 
@@ -602,10 +694,12 @@ public:
         delete enc_hist;
     }
 
-    void test_attribute_history_with_exception(void) {
+    void test_attribute_history_with_exception(void)
+    {
         auto a_hist = device->attribute_history("attr_wrong_type", hist_depth);
 
-        for (size_t i = 0; i < a_hist->size(); i++) {
+        for(size_t i = 0; i < a_hist->size(); i++)
+        {
             TEST_LOG << "Command failed = " << (*a_hist)[i].has_failed() << endl;
             TimeVal &t = (*a_hist)[i].get_date();
             TEST_LOG << "Date : " << t.tv_sec << " sec, " << t.tv_usec << " usec" << endl;
@@ -617,22 +711,22 @@ public:
             TS_ASSERT((*a_hist)[i].has_failed());
             TS_ASSERT_EQUALS((*a_hist)[i].get_err_stack().length(), 1u);
             TS_ASSERT_EQUALS(std::string((*a_hist)[i].get_err_stack()[0].reason), API_AttrOptProp);
-//            AttributeDimension dim;
-//            dim = (*a_hist)[i].get_r_dimension();
+            //            AttributeDimension dim;
+            //            dim = (*a_hist)[i].get_r_dimension();
 
             TS_ASSERT_EQUALS((*a_hist)[i].get_dim_x(), 0);
             TS_ASSERT_EQUALS((*a_hist)[i].get_dim_y(), 0);
 
-//            dim = (*a_hist)[i].get_w_dimension();
+            //            dim = (*a_hist)[i].get_w_dimension();
 
-//            TS_ASSERT_EQUALS(dim.dim_x, 0);
-//            TS_ASSERT_EQUALS(dim.dim_y, 0);
-
+            //            TS_ASSERT_EQUALS(dim.dim_x, 0);
+            //            TS_ASSERT_EQUALS(dim.dim_y, 0);
         }
         delete a_hist;
     }
 
-    void test_getting_a_long_64_attribute_from_polling_buffer(void) {
+    void test_getting_a_long_64_attribute_from_polling_buffer(void)
+    {
         TS_ASSERT_THROWS_NOTHING(device->set_source(Tango::CACHE));
         CxxTest::TangoPrinter::restore_set("dev1_source_cache");
 
@@ -648,7 +742,8 @@ public:
         TS_ASSERT_EQUALS(data_type, Tango::DEV_LONG64);
     }
 
-    void test_getting_an_unsigned_long_64_bits_attribute_from_polling_buffer(void) {
+    void test_getting_an_unsigned_long_64_bits_attribute_from_polling_buffer(void)
+    {
         TS_ASSERT_THROWS_NOTHING(device->set_source(Tango::CACHE));
         CxxTest::TangoPrinter::restore_set("dev1_source_cache");
 
@@ -662,13 +757,14 @@ public:
         TS_ASSERT_EQUALS(data_type_ulo, Tango::DEV_ULONG64);
     }
 
-    void test_getting_a_unsigned_long_spectrum_attribute_from_polling_buffer(void) {
+    void test_getting_a_unsigned_long_spectrum_attribute_from_polling_buffer(void)
+    {
         TS_ASSERT_THROWS_NOTHING(device->set_source(Tango::CACHE));
         CxxTest::TangoPrinter::restore_set("dev1_source_cache");
 
         DeviceAttribute da;
         TS_ASSERT_THROWS_NOTHING(da = device->read_attribute("ULong_spec_attr_rw"));
-        vector <DevULong> v_lo;
+        vector<DevULong> v_lo;
         auto ret = (da >> v_lo);
 
         TS_ASSERT(ret);
@@ -677,13 +773,14 @@ public:
         TS_ASSERT_EQUALS(v_lo[2], 222222u);
     }
 
-    void test_getting_a_state_spectrum_attribute_from_polling_buffer(void) {
+    void test_getting_a_state_spectrum_attribute_from_polling_buffer(void)
+    {
         TS_ASSERT_THROWS_NOTHING(device->set_source(Tango::CACHE));
         CxxTest::TangoPrinter::restore_set("dev1_source_cache");
 
         DeviceAttribute da;
         TS_ASSERT_THROWS_NOTHING(da = device->read_attribute("State_spec_attr_rw"));
-        vector <DevState> v_sta;
+        vector<DevState> v_sta;
         auto ret = (da >> v_sta);
 
         TS_ASSERT(ret);
@@ -691,7 +788,8 @@ public:
         TS_ASSERT_EQUALS(v_sta[1], Tango::OFF);
     }
 
-    void test_getting_a_dev_encoded_attribute_from_polling_buffer(void) {
+    void test_getting_a_dev_encoded_attribute_from_polling_buffer(void)
+    {
         TS_ASSERT_THROWS_NOTHING(device->set_source(Tango::CACHE));
         CxxTest::TangoPrinter::restore_set("dev1_source_cache");
 
@@ -709,27 +807,35 @@ public:
         TS_ASSERT_EQUALS(enc_lo.encoded_data[3], 100);
     }
 
-    void test_polling_status_from_device_name(void) {
-        if (CxxTest::TangoPrinter::is_restore_set("dev1_source_cache"))
+    void test_polling_status_from_device_name(void)
+    {
+        if(CxxTest::TangoPrinter::is_restore_set("dev1_source_cache"))
+        {
             TS_ASSERT_THROWS_NOTHING(device->set_source(Tango::CACHE_DEV));
+        }
 
-        vector <string> *poll_str = nullptr;
+        vector<string> *poll_str = nullptr;
         TS_ASSERT_THROWS_NOTHING(poll_str = device->polling_status());
 
         unsigned long nb_polled = BASIC_NB_POLL;
-        for (unsigned int i = 0; i < poll_str->size(); i++) {
-            if ((*poll_str)[i].find("String_attr") != string::npos) {
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
+            if((*poll_str)[i].find("String_attr") != string::npos)
+            {
                 nb_polled++;
             }
-            if ((*poll_str)[i].find("IOStartPoll") != string::npos) {
+            if((*poll_str)[i].find("IOStartPoll") != string::npos)
+            {
                 nb_polled++;
             }
         }
 
         TEST_LOG << poll_str->size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < poll_str->size(); i++)
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
             TEST_LOG << "Polling status = " << (*poll_str)[i] << endl;
+        }
         TEST_LOG << endl;
 
         TS_ASSERT_EQUALS(poll_str->size(), nb_polled);
@@ -737,15 +843,18 @@ public:
         delete poll_str;
     }
 
-    void test_polling_status_from_device_name_2(void) {
+    void test_polling_status_from_device_name_2(void)
+    {
         auto device2 = new DeviceProxy(device2_name);
-        vector <string> *poll_str = nullptr;
+        vector<string> *poll_str = nullptr;
         TS_ASSERT_THROWS_NOTHING(poll_str = device2->polling_status());
 
         TEST_LOG << poll_str->size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < poll_str->size(); i++)
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
             TEST_LOG << "Polling status = " << (*poll_str)[i] << endl;
+        }
         TEST_LOG << endl;
 
         TS_ASSERT_EQUALS(poll_str->size(), 0u);
@@ -753,40 +862,44 @@ public:
         delete device2;
     }
 
-    void test_polling_status_from_alias_name(void) {
-
+    void test_polling_status_from_alias_name(void)
+    {
         string adm_name = device->adm_name();
         DeviceProxy *admin_dev = new DeviceProxy(adm_name);
-
 
         DeviceData d_send, d_received;
         d_send << alias_name;
         TS_ASSERT_THROWS_NOTHING(d_received = admin_dev->command_inout("DevPollStatus", d_send));
-        vector <string> v_str;
+        vector<string> v_str;
         d_received >> v_str;
 
         auto nb_polled = BASIC_NB_POLL;
-        for (unsigned int i = 0; i < v_str.size(); i++) {
-            if (v_str[i].find("String_attr") != string::npos) {
+        for(unsigned int i = 0; i < v_str.size(); i++)
+        {
+            if(v_str[i].find("String_attr") != string::npos)
+            {
                 nb_polled++;
                 continue;
             }
-            if (v_str[i].find("IOStartPoll") != string::npos) {
+            if(v_str[i].find("IOStartPoll") != string::npos)
+            {
                 nb_polled++;
             }
         }
 
         TEST_LOG << v_str.size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < v_str.size(); i++)
+        for(unsigned int i = 0; i < v_str.size(); i++)
+        {
             TEST_LOG << "Polling status = " << v_str[i] << endl;
+        }
         TEST_LOG << endl;
 
         TS_ASSERT_EQUALS(v_str.size(), nb_polled);
     }
 
-    void test_get_command_poll_period(void) {
-
+    void test_get_command_poll_period(void)
+    {
         string cmd("IOExcept");
         int per = 0;
         TS_ASSERT_THROWS_NOTHING(per = device->get_command_poll_period(cmd));
@@ -802,8 +915,8 @@ public:
         TS_ASSERT_EQUALS(per, 1000);
     }
 
-    void test_poll_command(void) {
-
+    void test_poll_command(void)
+    {
         string cmd{"IOArray1"};
         bool poll = true;
         TS_ASSERT_THROWS_NOTHING(poll = device->is_command_polled(cmd));
@@ -828,21 +941,26 @@ public:
         TS_ASSERT_EQUALS(per, 5000);
 
         std::this_thread::sleep_for(std::chrono::seconds(3));
-        vector <string> *poll_str = nullptr;
+        vector<string> *poll_str = nullptr;
         TS_ASSERT_THROWS_NOTHING(poll_str = device->polling_status());
 
         TEST_LOG << poll_str->size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < poll_str->size(); i++)
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
             TEST_LOG << "Polling status = " << (*poll_str)[i] << endl;
+        }
         TEST_LOG << endl;
 
         std::size_t nb_polled = BASIC_NB_POLL + 1;
-        for (unsigned int i = 0; i < poll_str->size(); i++) {
-            if ((*poll_str)[i].find("String_attr") != string::npos) {
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
+            if((*poll_str)[i].find("String_attr") != string::npos)
+            {
                 nb_polled++;
             }
-            if ((*poll_str)[i].find("IOStartPoll") != string::npos) {
+            if((*poll_str)[i].find("IOStartPoll") != string::npos)
+            {
                 nb_polled++;
             }
         }
@@ -852,26 +970,27 @@ public:
         delete poll_str;
     }
 
-    void test_min_polling_period(void) {
-//
-//  WARNING, this test works only if device property min_poll_period set to 200
-//  and cmd_min_poll_period set to IOExcept,500
-//
+    void test_min_polling_period(void)
+    {
+        //
+        //  WARNING, this test works only if device property min_poll_period set to 200
+        //  and cmd_min_poll_period set to IOExcept,500
+        //
 
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcatch-value"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wcatch-value"
 #endif
 
 #undef _TS_LAST_CATCH
-#define _TS_LAST_CATCH(b) _TS_CATCH_TYPE( (...), b )
+#define _TS_LAST_CATCH(b) _TS_CATCH_TYPE((...), b)
 
         TS_ASSERT_THROWS(device->poll_command("IOExcept", 300), Tango::DevFailed);
 
         TS_ASSERT_THROWS(device->poll_command("IOExcept", 100), Tango::DevFailed);
 
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
+  #pragma GCC diagnostic pop
 #endif
 
         TS_ASSERT_THROWS_NOTHING(device->poll_command("IOExcept", 500));
@@ -881,7 +1000,7 @@ public:
         TS_ASSERT_THROWS_NOTHING(device->poll_command("IOExcept", 2000));
 
         DbData db;
-        vector <string> prop_vs;
+        vector<string> prop_vs;
         prop_vs.push_back("IOExcept");
         prop_vs.push_back("500");
         db.push_back(DbDatum("cmd_min_poll_period"));
@@ -889,7 +1008,8 @@ public:
         TS_ASSERT_THROWS_NOTHING(device->put_property(db));
     }
 
-    void test_stop_poll_command(void) {
+    void test_stop_poll_command(void)
+    {
         string cmd{"IOArray1"};
         TS_ASSERT_THROWS_NOTHING(device->stop_poll_command(cmd));
 
@@ -898,21 +1018,26 @@ public:
 
         TS_ASSERT(!poll);
 
-        vector <string> *poll_str = nullptr;
+        vector<string> *poll_str = nullptr;
         TS_ASSERT_THROWS_NOTHING(poll_str = device->polling_status());
 
         TEST_LOG << poll_str->size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < poll_str->size(); i++)
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
             TEST_LOG << "Polling status = " << (*poll_str)[i] << endl;
+        }
         TEST_LOG << endl;
 
         std::size_t nb_polled = BASIC_NB_POLL;
-        for (unsigned int i = 0; i < poll_str->size(); i++) {
-            if ((*poll_str)[i].find("String_attr") != string::npos) {
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
+            if((*poll_str)[i].find("String_attr") != string::npos)
+            {
                 nb_polled++;
             }
-            if ((*poll_str)[i].find("IOStartPoll") != string::npos) {
+            if((*poll_str)[i].find("IOStartPoll") != string::npos)
+            {
                 nb_polled++;
             }
         }
@@ -922,8 +1047,8 @@ public:
         delete poll_str;
     }
 
-    void test_poll_attribute(void) {
-
+    void test_poll_attribute(void)
+    {
         string attr{"Double_attr"};
         bool poll = true;
         TS_ASSERT_THROWS_NOTHING(poll = device->is_attribute_polled(attr));
@@ -949,21 +1074,26 @@ public:
 
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
-        vector <string> *poll_str = nullptr;
+        vector<string> *poll_str = nullptr;
         TS_ASSERT_THROWS_NOTHING(poll_str = device->polling_status());
 
         TEST_LOG << poll_str->size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < poll_str->size(); i++)
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
             TEST_LOG << "Polling status = " << (*poll_str)[i] << endl;
+        }
         TEST_LOG << endl;
 
         std::size_t nb_polled = BASIC_NB_POLL + 1;
-        for (unsigned int i = 0; i < poll_str->size(); i++) {
-            if ((*poll_str)[i].find("String_attr") != string::npos) {
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
+            if((*poll_str)[i].find("String_attr") != string::npos)
+            {
                 nb_polled++;
             }
-            if ((*poll_str)[i].find("IOStartPoll") != string::npos) {
+            if((*poll_str)[i].find("IOStartPoll") != string::npos)
+            {
                 nb_polled++;
             }
         }
@@ -973,7 +1103,8 @@ public:
         delete poll_str;
     }
 
-    void test_stop_poll_attribute(void) {
+    void test_stop_poll_attribute(void)
+    {
         string attr{"Double_attr"};
         TS_ASSERT_THROWS_NOTHING(device->stop_poll_attribute(attr));
 
@@ -982,21 +1113,26 @@ public:
 
         TS_ASSERT(!poll);
 
-        vector <string> *poll_str = nullptr;
+        vector<string> *poll_str = nullptr;
         TS_ASSERT_THROWS_NOTHING(poll_str = device->polling_status());
 
         TEST_LOG << poll_str->size() << " object(s) polled for device" << endl;
         TEST_LOG << endl;
-        for (unsigned int i = 0; i < poll_str->size(); i++)
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
             TEST_LOG << "Polling status = " << (*poll_str)[i] << endl;
+        }
         TEST_LOG << endl;
 
         std::size_t nb_polled = BASIC_NB_POLL;
-        for (unsigned int i = 0; i < poll_str->size(); i++) {
-            if ((*poll_str)[i].find("String_attr") != string::npos) {
+        for(unsigned int i = 0; i < poll_str->size(); i++)
+        {
+            if((*poll_str)[i].find("String_attr") != string::npos)
+            {
                 nb_polled++;
             }
-            if ((*poll_str)[i].find("IOStartPoll") != string::npos) {
+            if((*poll_str)[i].find("IOStartPoll") != string::npos)
+            {
                 nb_polled++;
             }
         }
@@ -1006,32 +1142,28 @@ public:
         delete poll_str;
     }
 
-    void test_poll_device_2(void) {
+    void test_poll_device_2(void)
+    {
         auto dev2 = new DeviceProxy(device2_name);
         TS_ASSERT_THROWS_NOTHING(dev2->poll_attribute("PollLong_attr", 1000));
         CxxTest::TangoPrinter::restore_set("dev2_poll_PollLong_attr_1000");
 
         this_thread::sleep_for(chrono::seconds{2});
 
-        vector <string> polled_devs;
+        vector<string> polled_devs;
         split_string(ref_polling_pool_conf[0], ',', polled_devs);
         int nb_polled_devs = polled_devs.size();
 
-// Add a device into device server and restart it
-// Also add property to poll one of the device attribute
+        // Add a device into device server and restart it
+        // Also add property to poll one of the device attribute
 
-
-        DbDevInfo my_device_info{
-                new_dev.c_str(),
-                TEST_CLASS,
-                serv_name.c_str()
-        };
+        DbDevInfo my_device_info{new_dev.c_str(), TEST_CLASS, serv_name.c_str()};
 
         Database db{};
         TS_ASSERT_THROWS_NOTHING(db.add_device(my_device_info));
 
         DbDatum poll_prop("polled_attr");
-        vector <string> poll_param;
+        vector<string> poll_param;
         poll_param.push_back("PollLong_attr");
         poll_param.push_back("1000");
         poll_prop << poll_param;
@@ -1045,13 +1177,13 @@ public:
 
         this_thread::sleep_for(chrono::seconds{5});
 
-// Read polling threads pool conf once more
+        // Read polling threads pool conf once more
 
         DeviceData da;
 
         DeviceProxy dev{device_name};
         TS_ASSERT_THROWS_NOTHING(da = dev.command_inout("PollingPoolTst"));
-        vector <string> new_polling_pool_conf;
+        vector<string> new_polling_pool_conf;
         da >> new_polling_pool_conf;
 
         TS_ASSERT_EQUALS(ref_polling_pool_conf.size(), new_polling_pool_conf.size());
@@ -1064,12 +1196,9 @@ public:
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
     }
 
-    void test_change_polling_thread_number_and_add_2_more_devices(void) {
-        DbDevInfo my_device_info{
-                new_dev1_th2.c_str(),
-                TEST_CLASS,
-                serv_name.c_str()
-        };
+    void test_change_polling_thread_number_and_add_2_more_devices(void)
+    {
+        DbDevInfo my_device_info{new_dev1_th2.c_str(), TEST_CLASS, serv_name.c_str()};
 
         Database db{};
         TS_ASSERT_THROWS_NOTHING(db.add_device(my_device_info));
@@ -1084,9 +1213,8 @@ public:
         db_data.push_back(pool_size);
         TS_ASSERT_THROWS_NOTHING(db.put_device_property(admin_dev_name.c_str(), db_data));
 
-
         DbDatum poll_prop("polled_attr");
-        vector <string> poll_param;
+        vector<string> poll_param;
         poll_param.push_back("PollLong_attr");
         poll_param.push_back("1000");
         poll_prop << poll_param;
@@ -1102,19 +1230,19 @@ public:
 
         this_thread::sleep_for(chrono::seconds{5});
 
-// Check new pool conf
+        // Check new pool conf
 
         DeviceData dz;
 
         DeviceProxy dev(device_name);
         TS_ASSERT_THROWS_NOTHING(dz = dev.command_inout("PollingPoolTst"));
 
-        vector <string> new_polling_pool_conf{};
+        vector<string> new_polling_pool_conf{};
         dz >> new_polling_pool_conf;
 
         TS_ASSERT_EQUALS(new_polling_pool_conf.size(), ref_polling_pool_conf.size() + 1);
 
-        vector <string> polled_devs{};
+        vector<string> polled_devs{};
         split_string(new_polling_pool_conf[1], ',', polled_devs);
         auto new_nb_polled_devs = polled_devs.size();
 
@@ -1127,12 +1255,9 @@ public:
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
     }
 
-    void test_change_polling_thread_number_to_3_and_add_1_more_device(void) {
-        DbDevInfo my_device_info{
-                new_dev1_th3.c_str(),
-                TEST_CLASS,
-                serv_name.c_str()
-        };
+    void test_change_polling_thread_number_to_3_and_add_1_more_device(void)
+    {
+        DbDevInfo my_device_info{new_dev1_th3.c_str(), TEST_CLASS, serv_name.c_str()};
 
         Database db{};
         TS_ASSERT_THROWS_NOTHING(db.add_device(my_device_info));
@@ -1145,7 +1270,7 @@ public:
         TS_ASSERT_THROWS_NOTHING(db.put_device_property(admin_dev_name.c_str(), db_data3));
 
         DbDatum poll_prop("polled_attr");
-        vector <string> poll_param;
+        vector<string> poll_param;
         poll_param.push_back("PollLong_attr");
         poll_param.push_back("1000");
         poll_prop << poll_param;
@@ -1160,19 +1285,19 @@ public:
 
         this_thread::sleep_for(chrono::seconds{5});
 
-// Check new pool conf
+        // Check new pool conf
 
         DeviceData dx;
 
         DeviceProxy dev{device_name};
         TS_ASSERT_THROWS_NOTHING(dx = dev.command_inout("PollingPoolTst"));
 
-        vector <string> new_polling_pool_conf{};
+        vector<string> new_polling_pool_conf{};
         dx >> new_polling_pool_conf;
 
         TS_ASSERT_EQUALS(new_polling_pool_conf.size(), ref_polling_pool_conf.size() + 2);
 
-        vector <string> polled_devs;
+        vector<string> polled_devs;
         split_string(new_polling_pool_conf[2], ',', polled_devs);
 
         auto new_nb_polled_devs = polled_devs.size();
@@ -1182,7 +1307,8 @@ public:
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
     }
 
-    void test_delete_1_device_to_check_automatic_polling_pool_reconfiguration(void) {
+    void test_delete_1_device_to_check_automatic_polling_pool_reconfiguration(void)
+    {
         Database db{};
         TS_ASSERT_THROWS_NOTHING(db.delete_device(new_dev1_th3));
 
@@ -1191,19 +1317,19 @@ public:
 
         this_thread::sleep_for(chrono::seconds{5});
 
-// Check pool conf
+        // Check pool conf
 
         DeviceData dv;
 
         DeviceProxy dev{device_name};
         TS_ASSERT_THROWS_NOTHING(dv = dev.command_inout("PollingPoolTst"));
 
-        vector <string> new_polling_pool_conf;
+        vector<string> new_polling_pool_conf;
         dv >> new_polling_pool_conf;
 
         TS_ASSERT_EQUALS(new_polling_pool_conf.size(), ref_polling_pool_conf.size() + 1);
 
-        vector <string> polled_devs;
+        vector<string> polled_devs;
         split_string(new_polling_pool_conf[1], ',', polled_devs);
         auto new_nb_polled_devs = polled_devs.size();
 
@@ -1216,7 +1342,8 @@ public:
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
     }
 
-    void reset_device_server() {
+    void reset_device_server()
+    {
         Database db{};
 
         del_device_no_error(db, new_dev);
@@ -1243,12 +1370,14 @@ public:
     }
 };
 
-void split_string(string &the_str, char delim, vector <string> &splitted_str) {
+void split_string(string &the_str, char delim, vector<string> &splitted_str)
+{
     string::size_type pos, start;
     splitted_str.clear();
 
     start = 0;
-    while ((pos = the_str.find(delim, start)) != string::npos) {
+    while((pos = the_str.find(delim, start)) != string::npos)
+    {
         splitted_str.push_back(the_str.substr(start, pos - start));
         start = pos + 1;
     }
@@ -1256,34 +1385,47 @@ void split_string(string &the_str, char delim, vector <string> &splitted_str) {
     splitted_str.push_back(the_str.substr(start));
 }
 
-
-void stop_poll_att_no_except(DeviceProxy *dev, const char *att_name) {
-    try {
+void stop_poll_att_no_except(DeviceProxy *dev, const char *att_name)
+{
+    try
+    {
         dev->stop_poll_attribute(att_name);
     }
-    catch (Tango::DevFailed &) {}
-    catch (CORBA::Exception &e) {
+    catch(Tango::DevFailed &)
+    {
+    }
+    catch(CORBA::Exception &e)
+    {
         Except::print_exception(e);
         exit(-1);
     }
 }
 
-void stop_poll_cmd_no_except(DeviceProxy *dev, const char *cmd_name) {
-    try {
+void stop_poll_cmd_no_except(DeviceProxy *dev, const char *cmd_name)
+{
+    try
+    {
         dev->stop_poll_command(cmd_name);
     }
-    catch (Tango::DevFailed &) {}
-    catch (CORBA::Exception &e) {
+    catch(Tango::DevFailed &)
+    {
+    }
+    catch(CORBA::Exception &e)
+    {
         Except::print_exception(e);
         exit(-1);
     }
 }
 
-void del_device_no_error(Database &db, string& d_name) {
-    try {
+void del_device_no_error(Database &db, string &d_name)
+{
+    try
+    {
         db.delete_device(d_name.c_str());
     }
-    catch (DevFailed &) {}
+    catch(DevFailed &)
+    {
+    }
 }
 
 #endif // PollTestSuite_h

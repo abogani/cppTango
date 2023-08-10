@@ -84,37 +84,37 @@
 //
 
 #ifdef _WIN32
-    #define _TG_WINDOWS_
+  #define _TG_WINDOWS_
 #endif
 
 //
 // For Windows DLL (import and export nightmare)
 //
 
-#ifdef  _TG_WINDOWS_
-    #if ((defined _USRDLL) || (defined TANGO_HAS_DLL))
-        #if (defined _TANGO_LIB)
-            // basically never used as we have CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS set
-            #define TANGO_IMP_EXP    __declspec(dllexport)
-            #define TANGO_IMP
-        #else
-            #define TANGO_IMP_EXP    __declspec(dllimport)
-            #define TANGO_IMP    __declspec(dllimport)
-        #endif /* _TANGO_LIB */
+#ifdef _TG_WINDOWS_
+  #if((defined _USRDLL) || (defined TANGO_HAS_DLL))
+    #if(defined _TANGO_LIB)
+      // basically never used as we have CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS set
+      #define TANGO_IMP_EXP __declspec(dllexport)
+      #define TANGO_IMP
     #else
-        #define TANGO_IMP_EXP
-        #define TANGO_IMP
-    #endif /* TANGO_HAS_DLL */
-
-    #if (defined _TANGO_LIB)
-        #define TANGO_REV_EXP
-    #else
-        #define TANGO_REV_EXP    __declspec(dllexport)
+      #define TANGO_IMP_EXP __declspec(dllimport)
+      #define TANGO_IMP __declspec(dllimport)
     #endif /* _TANGO_LIB */
-#else
+  #else
     #define TANGO_IMP_EXP
-    #define TANGO_REV_EXP
     #define TANGO_IMP
+  #endif /* TANGO_HAS_DLL */
+
+  #if(defined _TANGO_LIB)
+    #define TANGO_REV_EXP
+  #else
+    #define TANGO_REV_EXP __declspec(dllexport)
+  #endif /* _TANGO_LIB */
+#else
+  #define TANGO_IMP_EXP
+  #define TANGO_REV_EXP
+  #define TANGO_IMP
 #endif /* _TG_WINDOWS_ */
 
 //
@@ -122,19 +122,19 @@
 //
 
 #ifdef _GLIBCXX_USE_CXX11_ABI
-    #define TANGO_CXX11_ABI __attribute((abi_tag("cxx11")))
+  #define TANGO_CXX11_ABI __attribute((abi_tag("cxx11")))
 #else
-    #define TANGO_CXX11_ABI
+  #define TANGO_CXX11_ABI
 #endif
 
 //
 // Some helper define
 //
 
-#define     TangoSys_OMemStream    std::ostringstream
-#define        TangoSys_MemStream    std::stringstream
-#define        TangoSys_Pid        int
-#define        TangoSys_Cout        std::ostream
+#define TangoSys_OMemStream std::ostringstream
+#define TangoSys_MemStream std::stringstream
+#define TangoSys_Pid int
+#define TangoSys_Cout std::ostream
 
 //
 // For Microsoft compilers
@@ -146,7 +146,7 @@
   #pragma warning(disable : 4786)
   #pragma warning(disable : 4267) // var : conversion from size_t to type, possible loss of data
   #pragma warning(disable : 4244) // conversion conversion from type1 to type2, possible loss of data
-  #pragma warning(disable : 4996)    // disable all deprecation warnings
+  #pragma warning(disable : 4996) // disable all deprecation warnings
 #endif
 
 //
@@ -154,11 +154,11 @@
 //
 
 #ifndef _TG_WINDOWS_
-    #define TG_strcasecmp strcasecmp
-    #define TG_strncasecmp strncasecmp
+  #define TG_strcasecmp strcasecmp
+  #define TG_strncasecmp strncasecmp
 #else
-    #define    TG_strcasecmp stricmp
-    #define TG_strncasecmp strnicmp
+  #define TG_strcasecmp stricmp
+  #define TG_strncasecmp strnicmp
 #endif
 
 //
@@ -166,33 +166,33 @@
 //
 
 #ifdef _TG_WINDOWS_
-    #define TANGO_UNUSED(var) var
+  #define TANGO_UNUSED(var) var
 #else
-    #define TANGO_UNUSED(var) var __attribute__ ((unused))
+  #define TANGO_UNUSED(var) var __attribute__((unused))
 #endif
 
 #ifndef _TG_WINDOWS_
-    #include <omniORB4/acconfig.h>
+  #include <omniORB4/acconfig.h>
 
-    #ifdef PACKAGE_BUGREPORT
-        #undef PACKAGE_BUGREPORT
-    #endif
+  #ifdef PACKAGE_BUGREPORT
+    #undef PACKAGE_BUGREPORT
+  #endif
 
-    #ifdef PACKAGE_NAME
-        #undef PACKAGE_NAME
-    #endif
+  #ifdef PACKAGE_NAME
+    #undef PACKAGE_NAME
+  #endif
 
-    #ifdef PACKAGE_STRING
-        #undef PACKAGE_STRING
-    #endif
+  #ifdef PACKAGE_STRING
+    #undef PACKAGE_STRING
+  #endif
 
-    #ifdef PACKAGE_TARNAME
-        #undef PACKAGE_TARNAME
-    #endif
+  #ifdef PACKAGE_TARNAME
+    #undef PACKAGE_TARNAME
+  #endif
 
-    #ifdef PACKAGE_VERSION
-        #undef PACKAGE_VERSION
-    #endif
+  #ifdef PACKAGE_VERSION
+    #undef PACKAGE_VERSION
+  #endif
 #endif
 
 #endif /* _TANGO_CONFIG_H */

@@ -34,7 +34,6 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #ifndef TestCppTango1022_H
 #define TestCppTango1022_H
 
@@ -71,9 +70,9 @@ class TestCppTango1022 : public TANGO_BASE_CLASS
 {
 
 /*----- PROTECTED REGION ID(TestCppTango1022::Data Members) ENABLED START -----*/
-/* clang-format on */
-//	Add your own data members
-/* clang-format off */
+    /* clang-format on */
+    //	Add your own data members
+    /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::Data Members
 
 
@@ -176,9 +175,9 @@ public:
 	void add_dynamic_commands();
 
 /*----- PROTECTED REGION ID(TestCppTango1022::Additional Method prototypes) ENABLED START -----*/
-/* clang-format on */
-//	Additional Method prototypes
-/* clang-format off */
+    /* clang-format on */
+    //	Additional Method prototypes
+    /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::Additional Method prototypes
 };
 

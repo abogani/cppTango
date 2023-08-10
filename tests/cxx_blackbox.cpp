@@ -2,29 +2,27 @@
 #define BlackboxTestSuite_h
 
 #ifdef _TG_WINDOWS_
-#include <process.h> // needed to obtain process id
-#endif     // _TG_WINDOWS_
+  #include <process.h> // needed to obtain process id
+#endif                 // _TG_WINDOWS_
 
 #include "cxx_common.h"
 
 #undef SUITE_NAME
 #define SUITE_NAME BlackboxTestSuite
 
-class BlackboxTestSuite: public CxxTest::TestSuite
+class BlackboxTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
     DeviceProxy *device1, *device2, *device3, *dserver, *dbserver;
     string device1_name, device2_name, device3_name, fulldsname, client_host, dbserver_name, dserver_name;
     DevLong server_version;
 
-public:
+  public:
     SUITE_NAME()
     {
-
-//
-// Arguments check -------------------------------------------------
-//
-
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device2");
@@ -36,9 +34,9 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
-//
-// Initialization --------------------------------------------------
-//
+        //
+        // Initialization --------------------------------------------------
+        //
 
         try
         {
@@ -51,12 +49,11 @@ public:
             dserver->ping();
             dbserver->ping();
         }
-        catch (CORBA::Exception &e)
+        catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
             exit(-1);
         }
-
     }
 
     virtual ~SUITE_NAME()
@@ -94,17 +91,18 @@ public:
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test black-box device feature
+    // Test black-box device feature
 
     void test_blackbox_device_feature(void)
     {
-        TS_ASSERT_THROWS_ASSERT(device1->black_box(0), Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_BlackBoxArgument);
-                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(device1->black_box(0),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_BlackBoxArgument);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         DeviceData din, dout;
         DevLong lg_in = 10, lg_out;
@@ -143,32 +141,35 @@ public:
             version_str = "_4";
             break;
         default:
-      TS_FAIL("Unexpected default");
+            TS_FAIL("Unexpected default");
         }
 
 #ifdef _TG_WINDOWS_
         int pid = _getpid();
 #else
         pid_t pid = getpid();
-#endif     // _TG_WINDOWS_
+#endif // _TG_WINDOWS_
 
         stringstream ss;
         ss << pid;
         pid_str = ss.str();
 
-        reference_str = "Operation command_inout" + version_str + " (cmd = IOLong) from cache_device requested from " + client_host + " (CPP/Python client with PID " + pid_str + ")";
+        reference_str = "Operation command_inout" + version_str + " (cmd = IOLong) from cache_device requested from " +
+                        client_host + " (CPP/Python client with PID " + pid_str + ")";
 
         TS_ASSERT_THROWS_NOTHING(blackbox_out = device1->black_box(3));
         for(vector<string>::iterator it = (*blackbox_out).begin(); it != (*blackbox_out).end(); ++it)
         {
             out_str = *it;
-            out_str.erase(0,out_str.rfind(": ") + 2); // removes time stamp from the output
+            out_str.erase(0, out_str.rfind(": ") + 2); // removes time stamp from the output
 
             TS_ASSERT_EQUALS(out_str, reference_str);
         }
 
         // removing properties of memorized attributes
-        string query = "select attribute, name  from property_attribute_device where name like '\\_\\_%' and  device='" + device3_name + "'";
+        string query =
+            "select attribute, name  from property_attribute_device where name like '\\_\\_%' and  device='" +
+            device3_name + "'";
         const DevVarLongStringArray *res;
         DevVarLongStringArray result;
         din << query;
@@ -179,14 +180,14 @@ public:
         // TODO: check the loop
         for(unsigned int i = 0; i < result.svalue.length(); i++)
         {
-            if(i%2 == 0)
+            if(i % 2 == 0)
             {
-//                TEST_LOG << "===> attr_name: " << string(result.svalue[i].in()) << endl;
+                //                TEST_LOG << "===> attr_name: " << string(result.svalue[i].in()) << endl;
                 attr_name = device3_name + "/" + string(result.svalue[i].in());
             }
             else
             {
-//                TEST_LOG << "===> attr_prop: " << string(result.svalue[i].in()) << endl;
+                //                TEST_LOG << "===> attr_prop: " << string(result.svalue[i].in()) << endl;
                 attr_prop = string(result.svalue[i].in());
 
                 AttributeProxy *my_attr = nullptr;
@@ -201,42 +202,44 @@ public:
 
         TS_ASSERT_THROWS_NOTHING(device3 = new DeviceProxy(device3_name));
 
-TEST_LOG << "Start of strange test" << endl;
+        TEST_LOG << "Start of strange test" << endl;
         try
         {
             vector<string> *bb = device3->black_box(5);
             TEST_LOG << endl << "===> blackbox size: " << (*bb).size() << endl;
             if((*bb).size() > 0)
-                    TEST_LOG << "===> first element: " << (*bb)[0] << endl;
+            {
+                TEST_LOG << "===> first element: " << (*bb)[0] << endl;
+            }
         }
         catch(DevFailed &e)
         {
             string reas(e.errors[0].reason.in());
-TEST_LOG << "Exception errors length = " << e.errors.length() << endl;
-TEST_LOG << "Exception reason = " << reas << endl;
-TEST_LOG << "Exception desc = " << e.errors[0].desc.in() << endl;
-TEST_LOG << "Exception origin = " << e.errors[0].origin.in() << endl;
-if (e.errors.length() > 1)
-{
-TEST_LOG << "Exception 1 reason = " << e.errors[1].reason.in() << endl;
-TEST_LOG << "Exception 1 desc = " << e.errors[1].desc.in() << endl;
-TEST_LOG << "Exception 1 origin = " << e.errors[1].origin.in() << endl;
-}
-Tango::DeviceProxy *dev = new Tango::DeviceProxy(dserver_name);
-try
-{
-Tango::DeviceData dd = dev->command_inout("QueryDevice");
-TEST_LOG << "Device list = " << dd << endl;
-}
-catch (Tango::DevFailed&)
-{
-TEST_LOG << "Again exception when talking to adm device!!!" << endl;
-}
-            TEST_LOG << "===> Nothing yet stored in blackbox, error reason = " << reas << endl;
-//            TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
-            if (reas == API_CorbaException)
+            TEST_LOG << "Exception errors length = " << e.errors.length() << endl;
+            TEST_LOG << "Exception reason = " << reas << endl;
+            TEST_LOG << "Exception desc = " << e.errors[0].desc.in() << endl;
+            TEST_LOG << "Exception origin = " << e.errors[0].origin.in() << endl;
+            if(e.errors.length() > 1)
             {
-TEST_LOG << "Too early, sleeping 4 more seconds...." << endl;
+                TEST_LOG << "Exception 1 reason = " << e.errors[1].reason.in() << endl;
+                TEST_LOG << "Exception 1 desc = " << e.errors[1].desc.in() << endl;
+                TEST_LOG << "Exception 1 origin = " << e.errors[1].origin.in() << endl;
+            }
+            Tango::DeviceProxy *dev = new Tango::DeviceProxy(dserver_name);
+            try
+            {
+                Tango::DeviceData dd = dev->command_inout("QueryDevice");
+                TEST_LOG << "Device list = " << dd << endl;
+            }
+            catch(Tango::DevFailed &)
+            {
+                TEST_LOG << "Again exception when talking to adm device!!!" << endl;
+            }
+            TEST_LOG << "===> Nothing yet stored in blackbox, error reason = " << reas << endl;
+            //            TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
+            if(reas == API_CorbaException)
+            {
+                TEST_LOG << "Too early, sleeping 4 more seconds...." << endl;
                 std::this_thread::sleep_for(std::chrono::seconds(4));
 
                 try
@@ -244,52 +247,56 @@ TEST_LOG << "Too early, sleeping 4 more seconds...." << endl;
                     vector<string> *bb = device3->black_box(5);
                     TEST_LOG << endl << "===> blackbox size: " << (*bb).size() << endl;
                     if((*bb).size() > 0)
-                            TEST_LOG << "===> first element: " << (*bb)[0] << endl;
+                    {
+                        TEST_LOG << "===> first element: " << (*bb)[0] << endl;
+                    }
                 }
                 catch(DevFailed &e)
                 {
                     string reas(e.errors[0].reason.in());
-TEST_LOG << "Exception reason = " << reas << endl;
-TEST_LOG << "Exception desc = " << e.errors[0].desc.in() << endl;
-TEST_LOG << "Exception origin = " << e.errors[0].origin.in() << endl;
-if (e.errors.length() > 1)
-{
-TEST_LOG << "Exception 1 reason = " << e.errors[1].reason.in() << endl;
-TEST_LOG << "Exception 1 desc = " << e.errors[1].desc.in() << endl;
-TEST_LOG << "Exception 1 origin = " << e.errors[1].origin.in() << endl;
-}
-Tango::DeviceProxy *dev = new Tango::DeviceProxy(dserver_name);
-try
-{
-Tango::DeviceData dd = dev->command_inout("QueryDevice");
-TEST_LOG << "Device list = " << dd << endl;
-}
-catch (Tango::DevFailed&)
-{
-TEST_LOG << "Again exception when talking to adm device!!!" << endl;
-}
+                    TEST_LOG << "Exception reason = " << reas << endl;
+                    TEST_LOG << "Exception desc = " << e.errors[0].desc.in() << endl;
+                    TEST_LOG << "Exception origin = " << e.errors[0].origin.in() << endl;
+                    if(e.errors.length() > 1)
+                    {
+                        TEST_LOG << "Exception 1 reason = " << e.errors[1].reason.in() << endl;
+                        TEST_LOG << "Exception 1 desc = " << e.errors[1].desc.in() << endl;
+                        TEST_LOG << "Exception 1 origin = " << e.errors[1].origin.in() << endl;
+                    }
+                    Tango::DeviceProxy *dev = new Tango::DeviceProxy(dserver_name);
+                    try
+                    {
+                        Tango::DeviceData dd = dev->command_inout("QueryDevice");
+                        TEST_LOG << "Device list = " << dd << endl;
+                    }
+                    catch(Tango::DevFailed &)
+                    {
+                        TEST_LOG << "Again exception when talking to adm device!!!" << endl;
+                    }
                     TEST_LOG << "===> Nothing yet stored in blackbox, error reason = " << reas << endl;
-                        TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
+                    TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
                 }
             }
             else
+            {
                 TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
+            }
         }
         catch(...)
         {
             TEST_LOG << "===> Error in checking blackbox size" << endl;
-            TS_ASSERT (false);
+            TS_ASSERT(false);
         }
 
-/*        TS_ASSERT_THROWS_ASSERT(device3->black_box(2), Tango::DevFailed &e,
-                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_BlackBoxEmpty);
-                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));*/
+        /*        TS_ASSERT_THROWS_ASSERT(device3->black_box(2), Tango::DevFailed &e,
+                        TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_BlackBoxEmpty);
+                        TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));*/
         delete device3;
 
         reference_str = "Operation ping requested from " + client_host;
         TS_ASSERT_THROWS_NOTHING(blackbox_out = device2->black_box(1));
         out_str = (*blackbox_out)[0];
-        out_str.erase(0,out_str.rfind(": ") + 2);
+        out_str.erase(0, out_str.rfind(": ") + 2);
         TS_ASSERT_EQUALS(out_str, reference_str);
     }
 };
