@@ -1,15 +1,15 @@
 //=============================================================================
 //
-// file :		attrmanip.h
+// file :        attrmanip.h
 //
-// description :	Include for the Tango attribute manipulator
+// description :    Include for the Tango attribute manipulator
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -42,24 +42,24 @@ namespace Tango
 
 class AttrManip
 {
-	friend std::ostream &operator<<(std::ostream &,const AttrManip&);
-	friend void execute_manip(std::ostream &, const std::string &str);
+    friend std::ostream &operator<<(std::ostream &,const AttrManip&);
+    friend void execute_manip(std::ostream &, const std::string &str);
 
 public:
-	AttrManip(const char *f):format(f) {
+    AttrManip(const char *f):format(f) {
     std::transform(format.begin(),format.end(),format.begin(),::tolower);
-	}
+    }
 
-	AttrManip(const std::string &str):format(str) {
+    AttrManip(const std::string &str):format(str) {
     std::transform(format.begin(),format.end(),format.begin(),::tolower);
-	}
+    }
 
   inline const std::string& to_string (void) const {
     return format;
   }
 
 private:
-	std::string format;
+    std::string format;
 };
 
 

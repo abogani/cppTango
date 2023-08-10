@@ -1,15 +1,15 @@
 //===================================================================================================================
 //
-// file :		w_pipe.h
+// file :        w_pipe.h
 //
-// description :	Include file for the WPipe class.
+// description :    Include file for the WPipe class.
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -58,17 +58,17 @@ public:
  *
  * The default constructor
  */
-	WPipe():w_ext(new WPipeExt) {}
+    WPipe():w_ext(new WPipeExt) {}
 
 /**
  * Constructs a newly allocated WPipe object from its
  * name, its description, its label and its display level
  *
- * @param 	na		The pipe name
- * @param	level	The pipe display level
+ * @param     na        The pipe name
+ * @param    level    The pipe display level
  *
  */
-	WPipe(const std::string &na,const Tango::DispLevel level);
+    WPipe(const std::string &na,const Tango::DispLevel level);
 //@}
 
 /**@name Destructor
@@ -91,7 +91,7 @@ public:
  *
  * @return The root blob name
  */
-	std::string get_root_blob_name() {return the_blob.get_name();}
+    std::string get_root_blob_name() {return the_blob.get_name();}
 //@}
 
 /**@name Extracting data from a WPipe
@@ -108,7 +108,7 @@ public:
  * @param [in] datum The pipe data
  * @exception WrongData if requested
  */
-	WPipe & operator >> (short &datum);
+    WPipe & operator >> (short &datum);
 #endif
 /**
  * Get root blob data element number
@@ -117,7 +117,7 @@ public:
  *
  * @return The root blob data element number
  */
-	size_t get_data_elt_nb() {return the_blob.get_data_elt_nb();}
+    size_t get_data_elt_nb() {return the_blob.get_data_elt_nb();}
 /**
  * Get root blob data elements name
  *
@@ -125,7 +125,7 @@ public:
  *
  * @return The root blob data elements name
  */
-	std::vector<std::string> get_data_elt_names() {return the_blob.get_data_elt_names();}
+    std::vector<std::string> get_data_elt_names() {return the_blob.get_data_elt_names();}
 /**
  * Get root blob data element name
  *
@@ -134,7 +134,7 @@ public:
  * @param [in] ind The data element index within the root blob
  * @return The root blob data element name
  */
-	std::string get_data_elt_name(size_t ind) {return the_blob.get_data_elt_name(ind);}
+    std::string get_data_elt_name(size_t ind) {return the_blob.get_data_elt_name(ind);}
 /**
  * Get root blob data element value type
  *
@@ -143,14 +143,14 @@ public:
  * @param [in] ind The data element index within the root blob
  * @return The blob data element value type
  */
-	int get_data_elt_type(size_t ind) {return the_blob.get_data_elt_type(ind);}
+    int get_data_elt_type(size_t ind) {return the_blob.get_data_elt_type(ind);}
 //@}
 
 /// @privatesection
-	virtual void write(DeviceImpl *) {}
+    virtual void write(DeviceImpl *) {}
 
 
-	WPipe &operator[](const std::string &);
+    WPipe &operator[](const std::string &);
 
 private:
     class WPipeExt
@@ -159,7 +159,7 @@ private:
         WPipeExt() {}
     };
 
-    std::unique_ptr<WPipeExt>			w_ext;           // Class extension
+    std::unique_ptr<WPipeExt>            w_ext;           // Class extension
 
 };
 

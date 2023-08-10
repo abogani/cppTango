@@ -10,15 +10,15 @@ void check_delta_val_value(Tango::DeviceProxy &d,Tango::DeviceProxy &,string &,c
 
 int main(int argc,char *argv[])
 {
-	if (argc != 2)
-	{
-		cerr << "Usage: attr_conf <device name>" << endl;
-		exit(-1);
-	}
+    if (argc != 2)
+    {
+        cerr << "Usage: attr_conf <device name>" << endl;
+        exit(-1);
+    }
 
-	try
-	{
-		Tango::DeviceProxy dev(argv[1]);
+    try
+    {
+        Tango::DeviceProxy dev(argv[1]);
         string adm_name = dev.adm_name();
         Tango::DeviceProxy admin_dev(adm_name);
 
@@ -26,9 +26,9 @@ int main(int argc,char *argv[])
 // For string attribute property
 //
 
-		string att("DefAttr");
+        string att("DefAttr");
 
-		TEST_LOG << "DeviceProxy instance created successfully" << endl;
+        TEST_LOG << "DeviceProxy instance created successfully" << endl;
 
         check_description(dev,admin_dev,att,"Dev desc","No description","No description","No description");
         TEST_LOG << "        Description : no class, no lib --> OK" << endl;
@@ -125,11 +125,11 @@ int main(int argc,char *argv[])
         check_delta_val_value(dev,admin_dev,att,"222","5","77","Not specified");
         TEST_LOG << "        delta_val : class, lib --> OK" << endl;
     }
-	catch (Tango::DevFailed &e)
-	{
-		Tango::Except::print_exception(e);
-		exit(-1);
-	}
+    catch (Tango::DevFailed &e)
+    {
+        Tango::Except::print_exception(e);
+        exit(-1);
+    }
 }
 
 void check_description(Tango::DeviceProxy &dev,
@@ -143,7 +143,7 @@ void check_description(Tango::DeviceProxy &dev,
 
 // Set-up
 
-	Tango::AttributeInfoEx aie;
+    Tango::AttributeInfoEx aie;
     Tango::AttributeInfoListEx aie_list;
 
     aie = dev.get_attribute_config(att);
@@ -318,7 +318,7 @@ void check_min_value(Tango::DeviceProxy &dev,
 
 // Set-up
 
-	Tango::AttributeInfoEx aie;
+    Tango::AttributeInfoEx aie;
     Tango::AttributeInfoListEx aie_list;
 
     aie = dev.get_attribute_config(att);
@@ -491,7 +491,7 @@ void check_ev_period_value(Tango::DeviceProxy &dev,
 
 // Set-up
 
-	Tango::AttributeInfoEx aie;
+    Tango::AttributeInfoEx aie;
     Tango::AttributeInfoListEx aie_list;
 
     aie = dev.get_attribute_config(att);
@@ -664,7 +664,7 @@ void check_rel_change_value(Tango::DeviceProxy &dev,
 
 // Set-up
 
-	Tango::AttributeInfoEx aie;
+    Tango::AttributeInfoEx aie;
     Tango::AttributeInfoListEx aie_list;
 
     aie = dev.get_attribute_config(att);
@@ -840,7 +840,7 @@ void check_delta_val_value(Tango::DeviceProxy &dev,
 
 // Set-up
 
-	Tango::AttributeInfoEx aie;
+    Tango::AttributeInfoEx aie;
     Tango::AttributeInfoListEx aie_list;
 
     aie = dev.get_attribute_config(att);

@@ -1,17 +1,17 @@
 //+==================================================================================================================
 //
-// file :		Device.cpp
+// file :        Device.cpp
 //
-// description :	C++ source code for the DeviceImpl class. This class is the root class for all derived Device
-//					classes. It is an abstract class. The DeviceImpl class is the CORBA servant which is "exported"
-//					onto the network and accessed by the client.
+// description :    C++ source code for the DeviceImpl class. This class is the root class for all derived Device
+//                    classes. It is an abstract class. The DeviceImpl class is the CORBA servant which is "exported"
+//                    onto the network and accessed by the client.
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -386,17 +386,17 @@ namespace Tango
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::DeviceImpl
+// method :        DeviceImpl::DeviceImpl
 //
-// description :	constructors for the device_impl class from the class object
-//			pointer, the device name, the description field,
-//			the =aqmz and the status.
+// description :    constructors for the device_impl class from the class object
+//            pointer, the device name, the description field,
+//            the =aqmz and the status.
 //
-// argument : in :	- cl_ptr : The class object pointer
-//			- d_name : The device name
-//			- de : The device description (default to "A TANGO device")
-//			- st : The device state (default to UNKNOWN)
-//			- sta : The device status (default to "Not initialised")
+// argument : in :    - cl_ptr : The class object pointer
+//            - d_name : The device name
+//            - de : The device description (default to "A TANGO device")
+//            - st : The device state (default to UNKNOWN)
+//            - sta : The device status (default to "Not initialised")
 //
 //--------------------------------------------------------------------------
 
@@ -540,10 +540,10 @@ void DeviceImpl::real_ctor()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::stop_polling
+// method :        DeviceImpl::stop_polling
 //
-// description :	Stop all polling for a device. if the device is
-//			polled, call this method before deleting it.
+// description :    Stop all polling for a device. if the device is
+//            polled, call this method before deleting it.
 //
 // argin(s) : - with_db_upd : Is it necessary to update db ?
 //
@@ -697,10 +697,10 @@ void DeviceImpl::stop_polling(bool with_db_upd)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::~DeviceImpl
+// method :        DeviceImpl::~DeviceImpl
 //
-// description :	Destructor for the device class. It simply frees
-//			the memory allocated for the black box object
+// description :    Destructor for the device class. It simply frees
+//            the memory allocated for the black box object
 //
 //--------------------------------------------------------------------------
 
@@ -779,11 +779,11 @@ DeviceImpl::~DeviceImpl()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::black_box_create
+// method :        DeviceImpl::black_box_create
 //
-// description :	Private method to create the device black box.
-//			The black box depth is a resource with a default
-//			value if the resource is not defined
+// description :    Private method to create the device black box.
+//            The black box depth is a resource with a default
+//            value if the resource is not defined
 //
 //--------------------------------------------------------------------------
 
@@ -814,20 +814,20 @@ void DeviceImpl::black_box_create()
 
 //+----------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_dev_system_resource()
+// method :        DeviceImpl::get_dev_system_resource()
 //
-// description :	Method to retrieve some basic device resources
-//			The resources to be retrived are :
-//				- The black box depth
-//				- The device description
-//				- The polling ring buffer depth
-//				- The polled command(s)
-//				- The polled attribute(s)
-//				- The non automatic polled command list
-//				- The non automatic polled attribute list
-//				- The polling too old factor
-//				- The command polling ring depth (if any)
-//				- The attribute polling ring depth (if any)
+// description :    Method to retrieve some basic device resources
+//            The resources to be retrived are :
+//                - The black box depth
+//                - The device description
+//                - The polling ring buffer depth
+//                - The polled command(s)
+//                - The polled attribute(s)
+//                - The non automatic polled command list
+//                - The non automatic polled attribute list
+//                - The polling too old factor
+//                - The command polling ring depth (if any)
+//                - The attribute polling ring depth (if any)
 //
 //-----------------------------------------------------------------------------
 
@@ -1012,11 +1012,11 @@ void DeviceImpl::get_dev_system_resource()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::_default_POA
+// method :        DeviceImpl::_default_POA
 //
-// description :	Return a pointer to the POA on which the device should
-//			be activated. This method is required by CORBA to
-//			create a POA with the IMPLICIT_ACTIVATION policy
+// description :    Return a pointer to the POA on which the device should
+//            be activated. This method is required by CORBA to
+//            create a POA with the IMPLICIT_ACTIVATION policy
 //
 //--------------------------------------------------------------------------
 
@@ -1027,13 +1027,13 @@ PortableServer::POA_ptr DeviceImpl::_default_POA()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::register_signal
+// method :        DeviceImpl::register_signal
 //
-// description :	Method to register a device on a signal. When the
-//			signal is sent to the process, the signal_handler
-//			method of this class will be executed
+// description :    Method to register a device on a signal. When the
+//            signal is sent to the process, the signal_handler
+//            method of this class will be executed
 //
-// in : 		signo : The signal number
+// in :         signo : The signal number
 //
 //--------------------------------------------------------------------------
 
@@ -1049,21 +1049,21 @@ void DeviceImpl::register_signal(long signo, bool hand)
 #else
                                                                                                                         void DeviceImpl::register_signal(long signo)
 {
-	TANGO_LOG_DEBUG << "DeviceImpl::register_signal() arrived for signal " << signo << std::endl;
+    TANGO_LOG_DEBUG << "DeviceImpl::register_signal() arrived for signal " << signo << std::endl;
 
-	DServerSignal::instance()->register_dev_signal(signo,this);
+    DServerSignal::instance()->register_dev_signal(signo,this);
 
-	TANGO_LOG_DEBUG << "Leaving DeviceImpl::register_signal method()" << std::endl;
+    TANGO_LOG_DEBUG << "Leaving DeviceImpl::register_signal method()" << std::endl;
 }
 #endif
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::unregister_signal
+// method :        DeviceImpl::unregister_signal
 //
-// description :	Method to unregister a device on a signal.
+// description :    Method to unregister a device on a signal.
 //
-// in : 		signo : The signal number
+// in :         signo : The signal number
 //
 //--------------------------------------------------------------------------
 
@@ -1078,14 +1078,14 @@ void DeviceImpl::unregister_signal(long signo)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::signal_handler
+// method :        DeviceImpl::signal_handler
 //
-// description :	This is the signal handler for the device. This method
-//			is defined as virtual and therefore, can be redefined
-//			by DS programmers in their own classes derived from
-//			DeviceImpl
+// description :    This is the signal handler for the device. This method
+//            is defined as virtual and therefore, can be redefined
+//            by DS programmers in their own classes derived from
+//            DeviceImpl
 //
-// in : 		signo : The signal number
+// in :         signo : The signal number
 //
 //--------------------------------------------------------------------------
 
@@ -1099,14 +1099,14 @@ void DeviceImpl::signal_handler(long signo)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::check_command_exist
+// method :        DeviceImpl::check_command_exist
 //
-// description :	This method check that a comamnd is supported by
-//			the device and does not need input value.
-//			The method throws an exception if the
-//			command is not defined or needs an input value
+// description :    This method check that a comamnd is supported by
+//            the device and does not need input value.
+//            The method throws an exception if the
+//            command is not defined or needs an input value
 //
-// in : 		cmd_name : The command name
+// in :         cmd_name : The command name
 //
 //--------------------------------------------------------------------------
 
@@ -1135,13 +1135,13 @@ void DeviceImpl::check_command_exists(const std::string &cmd_name)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_command
+// method :        DeviceImpl::get_command
 //
-// description :	This method returns a pointer to command object.
-//			The method throws an exception if the
-//			command is not defined
+// description :    This method returns a pointer to command object.
+//            The method throws an exception if the
+//            command is not defined
 //
-// in : 		cmd_name : The command name
+// in :         cmd_name : The command name
 //
 //--------------------------------------------------------------------------
 
@@ -1172,14 +1172,14 @@ Command *DeviceImpl::get_command(const std::string &cmd_name)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_polled_obj_by_type_name
+// method :        DeviceImpl::get_polled_obj_by_type_name
 //
-// description :	This method check that a comamnd is supported by
-//			the device and does not need input value.
-//			The method throws an exception if the
-//			command is not defined or needs an input value
+// description :    This method check that a comamnd is supported by
+//            the device and does not need input value.
+//            The method throws an exception if the
+//            command is not defined or needs an input value
 //
-// in : 		cmd_name : The command name
+// in :         cmd_name : The command name
 //
 //--------------------------------------------------------------------------
 
@@ -1211,19 +1211,19 @@ std::vector<PollObj *>::iterator DeviceImpl::get_polled_obj_by_type_name(
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_cmd_poll_ring_depth
+//        DeviceImpl::get_cmd_poll_ring_depth
 //
 // description :
-//		This method returns the polling buffer depth. Most of the times, this is defined at device level
-//		via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
-//		device "cmd_poll_ring_depth" property.
+//        This method returns the polling buffer depth. Most of the times, this is defined at device level
+//        via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
+//        device "cmd_poll_ring_depth" property.
 //
 // args :
-// 		in :
-//			- cmd_name : The command name
+//         in :
+//            - cmd_name : The command name
 //
 // return :
-// 		This method returns the polling buffer depth
+//         This method returns the polling buffer depth
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1291,19 +1291,19 @@ long DeviceImpl::get_cmd_poll_ring_depth(const std::string &cmd_name)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_attr_poll_ring_depth
+//        DeviceImpl::get_attr_poll_ring_depth
 //
 // description :
-//		This method returns the polling buffer depth. Most of the times, this is defined at device level
-//		via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
-//		device "attr_poll_ring_depth" property.
+//        This method returns the polling buffer depth. Most of the times, this is defined at device level
+//        via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
+//        device "attr_poll_ring_depth" property.
 //
 // args :
-// 		in :
-//			- attr_name : The attribute name
+//         in :
+//            - attr_name : The attribute name
 //
 // return :
-// 		This method returns the polling buffer depth
+//         This method returns the polling buffer depth
 //
 //--------------------------------------------------------------------------
 
@@ -1387,12 +1387,12 @@ long DeviceImpl::get_attr_poll_ring_depth(const std::string &attr_name)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::dev_state
+//        DeviceImpl::dev_state
 //
 // description :
-//		The default method called by the DevState command. If the device is ON, this method checks attribute
-//		with a defined alarm and set the state to ALARM if one of these attribute is in alarm. Otherwise, simply
-//		returns device state
+//        The default method called by the DevState command. If the device is ON, this method checks attribute
+//        with a defined alarm and set the state to ALARM if one of these attribute is in alarm. Otherwise, simply
+//        returns device state
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1674,11 +1674,11 @@ Tango::DevState DeviceImpl::dev_state()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::dev_status
+//        DeviceImpl::dev_status
 //
 // description :
-//		The default method called by the DevStatus command. If the device is ON, this method add Attribute status
-//		for all device attribute in alarm state.
+//        The default method called by the DevStatus command. If the device is ON, this method add Attribute status
+//        for all device attribute in alarm state.
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -1767,15 +1767,15 @@ Tango::ConstDevString DeviceImpl::dev_status()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::command_inout
+// method :        DeviceImpl::command_inout
 //
-// description :	Method called for each command_inout operation executed
-//			from any client
-//			The call to this method is in a try bloc for the
-//			Tango::DevFailed exception (generated by the idl
-//			compiler in the tango_skel.cpp file). Therefore, it
-//			is not necessary to propagate by re-throw the exceptions
-//			thrown by the underlying functions/methods.
+// description :    Method called for each command_inout operation executed
+//            from any client
+//            The call to this method is in a try bloc for the
+//            Tango::DevFailed exception (generated by the idl
+//            compiler in the tango_skel.cpp file). Therefore, it
+//            is not necessary to propagate by re-throw the exceptions
+//            thrown by the underlying functions/methods.
 //
 //--------------------------------------------------------------------------
 
@@ -1844,13 +1844,13 @@ CORBA::Any *DeviceImpl::command_inout(const char *in_cmd,
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::name
+// method :        DeviceImpl::name
 //
-// description :	Method called when a client request the name attribute
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the name attribute
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -1898,13 +1898,13 @@ char *DeviceImpl::name()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::adm_name
+// method :        DeviceImpl::adm_name
 //
-// description :	Method called when a client request the adm_name attribute
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the adm_name attribute
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -1953,14 +1953,14 @@ char *DeviceImpl::adm_name()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::description
+// method :        DeviceImpl::description
 //
-// description :	Method called when a client request the description
-//			attribute
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the description
+//            attribute
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -2008,10 +2008,10 @@ char *DeviceImpl::description()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::state
+// method :        DeviceImpl::state
 //
-// description :	Method called when a client request the state
-//			attribute
+// description :    Method called when a client request the state
+//            attribute
 //
 //--------------------------------------------------------------------------
 
@@ -2097,14 +2097,14 @@ Tango::DevState DeviceImpl::state()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::status
+// method :        DeviceImpl::status
 //
-// description :	Method called when a client request the description
-//			status
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the description
+//            status
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -2158,7 +2158,7 @@ char *DeviceImpl::status()
         }
         else
         {
-            tmp = CORBA::string_dup("Got exception	when trying to build device status");
+            tmp = CORBA::string_dup("Got exception    when trying to build device status");
         }
     }
     catch (...)
@@ -2186,12 +2186,12 @@ char *DeviceImpl::status()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::black_box
+// method :        DeviceImpl::black_box
 //
-// description :	CORBA operation to read n element(s) of the black-box.
-//			This method returns black box element as strings
+// description :    CORBA operation to read n element(s) of the black-box.
+//            This method returns black box element as strings
 //
-// argument: in :	- n : Number of elt to read
+// argument: in :    - n : Number of elt to read
 //
 //--------------------------------------------------------------------------
 
@@ -2215,11 +2215,11 @@ Tango::DevVarStringArray *DeviceImpl::black_box(CORBA::Long n)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::command_list_query
+// method :        DeviceImpl::command_list_query
 //
-// description :	CORBA operation to read the device command list.
-//			This method returns command info in a sequence of
-//			DevCmdInfo
+// description :    CORBA operation to read the device command list.
+//            This method returns command info in a sequence of
+//            DevCmdInfo
 //
 //--------------------------------------------------------------------------
 
@@ -2296,11 +2296,11 @@ Tango::DevCmdInfoList *DeviceImpl::command_list_query()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::command_query
+// method :        DeviceImpl::command_query
 //
-// description :	CORBA operation to read a device command info.
-//			This method returns command info for a specific
-//			command.
+// description :    CORBA operation to read a device command info.
+//            This method returns command info for a specific
+//            command.
 //
 //
 //--------------------------------------------------------------------------
@@ -2394,9 +2394,9 @@ Tango::DevCmdInfo *DeviceImpl::command_query(const char *command)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::info
+// method :        DeviceImpl::info
 //
-// description :	CORBA operation to get device info
+// description :    CORBA operation to get device info
 //
 //--------------------------------------------------------------------------
 
@@ -2500,9 +2500,9 @@ Tango::DevInfo *DeviceImpl::info()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::ping
+// method :        DeviceImpl::ping
 //
-// description :	CORBA operation to ping if a device to see it is alive
+// description :    CORBA operation to ping if a device to see it is alive
 //
 //--------------------------------------------------------------------------
 
@@ -2526,11 +2526,11 @@ void DeviceImpl::ping()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_attribute_config
+// method :        DeviceImpl::get_attribute_config
 //
-// description :	CORBA operation to get attribute configuration.
+// description :    CORBA operation to get attribute configuration.
 //
-// argument: in :	- names: name of attribute(s)
+// argument: in :    - names: name of attribute(s)
 //
 // This method returns a pointer to a AttributeConfigList with one AttributeConfig
 // structure for each atribute
@@ -2641,14 +2641,14 @@ Tango::AttributeConfigList *DeviceImpl::get_attribute_config(const Tango::DevVar
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::set_attribute_config
+// method :        DeviceImpl::set_attribute_config
 //
-// description :	CORBA operation to set attribute configuration locally
-//			and in the Tango database
+// description :    CORBA operation to set attribute configuration locally
+//            and in the Tango database
 //
-// argument: in :	- new_conf: The new attribute(s) configuration. One
-//				    AttributeConfig structure is needed for each
-//				    attribute to update
+// argument: in :    - new_conf: The new attribute(s) configuration. One
+//                    AttributeConfig structure is needed for each
+//                    attribute to update
 //
 //--------------------------------------------------------------------------
 
@@ -2806,11 +2806,11 @@ void DeviceImpl::set_attribute_config(const Tango::AttributeConfigList &new_conf
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::read_attributes
+// method :        DeviceImpl::read_attributes
 //
-// description :	CORBA operation to read attribute(s) value.
+// description :    CORBA operation to read attribute(s) value.
 //
-// argument: in :	- names: name of attribute(s) to be read
+// argument: in :    - names: name of attribute(s) to be read
 //
 // This method returns a pointer to a AttributeConfigList with one AttributeValue
 // structure for each atribute. This structure contains the attribute value, the
@@ -3153,11 +3153,11 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::write_attributes
+// method :        DeviceImpl::write_attributes
 //
-// description :	CORBA operation to write attribute(s) value
+// description :    CORBA operation to write attribute(s) value
 //
-// argument: in :	- values: The new attribute(s) value to be set.
+// argument: in :    - values: The new attribute(s) value to be set.
 //
 //--------------------------------------------------------------------------
 
@@ -3345,14 +3345,14 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::add_attribute
+//        DeviceImpl::add_attribute
 //
 // description :
-//		Add attribute to the device attribute(s) list
+//        Add attribute to the device attribute(s) list
 //
 // argument:
-//		in :
-//			- new_attr: The new attribute to be added.
+//        in :
+//            - new_attr: The new attribute to be added.
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -3531,14 +3531,14 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_attribute
+//        DeviceImpl::remove_attribute
 //
 // description :
-//		Remove attribute to the device attribute(s) list
+//        Remove attribute to the device attribute(s) list
 //
 // argument:
-//		in :
-//			- rem_attr: The attribute to be deleted.
+//        in :
+//            - rem_attr: The attribute to be deleted.
 //          - free_it : Free Attr object flag
 //          - clean_db : Clean attribute related info in db
 //
@@ -3748,14 +3748,14 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_attribute
+//        DeviceImpl::remove_attribute
 //
 // description :
-//		Remove attribute to the device attribute(s) list
+//        Remove attribute to the device attribute(s) list
 //
 // argument:
-//		in :
-//			- rem_attr: The name of the attribute to be deleted.
+//        in :
+//            - rem_attr: The name of the attribute to be deleted.
 //          - free_it : Free Attr object flag
 //          - clean_db : Clean attribute related info in db
 //
@@ -3784,15 +3784,15 @@ void DeviceImpl::remove_attribute(const std::string &rem_attr_name, bool free_it
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::add_command
+//        DeviceImpl::add_command
 //
 // description :
-//		Add command to the device command(s) list
+//        Add command to the device command(s) list
 //
 // argument:
-//		in :
-//			- new_cmd: The new command to be added.
-//			- device_level : flag set to true if the command must be added at the device level (instead of class level)
+//        in :
+//            - new_cmd: The new command to be added.
+//            - device_level : flag set to true if the command must be added at the device level (instead of class level)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -3914,14 +3914,14 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_command
+//        DeviceImpl::remove_command
 //
 // description :
-//		Remove command to the device command(s) list
+//        Remove command to the device command(s) list
 //
 // argument:
-//		in :
-//			- rem_cmd: The command to be deleted.
+//        in :
+//            - rem_cmd: The command to be deleted.
 //          - free_it : Free Command object flag
 //          - clean_db : Clean command related info in db
 //
@@ -4083,14 +4083,14 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_command
+//        DeviceImpl::remove_command
 //
 // description :
-//		Remove command to the device command(s) list
+//        Remove command to the device command(s) list
 //
 // argument:
-//		in :
-//			- rem_cmd_name: The name of the command to be deleted.
+//        in :
+//            - rem_cmd_name: The name of the command to be deleted.
 //          - free_it : Free Command object flag
 //          - clean_db : Clean command related info in db
 //
@@ -4131,11 +4131,11 @@ void DeviceImpl::remove_command(const std::string &rem_cmd_name, bool free_it, b
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::poll_lists_2_v5
+//        DeviceImpl::poll_lists_2_v5
 //
 // description :
-//		Started from Tango V5, state and status are polled as attributes. Previously, they were polled as commands.
-//		If state or status are polled as commands, move them to the list of polled attributes
+//        Started from Tango V5, state and status are polled as attributes. Previously, they were polled as commands.
+//        If state or status are polled as commands, move them to the list of polled attributes
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4200,15 +4200,15 @@ void DeviceImpl::poll_lists_2_v5()
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::init_cmd_poll_ext_trig
+//        Attribute::init_cmd_poll_ext_trig
 //
 // description :
-//		Write the command name to the list of polled commands in the database. The polling period is set to 0 to
-//		indicate that the polling buffer is filled externally from the device server code.
+//        Write the command name to the list of polled commands in the database. The polling period is set to 0 to
+//        indicate that the polling buffer is filled externally from the device server code.
 //
 // args :
-//		in :
-//			- cmd_name : The command name
+//        in :
+//            - cmd_name : The command name
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -4282,12 +4282,12 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
 //+--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::init_cmd_poll_period
+//        Attribute::init_cmd_poll_period
 //
 // description :
-//		Checks the specified polling period for all commands of the device. If a polling period is specified for a
-//		command the command name and the period are written to the list of polled commands in the database.
-//		This happens only if the command is not yet in the list of polled commands.
+//        Checks the specified polling period for all commands of the device. If a polling period is specified for a
+//        command the command name and the period are written to the list of polled commands in the database.
+//        This happens only if the command is not yet in the list of polled commands.
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -4396,15 +4396,15 @@ void DeviceImpl::init_cmd_poll_period()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::init_attr_poll_ext_trig
+//        Attribute::init_attr_poll_ext_trig
 //
 // description :
-//		Write the attribute name to the list of polled attributes in the database. The polling period is set to 0
-//		to indicate that the polling buffer is filled externally from the device server code.
+//        Write the attribute name to the list of polled attributes in the database. The polling period is set to 0
+//        to indicate that the polling buffer is filled externally from the device server code.
 //
 // args :
-//		in :
-//			- attr_name : The attribute name
+//        in :
+//            - attr_name : The attribute name
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4487,12 +4487,12 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::init_attr_poll_period
+//        DeviceImpl::init_attr_poll_period
 //
 // description :
-//		Checks the specified polling period for all attributes of the device. If a polling period is specified for an
-//		attribute the attribute name and the period are written to the list of polled attributes in the database.
-//		This happens only if the attribute is not yet in the list of polled attributes.
+//        Checks the specified polling period for all attributes of the device. If a polling period is specified for an
+//        attribute the attribute name and the period are written to the list of polled attributes in the database.
+//        This happens only if the attribute is not yet in the list of polled attributes.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -4637,14 +4637,14 @@ void DeviceImpl::init_attr_poll_period()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::push_att_conf_event
+//        DeviceImpl::push_att_conf_event
 //
 // description :
-//		Push an attribute configuration event
+//        Push an attribute configuration event
 //
 // args :
-//		in :
-//			- attr : The attribute
+//        in :
+//            - attr : The attribute
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4718,10 +4718,10 @@ void DeviceImpl::push_att_conf_event(Attribute *attr)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_client_ident()
+//        DeviceImpl::get_client_ident()
 //
 // description :
-//		Get client identification. This method returns a pointer to the client identification
+//        Get client identification. This method returns a pointer to the client identification
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -4734,15 +4734,15 @@ Tango::client_addr *DeviceImpl::get_client_ident()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::lock
+//        DeviceImpl::lock
 //
 // description :
-//		Lock the device
+//        Lock the device
 //
 // args :
-//		in :
-//			- cl : The client identification
-//			- validity : The lock validity
+//        in :
+//            - cl : The client identification
+//            - validity : The lock validity
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -4797,14 +4797,14 @@ void DeviceImpl::lock(client_addr *cl, int validity)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::relock
+//        DeviceImpl::relock
 //
 // description :
-//		ReLock the device
+//        ReLock the device
 //
 // args :
-//		in :
-//			- cl : The client identification
+//        in :
+//            - cl : The client identification
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4852,14 +4852,14 @@ void DeviceImpl::relock(client_addr *cl)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::unlock
+//        DeviceImpl::unlock
 //
 // description :
-//		Unlock the device
+//        Unlock the device
 //
 // args :
-//		in :
-//			- forced : Flag set to true if the unlock is forced
+//        in :
+//            - forced : Flag set to true if the unlock is forced
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -4903,14 +4903,14 @@ Tango::DevLong DeviceImpl::unlock(bool forced)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::basic_unlock
+//        DeviceImpl::basic_unlock
 //
 // description :
-//		Mark the device as unlocked
+//        Mark the device as unlocked
 //
 // args :
-//		in :
-//			- forced : Flag set to true if the unlock is forced
+//        in :
+//            - forced : Flag set to true if the unlock is forced
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4941,11 +4941,11 @@ void DeviceImpl::basic_unlock(bool forced)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::valid_lock
+//        DeviceImpl::valid_lock
 //
 // description :
-//		Check lock validity (according to lock validity time). This method returns true if the lock is still valid.
-//		Otherwise, returns false
+//        Check lock validity (according to lock validity time). This method returns true if the lock is still valid.
+//        Otherwise, returns false
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -4965,18 +4965,18 @@ bool DeviceImpl::valid_lock()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::lock_status
+//        DeviceImpl::lock_status
 //
 // description :
-//		Build a device locking status
-//		This method returns a sequence with longs and strings. The strings contain:
-//			1 - The locker process hostname
-//			2 - The java main class (in case of Java locker)
-//			3 - A string which summarizes the locking status
-// 		The longs contain:
-//			1 - A locked flag (0 means not locked, 1 means locked)
-//			2 - The locker process PID (C++ client)
-//			3 - The locker UUID (Java client) which needs 4 longs
+//        Build a device locking status
+//        This method returns a sequence with longs and strings. The strings contain:
+//            1 - The locker process hostname
+//            2 - The java main class (in case of Java locker)
+//            3 - A string which summarizes the locking status
+//         The longs contain:
+//            1 - A locked flag (0 means not locked, 1 means locked)
+//            2 - The locker process PID (C++ client)
+//            3 - The locker UUID (Java client) which needs 4 longs
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -5055,18 +5055,18 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::set_locking_param
+//        DeviceImpl::set_locking_param
 //
 // description :
-//		Restore device locking parameter
+//        Restore device locking parameter
 //
 // args :
-//		in :
-//			- cl : Locker
-//		  	- old_cl : Previous locker
-//		  	- date : Locking date
-//		  	- ctr : Locking counter
-//		  	- valid : Locking validity
+//        in :
+//            - cl : Locker
+//              - old_cl : Previous locker
+//              - date : Locking date
+//              - ctr : Locking counter
+//              - valid : Locking validity
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -5084,15 +5084,15 @@ void DeviceImpl::set_locking_param(client_addr *cl, client_addr *old_cl, time_t 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::check_lock
+//        DeviceImpl::check_lock
 //
 // description :
-//		Method called for each command_inout operation executed from any client on a Tango device.
+//        Method called for each command_inout operation executed from any client on a Tango device.
 //
 // argument:
-//		in :
-//			- meth : Method name (for error message)
-//			- cmd : Command name
+//        in :
+//            - meth : Method name (for error message)
+//            - cmd : Command name
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -5172,14 +5172,14 @@ void DeviceImpl::check_lock(const char *meth, const char *cmd)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::throw_locked_exception()
+//        DeviceImpl::throw_locked_exception()
 //
 // description :
-//		Throw a DeviceLocked exception
+//        Throw a DeviceLocked exception
 //
 // argument:
-//		in :
-//			- meth : Method name
+//        in :
+//            - meth : Method name
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -5195,19 +5195,19 @@ void DeviceImpl::throw_locked_exception(const char *meth)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::data_into_net_obj
+//        DeviceImpl::data_into_net_obj
 //
 // description :
-//		Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
-//		it's an Any object. Then, it is an IDL union
+//        Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
+//        it's an Any object. Then, it is an IDL union
 //
 // argument:
-//		in :
-//			- att :
-//			- aid :
-//			- index :
-//			- w_type :
-//			- del_seq :
+//        in :
+//            - att :
+//            - aid :
+//            - index :
+//            - w_type :
+//            - del_seq :
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -5400,20 +5400,20 @@ void DeviceImpl::data_into_net_object(Attribute &att, AttributeIdlData &aid,
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::polled_data_into_net_obj
+//        DeviceImpl::polled_data_into_net_obj
 //
 // description :
-//		Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
-//		it's an Any object. Then, it is an IDL union
+//        Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
+//        it's an Any object. Then, it is an IDL union
 //
 // argument:
-//		in :
-//			- aid :
-//			- index :
-//			- type :
-//			- vers : Device IDl version
-//			- polled_att :
-//			- names :
+//        in :
+//            - aid :
+//            - index :
+//            - type :
+//            - vers : Device IDl version
+//            - polled_att :
+//            - names :
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -5664,12 +5664,12 @@ void DeviceImpl::polled_data_into_net_object(AttributeIdlData &aid,
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//			DeviceImpl::att_conf_loop
+//            DeviceImpl::att_conf_loop
 //
 // description :
-//			Set flags in DeviceImpl if any of the device attributes has some wrong configuration in DB generating
-//			startup exception when the server started.
-//			In DeviceImpl class, this method set the force_alarm_state flag and fills in the
+//            Set flags in DeviceImpl if any of the device attributes has some wrong configuration in DB generating
+//            startup exception when the server started.
+//            In DeviceImpl class, this method set the force_alarm_state flag and fills in the
 //          att_wrong_db_conf vector with attribute name(s) (for device status)
 //
 //--------------------------------------------------------------------------------------------------------------------
@@ -5722,7 +5722,7 @@ void DeviceImpl::att_conf_loop()
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::check_att_conf
+//        DeviceImpl::check_att_conf
 //
 // description :
 //
@@ -5741,18 +5741,18 @@ void DeviceImpl::check_att_conf()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::build_att_list_in_status_mess
+//        DeviceImpl::build_att_list_in_status_mess
 //
 // description :
-//		Build device status message in case of device with some
-//			- att with wrong conf. in db
-//			- some memorized attribute failed during the startup phase
-//			- some wrongly configured forwarded attributes
+//        Build device status message in case of device with some
+//            - att with wrong conf. in db
+//            - some memorized attribute failed during the startup phase
+//            - some wrongly configured forwarded attributes
 //
 // argument:
-//		in :
-//			- nb_att : Number of attributes in error
-//			- att_type : Type of attribute error (conf or mem)
+//        in :
+//            - nb_att : Number of attributes in error
+//            - att_type : Type of attribute error (conf or mem)
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -5844,15 +5844,15 @@ void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_t
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::is_there_subscriber
+//        DeviceImpl::is_there_subscriber
 //
 // description :
-//		Returns true if there is some subscriber(s) listening on the event
+//        Returns true if there is some subscriber(s) listening on the event
 //
 // argument:
-//		in :
-//			- att_name : The attribute name
-//			- event_type : The event type
+//        in :
+//            - att_name : The attribute name
+//            - event_type : The event type
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -5903,14 +5903,14 @@ bool DeviceImpl::is_there_subscriber(const std::string &att_name, EventType even
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::rem_wrong_fwd_att
+//        DeviceImpl::rem_wrong_fwd_att
 //
 // description :
-//		Remove one forwarded attribute from the list of errored forwarded attribute
+//        Remove one forwarded attribute from the list of errored forwarded attribute
 //
 // argument:
-//		in :
-//			- root_att_name : The root attribute name to be removed
+//        in :
+//            - root_att_name : The root attribute name to be removed
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -5932,15 +5932,15 @@ void DeviceImpl::rem_wrong_fwd_att(const std::string &root_att_name)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::update_wrong_fwd_att
+//        DeviceImpl::update_wrong_fwd_att
 //
 // description :
-//		Update error code for one forwarded attribute in the list of errored forwarded attribute
+//        Update error code for one forwarded attribute in the list of errored forwarded attribute
 //
 // argument:
-//		in :
-//			- root_att_name : The root attribute name to be removed
-//			- err : The new error code
+//        in :
+//            - root_att_name : The root attribute name to be removed
+//            - err : The new error code
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -5962,15 +5962,15 @@ void DeviceImpl::update_wrong_conf_att(const std::string &root_att_name, FwdAttE
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::lock_root_devices
+//        DeviceImpl::lock_root_devices
 //
 // description :
-//		Lock/Unlock all root devices for all the forwarded attributes defined for this device
+//        Lock/Unlock all root devices for all the forwarded attributes defined for this device
 //
 // argument:
-//		in :
-//			- validity : The lock validity interval (used only in case of locking)
-//			- lock_action : Flag set to true if root device(s) must be locked. If false, root devices will be unlocked
+//        in :
+//            - validity : The lock validity interval (used only in case of locking)
+//            - lock_action : Flag set to true if root device(s) must be locked. If false, root devices will be unlocked
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -6019,11 +6019,11 @@ void DeviceImpl::lock_root_devices(int validity, bool lock_action)
 
 //+----------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_local_cmd_by_name
+// method :        DeviceImpl::get_local_cmd_by_name
 //
-// description :	Get a reference to a local Command object
+// description :    Get a reference to a local Command object
 //
-// in : 	cmd_name : The command name
+// in :     cmd_name : The command name
 //
 //-----------------------------------------------------------------------------
 
@@ -6057,11 +6057,11 @@ Command &DeviceImpl::get_local_cmd_by_name(const std::string &cmd_name)
 
 //+----------------------------------------------------------------------------
 //
-// method :		DeviceImpl::remove_local_command
+// method :        DeviceImpl::remove_local_command
 //
-// description :	Delete a command from the local command list
+// description :    Delete a command from the local command list
 //
-// in : 	cmd_name : The command name (in lower case letter)
+// in :     cmd_name : The command name (in lower case letter)
 //
 //-----------------------------------------------------------------------------
 
@@ -6094,10 +6094,10 @@ void DeviceImpl::remove_local_command(const std::string &cmd_name)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_event_subscription_states
+//        DeviceImpl::get_event_subscription_states
 //
 // description :
-//		Return event info for the device with events subscribed
+//        Return event info for the device with events subscribed
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -6116,14 +6116,14 @@ DeviceEventSubscriptionState DeviceImpl::get_event_subscription_state()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::set_event_subscription_state
+//        DeviceImpl::set_event_subscription_state
 //
 // description :
 //      Set device interface change event subscription time
 //
 // argument :
-// 		in :
-//			- eve : One structure in this vector for each device event subscribed
+//         in :
+//            - eve : One structure in this vector for each device event subscribed
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -6141,14 +6141,14 @@ void DeviceImpl::set_event_subscription_state(const DeviceEventSubscriptionState
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::push_dev_intr
+//        DeviceImpl::push_dev_intr
 //
 // description :
-//		Start or update device interface change event thread
+//        Start or update device interface change event thread
 //
 // argument :
-// 		in :
-//			- ev_client : Flag set to true if some clients are listening on the event
+//         in :
+//            - ev_client : Flag set to true if some clients are listening on the event
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -6208,11 +6208,11 @@ void DeviceImpl::push_dev_intr(bool ev_client)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::end_pipe_config
+//        DeviceImpl::end_pipe_config
 //
 // description :
-//		Get all pipe properties defined at device level and aggregate all the pipe properties defined at different
-//		level (device, user default, class default
+//        Get all pipe properties defined at device level and aggregate all the pipe properties defined at different
+//        level (device, user default, class default
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -6330,19 +6330,19 @@ void DeviceImpl::end_pipe_config()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::set_pipe_prop
+//        DeviceImpl::set_pipe_prop
 //
 // description :
-//		Set a pipe property. A pipe property can be defined at device level in DB, by a user default or at
-//		class level in DB. Properties defined in DB at device level are given to the method as the first
-//		parameter. If the user has defined some user default, the pipe object already has them. The properties
-//		defined at class level are available in the MultiClassPipe object available in the DeviceClass instance
+//        Set a pipe property. A pipe property can be defined at device level in DB, by a user default or at
+//        class level in DB. Properties defined in DB at device level are given to the method as the first
+//        parameter. If the user has defined some user default, the pipe object already has them. The properties
+//        defined at class level are available in the MultiClassPipe object available in the DeviceClass instance
 //
 // argument :
-//		in:
-//			- dev_prop : Pipe properties defined at device level
-//			- pi_ptr : Pipe instance pointer
-//			- ppt : Property type (label or description)
+//        in:
+//            - dev_prop : Pipe properties defined at device level
+//            - pi_ptr : Pipe instance pointer
+//            - ppt : Property type (label or description)
 //
 //------------------------------------------------------------------------------------------------------------------
 

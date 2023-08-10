@@ -1,21 +1,21 @@
 //+===========================================================================
 //
-// file :		class_factory.cpp
+// file :        class_factory.cpp
 //
-// description :	C++ source file for a dummy DServer::class_factory()
-//			method. For server, this method is redefined by the
-//			DS programmer in its own file and the linker will not
-//			use this file. For client where ther is no
-//			class_factory() method, this one will be used by the
-//			linker
-//			This works only if class_factory() is in its own file
+// description :    C++ source file for a dummy DServer::class_factory()
+//            method. For server, this method is redefined by the
+//            DS programmer in its own file and the linker will not
+//            use this file. For client where ther is no
+//            class_factory() method, this one will be used by the
+//            linker
+//            This works only if class_factory() is in its own file
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -76,15 +76,15 @@ namespace Tango
 typedef void (DServer::*PTR)(void);
 typedef union _convertor
 {
-	PTR d;
-	FARPROC s;
+    PTR d;
+    FARPROC s;
 }convertor;
 #elif defined(__APPLE__)
 typedef void (DServer::*PTR)(void);
 typedef union _convertor
 {
-	PTR d;
-	void *s;
+    PTR d;
+    void *s;
 } convertor;
 #endif
 
@@ -92,19 +92,19 @@ typedef union _convertor
 void DServer::class_factory()
 {
 #ifdef _TG_WINDOWS_
-	Tango::Util *tg = Tango::Util::instance();
-	std::string exe_name = tg->get_ds_exec_name();
-	exe_name = exe_name + ".exe";
-	HMODULE mod;
-	FARPROC proc;
-	convertor conv;
-	PTR tmp;
+    Tango::Util *tg = Tango::Util::instance();
+    std::string exe_name = tg->get_ds_exec_name();
+    exe_name = exe_name + ".exe";
+    HMODULE mod;
+    FARPROC proc;
+    convertor conv;
+    PTR tmp;
 
-	if ((mod = GetModuleHandle(exe_name.c_str())) == NULL)
-	{
-		std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
-		exit(-1);
-	}
+    if ((mod = GetModuleHandle(exe_name.c_str())) == NULL)
+    {
+        std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
+        exit(-1);
+    }
 
 //
 // Use the mangled name to find the user DServer::class_factory method
@@ -114,22 +114,22 @@ void DServer::class_factory()
 //
 
 #ifdef _WIN64
-	if ((proc = GetProcAddress(mod,"?class_factory@DServer@Tango@@AEAAXXZ")) == NULL)
+    if ((proc = GetProcAddress(mod,"?class_factory@DServer@Tango@@AEAAXXZ")) == NULL)
 #elif defined(_WIN32) /* WIN32 */
-	if ((proc = GetProcAddress(mod,"?class_factory@DServer@Tango@@AAEXXZ")) == NULL)
+    if ((proc = GetProcAddress(mod,"?class_factory@DServer@Tango@@AAEXXZ")) == NULL)
 #endif
-	{
-		std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
-		exit(-1);
-	}
-	else
-	{
-		conv.d = &DServer::stop_polling;
-		conv.s = proc;
+    {
+        std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
+        exit(-1);
+    }
+    else
+    {
+        conv.d = &DServer::stop_polling;
+        conv.s = proc;
 
-		tmp = conv.d;
-		(this->*tmp)();
-	}
+        tmp = conv.d;
+        (this->*tmp)();
+    }
 
 #elif defined(__APPLE__)
     Tango::Util* tg{Tango::Util::instance()};
@@ -254,8 +254,8 @@ void DServer::class_factory()
     PTR tmp{conv.d};
     (this->*tmp)();
 #else
-		std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
-		exit(-1);
+        std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
+        exit(-1);
 #endif
 
 }

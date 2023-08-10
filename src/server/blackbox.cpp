@@ -3,16 +3,16 @@
 // file :               BlackBox.cpp
 //
 // description :        C++ source code for the BlackBoxElt and BlackBox classes. These classes are used to implement
-//						the tango device server black box. There is one black box for each Tango device. This black box
-//						keeps info. on all the activities on a device. A client is able to retrieve these data via
-//						a Device CORBA attribute
+//                        the tango device server black box. There is one black box for each Tango device. This black box
+//                        keeps info. on all the activities on a device. A client is able to retrieve these data via
+//                        a Device CORBA attribute
 //
 // project :            TANGO
 //
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -127,10 +127,10 @@ void client_call_interceptor(omniCallDescriptor* d, omniServant* s)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBoxElt::BlackBoxElt
+//        BlackBoxElt::BlackBoxElt
 //
 // description :
-//		Constructor for the BlackBoxElt class. This constructor simply set the internal value to their default
+//        Constructor for the BlackBoxElt class. This constructor simply set the internal value to their default
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -152,15 +152,15 @@ BlackBoxElt::~BlackBoxElt()
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::BlackBox
+//        BlackBox::BlackBox
 //
 // description :
-//		Two constructors for the BlackBox class. The first one does not take any argument and construct a black box
-//		with the default depth. The second one create a black box with a depth defined by the argument.
+//        Two constructors for the BlackBox class. The first one does not take any argument and construct a black box
+//        with the default depth. The second one create a black box with a depth defined by the argument.
 //
 // argument :
-//		in :
-//			- max_size : The black box depth
+//        in :
+//            - max_size : The black box depth
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -183,14 +183,14 @@ BlackBox::BlackBox(long max_size)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::insert_corba_attr
+//        BlackBox::insert_corba_attr
 //
 // description :
-//		This method insert a new element in the black box when this element is a attribute
+//        This method insert a new element in the black box when this element is a attribute
 //
 // argument :
-//		in :
-//			- attr : The attribute type
+//        in :
+//            - attr : The attribute type
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -236,16 +236,16 @@ void BlackBox::insert_corba_attr(BlackBoxElt_AttrType attr)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::insert_cmd
+//        BlackBox::insert_cmd
 //
 // description :
-//		This method insert a new element in the black box when this element is a call to the operation command_inout
+//        This method insert a new element in the black box when this element is a call to the operation command_inout
 //
 // argument :
-//		in :
-//			- cmd : The command name
-//			- vers : The IDL device version
-//			- sour : The source parameter (DEV, CACHE...)
+//        in :
+//            - cmd : The command name
+//            - vers : The IDL device version
+//            - sour : The source parameter (DEV, CACHE...)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -301,16 +301,16 @@ void BlackBox::insert_cmd_nl(const char *cmd, long vers, DevSource sour)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::insert_cmd_cl_ident
+//        BlackBox::insert_cmd_cl_ident
 //
 // description :
-//		This method insert a new element in the black box when this element is a call to the operation command_inout
+//        This method insert a new element in the black box when this element is a call to the operation command_inout
 //
 // argument :
-//		in :
-//			- cmd : The command name
-//			- cl_id : The client identification data
-//			- sour : The source parameter (DEV, CACHE...)
+//        in :
+//            - cmd : The command name
+//            - cl_id : The client identification data
+//            - sour : The source parameter (DEV, CACHE...)
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -352,15 +352,15 @@ void BlackBox::insert_cmd_cl_ident(const char *cmd, const ClntIdent &cl_id, long
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::add_cl_ident
+//        BlackBox::add_cl_ident
 //
 // description :
-//		Add client identification data to the client address instance
+//        Add client identification data to the client address instance
 //
 // argument :
-//		in :
-//			- cl_ident : The client identificator
-//			- cl_addr : The client address instance
+//        in :
+//            - cl_ident : The client identificator
+//            - cl_addr : The client address instance
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -394,14 +394,14 @@ void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::update_client_host
+//        BlackBox::update_client_host
 //
 // description :
-//		Add client identification data to one of the BlackBox element
+//        Add client identification data to one of the BlackBox element
 //
 // argument :
-//		in :
-//			- ip : The client address instance
+//        in :
+//            - ip : The client address instance
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -427,15 +427,15 @@ void BlackBox::update_client_host(client_addr *ip)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::insert_op
+//        BlackBox::insert_op
 //
 // description :
-//		This method insert a new element in the black box when this element is a call to an operation which is not
-//		the command_inout operation
+//        This method insert a new element in the black box when this element is a call to an operation which is not
+//        the command_inout operation
 //
 // argument :
-//		in :
-//			- op : The operation type
+//        in :
+//            - op : The operation type
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -506,17 +506,17 @@ void BlackBox::insert_op_nl(BlackBoxElt_OpType op)
 //+--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::insert_attr
+//        BlackBox::insert_attr
 //
 // description :
-//		This method insert a new element in the black box when this element is a call to the CORBA operation
-//		read_attributes
+//        This method insert a new element in the black box when this element is a call to the CORBA operation
+//        read_attributes
 //
 // argument :
-//		in :
-//			- names : The attribute(s) name
-//			- vers : The device IDl version
-//			- sour : The device source parameter (CACHE, DEV,...)
+//        in :
+//            - names : The attribute(s) name
+//            - vers : The device IDl version
+//            - sour : The device source parameter (CACHE, DEV,...)
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -923,15 +923,15 @@ void BlackBox::insert_attr_nl_4(const Tango::AttributeValueList_4 &att_list)
 //+--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::insert_wr_attr
+//        BlackBox::insert_wr_attr
 //
 // description :
-//		This method insert a new element in the black box when this element is a call to the CORBA operation
-//		write_read_attributes
+//        This method insert a new element in the black box when this element is a call to the CORBA operation
+//        write_read_attributes
 //
 // argument :
-//		in :
-//			- att_list : The attribute list
+//        in :
+//            - att_list : The attribute list
 //          - r_names : Attribute name(s)
 //          - cl_id : Client identifier
 //          - vers :
@@ -1023,11 +1023,11 @@ void BlackBox::insert_attr_wr_nl(const Tango::AttributeValueList_4 &att_list,
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::inc_indexes
+//        BlackBox::inc_indexes
 //
 // description :
-//		This private method increment the indexes used to acces the box itself. This is necessary because the box must
-//		be managed as a circular buffer
+//        This private method increment the indexes used to acces the box itself. This is necessary because the box must
+//        be managed as a circular buffer
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1049,10 +1049,10 @@ void BlackBox::inc_indexes()
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::get_client_host
+//        BlackBox::get_client_host
 //
 // description :
-//		This private method retrieves the client host IP address (the number). IT USES OMNIORB SPECIFIC INTERCEPTOR
+//        This private method retrieves the client host IP address (the number). IT USES OMNIORB SPECIFIC INTERCEPTOR
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1118,14 +1118,14 @@ void BlackBox::get_client_host()
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::build_info_as_str
+//        BlackBox::build_info_as_str
 //
 // description :
-//		Translate all the info stored in a black box element into a readable string.
+//        Translate all the info stored in a black box element into a readable string.
 //
 // argument :
-//		in :
-//			- index : The black box element index
+//        in :
+//            - index : The black box element index
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1685,14 +1685,14 @@ void BlackBox::build_info_as_str(long index)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::add_source
+//        BlackBox::add_source
 //
 // description :
-//		Read black box element as strings. The newest element is return in the first position
+//        Read black box element as strings. The newest element is return in the first position
 //
 // argument :
-//		in :
-//			- index : The number of element to read
+//        in :
+//            - index : The number of element to read
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1721,14 +1721,14 @@ void BlackBox::add_source(long index)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::read
+//        BlackBox::read
 //
 // description :
-//		Read black box element as strings. The newest element is returned in the first position
+//        Read black box element as strings. The newest element is returned in the first position
 //
 // argument :
-//		in :
-//			- index : The number of element to read
+//        in :
+//            - index : The number of element to read
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1824,18 +1824,18 @@ Tango::DevVarStringArray *BlackBox::read(long wanted_elt)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		BlackBox::date_ux_to_str
+//        BlackBox::date_ux_to_str
 //
 // description :
-//		Convert a UNIX date (number of seconds since EPOCH) to a string and
-//		return a string in the following format :
-//			dd/mm/yyyy hh24:mi:ss:xx
+//        Convert a UNIX date (number of seconds since EPOCH) to a string and
+//        return a string in the following format :
+//            dd/mm/yyyy hh24:mi:ss:xx
 //
 // argument :
-//		in :
-//			- ux_date : The UNIX date in a std::chrono::system_clock::time_point structure
-//		out :
-//			- str_date : Pointer to char array where the date will be stored (must be allocated)
+//        in :
+//            - ux_date : The UNIX date in a std::chrono::system_clock::time_point structure
+//        out :
+//            - str_date : Pointer to char array where the date will be stored (must be allocated)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1857,10 +1857,10 @@ std::string BlackBox::timestamp_unix_to_str(const std::chrono::system_clock::tim
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		client_addr::client_addr
+//        client_addr::client_addr
 //
 // description :
-//		Copy ctor of the client_addr class
+//        Copy ctor of the client_addr class
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1878,10 +1878,10 @@ client_addr::client_addr(const client_addr &rhs)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		client_addr::operator=()
+//        client_addr::operator=()
 //
 // description :
-//		Assignement operator of the client_addr class
+//        Assignement operator of the client_addr class
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1905,10 +1905,10 @@ client_addr &client_addr::operator=(const client_addr &rhs)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		client_addr::operator==()
+//        client_addr::operator==()
 //
 // description :
-//		Equality operator of the client_addr class
+//        Equality operator of the client_addr class
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1964,10 +1964,10 @@ bool client_addr::operator==(const client_addr &rhs)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		client_addr::operator!=()
+//        client_addr::operator!=()
 //
 // description :
-//		Operator of the client_addr class
+//        Operator of the client_addr class
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -2023,10 +2023,10 @@ bool client_addr::operator!=(const client_addr &rhs)
 //+--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		client_addr::client_ip_2_client_name()
+//        client_addr::client_ip_2_client_name()
 //
 // description :
-//		Convert client host IP address to client host name
+//        Convert client host IP address to client host name
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -2125,10 +2125,10 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
-// operator overloading : 	<<
+// operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the client_addr class
+//        Friend function to ease printing instance of the client_addr class
 //
 //--------------------------------------------------------------------------------------------------------------------
 

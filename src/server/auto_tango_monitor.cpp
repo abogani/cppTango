@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -39,11 +39,11 @@ namespace Tango
     //---------------------------------------------------------------------------------------------------------------
     //
     // class :
-    //		AutoTangoMonitor
+    //        AutoTangoMonitor
     //
     // description :
-    //		This class is only a helper class used to get a TangoMonitor object during its construction and to
-    //		it during its destruction. It makes developer life easier.
+    //        This class is only a helper class used to get a TangoMonitor object during its construction and to
+    //        it during its destruction. It makes developer life easier.
     //
     //---------------------------------------------------------------------------------------------------------------
     AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceImpl *dev, bool force)
@@ -112,11 +112,11 @@ namespace Tango
     //---------------------------------------------------------------------------------------------------------------
     //
     // class :
-    //		NoSyncModelTangoMonitor
+    //        NoSyncModelTangoMonitor
     //
     // description :
-    //		This class is only a helper class used to get a TangoMonitor object during its construction and to
-    //		it during its destruction only if the device server process is in NO_SYNC synchronisation model
+    //        This class is only a helper class used to get a TangoMonitor object during its construction and to
+    //        it during its destruction only if the device server process is in NO_SYNC synchronisation model
     //
     //---------------------------------------------------------------------------------------------------------------
     NoSyncModelTangoMonitor::NoSyncModelTangoMonitor(Tango::DeviceImpl *dev)

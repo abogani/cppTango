@@ -10,7 +10,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -37,13 +37,13 @@ namespace Tango
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		PollThread::robb_data
+//        PollThread::robb_data
 //
 // description :
 //
 // argument :
-//		in :
-//			- attr_value : The poor attribute value on which we are going to robb data
+//        in :
+//            - attr_value : The poor attribute value on which we are going to robb data
 //          - new_attr_value : The robber
 //
 //------------------------------------------------------------------------------------------------------------------
@@ -214,14 +214,14 @@ void PollThread::robb_data(T &attr_value,T &new_attr_value)
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		PollThread::copy_remaining
+//        PollThread::copy_remaining
 //
 // description :
 //      Copy from one AttributeValue_X structure to another one data elements which are not the data themselves
 //
 // argument :
-//		in :
-//			- attr_value : The origin attribute value
+//        in :
+//            - attr_value : The origin attribute value
 //      out :
 //          - new_attr_value : The new attribute value
 //

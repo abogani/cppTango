@@ -2,13 +2,13 @@
 // Level.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -107,15 +107,15 @@ public:
    **/
   static const std::string& get_name (Value level);
 
-	/**
-	 * Returns the value of the given level name.
-	 * This can be either one of "OFF", "ERRROR", ... or a
-	 * decimal string representation of the value, e.g. '500' for DEBUG.
-	 * @param level_name the string containing the the of the level
-	 * @return the value corresponding with the level name
-	 * @throw std::invalid_argument if the level_name does not
-	 * correspond with a known Level name or a number
-	 **/
+    /**
+     * Returns the value of the given level name.
+     * This can be either one of "OFF", "ERRROR", ... or a
+     * decimal string representation of the value, e.g. '500' for DEBUG.
+     * @param level_name the string containing the the of the level
+     * @return the value corresponding with the level name
+     * @throw std::invalid_argument if the level_name does not
+     * correspond with a known Level name or a number
+     **/
    static Value get_value (const std::string& level_name);
 };
 

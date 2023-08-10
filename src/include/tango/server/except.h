@@ -9,7 +9,7 @@
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -62,11 +62,11 @@ static inline std::ostream &operator<<(std::ostream &ss, const Tango::DevFailed 
 //==================================================================================================================
 //
 // Class :
-//		Except
+//        Except
 //
 // description :
-//		This class is a container for all exceptions related methods to be used in aa Tango device server/client.
-//		Most of these methods are static.
+//        This class is a container for all exceptions related methods to be used in aa Tango device server/client.
+//        Most of these methods are static.
 //
 //==================================================================================================================
 
@@ -98,7 +98,7 @@ public:
  *
  * @param ex The exception object reference
  */
-	static void print_exception(const CORBA::Exception &ex);
+    static void print_exception(const CORBA::Exception &ex);
 //@}
 
 /**@name Error stack related method */
@@ -110,7 +110,7 @@ public:
  *
  * @param ex The error stack reference
  */
-	static void print_error_stack(const Tango::DevErrorList &ex);
+    static void print_error_stack(const Tango::DevErrorList &ex);
 
 //@}
 
@@ -133,21 +133,21 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   const char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       const char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].desc = Tango::string_dup(desc);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		errors[0].origin = Tango::string_dup(origin);
+        errors.length(1);
+        errors[0].desc = Tango::string_dup(desc);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        errors[0].origin = Tango::string_dup(origin);
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -168,22 +168,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   const char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       const char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].desc = Tango::string_dup(desc);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
+        errors.length(1);
+        errors[0].desc = Tango::string_dup(desc);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -204,22 +204,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].desc = Tango::string_dup(desc);
-		delete[] desc;
-		errors[0].origin = Tango::string_dup(origin);
-		errors[0].reason = Tango::string_dup(reason);
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].desc = Tango::string_dup(desc);
+        delete[] desc;
+        errors[0].origin = Tango::string_dup(origin);
+        errors[0].reason = Tango::string_dup(reason);
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -239,23 +239,23 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
-		errors[0].desc = Tango::string_dup(desc);
-		delete[] desc;
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
+        errors[0].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -276,22 +276,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   const char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       const char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin);
-		errors[0].desc = Tango::string_dup(desc);
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin);
+        errors[0].desc = Tango::string_dup(desc);
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -312,23 +312,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   const char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       const char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
-		errors[0].desc = Tango::string_dup(desc);
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
+        errors[0].desc = Tango::string_dup(desc);
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -349,23 +349,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin);
-		errors[0].desc = Tango::string_dup(desc);
-		delete[] desc;
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin);
+        errors[0].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -386,58 +386,24 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
-		errors[0].desc = Tango::string_dup(desc);
-		delete[] desc;
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
+        errors[0].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw Tango::DevFailed(errors);
-	}
-
-/**
- * Generate and throw a TANGO DevFailed exception.
- *
- * The exception is created with a single DevError
- * object. A default value "Tango::ERR" is defined for the DevError
- * severity field.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- *
- * @param reason The exception DevError object reason field
- * @param desc The exception DevError object desc field
- * @param origin The exception DevError object origin field
- * @param sever The exception DevError object severity field
- * @exception DevFailed The thrown exception.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- */
-
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   const std::string &desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
-
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin.c_str());
-		errors[0].desc = Tango::string_dup(desc.c_str());
-
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -457,55 +423,21 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   const std::string &desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       const std::string &desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin);
-		errors[0].desc = Tango::string_dup(desc.c_str());
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin.c_str());
+        errors[0].desc = Tango::string_dup(desc.c_str());
 
-		throw Tango::DevFailed(errors);
-	}
-
-/**
- * Generate and throw a TANGO DevFailed exception.
- *
- * The exception is created with a single DevError
- * object. A default value "Tango::ERR" is defined for the DevError
- * severity field.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- *
- * @param reason The exception DevError object reason field
- * @param desc The exception DevError object desc field
- * @param origin The exception DevError object origin field
- * @param sever The exception DevError object severity field
- * @exception DevFailed The thrown exception.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- */
-
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   const char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
-
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin.c_str());
-		errors[0].desc = Tango::string_dup(desc);
-
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -525,55 +457,21 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   const char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       const std::string &desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin);
-		errors[0].desc = Tango::string_dup(desc);
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin);
+        errors[0].desc = Tango::string_dup(desc.c_str());
 
-		throw Tango::DevFailed(errors);
-	}
-
-/**
- * Generate and throw a TANGO DevFailed exception.
- *
- * The exception is created with a single DevError
- * object. A default value "Tango::ERR" is defined for the DevError
- * severity field.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- *
- * @param reason The exception DevError object reason field
- * @param desc The exception DevError object desc field
- * @param origin The exception DevError object origin field
- * @param sever The exception DevError object severity field
- * @exception DevFailed The thrown exception.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- */
-
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   const std::string &desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
-
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		errors[0].origin = Tango::string_dup(origin.c_str());
-		errors[0].desc = Tango::string_dup(desc.c_str());
-
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -593,21 +491,21 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   const std::string &desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       const char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		errors[0].origin = Tango::string_dup(origin);
-		errors[0].desc = Tango::string_dup(desc.c_str());
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin.c_str());
+        errors[0].desc = Tango::string_dup(desc);
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -627,21 +525,123 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const char *reason,
-					   const char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       const char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		errors[0].origin = Tango::string_dup(origin.c_str());
-		errors[0].desc = Tango::string_dup(desc);
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin);
+        errors[0].desc = Tango::string_dup(desc);
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
+
+/**
+ * Generate and throw a TANGO DevFailed exception.
+ *
+ * The exception is created with a single DevError
+ * object. A default value "Tango::ERR" is defined for the DevError
+ * severity field.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ *
+ * @param reason The exception DevError object reason field
+ * @param desc The exception DevError object desc field
+ * @param origin The exception DevError object origin field
+ * @param sever The exception DevError object severity field
+ * @exception DevFailed The thrown exception.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ */
+
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       const std::string &desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
+
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        errors[0].origin = Tango::string_dup(origin.c_str());
+        errors[0].desc = Tango::string_dup(desc.c_str());
+
+        throw Tango::DevFailed(errors);
+    }
+
+/**
+ * Generate and throw a TANGO DevFailed exception.
+ *
+ * The exception is created with a single DevError
+ * object. A default value "Tango::ERR" is defined for the DevError
+ * severity field.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ *
+ * @param reason The exception DevError object reason field
+ * @param desc The exception DevError object desc field
+ * @param origin The exception DevError object origin field
+ * @param sever The exception DevError object severity field
+ * @exception DevFailed The thrown exception.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ */
+
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       const std::string &desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
+
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        errors[0].origin = Tango::string_dup(origin);
+        errors[0].desc = Tango::string_dup(desc.c_str());
+
+        throw Tango::DevFailed(errors);
+    }
+
+/**
+ * Generate and throw a TANGO DevFailed exception.
+ *
+ * The exception is created with a single DevError
+ * object. A default value "Tango::ERR" is defined for the DevError
+ * severity field.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ *
+ * @param reason The exception DevError object reason field
+ * @param desc The exception DevError object desc field
+ * @param origin The exception DevError object origin field
+ * @param sever The exception DevError object severity field
+ * @exception DevFailed The thrown exception.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ */
+
+    [[noreturn]] static inline void throw_exception(const char *reason,
+                       const char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
+
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        errors[0].origin = Tango::string_dup(origin.c_str());
+        errors[0].desc = Tango::string_dup(desc);
+
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -662,22 +662,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   const std::string &desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       const std::string &desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
-		errors[0].desc = Tango::string_dup(desc.c_str());
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
+        errors[0].desc = Tango::string_dup(desc.c_str());
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -698,23 +698,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin);
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin);
         errors[0].desc   = Tango::string_dup(desc);
-		delete[] desc;
-		errors[0].desc = Tango::string_dup(origin.c_str());
+        delete[] desc;
+        errors[0].desc = Tango::string_dup(origin.c_str());
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -735,23 +735,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(const std::string &reason,
-					   char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(const std::string &reason,
+                       char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason.c_str());
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
-		errors[0].desc = Tango::string_dup(desc);
-		delete desc;
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason.c_str());
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
+        errors[0].desc = Tango::string_dup(desc);
+        delete desc;
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -772,22 +772,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   const std::string &desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       const std::string &desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin.c_str());
-		errors[0].desc = Tango::string_dup(desc.c_str());
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin.c_str());
+        errors[0].desc = Tango::string_dup(desc.c_str());
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -808,23 +808,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   const std::string &desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       const std::string &desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin);
-		delete[] origin;
-		errors[0].desc = Tango::string_dup(desc.c_str());
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin);
+        delete[] origin;
+        errors[0].desc = Tango::string_dup(desc.c_str());
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -845,23 +845,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_exception(char *reason,
-					   char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::DevErrorList errors(1);
+    [[noreturn]] static inline void throw_exception(char *reason,
+                       char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::DevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].severity = sever;
-		errors[0].reason = Tango::string_dup(reason);
-		delete[] reason;
-		errors[0].origin = Tango::string_dup(origin.c_str());
-		errors[0].desc = Tango::string_dup(desc);
-		delete[] desc;
+        errors.length(1);
+        errors[0].severity = sever;
+        errors[0].reason = Tango::string_dup(reason);
+        delete[] reason;
+        errors[0].origin = Tango::string_dup(origin.c_str());
+        errors[0].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw Tango::DevFailed(errors);
-	}
+        throw Tango::DevFailed(errors);
+    }
 
 //@}
 
@@ -885,22 +885,22 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   const char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       const char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -922,23 +922,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   const char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       const char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -960,23 +960,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete[] desc;
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete[] desc;
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -997,24 +997,24 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete[] desc;
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1036,23 +1036,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
- 					   const char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                        const char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1074,24 +1074,24 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
-					   const char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                       const char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1113,24 +1113,24 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
-					   char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                       char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete[] desc;
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1152,61 +1152,25 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
-					   char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                       char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete[] desc;
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw ex;
-	}
-
-/**
- * Re-throw a TANGO DevFailed exception with one more error.
- *
- * The exception is re-thrown with one more DevError
- * object. A default value "Tango::ERR" is defined for the new DevError
- * severity field.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- *
- * @param ex The DevFailed exception
- * @param reason The exception DevError object reason field
- * @param desc The exception DevError object desc field
- * @param origin The exception DevError object origin field
- * @param sever The exception DevError object severity field
- * @exception DevFailed The thrown exception.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- */
-
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   const std::string &desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
-
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
-
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1227,58 +1191,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   const std::string &desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       const std::string &desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
 
-		throw ex;
-	}
-
-/**
- * Re-throw a TANGO DevFailed exception with one more error.
- *
- * The exception is re-thrown with one more DevError
- * object. A default value "Tango::ERR" is defined for the new DevError
- * severity field.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- *
- * @param ex The DevFailed exception
- * @param reason The exception DevError object reason field
- * @param desc The exception DevError object desc field
- * @param origin The exception DevError object origin field
- * @param sever The exception DevError object severity field
- * @exception DevFailed The thrown exception.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- */
-
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   const char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
-
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1299,58 +1227,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   const char *desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       const std::string &desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
 
-		throw ex;
-	}
-
-/**
- * Re-throw a TANGO DevFailed exception with one more error.
- *
- * The exception is re-thrown with one more DevError
- * object. A default value "Tango::ERR" is defined for the new DevError
- * severity field.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- *
- * @param ex The DevFailed exception
- * @param reason The exception DevError object reason field
- * @param desc The exception DevError object desc field
- * @param origin The exception DevError object origin field
- * @param sever The exception DevError object severity field
- * @exception DevFailed The thrown exception.
- * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
- * <b>DevFailed</b> exception specification
- */
-
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   const std::string &desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
-
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
-
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1371,22 +1263,22 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   const std::string &desc,
-					   const char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       const char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1407,22 +1299,130 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const char *reason,
-					   const char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       const char *desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
 
-		throw ex;
-	}
+        throw ex;
+    }
+
+/**
+ * Re-throw a TANGO DevFailed exception with one more error.
+ *
+ * The exception is re-thrown with one more DevError
+ * object. A default value "Tango::ERR" is defined for the new DevError
+ * severity field.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ *
+ * @param ex The DevFailed exception
+ * @param reason The exception DevError object reason field
+ * @param desc The exception DevError object desc field
+ * @param origin The exception DevError object origin field
+ * @param sever The exception DevError object severity field
+ * @exception DevFailed The thrown exception.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ */
+
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       const std::string &desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
+
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+
+        throw ex;
+    }
+
+/**
+ * Re-throw a TANGO DevFailed exception with one more error.
+ *
+ * The exception is re-thrown with one more DevError
+ * object. A default value "Tango::ERR" is defined for the new DevError
+ * severity field.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ *
+ * @param ex The DevFailed exception
+ * @param reason The exception DevError object reason field
+ * @param desc The exception DevError object desc field
+ * @param origin The exception DevError object origin field
+ * @param sever The exception DevError object severity field
+ * @exception DevFailed The thrown exception.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ */
+
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       const std::string &desc,
+                       const char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
+
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+
+        throw ex;
+    }
+
+/**
+ * Re-throw a TANGO DevFailed exception with one more error.
+ *
+ * The exception is re-thrown with one more DevError
+ * object. A default value "Tango::ERR" is defined for the new DevError
+ * severity field.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ *
+ * @param ex The DevFailed exception
+ * @param reason The exception DevError object reason field
+ * @param desc The exception DevError object desc field
+ * @param origin The exception DevError object origin field
+ * @param sever The exception DevError object severity field
+ * @exception DevFailed The thrown exception.
+ * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
+ * <b>DevFailed</b> exception specification
+ */
+
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const char *reason,
+                       const char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
+
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1444,23 +1444,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   const std::string &desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       const std::string &desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1482,23 +1482,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete[] desc;
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1520,24 +1520,24 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   const std::string &reason,
-					   char *desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       const std::string &reason,
+                       char *desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete desc;
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason.c_str());
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete desc;
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1559,23 +1559,23 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
-					   const std::string &desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                       const std::string &desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1597,24 +1597,24 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
-					   const std::string &desc,
-					   char *origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                       const std::string &desc,
+                       char *origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin);
-		delete[] origin;
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin);
+        delete[] origin;
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());
 
-		throw ex;
-	}
+        throw ex;
+    }
 
 /**
  * Re-throw a TANGO DevFailed exception with one more error.
@@ -1636,24 +1636,24 @@ public:
  * <b>DevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-					   char *reason,
-					   char *desc,
-					   const std::string &origin,
-		            		   Tango::ErrSeverity sever = Tango::ERR)
-	{
-		long nb_err = ex.errors.length();
-		ex.errors.length(nb_err + 1);
+    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
+                       char *reason,
+                       char *desc,
+                       const std::string &origin,
+                               Tango::ErrSeverity sever = Tango::ERR)
+    {
+        long nb_err = ex.errors.length();
+        ex.errors.length(nb_err + 1);
 
-		ex.errors[nb_err].severity = sever;
-		ex.errors[nb_err].reason = Tango::string_dup(reason);
-		delete[] reason;
-		ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
-		ex.errors[nb_err].desc = Tango::string_dup(desc);
-		delete[] desc;
+        ex.errors[nb_err].severity = sever;
+        ex.errors[nb_err].reason = Tango::string_dup(reason);
+        delete[] reason;
+        ex.errors[nb_err].origin = Tango::string_dup(origin.c_str());
+        ex.errors[nb_err].desc = Tango::string_dup(desc);
+        delete[] desc;
 
-		throw ex;
-	}
+        throw ex;
+    }
 //@}
 
 /**@name Other throw exception methods */
@@ -1676,7 +1676,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static void throw_exception(const CORBA::SystemException &ex,const char *origin);
+    [[noreturn]] static void throw_exception(const CORBA::SystemException &ex,const char *origin);
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -1697,7 +1697,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static void throw_exception(const CORBA::SystemException &ex,char *origin);
+    [[noreturn]] static void throw_exception(const CORBA::SystemException &ex,char *origin);
 
 /**
  * Generate and throw a TANGO DevFailed exception.
@@ -1718,7 +1718,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	[[noreturn]] static void throw_exception(const CORBA::SystemException &ex,const std::string &origin);
+    [[noreturn]] static void throw_exception(const CORBA::SystemException &ex,const std::string &origin);
 
 
 /**
@@ -1743,22 +1743,22 @@ public:
  * <b>MultiDevFailed</b> exception specification
  */
 
-	[[noreturn]] static inline void throw_named_exception(const char *att_name,const char *reason,
-					   const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR)
-	{
-		Tango::NamedDevErrorList errors(1);
+    [[noreturn]] static inline void throw_named_exception(const char *att_name,const char *reason,
+                       const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR)
+    {
+        Tango::NamedDevErrorList errors(1);
 
-		errors.length(1);
-		errors[0].name = Tango::string_dup(att_name);
-		errors[0].index_in_call = 999;
-		errors[0].err_list.length(1);
-		errors[0].err_list[0].desc = Tango::string_dup(desc);
-		errors[0].err_list[0].severity = sever;
-		errors[0].err_list[0].reason = Tango::string_dup(reason);
-		errors[0].err_list[0].origin = Tango::string_dup(origin);
+        errors.length(1);
+        errors[0].name = Tango::string_dup(att_name);
+        errors[0].index_in_call = 999;
+        errors[0].err_list.length(1);
+        errors[0].err_list[0].desc = Tango::string_dup(desc);
+        errors[0].err_list[0].severity = sever;
+        errors[0].err_list[0].reason = Tango::string_dup(reason);
+        errors[0].err_list[0].origin = Tango::string_dup(origin);
 
-		throw Tango::MultiDevFailed(errors);
-	}
+        throw Tango::MultiDevFailed(errors);
+    }
 
 /**
  * Throw a TANGO MultiDevFailed exception.
@@ -1781,26 +1781,26 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>MultiDevFailed</b> exception specification
  */
-	[[noreturn]] static inline void throw_named_exception(std::vector<std::string> &atts,const char *reason,
-					   const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR)
-	{
-		unsigned int a_size = (unsigned int)atts.size();
-		Tango::NamedDevErrorList errors(a_size);
+    [[noreturn]] static inline void throw_named_exception(std::vector<std::string> &atts,const char *reason,
+                       const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR)
+    {
+        unsigned int a_size = (unsigned int)atts.size();
+        Tango::NamedDevErrorList errors(a_size);
 
-		errors.length(a_size);
-		for (unsigned int loop = 0;loop < a_size;loop++)
-		{
-			errors[loop].name = Tango::string_dup(atts[loop].c_str());
-			errors[loop].index_in_call = 999;
-			errors[loop].err_list.length(1);
-			errors[loop].err_list[0].desc = Tango::string_dup(desc);
-			errors[loop].err_list[0].severity = sever;
-			errors[loop].err_list[0].reason = Tango::string_dup(reason);
-			errors[loop].err_list[0].origin = Tango::string_dup(origin);
-		}
+        errors.length(a_size);
+        for (unsigned int loop = 0;loop < a_size;loop++)
+        {
+            errors[loop].name = Tango::string_dup(atts[loop].c_str());
+            errors[loop].index_in_call = 999;
+            errors[loop].err_list.length(1);
+            errors[loop].err_list[0].desc = Tango::string_dup(desc);
+            errors[loop].err_list[0].severity = sever;
+            errors[loop].err_list[0].reason = Tango::string_dup(reason);
+            errors[loop].err_list[0].origin = Tango::string_dup(origin);
+        }
 
-		throw Tango::MultiDevFailed(errors);
-	}
+        throw Tango::MultiDevFailed(errors);
+    }
 
 /**
  * Throw a TANGO MultiDevFailed exception.
@@ -1827,8 +1827,8 @@ public:
  * <b>MultiDevFailed</b> exception specification
  */
 
-	[[noreturn]] static void throw_named_exception(Tango::DeviceImpl *d,long att_idx,const char *reason,
-				   const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR);
+    [[noreturn]] static void throw_named_exception(Tango::DeviceImpl *d,long att_idx,const char *reason,
+                   const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR);
 
 /**
  * Throw a TANGO MultiDevFailed exception.
@@ -1856,7 +1856,7 @@ public:
  */
 
   [[noreturn]] static void throw_named_exception(Tango::DeviceImpl *d,std::vector<long> &atts,const char *reason,
-				   const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR);
+                   const char *desc,const char *origin,Tango::ErrSeverity sever = Tango::ERR);
 
 
 /**
@@ -1872,20 +1872,20 @@ public:
  * @param ex2 The second DevFailed exception
  * @return A boolean set to true if the two exceptions are equal
  */
-	static bool compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2);
+    static bool compare_exception(Tango::DevFailed &ex1, Tango::DevFailed &ex2);
 
 
 //@}
 
 /// @privatesection
 
-	static char *print_CORBA_SystemException(const CORBA::SystemException *);
-	static char *print_CORBA_SystemException_r(const CORBA::SystemException *, char * err_msg); // reentrant version
-	static omni_mutex the_mutex;
+    static char *print_CORBA_SystemException(const CORBA::SystemException *);
+    static char *print_CORBA_SystemException_r(const CORBA::SystemException *, char * err_msg); // reentrant version
+    static omni_mutex the_mutex;
 
 protected:
 /// @privatesection
-	static char mess[256];
+    static char mess[256];
 };
 
 // Note: This returns raw pointer to a temporary c-string, it must be copied (e.g. with string_dup).

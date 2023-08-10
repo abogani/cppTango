@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -39,14 +39,14 @@ namespace Tango
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		FwdAttribute::set_local_attribute
+//        FwdAttribute::set_local_attribute
 //
 // description :
-//		Set value in the local attribute
+//        Set value in the local attribute
 //
 // argument :
-//		in :
-//			- da : The DeviceAttribute coming from the root device read_attribute()
+//        in :
+//            - da : The DeviceAttribute coming from the root device read_attribute()
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -75,18 +75,18 @@ void FwdAttribute::set_local_attribute(DeviceAttribute &da, T *&seq_ptr)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		FwdAttribute::propagate_writen_data
+//        FwdAttribute::propagate_writen_data
 //
 // description :
-//		Pass the data received by a writable attribute into a DeviceAttribute used to write another attribute
+//        Pass the data received by a writable attribute into a DeviceAttribute used to write another attribute
 //
 // argument :
-//		in :
-//			- attr : The attribute
-//			- ptr : Intermediate pointer
-//			- seq_ptr : Poniter to sequence used to fill in the DeviceAttribute
-//		out :
-//			- da : The DeviceAttribute coming from the root device read_attribute()
+//        in :
+//            - attr : The attribute
+//            - ptr : Intermediate pointer
+//            - seq_ptr : Poniter to sequence used to fill in the DeviceAttribute
+//        out :
+//            - da : The DeviceAttribute coming from the root device read_attribute()
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -105,17 +105,17 @@ void FwdAttribute::propagate_writen_data(DeviceAttribute &da, WAttribute &attr, 
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		FwdAttribute::new_att_conf_base
+//        FwdAttribute::new_att_conf_base
 //
 // description :
 //
 //
 // argument :
-//		in :
-//			- conf : The new attribute configuration
+//        in :
+//            - conf : The new attribute configuration
 //
 // return :
-//		True if the new configuration is not the same than the actual one. Return false otherwise
+//        True if the new configuration is not the same than the actual one. Return false otherwise
 //
 //--------------------------------------------------------------------------------------------------------------------
 

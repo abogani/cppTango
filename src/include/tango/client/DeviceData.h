@@ -4,7 +4,7 @@
 //
 //
 // Copyright (C) :      2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -32,10 +32,10 @@
 
 
 /****************************************************************************************
- * 																						*
- * 					The DeviceData class					   						    *
- * 					--------------------											    *
- * 																						*
+ *                                                                                         *
+ *                     The DeviceData class                                                   *
+ *                     --------------------                                                *
+ *                                                                                         *
  ***************************************************************************************/
 
 
@@ -68,21 +68,21 @@ public :
 //
 // constructor methods
 //
-	enum except_flags
-	{
-		isempty_flag,
-		wrongtype_flag,
-		numFlags
-	};
+    enum except_flags
+    {
+        isempty_flag,
+        wrongtype_flag,
+        numFlags
+    };
 
-//	DeviceData();
-	DeviceData(const DeviceData &);
-	DeviceData & operator=(const DeviceData &);
-	DeviceData(DeviceData &&);
-	DeviceData & operator=(DeviceData &&);
-	virtual ~DeviceData();
+//    DeviceData();
+    DeviceData(const DeviceData &);
+    DeviceData & operator=(const DeviceData &);
+    DeviceData(DeviceData &&);
+    DeviceData & operator=(DeviceData &&);
+    virtual ~DeviceData();
 
-	CORBA::Any_var any;
+    CORBA::Any_var any;
 
 ///@publicsection
 /**@name Constructors */
@@ -226,7 +226,7 @@ public :
  * @param [in] datum The data to be inserted
  * @exception WrongData if requested
  */
-	void operator << (bool datum) {any <<= CORBA::Any::from_boolean(datum);}
+    void operator << (bool datum) {any <<= CORBA::Any::from_boolean(datum);}
 /**
  * Insert data into a DeviceData for the DevVarLongStringArray data type
  *
@@ -236,7 +236,7 @@ public :
  * @param [in] vs The string vector to be inserted
  * @exception WrongData if requested
  */
-	void insert(const std::vector<DevLong> &vl, const std::vector<std::string>&vs);
+    void insert(const std::vector<DevLong> &vl, const std::vector<std::string>&vs);
 /**
  * Insert data into a DeviceData for the DevVarDoubleStringArray data type
  *
@@ -246,7 +246,7 @@ public :
  * @param [in] vs The string vector to be inserted
  * @exception WrongData if requested
  */
-	void insert(const std::vector<double> &vd, const std::vector<std::string> &vs);
+    void insert(const std::vector<double> &vd, const std::vector<std::string> &vs);
 /**
  * Insert data into a DeviceData for the DevEncoded data type
  *
@@ -262,7 +262,7 @@ public :
  * @param [in] buffer The data part of the DevEncoded instance
  * @exception WrongData if requested
  */
-	void insert(const std::string &str,std::vector<unsigned char> &buffer);
+    void insert(const std::string &str,std::vector<unsigned char> &buffer);
 /**
  * The extract operators
  *
@@ -324,7 +324,7 @@ public :
  * @return Boolean set to false if the extraction failed
  * @exception WrongData if requested
  */
-	bool operator >> (bool &datum);
+    bool operator >> (bool &datum);
 /**
  * Extract data from a DeviceData for the DevVarLongStringArray data type
  *
@@ -335,7 +335,7 @@ public :
  * @return Boolean set to false if the extraction failed
  * @exception WrongData if requested
  */
-	bool extract(std::vector<DevLong> &vl, std::vector<std::string> &vs);
+    bool extract(std::vector<DevLong> &vl, std::vector<std::string> &vs);
 /**
  * Extract data from a DeviceData for the DevVarDoubleStringArray data type
  *
@@ -346,7 +346,7 @@ public :
  * @return Boolean set to false if the extraction failed
  * @exception WrongData if requested
  */
-	bool extract(std::vector<double> &vd, std::vector<std::string> &vs);
+    bool extract(std::vector<double> &vd, std::vector<std::string> &vs);
 /**
  * Extract data from a DeviceData for the DevEncoded data type
  *
@@ -367,101 +367,101 @@ public :
 //
 // insert methods for native C++ types
 //
-//	void operator << (bool datum) {any <<= CORBA::Any::from_boolean(datum);}
-	void operator << (short datum) {any <<= datum;}
-	void operator << (unsigned short datum) {any <<= datum;}
-	void operator << (DevLong datum) {any <<= datum;}
-	void operator << (DevULong datum) {any <<= datum;}
-	void operator << (DevLong64 datum) {any <<= datum;}
-	void operator << (DevULong64 datum) {any <<= datum;}
-	void operator << (float datum) {any <<= datum;}
-	void operator << (double datum) {any <<= datum;}
-	void operator << (char *datum) {any <<= datum;}
-	void operator << (const char *datum) {any <<= datum;}
-	void operator << (const std::string &datum) {any <<= datum.c_str();}
-	void operator << (const std::vector<bool>&);
-	void operator << (const std::vector<unsigned char>&);
-	void operator << (const std::vector<std::string>&);
-	void operator << (const std::vector<short>&);
-	void operator << (const std::vector<unsigned short>&);
-	void operator << (const std::vector<DevLong> &);
-	void operator << (const std::vector<DevULong> &);
-	void operator << (const std::vector<DevLong64> &);
-	void operator << (const std::vector<DevULong64> &);
-	void operator << (const std::vector<float>&);
-	void operator << (const std::vector<double>&);
-	void operator << (DevState datum) {(any.inout()) <<= datum;}
-	void operator << (const DevEncoded &datum) {(any.inout()) <<= datum;}
+//    void operator << (bool datum) {any <<= CORBA::Any::from_boolean(datum);}
+    void operator << (short datum) {any <<= datum;}
+    void operator << (unsigned short datum) {any <<= datum;}
+    void operator << (DevLong datum) {any <<= datum;}
+    void operator << (DevULong datum) {any <<= datum;}
+    void operator << (DevLong64 datum) {any <<= datum;}
+    void operator << (DevULong64 datum) {any <<= datum;}
+    void operator << (float datum) {any <<= datum;}
+    void operator << (double datum) {any <<= datum;}
+    void operator << (char *datum) {any <<= datum;}
+    void operator << (const char *datum) {any <<= datum;}
+    void operator << (const std::string &datum) {any <<= datum.c_str();}
+    void operator << (const std::vector<bool>&);
+    void operator << (const std::vector<unsigned char>&);
+    void operator << (const std::vector<std::string>&);
+    void operator << (const std::vector<short>&);
+    void operator << (const std::vector<unsigned short>&);
+    void operator << (const std::vector<DevLong> &);
+    void operator << (const std::vector<DevULong> &);
+    void operator << (const std::vector<DevLong64> &);
+    void operator << (const std::vector<DevULong64> &);
+    void operator << (const std::vector<float>&);
+    void operator << (const std::vector<double>&);
+    void operator << (DevState datum) {(any.inout()) <<= datum;}
+    void operator << (const DevEncoded &datum) {(any.inout()) <<= datum;}
 
-//	void insert(vector<DevLong>&, vector<string>&);
-//	void insert(vector<double>&, vector<string>&);
+//    void insert(vector<DevLong>&, vector<string>&);
+//    void insert(vector<double>&, vector<string>&);
 
-//	void insert(const string &,vector<unsigned char>&);
-	void insert(const char *,DevVarCharArray *);
-	void insert(const char *,unsigned char *,unsigned int);
+//    void insert(const string &,vector<unsigned char>&);
+    void insert(const char *,DevVarCharArray *);
+    void insert(const char *,unsigned char *,unsigned int);
 
 //
 // insert methods for TANGO CORBA sequence types
 //
 
-	inline void operator << (DevVarBooleanArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarCharArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarShortArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarUShortArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarLongArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarLong64Array *datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarULongArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarULong64Array* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarFloatArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarDoubleArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarStringArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarLongStringArray* datum) { any.inout() <<= datum;}
-	inline void operator << (DevVarDoubleStringArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarBooleanArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarCharArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarShortArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarUShortArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarLongArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarLong64Array *datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarULongArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarULong64Array* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarFloatArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarDoubleArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarStringArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarLongStringArray* datum) { any.inout() <<= datum;}
+    inline void operator << (DevVarDoubleStringArray* datum) { any.inout() <<= datum;}
 
-	inline void operator << (const DevVarBooleanArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarCharArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarShortArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarUShortArray datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarLongArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarLong64Array &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarULongArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarULong64Array &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarFloatArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarDoubleArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarStringArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarLongStringArray &datum) { any.inout() <<= datum;}
-	inline void operator << (const DevVarDoubleStringArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarBooleanArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarCharArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarShortArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarUShortArray datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarLongArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarLong64Array &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarULongArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarULong64Array &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarFloatArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarDoubleArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarStringArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarLongStringArray &datum) { any.inout() <<= datum;}
+    inline void operator << (const DevVarDoubleStringArray &datum) { any.inout() <<= datum;}
 
 //
 // extract methods for native C++ types
 //
 
-//	bool operator >> (bool&);
-	bool operator >> (short&);
-	bool operator >> (unsigned short&);
-	bool operator >> (DevLong&);
-	bool operator >> (DevULong&);
-	bool operator >> (DevLong64&);
-	bool operator >> (DevULong64&);
-	bool operator >> (float&);
-	bool operator >> (double&);
-	bool operator >> (const char*&);
-	bool operator >> (std::string&);
+//    bool operator >> (bool&);
+    bool operator >> (short&);
+    bool operator >> (unsigned short&);
+    bool operator >> (DevLong&);
+    bool operator >> (DevULong&);
+    bool operator >> (DevLong64&);
+    bool operator >> (DevULong64&);
+    bool operator >> (float&);
+    bool operator >> (double&);
+    bool operator >> (const char*&);
+    bool operator >> (std::string&);
 
-	bool operator >> (std::vector<bool>&);
-	bool operator >> (std::vector<unsigned char>&);
-	bool operator >> (std::vector<std::string>&);
-	bool operator >> (std::vector<short>&);
-	bool operator >> (std::vector<unsigned short>&);
-	bool operator >> (std::vector<DevLong>&);
-	bool operator >> (std::vector<DevULong>&);
-	bool operator >> (std::vector<DevLong64>&);
-	bool operator >> (std::vector<DevULong64>&);
-	bool operator >> (std::vector<float>&);
-	bool operator >> (std::vector<double>&);
-	bool operator >> (DevState&);
-//	bool extract(std::vector<DevLong>&, std::vector<std::string>&);
-//	bool extract(std::vector<double>&, std::vector<std::string>&);
+    bool operator >> (std::vector<bool>&);
+    bool operator >> (std::vector<unsigned char>&);
+    bool operator >> (std::vector<std::string>&);
+    bool operator >> (std::vector<short>&);
+    bool operator >> (std::vector<unsigned short>&);
+    bool operator >> (std::vector<DevLong>&);
+    bool operator >> (std::vector<DevULong>&);
+    bool operator >> (std::vector<DevLong64>&);
+    bool operator >> (std::vector<DevULong64>&);
+    bool operator >> (std::vector<float>&);
+    bool operator >> (std::vector<double>&);
+    bool operator >> (DevState&);
+//    bool extract(std::vector<DevLong>&, std::vector<std::string>&);
+//    bool extract(std::vector<double>&, std::vector<std::string>&);
 
 //  bool extract(const char *&,unsigned char *&,unsigned int &);
     bool extract(std::string &,std::vector<unsigned char> &);
@@ -470,22 +470,22 @@ public :
 // extract methods for TANGO CORBA sequence types
 //
 
-	bool operator >> (const DevVarBooleanArray* &datum);
-	bool operator >> (const DevVarCharArray* &datum);
-	bool operator >> (const DevVarShortArray* &datum);
-	bool operator >> (const DevVarUShortArray* &datum);
-	bool operator >> (const DevVarLongArray* &datum);
-	bool operator >> (const DevVarLong64Array* &datum);
-	bool operator >> (const DevVarULongArray* &datum);
-	bool operator >> (const DevVarULong64Array* &datum);
-	bool operator >> (const DevVarFloatArray* &datum);
-	bool operator >> (const DevVarDoubleArray* &datum);
-	bool operator >> (const DevVarStringArray* &datum);
-	bool operator >> (const DevVarLongStringArray* &datum);
-	bool operator >> (const DevVarDoubleStringArray* &datum);
+    bool operator >> (const DevVarBooleanArray* &datum);
+    bool operator >> (const DevVarCharArray* &datum);
+    bool operator >> (const DevVarShortArray* &datum);
+    bool operator >> (const DevVarUShortArray* &datum);
+    bool operator >> (const DevVarLongArray* &datum);
+    bool operator >> (const DevVarLong64Array* &datum);
+    bool operator >> (const DevVarULongArray* &datum);
+    bool operator >> (const DevVarULong64Array* &datum);
+    bool operator >> (const DevVarFloatArray* &datum);
+    bool operator >> (const DevVarDoubleArray* &datum);
+    bool operator >> (const DevVarStringArray* &datum);
+    bool operator >> (const DevVarLongStringArray* &datum);
+    bool operator >> (const DevVarDoubleStringArray* &datum);
 
-	bool operator >> (const DevEncoded* &datum);
-	bool operator >> (DevEncoded &datum);
+    bool operator >> (const DevEncoded* &datum);
+    bool operator >> (DevEncoded &datum);
 
 ///@publicsection
 /**@name Exception and error related methods methods
@@ -504,7 +504,7 @@ public :
  *
  * @param [in] fl The exception flag
  */
-	void exceptions(std::bitset<numFlags> fl) {exceptions_flags = fl;}
+    void exceptions(std::bitset<numFlags> fl) {exceptions_flags = fl;}
 /**
  * Get exception flag
  *
@@ -524,7 +524,7 @@ public :
  *
  * @return The exception flag
  */
-	std::bitset<numFlags> exceptions() {return exceptions_flags;}
+    std::bitset<numFlags> exceptions() {return exceptions_flags;}
 /**
  * Reset one exception flag
  *
@@ -532,7 +532,7 @@ public :
  *
  * @param [in] fl The exception flag
  */
-	void reset_exceptions(except_flags fl) {exceptions_flags.reset((size_t)fl);}
+    void reset_exceptions(except_flags fl) {exceptions_flags.reset((size_t)fl);}
 /**
  * Set one exception flag
  *
@@ -540,7 +540,7 @@ public :
  *
  * @param [in] fl The exception flag
  */
-	void set_exceptions(except_flags fl) {exceptions_flags.set((size_t)fl);}
+    void set_exceptions(except_flags fl) {exceptions_flags.set((size_t)fl);}
 /**
  * Get instance extraction state
  *
@@ -564,7 +564,7 @@ public :
  *
  * @return The error bit set.
  */
-	std::bitset<numFlags> state() {return ext->ext_state;}
+    std::bitset<numFlags> state() {return ext->ext_state;}
 //@}
 
 /**@name miscellaneous methods */
@@ -593,7 +593,7 @@ public :
  *
  * @return Boolean set to true is the instance is empty
  */
-	bool is_empty();
+    bool is_empty();
 /**
  * Get Tango data type of the included data
  *
@@ -601,7 +601,7 @@ public :
  *
  * @return The data type
  */
-	int get_type();
+    int get_type();
 //@}
 
 /**
@@ -621,13 +621,13 @@ public :
  * @param [in] str The printing stream
  * @param [in] dd The instance to be printed
  */
-	friend std::ostream &operator<<(std::ostream &str, const DeviceData &dd);
+    friend std::ostream &operator<<(std::ostream &str, const DeviceData &dd);
 
 protected :
 ///@privatesection
-	bool any_is_null() const;
+    bool any_is_null() const;
 
-	std::bitset<numFlags> 	exceptions_flags;
+    std::bitset<numFlags>     exceptions_flags;
 
 private:
     class DeviceDataExt

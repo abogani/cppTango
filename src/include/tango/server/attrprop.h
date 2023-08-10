@@ -1,19 +1,19 @@
 //==================================================================================================================
 //
-// file :		AttrProp.h
+// file :        AttrProp.h
 //
-// description :	Include file for the AttrProp, DoubleAttrProp and MultiAttrProp classes.
-//					Three classes are declared in this file :
-//						The AttrProp class
-//						The DoubleAttrProp class
-//						The MultiAttrProp class
+// description :    Include file for the AttrProp, DoubleAttrProp and MultiAttrProp classes.
+//                    Three classes are declared in this file :
+//                        The AttrProp class
+//                        The DoubleAttrProp class
+//                        The MultiAttrProp class
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -44,10 +44,10 @@ namespace Tango
 
 //=================================================================================================================
 //
-//			The AttrProp class
+//            The AttrProp class
 //
 // description :
-//		This is a template class which holds a value of attribute property and its string representation.
+//        This is a template class which holds a value of attribute property and its string representation.
 //
 //=================================================================================================================
 
@@ -71,31 +71,31 @@ public:
 /**
  * Default constructor.
  */
-	AttrProp() : is_value(false),ext(nullptr) {}
+    AttrProp() : is_value(false),ext(nullptr) {}
 /**
  * Create a new AttrProp object.
  *
  * @param value The attribute property value.
  */
-	AttrProp(const T &value) : val(value), is_value(true), ext(nullptr)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		st << value;
-		str = st.str();
-	}
+    AttrProp(const T &value) : val(value), is_value(true), ext(nullptr)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        st << value;
+        str = st.str();
+    }
 /**
  * Create a new AttrProp object.
  *
  * @param value_str The 'C string' representation of attribute property.
  */
-	AttrProp(const char *value_str) : str(std::string(value_str)), is_value(false), ext(nullptr) {}
+    AttrProp(const char *value_str) : str(std::string(value_str)), is_value(false), ext(nullptr) {}
 /**
  * Create a new AttrProp object.
  *
  * @param value_str The string representation of attribute property value.
  */
-	AttrProp(const std::string &value_str) : str(value_str), is_value(false), ext(nullptr) {}
+    AttrProp(const std::string &value_str) : str(value_str), is_value(false), ext(nullptr) {}
 //@}
 
 /**@name Assignment operators
@@ -110,16 +110,16 @@ public:
  *
  * @return AttrProp object with both value and its string representation set.
  */
-	AttrProp &operator=(const T &value)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		st << value;
-		str = st.str();
-		val = value;
-		is_value = true;
-		return *this;
-	}
+    AttrProp &operator=(const T &value)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        st << value;
+        str = st.str();
+        val = value;
+        is_value = true;
+        return *this;
+    }
 /**
  * Assign the string representation of the attribute property value.
  *
@@ -127,12 +127,12 @@ public:
  *
  * @return AttrProp object with the string representation of its value set.
  */
-	AttrProp &operator=(const char *value_str)
-	{
-		str = value_str;
-		is_value = false;
-		return *this;
-	}
+    AttrProp &operator=(const char *value_str)
+    {
+        str = value_str;
+        is_value = false;
+        return *this;
+    }
 /**
  * Assign the string representation of the attribute property value.
  *
@@ -140,12 +140,12 @@ public:
  *
  * @return AttrProp object with the string representation of its value set.
  */
-	AttrProp &operator=(const std::string &value_str)
-	{
-		str = value_str;
-		is_value = false;
-		return *this;
-	}
+    AttrProp &operator=(const std::string &value_str)
+    {
+        str = value_str;
+        is_value = false;
+        return *this;
+    }
 //@}
 
 /**@name Get/Set object members.
@@ -158,21 +158,21 @@ public:
  *
  * @return The attribute property value.
  */
-	T get_val()
-	{
-		if(is_value == false)
-		{
-			std::string err_msg = "Numeric representation of the property's value (" + str + ") has not been set";
-			TANGO_THROW_EXCEPTION(API_AttrPropValueNotSet, err_msg);
-		}
-		return val;
-	}
+    T get_val()
+    {
+        if(is_value == false)
+        {
+            std::string err_msg = "Numeric representation of the property's value (" + str + ") has not been set";
+            TANGO_THROW_EXCEPTION(API_AttrPropValueNotSet, err_msg);
+        }
+        return val;
+    }
 /**
  * Get string representation of the attribute property value.
  *
  * @return The string representation of the attribute property value.
  */
-	std::string &get_str() {return str;}
+    std::string &get_str() {return str;}
 /**
  * Set the attribute property value.
  *
@@ -180,27 +180,27 @@ public:
  *
  * @param value The value of the attribute property.
  */
-	void set_val(const T &value)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		st << value;
-		str = st.str();
-		val = value;
-		is_value = true;
-	}
+    void set_val(const T &value)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        st << value;
+        str = st.str();
+        val = value;
+        is_value = true;
+    }
 /**
  * Set string representation of the attribute property value.
  *
  * @param value_str The the 'C string' representation of the attribute property value.
  */
-	void set_str(const char *value_str) {str = std::string(value_str); is_value = false;}
+    void set_str(const char *value_str) {str = std::string(value_str); is_value = false;}
 /**
  * Set string representation of the attribute property value.
  *
  * @param value_str The the string representation of the attribute property value.
  */
-	void set_str(const std::string &value_str) {str = value_str; is_value = false;}
+    void set_str(const std::string &value_str) {str = value_str; is_value = false;}
 //@}
 
 /**@name Check method
@@ -215,41 +215,41 @@ public:
  *
  * @return A boolean set to true if the attribute property value has been assigned
  */
-	bool is_val() {return is_value;}
+    bool is_val() {return is_value;}
 //@}
 
 /// @privatesection
 
-	operator std::string()
-	{
-		return str;
-	}
-	operator const char *()
-	{
-		return str.c_str();
-	}
+    operator std::string()
+    {
+        return str;
+    }
+    operator const char *()
+    {
+        return str.c_str();
+    }
 
 private:
-	T val;
-	std::string str;
-	bool is_value;
+    T val;
+    std::string str;
+    bool is_value;
 
 //
 // The extension class
 //
 
-	class AttrPropExt {};
+    class AttrPropExt {};
 
-    std::unique_ptr<AttrPropExt>		ext;           // Class extension
+    std::unique_ptr<AttrPropExt>        ext;           // Class extension
 };
 
 //===================================================================================================================
 //
-//			The DoubleAttrProp class
+//            The DoubleAttrProp class
 //
-// description :	This is a template class which holds values of a compound attribute property (like rel_change,
-//					abs_change, archive_rel_change, archive_abs_change) which consists of two values, and its string
-//					representation.
+// description :    This is a template class which holds values of a compound attribute property (like rel_change,
+//                    abs_change, archive_rel_change, archive_abs_change) which consists of two values, and its string
+//                    representation.
 //
 //==================================================================================================================
 
@@ -274,49 +274,49 @@ public:
 /**
  * Default constructor.
  */
-	DoubleAttrProp() : is_value(false) {}
+    DoubleAttrProp() : is_value(false) {}
 /**
  * Create a new DoubleAttrProp object.
  *
  * @param values A vector containing two values of
  * the compound attribute property.
  */
-	DoubleAttrProp(const std::vector<T> &values) : val(values), is_value(true)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		for(size_t i = 0; i < values.size(); i++)
-		{
-			if(i > 0)
-				st << ",";
-			st << values[i];
-		}
-		str = st.str();
-	}
+    DoubleAttrProp(const std::vector<T> &values) : val(values), is_value(true)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        for(size_t i = 0; i < values.size(); i++)
+        {
+            if(i > 0)
+                st << ",";
+            st << values[i];
+        }
+        str = st.str();
+    }
 /**
  * Create a new DoubleAttrProp object.
  *
  * @param value The figure assigned to both values of the compound attribute property.
  */
-	DoubleAttrProp(const T &value) : is_value(true) {
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		st << value;
-		str = st.str();
-		val.push_back(value);
-	}
+    DoubleAttrProp(const T &value) : is_value(true) {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        st << value;
+        str = st.str();
+        val.push_back(value);
+    }
 /**
  * Create a new DoubleAttrProp object.
  *
  * @param value_str The 'C string' representation of values of the compound attribute property.
  */
-	DoubleAttrProp(const char *value_str) : str(std::string(value_str)), is_value(false) {}
+    DoubleAttrProp(const char *value_str) : str(std::string(value_str)), is_value(false) {}
 /**
  * Create a new DoubleAttrProp object.
  *
  * @param value_str The string representation of values of the compound attribute property.
  */
-	DoubleAttrProp(const std::string &value_str) : str(value_str), is_value(false) {}
+    DoubleAttrProp(const std::string &value_str) : str(value_str), is_value(false) {}
 //@}
 
 /**@name Assignment operators
@@ -332,21 +332,21 @@ public:
  * @return DoubleAttrProp object with both values of the compound attribute property
  * and their string representation set.
  */
-	DoubleAttrProp & operator=(const std::vector<T> &values)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		for(size_t i = 0; i < values.size(); i++)
-		{
-			if(i > 0)
-				st << ",";
-			st << values[i];
-		}
-		str = st.str();
-		val = values;
-		is_value = true;
-		return *this;
-	}
+    DoubleAttrProp & operator=(const std::vector<T> &values)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        for(size_t i = 0; i < values.size(); i++)
+        {
+            if(i > 0)
+                st << ",";
+            st << values[i];
+        }
+        str = st.str();
+        val = values;
+        is_value = true;
+        return *this;
+    }
 /**
  * Assign the values of the compound attribute property.
  *
@@ -355,19 +355,19 @@ public:
  * @return DoubleAttrProp object with both values of the compound attribute property
  * and their string representation set.
  */
-	DoubleAttrProp & operator=(const T &value)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		if(Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR)
-			st << (short)value; // to represent the numeric value
-		else
-			st << value;
-		str = st.str();
-		val.push_back(value);
-		is_value = true;
-		return *this;
-	}
+    DoubleAttrProp & operator=(const T &value)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        if(Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR)
+            st << (short)value; // to represent the numeric value
+        else
+            st << value;
+        str = st.str();
+        val.push_back(value);
+        is_value = true;
+        return *this;
+    }
 /**
  * Assign the values of the compound attribute property.
  *
@@ -376,12 +376,12 @@ public:
  * @return DoubleAttrProp object with string representation of values of
  * the compound attribute property set.
  */
-	DoubleAttrProp & operator=(const char *value_str)
-	{
-		str = value_str;
-		is_value = false;
-		return *this;
-	}
+    DoubleAttrProp & operator=(const char *value_str)
+    {
+        str = value_str;
+        is_value = false;
+        return *this;
+    }
 /**
  * Assign the values of the compound attribute property.
  *
@@ -390,12 +390,12 @@ public:
  * @return DoubleAttrProp object with string representation of values of
  * the compound attribute property set.
  */
-	DoubleAttrProp & operator=(const std::string &value_str)
-	{
-		str = value_str;
-		is_value = false;
-		return *this;
-	}
+    DoubleAttrProp & operator=(const std::string &value_str)
+    {
+        str = value_str;
+        is_value = false;
+        return *this;
+    }
 //@}
 
 /**@name Get/Set object members.
@@ -408,21 +408,21 @@ public:
  *
  * @return The vector containing the compound attribute property values.
  */
-	std::vector<T> get_val()
-	{
-		if(is_value == false)
-		{
-			std::string err_msg = "Numeric representation of the property's value (" + str + ") has not been set";
-			TANGO_THROW_EXCEPTION(API_AttrPropValueNotSet, err_msg);
-		}
-		return val;
-	}
+    std::vector<T> get_val()
+    {
+        if(is_value == false)
+        {
+            std::string err_msg = "Numeric representation of the property's value (" + str + ") has not been set";
+            TANGO_THROW_EXCEPTION(API_AttrPropValueNotSet, err_msg);
+        }
+        return val;
+    }
 /**
  * Get string representation of the compound attribute property values.
  *
  * @return The string representation of the compound attribute property values.
  */
-	std::string &get_str() {return str;}
+    std::string &get_str() {return str;}
 /**
  * Set the compound attribute property values.
  *
@@ -430,20 +430,20 @@ public:
  *
  * @param values The vector containing the compound attribute property values.
  */
-	void set_val(const std::vector<T> &values)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		for(size_t i = 0; i < values.size(); i++)
-		{
-			if(i > 0)
-				st << ",";
-			st << values[i];
-		}
-		str = st.str();
-		val = values;
-		is_value = true;
-	}
+    void set_val(const std::vector<T> &values)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        for(size_t i = 0; i < values.size(); i++)
+        {
+            if(i > 0)
+                st << ",";
+            st << values[i];
+        }
+        str = st.str();
+        val = values;
+        is_value = true;
+    }
 /**
  * Set the compound attribute property values.
  *
@@ -452,27 +452,27 @@ public:
  *
  * @param value The figure representing both values of the compound attribute property.
  */
-	void set_val(const T &value)
-	{
-		TangoSys_MemStream st;
-		st.precision(TANGO_FLOAT_PRECISION);
-		st << value;
-		str = st.str();
-		val.push_back(value);
-		is_value = true;
-	}
+    void set_val(const T &value)
+    {
+        TangoSys_MemStream st;
+        st.precision(TANGO_FLOAT_PRECISION);
+        st << value;
+        str = st.str();
+        val.push_back(value);
+        is_value = true;
+    }
 /**
  * Set string representation of the compound attribute property values.
  *
  * @param value_str The 'C string' representation of the compound attribute property values.
  */
-	void set_str(const char *value_str) {str = std::string(value_str); is_value = false;}
+    void set_str(const char *value_str) {str = std::string(value_str); is_value = false;}
 /**
  * Set string representation of the compound attribute property values.
  *
  * @param value_str The string representation of the compound attribute property values.
  */
-	void set_str(const std::string &value_str) {str = value_str; is_value = false;}
+    void set_str(const std::string &value_str) {str = value_str; is_value = false;}
 //@}
 
 /**@name Check method
@@ -488,39 +488,39 @@ public:
  *
  * @return A boolean set to true if the compound attribute property values have been assigned
  */
-	bool is_val() {return is_value;}
+    bool is_val() {return is_value;}
 //@}
 
 /// @privatesection
 
-	operator std::string()
-	{
-		return str;
-	}
-	operator const char *()
-	{
-		return str.c_str();
-	}
+    operator std::string()
+    {
+        return str;
+    }
+    operator const char *()
+    {
+        return str.c_str();
+    }
 
 private:
-	std::vector<T> val;
-	std::string str;
-	bool is_value;
+    std::vector<T> val;
+    std::string str;
+    bool is_value;
 
 //
 // The extension class
 //
 
-	class DoubleAttrPropExt {};
+    class DoubleAttrPropExt {};
 
-	std::unique_ptr<DoubleAttrPropExt>	ext;           // Class extension
+    std::unique_ptr<DoubleAttrPropExt>    ext;           // Class extension
 };
 
 //==================================================================================================================
 //
-//			The MultiAttrProp class
+//            The MultiAttrProp class
 //
-// description :	This is a template class which holds values of modifiable attribute properties.
+// description :    This is a template class which holds values of modifiable attribute properties.
 //
 //=================================================================================================================
 
@@ -545,49 +545,49 @@ public:
 /**
  * Default constructor.
  */
-	MultiAttrProp()
-	{
+    MultiAttrProp()
+    {
 
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundefined-var-template"
 #endif
 
-		CmdArgType type = Tango::tango_type_traits<T>::type_value(); // restricts template initialisation to supported types
-		if(type){} // prevents compiler warning about unused variable type
+        CmdArgType type = Tango::tango_type_traits<T>::type_value(); // restricts template initialisation to supported types
+        if(type){} // prevents compiler warning about unused variable type
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
 
-	}
+    }
 //@}
 /**@name Class data members */
 //@{
 /**
  * Attribute label
  */
-		std::string 						label;
+        std::string                         label;
 /**
  * Attribute description
  */
-		std::string 						description;
+        std::string                         description;
 /**
  * Attribute unit
  */
-		std::string 						unit;
+        std::string                         unit;
 /**
  * Attribute standard_unit
  */
-		std::string 						standard_unit;
+        std::string                         standard_unit;
 /**
  * Attribute display_unit
  */
-		std::string 						display_unit;
+        std::string                         display_unit;
 /**
  * Attribute format
  */
-		std::string 						format;
+        std::string                         format;
 /**
  * Attribute min_value
  */
@@ -615,7 +615,7 @@ public:
 /**
  * Attribute delta_t
  */
-        AttrProp<DevLong>			delta_t;
+        AttrProp<DevLong>            delta_t;
 /**
  * Attribute delta_val
  */
@@ -623,31 +623,31 @@ public:
 /**
  * Attribute event_period
  */
-        AttrProp<DevLong>			event_period;
+        AttrProp<DevLong>            event_period;
 /**
  * Attribute archive_period
  */
-        AttrProp<DevLong>			archive_period;
+        AttrProp<DevLong>            archive_period;
 /**
  * Attribute rel_change
  */
-        DoubleAttrProp<DevDouble>	rel_change;
+        DoubleAttrProp<DevDouble>    rel_change;
 /**
  * Attribute abs_change
  */
-        DoubleAttrProp<DevDouble>	abs_change;
+        DoubleAttrProp<DevDouble>    abs_change;
 /**
  * Attribute archive_rel_change
  */
-        DoubleAttrProp<DevDouble>	archive_rel_change;
+        DoubleAttrProp<DevDouble>    archive_rel_change;
 /**
  * Attribute archive_abs_change
  */
-        DoubleAttrProp<DevDouble>	archive_abs_change;
+        DoubleAttrProp<DevDouble>    archive_abs_change;
 /**
  * Enumeration labels (For DevEnum data type)
  */
-        std::vector<std::string>				enum_labels;
+        std::vector<std::string>                enum_labels;
 //@}
 private:
 
@@ -655,9 +655,9 @@ private:
 // The extension class
 //
 
-	class MultiAttrPropExt {};
+    class MultiAttrPropExt {};
 
-	std::unique_ptr<MultiAttrPropExt>	ext;           // Class extension
+    std::unique_ptr<MultiAttrPropExt>    ext;           // Class extension
 };
 
 } // End of Tango namespace

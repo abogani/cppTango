@@ -1,13 +1,13 @@
 //===================================================================================================================
 //
-// devapi_base.cpp 	- C++ source code file for TANGO device api
+// devapi_base.cpp     - C++ source code file for TANGO device api
 //
-// programmer(s)	- Andy Gotz (goetz@esrf.fr)
+// programmer(s)    - Andy Gotz (goetz@esrf.fr)
 //
-// original 		- March 2001
+// original         - March 2001
 //
 // Copyright (C) :      2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -372,7 +372,7 @@ void Connection::set_source(Tango::DevSource sou)
 //-----------------------------------------------------------------------------
 //
 // Connection::connect() - method to create connection to a TANGO device
-//		using its stringified CORBA reference i.e. IOR or corbaloc
+//        using its stringified CORBA reference i.e. IOR or corbaloc
 //
 //-----------------------------------------------------------------------------
 
@@ -518,8 +518,8 @@ void Connection::connect(const std::string &corba_name)
                 }
             }
 
-//			if (connect_to_db == false)
-//				omniORB::setClientConnectTimeout(0);
+//            if (connect_to_db == false)
+//                omniORB::setClientConnectTimeout(0);
             retry = false;
 
 //
@@ -535,8 +535,8 @@ void Connection::connect(const std::string &corba_name)
         }
         catch (CORBA::SystemException &ce)
         {
-//			if (connect_to_db == false)
-//				omniORB::setClientConnectTimeout(0);
+//            if (connect_to_db == false)
+//                omniORB::setClientConnectTimeout(0);
 
             TangoSys_OMemStream desc;
             TangoSys_MemStream reason;
@@ -756,12 +756,12 @@ void Connection::reconnect(bool db_used)
         {
             try
             {
-//				if (user_connect_timeout != -1)
-//					omniORB::setClientConnectTimeout(user_connect_timeout);
-//				else
-//					omniORB::setClientConnectTimeout(NARROW_CLNT_TIMEOUT);
+//                if (user_connect_timeout != -1)
+//                    omniORB::setClientConnectTimeout(user_connect_timeout);
+//                else
+//                    omniORB::setClientConnectTimeout(NARROW_CLNT_TIMEOUT);
                 device->ping();
-//				omniORB::setClientConnectTimeout(0);
+//                omniORB::setClientConnectTimeout(0);
 
                 prev_failed_t0 = tango_nullopt;
 
@@ -779,7 +779,7 @@ void Connection::reconnect(bool db_used)
             }
             catch (CORBA::SystemException &ce)
             {
-//				omniORB::setClientConnectTimeout(0);
+//                omniORB::setClientConnectTimeout(0);
                 connection_state = CONNECTION_NOTOK;
 
                 TangoSys_OMemStream desc;
@@ -825,7 +825,7 @@ bool Connection::is_connected()
 // 2 - A file ".tangorc" in the user home directory
 // 3 - A file "/etc/tangorc"
 //
-// in :	- env_var_name : The environment variable name
+// in :    - env_var_name : The environment variable name
 //
 // out : - env_var : The string initialised with the env. variable value
 //
@@ -929,8 +929,8 @@ int Connection::get_env_var(const char *env_var_name, std::string &env_var)
 //
 // Connection::get_env_var_from_file() - Get an environment variable from a file
 //
-// in :	- env_var : The environment variable name
-//		- f_name : The file name
+// in :    - env_var : The environment variable name
+//        - f_name : The file name
 //
 // out : - ret_env_var : The string initialised with the env. variable value
 //
@@ -989,14 +989,14 @@ int Connection::get_env_var_from_file(const std::string &f_name, const char *env
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method:
-//		Connection::get_fqdn()
+//        Connection::get_fqdn()
 //
 // description:
-// 		This method gets the host fully qualified domain name (from DNS) and modified the passed string accordingly
+//         This method gets the host fully qualified domain name (from DNS) and modified the passed string accordingly
 //
 // argument:
-// 		in/out :
-//			- the_host: The original host name
+//         in/out :
+//            - the_host: The original host name
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -1233,8 +1233,8 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
                         db_num = au->get_db_ind(get_db_host(), get_db_port_num());
                     }
                     db = v_d[db_num];
-/*					if (db->is_control_access_checked() == false)
-						db = static_cast<Database *>(this);*/
+/*                    if (db->is_control_access_checked() == false)
+                        db = static_cast<Database *>(this);*/
                 }
 
 //
@@ -1262,11 +1262,11 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
                     }
 
                     DevErrorList &e = db->get_access_except_errors();
-/*					if (e.length() != 0)
-					{
-						DevFailed df(e);
-						throw df;
-					}*/
+/*                    if (e.length() != 0)
+                    {
+                        DevFailed df(e);
+                        throw df;
+                    }*/
 
                     TangoSys_OMemStream desc;
                     if (e.length() == 0)
@@ -1391,7 +1391,7 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
 //-----------------------------------------------------------------------------
 //
 // Connection::command_inout() - public method to execute a command on a TANGO device
-//				 using low level CORBA types
+//                 using low level CORBA types
 //
 //-----------------------------------------------------------------------------
 
@@ -1437,8 +1437,8 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
                         db_num = au->get_db_ind(get_db_host(), get_db_port_num());
                     }
                     db = v_d[db_num];
-/*					if (db->is_control_access_checked() == false)
-						db = static_cast<Database *>(this);*/
+/*                    if (db->is_control_access_checked() == false)
+                        db = static_cast<Database *>(this);*/
                 }
 
 //
@@ -1465,11 +1465,11 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
                     }
 
                     DevErrorList &e = db->get_access_except_errors();
-/*					if (e.length() != 0)
-					{
-						DevFailed df(e);
-						throw df;
-					}*/
+/*                    if (e.length() != 0)
+                    {
+                        DevFailed df(e);
+                        throw df;
+                    }*/
 
                     TangoSys_OMemStream desc;
                     if (e.length() == 0)
@@ -1947,9 +1947,9 @@ DeviceProxy &DeviceProxy::operator=(const DeviceProxy &rval)
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::parse_name() - Parse device name according to Tango device
-//			       name syntax
+//                   name syntax
 //
-// in :	- full_name : The device name
+// in :    - full_name : The device name
 //
 //-----------------------------------------------------------------------------
 
@@ -2407,8 +2407,8 @@ std::string DeviceProxy::get_corba_name(bool need_check_acc)
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::build_corba_name() - build corba name for non database device
-//				     server. In this case, corba name uses
-//				     the "corbaloc" naming schema
+//                     server. In this case, corba name uses
+//                     the "corbaloc" naming schema
 //
 //-----------------------------------------------------------------------------
 
@@ -2425,8 +2425,8 @@ std::string DeviceProxy::build_corba_name()
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::reconnect() - Call the reconnection method and in case
-//			      the device has been created from its alias,
-//		              get its real name.
+//                  the device has been created from its alias,
+//                      get its real name.
 //
 //-----------------------------------------------------------------------------
 
@@ -2997,7 +2997,7 @@ std::string DeviceProxy::description()
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::black_box() - return the list of the last n commands exectued on
-//		this TANGO device
+//        this TANGO device
 //
 //-----------------------------------------------------------------------------
 
@@ -3161,7 +3161,7 @@ DeviceInfo const &DeviceProxy::info()
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::command_query() - return the description for the specified
-//		command implemented for this TANGO device
+//        command implemented for this TANGO device
 //
 //-----------------------------------------------------------------------------
 
@@ -3325,7 +3325,7 @@ CommandInfoList *DeviceProxy::command_list_query()
                 cmd_info_list = dev->command_list_query();
 
                 command_info_list = new CommandInfoList(cmd_info_list->length());
-//				command_info_list->resize(cmd_info_list->length());
+//                command_info_list->resize(cmd_info_list->length());
 
                 for (unsigned int i = 0; i < cmd_info_list->length(); i++)
                 {
@@ -3344,7 +3344,7 @@ CommandInfoList *DeviceProxy::command_list_query()
                 cmd_info_list_2 = dev->command_list_query_2();
 
                 command_info_list = new CommandInfoList(cmd_info_list_2->length());
-//				command_info_list->resize(cmd_info_list_2->length());
+//                command_info_list->resize(cmd_info_list_2->length());
 
                 for (unsigned int i = 0; i < cmd_info_list_2->length(); i++)
                 {
@@ -4057,7 +4057,7 @@ AttributeInfoListEx *DeviceProxy::get_attribute_config_ex(const std::vector<std:
 // This method is called only for device_2 device
 //
 // In : dev_attr_config : ptr to attribute config vector returned
-//			  to caller
+//              to caller
 //
 //-----------------------------------------------------------------------------
 
@@ -6912,7 +6912,7 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::attribute_history() - get attribute history
-//				      (only for polled attribute)
+//                      (only for polled attribute)
 //
 //-----------------------------------------------------------------------------
 
@@ -7052,10 +7052,10 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method:
-//		DeviceProxy::connect_to_adm_device()
+//        DeviceProxy::connect_to_adm_device()
 //
 // description:
-//		Create a connection to the admin device of the Tango device server process where the device is running.
+//        Create a connection to the admin device of the Tango device server process where the device is running.
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -7109,8 +7109,8 @@ std::vector<std::string> *DeviceProxy::polling_status()
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::is_polled() - return true if the object "obj_name" is polled.
-//			      In this case, the upd string is initialised with
-//			      the polling period.
+//                  In this case, the upd string is initialised with
+//                  the polling period.
 //
 //-----------------------------------------------------------------------------
 
@@ -7200,7 +7200,7 @@ bool DeviceProxy::is_polled(polled_object obj, const std::string &obj_name, std:
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::get_command_poll_period() - Return command polling period
-//					    (in mS)
+//                        (in mS)
 //
 //-----------------------------------------------------------------------------
 
@@ -7228,7 +7228,7 @@ int DeviceProxy::get_command_poll_period(const std::string &cmd_name)
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::get_attribute_poll_period() - Return attribute polling period
-//					    (in mS)
+//                        (in mS)
 //
 //-----------------------------------------------------------------------------
 
@@ -7256,8 +7256,8 @@ int DeviceProxy::get_attribute_poll_period(const std::string &attr_name)
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::poll_command() - If object is already polled, just update its
-//				 polling period. If object is not polled, add
-//				 it to the list of polled objects
+//                 polling period. If object is not polled, add
+//                 it to the list of polled objects
 //
 //-----------------------------------------------------------------------------
 
@@ -7340,8 +7340,8 @@ void DeviceProxy::poll_command(const std::string &cmd_name, int period)
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::poll_attribute() - If object is already polled, just update its
-//				 polling period. If object is not polled, add
-//				 it to the list of polled objects
+//                 polling period. If object is not polled, add
+//                 it to the list of polled objects
 //
 //-----------------------------------------------------------------------------
 
@@ -7690,10 +7690,10 @@ void DeviceProxy::set_logging_level(int level)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::subscribe_event
+//         DeviceProxy::subscribe_event
 //
 // description :
-//		Subscribe to an event - Old interface for compatibility
+//        Subscribe to an event - Old interface for compatibility
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -7706,10 +7706,10 @@ int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event,
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::subscribe_event
+//         DeviceProxy::subscribe_event
 //
 // description :
-//		Subscribe to an event- Adds the statless flag for stateless event subscription.
+//        Subscribe to an event- Adds the statless flag for stateless event subscription.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -7757,11 +7757,11 @@ int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event,
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::subscribe_event
+//         DeviceProxy::subscribe_event
 //
 // description :
-//		Subscribe to an event with the usage of the event queue for data reception. Adds the statless flag for
-//		stateless event subscription.
+//        Subscribe to an event with the usage of the event queue for data reception. Adds the statless flag for
+//        stateless event subscription.
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -7810,10 +7810,10 @@ int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event,
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::subscribe_event
+//         DeviceProxy::subscribe_event
 //
 // description :
-//		Subscribe to a device event- Add the statless flag for stateless event subscription.
+//        Subscribe to a device event- Add the statless flag for stateless event subscription.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -7843,11 +7843,11 @@ int DeviceProxy::subscribe_event(EventType event, CallBack *callback, bool state
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::subscribe_event
+//         DeviceProxy::subscribe_event
 //
 // description :
-//		Subscribe to an event with the usage of the event queue for data reception. Adds the statless flag for
-//		stateless event subscription.
+//        Subscribe to an event with the usage of the event queue for data reception. Adds the statless flag for
+//        stateless event subscription.
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -7877,10 +7877,10 @@ int DeviceProxy::subscribe_event(EventType event, int event_queue_size, bool sta
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::unsubscribe_event
+//         DeviceProxy::unsubscribe_event
 //
 // description :
-//		Unsubscribe to an event
+//        Unsubscribe to an event
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -8547,10 +8547,10 @@ void DeviceProxy::unlock(bool force)
             std::map<std::string, LockingThread>::iterator pos = au->lock_threads.find(adm_dev_name);
             if (pos == au->lock_threads.end())
             {
-//				TangoSys_OMemStream o;
+//                TangoSys_OMemStream o;
 
-//				o << "Can't find the locking thread for device " << device_name << " and admin device " << adm_dev_name << ends;
-//				TANGO_THROW_EXCEPTION(API_CantFindLockingThread, o.str());
+//                o << "Can't find the locking thread for device " << device_name << " and admin device " << adm_dev_name << ends;
+//                TANGO_THROW_EXCEPTION(API_CantFindLockingThread, o.str());
             }
             else
             {
@@ -9478,13 +9478,13 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
 
 //-----------------------------------------------------------------------------
 //
-// method : 		DeviceProxy::same_att_name()
+// method :         DeviceProxy::same_att_name()
 //
-// description : 	Check if in the attribute name list there is not several
-//					times the same attribute. Throw exception in case of
+// description :     Check if in the attribute name list there is not several
+//                    times the same attribute. Throw exception in case of
 //
-// argin(s) :		attr_list : The attribute name(s) list
-//					met_name : The calling method name (for exception)
+// argin(s) :        attr_list : The attribute name(s) list
+//                    met_name : The calling method name (for exception)
 //
 //-----------------------------------------------------------------------------
 
@@ -9596,14 +9596,14 @@ void DeviceProxy::local_import(std::string &local_ior)
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method:
-//		DeviceProxy::get_tango_lib_version()
+//        DeviceProxy::get_tango_lib_version()
 //
 // description:
-//		Returns the Tango lib version number used by the remote device
+//        Returns the Tango lib version number used by the remote device
 //
 // return:
-//		The device Tango lib version as a 3 or 4 digits number
-//		Possible return value are: 100,200,500,520,700,800,810,...
+//        The device Tango lib version as a 3 or 4 digits number
+//        Possible return value are: 100,200,500,520,700,800,810,...
 //
 //---------------------------------------------------------------------------------------------------------------------
 

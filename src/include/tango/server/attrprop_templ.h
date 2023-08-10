@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -43,33 +43,33 @@ namespace Tango
 template<>
 inline AttrProp<DevUChar>::AttrProp(const DevUChar &value) : val(value), is_value(true), ext(nullptr)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	st << (short)value; // to represent the numeric value
-	str = st.str();
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    st << (short)value; // to represent the numeric value
+    str = st.str();
 }
 
 template<>
 inline AttrProp<DevUChar>& AttrProp<DevUChar>::operator=(const DevUChar &value)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	st << (short)value; // to represent the numeric value
-	str = st.str();
-	val = value;
-	is_value = true;
-	return *this;
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    st << (short)value; // to represent the numeric value
+    str = st.str();
+    val = value;
+    is_value = true;
+    return *this;
 }
 
 template<>
 inline void AttrProp<DevUChar>::set_val(const DevUChar &value)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	st << (short)value; // to represent the numeric value
-	str = st.str();
-	val = value;
-	is_value = true;
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    st << (short)value; // to represent the numeric value
+    str = st.str();
+    val = value;
+    is_value = true;
 }
 
 //
@@ -79,80 +79,80 @@ inline void AttrProp<DevUChar>::set_val(const DevUChar &value)
 template<>
 inline DoubleAttrProp<DevUChar>::DoubleAttrProp(const std::vector<DevUChar> &values) : val(values), is_value(true)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	for(size_t i = 0; i < values.size(); i++)
-	{
-		if(i > 0)
-			st << ",";
-		st << (short)values[i]; // to represent the numeric value
-	}
-	str = st.str();
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    for(size_t i = 0; i < values.size(); i++)
+    {
+        if(i > 0)
+            st << ",";
+        st << (short)values[i]; // to represent the numeric value
+    }
+    str = st.str();
 }
 
 template<>
 inline DoubleAttrProp<DevUChar>::DoubleAttrProp(const DevUChar &value) : is_value(true) {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	st << (short)value; // to represent the numeric value
-	str = st.str();
-	val.push_back(value);
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    st << (short)value; // to represent the numeric value
+    str = st.str();
+    val.push_back(value);
 }
 
 template<>
 inline DoubleAttrProp<DevUChar>& DoubleAttrProp<DevUChar>::operator=(const std::vector<DevUChar> &values)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	for(size_t i = 0; i < values.size(); i++)
-	{
-		if(i > 0)
-			st << ",";
-		st << (short)values[i]; // to represent the numeric value
-	}
-	str = st.str();
-	val = values;
-	is_value = true;
-	return *this;
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    for(size_t i = 0; i < values.size(); i++)
+    {
+        if(i > 0)
+            st << ",";
+        st << (short)values[i]; // to represent the numeric value
+    }
+    str = st.str();
+    val = values;
+    is_value = true;
+    return *this;
 }
 
 template<>
 inline DoubleAttrProp<DevUChar>& DoubleAttrProp<DevUChar>::operator=(const DevUChar &value)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	st << (short)value; // to represent the numeric value
-	str = st.str();
-	val.push_back(value);
-	is_value = true;
-	return *this;
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    st << (short)value; // to represent the numeric value
+    str = st.str();
+    val.push_back(value);
+    is_value = true;
+    return *this;
 }
 
 template<>
 inline void DoubleAttrProp<DevUChar>::set_val(const std::vector<DevUChar> &values)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	for(size_t i = 0; i < values.size(); i++)
-	{
-		if(i > 0)
-			st << ",";
-		st << (short)values[i]; // to represent the numeric value
-	}
-	str = st.str();
-	val = values;
-	is_value = true;
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    for(size_t i = 0; i < values.size(); i++)
+    {
+        if(i > 0)
+            st << ",";
+        st << (short)values[i]; // to represent the numeric value
+    }
+    str = st.str();
+    val = values;
+    is_value = true;
 }
 
 template<>
 inline void DoubleAttrProp<DevUChar>::set_val(const DevUChar &value)
 {
-	TangoSys_MemStream st;
-	st.precision(TANGO_FLOAT_PRECISION);
-	st << (short)value; // to represent the numeric value
-	str = st.str();
-	val.push_back(value);
-	is_value = true;
+    TangoSys_MemStream st;
+    st.precision(TANGO_FLOAT_PRECISION);
+    st << (short)value; // to represent the numeric value
+    str = st.str();
+    val.push_back(value);
+    is_value = true;
 }
 
 //
@@ -165,27 +165,27 @@ class MultiAttrProp<DevEncoded>
 public:
         MultiAttrProp() {}
 
-		std::string 					            label;
-		std::string 					            description;
-		std::string 					            unit;
-		std::string 					            standard_unit;
-		std::string 					            display_unit;
-		std::string 					            format;
-        AttrProp<DevUChar>                 	min_value;
-        AttrProp<DevUChar>                 	max_value;
-        AttrProp<DevUChar>                 	min_alarm;
-        AttrProp<DevUChar>                 	max_alarm;
-        AttrProp<DevUChar>                 	min_warning;
-        AttrProp<DevUChar>                 	max_warning;
-        AttrProp<DevLong>					delta_t;
-        AttrProp<DevUChar>                 	delta_val;
-        AttrProp<DevLong>                 	event_period;
-        AttrProp<DevLong>                 	archive_period;
-        DoubleAttrProp<DevDouble>	        rel_change;
-        DoubleAttrProp<DevDouble>	        abs_change;
-        DoubleAttrProp<DevDouble>	        archive_rel_change;
-        DoubleAttrProp<DevDouble>	        archive_abs_change;
-        std::vector<std::string>						enum_labels;
+        std::string                                 label;
+        std::string                                 description;
+        std::string                                 unit;
+        std::string                                 standard_unit;
+        std::string                                 display_unit;
+        std::string                                 format;
+        AttrProp<DevUChar>                     min_value;
+        AttrProp<DevUChar>                     max_value;
+        AttrProp<DevUChar>                     min_alarm;
+        AttrProp<DevUChar>                     max_alarm;
+        AttrProp<DevUChar>                     min_warning;
+        AttrProp<DevUChar>                     max_warning;
+        AttrProp<DevLong>                    delta_t;
+        AttrProp<DevUChar>                     delta_val;
+        AttrProp<DevLong>                     event_period;
+        AttrProp<DevLong>                     archive_period;
+        DoubleAttrProp<DevDouble>            rel_change;
+        DoubleAttrProp<DevDouble>            abs_change;
+        DoubleAttrProp<DevDouble>            archive_rel_change;
+        DoubleAttrProp<DevDouble>            archive_abs_change;
+        std::vector<std::string>                        enum_labels;
 
 private:
 
@@ -193,9 +193,9 @@ private:
 // The extension class
 //
 
-	class MultiAttrPropExt {};
+    class MultiAttrPropExt {};
 
-	std::unique_ptr<MultiAttrPropExt>	ext;           // Class extension
+    std::unique_ptr<MultiAttrPropExt>    ext;           // Class extension
 };
 
 } // End of Tango namespace

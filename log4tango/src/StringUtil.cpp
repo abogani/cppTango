@@ -2,13 +2,13 @@
 // StringUtil.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -38,27 +38,27 @@
 namespace log4tango {
 
     std::string StringUtil::vform(const char* format, va_list args) {
-	size_t size = 1024;
-	char* buffer = new char[size];
+    size_t size = 1024;
+    char* buffer = new char[size];
 
-	while (1) {
-	    int n = VSNPRINTF(buffer, size, format, args);
+    while (1) {
+        int n = VSNPRINTF(buffer, size, format, args);
 
-	    // If that worked, return a string.
-	    if ((n > -1) && (static_cast<size_t>(n) < size)) {
-		std::string s(buffer);
-		delete [] buffer;
-		return s;
-	    }
+        // If that worked, return a string.
+        if ((n > -1) && (static_cast<size_t>(n) < size)) {
+        std::string s(buffer);
+        delete [] buffer;
+        return s;
+        }
 
-	    // Else try again with more space.
+        // Else try again with more space.
             size = (n > -1) ?
                 n + 1 :   // ISO/IEC 9899:1999
                 size * 2; // twice the old size
 
-	    delete [] buffer;
-	    buffer = new char[size];
-	}
+        delete [] buffer;
+        buffer = new char[size];
+    }
     }
 
     std::string StringUtil::trim(const std::string& s) {
@@ -79,8 +79,8 @@ namespace log4tango {
     }
 
     unsigned int StringUtil::split(std::vector<std::string>& v,
-				   const std::string& s,
-				   char delimiter, unsigned int maxSegments) {
+                   const std::string& s,
+                   char delimiter, unsigned int maxSegments) {
         v.clear();
         std::back_insert_iterator<std::vector<std::string> > it(v);
         return split(it, s, delimiter, maxSegments);

@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -41,15 +41,15 @@ namespace Tango
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::check_hard_coded_properties()
+//        Attribute::check_hard_coded_properties()
 //
 // description :
-//		Check if the user tries to change attribute properties considered as hard coded
+//        Check if the user tries to change attribute properties considered as hard coded
 //      Throw exception in case of
 //
 // args :
-// 		in :
-//			- user_conf : The attribute configuration sent by the user
+//         in :
+//            - user_conf : The attribute configuration sent by the user
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -130,14 +130,14 @@ void Attribute::check_hard_coded_properties(const T &user_conf)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_hard_coded_properties()
+//        Attribute::set_hard_coded_properties()
 //
 // description :
-//		Set some "hard coded" attribute properties. This method is used only in case of forwarded attribute
+//        Set some "hard coded" attribute properties. This method is used only in case of forwarded attribute
 //
 // args :
-// 		in :
-//			- user_conf : The attribute configuration sent by the user
+//         in :
+//            - user_conf : The attribute configuration sent by the user
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -155,15 +155,15 @@ void Attribute::set_hard_coded_properties(const T &user_conf)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_min_alarm()
+//        Attribute::set_min_alarm()
 //
 // description :
-//		Sets minimum alarm attribute property. Throws exception in case the data type of provided property does not
-//		match the attribute data type
+//        Sets minimum alarm attribute property. Throws exception in case the data type of provided property does not
+//        match the attribute data type
 //
 // args :
-// 		in :
-//			- new_min_alarm : The minimum alarm property to be set
+//         in :
+//            - new_min_alarm : The minimum alarm property to be set
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -190,7 +190,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
     }
 
 //
-//	Check coherence with max_alarm
+//    Check coherence with max_alarm
 //
 
     if (alarm_conf.test(max_level))
@@ -327,16 +327,16 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::get_min_alarm()
+//        Attribute::get_min_alarm()
 //
 // description :
-//		Gets attribute's minimum alarm value and assigns it to the variable provided as a parameter
-//		Throws exception in case the data type of provided parameter does not match the attribute data type
-//		or if minimum alarm is not defined
+//        Gets attribute's minimum alarm value and assigns it to the variable provided as a parameter
+//        Throws exception in case the data type of provided parameter does not match the attribute data type
+//        or if minimum alarm is not defined
 //
 // args :
-// 		out :
-//			- min_al : The variable to be assigned the attribute's minimum alarm value
+//         out :
+//            - min_al : The variable to be assigned the attribute's minimum alarm value
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -372,15 +372,15 @@ void Attribute::get_min_alarm(T &min_al)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_max_alarm()
+//        Attribute::set_max_alarm()
 //
 // description :
-//		Sets maximum alarm attribute property
-//		Throws exception in case the data type of provided property does not match the attribute data type
+//        Sets maximum alarm attribute property
+//        Throws exception in case the data type of provided property does not match the attribute data type
 //
 // args :
-// 		in :
-//			- new_max_alarm : The maximum alarm property to be set
+//         in :
+//            - new_max_alarm : The maximum alarm property to be set
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -407,7 +407,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
     }
 
 //
-//	Check coherence with min_alarm
+//    Check coherence with min_alarm
 //
 
     if (alarm_conf.test(min_level))
@@ -545,16 +545,16 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::get_max_alarm()
+//        Attribute::get_max_alarm()
 //
 // description :
-//		Gets attribute's maximum alarm value and assigns it to the variable provided as a parameter
-//		Throws exception in case the data type of provided parameter does not match the attribute data type
-//		or if maximum alarm is not defined
+//        Gets attribute's maximum alarm value and assigns it to the variable provided as a parameter
+//        Throws exception in case the data type of provided parameter does not match the attribute data type
+//        or if maximum alarm is not defined
 //
 // args :
-// 		out :
-//			- max_al : The variable to be assigned the attribute's maximum alarm value
+//         out :
+//            - max_al : The variable to be assigned the attribute's maximum alarm value
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -590,15 +590,15 @@ void Attribute::get_max_alarm(T &max_al)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_min_warning()
+//        Attribute::set_min_warning()
 //
 // description :
-//		Sets minimum warning attribute property
-//		Throws exception in case the data type of provided property does not match the attribute data type
+//        Sets minimum warning attribute property
+//        Throws exception in case the data type of provided property does not match the attribute data type
 //
 // args :
-// 		in :
-//			- new_min_warning : The minimum warning property to be set
+//         in :
+//            - new_min_warning : The minimum warning property to be set
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -626,7 +626,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
     }
 
 //
-//	Check coherence with max_warning
+//    Check coherence with max_warning
 //
 
     if (alarm_conf.test(max_warn))
@@ -764,16 +764,16 @@ void Attribute::set_min_warning(const T &new_min_warning)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::get_min_warning()
+//        Attribute::get_min_warning()
 //
 // description :
-//		Gets attribute's minimum warning value and assigns it to the variable provided as a parameter
-//		Throws exception in case the data type of provided parameter does not match the attribute data type
-//		or if minimum warning is not defined
+//        Gets attribute's minimum warning value and assigns it to the variable provided as a parameter
+//        Throws exception in case the data type of provided parameter does not match the attribute data type
+//        or if minimum warning is not defined
 //
 // args :
-// 		out :
-//			- min_war : The variable to be assigned the attribute's minimum warning value
+//         out :
+//            - min_war : The variable to be assigned the attribute's minimum warning value
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -809,15 +809,15 @@ void Attribute::get_min_warning(T &min_war)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_max_warning()
+//        Attribute::set_max_warning()
 //
 // description :
-//		Sets maximum warning attribute property
-//		Throws exception in case the data type of provided property does not match the attribute data type
+//        Sets maximum warning attribute property
+//        Throws exception in case the data type of provided property does not match the attribute data type
 //
 // args :
-// 		in :
-//			- new_max_warning : The maximum warning property to be set
+//         in :
+//            - new_max_warning : The maximum warning property to be set
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -844,7 +844,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
     }
 
 //
-//	Check coherence with min_warning
+//    Check coherence with min_warning
 //
 
     if (alarm_conf.test(min_warn))
@@ -981,16 +981,16 @@ void Attribute::set_max_warning(const T &new_max_warning)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::get_max_warning()
+//        Attribute::get_max_warning()
 //
 // description :
-//		Gets attribute's maximum warning value and assigns it to the variable provided as a parameter
-//		Throws exception in case the data type of provided parameter does not match the attribute data type
-//		or if maximum warning is not defined
+//        Gets attribute's maximum warning value and assigns it to the variable provided as a parameter
+//        Throws exception in case the data type of provided parameter does not match the attribute data type
+//        or if maximum warning is not defined
 //
 // args :
-// 		out :
-//			- max_war : The variable to be assigned the attribute's maximum warning value
+//         out :
+//            - max_war : The variable to be assigned the attribute's maximum warning value
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1026,14 +1026,14 @@ void Attribute::get_max_warning(T &max_war)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::get_properties()
+//        Attribute::get_properties()
 //
 // description :
-//		Gets attribute's properties in one call
+//        Gets attribute's properties in one call
 //
 // args :
-// 		out :
-//			- props : The variable to be assigned the attribute's properties value
+//         out :
+//            - props : The variable to be assigned the attribute's properties value
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1094,14 +1094,14 @@ void Attribute::get_properties(Tango::MultiAttrProp<T> &props)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_properties()
+//        Attribute::set_properties()
 //
 // description :
-//		Sets attribute's properties in one call
+//        Sets attribute's properties in one call
 //
 // args :
-// 		in :
-//			- props : The new attribute's properties value
+//         in :
+//            - props : The new attribute's properties value
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1224,16 +1224,16 @@ void Attribute::set_properties(Tango::MultiAttrProp<T> &props)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::set_upd_properties()
+//        Attribute::set_upd_properties()
 //
 // description :
-//		Set new attribute configuration AND update database (if required)
+//        Set new attribute configuration AND update database (if required)
 //
 // args :
-// 		in :
-//			- conf : The new attribute configuration
-//			- dev_name : The device name
-//			- from_ds : Flag set to true if the call is from a DS process
+//         in :
+//            - conf : The new attribute configuration
+//            - dev_name : The device name
+//            - from_ds : Flag set to true if the call is from a DS process
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1339,16 +1339,16 @@ void Attribute::set_upd_properties(const T &conf, const std::string &dev_name, b
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::Attribute_2_AttributeValue_base
+//        Attribute::Attribute_2_AttributeValue_base
 //
 // description :
-//		Build an AttributeValue_X object (the base part) from the Attribute object content
+//        Build an AttributeValue_X object (the base part) from the Attribute object content
 //
 // arguments
-// 		in :
-//			- d : The device to which the attribute belongs to
-//		out :
-//			- ptr : Pointer to the AttributeValue_X object to be filled in
+//         in :
+//            - d : The device to which the attribute belongs to
+//        out :
+//            - ptr : Pointer to the AttributeValue_X object to be filled in
 //
 //--------------------------------------------------------------------------------------------------------------------
 

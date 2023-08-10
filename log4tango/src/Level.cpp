@@ -2,13 +2,13 @@
 // Level.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -87,22 +87,22 @@ static const std::string names[NUM_LEVELS] = {
     std::string("DEBUG"),
     std::string("UNKNOWN")
 };
-	Level::Value value = -1;
-	for (unsigned int i = 0; i < NUM_LEVELS; i++) {
-	  if (level_name == names[i]) {
-		  value = i * 100;
-		  break;
-	  }
-	}
-	if (value == -1) {
-		char* end_pointer;
-		value = std::strtoul(level_name.c_str(), &end_pointer, 10);
-		if (*end_pointer != 0) {
-		  throw std::invalid_argument(std::string("unknown level name: '")
+    Level::Value value = -1;
+    for (unsigned int i = 0; i < NUM_LEVELS; i++) {
+      if (level_name == names[i]) {
+          value = i * 100;
+          break;
+      }
+    }
+    if (value == -1) {
+        char* end_pointer;
+        value = std::strtoul(level_name.c_str(), &end_pointer, 10);
+        if (*end_pointer != 0) {
+          throw std::invalid_argument(std::string("unknown level name: '")
                                   + level_name + "'");
-		}
-	}
-	return value;
+        }
+    }
+    return value;
 }
 
 } // namespace log4tango

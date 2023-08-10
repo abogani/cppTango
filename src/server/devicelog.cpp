@@ -1,15 +1,15 @@
 //+=============================================================================
 //
-// file :	  DeviceLog.cpp
+// file :      DeviceLog.cpp
 //
 // description :  Logging oriented methods of the DeviceImpl class
 //
-// project :	  TANGO
+// project :      TANGO
 //
-// author(s) :	  N.Leclercq - SOLEIL
+// author(s) :      N.Leclercq - SOLEIL
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -162,7 +162,7 @@ void DeviceImpl::init_logger (void)
     // ... convert it to log4tango level
     log4tango::Level::Value cmd_line_level = log4tango::Level::OFF;
     if (trace_level > 4)
-    	cmd_line_level = log4tango::Level::DEBUG;
+        cmd_line_level = log4tango::Level::DEBUG;
     bool level_set_from_cmd_line = true;
     // are we initializing the dserver's logger
     log4tango::Logger* the_logger = get_logger();
@@ -222,8 +222,8 @@ void DeviceImpl::init_logger (void)
     }
     else {
       // set logger's level (from cmd line)
-		if (the_logger != Logging::get_core_logger())
-      		the_logger->set_level(cmd_line_level);
+        if (the_logger != Logging::get_core_logger())
+              the_logger->set_level(cmd_line_level);
     }
     // save current logging level
     saved_log_level = the_logger->get_level();

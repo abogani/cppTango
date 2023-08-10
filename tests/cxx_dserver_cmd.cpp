@@ -231,8 +231,8 @@ public:
         din << fake_logging_target;
 
         TS_ASSERT_THROWS_ASSERT(dserver->command_inout("AddLoggingTarget", din), Tango::DevFailed & e,
-				TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CannotOpenFile);
-				TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CannotOpenFile);
+                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         // add logging target
         DevVarStringArray logging_target;

@@ -1,13 +1,13 @@
 
 //+==================================================================================================================
-// devapi_utils.cpp 	- C++ source code file for TANGO device api
+// devapi_utils.cpp     - C++ source code file for TANGO device api
 //
-// programmer(s)	- Emmanuel Taurel(taurel@esrf.fr)
+// programmer(s)    - Emmanuel Taurel(taurel@esrf.fr)
 //
-// original 		- March 2014
+// original         - March 2014
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -97,10 +97,10 @@ namespace Tango
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		DeviceProxy::from_hist_2_AttHistory()
+//         DeviceProxy::from_hist_2_AttHistory()
 //
 // description :
-// 		Convert the attribute history as returned by a IDL 4 device to the classical DeviceAttributeHistory format
+//         Convert the attribute history as returned by a IDL 4 device to the classical DeviceAttributeHistory format
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -112,167 +112,167 @@ void DeviceProxy::from_hist_2_AttHistory(const T &hist,std::vector<DeviceAttribu
 // Check received data validity
 //
 
-	if ((hist->quals.length() != hist->quals_array.length()) ||
-		(hist->r_dims.length() != hist->r_dims_array.length()) ||
-		(hist->w_dims.length() != hist->w_dims_array.length()) ||
-		(hist->errors.length() != hist->errors_array.length()))
-	{
-		TANGO_THROW_EXCEPTION(API_WrongHistoryDataBuffer, "Data buffer received from server is not valid !");
-	}
+    if ((hist->quals.length() != hist->quals_array.length()) ||
+        (hist->r_dims.length() != hist->r_dims_array.length()) ||
+        (hist->w_dims.length() != hist->w_dims_array.length()) ||
+        (hist->errors.length() != hist->errors_array.length()))
+    {
+        TANGO_THROW_EXCEPTION(API_WrongHistoryDataBuffer, "Data buffer received from server is not valid !");
+    }
 
 //
 // Get history depth
 //
 
-	unsigned int h_depth = hist->dates.length();
+    unsigned int h_depth = hist->dates.length();
 
 //
 // Copy date and name in each history list element
 //
 
-	unsigned int loop;
-	for (loop = 0;loop < h_depth;loop++)
-	{
-		(*ddh)[loop].time = hist->dates[loop];
-		(*ddh)[loop].name = hist->name.in();
-	}
+    unsigned int loop;
+    for (loop = 0;loop < h_depth;loop++)
+    {
+        (*ddh)[loop].time = hist->dates[loop];
+        (*ddh)[loop].name = hist->name.in();
+    }
 
 //
 // Copy the attribute quality factor
 //
 
-	int k;
+    int k;
 
-	for (loop = 0;loop < hist->quals.length();loop++)
-	{
-		int nb_elt = hist->quals_array[loop].nb_elt;
-		int start = hist->quals_array[loop].start;
+    for (loop = 0;loop < hist->quals.length();loop++)
+    {
+        int nb_elt = hist->quals_array[loop].nb_elt;
+        int start = hist->quals_array[loop].start;
 
-		for (k = 0;k < nb_elt;k++)
-			(*ddh)[start - k].quality = hist->quals[loop];
-	}
+        for (k = 0;k < nb_elt;k++)
+            (*ddh)[start - k].quality = hist->quals[loop];
+    }
 
 //
 // Copy read dimension
 //
 
-	for (loop = 0;loop < hist->r_dims.length();loop++)
-	{
-		int nb_elt = hist->r_dims_array[loop].nb_elt;
-		int start = hist->r_dims_array[loop].start;
+    for (loop = 0;loop < hist->r_dims.length();loop++)
+    {
+        int nb_elt = hist->r_dims_array[loop].nb_elt;
+        int start = hist->r_dims_array[loop].start;
 
-		for (k = 0;k < nb_elt;k++)
-		{
-			(*ddh)[start - k].dim_x = hist->r_dims[loop].dim_x;
-			(*ddh)[start - k].dim_y = hist->r_dims[loop].dim_y;
-		}
-	}
+        for (k = 0;k < nb_elt;k++)
+        {
+            (*ddh)[start - k].dim_x = hist->r_dims[loop].dim_x;
+            (*ddh)[start - k].dim_y = hist->r_dims[loop].dim_y;
+        }
+    }
 
 //
 // Copy write dimension
 //
 
-	for (loop = 0;loop < hist->w_dims.length();loop++)
-	{
-		int nb_elt = hist->w_dims_array[loop].nb_elt;
-		int start = hist->w_dims_array[loop].start;
+    for (loop = 0;loop < hist->w_dims.length();loop++)
+    {
+        int nb_elt = hist->w_dims_array[loop].nb_elt;
+        int start = hist->w_dims_array[loop].start;
 
-		for (k = 0;k < nb_elt;k++)
-		{
-			(*ddh)[start - k].set_w_dim_x(hist->w_dims[loop].dim_x);
-			(*ddh)[start - k].set_w_dim_y(hist->w_dims[loop].dim_y);
-		}
-	}
+        for (k = 0;k < nb_elt;k++)
+        {
+            (*ddh)[start - k].set_w_dim_x(hist->w_dims[loop].dim_x);
+            (*ddh)[start - k].set_w_dim_y(hist->w_dims[loop].dim_y);
+        }
+    }
 
 //
 // Copy errors
 //
 
-	for (loop = 0;loop < hist->errors.length();loop++)
-	{
-		int nb_elt = hist->errors_array[loop].nb_elt;
-		int start = hist->errors_array[loop].start;
+    for (loop = 0;loop < hist->errors.length();loop++)
+    {
+        int nb_elt = hist->errors_array[loop].nb_elt;
+        int start = hist->errors_array[loop].start;
 
-		for (k = 0;k < nb_elt;k++)
-		{
-			(*ddh)[start - k].failed(true);
-			DevErrorList &err_list = (*ddh)[start - k].get_error_list();
-			err_list.length(hist->errors[loop].length());
-			for (unsigned int g = 0;g < hist->errors[loop].length();g++)
-			{
-				err_list[g] = (hist->errors[loop])[g];
-			}
-		}
-	}
+        for (k = 0;k < nb_elt;k++)
+        {
+            (*ddh)[start - k].failed(true);
+            DevErrorList &err_list = (*ddh)[start - k].get_error_list();
+            err_list.length(hist->errors[loop].length());
+            for (unsigned int g = 0;g < hist->errors[loop].length();g++)
+            {
+                err_list[g] = (hist->errors[loop])[g];
+            }
+        }
+    }
 
 //
 // Get data type and data ptr
 //
 
-	CORBA::TypeCode_var ty = hist->value.type();
-	if (ty->kind() != tk_null)
-	{
-		CORBA::TypeCode_var ty_alias = ty->content_type();
-		CORBA::TypeCode_var ty_seq = ty_alias->content_type();
+    CORBA::TypeCode_var ty = hist->value.type();
+    if (ty->kind() != tk_null)
+    {
+        CORBA::TypeCode_var ty_alias = ty->content_type();
+        CORBA::TypeCode_var ty_seq = ty_alias->content_type();
 
-		switch (ty_seq->kind())
-		{
-			case tk_long:
+        switch (ty_seq->kind())
+        {
+            case tk_long:
                         extract_value<Tango::DevVarLongArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_longlong:
+            case tk_longlong:
                         extract_value<Tango::DevVarLong64Array>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_short:
+            case tk_short:
                         extract_value<Tango::DevVarShortArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_double:
+            case tk_double:
                         extract_value<Tango::DevVarDoubleArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_string:
+            case tk_string:
                         extract_value<Tango::DevVarStringArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_float:
+            case tk_float:
                         extract_value<Tango::DevVarFloatArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_boolean:
+            case tk_boolean:
                         extract_value<Tango::DevVarBooleanArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_ushort:
+            case tk_ushort:
                         extract_value<Tango::DevVarUShortArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_octet:
+            case tk_octet:
                         extract_value<Tango::DevVarCharArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_ulong:
+            case tk_ulong:
                         extract_value<Tango::DevVarULongArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_ulonglong:
+            case tk_ulonglong:
                         extract_value<Tango::DevVarULong64Array>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_enum:
+            case tk_enum:
                         extract_value<Tango::DevVarStateArray>(hist->value, *ddh);
-			break;
+            break;
 
-			case tk_struct:
+            case tk_struct:
                         extract_value<Tango::DevVarEncodedArray>(hist->value, *ddh);
-			break;
+            break;
 
-			default:
+            default:
           TANGO_THROW_ON_DEFAULT(ty_seq->kind());
-		}
-	}
+        }
+    }
 }
 
 template<class T>
@@ -398,7 +398,7 @@ void DeviceProxy::extract_value<Tango::DevVarDoubleStringArray>(CORBA::Any& valu
         dvdsa->dvalue.length(data_num_length);
 
         for (size_t i = 0; i < data_length; ++i)
-       	    dvdsa->svalue[i] = tmp->svalue[(base_str - data_length) + i];
+               dvdsa->svalue[i] = tmp->svalue[(base_str - data_length) + i];
         for (size_t i = 0; i < data_num_length; ++i)
             dvdsa->dvalue[i] = tmp->dvalue[(base_num - data_num_length) + i];
 
@@ -450,7 +450,7 @@ void DeviceProxy::extract_value<Tango::DevVarLongStringArray>(CORBA::Any& value,
         dvdsa->lvalue.length(data_num_length);
 
         for (size_t i = 0; i < data_length; ++i)
-       	    dvdsa->svalue[i] = tmp->svalue[(base_str - data_length) + i];
+               dvdsa->svalue[i] = tmp->svalue[(base_str - data_length) + i];
         for (size_t i = 0; i < data_num_length;++i)
             dvdsa->lvalue[i] = tmp->lvalue[(base_num - data_num_length) + i];
 

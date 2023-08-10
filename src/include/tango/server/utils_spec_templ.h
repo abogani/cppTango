@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -40,20 +40,20 @@ namespace Tango
 //+---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Util::fill_cmd_polling_buffer
+//        Util::fill_cmd_polling_buffer
 //
 // description :
-//		Fill attribute polling buffer with your own data
-//		These are template specialization for data type
-//				DevBoolean
-//				DevUChar
-//		This is required because the insertion of these data type in a CORBA Any object requires specific code
+//        Fill attribute polling buffer with your own data
+//        These are template specialization for data type
+//                DevBoolean
+//                DevUChar
+//        This is required because the insertion of these data type in a CORBA Any object requires specific code
 //
 // args :
-//		in :
-// 			- dev : The device
-//			- cmd_name : The command name
-//			- data : The command data to be stored in the polling buffer
+//        in :
+//             - dev : The device
+//            - cmd_name : The command name
+//            - data : The command data to be stored in the polling buffer
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -157,11 +157,11 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,
 //
 
             DevBoolean *tmp_ptr = (data.get_data())[i].ptr;
-			CORBA::Any::from_boolean tmp(*tmp_ptr);
-			(*any_ptr) <<= tmp;
+            CORBA::Any::from_boolean tmp(*tmp_ptr);
+            (*any_ptr) <<= tmp;
 
-			if ((data.get_data())[i].release == true)
-				delete tmp_ptr;
+            if ((data.get_data())[i].release == true)
+                delete tmp_ptr;
         }
 
 //
@@ -292,11 +292,11 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,
 //
 
             DevUChar *tmp_ptr = (data.get_data())[i].ptr;
-			CORBA::Any::from_octet tmp(*tmp_ptr);
-			(*any_ptr) <<= tmp;
+            CORBA::Any::from_octet tmp(*tmp_ptr);
+            (*any_ptr) <<= tmp;
 
-			if ((data.get_data())[i].release == true)
-				delete tmp_ptr;
+            if ((data.get_data())[i].release == true)
+                delete tmp_ptr;
         }
 
 //

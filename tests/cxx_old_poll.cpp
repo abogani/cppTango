@@ -112,8 +112,8 @@ public:
 //
 // Clean up --------------------------------------------------------
 //
-//	TEST_LOG << "Device name = " << device_name << endl;
-//	TEST_LOG << "Kill device name = " << kill_device_name << endl;
+//    TEST_LOG << "Device name = " << device_name << endl;
+//    TEST_LOG << "Kill device name = " << kill_device_name << endl;
 
 
         if (CxxTest::TangoPrinter::is_restore_set("dev1_source_cache"))
@@ -122,7 +122,7 @@ public:
         if (CxxTest::TangoPrinter::is_restore_set("dev2_poll_PollLong_attr_1000"))
             stop_poll_att_no_except(new DeviceProxy(device2_name), "PollLong_attr");
 
-//	TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
+//    TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
         stop_poll_cmd_no_except(device, "IOPollStr1");
         stop_poll_cmd_no_except(device, "IOArray1");
         stop_poll_cmd_no_except(device, "IOPollArray2");
@@ -617,16 +617,16 @@ public:
             TS_ASSERT((*a_hist)[i].has_failed());
             TS_ASSERT_EQUALS((*a_hist)[i].get_err_stack().length(), 1u);
             TS_ASSERT_EQUALS(std::string((*a_hist)[i].get_err_stack()[0].reason), API_AttrOptProp);
-//			AttributeDimension dim;
-//			dim = (*a_hist)[i].get_r_dimension();
+//            AttributeDimension dim;
+//            dim = (*a_hist)[i].get_r_dimension();
 
             TS_ASSERT_EQUALS((*a_hist)[i].get_dim_x(), 0);
             TS_ASSERT_EQUALS((*a_hist)[i].get_dim_y(), 0);
 
-//			dim = (*a_hist)[i].get_w_dimension();
+//            dim = (*a_hist)[i].get_w_dimension();
 
-//			TS_ASSERT_EQUALS(dim.dim_x, 0);
-//			TS_ASSERT_EQUALS(dim.dim_y, 0);
+//            TS_ASSERT_EQUALS(dim.dim_x, 0);
+//            TS_ASSERT_EQUALS(dim.dim_y, 0);
 
         }
         delete a_hist;

@@ -10,7 +10,7 @@
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -53,9 +53,9 @@
 // _WIN32 one defined by the compiler itself.
 //
 // This means that on Windows 64 bits, we will have BOTH
-//		_WIN32
-//		WIN32
-//		_WIN64
+//        _WIN32
+//        WIN32
+//        _WIN64
 //
 // Within Tango, Windows include files are included by the "idl/tango.h" include file
 // included by tango.h after this file
@@ -84,7 +84,7 @@
 //
 
 #ifdef _WIN32
-	#define _TG_WINDOWS_
+    #define _TG_WINDOWS_
 #endif
 
 //
@@ -92,29 +92,29 @@
 //
 
 #ifdef  _TG_WINDOWS_
-	#if ((defined _USRDLL) || (defined TANGO_HAS_DLL))
-		#if (defined _TANGO_LIB)
-			// basically never used as we have CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS set
-			#define TANGO_IMP_EXP	__declspec(dllexport)
-			#define TANGO_IMP
-		#else
-			#define TANGO_IMP_EXP	__declspec(dllimport)
-			#define TANGO_IMP	__declspec(dllimport)
-		#endif /* _TANGO_LIB */
-	#else
-		#define TANGO_IMP_EXP
-		#define TANGO_IMP
-	#endif /* TANGO_HAS_DLL */
+    #if ((defined _USRDLL) || (defined TANGO_HAS_DLL))
+        #if (defined _TANGO_LIB)
+            // basically never used as we have CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS set
+            #define TANGO_IMP_EXP    __declspec(dllexport)
+            #define TANGO_IMP
+        #else
+            #define TANGO_IMP_EXP    __declspec(dllimport)
+            #define TANGO_IMP    __declspec(dllimport)
+        #endif /* _TANGO_LIB */
+    #else
+        #define TANGO_IMP_EXP
+        #define TANGO_IMP
+    #endif /* TANGO_HAS_DLL */
 
-	#if (defined _TANGO_LIB)
-		#define TANGO_REV_EXP
-	#else
-		#define TANGO_REV_EXP	__declspec(dllexport)
-	#endif /* _TANGO_LIB */
+    #if (defined _TANGO_LIB)
+        #define TANGO_REV_EXP
+    #else
+        #define TANGO_REV_EXP    __declspec(dllexport)
+    #endif /* _TANGO_LIB */
 #else
-	#define TANGO_IMP_EXP
-	#define TANGO_REV_EXP
-	#define TANGO_IMP
+    #define TANGO_IMP_EXP
+    #define TANGO_REV_EXP
+    #define TANGO_IMP
 #endif /* _TG_WINDOWS_ */
 
 //
@@ -131,10 +131,10 @@
 // Some helper define
 //
 
-#define 	TangoSys_OMemStream	std::ostringstream
-#define		TangoSys_MemStream	std::stringstream
-#define		TangoSys_Pid		int
-#define		TangoSys_Cout		std::ostream
+#define     TangoSys_OMemStream    std::ostringstream
+#define        TangoSys_MemStream    std::stringstream
+#define        TangoSys_Pid        int
+#define        TangoSys_Cout        std::ostream
 
 //
 // For Microsoft compilers
@@ -157,7 +157,7 @@
     #define TG_strcasecmp strcasecmp
     #define TG_strncasecmp strncasecmp
 #else
-    #define	TG_strcasecmp stricmp
+    #define    TG_strcasecmp stricmp
     #define TG_strncasecmp strnicmp
 #endif
 
@@ -172,27 +172,27 @@
 #endif
 
 #ifndef _TG_WINDOWS_
-	#include <omniORB4/acconfig.h>
+    #include <omniORB4/acconfig.h>
 
-	#ifdef PACKAGE_BUGREPORT
-		#undef PACKAGE_BUGREPORT
-	#endif
+    #ifdef PACKAGE_BUGREPORT
+        #undef PACKAGE_BUGREPORT
+    #endif
 
-	#ifdef PACKAGE_NAME
-		#undef PACKAGE_NAME
-	#endif
+    #ifdef PACKAGE_NAME
+        #undef PACKAGE_NAME
+    #endif
 
-	#ifdef PACKAGE_STRING
-		#undef PACKAGE_STRING
-	#endif
+    #ifdef PACKAGE_STRING
+        #undef PACKAGE_STRING
+    #endif
 
-	#ifdef PACKAGE_TARNAME
-		#undef PACKAGE_TARNAME
-	#endif
+    #ifdef PACKAGE_TARNAME
+        #undef PACKAGE_TARNAME
+    #endif
 
-	#ifdef PACKAGE_VERSION
-		#undef PACKAGE_VERSION
-	#endif
+    #ifdef PACKAGE_VERSION
+        #undef PACKAGE_VERSION
+    #endif
 #endif
 
 #endif /* _TANGO_CONFIG_H */

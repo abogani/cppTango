@@ -1,15 +1,15 @@
 //===================================================================================================================
 //
-// file :		pipedesc.h
+// file :        pipedesc.h
 //
-// description :	Include file for the Pipe user configuration
+// description :    Include file for the Pipe user configuration
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2014
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -62,7 +62,7 @@ public:
 /**
  * Constructs a newly allocated UserDefaultPipeProp object.
  */
-	UserDefaultPipeProp():ext(nullptr) {}
+    UserDefaultPipeProp():ext(nullptr) {}
 //@}
 
 /**@name Set default property methods */
@@ -70,29 +70,29 @@ public:
 /**
  * Set default label property
  *
- * @param	def_label	The user default label property
+ * @param    def_label    The user default label property
  */
-	void set_label(const std::string &def_label)
-	{
-		label = def_label;
-	}
+    void set_label(const std::string &def_label)
+    {
+        label = def_label;
+    }
 
 /**
  * Set default description property
  *
- * @param	def_desc	The user default description property
+ * @param    def_desc    The user default description property
  */
-	void set_description(const std::string &def_desc)
-	{
-		description = def_desc;
-	}
+    void set_description(const std::string &def_desc)
+    {
+        description = def_desc;
+    }
 //@}
 
 /// @privatesection
-	~UserDefaultPipeProp() {}
+    ~UserDefaultPipeProp() {}
 
-	std::string 			label;
-	std::string 			description;
+    std::string             label;
+    std::string             description;
 
 private:
     class UserDefaultPipePropExt

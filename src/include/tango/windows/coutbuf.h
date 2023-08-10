@@ -9,7 +9,7 @@
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -43,24 +43,24 @@ namespace Tango
 //   Some defines
 //
 
-#define IDC_LIST      	-777
-#define MAXLISTLINES  	200
+#define IDC_LIST          -777
+#define MAXLISTLINES      200
 
 class CoutBuf
 {
 public:
-  	CoutBuf(HINSTANCE,int,HWND,LPCSTR);
-  	virtual ~CoutBuf();
-  	HWND get_debug_window() {return DbgWin;}
-  	void clear_debug_window() {DbgWin = NULL;}
-  	void CreateWin(LPCSTR);
+      CoutBuf(HINSTANCE,int,HWND,LPCSTR);
+      virtual ~CoutBuf();
+      HWND get_debug_window() {return DbgWin;}
+      void clear_debug_window() {DbgWin = NULL;}
+      void CreateWin(LPCSTR);
 
-  	int dbg_out (LPCSTR);
+      int dbg_out (LPCSTR);
 
 protected:
 
-  	HWND DbgWin;
-  	HWND parent_window;
+      HWND DbgWin;
+      HWND parent_window;
 
 };
 

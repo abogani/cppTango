@@ -4,7 +4,7 @@
  * by NL - SOLEIL - 09/2002.
  *
  * Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
- *						European Synchrotron Radiation Facility
+ *                        European Synchrotron Radiation Facility
  *                      BP 220, Grenoble 38043
  *                      FRANCE
  *
@@ -33,24 +33,24 @@
 namespace Tango
 {
   class TangoRollingFileAppender : public log4tango::RollingFileAppender
-	{
-		public:
-			/**
-			 *
-			 **/
-			TangoRollingFileAppender (const std::string& name,
+    {
+        public:
+            /**
+             *
+             **/
+            TangoRollingFileAppender (const std::string& name,
                                 const std::string& fileName,
                                 size_t maxFileSize);
-			/**
-			 *
-			 **/
-			virtual ~TangoRollingFileAppender ();
+            /**
+             *
+             **/
+            virtual ~TangoRollingFileAppender ();
 
       /**
-			 *
-			 **/
+             *
+             **/
       virtual bool isValid (void) const;
-	};
+    };
 
 } // namespace tango
 

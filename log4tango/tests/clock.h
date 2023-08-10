@@ -1,12 +1,12 @@
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -39,22 +39,22 @@
 class Clock
 {
 public:
-    static bool		UsingCPU;
-    static usec_t 	time(void);
+    static bool        UsingCPU;
+    static usec_t     time(void);
 
-    			Clock(void);
-    			~Clock(void);
+                Clock(void);
+                ~Clock(void);
 
-    bool		active(void) const { return _active; }
-    usec_t		elapsed(void) const;
-    usec_t		start(void);
-    usec_t		reset(void) { return start(); }
-    usec_t		stop(void);
+    bool        active(void) const { return _active; }
+    usec_t        elapsed(void) const;
+    usec_t        start(void);
+    usec_t        reset(void) { return start(); }
+    usec_t        stop(void);
 
 private:
-    usec_t		_start;
-    usec_t		_elapsed;
-    bool		_active;
+    usec_t        _start;
+    usec_t        _elapsed;
+    bool        _active;
 };
 
 #endif

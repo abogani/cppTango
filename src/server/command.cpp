@@ -3,17 +3,17 @@
 // file :               Command.cpp
 //
 // description :        C++ source code for the Command and templCommand classes.
-//			The Command class is the root class for all derived
-//			Command classes. The TemplCommand class is a template
-//			command class use for command which does take input
-//			nor outout parameters.
+//            The Command class is the root class for all derived
+//            Command classes. The TemplCommand class is a template
+//            command class use for command which does take input
+//            nor outout parameters.
 //
 // project :            TANGO
 //
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -42,9 +42,9 @@ namespace Tango {
 
 //+-------------------------------------------------------------------------
 //
-// method : 		Command::Command
+// method :         Command::Command
 //
-// description : 	constructors for abstract class Command
+// description :     constructors for abstract class Command
 //
 //--------------------------------------------------------------------------
 
@@ -73,10 +73,10 @@ namespace Tango {
 
 //+----------------------------------------------------------------------------
 //
-// method : 		Command::extract()
+// method :         Command::extract()
 //
-// description : 	Command extract methods. These are very simple methods
-//			but overloaded many times for all Tango types.
+// description :     Command extract methods. These are very simple methods
+//            but overloaded many times for all Tango types.
 //
 //-----------------------------------------------------------------------------
 
@@ -219,10 +219,10 @@ namespace Tango {
 
 //+----------------------------------------------------------------------------
 //
-// method : 		Command::insert()
+// method :         Command::insert()
 //
-// description : 	Command insert methods. These are very simple methods
-//			but overloaded many times for all Tango types.
+// description :     Command insert methods. These are very simple methods
+//            but overloaded many times for all Tango types.
 //
 //-----------------------------------------------------------------------------
 
@@ -586,9 +586,9 @@ namespace Tango {
 
 //+-------------------------------------------------------------------------
 //
-// method : 		TempCommand class constructors
+// method :         TempCommand class constructors
 //
-// description : 	instance constructor
+// description :     instance constructor
 //
 //--------------------------------------------------------------------------
 
@@ -624,13 +624,13 @@ namespace Tango {
 
 //+-------------------------------------------------------------------------
 //
-// method : 		set_type
+// method :         set_type
 //
-// description : 	Set the Command class type data according to the type
-//			of the object passed as parameters
+// description :     Set the Command class type data according to the type
+//            of the object passed as parameters
 //
 // input : - data_type : reference to the type_info object of the parameter
-//	   - type : reference to the Command class type data
+//       - type : reference to the Command class type data
 //
 //--------------------------------------------------------------------------
 
@@ -742,16 +742,16 @@ namespace Tango {
 
 //+-------------------------------------------------------------------------
 //
-// method : 		is_allowed
+// method :         is_allowed
 //
-// description : 	Check if the command is allowed. If the pointer to
-//			DeviceImpl class method "allowed_ptr" is null, the
-//			default mode id used (command always executed).
-//			Otherwise, the method is executed
+// description :     Check if the command is allowed. If the pointer to
+//            DeviceImpl class method "allowed_ptr" is null, the
+//            default mode id used (command always executed).
+//            Otherwise, the method is executed
 //
 // input : - dev_ptr : pointer to the device on which the command must be
-//		       executed
-//	   - in_any : Incoming command data
+//               executed
+//       - in_any : Incoming command data
 //
 // This method returns a boolean set to true if the command is allowed
 //
@@ -766,14 +766,14 @@ namespace Tango {
 
 //+-------------------------------------------------------------------------
 //
-// method : 		execute
+// method :         execute
 //
-// description : 	Execute the method associated with the command
-//			(stored in the exe_ptr data)
+// description :     Execute the method associated with the command
+//            (stored in the exe_ptr data)
 //
 // input : - dev_ptr : pointer to the device on which the command must be
-//		       executed
-//	   - in_any : Incoming command data
+//               executed
+//       - in_any : Incoming command data
 //
 // This method returns a pointer to an CORBA::Any object with the command outing
 // data.

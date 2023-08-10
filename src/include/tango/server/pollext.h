@@ -3,15 +3,15 @@
 // file :               PollExt.h
 //
 // description :        Include for classes used by the method dedicated
-//			   to fill the polling buffer for command or
-//			   attributes.
+//               to fill the polling buffer for command or
+//               attributes.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -44,93 +44,93 @@ namespace Tango
 
 //=============================================================================
 //
-//			Attribute related class
+//            Attribute related class
 //
-// description :	These classes are used when the user want to fill
-//		       attribute polling buffer
+// description :    These classes are used when the user want to fill
+//               attribute polling buffer
 //
 //=============================================================================
 
 //=============================================================================
 //
-//			The AttrData class
+//            The AttrData class
 //
 //
-// description : 	This class is used to store all the data needed to build
-//			an attribute value.
+// description :     This class is used to store all the data needed to build
+//            an attribute value.
 //
 //=============================================================================
 
 #define __CHECK_DIM() \
-	if ((x == 0) || (y == 0)) \
-	{ \
-		TANGO_THROW_EXCEPTION(API_AttrOptProp, "X or Y dimension cannot be 0 for image attribute"); \
-	} \
-	else \
-		(void)0
+    if ((x == 0) || (y == 0)) \
+    { \
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, "X or Y dimension cannot be 0 for image attribute"); \
+    } \
+    else \
+        (void)0
 
 #define __CHECK_DIM_X() \
-	if (x == 0) \
-	{ \
-		TANGO_THROW_EXCEPTION(API_AttrOptProp, "X dimension cannot be 0 for spectrum or image attribute"); \
-	} \
-	else \
-		(void)0
+    if (x == 0) \
+    { \
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, "X dimension cannot be 0 for spectrum or image attribute"); \
+    } \
+    else \
+        (void)0
 
 template <typename T>
 class AttrData
 {
 public:
-	const T 			*ptr;
-	Tango::AttrQuality	qual;
-	long				x;
-	long				y;
-	bool				release;
-	DevErrorList		err;
+    const T             *ptr;
+    Tango::AttrQuality    qual;
+    long                x;
+    long                y;
+    bool                release;
+    DevErrorList        err;
 
-	long				wr_x;
-	long				wr_y;
-	const T 			*wr_ptr;
+    long                wr_x;
+    long                wr_y;
+    const T             *wr_ptr;
 
-	AttrData(const T *);
-	AttrData(const T *,Tango::AttrQuality);
-	AttrData(const T *,Tango::AttrQuality,bool);
-	AttrData(const T *,const T *);
-	AttrData(const T *,const T *,Tango::AttrQuality);
-	AttrData(const T *,const T *,Tango::AttrQuality,bool);
+    AttrData(const T *);
+    AttrData(const T *,Tango::AttrQuality);
+    AttrData(const T *,Tango::AttrQuality,bool);
+    AttrData(const T *,const T *);
+    AttrData(const T *,const T *,Tango::AttrQuality);
+    AttrData(const T *,const T *,Tango::AttrQuality,bool);
 
 // For spectrum
 
-	AttrData(const T *,long);
-	AttrData(const T *,long,Tango::AttrQuality);
-	AttrData(const T *,long,Tango::AttrQuality,bool);
-	AttrData(const T *,long,const T *,long);
-	AttrData(const T *,long,const T *,long,Tango::AttrQuality);
-	AttrData(const T *,long,const T *,long,Tango::AttrQuality,bool);
+    AttrData(const T *,long);
+    AttrData(const T *,long,Tango::AttrQuality);
+    AttrData(const T *,long,Tango::AttrQuality,bool);
+    AttrData(const T *,long,const T *,long);
+    AttrData(const T *,long,const T *,long,Tango::AttrQuality);
+    AttrData(const T *,long,const T *,long,Tango::AttrQuality,bool);
 
 // For image
 
-	AttrData(const T *,long,long);
-	AttrData(const T *,long,long,Tango::AttrQuality);
-	AttrData(const T *,long,long,Tango::AttrQuality,bool);
-	AttrData(const T *,long,long,const T *,long,long);
-	AttrData(const T *,long,long,const T *,long,long,Tango::AttrQuality);
-	AttrData(const T *,long,long,const T *,long,long,Tango::AttrQuality,bool);
+    AttrData(const T *,long,long);
+    AttrData(const T *,long,long,Tango::AttrQuality);
+    AttrData(const T *,long,long,Tango::AttrQuality,bool);
+    AttrData(const T *,long,long,const T *,long,long);
+    AttrData(const T *,long,long,const T *,long,long,Tango::AttrQuality);
+    AttrData(const T *,long,long,const T *,long,long,Tango::AttrQuality,bool);
 
 // For error
 
-	AttrData(DevErrorList &e): ptr(NULL),x(0),y(0),release(false),err(e),wr_x(0),wr_y(0),wr_ptr(NULL) {}
+    AttrData(DevErrorList &e): ptr(NULL),x(0),y(0),release(false),err(e),wr_x(0),wr_y(0),wr_ptr(NULL) {}
 };
 
 
 //=============================================================================
 //
-//			The TimedAttrData class
+//            The TimedAttrData class
 //
 //
-// description : 	This class inherits from the AttrData class and adds
-//			a date to all the data contains in the AttrData
-//			class
+// description :     This class inherits from the AttrData class and adds
+//            a date to all the data contains in the AttrData
+//            class
 //
 //=============================================================================
 
@@ -159,7 +159,7 @@ public:
  * @param p_data Pointer to the attribute value
  * @param when The date
  */
-	TimedAttrData(const T *p_data,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -171,7 +171,7 @@ public:
  * @param p_wr_data Pointer to the written part of the attribute value
  * @param when The date
  */
-	TimedAttrData(const T *p_data,const T *p_wr_data,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,const T *p_wr_data,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object.
@@ -182,7 +182,7 @@ public:
  * @param qual The attribute quality factor
  * @param when The date
  */
-	TimedAttrData(const T *p_data,Tango::AttrQuality qual,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,Tango::AttrQuality qual,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -194,7 +194,7 @@ public:
  * @param qual The attribute quality factor
  * @param when The date
  */
-	TimedAttrData(const T *p_data,const T *p_wr_data,Tango::AttrQuality qual,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,const T *p_wr_data,Tango::AttrQuality qual,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object.
@@ -204,7 +204,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
  * @param when The date
  */
-	TimedAttrData(const T *p_data,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -215,7 +215,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters must be freed
  * @param when The date
  */
-	TimedAttrData(const T *p_data,const T *p_wr_data,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,const T *p_wr_data,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
 //@}
 
 
@@ -235,7 +235,7 @@ public:
  * @param x The attribute x length
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -249,7 +249,7 @@ public:
  * @param x_wr The attribute written part x length
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object.
@@ -261,7 +261,7 @@ public:
  * @param qual The attribute quality factor
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,Tango::AttrQuality qual,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,Tango::AttrQuality qual,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -275,7 +275,7 @@ public:
  * @param qual The attribute quality factor
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,Tango::AttrQuality qual,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,Tango::AttrQuality qual,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object.
@@ -286,7 +286,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -299,7 +299,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> and <i>p_wr_data</i> parameters must be freed
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,const T *p_wr_data,long x_wr,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
 
 //@}
 
@@ -321,7 +321,7 @@ public:
  * @param y The attribute y length
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,long y,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,long y,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -337,7 +337,7 @@ public:
  * @param y_wr The attribute written part y length
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object.
@@ -350,7 +350,7 @@ public:
  * @param qual The attribute quality factor
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,long y,Tango::AttrQuality qual,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,long y,Tango::AttrQuality qual,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -366,7 +366,7 @@ public:
  * @param qual The attribute quality factor
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,Tango::AttrQuality qual,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,Tango::AttrQuality qual,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object.
@@ -378,7 +378,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,long y,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,long y,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
 
 /**
  * Create a new TimedAttrData object for a R/W attribute.
@@ -393,7 +393,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> abd <i>p_wr_data</i> parameters must be freed
  * @param when The date
  */
-	TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
+    TimedAttrData(const T *p_data,long x,long y,const T *p_wr_data,long x_wr,long y_wr,Tango::AttrQuality qual,bool rel,const TangoTimestamp &when);
 //@}
 
 
@@ -413,24 +413,24 @@ public:
  * @param errs The error stack
  * @param when The date
  */
-	TimedAttrData(DevErrorList &errs,const TangoTimestamp &when);
+    TimedAttrData(DevErrorList &errs,const TangoTimestamp &when);
 //@}
 
 /// @privatesection
-	std::chrono::system_clock::time_point tp;
+    std::chrono::system_clock::time_point tp;
 
 };
 
 
 //=============================================================================
 //
-//			The AttrHistoryStack class
+//            The AttrHistoryStack class
 //
 //
-// description : 	This class is simply a wrapper above a vector of
-//			TimedAttrData class. It is  used to pass an attribute
-//			value history which will be stored in the polling
-//			buffer
+// description :     This class is simply a wrapper above a vector of
+//            TimedAttrData class. It is  used to pass an attribute
+//            value history which will be stored in the polling
+//            buffer
 //
 //=============================================================================
 
@@ -456,58 +456,58 @@ public:
  *
  * @param elt The new element
  */
-	void push(TimedAttrData<T> const &elt);
+    void push(TimedAttrData<T> const &elt);
 
 /**
  * Get stack depth
  *
  * @return The stack depth
  */
-	size_t length() {return hist.size();}
+    size_t length() {return hist.size();}
 
 /**
  * Reserve memory for stack elements
  *
  * @param nb The stack element number
  */
-	void length(long nb) {hist.reserve(nb);}
+    void length(long nb) {hist.reserve(nb);}
 
 /**
  * Clear the stack
  */
-	void clear() {hist.clear();}
+    void clear() {hist.clear();}
 
 /**
  * Get stack data
  *
  * @return The stack itself
  */
-	std::vector<TimedAttrData<T> > &get_data();
+    std::vector<TimedAttrData<T> > &get_data();
 
 /// @privatesection
-	AttrHistoryStack() {}
+    AttrHistoryStack() {}
 
-	std::vector<Tango::TimedAttrData<T> >	hist;
+    std::vector<Tango::TimedAttrData<T> >    hist;
 };
 
 
 //=============================================================================
 //
-//			Command related class
+//            Command related class
 //
-// description :	These classes are used when the user want to fill
-//		       command polling buffer
+// description :    These classes are used when the user want to fill
+//               command polling buffer
 //
 //=============================================================================
 
 
 //=============================================================================
 //
-//			The TimedCmdData class
+//            The TimedCmdData class
 //
 //
-// description : 	This class is used to store all the data needed to build
-//			a command value plus a date.
+// description :     This class is used to store all the data needed to build
+//            a command value plus a date.
 //
 //=============================================================================
 
@@ -536,7 +536,7 @@ public:
  * @param p_data Pointer to the command result data
  * @param when The date
  */
-	TimedCmdData(T *p_data,const TangoTimestamp &when);
+    TimedCmdData(T *p_data,const TangoTimestamp &when);
 
 /**
  * Create a new TimedCmdData object with memory management.
@@ -545,7 +545,7 @@ public:
  * @param rel Set to true if the memory pointed to by the <i>p_data</i> parameter must be freed
  * @param when The date
  */
-	TimedCmdData(T *p_data,bool rel,const TangoTimestamp &when);
+    TimedCmdData(T *p_data,bool rel,const TangoTimestamp &when);
 
 /**
  * Create a new TimedCmdData object for errors.
@@ -556,28 +556,28 @@ public:
  * @param errs The error stack
  * @param when The date
  */
-	TimedCmdData(DevErrorList errs,const TangoTimestamp &when): ptr(NULL),err(errs),tp(when),release(false) {}
+    TimedCmdData(DevErrorList errs,const TangoTimestamp &when): ptr(NULL),err(errs),tp(when),release(false) {}
 //@}
 
 /// @privatesection
 
-	T		        *ptr;
-	DevErrorList	err;
-	std::chrono::system_clock::time_point tp;
-	bool		    release;
+    T                *ptr;
+    DevErrorList    err;
+    std::chrono::system_clock::time_point tp;
+    bool            release;
 
 };
 
 
 //=============================================================================
 //
-//			The CmdHistoryStack class
+//            The CmdHistoryStack class
 //
 //
-// description : 	This class is simply a wrapper above a vector of
-//			TimedCmdData class. It is  used to pass a command
-//			value history which will be stored in the polling
-//			buffer
+// description :     This class is simply a wrapper above a vector of
+//            TimedCmdData class. It is  used to pass a command
+//            value history which will be stored in the polling
+//            buffer
 //
 //=============================================================================
 
@@ -604,39 +604,39 @@ public:
  *
  * @param elt The new element
  */
-	void push(Tango::TimedCmdData<T> const &elt);
+    void push(Tango::TimedCmdData<T> const &elt);
 
 /**
  * Get stack depth
  *
  * @return The stack depth
  */
-	size_t length() {return hist.size();}
+    size_t length() {return hist.size();}
 
 /**
  * Reserve memory for stack elements
  *
  * @param nb The stack element number
  */
-	void length(long nb) {hist.reserve(nb);}
+    void length(long nb) {hist.reserve(nb);}
 
 /**
  * Clear the stack
  */
-	void clear() {hist.clear();}
+    void clear() {hist.clear();}
 
 /**
  * Get stack data
  *
  * @return The stack itself
  */
-	std::vector<TimedCmdData<T> > &get_data();
+    std::vector<TimedCmdData<T> > &get_data();
 
 /// @privatesection
 
-	CmdHistoryStack() {}
+    CmdHistoryStack() {}
 
-	std::vector<Tango::TimedCmdData<T> >	hist;
+    std::vector<Tango::TimedCmdData<T> >    hist;
 };
 
 

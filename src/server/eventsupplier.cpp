@@ -1,16 +1,16 @@
 //====================================================================================================================
 //
-//  file : 				eventsupplier.cpp
+//  file :                 eventsupplier.cpp
 //
-//	description : 		C++ classes for implementing the event server and client singleton classes - EventSupplier
-//						This class is used to send events from the server
+//    description :         C++ classes for implementing the event server and client singleton classes - EventSupplier
+//                        This class is used to send events from the server
 //
-//  author(s) : 		E.Taurel (taurel@esrf.fr)
+//  author(s) :         E.Taurel (taurel@esrf.fr)
 //
-//	original : 			29 June 2004
+//    original :             29 June 2004
 //
 //  Copyright (C) :     2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -80,14 +80,14 @@ std::string        EventSupplier::fqdn_prefix;
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::EventSupplier()
+//        EventSupplier::EventSupplier()
 //
 // description :
-//		EventSupplier class ctor
+//        EventSupplier class ctor
 //
 // argument :
-//		in :
-//			- tg : ptr to the Util class singleton
+//        in :
+//            - tg : ptr to the Util class singleton
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -114,17 +114,17 @@ EventSupplier::EventSupplier(Util *tg)
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::detect_and_push_events()
+//        EventSupplier::detect_and_push_events()
 //
 // description :
-//		Method to detect if it is necessary to push an event
+//        Method to detect if it is necessary to push an event
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- attr_value : The attribute value
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
-//			- attr_name : The attribute name
+//        in :
+//            - device_impl : The device
+//            - attr_value : The attribute value
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - attr_name : The attribute name
 //          - time_bef_attr : Exact date when the attribute has been read
 //
 //--------------------------------------------------------------------------------------------------------------------
@@ -305,19 +305,19 @@ SendEventType EventSupplier::detect_and_push_events(
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::detect_and_push_change_event()
+//        EventSupplier::detect_and_push_change_event()
 //
 // description :
-//		Method to detect if there it is necessary to push a change event
+//        Method to detect if there it is necessary to push a change event
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- attr_value : The attribute value
-//			- attr : The attribute object
-//			- attr_name : The attribute name
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
-// 			- user_push : Flag set to true if it is a user push
+//        in :
+//            - device_impl : The device
+//            - attr_value : The attribute value
+//            - attr : The attribute object
+//            - attr_name : The attribute name
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//             - user_push : Flag set to true if it is a user push
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -529,20 +529,20 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl, struct
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::detect_and_push_archive_event()
+//        EventSupplier::detect_and_push_archive_event()
 //
 // description :
-//		Method to detect if there it is necessary to push an archive event
+//        Method to detect if there it is necessary to push an archive event
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- attr_value : The attribute value
-//			- attr : The attribute object
-//			- attr_name : The attribute name
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
-//			- time_bef_attr : Date before the attribute was read
-//			- user_push : Flag set to true if it's the user who fires the event
+//        in :
+//            - device_impl : The device
+//            - attr_value : The attribute value
+//            - attr : The attribute object
+//            - attr_name : The attribute name
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - time_bef_attr : Date before the attribute was read
+//            - user_push : Flag set to true if it's the user who fires the event
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -818,19 +818,19 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::detect_and_push_periodic_event()
+//        EventSupplier::detect_and_push_periodic_event()
 //
 // description :
-//		Method to detect if there it is necessary to push a periodic event
+//        Method to detect if there it is necessary to push a periodic event
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- attr_value : The attribute value
-//			- attr : The attribute object
-//			- attr_name : The attribute name
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
-//			- time_bef_attr : Date before the attribute was read
+//        in :
+//            - device_impl : The device
+//            - attr_value : The attribute value
+//            - attr : The attribute object
+//            - attr_name : The attribute name
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - time_bef_attr : Date before the attribute was read
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -981,23 +981,23 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::detect_change()
+//        EventSupplier::detect_change()
 //
 // description :
-//		Method to detect if there is a change according to the criterions and return a boolean set to true if a change
-//		is detected
+//        Method to detect if there is a change according to the criterions and return a boolean set to true if a change
+//        is detected
 //
 // argument :
-//		in :
-//			- attr : The attribute object
-//			- attr_value : The current attribute value
-//			- archive :
-//			- delta_change_rel :
-//			- delta_change_abs :
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
-//			- force_change : A flag set to true if the change is due to a non mathematical reason
-//				       (array size change, from exception to classic...)
-//			- dev : Pointer to the device
+//        in :
+//            - attr : The attribute object
+//            - attr_value : The current attribute value
+//            - archive :
+//            - delta_change_rel :
+//            - delta_change_abs :
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - force_change : A flag set to true if the change is due to a non mathematical reason
+//                       (array size change, from exception to classic...)
+//            - dev : Pointer to the device
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -2223,17 +2223,17 @@ bool EventSupplier::detect_change(Attribute &attr, struct SuppliedEventData &att
 //+--------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::push_att_data_ready_event()
+//        EventSupplier::push_att_data_ready_event()
 //
 // description :
-//		Push a data ready event
+//        Push a data ready event
 //
 // argument :
-//		in :
-//			- device_impl : Pointer to device
-//			- attr_name : Attribute name
-//			- data_type : Attribute data type
-//			- ctr : Counter sent in event
+//        in :
+//            - device_impl : Pointer to device
+//            - attr_name : Attribute name
+//            - data_type : Attribute data type
+//            - ctr : Counter sent in event
 //
 //-------------------------------------------------------------------------------------------------------------
 
@@ -2273,16 +2273,16 @@ EventSupplier::push_att_data_ready_event(DeviceImpl *device_impl, const std::str
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::push_att_conf_event()
+//        EventSupplier::push_att_conf_event()
 //
 // description :
-//		Method to push attribute configration event
+//        Method to push attribute configration event
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- attr_conf : The attribute configuration
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
+//        in :
+//            - device_impl : The device
+//            - attr_conf : The attribute configuration
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
 //          - attr_name : The attribute name
 //
 //------------------------------------------------------------------------------------------------------------------
@@ -2375,17 +2375,17 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
 //+--------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::push_dev_intr_change_event()
+//        EventSupplier::push_dev_intr_change_event()
 //
 // description :
-//		Push a device interface change event
+//        Push a device interface change event
 //
 // argument :
-//		in :
-//			- device_impl : Pointer to device
-//			- dev_started : Device started flag
-//			- cmds_list: Device commands list
-//			- atts_list: Device attribute list
+//        in :
+//            - device_impl : Pointer to device
+//            - dev_started : Device started flag
+//            - cmds_list: Device commands list
+//            - atts_list: Device attribute list
 //
 //-------------------------------------------------------------------------------------------------------------
 
@@ -2454,17 +2454,17 @@ void EventSupplier::push_dev_intr_change_event(DeviceImpl *device_impl,
 //+--------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		EventSupplier::any_dev_intr_client
+//        EventSupplier::any_dev_intr_client
 //
 // description :
-//		Check if there is at least a device interface change client
+//        Check if there is at least a device interface change client
 //
 // argument :
-//		in :
-//			- device_impl : Pointer to device
+//        in :
+//            - device_impl : Pointer to device
 //
-//	return :
-//		True if there is at least one client listening for this event
+//    return :
+//        True if there is at least one client listening for this event
 //
 //-------------------------------------------------------------------------------------------------------------
 

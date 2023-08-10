@@ -1,15 +1,15 @@
 //+==================================================================================================================
 //
 //  zmqeventsupplier.cpp : C++ classes for implementing the event server and client singleton classes -ZmqEventSupplier
-//						   This class is used to send events from the server to the client(s) when zmq is used to
-//						   transport the events
+//                           This class is used to send events from the server to the client(s) when zmq is used to
+//                           transport the events
 //
-//  author(s) : 		  E.Taurel (taurel@esrf.fr)
+//  author(s) :           E.Taurel (taurel@esrf.fr)
 //
-//	original : 			  August 2011
+//    original :               August 2011
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -63,10 +63,10 @@ ZmqEventSupplier *ZmqEventSupplier::_instance = NULL;
 
 
 /************************************************************************/
-/*		       															*/
-/* 			ZmqEventSupplier class 					    				*/
-/*			----------------											*/
-/*		       															*/
+/*                                                                           */
+/*             ZmqEventSupplier class                                         */
+/*            ----------------                                            */
+/*                                                                           */
 /************************************************************************/
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -104,15 +104,15 @@ void get_zmq_port_from_envvar(const char *zmq_port_env_var, std::string &endpoin
 ZmqEventSupplier::ZmqEventSupplier(Util *tg):EventSupplier(tg),zmq_context(1),event_pub_sock(NULL),
 name_specified(false),double_send(0),double_send_heartbeat(false)
 {
-	_instance = this;
+    _instance = this;
 
 //
 // Create zmq release number
 //
 
-	int zmq_major,zmq_minor,zmq_patch;
-	zmq_version(&zmq_major,&zmq_minor,&zmq_patch);
-	zmq_release = (zmq_major * 100) + (zmq_minor * 10) + zmq_patch;
+    int zmq_major,zmq_minor,zmq_patch;
+    zmq_version(&zmq_major,&zmq_minor,&zmq_patch);
+    zmq_release = (zmq_major * 100) + (zmq_minor * 10) + zmq_patch;
 
 //
 // Create the Publisher socket for heartbeat event and bind it
@@ -123,18 +123,18 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
 
     heartbeat_pub_sock = new zmq::socket_t(zmq_context,ZMQ_PUB);
 
-	int reconnect_ivl = -1;
+    int reconnect_ivl = -1;
 
-	heartbeat_pub_sock->set(zmq::sockopt::linger, DEFAULT_LINGER);
-	try
-	{
-		heartbeat_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
-	}
-	catch (zmq::error_t &)
-	{
-		reconnect_ivl = 30000;
-		heartbeat_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
-	}
+    heartbeat_pub_sock->set(zmq::sockopt::linger, DEFAULT_LINGER);
+    try
+    {
+        heartbeat_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
+    }
+    catch (zmq::error_t &)
+    {
+        reconnect_ivl = 30000;
+        heartbeat_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
+    }
 
     heartbeat_endpoint = "tcp://";
     alt_ip.clear();
@@ -163,7 +163,7 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
 
     std::string::size_type pos = h_name.find('.');
     if (pos != std::string::npos)
-		canon_name = h_name.substr(0,pos);
+        canon_name = h_name.substr(0,pos);
 
     if (specified_addr.empty() == false && (specified_addr != "localhost"))
     {
@@ -320,33 +320,33 @@ name_specified(false),double_send(0),double_send_heartbeat(false)
 
 ZmqEventSupplier *ZmqEventSupplier::create(Util *tg)
 {
-	TANGO_LOG_DEBUG << "calling Tango::ZmqEventSupplier::create()" << std::endl;
+    TANGO_LOG_DEBUG << "calling Tango::ZmqEventSupplier::create()" << std::endl;
 
 //
 // Does the ZmqEventSupplier singleton exist already ? if so simply return it
 //
 
-	if (_instance != NULL)
-	{
-		return _instance;
-	}
+    if (_instance != NULL)
+    {
+        return _instance;
+    }
 
 //
 // ZmqEventSupplier singleton does not exist, create it
 //
 
-	ZmqEventSupplier *_event_supplier = new ZmqEventSupplier(tg);
+    ZmqEventSupplier *_event_supplier = new ZmqEventSupplier(tg);
 
-	return _event_supplier;
+    return _event_supplier;
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::~ZmqEventSupplier()
+//        ZmqEventSupplier::~ZmqEventSupplier()
 //
 // description :
-//		ZmqEventSupplier destructor.
+//        ZmqEventSupplier destructor.
 //      This dtor delete the zmq socket. The ZMQ context will be deleted (then calling zmq_term) when the object is
 //      destroyed
 //
@@ -362,27 +362,27 @@ ZmqEventSupplier::~ZmqEventSupplier()
     delete event_pub_sock;
 
     if (event_mcast.empty() == false)
-	{
-		std::map<std::string,McastSocketPub>::iterator ite,ite_stop;
-		ite = event_mcast.begin();
-		ite_stop = event_mcast.end();
+    {
+        std::map<std::string,McastSocketPub>::iterator ite,ite_stop;
+        ite = event_mcast.begin();
+        ite_stop = event_mcast.end();
 
-		for (ite = event_mcast.begin(); ite != ite_stop;++ite)
-			delete ite->second.pub_socket;
-	}
+        for (ite = event_mcast.begin(); ite != ite_stop;++ite)
+            delete ite->second.pub_socket;
+    }
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::tango_bind()
+//        ZmqEventSupplier::tango_bind()
 //
 // description :
-//		Choose a free port to bind ZMQ socket. Ask ZMQ to give us a port number
+//        Choose a free port to bind ZMQ socket. Ask ZMQ to give us a port number
 //
 // argument :
-//		in :
-//		- sock : The ZMQ socket
+//        in :
+//        - sock : The ZMQ socket
 //      - endpoint : The beginning of the ZMQ endpoint
 //
 //-------------------------------------------------------------------------------------------------------------------
@@ -393,17 +393,17 @@ void ZmqEventSupplier::tango_bind(zmq::socket_t *sock,std::string &endpoint)
 
     try
     {
-		sock->bind(base_endpoint);
+        sock->bind(base_endpoint);
 
-		std::string str = sock->get(zmq::sockopt::last_endpoint);
+        std::string str = sock->get(zmq::sockopt::last_endpoint);
 
         // if this was a request for an ephemeral port then we need to look
         // up which port was allocated
         if (endpoint.back() == '*')
         {
             endpoint.pop_back();
-			std::string::size_type pos = str.rfind(':');
-			std::string port_str = str.substr(pos + 1);
+            std::string::size_type pos = str.rfind(':');
+            std::string port_str = str.substr(pos + 1);
             endpoint = endpoint + port_str;
         }
     }
@@ -416,32 +416,32 @@ void ZmqEventSupplier::tango_bind(zmq::socket_t *sock,std::string &endpoint)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::test_endian()
+//        ZmqEventSupplier::test_endian()
 //
 // description :
-//		Get the host endianness
+//        Get the host endianness
 //
 // return:
-// 		This method returns the host endianness
-//     		0 -> Big endian
-//      	1 -> Little endian
+//         This method returns the host endianness
+//             0 -> Big endian
+//          1 -> Little endian
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 unsigned char ZmqEventSupplier::test_endian()
 {
     int test_var = 1;
-	unsigned char *cptr = (unsigned char*)&test_var;
+    unsigned char *cptr = (unsigned char*)&test_var;
     return (!(cptr[0] == 0));
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::create_event_socket()
+//        ZmqEventSupplier::create_event_socket()
 //
 // description :
-//		Create and bind the publisher socket used to publish the real events
+//        Create and bind the publisher socket used to publish the real events
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -461,15 +461,15 @@ void ZmqEventSupplier::create_event_socket()
         int reconnect_ivl = -1;
         event_pub_sock->set(zmq::sockopt::linger, DEFAULT_LINGER);
 
-		try
-		{
-			event_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
-		}
-		catch (zmq::error_t &)
-		{
-			reconnect_ivl = 30000;
-			event_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
-		}
+        try
+        {
+            event_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
+        }
+        catch (zmq::error_t &)
+        {
+            reconnect_ivl = 30000;
+            event_pub_sock->set(zmq::sockopt::reconnect_ivl, reconnect_ivl);
+        }
 
         event_endpoint = "tcp://";
 
@@ -548,14 +548,14 @@ void ZmqEventSupplier::create_event_socket()
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::create_mcast_event_socket()
+//        ZmqEventSupplier::create_mcast_event_socket()
 //
 // description :
-//		Create and bind the publisher socket used to publish the real events when multicast transport is required
+//        Create and bind the publisher socket used to publish the real events when multicast transport is required
 //
 // argument :
-//		in :
-//			- mcast_data : The multicast addr and port (mcast_adr:port)
+//        in :
+//            - mcast_data : The multicast addr and port (mcast_adr:port)
 //          - ev_name : The event name (dev_name/attr_name.event_type)
 //          - rate: The user defined PGM rate (O if undefined)
 //          - local_call: True if the caller is on the same host
@@ -633,14 +633,14 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,c
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::create_mcast_socket()
+//        ZmqEventSupplier::create_mcast_socket()
 //
 // description :
-//		Create and bind the publisher socket used to publish the real events when multicast transport is required
+//        Create and bind the publisher socket used to publish the real events when multicast transport is required
 //
 // argument :
-//		in :
-//			- mcast_data : The multicast addr and port (mcast_adr:port)
+//        in :
+//            - mcast_data : The multicast addr and port (mcast_adr:port)
 //          - rate: The user defined PGM rate (O if undefined)
 //          - ms: Reference to the structure to be stored in the macst map
 //
@@ -724,17 +724,17 @@ void ZmqEventSupplier::create_mcast_socket(const std::string &mcast_data,int rat
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::is_event_mcast()
+//        ZmqEventSupplier::is_event_mcast()
 //
 // description :
-//		This method checks if the event is already defined in the map of multicast event.
+//        This method checks if the event is already defined in the map of multicast event.
 //
 // argument :
-//		in :
-//			- ev_name : The event name (device/attr.event_type)
+//        in :
+//            - ev_name : The event name (device/attr.event_type)
 //
 // returns :
-// 		This method returns true if the event is in the map and false otherwise
+//         This method returns true if the event is in the map and false otherwise
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -751,17 +751,17 @@ bool ZmqEventSupplier::is_event_mcast(const std::string &ev_name)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::get_mcast_event_endpoint()
+//        ZmqEventSupplier::get_mcast_event_endpoint()
 //
 // description :
-//		This method returns the multicast socket endpoint for the event passed as parameter
+//        This method returns the multicast socket endpoint for the event passed as parameter
 //
 // argument :
-//		in :
-//			- event_name : The event name (device/attr.event_type)
+//        in :
+//            - event_name : The event name (device/attr.event_type)
 //
 // return :
-// 		This method returns a reference to the enpoint string
+//         This method returns a reference to the enpoint string
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -773,14 +773,14 @@ std::string &ZmqEventSupplier::get_mcast_event_endpoint(const std::string &ev_na
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::init_event_cptr()
+//        ZmqEventSupplier::init_event_cptr()
 //
 // description :
-//		Method to initialize event counter for a specific event
+//        Method to initialize event counter for a specific event
 //
 // argument :
-//		in :
-//			- event_name : The event name (device/attr.event_type)
+//        in :
+//            - event_name : The event name (device/attr.event_type)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -805,28 +805,28 @@ void ZmqEventSupplier::init_event_cptr(const std::string &event_name)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::push_heartbeat_event()
+//        ZmqEventSupplier::push_heartbeat_event()
 //
 // description :
-//		Method to push the hearbeat event
+//        Method to push the hearbeat event
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 void ZmqEventSupplier::push_heartbeat_event()
 {
-	time_t delta_time;
-	time_t now_time;
+    time_t delta_time;
+    time_t now_time;
 
 //
 // Heartbeat - check wether a heartbeat event has been sent recently. If not then send it.
 // A heartbeat contains no data, it is used by the consumer to know that the supplier is still alive.
 //
 
-	Tango::Util *tg = Tango::Util::instance();
-	DServer *adm_dev = tg->get_dserver_device();
-	now_time = time(NULL);
-	delta_time = now_time - adm_dev->last_heartbeat_zmq;
-	TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta time since last heartbeat " << delta_time << std::endl;
+    Tango::Util *tg = Tango::Util::instance();
+    DServer *adm_dev = tg->get_dserver_device();
+    now_time = time(NULL);
+    delta_time = now_time - adm_dev->last_heartbeat_zmq;
+    TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta time since last heartbeat " << delta_time << std::endl;
 
 //
 // We here compare delta_time to 8 and not to 10.
@@ -835,12 +835,12 @@ void ZmqEventSupplier::push_heartbeat_event()
 // seconds will be 9 even if in reality it is 9,9
 //
 
-	if (delta_time >= 8)
-	{
-	    int nb_event = 1;
+    if (delta_time >= 8)
+    {
+        int nb_event = 1;
 
-		TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): detected heartbeat event for " << heartbeat_event_name << std::endl;
-		TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta _time " << delta_time << std::endl;
+        TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): detected heartbeat event for " << heartbeat_event_name << std::endl;
+        TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta _time " << delta_time << std::endl;
 
         if (double_send_heartbeat == true)
         {
@@ -848,7 +848,7 @@ void ZmqEventSupplier::push_heartbeat_event()
             double_send_heartbeat = false;
         }
 
-		TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): nb_event = " << nb_event << std::endl;
+        TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): nb_event = " << nb_event << std::endl;
 
         while (nb_event != 0)
         {
@@ -954,26 +954,26 @@ void ZmqEventSupplier::push_heartbeat_event()
                 TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
             }
         }
-	}
+    }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::push_event()
+//        ZmqEventSupplier::push_event()
 //
 // description :
-//		Method to send the event to the event channel
+//        Method to send the event to the event channel
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- event_type : The event type (change, periodic....)
-//			- filterable_names :
-//			- filterable_data :
-//			- attr_value : The attribute value
-//			- obj_name : The attribute/pipe name
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
+//        in :
+//            - device_impl : The device
+//            - event_type : The event type (change, periodic....)
+//            - filterable_names :
+//            - filterable_data :
+//            - attr_value : The attribute value
+//            - obj_name : The attribute/pipe name
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -992,9 +992,9 @@ void ZmqEventSupplier::push_heartbeat_event()
 // will never be deadlocked.
 void tg_unlock(TANGO_UNUSED(void *data),void *hint)
 {
-	std::promise<void> * p = static_cast<std::promise<void>*>(hint);
-	p->set_value();
-	delete p;
+    std::promise<void> * p = static_cast<std::promise<void>*>(hint);
+    p->set_value();
+    delete p;
 }
 
 void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
@@ -1008,10 +1008,10 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
             DevFailed *except,
             bool inc_cptr)
 {
-	if (device_impl == NULL)
-		return;
+    if (device_impl == NULL)
+        return;
 
-	TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event(): called for attribute/pipe " << obj_name << std::endl;
+    TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event(): called for attribute/pipe " << obj_name << std::endl;
 
 //
 // Get the mutex to synchronize the sending of events
@@ -1022,13 +1022,13 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 // threads. The mutex used here is also a memory barrier
 //
 
-	omni_thread *th_id = omni_thread::self();
-	if (th_id == NULL)
-		th_id = omni_thread::create_dummy();
+    omni_thread *th_id = omni_thread::self();
+    if (th_id == NULL)
+        th_id = omni_thread::create_dummy();
 
-	omni_mutex_lock guard(push_mutex);
+    omni_mutex_lock guard(push_mutex);
 
-	calling_th = th_id->id();
+    calling_th = th_id->id();
 
 //
 // Create full event name
@@ -1082,56 +1082,56 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         ev_ctr = ev_cptr_ite->second;
     else
     {
-		bool print = false;
-    	if (intr_change == false && pipe_event == false)
-		{
-			Attribute &att = device_impl->get_device_attr()->get_attr_by_name(obj_name.c_str());
+        bool print = false;
+        if (intr_change == false && pipe_event == false)
+        {
+            Attribute &att = device_impl->get_device_attr()->get_attr_by_name(obj_name.c_str());
 
-			if (local_event_type == "data_ready")
-			{
-				if (att.event_data_ready_subscription != 0)
-					print = true;
-			}
-			else if (local_event_type == "attr_conf")
-			{
-				if (att.event_attr_conf_subscription != 0 || att.event_attr_conf5_subscription != 0)
-					print = true;
-			}
-			else if (local_event_type == "user_event")
-			{
-				if (att.event_user3_subscription != 0 || att.event_user4_subscription != 0 || att.event_user5_subscription != 0)
-					print = true;
-			}
-			else if (local_event_type == "change")
-			{
-				if (att.event_change3_subscription != 0 || att.event_change4_subscription != 0 || att.event_change5_subscription != 0)
-					print = true;
-			}
-			else if (local_event_type == "periodic")
-			{
-				if (att.event_periodic3_subscription != 0 || att.event_periodic4_subscription != 0 || att.event_periodic5_subscription != 0)
-					print = true;
-			}
-			else if (local_event_type == "archive")
-			{
-				if (att.event_archive3_subscription != 0 || att.event_archive4_subscription != 0 || att.event_archive5_subscription != 0)
-					print = true;
-			}
-		}
-		else if (pipe_event == true)
-		{
-			Pipe &pi = device_impl->get_device_class()->get_pipe_by_name(obj_name.c_str(),device_impl->get_name_lower());
-			if (pi.event_subscription != 0)
-				print = true;
-		}
-		else
-		{
-			if (device_impl->get_event_intr_change_subscription() != 0)
-				print = true;
-		}
+            if (local_event_type == "data_ready")
+            {
+                if (att.event_data_ready_subscription != 0)
+                    print = true;
+            }
+            else if (local_event_type == "attr_conf")
+            {
+                if (att.event_attr_conf_subscription != 0 || att.event_attr_conf5_subscription != 0)
+                    print = true;
+            }
+            else if (local_event_type == "user_event")
+            {
+                if (att.event_user3_subscription != 0 || att.event_user4_subscription != 0 || att.event_user5_subscription != 0)
+                    print = true;
+            }
+            else if (local_event_type == "change")
+            {
+                if (att.event_change3_subscription != 0 || att.event_change4_subscription != 0 || att.event_change5_subscription != 0)
+                    print = true;
+            }
+            else if (local_event_type == "periodic")
+            {
+                if (att.event_periodic3_subscription != 0 || att.event_periodic4_subscription != 0 || att.event_periodic5_subscription != 0)
+                    print = true;
+            }
+            else if (local_event_type == "archive")
+            {
+                if (att.event_archive3_subscription != 0 || att.event_archive4_subscription != 0 || att.event_archive5_subscription != 0)
+                    print = true;
+            }
+        }
+        else if (pipe_event == true)
+        {
+            Pipe &pi = device_impl->get_device_class()->get_pipe_by_name(obj_name.c_str(),device_impl->get_name_lower());
+            if (pi.event_subscription != 0)
+                print = true;
+        }
+        else
+        {
+            if (device_impl->get_event_intr_change_subscription() != 0)
+                print = true;
+        }
 
-		if (print == true)
-			TANGO_LOG_DEBUG << "-----> Can't find event counter for event " << event_name << " in map!!!!!!!!!!" << std::endl;
+        if (print == true)
+            TANGO_LOG_DEBUG << "-----> Can't find event counter for event " << event_name << " in map!!!!!!!!!!" << std::endl;
     }
 
 
@@ -1149,185 +1149,185 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     zmq::message_t event_call_mess(event_call_cdr.bufSize());
     memcpy(event_call_mess.data(),event_call_cdr.bufPtr(),event_call_cdr.bufSize());
 
-	bool large_data = false;
-	size_t mess_size;
-	void *mess_ptr;
+    bool large_data = false;
+    size_t mess_size;
+    void *mess_ptr;
     zmq::message_t data_mess;
 //
 // We will need this std::future object only for sending a large data.
 // In other cases it has invalid state and shouldn't be used.
 //
-	std::future<void> large_message_future;
+    std::future<void> large_message_future;
 
 
-	if (ev_value.zmq_mess != NULL)
-	{
+    if (ev_value.zmq_mess != NULL)
+    {
 
 //
 // It's a forwarded attribute, therefore, use the already marshalled message
 //
 
-		mess_ptr = ev_value.zmq_mess->data();
-		mess_size = ev_value.zmq_mess->size();
+        mess_ptr = ev_value.zmq_mess->data();
+        mess_size = ev_value.zmq_mess->size();
 
-		data_mess.move(*(ev_value.zmq_mess));
-	}
-	else
-	{
+        data_mess.move(*(ev_value.zmq_mess));
+    }
+    else
+    {
 
 //
 // Marshall the event data
 //
 
-		CORBA::ULong padding = 0XDEC0DEC0UL;
-		data_call_cdr.rewindPtrs();
+        CORBA::ULong padding = 0XDEC0DEC0UL;
+        data_call_cdr.rewindPtrs();
 
-		padding >>= data_call_cdr;
-		padding >>= data_call_cdr;
+        padding >>= data_call_cdr;
+        padding >>= data_call_cdr;
 
-		if (except == NULL)
-		{
-			if (ev_value.attr_val != NULL)
-			{
-				*(ev_value.attr_val) >>= data_call_cdr;
-			}
-			else if (ev_value.attr_val_3 != NULL)
-			{
-				*(ev_value.attr_val_3) >>= data_call_cdr;
-			}
-			else if (ev_value.attr_val_4 != NULL)
-			{
+        if (except == NULL)
+        {
+            if (ev_value.attr_val != NULL)
+            {
+                *(ev_value.attr_val) >>= data_call_cdr;
+            }
+            else if (ev_value.attr_val_3 != NULL)
+            {
+                *(ev_value.attr_val_3) >>= data_call_cdr;
+            }
+            else if (ev_value.attr_val_4 != NULL)
+            {
 
 //
 // Get number of data exchanged by this event. If this value is greater than a threshold, set a flag
 // In such a case, we will use ZMQ no-copy message call
 //
 
-				*(ev_value.attr_val_4) >>= data_call_cdr;
+                *(ev_value.attr_val_4) >>= data_call_cdr;
 
-				mess_ptr = data_call_cdr.bufPtr();
-				mess_ptr = (char *)mess_ptr + (sizeof(CORBA::Long) << 1);
+                mess_ptr = data_call_cdr.bufPtr();
+                mess_ptr = (char *)mess_ptr + (sizeof(CORBA::Long) << 1);
 
-				int nb_data;
-				int data_discr = ((int *)mess_ptr)[0];
+                int nb_data;
+                int data_discr = ((int *)mess_ptr)[0];
 
-				if (data_discr == ATT_ENCODED)
-				{
-					const DevVarEncodedArray &dvea = ev_value.attr_val_4->value.encoded_att_value();
-					nb_data = dvea.length();
-					if (nb_data > LARGE_DATA_THRESHOLD_ENCODED)
-						large_data = true;
-				}
-				else if (data_discr == ATT_NO_DATA)
-				{
-					nb_data = 0;
-				}
-				else
-				{
-					nb_data = ((int *)mess_ptr)[1];
-					if (nb_data >= LARGE_DATA_THRESHOLD)
-						large_data = true;
-				}
-			}
-			else if (ev_value.attr_val_5 != NULL)
-			{
-//
-// Get number of data exchanged by this event. If this value is greater than a threshold, set a flag
-// In such a case, we will use ZMQ no-copy message call
-//
-
-				*(ev_value.attr_val_5) >>= data_call_cdr;
-
-				mess_ptr = data_call_cdr.bufPtr();
-				mess_ptr = (char *)mess_ptr + (sizeof(CORBA::Long) << 1);
-
-				int nb_data;
-				int data_discr = ((int *)mess_ptr)[0];
-
-				if (data_discr == ATT_ENCODED)
-				{
-					const DevVarEncodedArray &dvea = ev_value.attr_val_5->value.encoded_att_value();
-					nb_data = dvea.length();
-					if (nb_data > LARGE_DATA_THRESHOLD_ENCODED)
-						large_data = true;
-				}
-				else if (data_discr == ATT_NO_DATA)
-				{
+                if (data_discr == ATT_ENCODED)
+                {
+                    const DevVarEncodedArray &dvea = ev_value.attr_val_4->value.encoded_att_value();
+                    nb_data = dvea.length();
+                    if (nb_data > LARGE_DATA_THRESHOLD_ENCODED)
+                        large_data = true;
+                }
+                else if (data_discr == ATT_NO_DATA)
+                {
                     nb_data = 0;
-				}
-				else
-				{
-					nb_data = ((int *)mess_ptr)[1];
-					if (nb_data >= LARGE_DATA_THRESHOLD)
-						large_data = true;
-				}
-			}
-			else if (ev_value.attr_conf_2 != NULL)
-			{
-				*(ev_value.attr_conf_2) >>= data_call_cdr;
-			}
-			else if (ev_value.attr_conf_3 != NULL)
-			{
-				*(ev_value.attr_conf_3) >>= data_call_cdr;
-			}
-			else if (ev_value.attr_conf_5 != NULL)
-			{
-				*(ev_value.attr_conf_5) >>= data_call_cdr;
-			}
-			else if (ev_value.attr_dat_ready != NULL)
-			{
-				*(ev_value.attr_dat_ready) >>= data_call_cdr;
-			}
-			else if (ev_value.pipe_val != NULL)
-			{
-				size_t nb_data = get_blob_data_nb(ev_value.pipe_val->data_blob.blob_data);
-				if (nb_data >= LARGE_DATA_THRESHOLD)
-					large_data = true;
+                }
+                else
+                {
+                    nb_data = ((int *)mess_ptr)[1];
+                    if (nb_data >= LARGE_DATA_THRESHOLD)
+                        large_data = true;
+                }
+            }
+            else if (ev_value.attr_val_5 != NULL)
+            {
+//
+// Get number of data exchanged by this event. If this value is greater than a threshold, set a flag
+// In such a case, we will use ZMQ no-copy message call
+//
 
-				*(ev_value.pipe_val) >>= data_call_cdr;
-			}
-			else
-			{
-				*(ev_value.dev_intr_change) >>= data_call_cdr;
-			}
-		}
-		else
-		{
-			except->errors >>= data_call_cdr;
-		}
+                *(ev_value.attr_val_5) >>= data_call_cdr;
+
+                mess_ptr = data_call_cdr.bufPtr();
+                mess_ptr = (char *)mess_ptr + (sizeof(CORBA::Long) << 1);
+
+                int nb_data;
+                int data_discr = ((int *)mess_ptr)[0];
+
+                if (data_discr == ATT_ENCODED)
+                {
+                    const DevVarEncodedArray &dvea = ev_value.attr_val_5->value.encoded_att_value();
+                    nb_data = dvea.length();
+                    if (nb_data > LARGE_DATA_THRESHOLD_ENCODED)
+                        large_data = true;
+                }
+                else if (data_discr == ATT_NO_DATA)
+                {
+                    nb_data = 0;
+                }
+                else
+                {
+                    nb_data = ((int *)mess_ptr)[1];
+                    if (nb_data >= LARGE_DATA_THRESHOLD)
+                        large_data = true;
+                }
+            }
+            else if (ev_value.attr_conf_2 != NULL)
+            {
+                *(ev_value.attr_conf_2) >>= data_call_cdr;
+            }
+            else if (ev_value.attr_conf_3 != NULL)
+            {
+                *(ev_value.attr_conf_3) >>= data_call_cdr;
+            }
+            else if (ev_value.attr_conf_5 != NULL)
+            {
+                *(ev_value.attr_conf_5) >>= data_call_cdr;
+            }
+            else if (ev_value.attr_dat_ready != NULL)
+            {
+                *(ev_value.attr_dat_ready) >>= data_call_cdr;
+            }
+            else if (ev_value.pipe_val != NULL)
+            {
+                size_t nb_data = get_blob_data_nb(ev_value.pipe_val->data_blob.blob_data);
+                if (nb_data >= LARGE_DATA_THRESHOLD)
+                    large_data = true;
+
+                *(ev_value.pipe_val) >>= data_call_cdr;
+            }
+            else
+            {
+                *(ev_value.dev_intr_change) >>= data_call_cdr;
+            }
+        }
+        else
+        {
+            except->errors >>= data_call_cdr;
+        }
 
 
-		if (pipe_event == false)
-		{
-			mess_size = data_call_cdr.bufSize() - sizeof(CORBA::Long);
-			mess_ptr = (char *)data_call_cdr.bufPtr() + sizeof(CORBA::Long);
-		}
-		else
-		{
-			mess_size = data_call_cdr.bufSize();
-			mess_ptr = (char *)data_call_cdr.bufPtr();
-		}
+        if (pipe_event == false)
+        {
+            mess_size = data_call_cdr.bufSize() - sizeof(CORBA::Long);
+            mess_ptr = (char *)data_call_cdr.bufPtr() + sizeof(CORBA::Long);
+        }
+        else
+        {
+            mess_size = data_call_cdr.bufSize();
+            mess_ptr = (char *)data_call_cdr.bufPtr();
+        }
 
 //
 // For event with small amount of data, use memcpy to initialize the zmq message. For large amount of data, use
 // zmq message with no-copy option
 //
 
-		if (large_data == true)
-		{
-			std::promise<void> *large_message_promise = new std::promise<void>();
-			large_message_future = large_message_promise->get_future();
+        if (large_data == true)
+        {
+            std::promise<void> *large_message_promise = new std::promise<void>();
+            large_message_future = large_message_promise->get_future();
 //
 // We pass ownership of large_message_promise to tg_unlock function.
 //
-			data_mess.rebuild(mess_ptr,mess_size,tg_unlock,(void *)large_message_promise);
-		}
-		else
-		{
-			data_mess.rebuild(mess_size);
-			memcpy(data_mess.data(),mess_ptr,mess_size);
-		}
-	}
+            data_mess.rebuild(mess_ptr,mess_size,tg_unlock,(void *)large_message_promise);
+        }
+        else
+        {
+            data_mess.rebuild(mess_size);
+            memcpy(data_mess.data(),mess_ptr,mess_size);
+        }
+    }
 
 //
 // Send the data
@@ -1378,190 +1378,190 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 // Get publisher socket (multicast case)
 //
 
-		int send_nb = 1;
-		zmq::socket_t *pub;
-		pub = event_pub_sock;
+        int send_nb = 1;
+        zmq::socket_t *pub;
+        pub = event_pub_sock;
 
-		zmq::message_t *name_mess_ptr = &name_mess;
-		zmq::message_t *endian_mess_ptr = &endian_mess;
-		zmq::message_t *event_call_mess_ptr = &event_call_mess;
-		zmq::message_t *data_mess_ptr = &data_mess;
+        zmq::message_t *name_mess_ptr = &name_mess;
+        zmq::message_t *endian_mess_ptr = &endian_mess;
+        zmq::message_t *event_call_mess_ptr = &event_call_mess;
+        zmq::message_t *data_mess_ptr = &data_mess;
 
-		std::map<std::string,McastSocketPub>::iterator mcast_ite;
-		std::map<std::string,McastSocketPub>::iterator mcast_ite_end = event_mcast.end();
+        std::map<std::string,McastSocketPub>::iterator mcast_ite;
+        std::map<std::string,McastSocketPub>::iterator mcast_ite_end = event_mcast.end();
 
-		int local_double_send = double_send;
-		bool mcast_event = false;
+        int local_double_send = double_send;
+        bool mcast_event = false;
 
-		if (event_mcast.empty() == false)
-		{
-			if ((mcast_ite = event_mcast.find(event_name)) != mcast_ite_end)
-			{
-				if (mcast_ite->second.local_client == false)
-				{
-					pub = mcast_ite->second.pub_socket;
-				}
-				else
-				{
-					if (mcast_ite->second.pub_socket != NULL)
-					{
-						send_nb = 2;
-						pub = mcast_ite->second.pub_socket;
-					}
-				}
-				if (mcast_ite->second.double_send == true)
-					local_double_send++;
-				mcast_ite->second.double_send = false;
-				mcast_event = true;
-			}
-		}
+        if (event_mcast.empty() == false)
+        {
+            if ((mcast_ite = event_mcast.find(event_name)) != mcast_ite_end)
+            {
+                if (mcast_ite->second.local_client == false)
+                {
+                    pub = mcast_ite->second.pub_socket;
+                }
+                else
+                {
+                    if (mcast_ite->second.pub_socket != NULL)
+                    {
+                        send_nb = 2;
+                        pub = mcast_ite->second.pub_socket;
+                    }
+                }
+                if (mcast_ite->second.double_send == true)
+                    local_double_send++;
+                mcast_ite->second.double_send = false;
+                mcast_event = true;
+            }
+        }
 
-		if (local_double_send > 0)
-		{
-			send_nb = 2;
-			if (mcast_event == false)
-				double_send--;
-		}
+        if (local_double_send > 0)
+        {
+            send_nb = 2;
+            if (mcast_event == false)
+                double_send--;
+        }
 
 //
 // If we have a multicast socket with also a local client we are obliged to send two times the messages.
 // ZMQ does not support local client with PGM socket
 //
 
-		zmq::message_t name_mess_cpy;
-		zmq::message_t event_call_mess_cpy;
-		zmq::message_t data_mess_cpy;
+        zmq::message_t name_mess_cpy;
+        zmq::message_t event_call_mess_cpy;
+        zmq::message_t data_mess_cpy;
 
-		if (send_nb == 2)
-		{
-			name_mess_cpy.copy(name_mess);
-			event_call_mess_cpy.copy(event_call_mess);
-			data_mess_cpy.copy(data_mess);
-		}
+        if (send_nb == 2)
+        {
+            name_mess_cpy.copy(name_mess);
+            event_call_mess_cpy.copy(event_call_mess);
+            data_mess_cpy.copy(data_mess);
+        }
 
-		while(send_nb > 0)
-		{
+        while(send_nb > 0)
+        {
 
 //
 // Push the event
 //
 
-			auto ret = pub->send(*name_mess_ptr,zmq::send_flags::sndmore);
-			if (!ret)
-			{
-				std::cerr << "Name message returned false, assertion!!!!" << std::endl;
-				TANGO_ASSERT(false);
-			}
+            auto ret = pub->send(*name_mess_ptr,zmq::send_flags::sndmore);
+            if (!ret)
+            {
+                std::cerr << "Name message returned false, assertion!!!!" << std::endl;
+                TANGO_ASSERT(false);
+            }
 
-			ret = pub->send(*endian_mess_ptr,zmq::send_flags::sndmore);
-			if (!ret)
-			{
-				std::cerr << "Endian message returned false, assertion!!!!" << std::endl;
-				TANGO_ASSERT(false);
-			}
-			endian_mess_sent = true;
+            ret = pub->send(*endian_mess_ptr,zmq::send_flags::sndmore);
+            if (!ret)
+            {
+                std::cerr << "Endian message returned false, assertion!!!!" << std::endl;
+                TANGO_ASSERT(false);
+            }
+            endian_mess_sent = true;
 
-			ret = pub->send(*event_call_mess_ptr,zmq::send_flags::sndmore);
-			if (!ret)
-			{
-				std::cerr << "Call message returned false, assertion!!!!" << std::endl;
-				TANGO_ASSERT(false);
-			}
+            ret = pub->send(*event_call_mess_ptr,zmq::send_flags::sndmore);
+            if (!ret)
+            {
+                std::cerr << "Call message returned false, assertion!!!!" << std::endl;
+                TANGO_ASSERT(false);
+            }
 
-			ret = pub->send(*data_mess_ptr,zmq::send_flags::none);
-			if (!ret)
-			{
-				std::cerr << "Data message returned false, assertion!!!!" << std::endl;
-				TANGO_ASSERT(false);
-			}
+            ret = pub->send(*data_mess_ptr,zmq::send_flags::none);
+            if (!ret)
+            {
+                std::cerr << "Data message returned false, assertion!!!!" << std::endl;
+                TANGO_ASSERT(false);
+            }
 
-			send_nb--;
-			if (send_nb == 1)
-			{
+            send_nb--;
+            if (send_nb == 1)
+            {
 
-				if ((event_mcast.empty() == false) && (mcast_ite != mcast_ite_end))
-				{
+                if ((event_mcast.empty() == false) && (mcast_ite != mcast_ite_end))
+                {
 
 //
 // Case of multicast socket with a local client. Send the event also on the local socket
 //
 
-					if (mcast_ite->second.local_client == true)
-					{
-						zmq::socket_t *old_pub = pub;
-						pub = event_pub_sock;
+                    if (mcast_ite->second.local_client == true)
+                    {
+                        zmq::socket_t *old_pub = pub;
+                        pub = event_pub_sock;
 
-						name_mess.copy(name_mess_cpy);
-						endian_mess.copy(endian_mess_2);
-						event_call_mess.copy(event_call_mess_cpy);
-						data_mess.copy(data_mess_cpy);
+                        name_mess.copy(name_mess_cpy);
+                        endian_mess.copy(endian_mess_2);
+                        event_call_mess.copy(event_call_mess_cpy);
+                        data_mess.copy(data_mess_cpy);
 
-						pub->send(*name_mess_ptr,zmq::send_flags::sndmore);
-						pub->send(*endian_mess_ptr,zmq::send_flags::sndmore);
-						endian_mess_sent = true;
-						pub->send(*event_call_mess_ptr,zmq::send_flags::sndmore);
-						pub->send(*data_mess_ptr,zmq::send_flags::none);
+                        pub->send(*name_mess_ptr,zmq::send_flags::sndmore);
+                        pub->send(*endian_mess_ptr,zmq::send_flags::sndmore);
+                        endian_mess_sent = true;
+                        pub->send(*event_call_mess_ptr,zmq::send_flags::sndmore);
+                        pub->send(*data_mess_ptr,zmq::send_flags::none);
 
-						pub = old_pub;
+                        pub = old_pub;
 
-						name_mess_ptr = &name_mess_cpy;
-						endian_mess.copy(endian_mess_2);
-						event_call_mess_ptr = &event_call_mess_cpy;
-						data_mess_ptr = &data_mess_cpy;
-					}
-					else
-					{
-						name_mess_ptr = &name_mess_cpy;
-						endian_mess.copy(endian_mess_2);
-						event_call_mess_ptr = &event_call_mess_cpy;
-						data_mess_ptr = &data_mess_cpy;
-					}
-				}
+                        name_mess_ptr = &name_mess_cpy;
+                        endian_mess.copy(endian_mess_2);
+                        event_call_mess_ptr = &event_call_mess_cpy;
+                        data_mess_ptr = &data_mess_cpy;
+                    }
+                    else
+                    {
+                        name_mess_ptr = &name_mess_cpy;
+                        endian_mess.copy(endian_mess_2);
+                        event_call_mess_ptr = &event_call_mess_cpy;
+                        data_mess_ptr = &data_mess_cpy;
+                    }
+                }
 
-				name_mess_ptr = &name_mess_cpy;
-				endian_mess.copy(endian_mess_2);
-				event_call_mess_ptr = &event_call_mess_cpy;
-				data_mess_ptr = &data_mess_cpy;
-			}
-		}
+                name_mess_ptr = &name_mess_cpy;
+                endian_mess.copy(endian_mess_2);
+                event_call_mess_ptr = &event_call_mess_cpy;
+                data_mess_ptr = &data_mess_cpy;
+            }
+        }
 
 //
 // Increment event counter if required
 //
 
-		if (ev_cptr_ite != event_cptr.end() && inc_cptr == true)
-			ev_cptr_ite->second++;
+        if (ev_cptr_ite != event_cptr.end() && inc_cptr == true)
+            ev_cptr_ite->second++;
 
 //
 // For reference counting on zmq messages which do not have a local scope
 //
 
-		endian_mess.copy(endian_mess_2);
+        endian_mess.copy(endian_mess_2);
 
 //
 // wait for data to be acyually sent (ZMQ no copy mode)
 //
-		if (large_data)
-		{
-			large_message_future.wait();
+        if (large_data)
+        {
+            large_message_future.wait();
         }
-	}
-	catch(...)
-	{
-		TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event() failed !!!!!!!!!!!\n";
-		if (endian_mess_sent == true)
-			endian_mess.copy(endian_mess_2);
+    }
+    catch(...)
+    {
+        TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event() failed !!!!!!!!!!!\n";
+        if (endian_mess_sent == true)
+            endian_mess.copy(endian_mess_2);
 
-		TangoSys_OMemStream o;
-		o << "Can't push ZMQ event for event ";
-		o << event_name;
-		if (zmq_errno() != 0)
-			o << "\nZmq error: " << zmq_strerror(zmq_errno()) << std::ends;
-		else
-			o << std::ends;
+        TangoSys_OMemStream o;
+        o << "Can't push ZMQ event for event ";
+        o << event_name;
+        if (zmq_errno() != 0)
+            o << "\nZmq error: " << zmq_strerror(zmq_errno()) << std::ends;
+        else
+            o << std::ends;
 
-		TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
-	}
+        TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
+    }
 
 }
 
@@ -1597,7 +1597,7 @@ ZmqEventSupplier::create_full_event_name(DeviceImpl *device_impl,
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::update_connected_client
+//        ZmqEventSupplier::update_connected_client
 //
 // description :
 //
@@ -1661,20 +1661,20 @@ bool ZmqEventSupplier::update_connected_client(client_addr *cl)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::push_event_loop()
+//        ZmqEventSupplier::push_event_loop()
 //
 // description :
-//		Method to send the event in a loop due to possible different client release (event compatibility)
+//        Method to send the event in a loop due to possible different client release (event compatibility)
 //
 // argument :
-//		in :
-//			- device_impl : The device
-//			- event_type : The event type (change, periodic....)
-//			- filterable_names :
-//			- filterable_data :
-//			- attr_value : The attribute value
-//			- att : The attribute object reference
-//			- except : The exception thrown during the last attribute reading. NULL if no exception
+//        in :
+//            - device_impl : The device
+//            - event_type : The event type (change, periodic....)
+//            - filterable_names :
+//            - filterable_data :
+//            - attr_value : The attribute value
+//            - att : The attribute object reference
+//            - except : The exception thrown during the last attribute reading. NULL if no exception
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1683,20 +1683,20 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,EventType event_t
             TANGO_UNUSED(const std::vector<std::string> &filterable_names_lg),TANGO_UNUSED(const std::vector<long> &filterable_data_lg),
             const struct SuppliedEventData &attr_value,Attribute &att,DevFailed *except)
 {
-	TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event_loop(): called for attribute " << att.get_name() << std::endl;
+    TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event_loop(): called for attribute " << att.get_name() << std::endl;
 
-	std::vector<int> &client_libs = att.get_client_lib(event_type);
-	std::vector<int>::iterator ite;
-	std::string ev_name = EventName[event_type];
-	bool inc_ctr = true;
+    std::vector<int> &client_libs = att.get_client_lib(event_type);
+    std::vector<int>::iterator ite;
+    std::string ev_name = EventName[event_type];
+    bool inc_ctr = true;
 
-	for (ite = client_libs.begin();ite != client_libs.end();++ite)
-	{
-		bool need_free = false;
-		bool name_changed = false;
+    for (ite = client_libs.begin();ite != client_libs.end();++ite)
+    {
+        bool need_free = false;
+        bool name_changed = false;
 
-		struct SuppliedEventData sent_value;
-		::memset(&sent_value,0,sizeof(sent_value));
+        struct SuppliedEventData sent_value;
+        ::memset(&sent_value,0,sizeof(sent_value));
 
         if (*ite == 5)
         {
@@ -1728,191 +1728,191 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,EventType event_t
             }
         }
 
-		push_event(device_impl,
-			   ev_name,
-			   filterable_names,
-			   filterable_data,
-			   filterable_names_lg,
-			   filterable_data_lg,
-			   sent_value,
-			   att.get_name_lower(),
-			   except,
-			   inc_ctr);
+        push_event(device_impl,
+               ev_name,
+               filterable_names,
+               filterable_data,
+               filterable_names_lg,
+               filterable_data_lg,
+               sent_value,
+               att.get_name_lower(),
+               except,
+               inc_ctr);
 
-		inc_ctr = false;
-		if (need_free == true)
-		{
-			if (sent_value.attr_val_5 != NULL)
-				delete sent_value.attr_val_5;
-			else if (sent_value.attr_val_4 != NULL)
-				delete sent_value.attr_val_4;
-			else if (sent_value.attr_val_3 != NULL)
-				delete sent_value.attr_val_3;
-			else
-				delete sent_value.attr_val;
-		}
-		if (name_changed == true)
-			ev_name = EventName[event_type];
-	}
+        inc_ctr = false;
+        if (need_free == true)
+        {
+            if (sent_value.attr_val_5 != NULL)
+                delete sent_value.attr_val_5;
+            else if (sent_value.attr_val_4 != NULL)
+                delete sent_value.attr_val_4;
+            else if (sent_value.attr_val_3 != NULL)
+                delete sent_value.attr_val_3;
+            else
+                delete sent_value.attr_val;
+        }
+        if (name_changed == true)
+            ev_name = EventName[event_type];
+    }
 
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::get_blob_data_elt()
+//        ZmqEventSupplier::get_blob_data_elt()
 //
 // description :
-//		Get how many data are transferred in the blob given as parameter. For instance, for a blob transporting
-//		one array of 1000 double, the returned value will be 1000
+//        Get how many data are transferred in the blob given as parameter. For instance, for a blob transporting
+//        one array of 1000 double, the returned value will be 1000
 //
 // argument :
-//		in :
-//			- dvpdea : The sequence of data element in the blob
+//        in :
+//            - dvpdea : The sequence of data element in the blob
 //
 // return :
-//		Size (in number of data) of the data blob
+//        Size (in number of data) of the data blob
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 size_t ZmqEventSupplier::get_blob_data_nb(DevVarPipeDataEltArray &dvpdea)
 {
-	size_t ret = 0;
+    size_t ret = 0;
 
-	size_t nb_blob = dvpdea.length();
-	for (size_t loop = 0;loop < nb_blob;loop++)
-	{
-		ret = ret + get_data_elt_data_nb(dvpdea[loop]);
-	}
+    size_t nb_blob = dvpdea.length();
+    for (size_t loop = 0;loop < nb_blob;loop++)
+    {
+        ret = ret + get_data_elt_data_nb(dvpdea[loop]);
+    }
 
-	return ret;
+    return ret;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ZmqEventSupplier::get_data_elt_data_nb()
+//        ZmqEventSupplier::get_data_elt_data_nb()
 //
 // description :
-//		Get how many data are transferred in the data element given as parameter. For instance, for a data element
-//		transporting one array of 250 floats, the returned value will be 250
+//        Get how many data are transferred in the data element given as parameter. For instance, for a data element
+//        transporting one array of 250 floats, the returned value will be 250
 //
 // argument :
-//		in :
-//			- dvde : The data element
+//        in :
+//            - dvde : The data element
 //
 // return :
-//		Size (in number of data) of the data element
+//        Size (in number of data) of the data element
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 size_t ZmqEventSupplier::get_data_elt_data_nb(DevPipeDataElt &dvde)
 {
-	size_t ret = 0;
+    size_t ret = 0;
 
-	if (dvde.inner_blob.length() != 0)
-		ret = get_blob_data_nb(dvde.inner_blob);
-	else
-	{
-		switch (dvde.value._d())
-		{
-			case ATT_BOOL:
-			{
-				const DevVarBooleanArray &dvba = dvde.value.bool_att_value();
-				ret = dvba.length();
-			}
-			break;
+    if (dvde.inner_blob.length() != 0)
+        ret = get_blob_data_nb(dvde.inner_blob);
+    else
+    {
+        switch (dvde.value._d())
+        {
+            case ATT_BOOL:
+            {
+                const DevVarBooleanArray &dvba = dvde.value.bool_att_value();
+                ret = dvba.length();
+            }
+            break;
 
-			case ATT_SHORT:
-			{
-				const DevVarShortArray &dvsa = dvde.value.short_att_value();
-				ret = dvsa.length();
-			}
-			break;
+            case ATT_SHORT:
+            {
+                const DevVarShortArray &dvsa = dvde.value.short_att_value();
+                ret = dvsa.length();
+            }
+            break;
 
-			case ATT_LONG:
-			{
-				const DevVarLongArray &dvla = dvde.value.long_att_value();
-				ret = dvla.length();
-			}
-			break;
+            case ATT_LONG:
+            {
+                const DevVarLongArray &dvla = dvde.value.long_att_value();
+                ret = dvla.length();
+            }
+            break;
 
-			case ATT_LONG64:
-			{
-				const DevVarLong64Array &dvlo64 = dvde.value.long64_att_value();
-				ret = dvlo64.length();
-			}
-			break;
+            case ATT_LONG64:
+            {
+                const DevVarLong64Array &dvlo64 = dvde.value.long64_att_value();
+                ret = dvlo64.length();
+            }
+            break;
 
-			case ATT_FLOAT:
-			{
-				const DevVarFloatArray &dvfa = dvde.value.float_att_value();
-				ret = dvfa.length();
-			}
-			break;
+            case ATT_FLOAT:
+            {
+                const DevVarFloatArray &dvfa = dvde.value.float_att_value();
+                ret = dvfa.length();
+            }
+            break;
 
-			case ATT_DOUBLE:
-			{
-				const DevVarDoubleArray &dvda = dvde.value.double_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_DOUBLE:
+            {
+                const DevVarDoubleArray &dvda = dvde.value.double_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_UCHAR:
-			{
-				const DevVarCharArray &dvda = dvde.value.uchar_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_UCHAR:
+            {
+                const DevVarCharArray &dvda = dvde.value.uchar_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_USHORT:
-			{
-				const DevVarUShortArray &dvda = dvde.value.ushort_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_USHORT:
+            {
+                const DevVarUShortArray &dvda = dvde.value.ushort_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_ULONG:
-			{
-				const DevVarULongArray &dvda = dvde.value.ulong_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_ULONG:
+            {
+                const DevVarULongArray &dvda = dvde.value.ulong_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_ULONG64:
-			{
-				const DevVarULong64Array &dvda = dvde.value.ulong64_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_ULONG64:
+            {
+                const DevVarULong64Array &dvda = dvde.value.ulong64_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_STRING:
-			{
-				const DevVarStringArray &dvda = dvde.value.string_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_STRING:
+            {
+                const DevVarStringArray &dvda = dvde.value.string_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_STATE:
-			{
-				const DevVarStateArray &dvda = dvde.value.state_att_value();
-				ret = dvda.length();
-			}
-			break;
+            case ATT_STATE:
+            {
+                const DevVarStateArray &dvda = dvde.value.state_att_value();
+                ret = dvda.length();
+            }
+            break;
 
-			case ATT_ENCODED:
-			{
-				const DevVarEncodedArray &dvda = dvde.value.encoded_att_value();
-				ret = dvda[0].encoded_data.length();
-			}
-			break;
+            case ATT_ENCODED:
+            {
+                const DevVarEncodedArray &dvda = dvde.value.encoded_att_value();
+                ret = dvda[0].encoded_data.length();
+            }
+            break;
 
-			default:
+            default:
       TANGO_THROW_ON_DEFAULT(dvde.value._d());
-		}
-	}
+        }
+    }
 
-	return ret;
+    return ret;
 }
 
 } /* End of Tango namespace */

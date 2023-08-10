@@ -1,5 +1,5 @@
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -42,8 +42,8 @@ namespace Tango{
 class t_property
 {
 public:
-	std::string 				name;
-	std::vector<std::string> 	value;
+    std::string                 name;
+    std::vector<std::string>     value;
 
 };
 
@@ -51,43 +51,43 @@ public:
 class t_attribute_property
 {
 public:
-	std::string 				attribute_name;
-	std::vector<t_property*> 	properties;
+    std::string                 attribute_name;
+    std::vector<t_property*>     properties;
 };
 
 
 class t_device
 {
 public:
-	std::string 						name;
-	std::vector<t_property*> 			properties;
-	std::vector<t_attribute_property*> 	attribute_properties;
+    std::string                         name;
+    std::vector<t_property*>             properties;
+    std::vector<t_attribute_property*>     attribute_properties;
 };
 
 class t_tango_class
 {
 public:
-	std::string 						name;
-	std::string 						description;
-	std::string 						title;
-	std::vector<t_device*> 				devices;
-	std::vector<t_property*> 			properties;
-	std::vector<t_attribute_property*> 	attribute_properties;
+    std::string                         name;
+    std::string                         description;
+    std::string                         title;
+    std::vector<t_device*>                 devices;
+    std::vector<t_property*>             properties;
+    std::vector<t_attribute_property*>     attribute_properties;
 };
 
 
 class t_server
 {
 public:
-	std::string 					name;
-	std::string 					instance_name;
-	std::vector<t_tango_class*> 	classes;
-	std::vector<t_device*> 			devices;
+    std::string                     name;
+    std::string                     instance_name;
+    std::vector<t_tango_class*>     classes;
+    std::vector<t_device*>             devices;
 };
 
 template <class T> class hasName
 {
-    std::string 		name;
+    std::string         name;
 public:
     hasName (std::string _name) : name(_name) {}
     bool operator () (T* obj);
@@ -95,7 +95,7 @@ public:
 
 template <class T> class hasAttributeName
 {
-    std::string 		attribute_name;
+    std::string         attribute_name;
 public:
     hasAttributeName (std::string _name) : attribute_name(_name) {}
     bool operator () (T* obj);
@@ -105,9 +105,9 @@ class FileDatabaseExt
 {
 public:
 
-	FileDatabaseExt();
+    FileDatabaseExt();
 
-	~FileDatabaseExt();
+    ~FileDatabaseExt();
 
 };
 
@@ -115,95 +115,95 @@ public:
 class FileDatabase
 {
 public:
-	FileDatabase(const std::string& file_name);
-	~FileDatabase();
-	std::string  parse_res_file(const std::string& file_name);
-	void display();
-	std::string get_display();
-	void write_event_channel_ior(const std::string &);
+    FileDatabase(const std::string& file_name);
+    ~FileDatabase();
+    std::string  parse_res_file(const std::string& file_name);
+    void display();
+    std::string get_display();
+    void write_event_channel_ior(const std::string &);
 
 
-	CORBA::Any*      DbInfo(CORBA::Any&);
-	CORBA::Any*      DbImportDevice(CORBA::Any&);
-	CORBA::Any*      DbExportDevice(CORBA::Any&);
-	CORBA::Any*      DbUnExportDevice(CORBA::Any&);
-	CORBA::Any*      DbAddDevice(CORBA::Any&);
-	CORBA::Any*      DbDeleteDevice(CORBA::Any&);
-	CORBA::Any*      DbAddServer(CORBA::Any&);
-	CORBA::Any*      DbDeleteServer(CORBA::Any&);
-	CORBA::Any*      DbExportServer(CORBA::Any&);
-	CORBA::Any*      DbUnExportServer(CORBA::Any&);
-	CORBA::Any*      DbGetServerInfo(CORBA::Any&);
+    CORBA::Any*      DbInfo(CORBA::Any&);
+    CORBA::Any*      DbImportDevice(CORBA::Any&);
+    CORBA::Any*      DbExportDevice(CORBA::Any&);
+    CORBA::Any*      DbUnExportDevice(CORBA::Any&);
+    CORBA::Any*      DbAddDevice(CORBA::Any&);
+    CORBA::Any*      DbDeleteDevice(CORBA::Any&);
+    CORBA::Any*      DbAddServer(CORBA::Any&);
+    CORBA::Any*      DbDeleteServer(CORBA::Any&);
+    CORBA::Any*      DbExportServer(CORBA::Any&);
+    CORBA::Any*      DbUnExportServer(CORBA::Any&);
+    CORBA::Any*      DbGetServerInfo(CORBA::Any&);
 
-	CORBA::Any*      DbGetDeviceProperty(CORBA::Any&);
-	CORBA::Any*      DbPutDeviceProperty(CORBA::Any&);
-	CORBA::Any*      DbDeleteDeviceProperty(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceAttributeProperty(CORBA::Any&);
-	CORBA::Any*      DbPutDeviceAttributeProperty(CORBA::Any&);
-	CORBA::Any*      DbDeleteDeviceAttributeProperty(CORBA::Any&);
-	CORBA::Any*      DbGetClassProperty(CORBA::Any&);
-	CORBA::Any*      DbPutClassProperty(CORBA::Any&);
-	CORBA::Any*      DbDeleteClassProperty(CORBA::Any&);
-	CORBA::Any*      DbGetClassAttributeProperty(CORBA::Any&);
-	CORBA::Any*      DbPutClassAttributeProperty(CORBA::Any&);
-	CORBA::Any*      DbDeleteClassAttributeProperty(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceList(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceProperty(CORBA::Any&);
+    CORBA::Any*      DbPutDeviceProperty(CORBA::Any&);
+    CORBA::Any*      DbDeleteDeviceProperty(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceAttributeProperty(CORBA::Any&);
+    CORBA::Any*      DbPutDeviceAttributeProperty(CORBA::Any&);
+    CORBA::Any*      DbDeleteDeviceAttributeProperty(CORBA::Any&);
+    CORBA::Any*      DbGetClassProperty(CORBA::Any&);
+    CORBA::Any*      DbPutClassProperty(CORBA::Any&);
+    CORBA::Any*      DbDeleteClassProperty(CORBA::Any&);
+    CORBA::Any*      DbGetClassAttributeProperty(CORBA::Any&);
+    CORBA::Any*      DbPutClassAttributeProperty(CORBA::Any&);
+    CORBA::Any*      DbDeleteClassAttributeProperty(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceList(CORBA::Any&);
 
-	CORBA::Any*      DbGetDeviceDomainList(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceMemberList(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceExportedList(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceFamilyList(CORBA::Any&);
-	CORBA::Any*      DbGetProperty(CORBA::Any&);
-	CORBA::Any*      DbPutProperty(CORBA::Any&);
-	CORBA::Any*      DbDeleteProperty(CORBA::Any&);
-	CORBA::Any*      DbGetAliasDevice(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceAlias(CORBA::Any&);
-	CORBA::Any*      DbGetAttributeAlias(CORBA::Any&);
-	CORBA::Any*      DbGetDeviceAliasList(CORBA::Any&);
-	CORBA::Any*      DbGetAttributeAliasList(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceDomainList(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceMemberList(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceExportedList(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceFamilyList(CORBA::Any&);
+    CORBA::Any*      DbGetProperty(CORBA::Any&);
+    CORBA::Any*      DbPutProperty(CORBA::Any&);
+    CORBA::Any*      DbDeleteProperty(CORBA::Any&);
+    CORBA::Any*      DbGetAliasDevice(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceAlias(CORBA::Any&);
+    CORBA::Any*      DbGetAttributeAlias(CORBA::Any&);
+    CORBA::Any*      DbGetDeviceAliasList(CORBA::Any&);
+    CORBA::Any*      DbGetAttributeAliasList(CORBA::Any&);
 
-	CORBA::Any*		 DbGetClassPipeProperty(CORBA::Any&);
-	CORBA::Any*		 DbGetDevicePipeProperty(CORBA::Any&);
-	CORBA::Any*		 DbDeleteClassPipeProperty(CORBA::Any&);
-	CORBA::Any*		 DbDeleteDevicePipeProperty(CORBA::Any&);
-	CORBA::Any* 	 DbPutClassPipeProperty(CORBA::Any&);
-	CORBA::Any* 	 DbPutDevicePipeProperty(CORBA::Any&);
+    CORBA::Any*         DbGetClassPipeProperty(CORBA::Any&);
+    CORBA::Any*         DbGetDevicePipeProperty(CORBA::Any&);
+    CORBA::Any*         DbDeleteClassPipeProperty(CORBA::Any&);
+    CORBA::Any*         DbDeleteDevicePipeProperty(CORBA::Any&);
+    CORBA::Any*      DbPutClassPipeProperty(CORBA::Any&);
+    CORBA::Any*      DbPutDevicePipeProperty(CORBA::Any&);
 
-	void write_file();
+    void write_file();
 
 private:
-	std::string 			filename;
-	t_server 		m_server;
+    std::string             filename;
+    t_server         m_server;
 
-	void read_char(std::ifstream& f);
-	int class_lex(const std::string& word);
-	void  jump_line(std::ifstream& f);
-	void  jump_space(std::ifstream& f);
-	std::string read_word(std::ifstream& f);
-	void CHECK_LEX(int lt,int le);
-	std::vector<std::string> parse_resource_value(std::ifstream& f);
+    void read_char(std::ifstream& f);
+    int class_lex(const std::string& word);
+    void  jump_line(std::ifstream& f);
+    void  jump_space(std::ifstream& f);
+    std::string read_word(std::ifstream& f);
+    void CHECK_LEX(int lt,int le);
+    std::vector<std::string> parse_resource_value(std::ifstream& f);
 
-	std::string read_full_word(std::ifstream& f);
-	void escape_double_quote(std::string &);
+    std::string read_full_word(std::ifstream& f);
+    void escape_double_quote(std::string &);
 
 
-	static const char* lexical_word_null;
-	static const char* lexical_word_number;
-	static const char* lexical_word_string;
-	static const char* lexical_word_coma;
-	static const char* lexical_word_colon;
-	static const char* lexical_word_slash;
-	static const char* lexical_word_backslash;
-	static const char* lexical_word_arrow;
-	static int ReadBufferSize;
-	static int MaxWordLength;
+    static const char* lexical_word_null;
+    static const char* lexical_word_number;
+    static const char* lexical_word_string;
+    static const char* lexical_word_coma;
+    static const char* lexical_word_colon;
+    static const char* lexical_word_slash;
+    static const char* lexical_word_backslash;
+    static const char* lexical_word_arrow;
+    static int ReadBufferSize;
+    static int MaxWordLength;
 
-  	int 			CrtLine;
-  	int 			StartLine;
-  	char 			CurrentChar;
-  	char 			NextChar;
+      int             CrtLine;
+      int             StartLine;
+      char             CurrentChar;
+      char             NextChar;
 
-  	std::string 			word;
+      std::string             word;
 
     std::unique_ptr<FileDatabaseExt> ext;
 };

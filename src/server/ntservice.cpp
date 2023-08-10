@@ -1,5 +1,5 @@
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -37,17 +37,17 @@ static char* GetErrorText()
     char* str = 0;
     char* cstr = 0;
     rc = ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|
-		             FORMAT_MESSAGE_FROM_SYSTEM|
-		             FORMAT_MESSAGE_ARGUMENT_ARRAY,
-		             0, GetLastError(), LANG_NEUTRAL, (char*)&str, 0, 0);
+                     FORMAT_MESSAGE_FROM_SYSTEM|
+                     FORMAT_MESSAGE_ARGUMENT_ARRAY,
+                     0, GetLastError(), LANG_NEUTRAL, (char*)&str, 0, 0);
     if(str)
     {
-		cstr = Tango::string_dup(str);
-		::LocalFree((HLOCAL)str);
+        cstr = Tango::string_dup(str);
+        ::LocalFree((HLOCAL)str);
     }
     else
     {
-		cstr = Tango::string_dup("FormatMessage failed");
+        cstr = Tango::string_dup("FormatMessage failed");
     }
     return cstr;
 }
@@ -61,35 +61,35 @@ static char* GetErrorText()
 
 void NTEventLogger::emitMessage(int eventType, const char* msg)
 {
-    	const char* strings[1];
+        const char* strings[1];
 
-    	strings[0] = msg;
+        strings[0] = msg;
 
-    	::ReportEvent(eventSource_,         // handle of event source
-		      eventType,            // event type
-		      0,                    // event logger
-		      eventId_,             // event ID
-		      NULL,                 // current user's SID
-		      1,                    // strings in lpszStrings
-		      0,                    // no bytes of raw data
-		      strings,              // array of error strings
-		      NULL);                // no raw data
+        ::ReportEvent(eventSource_,         // handle of event source
+              eventType,            // event type
+              0,                    // event logger
+              eventId_,             // event ID
+              NULL,                 // current user's SID
+              1,                    // strings in lpszStrings
+              0,                    // no bytes of raw data
+              strings,              // array of error strings
+              NULL);                // no raw data
 }
 
 bool NTEventLogger::installValues(HKEY key)
 {
-	char path[512];
+    char path[512];
 
 //
 // Get path to executable.
 //
 
-	if(::GetModuleFileName(NULL, path, sizeof(path)) == 0)
-	{
-		CORBA::String_var err = GetErrorText();
-		std::cerr << "GetModuleFileName failed: " << err.in() << std::endl;
-		return false;
-   	}
+    if(::GetModuleFileName(NULL, path, sizeof(path)) == 0)
+    {
+        CORBA::String_var err = GetErrorText();
+        std::cerr << "GetModuleFileName failed: " << err.in() << std::endl;
+        return false;
+       }
 
     const char* keyname;
 
@@ -101,18 +101,18 @@ bool NTEventLogger::installValues(HKEY key)
 
     keyname = "EventMessageFile";
     if(::RegSetValueEx(key, keyname, 0,REG_SZ, (unsigned char*)path,
-		           strlen(path)+1) == ERROR_SUCCESS)
+                   strlen(path)+1) == ERROR_SUCCESS)
     {
-		DWORD supported = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE;
-		keyname = "TypesSupported";
-		if(::RegSetValueEx(key, "TypesSupported", 0, REG_DWORD,(unsigned char*)&supported,
-		                   sizeof(supported)) == ERROR_SUCCESS)
-		{
-	    		return true;
-		}
+        DWORD supported = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE;
+        keyname = "TypesSupported";
+        if(::RegSetValueEx(key, "TypesSupported", 0, REG_DWORD,(unsigned char*)&supported,
+                           sizeof(supported)) == ERROR_SUCCESS)
+        {
+                return true;
+        }
     }
 
-	CORBA::String_var err = GetErrorText();
+    CORBA::String_var err = GetErrorText();
     std::cerr << "RegSetValueEx " << keyname << " failed: " << err.in() << std::endl;
     return false;
 }
@@ -127,9 +127,9 @@ NTEventLogger::NTEventLogger(const char* service, DWORD eventId)
 {
     eventSource_ = ::RegisterEventSource(NULL, service);
     if(eventSource_ == 0)
-	{
-		TANGO_THROW_EXCEPTION(API_DatabaseAccess, "RegisterEventsource failed");
-	}
+    {
+        TANGO_THROW_EXCEPTION(API_DatabaseAccess, "RegisterEventsource failed");
+    }
 }
 
 NTEventLogger::~NTEventLogger()
@@ -148,7 +148,7 @@ bool NTEventLogger::install()
 // Constructor the key name
 //
 
-	std::string keyName ("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\");
+    std::string keyName ("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\");
     keyName += service_;
 
 //
@@ -168,15 +168,15 @@ bool NTEventLogger::install()
 //
 // Create the key
 //
-		DWORD d;
-		if(::RegCreateKeyEx(regHandle, keyName.c_str(), 0, "REG_SZ",
-			    	    REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0,
-			    	    &keyHandle, &d) != ERROR_SUCCESS)
-		{
-			CORBA::String_var err = GetErrorText();
-	    		std::cerr << "RegCreateKeyEx " << keyName.c_str() << " failed: " << err.in() << std::endl;
-	    		return false;
-		}
+        DWORD d;
+        if(::RegCreateKeyEx(regHandle, keyName.c_str(), 0, "REG_SZ",
+                        REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0,
+                        &keyHandle, &d) != ERROR_SUCCESS)
+        {
+            CORBA::String_var err = GetErrorText();
+                std::cerr << "RegCreateKeyEx " << keyName.c_str() << " failed: " << err.in() << std::endl;
+                return false;
+        }
     }
 
     bool rc = installValues(keyHandle);
@@ -194,7 +194,7 @@ NTEventLogger::uninstall()
 // Constructor the key name
 //
 
-	std::string keyName("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\");
+    std::string keyName("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\");
     keyName += service_;
 
     return ::RegDeleteKey(HKEY_LOCAL_MACHINE, keyName.c_str()) == ERROR_SUCCESS;
@@ -217,7 +217,7 @@ void NTEventLogger::warning(const char* msg)
 
 void NTEventLogger::trace(const char* logger, const char* msg)
 {
-	std::string s(logger);
+    std::string s(logger);
     s += ": ";
     s += msg;
     emitMessage(EVENTLOG_INFORMATION_TYPE, s.c_str());
@@ -228,7 +228,7 @@ void NTEventLogger::trace(const char* logger, const char* msg)
 //
 static void WINAPI _OB_serviceCtrl(DWORD ctrlCode)
 {
-   	NTService::instance() -> control(ctrlCode);
+       NTService::instance() -> control(ctrlCode);
 }
 
 static void WINAPI _OB_serviceMain(DWORD argc, LPTSTR* argv)
@@ -272,7 +272,7 @@ void NTService::statusUpdate(DWORD currentState, DWORD exitCode, DWORD waitHint)
     if (currentState == SERVICE_START_PENDING)
         status_.dwControlsAccepted = 0;
     else
-       	 status_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+            status_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
 
     status_.dwCurrentState = currentState;
     status_.dwWin32ExitCode = exitCode;
@@ -290,7 +290,7 @@ void NTService::statusUpdate(DWORD currentState, DWORD exitCode, DWORD waitHint)
 //
 
     if(!SetServiceStatus( statusHandle_, &status_) && logger_ != 0)
-		logger_ -> error("SetServiceStatus");
+        logger_ -> error("SetServiceStatus");
     SetServiceStatus(statusHandle_, &status_);
 }
 
@@ -313,7 +313,7 @@ void NTService::control(DWORD ctrlCode)
 // Service did not respond...  error.
 //
 
-    	statusUpdate(SERVICE_STOP_PENDING);
+        statusUpdate(SERVICE_STOP_PENDING);
         stop();
         return;
 
@@ -324,7 +324,7 @@ void NTService::control(DWORD ctrlCode)
 //
         break;
 
-   	 default:
+        default:
         TANGO_THROW_ON_DEFAULT(ctrlCode);
     }
 
@@ -360,70 +360,70 @@ void NTService::main(int argc, char** argv)
 //
 
         std::string keyName = "SYSTEM\\CurrentControlSet\\Services\\";
-		keyName = keyName + argv[0] + "\\Server\\";
+        keyName = keyName + argv[0] + "\\Server\\";
 
 //
 // The key goes into HKEY_LOCAL_MACHINE
 //
 
-    	HKEY regHandle = HKEY_LOCAL_MACHINE;
+        HKEY regHandle = HKEY_LOCAL_MACHINE;
 
 //
 // First try to open the key.
 //
 
-    	HKEY keyHandle;
-		int	errcode;
-		std::stringstream	s;
-    	if((errcode=::RegOpenKeyEx(regHandle,keyName.c_str(),0,KEY_ALL_ACCESS,
-		                  &keyHandle)) != ERROR_SUCCESS)
-    	{
-			s << "Can't retrieve server registry key ! error : ";
-			s << errcode << std::ends;
-			std::string st = s.str();
-			logger_->error(st.c_str());
-			return;
-    	}
+        HKEY keyHandle;
+        int    errcode;
+        std::stringstream    s;
+        if((errcode=::RegOpenKeyEx(regHandle,keyName.c_str(),0,KEY_ALL_ACCESS,
+                          &keyHandle)) != ERROR_SUCCESS)
+        {
+            s << "Can't retrieve server registry key ! error : ";
+            s << errcode << std::ends;
+            std::string st = s.str();
+            logger_->error(st.c_str());
+            return;
+        }
 
 //
 // Get instance name to send it to the start user method
 //
 
-    	DWORD type,size;
-    	char buf[128];
-		size = 127;
-    	if ((errcode=::RegQueryValueEx(keyHandle,"InstanceName",NULL,&type,
-			  (unsigned char *)buf,&size)) != ERROR_SUCCESS)
-    	{
-			s.seekp(0);
-			s.seekg(0);
-			s << "Can't retrieve instance name from registry ! error : ";
-			s << errcode;
-			if (errcode==ERROR_MORE_DATA)
-				s << " - Size required is " << size << "bytes" << std::endl;
-			s << std::ends;
+        DWORD type,size;
+        char buf[128];
+        size = 127;
+        if ((errcode=::RegQueryValueEx(keyHandle,"InstanceName",NULL,&type,
+              (unsigned char *)buf,&size)) != ERROR_SUCCESS)
+        {
+            s.seekp(0);
+            s.seekg(0);
+            s << "Can't retrieve instance name from registry ! error : ";
+            s << errcode;
+            if (errcode==ERROR_MORE_DATA)
+                s << " - Size required is " << size << "bytes" << std::endl;
+            s << std::ends;
 
-			std::string st = s.str();
-			logger_->error(st.c_str());
-			return;
-    	}
+            std::string st = s.str();
+            logger_->error(st.c_str());
+            return;
+        }
 
 //
 // Called the user start method with three parameters which are :
 //      - the exec name
-//	- the server instance name
-// 	- the logger
+//    - the server instance name
+//     - the logger
 //
 
-		std::string message("Starting ");
-		message = message + exec_name_ + '/' + buf + " tango device server";
-		logger_->info(message.c_str());
+        std::string message("Starting ");
+        message = message + exec_name_ + '/' + buf + " tango device server";
+        logger_->info(message.c_str());
 
-    	char *ptr[2];
-    	ptr[0] = const_cast<char *>(full_exec_name_.c_str());
-    	ptr[1] = &(buf[0]);
+        char *ptr[2];
+        ptr[0] = const_cast<char *>(full_exec_name_.c_str());
+        ptr[1] = &(buf[0]);
 
-		start(2,ptr,logger_);
+        start(2,ptr,logger_);
     }
 
 //
@@ -448,31 +448,31 @@ stopped_(false)
 // Build exececutable name from full executable name
 //
 
-	char *tmp;
+    char *tmp;
 
-	if ((tmp = strrchr((char *)name,'\\')) == 0)
-		exec_name_ = full_exec_name_;
-	else
-	{
-		tmp++;
-		exec_name_ = tmp;
-	}
+    if ((tmp = strrchr((char *)name,'\\')) == 0)
+        exec_name_ = full_exec_name_;
+    else
+    {
+        tmp++;
+        exec_name_ = tmp;
+    }
 
 //
 // Remove the .exe after the executable name
 //
 
-	std::string::size_type pos;
-	if ((pos = exec_name_.find('.')) != std::string::npos)
-	{
-		exec_name_.erase(pos,exec_name_.size());
-	}
+    std::string::size_type pos;
+    if ((pos = exec_name_.find('.')) != std::string::npos)
+    {
+        exec_name_.erase(pos,exec_name_.size());
+    }
 
 //
 // Build the logger object
 //
 
-	logger_ = new NTEventLogger(exec_name_.c_str(),0);
+    logger_ = new NTEventLogger(exec_name_.c_str(),0);
 
 }
 
@@ -495,7 +495,7 @@ NTService *NTService::instance()
 
 bool NTService::install(char *inst_name,bool autoStart)
 {
-	bool rc = false;
+    bool rc = false;
     char path[512];
 
 //
@@ -504,8 +504,8 @@ bool NTService::install(char *inst_name,bool autoStart)
 
     if(::GetModuleFileName(NULL, path, sizeof(path)) == 0)
     {
-		CORBA::String_var err = GetErrorText();
-		std::cerr << "GetModuleFileName failed: " << err.in() << std::endl;
+        CORBA::String_var err = GetErrorText();
+        std::cerr << "GetModuleFileName failed: " << err.in() << std::endl;
         return rc;
     }
 
@@ -514,9 +514,9 @@ bool NTService::install(char *inst_name,bool autoStart)
 //
 
     SC_HANDLE managerHandle = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-	if(!managerHandle)
+    if(!managerHandle)
     {
-		CORBA::String_var err = GetErrorText();
+        CORBA::String_var err = GetErrorText();
         std::cerr << "OpenSCManager failed: " <<  err.in() << std::endl;
         return rc;
     }
@@ -525,9 +525,9 @@ bool NTService::install(char *inst_name,bool autoStart)
 // Build service name and title
 //
 
-	name_ = exec_name_ + '_';
-	name_ = name_ + inst_name;
-	title_ = exec_name_ + " Tango device server (" + inst_name + ")";
+    name_ = exec_name_ + '_';
+    name_ = name_ + inst_name;
+    title_ = exec_name_ + " Tango device server (" + inst_name + ")";
 
 //
 // Create a new service.
@@ -535,18 +535,18 @@ bool NTService::install(char *inst_name,bool autoStart)
 
     DWORD start = (autoStart) ? SERVICE_AUTO_START : SERVICE_DEMAND_START;
     SC_HANDLE serviceHandle = ::CreateService(managerHandle,              // SCManager database
-						  name_.c_str(),              // name of service
-						  title_.c_str(),             // name to display
-						  SERVICE_ALL_ACCESS,         // desired access
-						  SERVICE_WIN32_OWN_PROCESS,  // service type
-						  start,                      // start type
-						  SERVICE_ERROR_NORMAL,       // error control type
-						  path,                       // service's binary
-						  NULL,                       // no load ordering group
-						  NULL,                       // no tag identifier
-						  "",                         // dependencies
-						  NULL,                       // LocalSystem account
-						  NULL);                      // no password
+                          name_.c_str(),              // name of service
+                          title_.c_str(),             // name to display
+                          SERVICE_ALL_ACCESS,         // desired access
+                          SERVICE_WIN32_OWN_PROCESS,  // service type
+                          start,                      // start type
+                          SERVICE_ERROR_NORMAL,       // error control type
+                          path,                       // service's binary
+                          NULL,                       // no load ordering group
+                          NULL,                       // no tag identifier
+                          "",                         // dependencies
+                          NULL,                       // LocalSystem account
+                          NULL);                      // no password
 
     if(serviceHandle)
     {
@@ -556,7 +556,7 @@ bool NTService::install(char *inst_name,bool autoStart)
     }
     else
     {
-		CORBA::String_var err = GetErrorText();
+        CORBA::String_var err = GetErrorText();
         std::cerr << "CreateService Failed: " << err.in() << std::endl;
     }
 
@@ -569,7 +569,7 @@ bool NTService::install(char *inst_name,bool autoStart)
 
     if(rc && logger_ != 0)
     {
-		rc = logger_ -> install();
+        rc = logger_ -> install();
     }
 
 //
@@ -593,21 +593,21 @@ bool NTService::install(char *inst_name,bool autoStart)
 
     HKEY keyHandle;
     if(::RegOpenKeyEx(regHandle, keyName.c_str(), 0, KEY_ALL_ACCESS,
-			  &keyHandle) != ERROR_SUCCESS)
+              &keyHandle) != ERROR_SUCCESS)
     {
 
 //
 // Create the key
 //
-		DWORD d;
-		if(::RegCreateKeyEx(regHandle, keyName.c_str(), 0, "REG_SZ",
-			    	    REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0,
-			    	    &keyHandle, &d) != ERROR_SUCCESS)
-		{
-			CORBA::String_var err = GetErrorText();
-	    	std::cerr << "RegCreateKeyEx " << keyName.c_str() << " failed: " << err.in() << std::endl;
-	    	return false;
-		}
+        DWORD d;
+        if(::RegCreateKeyEx(regHandle, keyName.c_str(), 0, "REG_SZ",
+                        REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0,
+                        &keyHandle, &d) != ERROR_SUCCESS)
+        {
+            CORBA::String_var err = GetErrorText();
+            std::cerr << "RegCreateKeyEx " << keyName.c_str() << " failed: " << err.in() << std::endl;
+            return false;
+        }
     }
 
 //
@@ -615,30 +615,30 @@ bool NTService::install(char *inst_name,bool autoStart)
 // and the Tango_host environment variable value
 //
 
-	const char *keyname;
+    const char *keyname;
     keyname = "InstanceName";
     if(::RegSetValueEx(keyHandle,keyname,0,REG_SZ,(unsigned char*)inst_name,
-		           strlen(inst_name)+1) != ERROR_SUCCESS)
+                   strlen(inst_name)+1) != ERROR_SUCCESS)
     {
-		CORBA::String_var err = GetErrorText();
-		std::cerr << "RegSetValueEx " << keyname << " failed: " << err.in() << std::endl;
-		return false;
+        CORBA::String_var err = GetErrorText();
+        std::cerr << "RegSetValueEx " << keyname << " failed: " << err.in() << std::endl;
+        return false;
     }
 
     char *env = getenv(EnvVariable);
-	if (env == NULL)
-	{
-		std::cerr << "Tango_host environment variable not defined !!!" << std::endl;
-		return false;
-	}
+    if (env == NULL)
+    {
+        std::cerr << "Tango_host environment variable not defined !!!" << std::endl;
+        return false;
+    }
 
     keyname = "TangoHost";
     if (::RegSetValueEx(keyHandle,keyname,0,REG_SZ,(unsigned char *)env,
-			    strlen(env) + 1) != ERROR_SUCCESS)
+                strlen(env) + 1) != ERROR_SUCCESS)
     {
-		CORBA::String_var err = GetErrorText();
-		std::cerr << "RegSetValueEx " << keyname << " failed: " << err.in() << std::endl;
-		return false;
+        CORBA::String_var err = GetErrorText();
+        std::cerr << "RegSetValueEx " << keyname << " failed: " << err.in() << std::endl;
+        return false;
     }
 
     return rc;
@@ -651,16 +651,16 @@ bool NTService::uninstall(char *inst_name)
     SC_HANDLE managerHandle = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if(!managerHandle)
     {
-		CORBA::String_var err = GetErrorText();
+        CORBA::String_var err = GetErrorText();
         std::cerr << "OpenSCManager failed: " << err.in() << std::endl;
         return rc;
     }
 
-	name_ = exec_name_ + '_';
-	name_ = name_ + inst_name;
-	title_ = exec_name_ + " Tango device server (" + inst_name + ")";
-	SC_HANDLE serviceHandle = ::OpenService(managerHandle, name_.c_str(),
-					    SERVICE_ALL_ACCESS);
+    name_ = exec_name_ + '_';
+    name_ = name_ + inst_name;
+    title_ = exec_name_ + " Tango device server (" + inst_name + ")";
+    SC_HANDLE serviceHandle = ::OpenService(managerHandle, name_.c_str(),
+                        SERVICE_ALL_ACCESS);
     if(serviceHandle)
     {
 
@@ -670,23 +670,23 @@ bool NTService::uninstall(char *inst_name)
 
         if(::ControlService(serviceHandle, SERVICE_CONTROL_STOP, &status_))
         {
-           	 std::cerr << "Stopping: " << title_ << std::endl;
-           	 std::this_thread::sleep_for(std::chrono::seconds(1));
+                std::cerr << "Stopping: " << title_ << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(1));
 
-           	 while(::QueryServiceStatus(serviceHandle, &status_))
-           	 {
-           		 if(status_.dwCurrentState == SERVICE_STOP_PENDING)
-           		 {
-           			 std::cerr << "." << std::endl;
-           			 std::this_thread::sleep_for(std::chrono::seconds(1));
-           		 }
-           		 else
-           			 break;
-           	 }
-           	 if(status_.dwCurrentState == SERVICE_STOPPED)
-           		 std::cerr << title_ << ": stopped." << std::endl;
-           	 else
-           		 std::cerr << title_ << ": failed to stop." << std::endl;
+                while(::QueryServiceStatus(serviceHandle, &status_))
+                {
+                    if(status_.dwCurrentState == SERVICE_STOP_PENDING)
+                    {
+                        std::cerr << "." << std::endl;
+                        std::this_thread::sleep_for(std::chrono::seconds(1));
+                    }
+                    else
+                        break;
+                }
+                if(status_.dwCurrentState == SERVICE_STOPPED)
+                    std::cerr << title_ << ": stopped." << std::endl;
+                else
+                    std::cerr << title_ << ": failed to stop." << std::endl;
         }
 
 //
@@ -695,20 +695,20 @@ bool NTService::uninstall(char *inst_name)
 
         if(::DeleteService(serviceHandle))
         {
-        	rc = true;
-        	std::cerr << title_ << ": removed." << std::endl;
+            rc = true;
+            std::cerr << title_ << ": removed." << std::endl;
         }
-       	else
+           else
         {
-			CORBA::String_var err = GetErrorText();
-			std::cerr << "DeleteService failed: " << err.in() << std::endl;
+            CORBA::String_var err = GetErrorText();
+            std::cerr << "DeleteService failed: " << err.in() << std::endl;
         }
         ::CloseServiceHandle(serviceHandle);
     }
     else
     {
-		CORBA::String_var err = GetErrorText();
-		std::cerr << "OpenService failed: " << err.in() << std::endl;
+        CORBA::String_var err = GetErrorText();
+        std::cerr << "OpenService failed: " << err.in() << std::endl;
     }
     ::CloseServiceHandle(managerHandle);
 
@@ -718,7 +718,7 @@ bool NTService::uninstall(char *inst_name)
 
     if(rc && logger_ != 0)
     {
-		rc = logger_ -> uninstall();
+        rc = logger_ -> uninstall();
     }
 
     return rc;
@@ -749,33 +749,33 @@ void NTService::run(int argc, char** argv)
 //
 
         if(!::StartServiceCtrlDispatcher(dispatchTable))
-		{
-			std::string err("StartServiceCtrlDispatcher: ");
-	    	err += GetErrorText();
-	    	if(logger_ != 0)
-				logger_ -> error(err.c_str());
-		}
-   	}
+        {
+            std::string err("StartServiceCtrlDispatcher: ");
+            err += GetErrorText();
+            if(logger_ != 0)
+                logger_ -> error(err.c_str());
+        }
+       }
 }
 
 void NTService::stop()
 {
-	Tango::Util *tg = Tango::Util::instance();
+    Tango::Util *tg = Tango::Util::instance();
 
-	stopped_ = true;
-//	tg->get_orb()->shutdown(false);
+    stopped_ = true;
+//    tg->get_orb()->shutdown(false);
 
-	std::string message(tg->get_ds_name());
-	message = message + " tango device server stopped";
-	logger_->info(message.c_str());
+    std::string message(tg->get_ds_name());
+    message = message + " tango device server stopped";
+    logger_->info(message.c_str());
 
-	statusUpdate(SERVICE_STOPPED);
+    statusUpdate(SERVICE_STOPPED);
 }
 
 bool NTService::is_installed()
 {
-	bool ret = true;
-    	return ret;
+    bool ret = true;
+        return ret;
 }
 
 int NTService::options(int argc,char *argv[])
@@ -790,78 +790,78 @@ int NTService::options(int argc,char *argv[])
 // <2 only if it is not a start command
 //
 
-	if (argc == 2)
-	{
-		usage(argv[0]);
-		return -1;
-	}
+    if (argc == 2)
+    {
+        usage(argv[0]);
+        return -1;
+    }
 
-	long start;
-	if (argc > 2)
-	{
-		if (strncmp(argv[2],"-v",2) == 0)
-			start = 3;
-		else
-			start = 2;
-	}
-	else
-		start = 2;
+    long start;
+    if (argc > 2)
+    {
+        if (strncmp(argv[2],"-v",2) == 0)
+            start = 3;
+        else
+            start = 2;
+    }
+    else
+        start = 2;
 
 //
 // Parse command line
 //
 
-	long i;
-	for (i = start;i < argc && *argv[i] == '-';i++)
-	{
-		if (strcmp(argv[i],"-h") == 0)
-		{
-			usage(argv[0]);
-			return 0;
-		}
-		else if (strcmp(argv[i],"-i") == 0)
-		{
-			if (argv[1][0] == '-')
-				usage(argv[0]);
-			else
-				install(argv[1]);
-			return 0;
-		}
-		else if (strcmp(argv[i],"-s") == 0)
-		{
-			if (argv[1][0] == '-')
-				usage(argv[0]);
-			else
-				install(argv[1],true);
-			return 0;
-		}
-		else if (strcmp(argv[i],"-u") == 0)
-		{
-			if (argv[1][0] == '-')
-				usage(argv[0]);
-			else
-				uninstall(argv[1]);
-			return 0;
-		}
-		else if (strcmp(argv[i],"-dbg") == 0)
-		{
-			setDebug();
-			return 1;
-		}
-	}
-	return 1;
+    long i;
+    for (i = start;i < argc && *argv[i] == '-';i++)
+    {
+        if (strcmp(argv[i],"-h") == 0)
+        {
+            usage(argv[0]);
+            return 0;
+        }
+        else if (strcmp(argv[i],"-i") == 0)
+        {
+            if (argv[1][0] == '-')
+                usage(argv[0]);
+            else
+                install(argv[1]);
+            return 0;
+        }
+        else if (strcmp(argv[i],"-s") == 0)
+        {
+            if (argv[1][0] == '-')
+                usage(argv[0]);
+            else
+                install(argv[1],true);
+            return 0;
+        }
+        else if (strcmp(argv[i],"-u") == 0)
+        {
+            if (argv[1][0] == '-')
+                usage(argv[0]);
+            else
+                uninstall(argv[1]);
+            return 0;
+        }
+        else if (strcmp(argv[i],"-dbg") == 0)
+        {
+            setDebug();
+            return 1;
+        }
+    }
+    return 1;
 }
 
 void NTService::usage(const char *prog_name)
 {
-	std::cerr << "Usage:\n";
-	std::cerr << prog_name << " instance_name [-v[trace_level]] options" << std::endl;
-	std::cerr << "Options :" << std::endl;
-	std::cerr << "-h\tShow this message" << std::endl;
-	std::cerr << "-i\tInstall the service" << std::endl;
-	std::cerr << "-s\tInstall the service with automatic startup" << std::endl;
-	std::cerr << "-u\tUninstall the service" << std::endl;
-	std::cerr << "-dbg\tRun in console mode" << std::endl;
+    std::cerr << "Usage:\n";
+    std::cerr << prog_name << " instance_name [-v[trace_level]] options" << std::endl;
+    std::cerr << "Options :" << std::endl;
+    std::cerr << "-h\tShow this message" << std::endl;
+    std::cerr << "-i\tInstall the service" << std::endl;
+    std::cerr << "-s\tInstall the service with automatic startup" << std::endl;
+    std::cerr << "-u\tUninstall the service" << std::endl;
+    std::cerr << "-dbg\tRun in console mode" << std::endl;
 }
 
 } // End of Tango namespace

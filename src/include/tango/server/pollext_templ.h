@@ -3,14 +3,14 @@
 // file :               PollExt_templ.h
 //
 // description :        Template method decleration for classes used by the method dedicated
-//			   			to fill the polling buffer for command or attributes.
+//                           to fill the polling buffer for command or attributes.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -44,20 +44,20 @@ namespace Tango
 
 //=============================================================================
 //
-//			Attribute related class
+//            Attribute related class
 //
-// description :	These classes are used when the user want to fill
-//		       attribute polling buffer
+// description :    These classes are used when the user want to fill
+//               attribute polling buffer
 //
 //=============================================================================
 
 //=============================================================================
 //
-//			The AttrData class
+//            The AttrData class
 //
 //
-// description : 	This class is used to store all the data needed to build
-//			an attribute value.
+// description :     This class is used to store all the data needed to build
+//            an attribute value.
 //
 //=============================================================================
 
@@ -65,52 +65,52 @@ namespace Tango
 template <typename T>
 inline AttrData<T>::AttrData(const T *p): ptr(p),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	qual = Tango::ATTR_VALID;
-	x = 1;
-	y = 0;
-	release = false;
+    qual = Tango::ATTR_VALID;
+    x = 1;
+    y = 0;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,Tango::AttrQuality q): ptr(p),qual(q),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	x = 1;
-	y = 0;
-	release = false;
+    x = 1;
+    y = 0;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,Tango::AttrQuality q,bool rel): ptr(p),qual(q),release(rel),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	x = 1;
-	y = 0;
+    x = 1;
+    y = 0;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,const T *wr_p): ptr(p),wr_y(0),wr_ptr(wr_p)
 {
-	qual = Tango::ATTR_VALID;
-	x = 1;
-	y = 0;
-	wr_x =1 ;
-	release = false;
+    qual = Tango::ATTR_VALID;
+    x = 1;
+    y = 0;
+    wr_x =1 ;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,const T *wr_p,Tango::AttrQuality q): ptr(p),qual(q),wr_y(0),wr_ptr(wr_p)
 {
-	x = 1;
-	y = 0;
-	wr_x = 1;
-	release = false;
+    x = 1;
+    y = 0;
+    wr_x = 1;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,const T *wr_p,Tango::AttrQuality q,bool rel): ptr(p),qual(q),release(rel),wr_y(0),wr_ptr(wr_p)
 {
-	x = 1;
-	y = 0;
-	wr_x = 1;
+    x = 1;
+    y = 0;
+    wr_x = 1;
 }
 
 // For spectrum
@@ -118,49 +118,49 @@ inline AttrData<T>::AttrData(const T *p,const T *wr_p,Tango::AttrQuality q,bool 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb): ptr(p),x(nb),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	__CHECK_DIM_X();
-	qual = Tango::ATTR_VALID;
-	y = 0;
-	release = false;
+    __CHECK_DIM_X();
+    qual = Tango::ATTR_VALID;
+    y = 0;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,Tango::AttrQuality q): ptr(p),qual(q),x(nb),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	__CHECK_DIM_X();
-	y = 0;
-	release = false;
+    __CHECK_DIM_X();
+    y = 0;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,Tango::AttrQuality q,bool rel): ptr(p),qual(q),x(nb),release(rel),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	__CHECK_DIM_X();
-	y = 0;
+    __CHECK_DIM_X();
+    y = 0;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,const T *wr_p,long wr_nb): ptr(p),x(nb),wr_x(wr_nb),wr_y(0),wr_ptr(wr_p)
 {
-	__CHECK_DIM_X();
-	qual = Tango::ATTR_VALID;
-	y = 0;
-	release = false;
+    __CHECK_DIM_X();
+    qual = Tango::ATTR_VALID;
+    y = 0;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,const T *wr_p,long wr_nb,Tango::AttrQuality q): ptr(p),qual(q),x(nb),wr_x(wr_nb),wr_y(0),wr_ptr(wr_p)
 {
-	__CHECK_DIM_X();
-	y = 0;
-	release = false;
+    __CHECK_DIM_X();
+    y = 0;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,const T *wr_p,long wr_nb,Tango::AttrQuality q,bool rel): ptr(p),qual(q),x(nb),release(rel),wr_x(wr_nb),wr_y(0),wr_ptr(wr_p)
 {
-	__CHECK_DIM_X();
-	y = 0;
+    __CHECK_DIM_X();
+    y = 0;
 }
 
 // For image
@@ -168,55 +168,55 @@ inline AttrData<T>::AttrData(const T *p,long nb,const T *wr_p,long wr_nb,Tango::
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,long nb2): ptr(p),x(nb),y(nb2),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	__CHECK_DIM();
-	qual = Tango::ATTR_VALID;
-	release = false;
+    __CHECK_DIM();
+    qual = Tango::ATTR_VALID;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,long nb2,Tango::AttrQuality q): ptr(p),qual(q),x(nb),y(nb2),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	__CHECK_DIM();
-	release = false;
+    __CHECK_DIM();
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,long nb2,Tango::AttrQuality q,bool rel): ptr(p),qual(q),
-									     x(nb),y(nb2),release(rel),wr_x(0),wr_y(0),wr_ptr(NULL)
+                                         x(nb),y(nb2),release(rel),wr_x(0),wr_y(0),wr_ptr(NULL)
 {
-	__CHECK_DIM();
+    __CHECK_DIM();
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,long nb2,const T *wr_p,long wr_nb,long wr_nb2): ptr(p),x(nb),y(nb2),wr_x(wr_nb),wr_y(wr_nb2),wr_ptr(wr_p)
 {
-	__CHECK_DIM();
-	qual = Tango::ATTR_VALID;
-	release = false;
+    __CHECK_DIM();
+    qual = Tango::ATTR_VALID;
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,long nb2,const T *wr_p,long wr_nb,long wr_nb2,Tango::AttrQuality q): ptr(p),qual(q),x(nb),y(nb2),wr_x(wr_nb),wr_y(wr_nb2),wr_ptr(wr_p)
 {
-	__CHECK_DIM();
-	release = false;
+    __CHECK_DIM();
+    release = false;
 }
 
 template <typename T>
 inline AttrData<T>::AttrData(const T *p,long nb,long nb2,const T *wr_p,long wr_nb,long wr_nb2,Tango::AttrQuality q,bool rel): ptr(p),qual(q),
-									     x(nb),y(nb2),release(rel),wr_x(wr_nb),wr_y(wr_nb2),wr_ptr(wr_p)
+                                         x(nb),y(nb2),release(rel),wr_x(wr_nb),wr_y(wr_nb2),wr_ptr(wr_p)
 {
-	__CHECK_DIM();
+    __CHECK_DIM();
 }
 
 //=============================================================================
 //
-//			The TimedAttrData class
+//            The TimedAttrData class
 //
 //
-// description : 	This class inherits from the AttrData class and adds
-//			a date to all the data contains in the AttrData
-//			class
+// description :     This class inherits from the AttrData class and adds
+//            a date to all the data contains in the AttrData
+//            class
 //
 //=============================================================================
 
@@ -303,13 +303,13 @@ inline TimedAttrData<T>::TimedAttrData(DevErrorList &errs,const TangoTimestamp &
 
 //=============================================================================
 //
-//			The AttrHistoryStack class
+//            The AttrHistoryStack class
 //
 //
-// description : 	This class is simply a wrapper above a vector of
-//			TimedAttrData class. It is  used to pass an attribute
-//			value history which will be stored in the polling
-//			buffer
+// description :     This class is simply a wrapper above a vector of
+//            TimedAttrData class. It is  used to pass an attribute
+//            value history which will be stored in the polling
+//            buffer
 //
 //=============================================================================
 
@@ -318,33 +318,33 @@ inline TimedAttrData<T>::TimedAttrData(DevErrorList &errs,const TangoTimestamp &
 template <typename T>
 inline void AttrHistoryStack<T>::push(TimedAttrData<T> const &elt)
 {
-	hist.push_back(elt);
+    hist.push_back(elt);
 }
 
 template <typename T>
 inline std::vector<TimedAttrData<T> > &AttrHistoryStack<T>::get_data()
 {
-	return hist;
+    return hist;
 }
 
 
 //=============================================================================
 //
-//			Command related class
+//            Command related class
 //
-// description :	These classes are used when the user want to fill
-//		       command polling buffer
+// description :    These classes are used when the user want to fill
+//               command polling buffer
 //
 //=============================================================================
 
 
 //=============================================================================
 //
-//			The TimedCmdData class
+//            The TimedCmdData class
 //
 //
-// description : 	This class is used to store all the data needed to build
-//			a command value plus a date.
+// description :     This class is used to store all the data needed to build
+//            a command value plus a date.
 //
 //=============================================================================
 
@@ -358,13 +358,13 @@ inline TimedCmdData<T>::TimedCmdData(T *p_data,bool rel,const TangoTimestamp &wh
 
 //=============================================================================
 //
-//			The CmdHistoryStack class
+//            The CmdHistoryStack class
 //
 //
-// description : 	This class is simply a wrapper above a vector of
-//			TimedCmdData class. It is  used to pass a command
-//			value history which will be stored in the polling
-//			buffer
+// description :     This class is simply a wrapper above a vector of
+//            TimedCmdData class. It is  used to pass a command
+//            value history which will be stored in the polling
+//            buffer
 //
 //=============================================================================
 
@@ -372,13 +372,13 @@ inline TimedCmdData<T>::TimedCmdData(T *p_data,bool rel,const TangoTimestamp &wh
 template <typename T>
 inline void CmdHistoryStack<T>::push(Tango::TimedCmdData<T> const &elt)
 {
-	hist.push_back(elt);
+    hist.push_back(elt);
 }
 
 template <typename T>
 inline std::vector<TimedCmdData<T> > & CmdHistoryStack<T>::get_data()
 {
-	return hist;
+    return hist;
 }
 
 

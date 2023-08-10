@@ -1,17 +1,17 @@
 //=============================================================================
 //
-// file :		MultiAttribute.h
+// file :        MultiAttribute.h
 //
-// description :	Include file for the MultiAttribute class.
-//			Each device has one object of this class. All device
-//			attribute objects are stored in this class
+// description :    Include file for the MultiAttribute class.
+//            Each device has one object of this class. All device
+//            attribute objects are stored in this class
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -48,12 +48,12 @@ class DeviceClass;
 
 //=============================================================================
 //
-//			The MultiAttribute class
+//            The MultiAttribute class
 //
 //
-// description :	There is one instance of this class for each device.
-//			This is mainly a helper class. It maintains a vector
-//			of all the attribute for the device
+// description :    There is one instance of this class for each device.
+//            This is mainly a helper class. It maintains a vector
+//            of all the attribute for the device
 //
 //=============================================================================
 
@@ -86,7 +86,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	MultiAttribute(const std::string &dev_name,DeviceClass *dev_class,DeviceImpl *dev);
+    MultiAttribute(const std::string &dev_name,DeviceClass *dev_class,DeviceImpl *dev);
 //@}
 
 /**@name Destructor
@@ -95,7 +95,7 @@ public:
 /**
  * The MultiAttribute desctructor.
  */
-	~MultiAttribute();
+    ~MultiAttribute();
 //@}
 
 /**@name Miscellaneous methods */
@@ -112,7 +112,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	Attribute &get_attr_by_name(const char *attr_name);
+    Attribute &get_attr_by_name(const char *attr_name);
 /**
  * Get Attribute object from its index.
  *
@@ -122,7 +122,7 @@ public:
  * @param ind The attribute index
  * @return A reference to the Attribute object
  */
-	Attribute &get_attr_by_ind(const long ind) {return *(attr_list[ind]);}
+    Attribute &get_attr_by_ind(const long ind) {return *(attr_list[ind]);}
 /**
  * Get Writable Attribute object from its name.
  *
@@ -135,7 +135,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	WAttribute &get_w_attr_by_name(const char *attr_name);
+    WAttribute &get_w_attr_by_name(const char *attr_name);
 /**
  * Get Writable Attribute object from its index.
  *
@@ -145,7 +145,7 @@ public:
  * @param ind The attribute index
  * @return A reference to the WAttribute object
  */
-	WAttribute &get_w_attr_by_ind(const long ind) {return static_cast<WAttribute &>(*(attr_list[ind]));}
+    WAttribute &get_w_attr_by_ind(const long ind) {return static_cast<WAttribute &>(*(attr_list[ind]));}
 /**
  * Get Attribute index into the main attribute vector from its name.
  *
@@ -159,20 +159,20 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	long get_attr_ind_by_name(const char *attr_name);
+    long get_attr_ind_by_name(const char *attr_name);
 /**
  * Get list of attribute with an alarm level defined.
  *
  * @return  A vector of long data. Each object is the index in the main
  * attribute vector of attribute with alarm level defined
  */
-	std::vector<long> &get_alarm_list() {return alarm_attr_list;}
+    std::vector<long> &get_alarm_list() {return alarm_attr_list;}
 /**
  * Get attribute number.
  *
  * @return  The attribute number
  */
-	unsigned long get_attr_nb() {return (unsigned long)attr_list.size();}
+    unsigned long get_attr_nb() {return (unsigned long)attr_list.size();}
 
 /**
  * Check alarm for one attribute with a given name.
@@ -187,7 +187,7 @@ public:
  * <b>DevFailed</b> exception specification
  *
  */
-	bool check_alarm(const char *attr_name) {return get_attr_by_name(attr_name).check_alarm();}
+    bool check_alarm(const char *attr_name) {return get_attr_by_name(attr_name).check_alarm();}
 /**
  * Check alarm for one attribute from its index in the main attributes vector.
  *
@@ -201,7 +201,7 @@ public:
  * <b>DevFailed</b> exception specification
  *
  */
-	bool check_alarm(const long ind) {return get_attr_by_ind(ind).check_alarm();}
+    bool check_alarm(const long ind) {return get_attr_by_ind(ind).check_alarm();}
 /**
  * Check alarm on all attribute(s) with an alarm defined.
  *
@@ -215,7 +215,7 @@ public:
  * <b>DevFailed</b> exception specification
  *
  */
-	bool check_alarm();
+    bool check_alarm();
 /**
  * Add alarm message to device status.
  *
@@ -224,14 +224,14 @@ public:
  *
  * @param  status  The string (should be the device status)
  */
-	void read_alarm(std::string &status);
+    void read_alarm(std::string &status);
 /**
  * Get the vector of attribute objects.
  *
  * Returns the vector of attribute objects.
  *
  */
-	 std::vector<Attribute *> &get_attribute_list(){return attr_list;}
+     std::vector<Attribute *> &get_attribute_list(){return attr_list;}
 //@}
 
 protected:
@@ -242,67 +242,67 @@ protected:
  *
  * This vector is often referred as the main attributes vector
  */
-	std::vector<Attribute *>	attr_list;
+    std::vector<Attribute *>    attr_list;
 /**
  * The list of writable attribute.
  *
  * It is a vector of index in the main attribute vector
  */
-	std::vector<long>		writable_attr_list;
+    std::vector<long>        writable_attr_list;
 /**
  * The list of attribute with an alarm level defined.
  *
  * It is a vector of index in the main attribute vector
  */
-	std::vector<long>		alarm_attr_list;
+    std::vector<long>        alarm_attr_list;
 //@}
 
 public:
 /// @privatesection
 
-	void add_write_value(Attribute &);
-	void add_attribute(const std::string &,DeviceClass *,long);
-	void add_fwd_attribute(const std::string &,DeviceClass *,long,Attr *);
-	void remove_attribute(const std::string &,bool);
-	std::vector<long> &get_w_attr_list() {return writable_attr_list;}
-	bool is_att_quality_alarmed();
-	AttributeEventSubscriptionStates get_event_subscription_states();
-	void set_event_subscription_states(const AttributeEventSubscriptionStates&);
-	void add_alarmed_quality_factor(std::string &);
-	void add_default(std::vector<AttrProperty> &,const std::string &,const std::string &,long);
-	void add_attr(Attribute *att);
-	void update(const Attribute &,const std::string &);
-	void check_idl_release(DeviceImpl *);
-	bool is_opt_prop(const std::string &);
+    void add_write_value(Attribute &);
+    void add_attribute(const std::string &,DeviceClass *,long);
+    void add_fwd_attribute(const std::string &,DeviceClass *,long,Attr *);
+    void remove_attribute(const std::string &,bool);
+    std::vector<long> &get_w_attr_list() {return writable_attr_list;}
+    bool is_att_quality_alarmed();
+    AttributeEventSubscriptionStates get_event_subscription_states();
+    void set_event_subscription_states(const AttributeEventSubscriptionStates&);
+    void add_alarmed_quality_factor(std::string &);
+    void add_default(std::vector<AttrProperty> &,const std::string &,const std::string &,long);
+    void add_attr(Attribute *att);
+    void update(const Attribute &,const std::string &);
+    void check_idl_release(DeviceImpl *);
+    bool is_opt_prop(const std::string &);
 
 private:
     class MultiAttributeExt
     {
-	public:
-		struct AttributePtrAndIndex
-		{
-			Attribute * att_ptr;
-			long att_index_in_vector;
-		};
-		MultiAttributeExt() {}
-		std::map<std::string, AttributePtrAndIndex> attr_map;
-		void put_attribute_in_map(Attribute * att, long index)
-		{
-			AttributePtrAndIndex mapElement;
-			mapElement.att_ptr = att;
-			mapElement.att_index_in_vector = index;
-			attr_map[att->get_name_lower()] = mapElement;
-		}
-		void increment_state_and_status_indexes()
-		{
-			attr_map["state"].att_index_in_vector++;
-			attr_map["status"].att_index_in_vector++;
-		}
+    public:
+        struct AttributePtrAndIndex
+        {
+            Attribute * att_ptr;
+            long att_index_in_vector;
+        };
+        MultiAttributeExt() {}
+        std::map<std::string, AttributePtrAndIndex> attr_map;
+        void put_attribute_in_map(Attribute * att, long index)
+        {
+            AttributePtrAndIndex mapElement;
+            mapElement.att_ptr = att;
+            mapElement.att_index_in_vector = index;
+            attr_map[att->get_name_lower()] = mapElement;
+        }
+        void increment_state_and_status_indexes()
+        {
+            attr_map["state"].att_index_in_vector++;
+            attr_map["status"].att_index_in_vector++;
+        }
     };
 
-	void concat(const std::vector<AttrProperty> &,const std::vector<AttrProperty> &,std::vector<AttrProperty> &);
-	void add_user_default(std::vector<AttrProperty> &,const std::vector<AttrProperty> &);
-	void check_associated(long,const std::string &);
+    void concat(const std::vector<AttrProperty> &,const std::vector<AttrProperty> &,std::vector<AttrProperty> &);
+    void add_user_default(std::vector<AttrProperty> &,const std::vector<AttrProperty> &);
+    void check_associated(long,const std::string &);
 
     std::unique_ptr<MultiAttributeExt>           ext;           // Class extension
 };

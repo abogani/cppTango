@@ -3,16 +3,16 @@
 // file :               dintrthread.cpp
 //
 // description :        C++ source code for the DevIntrThread class. This class is used for the device interface
-//						change thread. The rule of this thread is to delay the event sending in order to minimize
-//						the number of events thrown when dynamic command(s) and/or attribute(s) are added/removed
-//						in a loop.
+//                        change thread. The rule of this thread is to delay the event sending in order to minimize
+//                        the number of events thrown when dynamic command(s) and/or attribute(s) are added/removed
+//                        in a loop.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2014
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -42,26 +42,26 @@ namespace Tango
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DevIntrThread::DevIntrThread
+//        DevIntrThread::DevIntrThread
 //
 // description :
-//		The device interface change thread constructor.
+//        The device interface change thread constructor.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 DevIntrThread::DevIntrThread(ShDevIntrTh &cmd,TangoMonitor &m,DeviceImpl *_d):
 shared_data(cmd),p_mon(m),dev(_d)
 {
-	shared_data.cmd_pending = false;
+    shared_data.cmd_pending = false;
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DevIntrThread::run_undetached
+//        DevIntrThread::run_undetached
 //
 // description :
-//		The device interface change thread main code
+//        The device interface change thread main code
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -72,186 +72,186 @@ void DevIntrThread::run(TANGO_UNUSED(void *ptr))
 // The main loop
 //
 
-	bool exit = false;
+    bool exit = false;
 
-	try
-	{
-		while (exit == false)
-		{
-			DevIntrCmdType received = get_command(DEV_INTR_THREAD_SLEEP_TIME);
+    try
+    {
+        while (exit == false)
+        {
+            DevIntrCmdType received = get_command(DEV_INTR_THREAD_SLEEP_TIME);
 
-			switch (received)
-			{
-			case DEV_INTR_COMMAND:
-				execute_cmd();
-				break;
+            switch (received)
+            {
+            case DEV_INTR_COMMAND:
+                execute_cmd();
+                break;
 
-			case DEV_INTR_TIME_OUT:
-			    try
-			    {
+            case DEV_INTR_TIME_OUT:
+                try
+                {
                     push_event();
-			    }
-			    catch (Tango::DevFailed &e)
-			    {
-			        std::cerr << "Received a DevFailed exception while trying to push the device interface change event!!!" << std::endl;
-			        std::cerr << e.errors[0].desc.in() << std::endl;
-			    }
-				exit = true;
-				break;
-			}
-		}
+                }
+                catch (Tango::DevFailed &e)
+                {
+                    std::cerr << "Received a DevFailed exception while trying to push the device interface change event!!!" << std::endl;
+                    std::cerr << e.errors[0].desc.in() << std::endl;
+                }
+                exit = true;
+                break;
+            }
+        }
 
-		{
-			omni_mutex_lock sync(p_mon);
-			shared_data.th_running = false;
-		}
-		omni_thread::exit();
-	}
-	catch (omni_thread_fatal &)
-	{
-		std::cerr << "OUPS !! A omni thread fatal exception in a device interface change event thread!!!!!!!!" << std::endl;
-	}
+        {
+            omni_mutex_lock sync(p_mon);
+            shared_data.th_running = false;
+        }
+        omni_thread::exit();
+    }
+    catch (omni_thread_fatal &)
+    {
+        std::cerr << "OUPS !! A omni thread fatal exception in a device interface change event thread!!!!!!!!" << std::endl;
+    }
 
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DevIntrThread::get_command
+//        DevIntrThread::get_command
 //
 // description :
-//		This method wait on the shared monitor for a new command to be sent to the device interface change thread.
-//		The thread waits with a timeout.
+//        This method wait on the shared monitor for a new command to be sent to the device interface change thread.
+//        The thread waits with a timeout.
 //
 // argument :
-//		in :
-//			- tout : The timeout in mS
+//        in :
+//            - tout : The timeout in mS
 //
 // return :
-//		One enum with two possible value: Thread awaken due to timeout or thread awaken due to a received command
+//        One enum with two possible value: Thread awaken due to timeout or thread awaken due to a received command
 //
 //------------------------------------------------------------------------------------------------------------------
 
 DevIntrCmdType DevIntrThread::get_command(DevLong tout)
 {
-	omni_mutex_lock sync(p_mon);
-	DevIntrCmdType ret;
+    omni_mutex_lock sync(p_mon);
+    DevIntrCmdType ret;
 
 //
 // Wait on monitor
 //
 
-	if (shared_data.cmd_pending == false)
-	{
-		TANGO_LOG_DEBUG << "DevIntrThread:: Going to wait on monitor" << std::endl;
-		p_mon.wait(tout);
-	}
+    if (shared_data.cmd_pending == false)
+    {
+        TANGO_LOG_DEBUG << "DevIntrThread:: Going to wait on monitor" << std::endl;
+        p_mon.wait(tout);
+    }
 
 //
 // Test if it is a new command. If yes, copy its data locally
 //
 
-	if (shared_data.cmd_pending == true)
-	{
-		local_cmd = shared_data;
-		ret = DEV_INTR_COMMAND;
-	}
-	else
-		ret = DEV_INTR_TIME_OUT;
+    if (shared_data.cmd_pending == true)
+    {
+        local_cmd = shared_data;
+        ret = DEV_INTR_COMMAND;
+    }
+    else
+        ret = DEV_INTR_TIME_OUT;
 
-	return ret;
+    return ret;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DevIntrThread::execute_cmd
+//        DevIntrThread::execute_cmd
 //
 // description :
-//		This method is called when a command has been received. It execute the command!
+//        This method is called when a command has been received. It execute the command!
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DevIntrThread::execute_cmd()
 {
-	bool need_exit = false;
+    bool need_exit = false;
 
-	switch (local_cmd.cmd_code)
-	{
+    switch (local_cmd.cmd_code)
+    {
 
 //
 // A new rest
 //
 
-		case Tango::DEV_INTR_SLEEP :
-		{
-			break;
-		}
+        case Tango::DEV_INTR_SLEEP :
+        {
+            break;
+        }
 
 //
 // Ask locking thread to exit
 //
 
-		case Tango::DEV_INTR_EXIT :
-			need_exit = true;
-			break;
-	}
+        case Tango::DEV_INTR_EXIT :
+            need_exit = true;
+            break;
+    }
 
 //
 // Inform requesting thread that the work is done
 //
 
-	{
-		omni_mutex_lock sync(p_mon);
-		shared_data.cmd_pending = false;
-		p_mon.signal();
-	}
+    {
+        omni_mutex_lock sync(p_mon);
+        shared_data.cmd_pending = false;
+        p_mon.signal();
+    }
 
 //
 // If the command was an exit one, do it now
 //
 
-	if (need_exit == true)
-	{
-		{
-			omni_mutex_lock sync(p_mon);
-			shared_data.th_running = false;
-		}
-		omni_thread::exit();
-	}
+    if (need_exit == true)
+    {
+        {
+            omni_mutex_lock sync(p_mon);
+            shared_data.th_running = false;
+        }
+        omni_thread::exit();
+    }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DevIntrThread::push_event
+//        DevIntrThread::push_event
 //
 // description :
-//		This method pushes the device interface change event if there is a interface change
+//        This method pushes the device interface change event if there is a interface change
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DevIntrThread::push_event()
 {
-	TANGO_LOG_DEBUG << "Device interface change event thread pushing event!" << std::endl;
+    TANGO_LOG_DEBUG << "Device interface change event thread pushing event!" << std::endl;
 
-	AutoTangoMonitor sync(dev,true);
+    AutoTangoMonitor sync(dev,true);
 
-	if (shared_data.interface.has_changed(dev) == true)
-	{
-		TANGO_LOG_DEBUG << "Device interface has changed" << std::endl;
+    if (shared_data.interface.has_changed(dev) == true)
+    {
+        TANGO_LOG_DEBUG << "Device interface has changed" << std::endl;
 
-		Device_5Impl *dev_5 = static_cast<Device_5Impl *>(dev);
-		DevCmdInfoList_2 *cmds_list = dev_5->command_list_query_2();
+        Device_5Impl *dev_5 = static_cast<Device_5Impl *>(dev);
+        DevCmdInfoList_2 *cmds_list = dev_5->command_list_query_2();
 
-		DevVarStringArray dvsa(1);
-		dvsa.length(1);
-		dvsa[0] = Tango::string_dup(AllAttr_3);
-		AttributeConfigList_5 *atts_list = dev_5->get_attribute_config_5(dvsa);
+        DevVarStringArray dvsa(1);
+        dvsa.length(1);
+        dvsa[0] = Tango::string_dup(AllAttr_3);
+        AttributeConfigList_5 *atts_list = dev_5->get_attribute_config_5(dvsa);
 
-		ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
-		event_supplier_zmq->push_dev_intr_change_event(dev,false,cmds_list,atts_list);
-	}
+        ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
+        event_supplier_zmq->push_dev_intr_change_event(dev,false,cmds_list,atts_list);
+    }
 }
 
 } // End of Tango namespace

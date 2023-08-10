@@ -1,16 +1,16 @@
 //+===================================================================================================================
 //
-// file :		dev_poll.cpp
+// file :        dev_poll.cpp
 //
-// description :	C++ source code for part of the DeviceImpl class. This class is the root class for all derived
-//				    Device classes. Tis file contains some polling related methods.
+// description :    C++ source code for part of the DeviceImpl class. This class is the root class for all derived
+//                    Device classes. Tis file contains some polling related methods.
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -38,10 +38,10 @@ namespace Tango
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::init_poll_no_db
+//        DeviceImpl::init_poll_no_db
 //
 // description :
-//		Init polling info for device running without DB. In such a case, polling is available only for
+//        Init polling info for device running without DB. In such a case, polling is available only for
 //      object with polling defined in code. Fill in string vectors which are in case of DS using
 //      database initialised from the db.
 //
@@ -105,162 +105,162 @@ void DeviceImpl::init_poll_no_db()
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::is_attribute_polled
+//        DeviceImpl::is_attribute_polled
 //
 // description :
-//		Returns true if the attribute is polled
+//        Returns true if the attribute is polled
 //
 // argument:
-//		in :
-//			- att_name : The attribute name
+//        in :
+//            - att_name : The attribute name
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 bool DeviceImpl::is_attribute_polled(const std::string &att_name)
 {
-	std::string att = att_name;
-	std::transform(att.begin(),att.end(),att.begin(),::tolower);
+    std::string att = att_name;
+    std::transform(att.begin(),att.end(),att.begin(),::tolower);
 
-	std::vector<std::string> &att_list = get_polled_attr();
+    std::vector<std::string> &att_list = get_polled_attr();
 
-	for (unsigned int i = 0;i < att_list.size();i = i+2)
-	{
+    for (unsigned int i = 0;i < att_list.size();i = i+2)
+    {
 
 //
-//	Convert to lower case before comparison
+//    Convert to lower case before comparison
 //
 
-		std::string name_lowercase(att_list[i]);
-		std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
-		if ( att == name_lowercase )
-		{
+        std::string name_lowercase(att_list[i]);
+        std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
+        if ( att == name_lowercase )
+        {
 
 //
 // when the polling buffer is externally filled (polling period == 0)
 // mark the attribute as not polled! No events can be send by the polling thread!
 //
 
-			if ( att_list[i+1] == "0" )
-			{
-				return false;
-			}
-			else
-				return true;
-		}
-	}
+            if ( att_list[i+1] == "0" )
+            {
+                return false;
+            }
+            else
+                return true;
+        }
+    }
 
 //
 // now check wether a polling period is set (for example by pogo)
 //
 
 /*    Tango::Attribute &the_att = dev_attr->get_attr_by_name(att_name.c_str());
-	if ( the_att.get_polling_period() > 0 )
-	{
+    if ( the_att.get_polling_period() > 0 )
+    {
 
 //
 // check the list of non_auto_polled attributes to verify wether the polling was disabled
 //
 
-		std::vector<std::string> &napa = get_non_auto_polled_attr();
-		for (unsigned int j = 0;j < napa.size();j++)
-		{
-			if (TG_strcasecmp(napa[j].c_str(), att_name.c_str()) == 0)
-			{
-				return false;
-			}
-		}
+        std::vector<std::string> &napa = get_non_auto_polled_attr();
+        for (unsigned int j = 0;j < napa.size();j++)
+        {
+            if (TG_strcasecmp(napa[j].c_str(), att_name.c_str()) == 0)
+            {
+                return false;
+            }
+        }
 
-		return true;
-	}*/
+        return true;
+    }*/
 
-	return false;
+    return false;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::is_command_polled
+//        DeviceImpl::is_command_polled
 //
 // description :
-//		Returns true if the command is polled
+//        Returns true if the command is polled
 //
 // argument:
-//		in :
-//			- cmd_name : The command name
+//        in :
+//            - cmd_name : The command name
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 bool DeviceImpl::is_command_polled(const std::string &cmd_name)
 {
-	std::string cmd = cmd_name;
-	std::transform(cmd.begin(),cmd.end(),cmd.begin(),::tolower);
+    std::string cmd = cmd_name;
+    std::transform(cmd.begin(),cmd.end(),cmd.begin(),::tolower);
 
-	std::vector<std::string> &cmd_list = get_polled_cmd();
+    std::vector<std::string> &cmd_list = get_polled_cmd();
 
-	for (unsigned int i = 0;i < cmd_list.size();i = i+2)
-	{
+    for (unsigned int i = 0;i < cmd_list.size();i = i+2)
+    {
 
 //
-//	Convert to lower case before comparison
+//    Convert to lower case before comparison
 //
 
-		std::string name_lowercase(cmd_list[i]);
-		std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
-		if ( cmd == name_lowercase )
-		{
+        std::string name_lowercase(cmd_list[i]);
+        std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
+        if ( cmd == name_lowercase )
+        {
 
 //
 // when the polling buffer is externally filled (polling period == 0)
 // mark the attribute as not polled! No events can be send by the polling thread!
 //
 
-			if ( cmd_list[i+1] == "0" )
-			{
-				return false;
-			}
-			else
-				return true;
-		}
-	}
+            if ( cmd_list[i+1] == "0" )
+            {
+                return false;
+            }
+            else
+                return true;
+        }
+    }
 
 //
 // now check wether a polling period is set (for example by pogo)
 //
 
 /*    Tango::Command &the_cmd = device_class->get_cmd_by_name(cmd_name);
-	if ( the_cmd.get_polling_period() > 0 )
-	{
+    if ( the_cmd.get_polling_period() > 0 )
+    {
 
 //
 // check the list of non_auto_polled attributes to verify wether the polling was disabled
 //
 
-		std::vector<std::string> &napa = get_non_auto_polled_cmd();
-		for (unsigned int j = 0;j < napa.size();j++)
-		{
-			if (TG_strcasecmp(napa[j].c_str(), cmd_name.c_str()) == 0)
-			{
-				return false;
-			}
-		}
+        std::vector<std::string> &napa = get_non_auto_polled_cmd();
+        for (unsigned int j = 0;j < napa.size();j++)
+        {
+            if (TG_strcasecmp(napa[j].c_str(), cmd_name.c_str()) == 0)
+            {
+                return false;
+            }
+        }
 
-		return true;
-	}*/
+        return true;
+    }*/
 
-	return false;
+    return false;
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_attribute_poll_period
+//        DeviceImpl::get_attribute_poll_period
 //
 // description :
-//		Get the attribute polling period in mS (O if not polled)
+//        Get the attribute polling period in mS (O if not polled)
 //
 // argument:
-//		in :
-//			- att_name : The attribute name
+//        in :
+//            - att_name : The attribute name
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -268,30 +268,30 @@ int DeviceImpl::get_attribute_poll_period(const std::string &att_name)
 {
     int per = 0;
 
-	std::string att = att_name;
-	std::transform(att.begin(),att.end(),att.begin(),::tolower);
+    std::string att = att_name;
+    std::transform(att.begin(),att.end(),att.begin(),::tolower);
 
     bool found = false;
-	std::vector<std::string> &att_list = get_polled_attr();
-	for (unsigned int i = 0;i < att_list.size();i = i+2)
-	{
+    std::vector<std::string> &att_list = get_polled_attr();
+    for (unsigned int i = 0;i < att_list.size();i = i+2)
+    {
 
 //
-//	Convert to lower case before comparison
+//    Convert to lower case before comparison
 //
 
-		std::string name_lowercase(att_list[i]);
-		std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
-		if ( att == name_lowercase )
-		{
+        std::string name_lowercase(att_list[i]);
+        std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
+        if ( att == name_lowercase )
+        {
             std::stringstream ss;
             ss << att_list[i + 1];
             ss >> per;
             found = true;
 
             break;
-		}
-	}
+        }
+    }
 
 //
 // now check wether a polling period is set (for example by pogo)
@@ -299,24 +299,24 @@ int DeviceImpl::get_attribute_poll_period(const std::string &att_name)
 
     if (found == false)
     {
-    	Tango::Attribute &the_att = dev_attr->get_attr_by_name(att_name.c_str());
-    	per = the_att.get_polling_period();
-	}
+        Tango::Attribute &the_att = dev_attr->get_attr_by_name(att_name.c_str());
+        per = the_att.get_polling_period();
+    }
 
-	return per;
+    return per;
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_command_poll_period
+//        DeviceImpl::get_command_poll_period
 //
 // description :
-//		Get the command polling period in mS (0 if not polled)
+//        Get the command polling period in mS (0 if not polled)
 //
 // argument:
-//		in :
-//			- cmd_name : The command name
+//        in :
+//            - cmd_name : The command name
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -324,30 +324,30 @@ int DeviceImpl::get_command_poll_period(const std::string &cmd_name)
 {
     int per = 0;
 
-	std::string cmd = cmd_name;
-	std::transform(cmd.begin(),cmd.end(),cmd.begin(),::tolower);
+    std::string cmd = cmd_name;
+    std::transform(cmd.begin(),cmd.end(),cmd.begin(),::tolower);
 
     bool found = false;
-	std::vector<std::string> &cmd_list = get_polled_cmd();
-	for (unsigned int i = 0;i < cmd_list.size();i = i+2)
-	{
+    std::vector<std::string> &cmd_list = get_polled_cmd();
+    for (unsigned int i = 0;i < cmd_list.size();i = i+2)
+    {
 
 //
-//	Convert to lower case before comparison
+//    Convert to lower case before comparison
 //
 
-		std::string name_lowercase(cmd_list[i]);
-		std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
-		if ( cmd == name_lowercase )
-		{
+        std::string name_lowercase(cmd_list[i]);
+        std::transform(name_lowercase.begin(),name_lowercase.end(),name_lowercase.begin(),::tolower);
+        if ( cmd == name_lowercase )
+        {
             std::stringstream ss;
             ss << cmd_list[i + 1];
             ss >> per;
             found = true;
 
             break;
-		}
-	}
+        }
+    }
 
 //
 // now check wether a polling period is set (for example by pogo)
@@ -357,23 +357,23 @@ int DeviceImpl::get_command_poll_period(const std::string &cmd_name)
     {
         Tango::Command &the_cmd = device_class->get_cmd_by_name(cmd_name);
         per = the_cmd.get_polling_period();
-	}
+    }
 
-	return per;
+    return per;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::poll_attribute
+//        DeviceImpl::poll_attribute
 //
 // description :
-//		Poll one attribute. If the attribute is already polled, update its polling period to the new value
+//        Poll one attribute. If the attribute is already polled, update its polling period to the new value
 //
 // argument:
-//		in 	:
-//			- att_name : The attribute name
-//			- period : The polling period
+//        in     :
+//            - att_name : The attribute name
+//            - period : The polling period
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -385,15 +385,15 @@ void DeviceImpl::poll_attribute(const std::string &att_name,int period)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::poll_command
+//        DeviceImpl::poll_command
 //
 // description :
-//		Poll one command. If the command is already polled, update its polling period to the new value
+//        Poll one command. If the command is already polled, update its polling period to the new value
 //
 // argument:
-//		in :
-//			- cmd_name : The command name
-//   		- period : The polling period
+//        in :
+//            - cmd_name : The command name
+//           - period : The polling period
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -405,14 +405,14 @@ void DeviceImpl::poll_command(const std::string &cmd_name,int period)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::poll_object
+//        DeviceImpl::poll_object
 //
 // description :
-//		Poll one object. If the object is already polled, update its polling period to the new value
+//        Poll one object. If the object is already polled, update its polling period to the new value
 //
 // argument:
-//		in :
-//			- cmd_name : The object name
+//        in :
+//            - cmd_name : The object name
 //          - period : The polling period
 //          - type : Command or attribute
 //
@@ -422,10 +422,10 @@ void DeviceImpl::poll_object(const std::string &obj_name,int period,PollObjType 
 {
     Tango::Util *tg = Tango::Util::instance();
 
-	if (tg->is_svr_shutting_down() == true)
-	{
-		TANGO_THROW_EXCEPTION(API_NotSupported, "It's not supported to start polling on any device cmd/attr while the device is shutting down");
-	}
+    if (tg->is_svr_shutting_down() == true)
+    {
+        TANGO_THROW_EXCEPTION(API_NotSupported, "It's not supported to start polling on any device cmd/attr while the device is shutting down");
+    }
 
     if (tg->is_svr_starting() == true)
     {
@@ -521,8 +521,8 @@ void DeviceImpl::poll_object(const std::string &obj_name,int period,PollObjType 
             obj_type = "attribute";
         else
             obj_type = "command";
-		obj_type = obj_type + LOCAL_POLL_REQUEST;
-		send->svalue[1] = Tango::string_dup(obj_type.c_str());
+        obj_type = obj_type + LOCAL_POLL_REQUEST;
+        send->svalue[1] = Tango::string_dup(obj_type.c_str());
         send->svalue[2] = Tango::string_dup(obj_name.c_str());
         send->lvalue[0] = period;
 
@@ -558,14 +558,14 @@ void DeviceImpl::poll_object(const std::string &obj_name,int period,PollObjType 
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::stop_poll_attribute
+//        DeviceImpl::stop_poll_attribute
 //
 // description :
-//		Stop polling one attribute. Does nothing if the attribute is not polled
+//        Stop polling one attribute. Does nothing if the attribute is not polled
 //
 // argument:
-//		in :
-//			- att_name : The attribute name
+//        in :
+//            - att_name : The attribute name
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -577,14 +577,14 @@ void DeviceImpl::stop_poll_attribute(const std::string &att_name)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::stop_poll_command
+//        DeviceImpl::stop_poll_command
 //
 // description :
-//		Stop polling one command. Does nothing if the command is not polled
+//        Stop polling one command. Does nothing if the command is not polled
 //
 // argument:
-//		in :
-//			- cmd_name : The command name
+//        in :
+//            - cmd_name : The command name
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -596,14 +596,14 @@ void DeviceImpl::stop_poll_command(const std::string &cmd_name)
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::stop_poll_object
+//        DeviceImpl::stop_poll_object
 //
 // description :
-//		Stop polling one object. Does nothing if the object is not polled
+//        Stop polling one object. Does nothing if the object is not polled
 //
 // argument:
-//		in :
-//			- obj_name : The object name
+//        in :
+//            - obj_name : The object name
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -658,36 +658,36 @@ void DeviceImpl::stop_poll_object(const std::string &obj_name,PollObjType type)
     else
     {
 
-		if (tg->is_device_restarting(device_name) == false)
-		{
+        if (tg->is_device_restarting(device_name) == false)
+        {
 
 //
 // Ask the admin device to do the work (simulating the classical way to tune polling)
 //
 
-			DServer *ds = tg->get_dserver_device();
-			CORBA::Any the_any;
+            DServer *ds = tg->get_dserver_device();
+            CORBA::Any the_any;
 
-			DevVarStringArray *send = new DevVarStringArray();
-			send->length(3);
+            DevVarStringArray *send = new DevVarStringArray();
+            send->length(3);
 
-			(*send)[0] = Tango::string_dup(get_name().c_str());
-			std::string str_type;
-			if (type == POLL_CMD)
-				str_type = "command";
-			else
-				str_type = "attribute";
-			str_type = str_type + LOCAL_POLL_REQUEST;
-			(*send)[1] = Tango::string_dup(str_type.c_str());
-			(*send)[2] = Tango::string_dup(obj_name.c_str());
+            (*send)[0] = Tango::string_dup(get_name().c_str());
+            std::string str_type;
+            if (type == POLL_CMD)
+                str_type = "command";
+            else
+                str_type = "attribute";
+            str_type = str_type + LOCAL_POLL_REQUEST;
+            (*send)[1] = Tango::string_dup(str_type.c_str());
+            (*send)[2] = Tango::string_dup(obj_name.c_str());
 
-			the_any <<= send;
+            the_any <<= send;
 
-			CORBA::Any *received_any;
-			received_any = ds->command_inout("RemObjPolling",the_any);
+            CORBA::Any *received_any;
+            received_any = ds->command_inout("RemObjPolling",the_any);
 
-			delete received_any;
-		}
+            delete received_any;
+        }
     }
 }
 

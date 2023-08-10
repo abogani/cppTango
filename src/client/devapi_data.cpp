@@ -1,12 +1,12 @@
 //
-// devapi_data.cpp 	- C++ source code file for TANGO devapi class DeviceData
+// devapi_data.cpp     - C++ source code file for TANGO devapi class DeviceData
 //
-// programmer(s) 	- Andy Gotz (goetz@esrf.fr)
+// programmer(s)     - Andy Gotz (goetz@esrf.fr)
 //
-// original 		- March 2001
+// original         - March 2001
 //
 // Copyright (C) :      2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -691,8 +691,8 @@ bool DeviceData::operator>>(DevState &datum)
 //
 // DeviceData::operator >>(std::vector<bool> &) - extract a vector<bool> from DeviceData
 //
-//	@return true if operation was successful, otherwise - false
-//	@throws ApiDataExcept in case underlying value is not a boolean array
+//    @return true if operation was successful, otherwise - false
+//    @throws ApiDataExcept in case underlying value is not a boolean array
 //-----------------------------------------------------------------------------
 
 bool DeviceData::operator>>(std::vector<bool> &datum)
@@ -2112,10 +2112,10 @@ bool DeviceData::extract(std::string &str, std::vector<unsigned char> &datum)
 
 //+-------------------------------------------------------------------------
 //
-// operator overloading : 	<<
+// operator overloading :     <<
 //
-// description : 	Friend function to ease printing instance of the
-//			DeviceData class
+// description :     Friend function to ease printing instance of the
+//            DeviceData class
 //
 //--------------------------------------------------------------------------
 

@@ -4,7 +4,7 @@
 //
 //
 // Copyright (C) :      2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -32,10 +32,10 @@
 
 
 /****************************************************************************************
- * 																						*
- * 					The ApiUtil class													*
- * 					-----------------													*
- * 																						*
+ *                                                                                         *
+ *                     The ApiUtil class                                                    *
+ *                     -----------------                                                    *
+ *                                                                                         *
  ***************************************************************************************/
 
 /**
@@ -61,13 +61,13 @@ public:
  *
  * @return The singleton instance
  */
-	static ApiUtil *instance();
+    static ApiUtil *instance();
 /**
  * Destroy the ApiUtil instance
  *
  * Destroy the ApiUtil singleton instance.
  */
-	static void cleanup();
+    static void cleanup();
 
 /**
  * Get environment variable
@@ -81,7 +81,7 @@ public:
  * @param [out] value The environment variable value
  * @return Set to -1 if the environment varaibel is not found
  */
-	static int get_env_var(const char *name,std::string &value);
+    static int get_env_var(const char *name,std::string &value);
 /**
  * Get pending asynchronous requets number
  *
@@ -90,10 +90,10 @@ public:
  * @param [in] ty Asynchronous request type
  * @return Pending asynchronous request number
  */
-	size_t pending_asynch_call(asyn_req_type ty)
-	{if (ty==POLLING)return asyn_p_table->get_request_nb();
-	 else if (ty==CALL_BACK)return asyn_p_table->get_cb_request_nb();
-	 else return (asyn_p_table->get_request_nb()+asyn_p_table->get_cb_request_nb());}
+    size_t pending_asynch_call(asyn_req_type ty)
+    {if (ty==POLLING)return asyn_p_table->get_request_nb();
+     else if (ty==CALL_BACK)return asyn_p_table->get_cb_request_nb();
+     else return (asyn_p_table->get_request_nb()+asyn_p_table->get_cb_request_nb());}
 /**
  * Fire callback methods for asynchronous request(s)
  *
@@ -101,7 +101,7 @@ public:
  * arrived replied. Returns immediately if there is no replies already arrived or if there is no asynchronous
  * requests.
  */
-	void get_asynch_replies();
+    void get_asynch_replies();
 /**
  * Fire callback methods for asynchronous request(s) with timeout
  *
@@ -112,7 +112,7 @@ public:
  *
  * @param [in] timeout The timeout value
  */
-	void get_asynch_replies(long timeout);
+    void get_asynch_replies(long timeout);
 /**
  * Set asynchronous callback sub-model
  *
@@ -124,7 +124,7 @@ public:
  *
  * @param [in] csm The asynchronous callback sub-model
  */
-	void set_asynch_cb_sub_model(cb_sub_model csm);
+    void set_asynch_cb_sub_model(cb_sub_model csm);
 /**
  * Get asynchronous callback sub-model
  *
@@ -132,102 +132,102 @@ public:
  *
  * @return The asynchronous callback sub-model
  */
-	cb_sub_model get_asynch_cb_sub_model() {return auto_cb;}
+    cb_sub_model get_asynch_cb_sub_model() {return auto_cb;}
 
 /// @privatesection
 
-	CORBA::ORB_var get_orb() {return _orb;}
-	void set_orb(CORBA::ORB_var orb_in) {_orb = orb_in;}
-	void create_orb();
-	bool is_orb_nil() {return CORBA::is_nil(_orb);}
-	int	get_db_ind();
-	int	get_db_ind(const std::string &host,int port);
-	std::vector<Database *> &get_db_vect() {return db_vect;}
-	bool in_server() {return in_serv;}
-	void in_server(bool serv) {in_serv = serv;}
+    CORBA::ORB_var get_orb() {return _orb;}
+    void set_orb(CORBA::ORB_var orb_in) {_orb = orb_in;}
+    void create_orb();
+    bool is_orb_nil() {return CORBA::is_nil(_orb);}
+    int    get_db_ind();
+    int    get_db_ind(const std::string &host,int port);
+    std::vector<Database *> &get_db_vect() {return db_vect;}
+    bool in_server() {return in_serv;}
+    void in_server(bool serv) {in_serv = serv;}
 
-	TangoSys_Pid get_client_pid() {return cl_pid;}
-	void clean_locking_threads(bool clean=true);
+    TangoSys_Pid get_client_pid() {return cl_pid;}
+    void clean_locking_threads(bool clean=true);
 
-	bool is_lock_exit_installed() {omni_mutex_lock guard(lock_th_map);return exit_lock_installed;}
-	void set_lock_exit_installed(bool in) {omni_mutex_lock guard(lock_th_map);exit_lock_installed = in;}
+    bool is_lock_exit_installed() {omni_mutex_lock guard(lock_th_map);return exit_lock_installed;}
+    void set_lock_exit_installed(bool in) {omni_mutex_lock guard(lock_th_map);exit_lock_installed = in;}
 
-	bool need_reset_already_flag() {return reset_already_executed_flag;}
-	void need_reset_already_flag(bool in) {reset_already_executed_flag = in;}
+    bool need_reset_already_flag() {return reset_already_executed_flag;}
+    void need_reset_already_flag(bool in) {reset_already_executed_flag = in;}
 
-	static inline bool _is_instance_null()
-	{return instance() == nullptr;}
+    static inline bool _is_instance_null()
+    {return instance() == nullptr;}
 
 //
 // Utilities methods
 //
 
-	int get_user_connect_timeout() {return user_connect_timeout;}
+    int get_user_connect_timeout() {return user_connect_timeout;}
 
-	DevLong get_user_sub_hwm() {return user_sub_hwm;}
-	void set_event_buffer_hwm(DevLong val) {if (user_sub_hwm == -1)user_sub_hwm=val;}
+    DevLong get_user_sub_hwm() {return user_sub_hwm;}
+    void set_event_buffer_hwm(DevLong val) {if (user_sub_hwm == -1)user_sub_hwm=val;}
 
-	void get_ip_from_if(std::vector<std::string> &);
-	void print_error_message(const char *);
+    void get_ip_from_if(std::vector<std::string> &);
+    void print_error_message(const char *);
 
-	void set_sig_handler();
+    void set_sig_handler();
 
 //
 // EventConsumer related methods
 //
 
-	void create_notifd_event_consumer();
-	void create_zmq_event_consumer();
+    void create_notifd_event_consumer();
+    void create_zmq_event_consumer();
 
-	bool is_notifd_event_consumer_created() {return notifd_event_consumer != NULL;}
-	NotifdEventConsumer *get_notifd_event_consumer();
+    bool is_notifd_event_consumer_created() {return notifd_event_consumer != NULL;}
+    NotifdEventConsumer *get_notifd_event_consumer();
 
-	bool is_zmq_event_consumer_created() {return zmq_event_consumer != NULL;}
-	ZmqEventConsumer *get_zmq_event_consumer();
+    bool is_zmq_event_consumer_created() {return zmq_event_consumer != NULL;}
+    ZmqEventConsumer *get_zmq_event_consumer();
 
 //
 // Asynchronous methods
 //
 
-	AsynReq	*get_pasyn_table() {return asyn_p_table;}
+    AsynReq    *get_pasyn_table() {return asyn_p_table;}
 
 //
 // Conv. between AttributeValuexxx and DeviceAttribute
 //
 
-	static void attr_to_device(const AttributeValue *,const AttributeValue_3 *,long,DeviceAttribute *);
-	static void attr_to_device(const AttributeValue_4 *,long,DeviceAttribute *);
-	static void attr_to_device(const AttributeValue_5 *,long,DeviceAttribute *);
+    static void attr_to_device(const AttributeValue *,const AttributeValue_3 *,long,DeviceAttribute *);
+    static void attr_to_device(const AttributeValue_4 *,long,DeviceAttribute *);
+    static void attr_to_device(const AttributeValue_5 *,long,DeviceAttribute *);
 
-	static void device_to_attr(const DeviceAttribute &,AttributeValue_4 &);
-	static void device_to_attr(const DeviceAttribute &,AttributeValue &,const std::string &);
+    static void device_to_attr(const DeviceAttribute &,AttributeValue_4 &);
+    static void device_to_attr(const DeviceAttribute &,AttributeValue &,const std::string &);
 
 //
 // Conv. between AttributeConfig and AttributeInfoEx
 //
 
-	static void AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *,AttributeConfig_5 *);
+    static void AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *,AttributeConfig_5 *);
 
 protected:
 /// @privatesection
-	ApiUtil();
-	virtual ~ApiUtil();
+    ApiUtil();
+    virtual ~ApiUtil();
 
-	std::vector<Database *>			db_vect;
-	omni_mutex					the_mutex;
-	CORBA::ORB_var				_orb;
-	bool						in_serv;
+    std::vector<Database *>            db_vect;
+    omni_mutex                    the_mutex;
+    CORBA::ORB_var                _orb;
+    bool                        in_serv;
 
-	cb_sub_model				auto_cb;
-	CbThreadCmd					cb_thread_cmd;
-	CallBackThread				*cb_thread_ptr;
+    cb_sub_model                auto_cb;
+    CbThreadCmd                    cb_thread_cmd;
+    CallBackThread                *cb_thread_ptr;
 
-	AsynReq						*asyn_p_table;
+    AsynReq                        *asyn_p_table;
 
 public:
 /// @privatesection
-	omni_mutex					lock_th_map;
-	std::map<std::string,LockingThread>	lock_threads;
+    omni_mutex                    lock_th_map;
+    std::map<std::string,LockingThread>    lock_threads;
 
 private:
     class ApiUtilExt
@@ -236,16 +236,16 @@ private:
         ApiUtilExt() {}
     };
 
-	static ApiUtil 	*_instance;
-	static omni_mutex			inst_mutex;
-	bool						exit_lock_installed;
-	bool						reset_already_executed_flag;
+    static ApiUtil     *_instance;
+    static omni_mutex            inst_mutex;
+    bool                        exit_lock_installed;
+    bool                        reset_already_executed_flag;
 
     std::unique_ptr<ApiUtilExt>      ext;
 
     NotifdEventConsumer         *notifd_event_consumer;
-    TangoSys_Pid		        cl_pid;
-    int					        user_connect_timeout;
+    TangoSys_Pid                cl_pid;
+    int                            user_connect_timeout;
     ZmqEventConsumer            *zmq_event_consumer;
     std::vector<std::string>              host_ip_adrs;
     DevLong                     user_sub_hwm;

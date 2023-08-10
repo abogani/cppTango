@@ -2,55 +2,55 @@
 
 int main(int argc, char **argv)
 {
-	DeviceProxy *device;
+    DeviceProxy *device;
 
-	if (argc == 1)
-	{
-		TEST_LOG << "usage: %s device" << std::endl;
-		exit(-1);
-	}
+    if (argc == 1)
+    {
+        TEST_LOG << "usage: %s device" << std::endl;
+        exit(-1);
+    }
 
-	std::string device_name = argv[1];
+    std::string device_name = argv[1];
 
-	try
-	{
-		device = new DeviceProxy(device_name);
-	}
-	catch (CORBA::Exception &e)
-	{
-		Except::print_exception(e);
-		exit(1);
-	}
+    try
+    {
+        device = new DeviceProxy(device_name);
+    }
+    catch (CORBA::Exception &e)
+    {
+        Except::print_exception(e);
+        exit(1);
+    }
 
 
-	try
-	{
+    try
+    {
 
 // Send a command in fire and forget mode
 
-		long id;
+        long id;
 
-//		char key;
-//		TEST_LOG << "Hit any key : ";
-//		cin >> key;
+//        char key;
+//        TEST_LOG << "Hit any key : ";
+//        cin >> key;
 
-		id = device->command_inout_asynch("State",true);
+        id = device->command_inout_asynch("State",true);
 
-		assert (id == 0);
-	}
-	catch (Tango::DevFailed &e)
-	{
-		Except::print_exception(e);
-		exit(-1);
-	}
-	catch (CORBA::Exception &ex)
-	{
-		Except::print_exception(ex);
-		exit(-1);
-	}
+        assert (id == 0);
+    }
+    catch (Tango::DevFailed &e)
+    {
+        Except::print_exception(e);
+        exit(-1);
+    }
+    catch (CORBA::Exception &ex)
+    {
+        Except::print_exception(ex);
+        exit(-1);
+    }
 
 
-	delete device;
+    delete device;
 
-	return 0;
+    return 0;
 }

@@ -1,15 +1,15 @@
 //=============================================================================
 //
-// file :		Deviceclass.h
+// file :        Deviceclass.h
 //
-// description :	Include file for the DeviceClass root class.
+// description :    Include file for the DeviceClass root class.
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -52,13 +52,13 @@ class DServer;
 
 //=============================================================================
 //
-//			The DeviceClass class
+//            The DeviceClass class
 //
 //
-// description : 	This class will act as root class for all other
-//			DeviceClass classes. Its job is to define all Device
-//			class related properties and methods which exist only
-//			once e.g. the command list.
+// description :     This class will act as root class for all other
+//            DeviceClass classes. Its job is to define all Device
+//            class related properties and methods which exist only
+//            once e.g. the command list.
 //
 //=============================================================================
 
@@ -74,7 +74,7 @@ class DServer;
 
 class DeviceClass
 {
-	friend class Tango::AutoTangoMonitor;
+    friend class Tango::AutoTangoMonitor;
 public:
 
 /**@name Destructor
@@ -83,7 +83,7 @@ public:
 /**
  * The device destructor.
  */
-	virtual ~DeviceClass();
+    virtual ~DeviceClass();
 //@}
 
 /**@name Miscellaneous methods */
@@ -96,10 +96,10 @@ public:
  * Check if the command is allowed by invoking the <i>is_allowed</i> method
  * If the command is allowed, invokes the <i>execute</i> method.
  *
- * @param 	device	The device on which the command must be executed
- * @param	command	The command name
- * @param	in_any 	The command input data still packed in a CORBA Any object
- * @return	A CORBA Any object with the output data packed in
+ * @param     device    The device on which the command must be executed
+ * @param    command    The command name
+ * @param    in_any     The command input data still packed in a CORBA Any object
+ * @return    A CORBA Any object with the output data packed in
  * @exception DevFailed If the command is not found, if the command is not allowed
  * in the actual device state and re-throws of all the exception thrown by the
  * <i>always_executed_hook</i>, <i>is_alloed</i> and <i>execute</i> methods.
@@ -107,8 +107,8 @@ public:
  * <b>DevFailed</b> exception specification
  *
  */
-	CORBA::Any *command_handler(DeviceImpl *device,
-				    const std::string &command,const CORBA::Any &in_any);
+    CORBA::Any *command_handler(DeviceImpl *device,
+                    const std::string &command,const CORBA::Any &in_any);
 /**
  * Create command objects for all command supported by this class of device.
  *
@@ -117,7 +117,7 @@ public:
  * in a vector of command objects
  *
  */
-	virtual void command_factory() = 0;
+    virtual void command_factory() = 0;
 /**
  * Create all the attributes name supported by this class of device.
  *
@@ -126,7 +126,7 @@ public:
  * create and store the supported attributes in a vector.
  *
  */
-	virtual void attribute_factory(std::vector<Attr *> &) {}
+    virtual void attribute_factory(std::vector<Attr *> &) {}
 /**
  * Create all the pipes supported by this class of device.
  *
@@ -135,7 +135,7 @@ public:
  * create and store the supported pipes in a vector.
  *
  */
-	virtual void pipe_factory() {}
+    virtual void pipe_factory() {}
 
 /**
  * Create device(s).
@@ -150,7 +150,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	virtual void device_factory(const Tango::DevVarStringArray *dev_list) = 0;
+    virtual void device_factory(const Tango::DevVarStringArray *dev_list) = 0;
 
 /**
  * Create device(s) name list (for no database device server).
@@ -162,7 +162,7 @@ public:
  * @param list Reference to the device name list
  */
 
-	virtual void device_name_factory(std::vector<std::string> &list) {(void)list;}
+    virtual void device_name_factory(std::vector<std::string> &list) {(void)list;}
 
 /**
  * Delete device.
@@ -174,7 +174,7 @@ public:
  * @param dev_name Reference to the device name
  */
 
-	void device_destroyer(const std::string &dev_name);
+    void device_destroyer(const std::string &dev_name);
 
 /**
  * Delete device.
@@ -186,7 +186,7 @@ public:
  * @param dev_name Reference to the device name
  */
 
-	void device_destroyer(const char *dev_name);
+    void device_destroyer(const char *dev_name);
 
 //@}
 
@@ -200,31 +200,31 @@ public:
  *
  * @return The TANGO device class name
  */
-	std::string &get_name() {return name;}
+    std::string &get_name() {return name;}
 /**
  * Get the TANGO device class documentation URL.
  *
  * @return The TANGO device class documentation
  */
-	std::string &get_doc_url() {return doc_url;}
+    std::string &get_doc_url() {return doc_url;}
 /**
  * Get the TANGO device type name.
  *
  * @return The TANGO device type name
  */
-	std::string &get_type() {return type;}
+    std::string &get_type() {return type;}
 /**
  * Get the device object vector.
  *
  * @return A reference to the device vector
  */
-	std::vector<DeviceImpl *> &get_device_list() {return device_list;}
+    std::vector<DeviceImpl *> &get_device_list() {return device_list;}
 /**
  * Get the command object vector.
  *
  * @return A reference to the command vector
  */
-	std::vector<Command *> &get_command_list() {return command_list;}
+    std::vector<Command *> &get_command_list() {return command_list;}
 /**
  * Get the pipe object vector.
  *
@@ -232,13 +232,13 @@ public:
  *
  * @return A reference to the pipe vector containing all device pipes
  */
-	std::vector<Pipe *> &get_pipe_list(const std::string &dev_name);
+    std::vector<Pipe *> &get_pipe_list(const std::string &dev_name);
 /**
  * Get a reference to a command object.
  *
  * @return A reference to the command object
  */
-	Command &get_cmd_by_name(const std::string &);
+    Command &get_cmd_by_name(const std::string &);
 /**
  * Get a reference to a pipe object.
  *
@@ -247,38 +247,38 @@ public:
  *
  * @return A reference to the pipe object
  */
-	Pipe &get_pipe_by_name(const std::string &pipe_name,const std::string &dev_name);
+    Pipe &get_pipe_by_name(const std::string &pipe_name,const std::string &dev_name);
 /**
  * Get a pointer to the associated DbClass object.
  *
  * @return Pointer to the DbClas object
  */
 
-	DbClass *get_db_class() {return db_class;}
+    DbClass *get_db_class() {return db_class;}
 /**
  * Get a pointer to the class attributes object
  *
  * @return A pointer to the instance of the MultiClassAttribute
  */
- 	MultiClassAttribute *get_class_attr() {return class_attr;}
+     MultiClassAttribute *get_class_attr() {return class_attr;}
 /**
  * Get a pointer to the class pipes object
  *
  * @return A pointer to the instance of the MultiClassPipe
  */
- 	MultiClassPipe *get_class_pipe() {return class_pipe;}
+     MultiClassPipe *get_class_pipe() {return class_pipe;}
 /**
  * Set the TANGO device type name.
  *
  * @param dev_type The new TANGO device type name
  */
-	void set_type(const std::string &dev_type) {type = dev_type;}
+    void set_type(const std::string &dev_type) {type = dev_type;}
 /**
  * Set the TANGO device type name.
  *
  * @param dev_type The new TANGO device type name
  */
-	void set_type(const char *dev_type) {type = dev_type;}
+    void set_type(const char *dev_type) {type = dev_type;}
 //@}
 
 
@@ -298,7 +298,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void register_signal(long signo);
+    void register_signal(long signo);
 #else
 /**
  * Register a signal.
@@ -315,7 +315,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void register_signal(long signo,bool own_handler = false);
+    void register_signal(long signo,bool own_handler = false);
 #endif
 
 /**
@@ -332,7 +332,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void unregister_signal(long signo);
+    void unregister_signal(long signo);
 
 /**
  * Signal handler.
@@ -343,7 +343,7 @@ public:
  *
  * @param signo The signal number
  */
-	virtual void signal_handler(long signo);
+    virtual void signal_handler(long signo);
 
 //@}
 
@@ -354,10 +354,10 @@ protected:
 /**
  * Construct a newly allocated DeviceClass object.
  *
- * @param 	s	The Tango device class name
+ * @param     s    The Tango device class name
  *
  */
-	DeviceClass(const std::string &s);
+    DeviceClass(const std::string &s);
 //@}
 
 /**@name Miscellaneous protected methods */
@@ -377,7 +377,7 @@ protected:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void export_device(DeviceImpl *dev,const char* corba_dev_name = "Unused");
+    void export_device(DeviceImpl *dev,const char* corba_dev_name = "Unused");
 
 /**
  * Set a Tango classs default command
@@ -390,7 +390,7 @@ protected:
  * @param cmd The command object
  */
 
-	void set_default_command(Command *cmd) {default_cmd = cmd;}
+    void set_default_command(Command *cmd) {default_cmd = cmd;}
 //@}
 
 /**@name Class data members */
@@ -398,86 +398,86 @@ protected:
 /**
  * The TANGO device class name
  */
-	std::string 					name;
+    std::string                     name;
 /**
  * The TANGO device class documentation URL
  */
-	std::string					doc_url;
+    std::string                    doc_url;
 /**
  * The TANGO device type name
  */
-	std::string					type;
+    std::string                    type;
 /**
  * The command(s) list
  */
-	std::vector<Command *> 		command_list;
+    std::vector<Command *>         command_list;
 /**
  * The device(s) list
  */
-	std::vector<DeviceImpl *>	device_list;
+    std::vector<DeviceImpl *>    device_list;
 /**
  * The associated DbClass object
  */
-	DbClass					*db_class;
+    DbClass                    *db_class;
 /**
  * Pointer to the class multi attribute object
  */
- 	MultiClassAttribute		*class_attr;
+     MultiClassAttribute        *class_attr;
 /**
  * Pointer to the class multi pipe object
  */
- 	MultiClassPipe			*class_pipe;
+     MultiClassPipe            *class_pipe;
 /**
  * The pipe(s) list
  */
-	std::vector<Pipe *> 			pipe_list;
+    std::vector<Pipe *>             pipe_list;
 //@}
 
 public:
 /// @privatesection
-	std::vector<std::string> &get_nodb_name_list() {return nodb_name_list;}
-	void set_memorized_values(bool flag, long idx = 0,bool from_init = false);
+    std::vector<std::string> &get_nodb_name_list() {return nodb_name_list;}
+    void set_memorized_values(bool flag, long idx = 0,bool from_init = false);
 
-	void add_wiz_dev_prop(const std::string &name,const std::string &desc,const std::string &def);
-	void add_wiz_dev_prop(const std::string &name,const std::string &desc);
+    void add_wiz_dev_prop(const std::string &name,const std::string &desc,const std::string &def);
+    void add_wiz_dev_prop(const std::string &name,const std::string &desc);
 
-	void add_wiz_class_prop(const std::string &name,const std::string &desc,const std::string &def);
-	void add_wiz_class_prop(const std::string &name,const std::string &desc);
+    void add_wiz_class_prop(const std::string &name,const std::string &desc,const std::string &def);
+    void add_wiz_class_prop(const std::string &name,const std::string &desc);
 
-	std::vector<std::string> &get_wiz_class_prop() {return wiz_class_prop;}
-	std::vector<std::string> &get_wiz_dev_prop() {return wiz_dev_prop;}
+    std::vector<std::string> &get_wiz_class_prop() {return wiz_class_prop;}
+    std::vector<std::string> &get_wiz_dev_prop() {return wiz_dev_prop;}
 
-	std::string &get_cvs_tag() {return cvs_tag;}
-	std::string &get_cvs_location() {return cvs_location;}
+    std::string &get_cvs_tag() {return cvs_tag;}
+    std::string &get_cvs_location() {return cvs_location;}
 
-	std::string &get_svn_tag() {return svn_tag;}
-	std::string &get_svn_location() {return svn_location;}
+    std::string &get_svn_tag() {return svn_tag;}
+    std::string &get_svn_location() {return svn_location;}
 
-	void set_cvs_tag(const std::string &str) {cvs_tag=str;}
-	void set_cvs_location(const std::string &str) {cvs_location=str;}
+    void set_cvs_tag(const std::string &str) {cvs_tag=str;}
+    void set_cvs_location(const std::string &str) {cvs_location=str;}
 
-	void add_device(DeviceImpl *dev) {device_list.push_back(dev);}
-	void delete_dev(long idx,Tango::Util *tg,PortableServer::POA_ptr r_poa);
+    void add_device(DeviceImpl *dev) {device_list.push_back(dev);}
+    void delete_dev(long idx,Tango::Util *tg,PortableServer::POA_ptr r_poa);
 
-	virtual void delete_class() {}
-	void get_mcast_event(DServer *);
+    virtual void delete_class() {}
+    void get_mcast_event(DServer *);
 
-	bool is_command_allowed(const char *);
+    bool is_command_allowed(const char *);
 
-	bool get_device_factory_done() {return device_factory_done;}
-	void set_device_factory_done(bool val) {device_factory_done = val;}
+    bool get_device_factory_done() {return device_factory_done;}
+    void set_device_factory_done(bool val) {device_factory_done = val;}
 
-	void check_att_conf();
-	void release_devices_mon();
+    void check_att_conf();
+    void release_devices_mon();
 
-	void remove_command(const std::string &);
+    void remove_command(const std::string &);
 
-	void create_device_pipe(DeviceClass *,DeviceImpl *);
-	std::vector<Pipe *> &get_pipe_list() {return pipe_list;}
+    void create_device_pipe(DeviceClass *,DeviceImpl *);
+    std::vector<Pipe *> &get_pipe_list() {return pipe_list;}
 
 protected:
 /// @privatesection
-	Command *get_default_command() {return default_cmd;}
+    Command *get_default_command() {return default_cmd;}
 
 private:
     class DeviceClassExt
@@ -488,13 +488,13 @@ private:
         std::map<std::string,std::vector<Pipe *> > dev_pipe_list;
     };
 
-	void get_class_system_resource();
-	void throw_mem_value(DeviceImpl *,const Attribute &);
+    void get_class_system_resource();
+    void throw_mem_value(DeviceImpl *,const Attribute &);
 
-	std::vector<std::string>			wiz_class_prop;
-	std::vector<std::string>			wiz_dev_prop;
+    std::vector<std::string>            wiz_class_prop;
+    std::vector<std::string>            wiz_dev_prop;
 
-	std::vector<std::string>			allowed_cmds;
+    std::vector<std::string>            allowed_cmds;
 
     std::unique_ptr<DeviceClassExt>      ext;           // Class extension
 
@@ -502,11 +502,11 @@ private:
 // Ported from the extension class
 //
 
-    std::vector<std::string>		nodb_name_list;
-    TangoMonitor		only_one;
-    std::string				cvs_tag;
-    std::string				cvs_location;
-    Command * 			default_cmd;
+    std::vector<std::string>        nodb_name_list;
+    TangoMonitor        only_one;
+    std::string                cvs_tag;
+    std::string                cvs_location;
+    Command *             default_cmd;
     std::string              svn_tag;
     std::string              svn_location;
     bool                device_factory_done;

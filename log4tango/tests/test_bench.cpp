@@ -1,8 +1,8 @@
 //
 // Copyright (C) :  2004,2005,2006,2007,2008,2009,2010
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
 
     std::cout << "  level: " << log4tango::Level::get_name(pv)
               << "  count: " << count << std::endl << " iterations"
-	      << "  size: " << size  << std::endl << " bytes"
-	      << std::endl;
+          << "  size: " << size  << std::endl << " bytes"
+          << std::endl;
 
     log4tango::Logger log("cat");
     log.set_level(pv - 100);
@@ -66,37 +66,37 @@ int main(int argc, char* argv[])
     const int num_tests = 7;
 
     const char* tests[num_tests] = {
-    	"  layout::log.error(buffer) : ",
-	"  layout::log.error_stream << std:string : ",
-	"  layout::log.error(std:string) :  ",
-	"  patternlayout::log.error(buffer) : ",
-	"  patternlayout::log.error_stream << std:string : ",
-	"  patternlayout::log.error(std:string) :  ",
-	"  patternlayout::if cat.is_p_enabled(p) log.error_stream << std:string : ",
+        "  layout::log.error(buffer) : ",
+    "  layout::log.error_stream << std:string : ",
+    "  layout::log.error(std:string) :  ",
+    "  patternlayout::log.error(buffer) : ",
+    "  patternlayout::log.error_stream << std:string : ",
+    "  patternlayout::log.error(std:string) :  ",
+    "  patternlayout::if cat.is_p_enabled(p) log.error_stream << std:string : ",
     };
 
     float results[num_tests];
     ::memset(results, 0, num_tests * sizeof(float));
 
     {
-	clock.start();
-	for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, "%s", buffer);
-	clock.stop();
-	results[0] = ((float)clock.elapsed()) / count;
+    clock.start();
+    for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, "%s", buffer);
+    clock.stop();
+    results[0] = ((float)clock.elapsed()) / count;
     }
     {
-	std::string str(size, 'X');
-	clock.start();
-	for (int i = 0; i < count; i++) log.error_stream() << str;
-	clock.stop();
-	results[1] = ((float)clock.elapsed()) / count;
+    std::string str(size, 'X');
+    clock.start();
+    for (int i = 0; i < count; i++) log.error_stream() << str;
+    clock.stop();
+    results[1] = ((float)clock.elapsed()) / count;
     }
     {
-	std::string str(size, 'X');
-	clock.start();
-	for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, str);
-	clock.stop();
-	results[2] = ((float)clock.elapsed()) / count;
+    std::string str(size, 'X');
+    clock.start();
+    for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, str);
+    clock.stop();
+    results[2] = ((float)clock.elapsed()) / count;
     }
 
     {
@@ -105,33 +105,33 @@ int main(int argc, char* argv[])
         ostreamAppender->set_layout(patternLayout);
     }
     {
-	clock.start();
-	for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, "%s", buffer);
-	clock.stop();
-	results[3] = ((float)clock.elapsed()) / count;
+    clock.start();
+    for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, "%s", buffer);
+    clock.stop();
+    results[3] = ((float)clock.elapsed()) / count;
     }
     {
-	std::string str(size, 'X');
-	clock.start();
-	for (int i = 0; i < count; i++) log.error_stream() << str;
-	clock.stop();
-	results[4] = ((float)clock.elapsed()) / count;
+    std::string str(size, 'X');
+    clock.start();
+    for (int i = 0; i < count; i++) log.error_stream() << str;
+    clock.stop();
+    results[4] = ((float)clock.elapsed()) / count;
     }
     {
-	std::string str(size, 'X');
-	clock.start();
-	for (int i = 0; i < count; i++)
-	  if (log.is_level_enabled(pv))
-	    log.error_stream() << str;
-	clock.stop();
-	results[6] = ((float)clock.elapsed()) / count;
+    std::string str(size, 'X');
+    clock.start();
+    for (int i = 0; i < count; i++)
+      if (log.is_level_enabled(pv))
+        log.error_stream() << str;
+    clock.stop();
+    results[6] = ((float)clock.elapsed()) / count;
     }
     {
-	std::string str(size, 'X');
-	clock.start();
-	for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, str);
-	clock.stop();
-	results[5] = ((float)clock.elapsed()) / count;
+    std::string str(size, 'X');
+    clock.start();
+    for (int i = 0; i < count; i++) log.error(__FILE__, __LINE__, str);
+    clock.stop();
+    results[5] = ((float)clock.elapsed()) / count;
     }
 
     for (int i = 0; i < num_tests; i++) std::cout << tests[i] << results[i] << " us" << std::endl;

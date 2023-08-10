@@ -2,10 +2,10 @@
 //
 // C++ source code file for TANGO api class ApiUtil
 //
-// programmer 	- Emmanuel Taurel (taurel@esrf.fr)
+// programmer     - Emmanuel Taurel (taurel@esrf.fr)
 //
 // Copyright (C) :      2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -21,7 +21,7 @@
 // You should have received a copy of the GNU Lesser General Public License along with Tango.
 // If not, see <http://www.gnu.org/licenses/>.
 //
-// original 	- May 2002
+// original     - May 2002
 //
 //
 //
@@ -69,11 +69,11 @@ void _t_handler(TANGO_UNUSED(int signum))
 
 ApiUtil *ApiUtil::instance()
 {
-	omni_mutex_lock lo(inst_mutex);
+    omni_mutex_lock lo(inst_mutex);
 
-	if (_instance == nullptr)
-		_instance = new ApiUtil();
-	return _instance;
+    if (_instance == nullptr)
+        _instance = new ApiUtil();
+    return _instance;
 }
 
 void ApiUtil::cleanup()
@@ -88,10 +88,10 @@ void ApiUtil::cleanup()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::ApiUtil()
+//        ApiUtil::ApiUtil()
 //
 // description :
-//		Constructor of the ApiUtil class.
+//        Constructor of the ApiUtil class.
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -179,10 +179,10 @@ ApiUtil::ApiUtil()
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::~ApiUtil()
+//        ApiUtil::~ApiUtil()
 //
 // description :
-//		Destructor of the ApiUtil class.
+//        Destructor of the ApiUtil class.
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -255,10 +255,10 @@ ApiUtil::~ApiUtil()
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::set_sig_handler()
+//        ApiUtil::set_sig_handler()
 //
 // description :
-//		Install a signal handler for SIGINT and SIGTERM but only if nothing is already installed
+//        Install a signal handler for SIGINT and SIGTERM but only if nothing is already installed
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -295,10 +295,10 @@ void ApiUtil::set_sig_handler()
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::create_orb()
+//        ApiUtil::create_orb()
 //
 // description :
-//		Create the CORBA orb object
+//        Create the CORBA orb object
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -367,10 +367,10 @@ void ApiUtil::create_orb()
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		ApiUtil::get_db_ind()
+//         ApiUtil::get_db_ind()
 //
 // description :
-//		Retrieve a Tango database object created from the TANGO_HOST environment variable
+//        Retrieve a Tango database object created from the TANGO_HOST environment variable
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -425,11 +425,11 @@ int ApiUtil::get_db_ind(const std::string &host, int port)
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_asynch_replies()
+//        ApiUtil::get_asynch_replies()
 //
 // description :
-//		Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
-//		not yet arrived. Fire callback for replies already arrived
+//        Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
+//        not yet arrived. Fire callback for replies already arrived
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -513,15 +513,15 @@ void ApiUtil::process_request(Connection* connection, const TgRequest& tg_req, C
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_asynch_replies()
+//        ApiUtil::get_asynch_replies()
 //
 // description :
-//		Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
-//		not yet arrived. Fire callback for replies already arrived
+//        Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
+//        not yet arrived. Fire callback for replies already arrived
 //
 // arg(s) :
-//		in :
-//			- call_timeout : The timeout value in mS
+//        in :
+//            - call_timeout : The timeout value in mS
 //
 //-----------------------------------------------------------------------------
 
@@ -701,14 +701,14 @@ void ApiUtil::get_asynch_replies(long call_timeout)
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::set_asynch_cb_sub_model()
+//        ApiUtil::set_asynch_cb_sub_model()
 //
 // description :
-//		Set the callback automatic mode (Fired by dedicated call or automatically fired by a separate thread)
+//        Set the callback automatic mode (Fired by dedicated call or automatically fired by a separate thread)
 //
 // arg(s) :
-//		in :
-//			- mode : The new callback mode
+//        in :
+//            - mode : The new callback mode
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -754,11 +754,11 @@ void ApiUtil::set_asynch_cb_sub_model(cb_sub_model mode)
 //-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::create_xxx_event_consumer()
+//        ApiUtil::create_xxx_event_consumer()
 //
 // description :
-//		Create the event consumer. This will automatically start a new thread which is waiting in a CORBA::run()
-//		indefintely for events. It will then trigger the events.
+//        Create the event consumer. This will automatically start a new thread which is waiting in a CORBA::run()
+//        indefintely for events. It will then trigger the events.
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -785,14 +785,14 @@ ZmqEventConsumer *ApiUtil::get_zmq_event_consumer()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::clean_locking_threads()
+//        ApiUtil::clean_locking_threads()
 //
 // description :
-//		Ask all remaining locking threads to exit
+//        Ask all remaining locking threads to exit
 //
 // args :
-//		in :
-//			- clean :
+//        in :
+//            - clean :
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -849,7 +849,7 @@ void ApiUtil::clean_locking_threads(bool clean)
 //-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::attr_to_device()
+//        ApiUtil::attr_to_device()
 //
 // description :
 //
@@ -1240,16 +1240,16 @@ void ApiUtil::attr_to_device(const AttributeValue_5 *attr_value_5, TANGO_UNUSED(
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::device_to_attr()
+//        ApiUtil::device_to_attr()
 //
 // description :
-//		initialize one AttributeValue instance from a DeviceAttribute one
+//        initialize one AttributeValue instance from a DeviceAttribute one
 //
 // arg(s) :
-//		in :
-//			- dev_attr : The DeviceAttribute instance taken as source
-//		out :
-//			- att : The AttributeValue used as destination
+//        in :
+//            - dev_attr : The DeviceAttribute instance taken as source
+//        out :
+//            - att : The AttributeValue used as destination
 //
 //---------------------------------------------------------------------------------------------------------------
 
@@ -1385,16 +1385,16 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &at
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::AttributeInfoEx_to_AttributeConfig()
+//        ApiUtil::AttributeInfoEx_to_AttributeConfig()
 //
 // description :
-//		Initialize one AttributeConfig instance from a AttributeInfoEx one
+//        Initialize one AttributeConfig instance from a AttributeInfoEx one
 //
 // arg(s) :
-//		in :
-//			- aie : The AttributeInfoEx instance taken as source
-//		out :
-//			- att_conf_5 : The AttributeConfig used as destination
+//        in :
+//            - aie : The AttributeInfoEx instance taken as source
+//        out :
+//            - att_conf_5 : The AttributeConfig used as destination
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -1490,19 +1490,19 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_env_var()
+//        ApiUtil::get_env_var()
 //
 // description :
-//		Get environment variable
+//        Get environment variable
 //
 // arg(s) :
-//		in :
-//			- env_var_name : The environment variable name
-//		out :
-//			- env_var : Reference to the string initialised with the env. variable value (if found)
+//        in :
+//            - env_var_name : The environment variable name
+//        out :
+//            - env_var : Reference to the string initialised with the env. variable value (if found)
 //
 // return :
-//		0 if the env. variable is found and -1 otherwise
+//        0 if the env. variable is found and -1 otherwise
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1515,14 +1515,14 @@ int ApiUtil::get_env_var(const char *env_var_name, std::string &env_var)
 //---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_ip_from_if()
+//        ApiUtil::get_ip_from_if()
 //
 // description :
-//		Get host IP address from its network interface
+//        Get host IP address from its network interface
 //
 // arg(s) :
-//		out :
-//			- ip_adr_list : Host IP address
+//        out :
+//            - ip_adr_list : Host IP address
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1672,14 +1672,14 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::print_error_message
+//        ApiUtil::print_error_message
 //
 // description :
-//		Print error message on stderr but first print date
+//        Print error message on stderr but first print date
 //
 // argument :
-//		in :
-//			- mess : The user error message
+//        in :
+//            - mess : The user error message
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -1692,10 +1692,10 @@ void ApiUtil::print_error_message(const char *mess)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // function
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the AttributeInfo class
+//        Friend function to ease printing instance of the AttributeInfo class
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -1755,10 +1755,10 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfo &p)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	=
+//         operator overloading :     =
 //
 // description :
-//		Assignement operator for the AttributeInfoEx class from a AttributeConfig_2 pointer
+//        Assignement operator for the AttributeInfoEx class from a AttributeConfig_2 pointer
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1794,10 +1794,10 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_2 *att_2)
 //+---------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	=
+//         operator overloading :     =
 //
 // description :
-//		Assignement operator for the AttributeInfoEx class from a AttributeConfig_3 pointer
+//        Assignement operator for the AttributeInfoEx class from a AttributeConfig_3 pointer
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -1869,10 +1869,10 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_3 *att_3)
 //+---------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	=
+//         operator overloading :     =
 //
 // description :
-//		Assignement operator for the AttributeInfoEx class from a AttributeConfig_5 pointer
+//        Assignement operator for the AttributeInfoEx class from a AttributeConfig_5 pointer
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -1965,10 +1965,10 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the AttributeInfo class
+//        Friend function to ease printing instance of the AttributeInfo class
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -2144,10 +2144,10 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the PipeInfo class
+//        Friend function to ease printing instance of the PipeInfo class
 //
 //-----------------------------------------------------------------------------------------------------------------
 

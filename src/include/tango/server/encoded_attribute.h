@@ -1,12 +1,12 @@
 ///=============================================================================
 //
-// file :		encoded_attribute.h
+// file :        encoded_attribute.h
 //
-// description :	Include file for the management of Tango::DevEncoded format
+// description :    Include file for the management of Tango::DevEncoded format
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		JL Pons
+// author(s) :        JL Pons
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
 //                      European Synchrotron Radiation Facility
@@ -71,7 +71,7 @@ namespace Tango
              * passed to the attribute with the attribute::set_value() method
              *
              * @param buf_pool_size    Buffer pool size
-             * @param serialization	   Set to true if the instance manage the data buffer serialization
+             * @param serialization       Set to true if the instance manage the data buffer serialization
              *
              */
             EncodedAttribute(int buf_pool_size,bool serialization = false);
@@ -221,14 +221,14 @@ namespace Tango
             {
             };
 
-            unsigned char 		    **buffer_array;
-            std::size_t  		    *buffSize_array;
-            omni_mutex			    *mutex_array;
-            char          		    *format;
+            unsigned char             **buffer_array;
+            std::size_t              *buffSize_array;
+            omni_mutex                *mutex_array;
+            char                      *format;
 
-            int 					index;
-            int					    buf_elt_nb;
-            bool					manage_exclusion;
+            int                     index;
+            int                        buf_elt_nb;
+            bool                    manage_exclusion;
 
             std::unique_ptr<EncodedAttributeExt>     ext;           // Class extension
 

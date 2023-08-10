@@ -3,7 +3,7 @@
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -38,7 +38,7 @@ namespace Tango {
 
 /***************************************************************************
 *
-*		Exception classes used for the write_attribute call
+*        Exception classes used for the write_attribute call
 *
 ****************************************************************************/
 
@@ -55,14 +55,14 @@ namespace Tango {
 class NamedDevFailed
 {
 public:
-  std::string		    name;           ///< The name of the attribute which fails
-	long		    idx_in_call;    ///< Index in the write_attributes method parameter vector of the attribute which failed.
-	DevErrorList	err_stack;      ///< The error stack
+  std::string            name;           ///< The name of the attribute which fails
+    long            idx_in_call;    ///< Index in the write_attributes method parameter vector of the attribute which failed.
+    DevErrorList    err_stack;      ///< The error stack
 
 /// @privatesection
 
-	NamedDevFailed(const DevErrorList &err,const std::string &na,long idx):name(na),idx_in_call(idx),err_stack(err) {}
-	NamedDevFailed();
+    NamedDevFailed(const DevErrorList &err,const std::string &na,long idx):name(na),idx_in_call(idx),err_stack(err) {}
+    NamedDevFailed();
 };
 
 /**
@@ -85,7 +85,7 @@ public:
  *
  * @return The number of attribute(s) which fail during the write_attribute call
  */
-	size_t get_faulty_attr_nb() {return err_list.size();}
+    size_t get_faulty_attr_nb() {return err_list.size();}
 /**
  * Check if the call failed
  *
@@ -93,20 +93,20 @@ public:
  *
  * @return A boolean set to true if the call failed for at least one attribute
  */
-	bool call_failed() {if ((err_list.empty()==true) && (errors.length()!=0))return true;else return false;}
+    bool call_failed() {if ((err_list.empty()==true) && (errors.length()!=0))return true;else return false;}
 
-	std::vector<NamedDevFailed>	err_list;   ///< There is one element in this vector for each attribute which failed during its writing.
+    std::vector<NamedDevFailed>    err_list;   ///< There is one element in this vector for each attribute which failed during its writing.
 
 /// @privatesection
 
-	NamedDevFailedList(const Tango::MultiDevFailed &,std::string,const char *,const char *);
-	NamedDevFailedList() {}
+    NamedDevFailedList(const Tango::MultiDevFailed &,std::string,const char *,const char *);
+    NamedDevFailedList() {}
 };
 
 
 /****************************************************************************
 *
-*		Macro to define API specific exception and their methods
+*        Macro to define API specific exception and their methods
 *
 *****************************************************************************/
 
@@ -114,260 +114,260 @@ public:
 class E: public Tango::DevFailed \
 { \
 public: \
-	E(const DevErrorList& err):DevFailed(err) {} \
+    E(const DevErrorList& err):DevFailed(err) {} \
 }; \
 class I \
 { \
 public: \
-	static inline void throw_exception(const char *reason,const std::string &desc,const char *origin, \
-					   Tango::ErrSeverity sever = Tango::ERR) \
-	{\
-		Tango::DevErrorList errors(1);\
-		errors.length(1);\
-		errors[0].desc = Tango::string_dup(desc.c_str()); \
-		errors[0].severity = sever; \
-		errors[0].reason = Tango::string_dup(reason);\
-		errors[0].origin = Tango::string_dup(origin);\
-		throw Tango::E(errors);\
-	}\
+    static inline void throw_exception(const char *reason,const std::string &desc,const char *origin, \
+                       Tango::ErrSeverity sever = Tango::ERR) \
+    {\
+        Tango::DevErrorList errors(1);\
+        errors.length(1);\
+        errors[0].desc = Tango::string_dup(desc.c_str()); \
+        errors[0].severity = sever; \
+        errors[0].reason = Tango::string_dup(reason);\
+        errors[0].origin = Tango::string_dup(origin);\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void throw_exception(const char *reason,char *desc,const char *origin,\
-					   Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(1);\
-		errors.length(1);\
-		errors[0].desc = Tango::string_dup(desc);\
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(reason);\
-		errors[0].origin = Tango::string_dup(origin);\
-		delete[] desc;\
-		throw Tango::E(errors);\
-	}\
+    static inline void throw_exception(const char *reason,char *desc,const char *origin,\
+                       Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(1);\
+        errors.length(1);\
+        errors[0].desc = Tango::string_dup(desc);\
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(reason);\
+        errors[0].origin = Tango::string_dup(origin);\
+        delete[] desc;\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void throw_exception(const char *reason,const char *desc,const char *origin,\
-					   Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(1);\
-		errors.length(1);\
-		errors[0].desc = Tango::string_dup(desc);\
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(reason);\
-		errors[0].origin = Tango::string_dup(origin);\
-		throw Tango::E(errors);\
-	}\
+    static inline void throw_exception(const char *reason,const char *desc,const char *origin,\
+                       Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(1);\
+        errors.length(1);\
+        errors[0].desc = Tango::string_dup(desc);\
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(reason);\
+        errors[0].origin = Tango::string_dup(origin);\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void re_throw_exception(CORBA::SystemException &cex,\
-					      const std::string &reason,const std::string &desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		Tango::Except::the_mutex.lock(); \
-		char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
-		errors[0].desc = Tango::string_dup(tmp);\
-		Tango::Except::the_mutex.unlock(); \
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin);\
-		errors[1].desc = Tango::string_dup(desc.c_str());\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason.c_str());\
-		errors[1].origin = Tango::string_dup(origin);\
-		throw Tango::E(errors);\
-	}\
+    static inline void re_throw_exception(CORBA::SystemException &cex,\
+                          const std::string &reason,const std::string &desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        Tango::Except::the_mutex.lock(); \
+        char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
+        errors[0].desc = Tango::string_dup(tmp);\
+        Tango::Except::the_mutex.unlock(); \
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin);\
+        errors[1].desc = Tango::string_dup(desc.c_str());\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason.c_str());\
+        errors[1].origin = Tango::string_dup(origin);\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void re_throw_exception(CORBA::SystemException &cex,\
-					      char *reason,char *desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		Tango::Except::the_mutex.lock(); \
-		char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
-		errors[0].desc = Tango::string_dup(tmp);\
-		Tango::Except::the_mutex.unlock(); \
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin);\
-		errors[1].desc = Tango::string_dup(desc);\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason);\
-		errors[1].origin = Tango::string_dup(origin);\
-		delete[] desc;\
-		delete[] reason;\
-		throw Tango::E(errors);\
-	}\
-	static inline void re_throw_exception(CORBA::SystemException &cex,\
-					      const char *reason,const std::string &desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		Tango::Except::the_mutex.lock(); \
-		char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
-		errors[0].desc = Tango::string_dup(tmp);\
-		Tango::Except::the_mutex.unlock(); \
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin);\
-		errors[1].desc = Tango::string_dup(desc.c_str());\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason);\
-		errors[1].origin = Tango::string_dup(origin);\
-		throw Tango::E(errors);\
-	}\
-	static inline void re_throw_exception(CORBA::SystemException &cex,\
-					      const char *reason,const std::string &desc,\
-					      const std::string &origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		Tango::Except::the_mutex.lock(); \
-		char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
-		errors[0].desc = Tango::string_dup(tmp);\
-		Tango::Except::the_mutex.unlock(); \
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin.c_str());\
-		errors[1].desc = Tango::string_dup(desc.c_str());\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason);\
-		errors[1].origin = Tango::string_dup(origin.c_str());\
-		throw Tango::E(errors);\
-	}\
+    static inline void re_throw_exception(CORBA::SystemException &cex,\
+                          char *reason,char *desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        Tango::Except::the_mutex.lock(); \
+        char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
+        errors[0].desc = Tango::string_dup(tmp);\
+        Tango::Except::the_mutex.unlock(); \
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin);\
+        errors[1].desc = Tango::string_dup(desc);\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason);\
+        errors[1].origin = Tango::string_dup(origin);\
+        delete[] desc;\
+        delete[] reason;\
+        throw Tango::E(errors);\
+    }\
+    static inline void re_throw_exception(CORBA::SystemException &cex,\
+                          const char *reason,const std::string &desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        Tango::Except::the_mutex.lock(); \
+        char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
+        errors[0].desc = Tango::string_dup(tmp);\
+        Tango::Except::the_mutex.unlock(); \
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin);\
+        errors[1].desc = Tango::string_dup(desc.c_str());\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason);\
+        errors[1].origin = Tango::string_dup(origin);\
+        throw Tango::E(errors);\
+    }\
+    static inline void re_throw_exception(CORBA::SystemException &cex,\
+                          const char *reason,const std::string &desc,\
+                          const std::string &origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        Tango::Except::the_mutex.lock(); \
+        char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
+        errors[0].desc = Tango::string_dup(tmp);\
+        Tango::Except::the_mutex.unlock(); \
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin.c_str());\
+        errors[1].desc = Tango::string_dup(desc.c_str());\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason);\
+        errors[1].origin = Tango::string_dup(origin.c_str());\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void re_throw_exception(CORBA::SystemException &cex,\
-					      const char *reason,char *desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		Tango::Except::the_mutex.lock(); \
-		char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
-		errors[0].desc = Tango::string_dup(tmp);\
-		Tango::Except::the_mutex.unlock(); \
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin);\
-		errors[1].desc = Tango::string_dup(desc);\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason);\
-		errors[1].origin = Tango::string_dup(origin);\
-		delete[] desc;\
-		throw Tango::E(errors);\
-	}\
+    static inline void re_throw_exception(CORBA::SystemException &cex,\
+                          const char *reason,char *desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        Tango::Except::the_mutex.lock(); \
+        char *tmp = Tango::Except::print_CORBA_SystemException(&cex);\
+        errors[0].desc = Tango::string_dup(tmp);\
+        Tango::Except::the_mutex.unlock(); \
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin);\
+        errors[1].desc = Tango::string_dup(desc);\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason);\
+        errors[1].origin = Tango::string_dup(origin);\
+        delete[] desc;\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void re_throw_exception(Tango::E &ex,\
-					      const char *reason,char *desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		long nb_err = ex.errors.length();\
-		ex.errors.length(nb_err + 1);\
-		ex.errors[nb_err].severity = sever;\
-		ex.errors[nb_err].desc = Tango::string_dup(desc);\
-		delete[] desc;\
-		ex.errors[nb_err].origin = Tango::string_dup(origin);\
-		ex.errors[nb_err].reason = Tango::string_dup(reason);\
-		throw ex;\
-	}\
+    static inline void re_throw_exception(Tango::E &ex,\
+                          const char *reason,char *desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        long nb_err = ex.errors.length();\
+        ex.errors.length(nb_err + 1);\
+        ex.errors[nb_err].severity = sever;\
+        ex.errors[nb_err].desc = Tango::string_dup(desc);\
+        delete[] desc;\
+        ex.errors[nb_err].origin = Tango::string_dup(origin);\
+        ex.errors[nb_err].reason = Tango::string_dup(reason);\
+        throw ex;\
+    }\
 \
-	static inline void re_throw_exception(Tango::E &ex,\
-					      const char *reason,const std::string &desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		long nb_err = ex.errors.length();\
-		ex.errors.length(nb_err + 1);\
-		ex.errors[nb_err].severity = sever;\
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());\
-		ex.errors[nb_err].origin = Tango::string_dup(origin);\
-		ex.errors[nb_err].reason = Tango::string_dup(reason);\
-		throw ex;\
-	}\
-	static inline void re_throw_exception(Tango::DevFailed &ex,\
-					      const char *reason,char *desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		long nb_err = ex.errors.length();\
-		ex.errors.length(nb_err + 1);\
-		ex.errors[nb_err].severity = sever;\
-		ex.errors[nb_err].desc = Tango::string_dup(desc);\
-		delete[] desc;\
-		ex.errors[nb_err].origin = Tango::string_dup(origin);\
-		ex.errors[nb_err].reason = Tango::string_dup(reason);\
-		throw ex;\
-	}\
+    static inline void re_throw_exception(Tango::E &ex,\
+                          const char *reason,const std::string &desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        long nb_err = ex.errors.length();\
+        ex.errors.length(nb_err + 1);\
+        ex.errors[nb_err].severity = sever;\
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());\
+        ex.errors[nb_err].origin = Tango::string_dup(origin);\
+        ex.errors[nb_err].reason = Tango::string_dup(reason);\
+        throw ex;\
+    }\
+    static inline void re_throw_exception(Tango::DevFailed &ex,\
+                          const char *reason,char *desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        long nb_err = ex.errors.length();\
+        ex.errors.length(nb_err + 1);\
+        ex.errors[nb_err].severity = sever;\
+        ex.errors[nb_err].desc = Tango::string_dup(desc);\
+        delete[] desc;\
+        ex.errors[nb_err].origin = Tango::string_dup(origin);\
+        ex.errors[nb_err].reason = Tango::string_dup(reason);\
+        throw ex;\
+    }\
 \
-	static inline void re_throw_exception(Tango::DevFailed &ex,\
-					      const char *reason,const std::string &desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		long nb_err = ex.errors.length();\
-		ex.errors.length(nb_err + 1);\
-		ex.errors[nb_err].severity = sever;\
-		ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());\
-		ex.errors[nb_err].origin = Tango::string_dup(origin);\
-		ex.errors[nb_err].reason = Tango::string_dup(reason);\
-		throw ex;\
-	}\
-	static inline void re_throw_exception(Tango::DevFailed &ex,\
-					      const char *reason,const char *desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		long nb_err = ex.errors.length();\
-		ex.errors.length(nb_err + 1);\
-		ex.errors[nb_err].severity = sever;\
-		ex.errors[nb_err].desc = Tango::string_dup(desc);\
-		ex.errors[nb_err].origin = Tango::string_dup(origin);\
-		ex.errors[nb_err].reason = Tango::string_dup(reason);\
-		throw ex;\
-	}\
+    static inline void re_throw_exception(Tango::DevFailed &ex,\
+                          const char *reason,const std::string &desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        long nb_err = ex.errors.length();\
+        ex.errors.length(nb_err + 1);\
+        ex.errors[nb_err].severity = sever;\
+        ex.errors[nb_err].desc = Tango::string_dup(desc.c_str());\
+        ex.errors[nb_err].origin = Tango::string_dup(origin);\
+        ex.errors[nb_err].reason = Tango::string_dup(reason);\
+        throw ex;\
+    }\
+    static inline void re_throw_exception(Tango::DevFailed &ex,\
+                          const char *reason,const char *desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        long nb_err = ex.errors.length();\
+        ex.errors.length(nb_err + 1);\
+        ex.errors[nb_err].severity = sever;\
+        ex.errors[nb_err].desc = Tango::string_dup(desc);\
+        ex.errors[nb_err].origin = Tango::string_dup(origin);\
+        ex.errors[nb_err].reason = Tango::string_dup(reason);\
+        throw ex;\
+    }\
 \
-	static inline void re_throw_exception(char *CORBA_error_desc,\
-					      const char *reason,char *desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		errors[0].desc = Tango::string_dup(CORBA_error_desc);\
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin);\
-		errors[1].desc = Tango::string_dup(desc);\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason);\
-		errors[1].origin = Tango::string_dup(origin);\
-		delete[] desc;\
-		throw Tango::E(errors);\
-	}\
+    static inline void re_throw_exception(char *CORBA_error_desc,\
+                          const char *reason,char *desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        errors[0].desc = Tango::string_dup(CORBA_error_desc);\
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin);\
+        errors[1].desc = Tango::string_dup(desc);\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason);\
+        errors[1].origin = Tango::string_dup(origin);\
+        delete[] desc;\
+        throw Tango::E(errors);\
+    }\
 \
-	static inline void re_throw_exception(char *CORBA_error_desc,\
-					      const char *reason,const std::string &desc,\
-					      const char *origin,\
-					      Tango::ErrSeverity sever = Tango::ERR)\
-	{\
-		Tango::DevErrorList errors(2);\
-		errors.length(2);\
-		errors[0].desc = Tango::string_dup(CORBA_error_desc);\
-		errors[0].severity = sever;\
-		errors[0].reason = Tango::string_dup(API_CorbaException);\
-		errors[0].origin = Tango::string_dup(origin);\
-		errors[1].desc = Tango::string_dup(desc.c_str());\
-		errors[1].severity = sever;\
-		errors[1].reason = Tango::string_dup(reason);\
-		errors[1].origin = Tango::string_dup(origin);\
-		throw Tango::E(errors);\
-	}\
+    static inline void re_throw_exception(char *CORBA_error_desc,\
+                          const char *reason,const std::string &desc,\
+                          const char *origin,\
+                          Tango::ErrSeverity sever = Tango::ERR)\
+    {\
+        Tango::DevErrorList errors(2);\
+        errors.length(2);\
+        errors[0].desc = Tango::string_dup(CORBA_error_desc);\
+        errors[0].severity = sever;\
+        errors[0].reason = Tango::string_dup(API_CorbaException);\
+        errors[0].origin = Tango::string_dup(origin);\
+        errors[1].desc = Tango::string_dup(desc.c_str());\
+        errors[1].severity = sever;\
+        errors[1].reason = Tango::string_dup(reason);\
+        errors[1].origin = Tango::string_dup(origin);\
+        throw Tango::E(errors);\
+    }\
 };
 
 MAKE_EXCEPT(ConnectionFailed,ApiConnExcept)
@@ -388,114 +388,114 @@ MAKE_EXCEPT(ProgrammingError,ProgrammingErrorExcept)
 //
 
 #define TRANSIENT_NOT_EXIST_EXCEPT(E,CLASS,NAME,OBJ) \
-	if (E.minor() == omni::TRANSIENT_CallTimedout) \
-	{ \
+    if (E.minor() == omni::TRANSIENT_CallTimedout) \
+    { \
 \
-		bool need_reconnect = false; \
-		omniORB::setClientConnectTimeout(NARROW_CLNT_TIMEOUT); \
-		try \
-		{ \
-			Device_var dev = Device::_duplicate(OBJ->device); \
-			dev->ping(); \
-		} \
-		catch(CORBA::TRANSIENT &trans_ping) \
-		{ \
-			if (trans_ping.minor() == omni::TRANSIENT_ConnectFailed || \
-				trans_ping.minor() == omni::TRANSIENT_CallTimedout  || \
+        bool need_reconnect = false; \
+        omniORB::setClientConnectTimeout(NARROW_CLNT_TIMEOUT); \
+        try \
+        { \
+            Device_var dev = Device::_duplicate(OBJ->device); \
+            dev->ping(); \
+        } \
+        catch(CORBA::TRANSIENT &trans_ping) \
+        { \
+            if (trans_ping.minor() == omni::TRANSIENT_ConnectFailed || \
+                trans_ping.minor() == omni::TRANSIENT_CallTimedout  || \
                 (OBJ->ext->has_alt_adr == true && trans_ping.minor() == omni::TRANSIENT_CallTimedout)) \
-			{ \
-				need_reconnect = true; \
-			} \
-		} \
-		catch(...) {} \
-		omniORB::setClientConnectTimeout(0); \
+            { \
+                need_reconnect = true; \
+            } \
+        } \
+        catch(...) {} \
+        omniORB::setClientConnectTimeout(0); \
 \
-		if (need_reconnect == false) \
-		{ \
-			TangoSys_OMemStream desc; \
-			desc << "Timeout (" << OBJ->timeout << " mS) exceeded on device " << OBJ->dev_name(); \
-			desc << std::ends; \
-			TangoSys_OMemStream ori; \
-			ori << CLASS << ":" << NAME << std::ends; \
-			ApiCommExcept::re_throw_exception(E, \
-						  (const char *)API_DeviceTimedOut, \
-						  desc.str(), ori.str());\
-		}\
-	} \
+        if (need_reconnect == false) \
+        { \
+            TangoSys_OMemStream desc; \
+            desc << "Timeout (" << OBJ->timeout << " mS) exceeded on device " << OBJ->dev_name(); \
+            desc << std::ends; \
+            TangoSys_OMemStream ori; \
+            ori << CLASS << ":" << NAME << std::ends; \
+            ApiCommExcept::re_throw_exception(E, \
+                          (const char *)API_DeviceTimedOut, \
+                          desc.str(), ori.str());\
+        }\
+    } \
 \
-	OBJ->set_connection_state(CONNECTION_NOTOK); \
-	ctr++; \
+    OBJ->set_connection_state(CONNECTION_NOTOK); \
+    ctr++; \
 \
-	if ((OBJ->tr_reco == false) || \
-	   ((ctr == 2) && (OBJ->tr_reco == true))) \
-	{ \
+    if ((OBJ->tr_reco == false) || \
+       ((ctr == 2) && (OBJ->tr_reco == true))) \
+    { \
 \
-		TangoSys_OMemStream desc; \
-		desc << "Failed to execute " << NAME << " on device " << OBJ->dev_name(); \
-		desc << std::ends; \
-		TangoSys_OMemStream ori; \
-		ori << CLASS << ":" << NAME << std::ends; \
-		ApiCommExcept::re_throw_exception(E, \
-						   (const char*)API_CommunicationFailed, \
-                        			   desc.str(),ori.str()); \
-	}
+        TangoSys_OMemStream desc; \
+        desc << "Failed to execute " << NAME << " on device " << OBJ->dev_name(); \
+        desc << std::ends; \
+        TangoSys_OMemStream ori; \
+        ori << CLASS << ":" << NAME << std::ends; \
+        ApiCommExcept::re_throw_exception(E, \
+                           (const char*)API_CommunicationFailed, \
+                                       desc.str(),ori.str()); \
+    }
 
 
 #define TRANSIENT_NOT_EXIST_EXCEPT_CMD(E) \
-	if (E.minor() == omni::TRANSIENT_CallTimedout) \
-	{ \
+    if (E.minor() == omni::TRANSIENT_CallTimedout) \
+    { \
 \
-		bool need_reconnect = false; \
-		try \
-		{ \
-			Device_var dev = Device::_duplicate(device); \
-			dev->ping(); \
-		} \
-		catch(CORBA::TRANSIENT &trans_ping) \
-		{ \
-			if (trans_ping.minor() == omni::TRANSIENT_ConnectFailed || \
+        bool need_reconnect = false; \
+        try \
+        { \
+            Device_var dev = Device::_duplicate(device); \
+            dev->ping(); \
+        } \
+        catch(CORBA::TRANSIENT &trans_ping) \
+        { \
+            if (trans_ping.minor() == omni::TRANSIENT_ConnectFailed || \
                 trans_ping.minor() == omni::TRANSIENT_CallTimedout || \
                 (ext->has_alt_adr == true && trans_ping.minor() == omni::TRANSIENT_CallTimedout)) \
-			{ \
-				need_reconnect = true; \
-			} \
-		} \
-		catch(...) {} \
+            { \
+                need_reconnect = true; \
+            } \
+        } \
+        catch(...) {} \
 \
-		if (need_reconnect == false) \
-		{ \
-			TangoSys_OMemStream desc; \
-			desc << "Timeout (" << timeout << " mS) exceeded on device " << dev_name(); \
-			desc << ", command " << command << std::ends; \
-			ApiCommExcept::re_throw_exception(E, \
-						  (const char *)API_DeviceTimedOut, \
-						  desc.str(), \
-						  (const char *)"Connection::command_inout()"); \
-		}\
-	} \
+        if (need_reconnect == false) \
+        { \
+            TangoSys_OMemStream desc; \
+            desc << "Timeout (" << timeout << " mS) exceeded on device " << dev_name(); \
+            desc << ", command " << command << std::ends; \
+            ApiCommExcept::re_throw_exception(E, \
+                          (const char *)API_DeviceTimedOut, \
+                          desc.str(), \
+                          (const char *)"Connection::command_inout()"); \
+        }\
+    } \
 \
-	set_connection_state(CONNECTION_NOTOK); \
-	if (get_lock_ctr() != 0) \
-	{ \
-		set_lock_ctr(0); \
-		TangoSys_OMemStream desc; \
-		desc << "Device " << dev_name() << " has lost your lock(s) (server re-start?) while executing command " << command << std::ends; \
-		DeviceUnlockedExcept::re_throw_exception(E,(const char*)DEVICE_UNLOCKED_REASON, \
-					desc.str(), (const char*)"Connection::command_inout()"); \
-	} \
-	ctr++; \
+    set_connection_state(CONNECTION_NOTOK); \
+    if (get_lock_ctr() != 0) \
+    { \
+        set_lock_ctr(0); \
+        TangoSys_OMemStream desc; \
+        desc << "Device " << dev_name() << " has lost your lock(s) (server re-start?) while executing command " << command << std::ends; \
+        DeviceUnlockedExcept::re_throw_exception(E,(const char*)DEVICE_UNLOCKED_REASON, \
+                    desc.str(), (const char*)"Connection::command_inout()"); \
+    } \
+    ctr++; \
 \
-	if ((tr_reco == false) || \
-	   ((ctr == 2) && (tr_reco == true))) \
-	{ \
-		TangoSys_OMemStream desc; \
-		desc << "Failed to execute command_inout on device " << dev_name(); \
-		desc << ", command " << command << std::ends; \
-		ApiCommExcept::re_throw_exception(E, \
-				   (const char*)API_CommunicationFailed, \
-                    		   desc.str(), \
-				   (const char*)"Connection::command_inout()"); \
-	}
+    if ((tr_reco == false) || \
+       ((ctr == 2) && (tr_reco == true))) \
+    { \
+        TangoSys_OMemStream desc; \
+        desc << "Failed to execute command_inout on device " << dev_name(); \
+        desc << ", command " << command << std::ends; \
+        ApiCommExcept::re_throw_exception(E, \
+                   (const char*)API_CommunicationFailed, \
+                               desc.str(), \
+                   (const char*)"Connection::command_inout()"); \
+    }
 
 #define TANGO_THROW_API_EXCEPTION(ExceptionClass, reason, desc) \
     ExceptionClass ::throw_exception(reason, desc, \

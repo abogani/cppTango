@@ -1,8 +1,8 @@
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						Synchrotron SOLEIL
-//                		L'Orme des Merisiers
-//                		Saint-Aubin - BP 48 - France
+//                        Synchrotron SOLEIL
+//                        L'Orme des Merisiers
+//                        Saint-Aubin - BP 48 - France
 //
 // This file is part of Tango.
 //
@@ -42,7 +42,7 @@
 #define _HANDLE_DEV_EXCEPTION(_cmd, _origin) _HANDLE_DEV_EXCEPTION_FILE_LINE(_cmd,_origin, __FILE__, __LINE__)
 
 #define _HANDLE_DEV_EXCEPTION_FILE_LINE(_cmd, _origin, _file, _line) \
-	catch (Tango::ConnectionFailed &e)  { \
+    catch (Tango::ConnectionFailed &e)  { \
      TangoSys_OMemStream d; \
     d << "Tango::ConnectionFailed exception caught while trying to execute " \
       << _cmd \

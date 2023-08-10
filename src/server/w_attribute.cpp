@@ -3,17 +3,17 @@
 // file :               w_attribute.cpp
 //
 // description :        C++ source code for the WAttribute class.
-//			This class is used to manage attribute.
-//			A Tango Device object instance has one
-//			MultiAttribute object which is an aggregate of
-//			Attribute or WAttribute objects
+//            This class is used to manage attribute.
+//            A Tango Device object instance has one
+//            MultiAttribute object which is an aggregate of
+//            Attribute or WAttribute objects
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -55,15 +55,15 @@ namespace Tango
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::WAttribute
+// method :         WAttribute::WAttribute
 //
-// description : 	constructor for the WAttribute class from the
-//			attribute property vector, its type and the device
-//			name
+// description :     constructor for the WAttribute class from the
+//            attribute property vector, its type and the device
+//            name
 //
-// argument : in : 	- prop_list : The attribute property list
-//			- type : The attrubute data type
-//			- dev_name : The device name
+// argument : in :     - prop_list : The attribute property list
+//            - type : The attrubute data type
+//            - dev_name : The device name
 //
 //--------------------------------------------------------------------------
 
@@ -152,9 +152,9 @@ WAttribute::WAttribute(std::vector<AttrProperty> &prop_list,
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::~WAttribute
+// method :         WAttribute::~WAttribute
 //
-// description : 	destructor for the WAttribute class
+// description :     destructor for the WAttribute class
 //
 //--------------------------------------------------------------------------
 
@@ -162,20 +162,20 @@ WAttribute::~WAttribute()
 {
     Tango::string_free(str_val);
     Tango::string_free(old_str_val);
-//	Tango::string_free(encoded_val.encoded_format);
-//	Tango::string_free(old_encoded_val.encoded_format);
+//    Tango::string_free(encoded_val.encoded_format);
+//    Tango::string_free(old_encoded_val.encoded_format);
 }
 
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		WAttribute::set_rvalue
+//        WAttribute::set_rvalue
 //
 // description :
-//		This method is used when a Writable attribute is set to set the value in the Attribute class. This is
-//		necessary for the read_attribute CORBA operation which takes its data from this internal Attribute
-//		class data. It is used in the read_attributes code in the device class
+//        This method is used when a Writable attribute is set to set the value in the Attribute class. This is
+//        necessary for the read_attribute CORBA operation which takes its data from this internal Attribute
+//        class data. It is used in the read_attributes code in the device class
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -324,12 +324,12 @@ void WAttribute::set_rvalue()
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::check_written_value
+// method :         WAttribute::check_written_value
 //
-// description : 	Check the value sent by the caller and copy incoming data
-//					for SCALAR attribute only
+// description :     Check the value sent by the caller and copy incoming data
+//                    for SCALAR attribute only
 //
-// in :			any : Reference to the CORBA Any object
+// in :            any : Reference to the CORBA Any object
 //
 //--------------------------------------------------------------------------
 
@@ -345,10 +345,10 @@ void WAttribute::check_written_value(const Tango::AttrValUnion &att_union, unsig
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::get_write_value_length
+// method :         WAttribute::get_write_value_length
 //
-// description : 	Returm to the caller the length of the new value to
-//			be written into the attribute
+// description :     Returm to the caller the length of the new value to
+//            be written into the attribute
 //
 //--------------------------------------------------------------------------
 
@@ -408,11 +408,11 @@ void WAttribute::set_write_value(Tango::DevEncoded *, TANGO_UNUSED(long x), TANG
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::rollback
+// method :         WAttribute::rollback
 //
-// description : 	Reset the internal data to its value before the
-//			set_write_value method was applied (Useful in case of
-//			error in the set_write_value method)
+// description :     Reset the internal data to its value before the
+//            set_write_value method was applied (Useful in case of
+//            error in the set_write_value method)
 //
 //--------------------------------------------------------------------------
 
@@ -487,9 +487,9 @@ void WAttribute::copy_data(const Tango::AttrValUnion &the_union)
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::set_written_date
+// method :         WAttribute::set_written_date
 //
-// description : 	Memorized when the attribute is written
+// description :     Memorized when the attribute is written
 //
 //--------------------------------------------------------------------------
 
@@ -500,10 +500,10 @@ void WAttribute::set_written_date()
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::check_rds_alarm
+// method :         WAttribute::check_rds_alarm
 //
-// description : 	Check if the attribute is in read different from set
-//			alarm.
+// description :     Check if the attribute is in read different from set
+//            alarm.
 //
 // This method returns true if the attribute has a read too different than the
 // the last set value. Otherwise, returns false.
@@ -853,12 +853,12 @@ void WAttribute::set_max_value(const char *new_max_value_str)
 
 //+-------------------------------------------------------------------------
 //
-// method : 		WAttribute::mem_value_below_above()
+// method :         WAttribute::mem_value_below_above()
 //
-// description : 	Check if the attribute last written value is below
+// description :     Check if the attribute last written value is below
 //                  (or above) the new threshold sent by the requester
 //
-// Arg in :			check_type : Which check has to be done: Below or above
+// Arg in :            check_type : Which check has to be done: Below or above
 //
 // This method returns true if the new threshold wanted by the user is not
 // coherent with the memorized value. Otherwise, returns false.

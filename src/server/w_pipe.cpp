@@ -3,14 +3,14 @@
 // file :               W_pipe.cpp
 //
 // description :        C++ source code for the WPipe class. The WPipe class is a root class for derived
-//						Pipe classes.
+//                        Pipe classes.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -38,10 +38,10 @@ namespace Tango
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		WPipe::WPipe
+//        WPipe::WPipe
 //
 // description :
-//		Constructor for base class WPipe
+//        Constructor for base class WPipe
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -53,17 +53,17 @@ WPipe::WPipe(const std::string &_name,Tango::DispLevel _level)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		WPipe::operator[]
+//        WPipe::operator[]
 //
 // description :
-//		Retrieve one data element from the WPipe from its name
+//        Retrieve one data element from the WPipe from its name
 //
 //-----------------------------------------------------------------------------------------------------------------
 
 WPipe &WPipe::operator[](const std::string &_na)
 {
-	get_blob().operator[](_na);
-	return *this;
+    get_blob().operator[](_na);
+    return *this;
 }
 
 

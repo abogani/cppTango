@@ -4,7 +4,7 @@
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -35,10 +35,10 @@
 #include <chrono>
 
 /****************************************************************************************
- * 																						*
- * 					The Connection class												*
- * 					--------------------												*
- * 																						*
+ *                                                                                         *
+ *                     The Connection class                                                *
+ *                     --------------------                                                *
+ *                                                                                         *
  ***************************************************************************************/
 
 /**
@@ -58,56 +58,56 @@ class Connection
 {
 protected :
 ///@privatesection
-	bool 				dbase_used;			// Dev. with database
-	bool 				from_env_var;		// DB from TANGO_HOST
+    bool                 dbase_used;            // Dev. with database
+    bool                 from_env_var;        // DB from TANGO_HOST
 
-	std::string 				host;				// DS host (if dbase_used=false)
-	std::string 				port;				// DS port (if dbase_used=false)
-	int 				port_num;			// DS port (as number)
+    std::string                 host;                // DS host (if dbase_used=false)
+    std::string                 port;                // DS port (if dbase_used=false)
+    int                 port_num;            // DS port (as number)
 
-	std::string 				db_host;			// DB host
-	std::string 				db_port;			// DB port
-	int 				db_port_num;		// DB port (as number)
+    std::string                 db_host;            // DB host
+    std::string                 db_port;            // DB port
+    int                 db_port_num;        // DB port (as number)
 
-	std::string 				ior;
-	long 				pasyn_ctr;
-	long				pasyn_cb_ctr;
+    std::string                 ior;
+    long                 pasyn_ctr;
+    long                pasyn_cb_ctr;
 
-	Tango::Device_var 	device;
-	Tango::Device_2_var device_2;
+    Tango::Device_var     device;
+    Tango::Device_2_var device_2;
 
-	int 				timeout;
+    int                 timeout;
 
-	int 				connection_state;
-	int 				version;
-	Tango::DevSource 	source;
+    int                 connection_state;
+    int                 version;
+    Tango::DevSource     source;
 
-	bool				check_acc;
-	AccessControlType	access;
+    bool                check_acc;
+    AccessControlType    access;
 
-	virtual std::string get_corba_name(bool)=0;
-	virtual std::string build_corba_name()=0;
-	virtual int get_lock_ctr()=0;
-	virtual void set_lock_ctr(int)=0;
+    virtual std::string get_corba_name(bool)=0;
+    virtual std::string build_corba_name()=0;
+    virtual int get_lock_ctr()=0;
+    virtual void set_lock_ctr(int)=0;
 
-	DeviceData redo_synch_cmd(const TgRequest &);
+    DeviceData redo_synch_cmd(const TgRequest &);
 
-	int get_env_var(const char *, std::string &);
-	int get_env_var_from_file(const std::string &,const char *, std::string &);
+    int get_env_var(const char *, std::string &);
+    int get_env_var_from_file(const std::string &,const char *, std::string &);
 
-	void set_connection_state(int);
+    void set_connection_state(int);
 
-	void check_and_reconnect();
-	void check_and_reconnect(Tango::DevSource &);
-	void check_and_reconnect(Tango::AccessControlType &);
-	void check_and_reconnect(Tango::DevSource &,Tango::AccessControlType &);
+    void check_and_reconnect();
+    void check_and_reconnect(Tango::DevSource &);
+    void check_and_reconnect(Tango::AccessControlType &);
+    void check_and_reconnect(Tango::DevSource &,Tango::AccessControlType &);
 
-	long add_asyn_request(CORBA::Request_ptr,TgRequest::ReqType);
-	void remove_asyn_request(long);
+    long add_asyn_request(CORBA::Request_ptr,TgRequest::ReqType);
+    void remove_asyn_request(long);
 
-	void add_asyn_cb_request(CORBA::Request_ptr,CallBack *,Connection *,TgRequest::ReqType);
-	void remove_asyn_cb_request(Connection *,CORBA::Request_ptr);
-	long get_pasyn_cb_ctr();
+    void add_asyn_cb_request(CORBA::Request_ptr,CallBack *,Connection *,TgRequest::ReqType);
+    void remove_asyn_cb_request(Connection *,CORBA::Request_ptr);
+    long get_pasyn_cb_ctr();
 
     class ConnectionExt
     {
@@ -121,20 +121,20 @@ protected :
 
     std::unique_ptr<ConnectionExt>   ext;
 
-    bool				tr_reco;
+    bool                tr_reco;
     Tango::Device_3_var device_3;
 
     tango_optional<std::chrono::steady_clock::time_point> prev_failed_t0;
 
-    Tango::Device_4_var	device_4;
-    omni_mutex			adm_dev_mutex;
-    omni_mutex			asyn_mutex;
-    ReadersWritersLock	con_to_mon;
+    Tango::Device_4_var    device_4;
+    omni_mutex            adm_dev_mutex;
+    omni_mutex            asyn_mutex;
+    ReadersWritersLock    con_to_mon;
 
-    int					user_connect_timeout;
-    bool				tango_host_localhost;
+    int                    user_connect_timeout;
+    bool                tango_host_localhost;
 
-    Tango::Device_5_var	device_5;
+    Tango::Device_5_var    device_5;
 
 public :
 ///@publicsection
@@ -148,7 +148,7 @@ public :
  *
  * @param [in] timeout The timeout value in mS
  */
-	virtual void set_timeout_millis(int timeout);
+    virtual void set_timeout_millis(int timeout);
 /**
  * Get device timeout
  *
@@ -156,7 +156,7 @@ public :
  *
  * @return The device timeout (in mS)
  */
-	virtual int get_timeout_millis();
+    virtual int get_timeout_millis();
 /**
  * Get device IDL version
  *
@@ -164,7 +164,7 @@ public :
  *
  * @return The device IDL version
  */
-	int get_idl_version() {return version;}
+    int get_idl_version() {return version;}
 /**
  * Get device source
  *
@@ -175,7 +175,7 @@ public :
  *
  * @return The device source flag
  */
-	virtual Tango::DevSource get_source();
+    virtual Tango::DevSource get_source();
 /**
  * Set device source
  *
@@ -185,7 +185,7 @@ public :
  *
  * @param [in] sou The device source
  */
-	virtual void set_source(Tango::DevSource sou);
+    virtual void set_source(Tango::DevSource sou);
 /**
  * Set device transparency (reconnection) mode
  *
@@ -195,7 +195,7 @@ public :
  *
  * @param [in] val The device transparency flag
  */
-	virtual void set_transparency_reconnection(bool val) {tr_reco = val;}
+    virtual void set_transparency_reconnection(bool val) {tr_reco = val;}
 /**
  * Get device transparency (reconnection) mode
  *
@@ -204,7 +204,7 @@ public :
  *
  * @return The device transparency flag
  */
-	virtual bool get_transparency_reconnection() {return tr_reco;}
+    virtual bool get_transparency_reconnection() {return tr_reco;}
 //@}
 
 /** @name Synchronous command oriented methods */
@@ -218,7 +218,7 @@ public :
  * @return The command result
  * @throws ConnectionFailed, CommunicationFailed, DeviceUnlocked, DevFailed from device
  */
-	virtual DeviceData command_inout(const std::string &cmd_name);
+    virtual DeviceData command_inout(const std::string &cmd_name);
 /**
  * Execute a command (with input data)
  *
@@ -230,7 +230,7 @@ public :
  * @return The command result
  * @throws ConnectionFailed, CommunicationFailed, DeviceUnlocked, DevFailed from device
  */
-	virtual DeviceData command_inout(const std::string &cmd_name, const DeviceData &d_in);
+    virtual DeviceData command_inout(const std::string &cmd_name, const DeviceData &d_in);
 //@}
 
 /** @name Aynchronous command oriented methods */
@@ -252,7 +252,7 @@ public :
  * @return The call identifier
  * @throws ConnectionFailed
  */
-	virtual long command_inout_asynch(const std::string &cmd_name,const DeviceData &argin,bool forget=false);
+    virtual long command_inout_asynch(const std::string &cmd_name,const DeviceData &argin,bool forget=false);
 /**
  * Execute a command asynchronously
  *
@@ -268,7 +268,7 @@ public :
  * @return The call identifier
  * @throws ConnectionFailed
  */
-	virtual long command_inout_asynch(const std::string &cmd_name,bool forget=false);
+    virtual long command_inout_asynch(const std::string &cmd_name,bool forget=false);
 /**
  * Check an asynchronous command_inout answer is arrived
  *
@@ -302,7 +302,7 @@ public :
  * @return The command result
  * @throws AsynCall, AsynReplyNotArrived, CommunicationFailed, DevFailed from device
  */
-	virtual DeviceData command_inout_reply(long id);
+    virtual DeviceData command_inout_reply(long id);
 /**
  * Check an asynchronous command_inout answer is arrived with timeout
  *
@@ -317,7 +317,7 @@ public :
  * @return The command result
  * @throws AsynCall, AsynReplyNotArrived, CommunicationFailed, DevFailed from device
  */
-	virtual DeviceData command_inout_reply(long id,long timeout);
+    virtual DeviceData command_inout_reply(long id,long timeout);
 /**
  * Execute a command asynchronously with callback
  *
@@ -329,7 +329,7 @@ public :
  * @param [in] cb The call-back object
  * @throws ConnectionFailed
  */
-	virtual void command_inout_asynch(const std::string &cmd_name,CallBack &cb);
+    virtual void command_inout_asynch(const std::string &cmd_name,CallBack &cb);
 /**
  * Execute a command asynchronously with input value and callback
  *
@@ -395,7 +395,7 @@ public :
  * @endcode
  *
  */
-	virtual void get_asynch_replies();
+    virtual void get_asynch_replies();
 /**
  * Fire callback methds with timeout
  *
@@ -406,7 +406,7 @@ public :
  *
  * @param [in] timeout The timeout value
  */
-	virtual void get_asynch_replies(long timeout);
+    virtual void get_asynch_replies(long timeout);
 /**
  * Cancel a pending asynchronous request
  *
@@ -417,7 +417,7 @@ public :
  * @param [in] id The call identifier
  * @throws AsynCall
  */
-	virtual void cancel_asynch_request(long id);
+    virtual void cancel_asynch_request(long id);
 /**
  * Cancel all pending asynchronous request
  *
@@ -426,56 +426,56 @@ public :
  * remote devices.
  *
  */
-	virtual void cancel_all_polling_asynch_request();
+    virtual void cancel_all_polling_asynch_request();
 //@}
 
 ///@privatesection
-	virtual std::string dev_name()=0;
+    virtual std::string dev_name()=0;
 
-	Connection(CORBA::ORB_var orb = CORBA::ORB::_nil());
-	Connection(bool dummy);
-	virtual ~Connection();
-	Connection(const Connection &);
-	Connection & operator=(const Connection &);
+    Connection(CORBA::ORB_var orb = CORBA::ORB::_nil());
+    Connection(bool dummy);
+    virtual ~Connection();
+    Connection(const Connection &);
+    Connection & operator=(const Connection &);
 
-	std::string &get_db_host() {return db_host;}
-	std::string &get_db_port() {return db_port;}
-	int get_db_port_num() {return db_port_num;}
-	bool get_from_env_var() {return from_env_var;}
-	static void get_fqdn(std::string &);
+    std::string &get_db_host() {return db_host;}
+    std::string &get_db_port() {return db_port;}
+    int get_db_port_num() {return db_port_num;}
+    bool get_from_env_var() {return from_env_var;}
+    static void get_fqdn(std::string &);
 
-	bool is_dbase_used() {return dbase_used;}
-	std::string &get_dev_host() {return host;}
-	std::string &get_dev_port() {return port;}
+    bool is_dbase_used() {return dbase_used;}
+    std::string &get_dev_host() {return host;}
+    std::string &get_dev_port() {return port;}
 
-	void connect(const std::string &name);
-	virtual void reconnect(bool);
-	bool is_connected();
+    void connect(const std::string &name);
+    virtual void reconnect(bool);
+    bool is_connected();
 
-	Tango::Device_var &get_device() {return device;} 	// For CORBA expert !!
-	Tango::Device_4_ptr get_device_4() {return Device_4::_duplicate(device_4);}
-	Tango::Device_5_ptr get_device_5() {return Device_5::_duplicate(device_5);}
+    Tango::Device_var &get_device() {return device;}     // For CORBA expert !!
+    Tango::Device_4_ptr get_device_4() {return Device_4::_duplicate(device_4);}
+    Tango::Device_5_ptr get_device_5() {return Device_5::_duplicate(device_5);}
 
-	virtual CORBA::Any_var command_inout(const std::string &, const CORBA::Any&);
+    virtual CORBA::Any_var command_inout(const std::string &, const CORBA::Any&);
 
 //
 // Asynchronous methods
 //
 
-	void Cb_Cmd_Request(CORBA::Request_ptr,Tango::CallBack *);
-	void Cb_ReadAttr_Request(CORBA::Request_ptr,Tango::CallBack *);
-	void Cb_WriteAttr_Request(CORBA::Request_ptr req,Tango::CallBack *cb_ptr);
-	void dec_asynch_counter(asyn_req_type ty);
+    void Cb_Cmd_Request(CORBA::Request_ptr,Tango::CallBack *);
+    void Cb_ReadAttr_Request(CORBA::Request_ptr,Tango::CallBack *);
+    void Cb_WriteAttr_Request(CORBA::Request_ptr req,Tango::CallBack *cb_ptr);
+    void dec_asynch_counter(asyn_req_type ty);
 
 //
 // Control access related methods
 //
 
-	AccessControlType get_access_control() {return access;}
-	void set_access_control(AccessControlType acc) {access=acc;}
-	AccessControlType get_access_right() {return get_access_control();}
+    AccessControlType get_access_control() {return access;}
+    void set_access_control(AccessControlType acc) {access=acc;}
+    AccessControlType get_access_right() {return get_access_control();}
 
-	friend class FwdAttribute;
+    friend class FwdAttribute;
 
 private:
     void omni420_timeout(int,char *);

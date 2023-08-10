@@ -1,15 +1,15 @@
 //+=============================================================================
 //
-// file :	        logstream.h
+// file :            logstream.h
 //
 // description :  A TLS helper class
 //
-// project :	    TANGO
+// project :        TANGO
 //
-// author(s) :	  N.Leclercq - SOLEIL
+// author(s) :      N.Leclercq - SOLEIL
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //

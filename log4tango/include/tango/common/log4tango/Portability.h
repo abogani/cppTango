@@ -2,13 +2,13 @@
 // Portability.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -46,25 +46,25 @@
 // windows.h before this file.
 
 #ifndef _WINDOWS_
-	#ifndef NOGDI
-		#define NOGDI // circumvent the ERROR #define in windows.h
-		#define LOG4TANGO_UNDEFINE_NOGDI
-	#endif
+    #ifndef NOGDI
+        #define NOGDI // circumvent the ERROR #define in windows.h
+        #define LOG4TANGO_UNDEFINE_NOGDI
+    #endif
 
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-		#define LOG4TANGO_UNDEFINE_WIN32_LEAN_AND_MEAN
-	#endif
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+        #define LOG4TANGO_UNDEFINE_WIN32_LEAN_AND_MEAN
+    #endif
 
-	#include <windows.h>
+    #include <windows.h>
 
-	#ifdef LOG4TANGO_UNDEFINE_NOGDI
-		#undef NOGDI
-	#endif
+    #ifdef LOG4TANGO_UNDEFINE_NOGDI
+        #undef NOGDI
+    #endif
 
-	#ifdef LOG4TANGO_UNDEFINE_WIN32_LEAN_AND_MEAN
-		#undef WIN32_LEAN_AND_MEAN
-	#endif
+    #ifdef LOG4TANGO_UNDEFINE_WIN32_LEAN_AND_MEAN
+        #undef WIN32_LEAN_AND_MEAN
+    #endif
 
 #endif
 // done dealing with ERROR #define
@@ -80,11 +80,11 @@ typedef unsigned short mode_t;
 #define LOG4TANGO_UNUSED(var) var
 
 #else // _MSC_VER
-	#ifdef __GNUC__
-		#define LOG4TANGO_UNUSED(var) var __attribute__ ((unused))
-	#else
-		#define LOG4TANGO_UNUSED(var) var
-	#endif
+    #ifdef __GNUC__
+        #define LOG4TANGO_UNUSED(var) var __attribute__ ((unused))
+    #else
+        #define LOG4TANGO_UNUSED(var) var
+    #endif
 #endif // _MSC_VER
 
 #endif // _LOG4TANGO_PORTABILITY_H

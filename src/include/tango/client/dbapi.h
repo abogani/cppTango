@@ -1,11 +1,11 @@
 
 //+==================================================================================================================
 //
-// dbapi.h -	include file for TANGO database api
+// dbapi.h -    include file for TANGO database api
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -65,8 +65,8 @@ typedef std::vector<DbDevExportInfo> DbDevExportInfos;
 typedef std::vector<DbDevImportInfo> DbDevImportInfos;
 typedef std::vector<DbDatum> DbData;
 
-#define		POGO_DESC	"Description"
-#define		POGO_TITLE	"ProjectTitle"
+#define        POGO_DESC    "Description"
+#define        POGO_TITLE    "ProjectTitle"
 
 ///
 /// Classes declaration
@@ -101,14 +101,14 @@ typedef std::vector<DbDatum> DbData;
 class DbProperty
 {
 public :
-	DbProperty(std::string);
-	~DbProperty();
+    DbProperty(std::string);
+    ~DbProperty();
 //
 // methods
 //
-	void get(DbData&);
-	void put(DbData&);
-	void delete_(DbData&);
+    void get(DbData&);
+    void put(DbData&);
+    void delete_(DbData&);
 };
 
 
@@ -122,23 +122,23 @@ public :
 class DbAttribute
 {
 private :
-	std::string name;
-	std::string device_name;
-	Database *dbase;
-	int db_ind;
-	bool ext_dbase;
+    std::string name;
+    std::string device_name;
+    Database *dbase;
+    int db_ind;
+    bool ext_dbase;
 
 public :
-	DbAttribute(const std::string &,const std::string &);
-	DbAttribute(const std::string &,const std::string &, Database *);
-	DbAttribute(const std::string &,const std::string &,const std::string &,const std::string &);
-	~DbAttribute();
+    DbAttribute(const std::string &,const std::string &);
+    DbAttribute(const std::string &,const std::string &, Database *);
+    DbAttribute(const std::string &,const std::string &,const std::string &,const std::string &);
+    ~DbAttribute();
 //
 // methods
 //
-	void get_property(DbData&);
-	void put_property(const DbData&);
-	void delete_property(const DbData&);
+    void get_property(DbData&);
+    void put_property(const DbData&);
+    void delete_property(const DbData&);
 };
 
 /**********************************************************************
@@ -157,10 +157,10 @@ public :
 class DbServer
 {
 private :
-	std::string 		name;
-	Database 	*dbase;
-	int 		db_ind;
-	bool 		ext_dbase;
+    std::string         name;
+    Database     *dbase;
+    int         db_ind;
+    bool         ext_dbase;
 
     class DbServerExt
     {
@@ -179,21 +179,21 @@ public :
  * A constructor for a DbServer object for a server in the TANGO database specified by the TANGO_HOST
  * environment variable.
  *
- * @param [in] server_name	The device server name
+ * @param [in] server_name    The device server name
  *
  */
-	DbServer(std::string server_name);
+    DbServer(std::string server_name);
 /**
  * Create a DbServer instance using a specified database
  *
  * A constructor for a DbServer object for the server in the specified database. This method reuses the
  * Database supplied by the programmer
  *
- * @param [in] server_name	The device server name
+ * @param [in] server_name    The device server name
  * @param [in] db The database object
  *
  */
-	DbServer(std::string server_name, Database *db);
+    DbServer(std::string server_name, Database *db);
 //@}
 //
 // methods
@@ -210,7 +210,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void add_server(DbDevInfos &serv);
+    void add_server(DbDevInfos &serv);
 /**
  * Delete the device server from database
  *
@@ -218,7 +218,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_server();
+    void delete_server();
 /**
  * Export all device server devices in database
  *
@@ -229,7 +229,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void export_server(DbDevExportInfos &serv);
+    void export_server(DbDevExportInfos &serv);
 /**
  * Mark all devices belonging to the device server as un-exported
  *
@@ -237,13 +237,13 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void unexport_server();
+    void unexport_server();
 //@}
 
 /// @privatesection
-	~DbServer();
+    ~DbServer();
 
-	DbServerInfo get_server_info();
+    DbServerInfo get_server_info();
 };
 
 
@@ -263,10 +263,10 @@ public :
 class DbClass
 {
 private :
-	std::string 		name;
-	Database 	*dbase;
-	int 		db_ind;
-	bool 		ext_dbase;
+    std::string         name;
+    Database     *dbase;
+    int         db_ind;
+    bool         ext_dbase;
 
     class DbClassExt
     {
@@ -285,21 +285,21 @@ public :
  * A constructor for a DbClass object for a class in the TANGO database specified by the TANGO_HOST
  * environment variable
  *
- * @param [in] class_name	The Tango class name
+ * @param [in] class_name    The Tango class name
  *
  */
-	DbClass(std::string class_name);
+    DbClass(std::string class_name);
 /**
  * Create a DbClass instance using a specified database
  *
  * A constructor for a DbClass object for the Tango class in the specified database. This method reuses the
  * Database supplied by the programmer.
  *
- * @param [in] class_name	The Tango class name
+ * @param [in] class_name    The Tango class name
  * @param [in] db The database object
  *
  */
-	DbClass(std::string class_name, Database *db);
+    DbClass(std::string class_name, Database *db);
 //@}
 
 //
@@ -317,7 +317,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void get_property(DbData &db);
+    void get_property(DbData &db);
 /**
  * Update class property in database
  *
@@ -328,7 +328,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void put_property(const DbData &db);
+    void put_property(const DbData &db);
 /**
  * Remove class property from database
  *
@@ -339,7 +339,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_property(const DbData &db);
+    void delete_property(const DbData &db);
 /**
  * Get class attribute property from database
  *
@@ -350,7 +350,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void get_attribute_property(DbData &db);
+    void get_attribute_property(DbData &db);
 /**
  * Update class attribute property in database
  *
@@ -361,7 +361,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void put_attribute_property(const DbData &db);
+    void put_attribute_property(const DbData &db);
 /**
  * Remove class attribute property from database
  *
@@ -372,7 +372,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_attribute_property(const DbData &db);
+    void delete_attribute_property(const DbData &db);
 /**
  * Get class pipe property from database
  *
@@ -383,7 +383,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void get_pipe_property(DbData &db);
+    void get_pipe_property(DbData &db);
 /**
  * Update class pipe property in database
  *
@@ -394,7 +394,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void put_pipe_property(const DbData &db);
+    void put_pipe_property(const DbData &db);
 /**
  * Remove class pipe property from database
  *
@@ -405,11 +405,11 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_pipe_property(const DbData &db);
+    void delete_pipe_property(const DbData &db);
 //@}
 
 /// @privatesection
-	~DbClass();
+    ~DbClass();
 };
 
 
@@ -436,12 +436,12 @@ class DbDatum
 {
 public:
 /// @privatesection
-	enum except_flags
-	{
-		isempty_flag,
-		wrongtype_flag,
-		numFlags
-	};
+    enum except_flags
+    {
+        isempty_flag,
+        wrongtype_flag,
+        numFlags
+    };
 /// @publicsection
 /**@name Constructors */
 //@{
@@ -450,19 +450,19 @@ public:
  *
  * Create an instance of the DbDatum class with name set to the specified parameter
  *
- * @param [in] name	The CORBA ORB pointer. Default value is fine for 99 % of cases
+ * @param [in] name    The CORBA ORB pointer. Default value is fine for 99 % of cases
  *
  */
-	DbDatum (std::string name);
+    DbDatum (std::string name);
 /**
  * Create a DbDatum object.
  *
  * Create an instance of the DbDatum class with name set to the specified parameter
  *
- * @param [in] name	The CORBA ORB pointer. Default value is fine for 99 % of cases
+ * @param [in] name    The CORBA ORB pointer. Default value is fine for 99 % of cases
  *
  */
-	DbDatum (const char *name);
+    DbDatum (const char *name);
 //@}
 
 /**@name Operators overloading */
@@ -521,7 +521,7 @@ public:
  *
  * @exception WrongData if requested
  */
-	void operator << (bool val);
+    void operator << (bool val);
 /**
  * Extractors operators
  *
@@ -547,7 +547,7 @@ public:
  *
  * @param [in] fl The exception flag
  */
-	void exceptions(std::bitset<DbDatum::numFlags> fl) { exceptions_flags = fl;}
+    void exceptions(std::bitset<DbDatum::numFlags> fl) { exceptions_flags = fl;}
 /**
  * Get exception flag
  *
@@ -567,7 +567,7 @@ public:
  *
  * @return The exception flag
  */
-	std::bitset<DbDatum::numFlags> exceptions() {return exceptions_flags;}
+    std::bitset<DbDatum::numFlags> exceptions() {return exceptions_flags;}
 /**
  * Reset one exception flag
  *
@@ -575,7 +575,7 @@ public:
  *
  * @param [in] fl The exception flag
  */
-	void reset_exceptions(except_flags fl) {exceptions_flags.reset((size_t)fl);}
+    void reset_exceptions(except_flags fl) {exceptions_flags.reset((size_t)fl);}
 /**
  * Set one exception flag
  *
@@ -583,7 +583,7 @@ public:
  *
  * @param [in] fl The exception flag
  */
-	void set_exceptions(except_flags fl) {exceptions_flags.set((size_t)fl);}
+    void set_exceptions(except_flags fl) {exceptions_flags.set((size_t)fl);}
 //@}
 /**@name Miscellaneous methods */
 //@{
@@ -610,83 +610,83 @@ public:
  *
  * @exception WrongData if requested
  */
-	bool is_empty();
+    bool is_empty();
 //@}
 /// @privatesection
 
-	std::string name;
+    std::string name;
 std::vector<std::string> value_string;
 //
 // constructor methods
 //
-	DbDatum();
-	~DbDatum();
-	DbDatum(const DbDatum &);
-	DbDatum &operator=(const DbDatum &);
+    DbDatum();
+    ~DbDatum();
+    DbDatum(const DbDatum &);
+    DbDatum &operator=(const DbDatum &);
 
-	size_t size()const {return value_string.size();}
+    size_t size()const {return value_string.size();}
 
 //
 // insert methods
 //
 
-	void operator << (short);
-	void operator << (unsigned char);
-	void operator << (unsigned short);
-	void operator << (DevLong);
-	void operator << (DevULong);
-	void operator << (DevLong64);
-	void operator << (DevULong64);
-	void operator << (float);
-	void operator << (double);
-	void operator << (char *);
-//	void operator << (char *&);
-	void operator << (const char *);
-//	void operator << (const char *&);
-	void operator << (const std::string&);
+    void operator << (short);
+    void operator << (unsigned char);
+    void operator << (unsigned short);
+    void operator << (DevLong);
+    void operator << (DevULong);
+    void operator << (DevLong64);
+    void operator << (DevULong64);
+    void operator << (float);
+    void operator << (double);
+    void operator << (char *);
+//    void operator << (char *&);
+    void operator << (const char *);
+//    void operator << (const char *&);
+    void operator << (const std::string&);
 
-	void operator << (const std::vector<std::string>&);
-	void operator << (const std::vector<short>&);
-	void operator << (const std::vector<unsigned short>&);
-	void operator << (const std::vector<DevLong>&);
-	void operator << (const std::vector<DevULong>&);
-	void operator << (const std::vector<DevLong64>&);
-	void operator << (const std::vector<DevULong64>&);
-	void operator << (const std::vector<float>&);
-	void operator << (const std::vector<double>&);
+    void operator << (const std::vector<std::string>&);
+    void operator << (const std::vector<short>&);
+    void operator << (const std::vector<unsigned short>&);
+    void operator << (const std::vector<DevLong>&);
+    void operator << (const std::vector<DevULong>&);
+    void operator << (const std::vector<DevLong64>&);
+    void operator << (const std::vector<DevULong64>&);
+    void operator << (const std::vector<float>&);
+    void operator << (const std::vector<double>&);
 
 //
 // extract methods
 //
 
-	bool operator >> (short&)const;
-	bool operator >> (unsigned char&)const;
-	bool operator >> (unsigned short&)const;
-	bool operator >> (DevLong&)const;
-	bool operator >> (DevULong&)const;
-	bool operator >> (DevLong64&)const;
-	bool operator >> (DevULong64&)const;
-	bool operator >> (float&)const;
-	bool operator >> (double&)const;
-	bool operator >> (const char*&)const;
-	bool operator >> (std::string&)const;
+    bool operator >> (short&)const;
+    bool operator >> (unsigned char&)const;
+    bool operator >> (unsigned short&)const;
+    bool operator >> (DevLong&)const;
+    bool operator >> (DevULong&)const;
+    bool operator >> (DevLong64&)const;
+    bool operator >> (DevULong64&)const;
+    bool operator >> (float&)const;
+    bool operator >> (double&)const;
+    bool operator >> (const char*&)const;
+    bool operator >> (std::string&)const;
 
-	bool operator >> (std::vector<std::string>&)const;
-	bool operator >> (std::vector<short>&)const;
-	bool operator >> (std::vector<unsigned short>&)const;
-	bool operator >> (std::vector<DevLong>&)const;
-	bool operator >> (std::vector<DevULong>&)const;
-	bool operator >> (std::vector<DevLong64>&)const;
-	bool operator >> (std::vector<DevULong64>&)const;
-	bool operator >> (std::vector<float>&)const;
-	bool operator >> (std::vector<double>&)const;
+    bool operator >> (std::vector<std::string>&)const;
+    bool operator >> (std::vector<short>&)const;
+    bool operator >> (std::vector<unsigned short>&)const;
+    bool operator >> (std::vector<DevLong>&)const;
+    bool operator >> (std::vector<DevULong>&)const;
+    bool operator >> (std::vector<DevLong64>&)const;
+    bool operator >> (std::vector<DevULong64>&)const;
+    bool operator >> (std::vector<float>&)const;
+    bool operator >> (std::vector<double>&)const;
 
 
 private :
 
-	int 				value_type;
-	int 				value_size;
-	std::bitset<numFlags> 	exceptions_flags;
+    int                 value_type;
+    int                 value_size;
+    std::bitset<numFlags>     exceptions_flags;
 
     class DbDatumExt
     {
@@ -784,9 +784,9 @@ private:
 class DbDevInfo
 {
 public :
-	std::string name;    ///< The device name
-	std::string _class;  ///< The device class name
-	std::string server;  ///< The full device server process name
+    std::string name;    ///< The device name
+    std::string _class;  ///< The device class name
+    std::string server;  ///< The full device server process name
 };
 
 /**********************************************************************
@@ -804,10 +804,10 @@ public :
 class DbDevImportInfo
 {
 public :
-	std::string  name;       ///< The device name
-	long    exported;   ///< The exported flag
-	std::string  ior;        ///< The device IOR
-	std::string  version;    ///< The device version (as a std::string)
+    std::string  name;       ///< The device name
+    long    exported;   ///< The exported flag
+    std::string  ior;        ///< The device IOR
+    std::string  version;    ///< The device version (as a std::string)
 };
 
 /****************************************************************
@@ -826,11 +826,11 @@ class DbDevFullInfo: public DbDevImportInfo
 {
 public :
     std::string  class_name;         ///< The device class name
-	std::string  ds_full_name;       ///< The full device server process name
-	std::string  host;               ///< The host name where the device server process is running
-	std::string  started_date;       ///< Date of the last device export (empty if not set in DB)
-	std::string  stopped_date;       ///< Date of the last device un-export (empty if not set in DB)
-	long    pid;                ///< The device server process PID (-1 if not set in DB)
+    std::string  ds_full_name;       ///< The full device server process name
+    std::string  host;               ///< The host name where the device server process is running
+    std::string  started_date;       ///< Date of the last device export (empty if not set in DB)
+    std::string  stopped_date;       ///< Date of the last device un-export (empty if not set in DB)
+    long    pid;                ///< The device server process PID (-1 if not set in DB)
 };
 
 
@@ -849,11 +849,11 @@ public :
 class DbDevExportInfo
 {
 public :
-	std::string  name;        ///< The device name
-	std::string  ior;         ///< The device IOR
-	std::string  host;        ///< The host name where the device server process runs
-	std::string  version;     ///< The device version
-	int     pid;         ///< The device server process PID
+    std::string  name;        ///< The device name
+    std::string  ior;         ///< The device IOR
+    std::string  host;        ///< The host name where the device server process runs
+    std::string  version;     ///< The device version
+    int     pid;         ///< The device server process PID
 };
 
 /**********************************************************************
@@ -865,18 +865,18 @@ public :
 class DbServerInfo
 {
 public :
-	std::string  name;
-	std::string  host;
-	int     mode;
-	int     level;
+    std::string  name;
+    std::string  host;
+    int     mode;
+    int     level;
 };
 
 
 /****************************************************************************************
- * 																						*
- * 					The DbServerCache class												*
- * 					------------------													*
- * 																						*
+ *                                                                                         *
+ *                     The DbServerCache class                                                *
+ *                     ------------------                                                    *
+ *                                                                                         *
  ***************************************************************************************/
 
 //
@@ -887,116 +887,116 @@ public :
 class DbServerCache
 {
 public:
-	typedef struct
-	{
-		int 			first_idx;
-		int 			last_idx;
-	}EltIdx;
+    typedef struct
+    {
+        int             first_idx;
+        int             last_idx;
+    }EltIdx;
 
-	typedef struct
-	{
-		int				first_idx;
-		int				last_idx;
-		int				prop_nb;
-		int 			*props_idx;
-	}PropEltIdx;
+    typedef struct
+    {
+        int                first_idx;
+        int                last_idx;
+        int                prop_nb;
+        int             *props_idx;
+    }PropEltIdx;
 
-	typedef struct
-	{
-		int 			first_idx;
-		int				last_idx;
-		int				att_nb;
-		int				*atts_idx;
-	}AttPropEltIdx;
+    typedef struct
+    {
+        int             first_idx;
+        int                last_idx;
+        int                att_nb;
+        int                *atts_idx;
+    }AttPropEltIdx;
 
-	typedef struct
-	{
-		PropEltIdx		dev_prop;
-		AttPropEltIdx 	dev_att_prop;
-		AttPropEltIdx	dev_pipe_prop;
-	}DevEltIdx;
+    typedef struct
+    {
+        PropEltIdx        dev_prop;
+        AttPropEltIdx     dev_att_prop;
+        AttPropEltIdx    dev_pipe_prop;
+    }DevEltIdx;
 
-	typedef struct
-	{
-		PropEltIdx 		class_prop;
-		AttPropEltIdx 	class_att_prop;
-		AttPropEltIdx	class_pipe_prop;
-		EltIdx 			dev_list;
-		int 			dev_nb;
-		DevEltIdx		*devs_idx;
-	}ClassEltIdx;
+    typedef struct
+    {
+        PropEltIdx         class_prop;
+        AttPropEltIdx     class_att_prop;
+        AttPropEltIdx    class_pipe_prop;
+        EltIdx             dev_list;
+        int             dev_nb;
+        DevEltIdx        *devs_idx;
+    }ClassEltIdx;
 
-	DbServerCache(Database *,const std::string &,const std::string &);
-	~DbServerCache();
+    DbServerCache(Database *,const std::string &,const std::string &);
+    ~DbServerCache();
 
-	const DevVarLongStringArray *import_adm_dev();
-	const DevVarLongStringArray *import_notifd_event();
-	const DevVarLongStringArray *import_adm_event();
-	const DevVarStringArray *get_class_property(DevVarStringArray *);
-	const DevVarStringArray *get_dev_property(DevVarStringArray *);
-	const DevVarStringArray *get_dev_list(DevVarStringArray *);
-	const DevVarStringArray *get_class_att_property(DevVarStringArray *);
-	const DevVarStringArray *get_dev_att_property(DevVarStringArray *);
-	const DevVarStringArray *get_obj_property(DevVarStringArray *);
-	const DevVarStringArray *get_device_property_list(DevVarStringArray *);
-	const DevVarStringArray *get_class_pipe_property(DevVarStringArray *);
-	const DevVarStringArray *get_dev_pipe_property(DevVarStringArray *);
-	const DevVarLongStringArray *import_tac_dev(const std::string &);
+    const DevVarLongStringArray *import_adm_dev();
+    const DevVarLongStringArray *import_notifd_event();
+    const DevVarLongStringArray *import_adm_event();
+    const DevVarStringArray *get_class_property(DevVarStringArray *);
+    const DevVarStringArray *get_dev_property(DevVarStringArray *);
+    const DevVarStringArray *get_dev_list(DevVarStringArray *);
+    const DevVarStringArray *get_class_att_property(DevVarStringArray *);
+    const DevVarStringArray *get_dev_att_property(DevVarStringArray *);
+    const DevVarStringArray *get_obj_property(DevVarStringArray *);
+    const DevVarStringArray *get_device_property_list(DevVarStringArray *);
+    const DevVarStringArray *get_class_pipe_property(DevVarStringArray *);
+    const DevVarStringArray *get_dev_pipe_property(DevVarStringArray *);
+    const DevVarLongStringArray *import_tac_dev(const std::string &);
 
-	const EltIdx &get_imp_dat() {return imp_adm;}
-	const EltIdx &get_imp_notifd_event() {return imp_notifd_event;}
-	const EltIdx &get_imp_adm_event() {return imp_adm_event;}
-	const PropEltIdx &get_DServer_class_prop() {return DServer_class_prop;}
-	const PropEltIdx &get_Default_prop() {return Default_prop;}
-	const PropEltIdx &get_adm_dev_prop() {return adm_dev_prop;}
-	const PropEltIdx &get_ctrl_serv_prop() {return ctrl_serv_prop;}
-	int get_class_nb() {return class_nb;}
-	const ClassEltIdx *get_classes_elt() {return classes_idx;}
-	int get_data_nb() {return n_data;}
+    const EltIdx &get_imp_dat() {return imp_adm;}
+    const EltIdx &get_imp_notifd_event() {return imp_notifd_event;}
+    const EltIdx &get_imp_adm_event() {return imp_adm_event;}
+    const PropEltIdx &get_DServer_class_prop() {return DServer_class_prop;}
+    const PropEltIdx &get_Default_prop() {return Default_prop;}
+    const PropEltIdx &get_adm_dev_prop() {return adm_dev_prop;}
+    const PropEltIdx &get_ctrl_serv_prop() {return ctrl_serv_prop;}
+    int get_class_nb() {return class_nb;}
+    const ClassEltIdx *get_classes_elt() {return classes_idx;}
+    int get_data_nb() {return n_data;}
 
 private:
-	void prop_indexes(int &,int &,PropEltIdx &,const DevVarStringArray *);
-	void prop_att_indexes(int &,int &,AttPropEltIdx &,const DevVarStringArray *);
-	void prop_pipe_indexes(int &,int &,AttPropEltIdx &,const DevVarStringArray *);
-	void get_obj_prop(DevVarStringArray *,PropEltIdx &,bool dev_prop=false);
-	int find_class(DevString );
-	int find_dev_att(DevString,int &,int &);
-	int find_obj(DevString obj_name,int &);
-	void get_obj_prop_list(DevVarStringArray *,PropEltIdx &);
+    void prop_indexes(int &,int &,PropEltIdx &,const DevVarStringArray *);
+    void prop_att_indexes(int &,int &,AttPropEltIdx &,const DevVarStringArray *);
+    void prop_pipe_indexes(int &,int &,AttPropEltIdx &,const DevVarStringArray *);
+    void get_obj_prop(DevVarStringArray *,PropEltIdx &,bool dev_prop=false);
+    int find_class(DevString );
+    int find_dev_att(DevString,int &,int &);
+    int find_obj(DevString obj_name,int &);
+    void get_obj_prop_list(DevVarStringArray *,PropEltIdx &);
 
-	CORBA::Any_var			received;
-	const DevVarStringArray *data_list;
-	int 					n_data;
-	int						proc_release;
+    CORBA::Any_var            received;
+    const DevVarStringArray *data_list;
+    int                     n_data;
+    int                        proc_release;
 
-	EltIdx					imp_adm;
-	EltIdx					imp_notifd_event;
-	EltIdx					imp_adm_event;
-	EltIdx                  imp_tac;
-	PropEltIdx				ctrl_serv_prop;
-	PropEltIdx				DServer_class_prop;
-	PropEltIdx				Default_prop;
-	PropEltIdx				adm_dev_prop;
-	int 					class_nb;
-	ClassEltIdx				*classes_idx;
+    EltIdx                    imp_adm;
+    EltIdx                    imp_notifd_event;
+    EltIdx                    imp_adm_event;
+    EltIdx                  imp_tac;
+    PropEltIdx                ctrl_serv_prop;
+    PropEltIdx                DServer_class_prop;
+    PropEltIdx                Default_prop;
+    PropEltIdx                adm_dev_prop;
+    int                     class_nb;
+    ClassEltIdx                *classes_idx;
 
-	DevVarLongStringArray	imp_adm_data;
-	DevVarLongStringArray	imp_notifd_event_data;
-	DevVarLongStringArray	imp_adm_event_data;
-	DevVarLongStringArray	imp_tac_data;
-	DevVarStringArray		ret_obj_prop;
-	DevVarStringArray		ret_dev_list;
-	DevVarStringArray		ret_obj_att_prop;
-	DevVarStringArray		ret_obj_pipe_prop;
-	DevVarStringArray		ret_prop_list;
+    DevVarLongStringArray    imp_adm_data;
+    DevVarLongStringArray    imp_notifd_event_data;
+    DevVarLongStringArray    imp_adm_event_data;
+    DevVarLongStringArray    imp_tac_data;
+    DevVarStringArray        ret_obj_prop;
+    DevVarStringArray        ret_dev_list;
+    DevVarStringArray        ret_obj_att_prop;
+    DevVarStringArray        ret_obj_pipe_prop;
+    DevVarStringArray        ret_prop_list;
 };
 
 
 /****************************************************************************************
- * 																						*
- * 					The DbServerData class												*
- * 					----------------													*
- * 																						*
+ *                                                                                         *
+ *                     The DbServerData class                                                *
+ *                     ----------------                                                    *
+ *                                                                                         *
  ***************************************************************************************/
 
 //
@@ -1016,67 +1016,67 @@ class DbServerData
 private:
     struct TangoProperty
     {
-        std::string   		name;
-        std::vector<std::string> 	values;
+        std::string           name;
+        std::vector<std::string>     values;
 
         TangoProperty(std::string &na, std::vector<std::string> &val):name(na),values(val) {}
-	};
+    };
 
     struct TangoAttribute: std::vector<TangoProperty>
     {
-        std::string   				name;
+        std::string                   name;
 
         TangoAttribute(std::string na):name(na) {}
     };
 
     struct TangoPipe: std::vector<TangoProperty>
     {
-        std::string   				name;
+        std::string                   name;
 
         TangoPipe(std::string na):name(na) {}
     };
 
-	struct TangoDevice: DeviceProxy
-	{
-        std::string 	name;
+    struct TangoDevice: DeviceProxy
+    {
+        std::string     name;
         std::vector<TangoProperty>   properties;
         std::vector<TangoAttribute>  attributes;
-        std::vector<TangoPipe>		pipes;
+        std::vector<TangoPipe>        pipes;
 
         TangoDevice(const std::string &);
 
-		std::string get_name() {return name;}
+        std::string get_name() {return name;}
         std::vector<TangoProperty> &get_properties() {return properties;}
         std::vector<TangoAttribute> &get_attributes() {return attributes;}
         std::vector<TangoPipe> &get_pipes() {return pipes;}
 
-		void put_properties(Database *);
+        void put_properties(Database *);
         void put_attribute_properties(Database *);
         void put_pipe_properties(Database *);
-	};
+    };
 
-	struct TangoClass: std::vector<TangoDevice>
-	{
+    struct TangoClass: std::vector<TangoDevice>
+    {
         std::string  name;
-        std::vector<TangoProperty>   	properties;
-        std::vector<TangoAttribute>   	attributes;
-        std::vector<TangoPipe>			pipes;
+        std::vector<TangoProperty>       properties;
+        std::vector<TangoAttribute>       attributes;
+        std::vector<TangoPipe>            pipes;
 
-		TangoClass(const std::string &,const std::string &,Database *);
+        TangoClass(const std::string &,const std::string &,Database *);
 
-		std::string get_name() {return name;}
+        std::string get_name() {return name;}
         std::vector<TangoProperty> &get_properties() {return properties;}
         std::vector<TangoAttribute> &get_attributes() {return attributes;}
         std::vector<TangoPipe> &get_pipes() {return pipes;}
 
-		void put_properties(Database *);
+        void put_properties(Database *);
         void put_attribute_properties(Database *);
-		void put_pipe_properties(Database *);
+        void put_pipe_properties(Database *);
         void remove_properties(Database *);
-	};
+    };
 
-	void create_server(Database *);
-	void put_properties(Database *);
+    void create_server(Database *);
+    void put_properties(Database *);
 
   std::string full_server_name;
   std::vector<TangoClass>  classes;
@@ -1088,11 +1088,11 @@ public:
  * A constructor for a DbServerData object for a device server process defined in the TANGO database specified by
  * the TANGO_HOST environment variable
  *
- * @param [in] ds_exec_name	The device server process executable name
+ * @param [in] ds_exec_name    The device server process executable name
  * @param [in] ds_inst_name The device server process instance name
  *
  */
-	DbServerData(const std::string &ds_exec_name,const std::string &ds_inst_name);
+    DbServerData(const std::string &ds_exec_name,const std::string &ds_inst_name);
 /**
  * Check if device(s) already defined
  *
@@ -1102,7 +1102,7 @@ public:
  * @param [in] tg_host The tango host
  * @return Boolean set to true if one of the device server device is defined in the Tango host given as parameter
  */
-	bool already_exist(const std::string &tg_host);
+    bool already_exist(const std::string &tg_host);
 /**
  * Put device server database configuration in new Tango host
  *
@@ -1110,7 +1110,7 @@ public:
  *
  * @param [in] tg_host The tango host
  */
-	void put_in_database(const std::string &tg_host);
+    void put_in_database(const std::string &tg_host);
 /**
  * Remove device server database configuration from Tango host
  *
@@ -1118,7 +1118,7 @@ public:
  *
  * @param [in] tg_host The tango host
  */
-	void remove(const std::string &tg_host);
+    void remove(const std::string &tg_host);
 /**
  * Remove device server database configuration from default Tango host
  *
@@ -1126,13 +1126,13 @@ public:
  * TANGO_HOST
  *
  */
-	void remove();
+    void remove();
 
 ///@privatesection
-	~DbServerData() {}
+    ~DbServerData() {}
 
-	const std::string &get_name() {return full_server_name;}
-	std::vector<TangoClass> &get_classes() {return classes;}
+    const std::string &get_name() {return full_server_name;}
+    std::vector<TangoClass> &get_classes() {return classes;}
 };
 
 /*
@@ -1145,67 +1145,67 @@ public:
 */
 
 #define MANAGE_EXCEPT(NAME) \
-	catch (Tango::CommunicationFailed &e) \
-	{ \
-		if (e.errors.length() >= 2) \
-		{ \
-			if (::strcmp(e.errors[1].reason.in(),API_DeviceTimedOut) == 0) \
-			{ \
-				if (db_retries != 0) \
-				{ \
-					db_retries--; \
-					if (db_retries == 0) \
-						throw; \
-				} \
-				else \
-					throw; \
-			} \
-			else \
-				throw; \
-		} \
-		else \
-			throw; \
-	}
+    catch (Tango::CommunicationFailed &e) \
+    { \
+        if (e.errors.length() >= 2) \
+        { \
+            if (::strcmp(e.errors[1].reason.in(),API_DeviceTimedOut) == 0) \
+            { \
+                if (db_retries != 0) \
+                { \
+                    db_retries--; \
+                    if (db_retries == 0) \
+                        throw; \
+                } \
+                else \
+                    throw; \
+            } \
+            else \
+                throw; \
+        } \
+        else \
+            throw; \
+    }
 
 #define CALL_DB_SERVER_NO_RET(NAME,SEND) \
-	{ \
-		bool retry_mac = true; \
-		long db_retries = 0; \
-		if (db_tg != NULL) \
-		{ \
-			if (db_tg->is_svr_starting() == true) \
-				db_retries = DB_START_PHASE_RETRIES; \
-		} \
-		while (retry_mac == true) \
-		{ \
-			try \
-			{ \
-				command_inout(NAME,SEND); \
-				retry_mac = false; \
-			} \
-			MANAGE_EXCEPT(NAME) \
-		} \
-	}
+    { \
+        bool retry_mac = true; \
+        long db_retries = 0; \
+        if (db_tg != NULL) \
+        { \
+            if (db_tg->is_svr_starting() == true) \
+                db_retries = DB_START_PHASE_RETRIES; \
+        } \
+        while (retry_mac == true) \
+        { \
+            try \
+            { \
+                command_inout(NAME,SEND); \
+                retry_mac = false; \
+            } \
+            MANAGE_EXCEPT(NAME) \
+        } \
+    }
 
 #define CALL_DB_SERVER(NAME,SEND,RET) \
-	{ \
-		bool retry_mac = true; \
-		long db_retries = 0; \
-		if (db_tg != NULL) \
-		{ \
-			if (db_tg->is_svr_starting() == true) \
-				db_retries = DB_START_PHASE_RETRIES; \
-		} \
-		while (retry_mac == true) \
-		{ \
-			try \
-			{ \
-				RET = command_inout(NAME,SEND); \
-				retry_mac = false; \
-			} \
-			MANAGE_EXCEPT(NAME) \
-		} \
-	}
+    { \
+        bool retry_mac = true; \
+        long db_retries = 0; \
+        if (db_tg != NULL) \
+        { \
+            if (db_tg->is_svr_starting() == true) \
+                db_retries = DB_START_PHASE_RETRIES; \
+        } \
+        while (retry_mac == true) \
+        { \
+            try \
+            { \
+                RET = command_inout(NAME,SEND); \
+                retry_mac = false; \
+            } \
+            MANAGE_EXCEPT(NAME) \
+        } \
+    }
 
 } // End of Tango namespace
 

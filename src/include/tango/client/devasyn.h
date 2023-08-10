@@ -3,7 +3,7 @@
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -55,8 +55,8 @@ class EventConsumerKeepAliveThread;
 
 /********************************************************************************
  *                                                                              *
- * 						CmdDoneEvent class										*
- * 																				*
+ *                         CmdDoneEvent class                                        *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -73,21 +73,21 @@ class CmdDoneEvent
 {
 public:
 ///@privatesection
-	CmdDoneEvent(DeviceProxy *dev,
-		     std::string &cmd,
-		     DeviceData &arg,
-		     DevErrorList &err_in):device(dev),
-					   cmd_name(cmd),
-					   argout(arg),
-					   errors(err_in)
-	{if (errors.length()==0) err=false;else err=true;}
+    CmdDoneEvent(DeviceProxy *dev,
+             std::string &cmd,
+             DeviceData &arg,
+             DevErrorList &err_in):device(dev),
+                       cmd_name(cmd),
+                       argout(arg),
+                       errors(err_in)
+    {if (errors.length()==0) err=false;else err=true;}
 
 ///@publicsection
-	Tango::DeviceProxy 	*device;        ///< The DeviceProxy object on which the call was executed
-  std::string	&cmd_name;      ///< The command name
-	DeviceData			&argout;        ///< The command argout
-	bool				err;            ///< A boolean flag set to true if the command failed. False otherwise
-	DevErrorList		&errors;        ///< The error stack
+    Tango::DeviceProxy     *device;        ///< The DeviceProxy object on which the call was executed
+  std::string    &cmd_name;      ///< The command name
+    DeviceData            &argout;        ///< The command argout
+    bool                err;            ///< A boolean flag set to true if the command failed. False otherwise
+    DevErrorList        &errors;        ///< The error stack
 
 private:
     class CmdDoneEventExt
@@ -100,9 +100,9 @@ private:
 };
 
 /********************************************************************************
- * 																				*
- * 						AttrReadEvent class										*
- * 																				*
+ *                                                                                 *
+ *                         AttrReadEvent class                                        *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -120,21 +120,21 @@ class AttrReadEvent
 {
 public:
 ///@privatesection
-	AttrReadEvent(DeviceProxy *dev,
-		      std::vector<std::string> &att_names,
-		      std::vector<DeviceAttribute> *arg,
-		      DevErrorList &err_in):device(dev),
-					    attr_names(att_names),
-					    argout(arg),
-					    errors(err_in)
-	{if (errors.length()==0) err=false;else err=true;}
+    AttrReadEvent(DeviceProxy *dev,
+              std::vector<std::string> &att_names,
+              std::vector<DeviceAttribute> *arg,
+              DevErrorList &err_in):device(dev),
+                        attr_names(att_names),
+                        argout(arg),
+                        errors(err_in)
+    {if (errors.length()==0) err=false;else err=true;}
 
 ///@publicsection
-	Tango::DeviceProxy 		*device;        ///< The DeviceProxy object on which the call was executed
- std::vector<std::string>			&attr_names;    ///< The attribute name list
- std::vector<DeviceAttribute>	*argout;        ///< The attribute data
-	bool					err;            ///< A boolean flag set to true if the request failed. False otherwise
-	DevErrorList			&errors;        ///< The error stack
+    Tango::DeviceProxy         *device;        ///< The DeviceProxy object on which the call was executed
+ std::vector<std::string>            &attr_names;    ///< The attribute name list
+ std::vector<DeviceAttribute>    *argout;        ///< The attribute data
+    bool                    err;            ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList            &errors;        ///< The error stack
 
 private:
     class AttrReadEventExt
@@ -147,9 +147,9 @@ private:
 };
 
 /********************************************************************************
- * 																				*
- * 						AttrWrittenEvent class									*
- * 																				*
+ *                                                                                 *
+ *                         AttrWrittenEvent class                                    *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -167,18 +167,18 @@ class AttrWrittenEvent
 {
 public:
 ///@privatesection
-	AttrWrittenEvent(DeviceProxy *dev,
-			 std::vector<std::string> &att_names,
-			 NamedDevFailedList &err_in):device(dev),
-			 		       attr_names(att_names),
-					       errors(err_in)
-	{err = errors.call_failed();}
+    AttrWrittenEvent(DeviceProxy *dev,
+             std::vector<std::string> &att_names,
+             NamedDevFailedList &err_in):device(dev),
+                            attr_names(att_names),
+                           errors(err_in)
+    {err = errors.call_failed();}
 
 ///@publicsection
-	Tango::DeviceProxy	*device;        ///< The DeviceProxy object on which the call was executed
- std::vector<std::string>		&attr_names;    ///< The attribute name list
-	bool				err;            ///< A boolean flag set to true if the request failed. False otherwise
-	NamedDevFailedList	&errors;        ///< The error stack
+    Tango::DeviceProxy    *device;        ///< The DeviceProxy object on which the call was executed
+ std::vector<std::string>        &attr_names;    ///< The attribute name list
+    bool                err;            ///< A boolean flag set to true if the request failed. False otherwise
+    NamedDevFailedList    &errors;        ///< The error stack
 
 private:
     class AttrWrittenEventExt
@@ -191,9 +191,9 @@ private:
 };
 
 /********************************************************************************
- * 																				*
- * 						CallBack class											*
- * 																				*
+ *                                                                                 *
+ *                         CallBack class                                            *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -226,7 +226,7 @@ public:
  *
  * @param cde The command data
  */
-	virtual void cmd_ended(CmdDoneEvent *cde) {}
+    virtual void cmd_ended(CmdDoneEvent *cde) {}
 /**
  * Asynchronous read attribute execution callback method
  *
@@ -236,7 +236,7 @@ public:
  *
  * @param are The read attribute data
  */
-	virtual void attr_read(AttrReadEvent *are) {}
+    virtual void attr_read(AttrReadEvent *are) {}
 /**
  * Asynchronous write attribute execution callback method
  *
@@ -246,7 +246,7 @@ public:
  *
  * @param awe The write attribute data
  */
-	virtual void attr_written(AttrWrittenEvent *awe) {}
+    virtual void attr_written(AttrWrittenEvent *awe) {}
 /**
  * Event callback method
  *
@@ -255,7 +255,7 @@ public:
  *
  * @param ed The event data
  */
-	virtual void push_event(EventData *ed) {}
+    virtual void push_event(EventData *ed) {}
 /**
  * attribute configuration change event callback method
  *
@@ -265,7 +265,7 @@ public:
  *
  * @param ace The attribute configuration change event data
  */
-	virtual void push_event(AttrConfEventData *ace) {}
+    virtual void push_event(AttrConfEventData *ace) {}
 /**
  * Data ready event callback method
  *
@@ -274,7 +274,7 @@ public:
  *
  * @param dre The data ready event data
  */
-	virtual void push_event(DataReadyEventData *dre) {}
+    virtual void push_event(DataReadyEventData *dre) {}
 /**
  * Device interface change event callback method
  *
@@ -283,7 +283,7 @@ public:
  *
  * @param dic The device interface change event data
  */
-	virtual void push_event(DevIntrChangeEventData *dic) {}
+    virtual void push_event(DevIntrChangeEventData *dic) {}
 /**
  * Pipe event callback method
  *
@@ -292,20 +292,20 @@ public:
  *
  * @param ped The pipe event data
  */
-	virtual void push_event(PipeEventData *ped) {}
+    virtual void push_event(PipeEventData *ped) {}
 #else
-	virtual void cmd_ended(CmdDoneEvent *) {}
-	virtual void attr_read(AttrReadEvent *) {}
-	virtual void attr_written(AttrWrittenEvent *) {}
-	virtual void push_event(EventData *) {}
-	virtual void push_event(AttrConfEventData *) {}
-	virtual void push_event(DataReadyEventData *) {}
-	virtual void push_event(DevIntrChangeEventData *) {}
-	virtual void push_event(PipeEventData *) {}
+    virtual void cmd_ended(CmdDoneEvent *) {}
+    virtual void attr_read(AttrReadEvent *) {}
+    virtual void attr_written(AttrWrittenEvent *) {}
+    virtual void push_event(EventData *) {}
+    virtual void push_event(AttrConfEventData *) {}
+    virtual void push_event(DataReadyEventData *) {}
+    virtual void push_event(DevIntrChangeEventData *) {}
+    virtual void push_event(PipeEventData *) {}
 #endif
 
 /// @privatesection
-	virtual ~CallBack() {}
+    virtual ~CallBack() {}
 
 private:
     class CallBackExt
@@ -322,82 +322,82 @@ private:
 class UniqIdent: public omni_mutex
 {
 public:
-	UniqIdent() {omni_mutex_lock sync(*this);ctr = 0;}
-	long get_ident() {omni_mutex_lock sync(*this);return ++ctr;}
+    UniqIdent() {omni_mutex_lock sync(*this);ctr = 0;}
+    long get_ident() {omni_mutex_lock sync(*this);return ++ctr;}
 
-	long ctr;
+    long ctr;
 };
 
 class TgRequest
 {
 public:
-	enum ReqType
-	{
-		CMD_INOUT,
-		READ_ATTR,
-		WRITE_ATTR_SINGLE,
-		WRITE_ATTR
-	};
+    enum ReqType
+    {
+        CMD_INOUT,
+        READ_ATTR,
+        WRITE_ATTR_SINGLE,
+        WRITE_ATTR
+    };
 
-	TgRequest(CORBA::Request_ptr re,ReqType ty):request(re),req_type(ty),cb_ptr(NULL),
-						    					arrived(false),dev(NULL)
-	{}
+    TgRequest(CORBA::Request_ptr re,ReqType ty):request(re),req_type(ty),cb_ptr(NULL),
+                                                arrived(false),dev(NULL)
+    {}
 
-	TgRequest(CORBA::Request_ptr re,ReqType ty,CallBack *cb):request(re),req_type(ty),cb_ptr(cb),
-							 								 arrived(false),dev(NULL)
-	{}
+    TgRequest(CORBA::Request_ptr re,ReqType ty,CallBack *cb):request(re),req_type(ty),cb_ptr(cb),
+                                                              arrived(false),dev(NULL)
+    {}
 
-	TgRequest(Tango::Connection *con,ReqType ty,CallBack *cb):request(NULL),req_type(ty),cb_ptr(cb),
-							 								  arrived(false),dev(con)
-	{}
+    TgRequest(Tango::Connection *con,ReqType ty,CallBack *cb):request(NULL),req_type(ty),cb_ptr(cb),
+                                                               arrived(false),dev(con)
+    {}
 
-	CORBA::Request_ptr	request;
-	ReqType				req_type;
-	CallBack			*cb_ptr;
-	bool				arrived;
-	Connection			*dev;
+    CORBA::Request_ptr    request;
+    ReqType                req_type;
+    CallBack            *cb_ptr;
+    bool                arrived;
+    Connection            *dev;
 };
 
 class AsynReq: public omni_mutex
 {
 public:
-	AsynReq(UniqIdent *ptr):ui_ptr(ptr),cond(this) {}
-	~AsynReq() {delete ui_ptr;}
+    AsynReq(UniqIdent *ptr):ui_ptr(ptr),cond(this) {}
+    ~AsynReq() {delete ui_ptr;}
 
-	TgRequest &get_request(long);
-	TgRequest &get_request(CORBA::Request_ptr);
-	TgRequest *get_request(Tango::Connection *);
+    TgRequest &get_request(long);
+    TgRequest &get_request(CORBA::Request_ptr);
+    TgRequest *get_request(Tango::Connection *);
 
-	long store_request(CORBA::Request_ptr,TgRequest::ReqType);
-	void store_request(CORBA::Request_ptr,CallBack *,Connection *,TgRequest::ReqType);
+    long store_request(CORBA::Request_ptr,TgRequest::ReqType);
+    void store_request(CORBA::Request_ptr,CallBack *,Connection *,TgRequest::ReqType);
 
-	void remove_request(long);
-	void remove_request(Connection *,CORBA::Request_ptr);
+    void remove_request(long);
+    void remove_request(Connection *,CORBA::Request_ptr);
 
-	size_t get_request_nb() {omni_mutex_lock sync(*this);return asyn_poll_req_table.size();}
-	size_t get_cb_request_nb() {omni_mutex_lock sync(*this);return cb_req_table.size();}
-	size_t get_cb_request_nb_i() {return cb_req_table.size();}
+    size_t get_request_nb() {omni_mutex_lock sync(*this);return asyn_poll_req_table.size();}
+    size_t get_cb_request_nb() {omni_mutex_lock sync(*this);return cb_req_table.size();}
+    size_t get_cb_request_nb_i() {return cb_req_table.size();}
 
-	void mark_as_arrived(CORBA::Request_ptr req);
-	std::multimap<Connection *,TgRequest> &get_cb_dev_table() {return cb_dev_table;}
+    void mark_as_arrived(CORBA::Request_ptr req);
+    std::multimap<Connection *,TgRequest> &get_cb_dev_table() {return cb_dev_table;}
 
-	void mark_as_cancelled(long);
-	void mark_all_polling_as_cancelled();
-	void wait() {cond.wait();}
-	void signal() {omni_mutex_lock sync(*this);cond.signal();}
+    void mark_as_cancelled(long);
+    void mark_all_polling_as_cancelled();
+    void wait() {cond.wait();}
+    void signal() {omni_mutex_lock sync(*this);cond.signal();}
 
 protected:
-	std::map<long,TgRequest>			asyn_poll_req_table;
-	UniqIdent 					*ui_ptr;
+    std::map<long,TgRequest>            asyn_poll_req_table;
+    UniqIdent                     *ui_ptr;
 
-	std::multimap<Connection *,TgRequest>	cb_dev_table;
-	std::map<CORBA::Request_ptr,TgRequest>	cb_req_table;
+    std::multimap<Connection *,TgRequest>    cb_dev_table;
+    std::map<CORBA::Request_ptr,TgRequest>    cb_req_table;
 
-  std::vector<long>				cancelled_request;
+  std::vector<long>                cancelled_request;
 
 private:
-	omni_condition				cond;
-	bool remove_cancelled_request(long);
+    omni_condition                cond;
+    bool remove_cancelled_request(long);
 };
 
 } // End of Tango namespace

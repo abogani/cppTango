@@ -3,15 +3,15 @@
 // file :               SeqVec.h
 //
 // description :        Include for the utilities function to ease CORBA
-//			sequences from standard C++ vector or in the
-//			oposite way.
+//            sequences from standard C++ vector or in the
+//            oposite way.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -54,10 +54,10 @@ namespace Tango
 
 //=============================================================================
 //
-//			Operator for the unsigned char array types
+//            Operator for the unsigned char array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarCharArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarCharArray) and C++ vectors
 //
 //=============================================================================
 
@@ -75,10 +75,10 @@ namespace Tango
  */
 inline void operator<<(DevVarCharArray &lval,const std::vector<unsigned char> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -89,20 +89,20 @@ inline void operator<<(DevVarCharArray &lval,const std::vector<unsigned char> &r
  */
 inline void operator<<(std::vector<unsigned char> &lval,const DevVarCharArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 
 //=============================================================================
 //
-//			Operator for the Short array types
+//            Operator for the Short array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarShortArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarShortArray) and C++ vectors
 //
 //=============================================================================
 
@@ -114,10 +114,10 @@ inline void operator<<(std::vector<unsigned char> &lval,const DevVarCharArray &r
  */
 inline void operator<<(DevVarShortArray &lval,const std::vector<short> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -128,19 +128,19 @@ inline void operator<<(DevVarShortArray &lval,const std::vector<short> &rval)
  */
 inline void operator<<(std::vector<short> &lval,const DevVarShortArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //=============================================================================
 //
-//			Operator for the Long array types
+//            Operator for the Long array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarLongArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarLongArray) and C++ vectors
 //
 //=============================================================================
 
@@ -152,10 +152,10 @@ inline void operator<<(std::vector<short> &lval,const DevVarShortArray &rval)
  */
 inline void operator<<(DevVarLongArray &lval,const std::vector<DevLong> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -166,20 +166,20 @@ inline void operator<<(DevVarLongArray &lval,const std::vector<DevLong> &rval)
  */
 inline void operator<<(std::vector<DevLong> &lval,const DevVarLongArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 
 //=============================================================================
 //
-//			Operator for the Long Long array types
+//            Operator for the Long Long array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarLong64Array) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarLong64Array) and C++ vectors
 //
 //=============================================================================
 
@@ -191,10 +191,10 @@ inline void operator<<(std::vector<DevLong> &lval,const DevVarLongArray &rval)
  */
 inline void operator<<(DevVarLong64Array &lval,const std::vector<DevLong64> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -205,19 +205,19 @@ inline void operator<<(DevVarLong64Array &lval,const std::vector<DevLong64> &rva
  */
 inline void operator<<(std::vector<DevLong64> &lval,const DevVarLong64Array &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //=============================================================================
 //
-//			Operator for the Float array types
+//            Operator for the Float array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarLongArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarLongArray) and C++ vectors
 //
 //=============================================================================
 
@@ -229,10 +229,10 @@ inline void operator<<(std::vector<DevLong64> &lval,const DevVarLong64Array &rva
  */
 inline void operator<<(DevVarFloatArray &lval,const std::vector<float> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -244,19 +244,19 @@ inline void operator<<(DevVarFloatArray &lval,const std::vector<float> &rval)
 
 inline void operator<<(std::vector<float> &lval,const DevVarFloatArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //=============================================================================
 //
-//			Operator for the Double array types
+//            Operator for the Double array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarDoubleArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarDoubleArray) and C++ vectors
 //
 //=============================================================================
 
@@ -268,10 +268,10 @@ inline void operator<<(std::vector<float> &lval,const DevVarFloatArray &rval)
  */
 inline void operator<<(DevVarDoubleArray &lval,const std::vector<double> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -283,20 +283,20 @@ inline void operator<<(DevVarDoubleArray &lval,const std::vector<double> &rval)
 
 inline void operator<<(std::vector<double> &lval,const DevVarDoubleArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 
 //=============================================================================
 //
-//			Operator for the Boolean array types
+//            Operator for the Boolean array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarBooleanArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarBooleanArray) and C++ vectors
 //
 //=============================================================================
 
@@ -308,10 +308,10 @@ inline void operator<<(std::vector<double> &lval,const DevVarDoubleArray &rval)
  */
 inline void operator<<(DevVarBooleanArray &lval,const std::vector<bool> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -323,19 +323,19 @@ inline void operator<<(DevVarBooleanArray &lval,const std::vector<bool> &rval)
 
 inline void operator<<(std::vector<bool> &lval,const DevVarBooleanArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //=============================================================================
 //
-//			Operator for the Unsigned short array types
+//            Operator for the Unsigned short array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarUShortArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarUShortArray) and C++ vectors
 //
 //=============================================================================
 
@@ -347,10 +347,10 @@ inline void operator<<(std::vector<bool> &lval,const DevVarBooleanArray &rval)
  */
 inline void operator<<(DevVarUShortArray &lval,const std::vector<unsigned short> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -362,19 +362,19 @@ inline void operator<<(DevVarUShortArray &lval,const std::vector<unsigned short>
 
 inline void operator<<(std::vector<unsigned short> &lval,const DevVarUShortArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //=============================================================================
 //
-//			Operator for the Unsigned long array types
+//            Operator for the Unsigned long array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarUShortArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarUShortArray) and C++ vectors
 //
 //=============================================================================
 
@@ -387,10 +387,10 @@ inline void operator<<(std::vector<unsigned short> &lval,const DevVarUShortArray
 
 inline void operator<<(DevVarULongArray &lval,const std::vector<DevULong> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -401,20 +401,20 @@ inline void operator<<(DevVarULongArray &lval,const std::vector<DevULong> &rval)
  */
 inline void operator<<(std::vector<DevULong> &lval,const DevVarULongArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 
 //=============================================================================
 //
-//			Operator for the Unsigned long long array types
+//            Operator for the Unsigned long long array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarULong64Array) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarULong64Array) and C++ vectors
 //
 //=============================================================================
 
@@ -427,10 +427,10 @@ inline void operator<<(std::vector<DevULong> &lval,const DevVarULongArray &rval)
 
 inline void operator<<(DevVarULong64Array &lval,const std::vector<DevULong64> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -441,19 +441,19 @@ inline void operator<<(DevVarULong64Array &lval,const std::vector<DevULong64> &r
  */
 inline void operator<<(std::vector<DevULong64> &lval,const DevVarULong64Array &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //=============================================================================
 //
-//			Operator for the string array types
+//            Operator for the string array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarStringArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarStringArray) and C++ vectors
 //
 //=============================================================================
 
@@ -465,10 +465,10 @@ inline void operator<<(std::vector<DevULong64> &lval,const DevVarULong64Array &r
  */
 inline void operator<<(DevVarStringArray &lval,const std::vector<std::string> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = Tango::string_dup(rval[i].c_str());
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = Tango::string_dup(rval[i].c_str());
 }
 
 /**
@@ -479,23 +479,23 @@ inline void operator<<(DevVarStringArray &lval,const std::vector<std::string> &r
  */
 inline void operator<<(std::vector<std::string> &lval,const DevVarStringArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	std::string str;
-	for (long i = 0;i < nb_elt;i++)
-	{
-		str = rval[i];
-		lval.push_back(str);
-	}
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    std::string str;
+    for (long i = 0;i < nb_elt;i++)
+    {
+        str = rval[i];
+        lval.push_back(str);
+    }
 }
 
 //=============================================================================
 //
-//			Operator for the DevState array types
+//            Operator for the DevState array types
 //
-// description :	These two operators allow simple insertion between
-//			Tango sequence (DevVarStateArray) and C++ vectors
+// description :    These two operators allow simple insertion between
+//            Tango sequence (DevVarStateArray) and C++ vectors
 //
 //=============================================================================
 
@@ -507,10 +507,10 @@ inline void operator<<(std::vector<std::string> &lval,const DevVarStringArray &r
  */
 inline void operator<<(DevVarStateArray &lval,const std::vector<DevState> &rval)
 {
-	size_t nb_elt = rval.size();
-	lval.length((CORBA::ULong)nb_elt);
-	for (unsigned long i = 0;i < nb_elt;i++)
-		lval[i] = rval[i];
+    size_t nb_elt = rval.size();
+    lval.length((CORBA::ULong)nb_elt);
+    for (unsigned long i = 0;i < nb_elt;i++)
+        lval[i] = rval[i];
 }
 
 /**
@@ -521,20 +521,20 @@ inline void operator<<(DevVarStateArray &lval,const std::vector<DevState> &rval)
  */
 inline void operator<<(std::vector<DevState> &lval,const DevVarStateArray &rval)
 {
-	long nb_elt = rval.length();
-	if (lval.empty() == false)
-		lval.clear();
-	for (long i = 0;i < nb_elt;i++)
-		lval.push_back(rval[i]);
+    long nb_elt = rval.length();
+    if (lval.empty() == false)
+        lval.clear();
+    for (long i = 0;i < nb_elt;i++)
+        lval.push_back(rval[i]);
 }
 
 //@}
 
 //=============================================================================
 //
-//			Print operator for sequence types
+//            Print operator for sequence types
 //
-// description :	These operators allow simple printing of sequences
+// description :    These operators allow simple printing of sequences
 //
 //=============================================================================
 /** @defgroup Eas Easy printing operator overloading functions

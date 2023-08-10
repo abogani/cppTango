@@ -1,17 +1,17 @@
 //=============================================================================
 //
-// file :		Command.h
+// file :        Command.h
 //
-// description :	Include for the Device root classes.
-//			One class is declared in this file :
-//				The Command class
+// description :    Include for the Device root classes.
+//            One class is declared in this file :
+//                The Command class
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -67,7 +67,7 @@ public:
  *
  * The default constructor
  */
-	Command():ext(new CommandExt) {}
+    Command():ext(new CommandExt) {}
 
 /**
  * Constructs a newly allocated Command object for a command from its
@@ -75,30 +75,30 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	s	The command name
- * @param	in	The command input parameter type
- * @param	out 	The command output parameter type
- * @param	level	The command display level
+ * @param     s    The command name
+ * @param    in    The command input parameter type
+ * @param    out     The command output parameter type
+ * @param    level    The command display level
  *
  */
-	Command(const std::string &s,Tango::CmdArgType in,Tango::CmdArgType out,
-		Tango::DispLevel level = Tango::OPERATOR);
+    Command(const std::string &s,Tango::CmdArgType in,Tango::CmdArgType out,
+        Tango::DispLevel level = Tango::OPERATOR);
 
 /**
  * Constructs a newly allocated Command object for a command from its
  * name, its input and output parameter types plus parameters description
  *
- * @param 	s	The command name
- * @param	in	The command input parameter type
- * @param	out 	The command output parameter type
- * @param	in_desc	The input parameter description
- * @param	out_desc The output parameter description
- * @param	level	The command display level
+ * @param     s    The command name
+ * @param    in    The command input parameter type
+ * @param    out     The command output parameter type
+ * @param    in_desc    The input parameter description
+ * @param    out_desc The output parameter description
+ * @param    level    The command display level
  *
  */
-	Command(const std::string &s,Tango::CmdArgType in,Tango::CmdArgType out,
-		const std::string &in_desc,const std::string &out_desc,
-		Tango::DispLevel level = Tango::OPERATOR);
+    Command(const std::string &s,Tango::CmdArgType in,Tango::CmdArgType out,
+        const std::string &in_desc,const std::string &out_desc,
+        Tango::DispLevel level = Tango::OPERATOR);
 //@}
 
 /**@name Destructor
@@ -126,7 +126,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	virtual CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any) = 0;
+    virtual CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any) = 0;
 
 /**
  * Check if the command is allowed in the actual device state.
@@ -144,7 +144,7 @@ public:
  * @return A boolean set to true is the command is allowed. Otherwise, the
  * return value is false.
  */
-	virtual bool is_allowed (DeviceImpl *dev, const CORBA::Any &in_any) {(void)dev;(void)in_any;return true;}
+    virtual bool is_allowed (DeviceImpl *dev, const CORBA::Any &in_any) {(void)dev;(void)in_any;return true;}
 
 /**
  * Init command parameters type.
@@ -154,7 +154,7 @@ public:
  * sub-classes.
  *
  */
-	virtual void init_types() {}
+    virtual void init_types() {}
 //@}
 
 /**@name Get/Set object members.
@@ -167,91 +167,91 @@ public:
  *
  * @return The command name
  */
-	std::string &get_name() {return name;}
+    std::string &get_name() {return name;}
 
 /**
  * Set the command name.
  *
  * @param new_name The new command name
  */
-	void set_name(const std::string &new_name) {name=new_name;}
+    void set_name(const std::string &new_name) {name=new_name;}
 
 /**
  * Return the command name in lower case letters.
  *
  * @return The command name
  */
-	std::string &get_lower_name() {return lower_name;}
+    std::string &get_lower_name() {return lower_name;}
 
 /**
  * Return the input parameter type.
  *
  * @return The input parameter type
  */
-	Tango::CmdArgType get_in_type() {return in_type;}
+    Tango::CmdArgType get_in_type() {return in_type;}
 
 /**
  * Return the output parameter type.
  *
  * @return The output parameter type
  */
-	Tango::CmdArgType get_out_type() {return out_type;}
+    Tango::CmdArgType get_out_type() {return out_type;}
 
 /**
  * Return the input parameter description.
  *
  * @return The input parameter description
  */
-	std::string &get_in_type_desc() {return in_type_desc;}
+    std::string &get_in_type_desc() {return in_type_desc;}
 
 /**
  * Return the output parameter description.
  *
  * @return The output parameter description
  */
-	std::string &get_out_type_desc() {return out_type_desc;}
+    std::string &get_out_type_desc() {return out_type_desc;}
 
 /**
  * Return the command display level.
  *
  * @return The command display level
  */
-	Tango::DispLevel get_disp_level() {return cmd_disp_level;}
+    Tango::DispLevel get_disp_level() {return cmd_disp_level;}
 
 /**
  * Set the input parameter description field.
  *
  * @param desc The input parameter description
  */
-	void set_in_type_desc(std::string desc) {in_type_desc = desc;}
+    void set_in_type_desc(std::string desc) {in_type_desc = desc;}
 
 /**
  * Set the output parameter description field.
  *
  * @param desc The output parameter description
  */
-	void set_out_type_desc(std::string desc) {out_type_desc = desc;}
+    void set_out_type_desc(std::string desc) {out_type_desc = desc;}
 
 /**
  * Set the command display level.
  *
  * @param level The command display level
  */
-	void set_disp_level(Tango::DispLevel level) {cmd_disp_level = level;}
+    void set_disp_level(Tango::DispLevel level) {cmd_disp_level = level;}
 
 /**
  * Set the command polling period.
  *
  * @param per The command polling period (in mS)
  */
-	void set_polling_period(long per) {poll_period = per;}
+    void set_polling_period(long per) {poll_period = per;}
 
 /**
  * Get the command polling period.
  *
  * @return The command polling period (in mS)
  */
-	long get_polling_period() {return poll_period;}
+    long get_polling_period() {return poll_period;}
 //@}
 
 
@@ -270,7 +270,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevBoolean &data);
+    void extract(const CORBA::Any &in,Tango::DevBoolean &data);
 
 /**
  * Extract a short data from a CORBA Any object.
@@ -282,7 +282,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevShort &data);
+    void extract(const CORBA::Any &in,Tango::DevShort &data);
 
 /**
  * Extract a long data from a CORBA Any object.
@@ -294,7 +294,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevLong &data);
+    void extract(const CORBA::Any &in,Tango::DevLong &data);
 
 /**
  * Extract a 64 bits long data from a CORBA Any object.
@@ -306,7 +306,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevLong64 &data);
+    void extract(const CORBA::Any &in,Tango::DevLong64 &data);
 
 /**
  * Extract a float data from a CORBA Any object.
@@ -318,7 +318,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevFloat &data);
+    void extract(const CORBA::Any &in,Tango::DevFloat &data);
 
 /**
  * Extract a double data from a CORBA Any object.
@@ -330,7 +330,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevDouble &data);
+    void extract(const CORBA::Any &in,Tango::DevDouble &data);
 
 /**
  * Extract an unsigned short data from a CORBA Any object.
@@ -342,7 +342,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevUShort &data);
+    void extract(const CORBA::Any &in,Tango::DevUShort &data);
 
 /**
  * Extract an unsigned long data from a CORBA Any object.
@@ -354,7 +354,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevULong &data);
+    void extract(const CORBA::Any &in,Tango::DevULong &data);
 
 /**
  * Extract an unsigned 64 bits long data from a CORBA Any object.
@@ -366,7 +366,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevULong64 &data);
+    void extract(const CORBA::Any &in,Tango::DevULong64 &data);
 
 /**
  * Extract a string from a CORBA Any object.
@@ -378,7 +378,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevString &data);
+    void extract(const CORBA::Any &in,Tango::DevString &data);
 
 /**
  * Extract a const string from a CORBA Any object.
@@ -390,7 +390,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const char *&data);
+    void extract(const CORBA::Any &in,const char *&data);
 
 /**
  * Extract a char array from a CORBA Any object.
@@ -402,7 +402,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarCharArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarCharArray *&data);
 
 /**
  * Extract a short array from a CORBA Any object.
@@ -414,7 +414,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarShortArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarShortArray *&data);
 
 /**
  * Extract a long array from a CORBA Any object.
@@ -426,7 +426,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarLongArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarLongArray *&data);
 
 /**
  * Extract a 64 bits long array from a CORBA Any object.
@@ -438,7 +438,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarLong64Array *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarLong64Array *&data);
 
 /**
  * Extract a float array from a CORBA Any object.
@@ -450,7 +450,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarFloatArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarFloatArray *&data);
 
 /**
  * Extract a double array from a CORBA Any object.
@@ -462,7 +462,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarDoubleArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarDoubleArray *&data);
 
 /**
  * Extract a unsigned short array from a CORBA Any object.
@@ -474,7 +474,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarUShortArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarUShortArray *&data);
 
 /**
  * Extract a unsigned long array from a CORBA Any object.
@@ -486,7 +486,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarULongArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarULongArray *&data);
 
 /**
  * Extract a unsigned 64 bits long array from a CORBA Any object.
@@ -498,7 +498,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarULong64Array *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarULong64Array *&data);
 
 /**
  * Extract a string array from a CORBA Any object.
@@ -510,7 +510,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarStringArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarStringArray *&data);
 
 /**
  * Extract a string array from a CORBA Any object.
@@ -534,7 +534,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarLongStringArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarLongStringArray *&data);
 
 /**
  * Extract a DevVarDoubleStringArray data from a CORBA Any object.
@@ -546,7 +546,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevVarDoubleStringArray *&data);
+    void extract(const CORBA::Any &in,const Tango::DevVarDoubleStringArray *&data);
 
 /**
  * Extract a Tango device state data from a CORBA Any object.
@@ -558,7 +558,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,Tango::DevState &data);
+    void extract(const CORBA::Any &in,Tango::DevState &data);
 
 /**
  * Extract a Tango DevEncoded data from a CORBA Any object.
@@ -570,7 +570,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void extract(const CORBA::Any &in,const Tango::DevEncoded *&data);
+    void extract(const CORBA::Any &in,const Tango::DevEncoded *&data);
 //@}
 
 /**@name Insert methods.
@@ -584,7 +584,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert();
+    CORBA::Any *insert();
 
 /**
  * Create a CORBA Any object and insert a Tango::DevBoolean data in it.
@@ -594,7 +594,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevBoolean data);
+    CORBA::Any *insert(Tango::DevBoolean data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevShort data in it.
@@ -604,7 +604,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevShort data);
+    CORBA::Any *insert(Tango::DevShort data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevLong data in it.
@@ -614,7 +614,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevLong data);
+    CORBA::Any *insert(Tango::DevLong data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevLong64 data in it.
@@ -624,7 +624,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevLong64 data);
+    CORBA::Any *insert(Tango::DevLong64 data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevFloat data in it.
@@ -634,7 +634,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevFloat data);
+    CORBA::Any *insert(Tango::DevFloat data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevDouble data in it.
@@ -644,7 +644,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevDouble data);
+    CORBA::Any *insert(Tango::DevDouble data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevUShort data in it.
@@ -654,7 +654,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevUShort data);
+    CORBA::Any *insert(Tango::DevUShort data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevULong data in it.
@@ -664,7 +664,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevULong data);
+    CORBA::Any *insert(Tango::DevULong data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevULong64 data in it.
@@ -674,7 +674,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevULong64 data);
+    CORBA::Any *insert(Tango::DevULong64 data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevString data in it.
@@ -686,7 +686,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevString data);
+    CORBA::Any *insert(Tango::DevString data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevString data in it.
@@ -699,7 +699,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(const char *data);
+    CORBA::Any *insert(const char *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarCharArray data in it.
@@ -711,7 +711,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarCharArray &data);
+    CORBA::Any *insert(Tango::DevVarCharArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarCharArray data in it.
@@ -726,7 +726,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarCharArray *data);
+    CORBA::Any *insert(Tango::DevVarCharArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarShortArray data in it.
@@ -738,7 +738,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarShortArray &data);
+    CORBA::Any *insert(Tango::DevVarShortArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarShortArray data in it.
@@ -753,7 +753,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarShortArray *data);
+    CORBA::Any *insert(Tango::DevVarShortArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarLongArray data in it.
@@ -765,7 +765,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarLongArray &data);
+    CORBA::Any *insert(Tango::DevVarLongArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarLongArray data in it.
@@ -780,7 +780,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarLongArray *data);
+    CORBA::Any *insert(Tango::DevVarLongArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarLong64Array data in it.
@@ -792,7 +792,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarLong64Array &data);
+    CORBA::Any *insert(Tango::DevVarLong64Array &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarLong64Array data in it.
@@ -807,7 +807,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarLong64Array *data);
+    CORBA::Any *insert(Tango::DevVarLong64Array *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarFloatArray data in it.
@@ -819,7 +819,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarFloatArray &data);
+    CORBA::Any *insert(Tango::DevVarFloatArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarFloatArray data in it.
@@ -834,7 +834,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarFloatArray *data);
+    CORBA::Any *insert(Tango::DevVarFloatArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarDoubleArray data in it.
@@ -846,7 +846,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarDoubleArray &data);
+    CORBA::Any *insert(Tango::DevVarDoubleArray &data);
 
 /**
  * Create a CORBA CORBA::Any object and insert a Tango::DevVarDoubleArray data in it.
@@ -861,7 +861,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarDoubleArray *data);
+    CORBA::Any *insert(Tango::DevVarDoubleArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarUShortArray data in it.
@@ -873,7 +873,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarUShortArray &data);
+    CORBA::Any *insert(Tango::DevVarUShortArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarUShortArray data in it.
@@ -888,7 +888,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarUShortArray *data);
+    CORBA::Any *insert(Tango::DevVarUShortArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarULongArray data in it.
@@ -900,7 +900,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarULongArray &data);
+    CORBA::Any *insert(Tango::DevVarULongArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarULongArray data in it.
@@ -915,7 +915,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarULongArray *data);
+    CORBA::Any *insert(Tango::DevVarULongArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarULong64Array data in it.
@@ -927,7 +927,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarULong64Array &data);
+    CORBA::Any *insert(Tango::DevVarULong64Array &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarULong64Array data in it.
@@ -942,7 +942,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarULong64Array *data);
+    CORBA::Any *insert(Tango::DevVarULong64Array *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarStringArray data in it.
@@ -954,7 +954,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarStringArray &data);
+    CORBA::Any *insert(Tango::DevVarStringArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarStringArray data in it.
@@ -969,7 +969,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarStringArray *data);
+    CORBA::Any *insert(Tango::DevVarStringArray *data);
 
         //TODO templates
 /**
@@ -982,7 +982,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-		CORBA::Any *insert(DevVarBooleanArray *data);
+        CORBA::Any *insert(DevVarBooleanArray *data);
 /**
  * Create a CORBA Any object and insert a Tango::DevVarBooleanArray data in it.
  *
@@ -1008,7 +1008,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarLongStringArray &data);
+    CORBA::Any *insert(Tango::DevVarLongStringArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarLongStringArray data in it.
@@ -1023,7 +1023,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarLongStringArray *data);
+    CORBA::Any *insert(Tango::DevVarLongStringArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarDoubleStringArray data in it.
@@ -1035,7 +1035,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarDoubleStringArray &data);
+    CORBA::Any *insert(Tango::DevVarDoubleStringArray &data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevVarDoubleStringArray data in it.
@@ -1050,7 +1050,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevVarDoubleStringArray *data);
+    CORBA::Any *insert(Tango::DevVarDoubleStringArray *data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevState data in it.
@@ -1060,7 +1060,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevState data);
+    CORBA::Any *insert(Tango::DevState data);
 
 /**
  * Create a CORBA Any object and insert a Tango::DevEncoded data in it.
@@ -1075,7 +1075,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *insert(Tango::DevEncoded *data);
+    CORBA::Any *insert(Tango::DevEncoded *data);
 //@}
 
 protected:
@@ -1084,27 +1084,27 @@ protected:
 /**
  * The command name
  */
-	std::string 			name;
+    std::string             name;
 /**
  * The command name in lower case
  */
-	std::string 			lower_name;
+    std::string             lower_name;
 /**
  * The command input parameter type
  */
-	Tango::CmdArgType	in_type;
+    Tango::CmdArgType    in_type;
 /**
  * The command output parameter type
  */
-	Tango::CmdArgType	out_type;
+    Tango::CmdArgType    out_type;
 /**
  * The command input parameter description
  */
-	std::string			in_type_desc;
+    std::string            in_type_desc;
 /**
  * The command output parameter type
  */
-	std::string			out_type_desc;
+    std::string            out_type_desc;
 //@}
 
 private:
@@ -1114,8 +1114,8 @@ private:
         CommandExt() {}
     };
 
-	void alloc_any(CORBA::Any *&);
-	void throw_bad_type(const char *);
+    void alloc_any(CORBA::Any *&);
+    void throw_bad_type(const char *);
 
     std::unique_ptr<CommandExt>          ext;           // Class extension
 
@@ -1123,23 +1123,23 @@ private:
 // Ported from the extension class
 //
 
-    Tango::DispLevel	cmd_disp_level;		    // Display  level
-    long			    poll_period;		    // Polling period
+    Tango::DispLevel    cmd_disp_level;            // Display  level
+    long                poll_period;            // Polling period
 
 };
 
 //=============================================================================
 //
-//			The TemplCommand class
+//            The TemplCommand class
 //
 //
-// description :	This class is a derived class of the Command class.
-//			It is used to create a command from a pointer to a
-//			object method which will execute the command.
-//			This class is for command without inout  nor output
-//			paremeters.
-//			This class is also a base class for the template Command
-//			class
+// description :    This class is a derived class of the Command class.
+//            It is used to create a command from a pointer to a
+//            object method which will execute the command.
+//            This class is for command without inout  nor output
+//            paremeters.
+//            This class is also a base class for the template Command
+//            class
 //
 //=============================================================================
 
@@ -1164,7 +1164,7 @@ public:
  *
  * The default constructor
  */
-	TemplCommand():ext(nullptr) {}
+    TemplCommand():ext(nullptr) {}
 
 /**
  * Constructs a newly allocated TemplCommand object for a command with a
@@ -1173,13 +1173,13 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    level        The command display level
  *
  */
-	TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
-		     Tango::DispLevel level);
+    TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
+             Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommand object for a command with a
@@ -1188,31 +1188,31 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    level        The command display level
  *
  */
-	TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
-		     bool (DeviceImpl::*state_method)(const CORBA::Any &),
-		     Tango::DispLevel level);
+    TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
+             bool (DeviceImpl::*state_method)(const CORBA::Any &),
+             Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommand object for a command with a
  * name, an execution method and a description for the
  * input and output command parameters.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	in_desc		The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    in_desc        The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
-		     const std::string &in_desc,const std::string &out_desc,
-		     Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
+             const std::string &in_desc,const std::string &out_desc,
+             Tango::DispLevel level = Tango::OPERATOR);
 
 /**
  * Constructs a newly allocated TemplCommand object for a command with a
@@ -1220,22 +1220,22 @@ public:
  * input and output command parameters.
  * This constructor set the command input and output type to Tango::DEV_VOID.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	in_desc		The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    in_desc        The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
-		     bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
-		     const std::string &in_desc = "",const std::string &out_desc = "",
-		     Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommand(const std::string &cmd_name,void (DeviceImpl::*exe_method)(),
+             bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+             const std::string &in_desc = "",const std::string &out_desc = "",
+             Tango::DispLevel level = Tango::OPERATOR);
 //@}
 
-	TemplCommand(const std::string &,Tango::DispLevel);
-	TemplCommand(const std::string &,const std::string & = "", const std::string & = "", DispLevel = Tango::OPERATOR);
+    TemplCommand(const std::string &,Tango::DispLevel);
+    TemplCommand(const std::string &,const std::string & = "", const std::string & = "", DispLevel = Tango::OPERATOR);
 
 /**@name Miscellaneous methods */
 //@{
@@ -1252,7 +1252,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	void set_type(const std::type_info &data_type,Tango::CmdArgType &type);
+    void set_type(const std::type_info &data_type,Tango::CmdArgType &type);
 
 /**
  * Invoke the command execution method given at object creation time.
@@ -1270,7 +1270,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
 
 /**
  * Invoke the command allowed method given at object creation time.
@@ -1289,7 +1289,7 @@ public:
  * does not supply a method to be excuted. If a method has been supplied, the
  * return value is the value returned by the user supplied mehod.
  */
-	bool is_allowed (DeviceImpl *dev, const CORBA::Any &in_any);
+    bool is_allowed (DeviceImpl *dev, const CORBA::Any &in_any);
 //@}
 
 private:
@@ -1297,7 +1297,7 @@ private:
     {
     };
 
-	void (DeviceImpl::*exe_ptr)();
+    void (DeviceImpl::*exe_ptr)();
   std::unique_ptr<TemplCommandExt>     ext;           // Class extension
 
 protected:
@@ -1306,23 +1306,23 @@ protected:
 /**
  * The command allowed method object reference
  */
-	bool (DeviceImpl::*allowed_ptr)(const CORBA::Any &);
+    bool (DeviceImpl::*allowed_ptr)(const CORBA::Any &);
 //@}
 };
 
 
 //=============================================================================
 //
-//			The TemplCommandInOut class
+//            The TemplCommandInOut class
 //
 //
-// description :	This class is a derived class of the Command class.
-//			It is used to create a command from a pointer to a
-//			object method which will execute the command.
-//			This class is for command without inout  nor output
-//			paremeters.
-//			This class is also a base class for the template Command
-//			class
+// description :    This class is a derived class of the Command class.
+//            It is used to create a command from a pointer to a
+//            object method which will execute the command.
+//            This class is for command without inout  nor output
+//            paremeters.
+//            This class is also a base class for the template Command
+//            class
 //
 //=============================================================================
 
@@ -1355,14 +1355,14 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    level        The command display level
  *
  */
-	TemplCommandInOut(const std::string &cmd_name,
-			  OUTARG (DeviceImpl::*exe_method)(INARG),
-			  Tango::DispLevel level);
+    TemplCommandInOut(const std::string &cmd_name,
+              OUTARG (DeviceImpl::*exe_method)(INARG),
+              Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommandInOut object for a command with a
@@ -1371,16 +1371,16 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    level        The command display level
  *
  */
-	TemplCommandInOut(const std::string &cmd_name,
-			  OUTARG (DeviceImpl::*exe_method)(INARG),
-		     	  bool (DeviceImpl::*state_method)(const CORBA::Any &),
-			  Tango::DispLevel level);
+    TemplCommandInOut(const std::string &cmd_name,
+              OUTARG (DeviceImpl::*exe_method)(INARG),
+                   bool (DeviceImpl::*state_method)(const CORBA::Any &),
+              Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommandInOut object for a command with a
@@ -1388,17 +1388,17 @@ public:
  * input and output command parameters.
  * The input and output command data type are automatically determined.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	in_desc		The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    in_desc        The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommandInOut(const std::string &cmd_name,
-			  OUTARG (DeviceImpl::*exe_method)(INARG),
-			  const std::string &in_desc,const std::string &out_desc,
-			  Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommandInOut(const std::string &cmd_name,
+              OUTARG (DeviceImpl::*exe_method)(INARG),
+              const std::string &in_desc,const std::string &out_desc,
+              Tango::DispLevel level = Tango::OPERATOR);
 
 /**
  * Constructs a newly allocated TemplCommandInOut object for a command with a
@@ -1406,22 +1406,22 @@ public:
  * input and output command parameters.
  * The input and output command data type are automatically determined.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	in_desc	The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    in_desc    The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommandInOut(const std::string &cmd_name,
-			  OUTARG (DeviceImpl::*exe_method)(INARG),
-			  bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
-			  const std::string &in_desc = "",const std::string &out_desc = "",
-			  Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommandInOut(const std::string &cmd_name,
+              OUTARG (DeviceImpl::*exe_method)(INARG),
+              bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+              const std::string &in_desc = "",const std::string &out_desc = "",
+              Tango::DispLevel level = Tango::OPERATOR);
 //@}
 
-	~TemplCommandInOut() {}
+    ~TemplCommandInOut() {}
 
 /**@name Miscellaneous methods */
 //@{
@@ -1432,7 +1432,7 @@ public:
  * automatically determined from the class template specialisation
  *
  */
-	void init_types();
+    void init_types();
 
 /**
  * Invoke the command execution method given at object creation time.
@@ -1450,7 +1450,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
 //@}
 
 private:
@@ -1458,55 +1458,55 @@ private:
     {
     };
 
-	OUTARG (DeviceImpl::*exe_ptr_inout)(INARG);
+    OUTARG (DeviceImpl::*exe_ptr_inout)(INARG);
   std::unique_ptr<TemplCommandInOut>       ext;           // Class extension
 };
 
 //+-------------------------------------------------------------------------
 //
-// method : 		TempCommandInOut class constructors
+// method :         TempCommandInOut class constructors
 //
-// description : 	instance constructor
+// description :     instance constructor
 //
 //--------------------------------------------------------------------------
 template <typename INARG,typename OUTARG>
 TemplCommandInOut<INARG,OUTARG>::TemplCommandInOut(const std::string &s,OUTARG (DeviceImpl::*f)(INARG),Tango::DispLevel level)
 :TemplCommand(s,level),exe_ptr_inout(f),ext(nullptr)
 {
-	allowed_ptr = NULL;
-	init_types();
+    allowed_ptr = NULL;
+    init_types();
 }
 
 template <typename INARG,typename OUTARG>
 TemplCommandInOut<INARG,OUTARG>::TemplCommandInOut(const std::string &s,OUTARG (DeviceImpl::*f)(INARG),bool (DeviceImpl::*a)(const CORBA::Any &),Tango::DispLevel level)
 :TemplCommand(s,level),exe_ptr_inout(f),ext(nullptr)
 {
-	allowed_ptr = a;
-	init_types();
+    allowed_ptr = a;
+    init_types();
 }
 
 template <typename INARG,typename OUTARG>
 TemplCommandInOut<INARG,OUTARG>::TemplCommandInOut(const std::string &s,OUTARG (DeviceImpl::*f)(INARG),const std::string &in_desc,const std::string &out_desc,Tango::DispLevel level)
 :TemplCommand(s,in_desc,out_desc,level),exe_ptr_inout(f),ext(nullptr)
 {
-	allowed_ptr = NULL;
-	init_types();
+    allowed_ptr = NULL;
+    init_types();
 }
 
 template <typename INARG,typename OUTARG>
 TemplCommandInOut<INARG,OUTARG>::TemplCommandInOut(const std::string &s,OUTARG (DeviceImpl::*f)(INARG),bool (DeviceImpl::*a)(const CORBA::Any &),const std::string &in_desc,const std::string &out_desc,Tango::DispLevel level)
 :TemplCommand(s,in_desc,out_desc,level),exe_ptr_inout(f),ext(nullptr)
 {
-	allowed_ptr = a;
-	init_types();
+    allowed_ptr = a;
+    init_types();
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		init_types
+// method :         init_types
 //
-// description : 	Initialise input and output type from the template
-//			class specialisation parameters.
+// description :     Initialise input and output type from the template
+//            class specialisation parameters.
 //
 //--------------------------------------------------------------------------
 
@@ -1517,25 +1517,25 @@ void TemplCommandInOut<INARG,OUTARG>::init_types()
 //
 // Set intput type
 //
-	set_type(typeid(INARG),in_type);
+    set_type(typeid(INARG),in_type);
 
 //
 // Set output type
 //
 
-	set_type(typeid(OUTARG),out_type);
+    set_type(typeid(OUTARG),out_type);
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		execute
+// method :         execute
 //
-// description : 	Execute the method associated with the command
-//			(stored in the exe_ptr data)
+// description :     Execute the method associated with the command
+//            (stored in the exe_ptr data)
 //
 // input : - dev_ptr : pointer to the device on which the command must be
-//		       executed
-//	   - in_any : Incoming command data
+//               executed
+//       - in_any : Incoming command data
 //
 // This method returns a pointer to an Any object with the command outing
 // data.
@@ -1550,25 +1550,25 @@ CORBA::Any *TemplCommandInOut<INARG,OUTARG>::execute(DeviceImpl *dev_ptr,const C
 // Execute the command associated method
 //
 
-	INARG in_data;
-	extract(in_any,in_data);
-	OUTARG out_data = (dev_ptr->*exe_ptr_inout)(in_data);
-	return insert(out_data);
+    INARG in_data;
+    extract(in_any,in_data);
+    OUTARG out_data = (dev_ptr->*exe_ptr_inout)(in_data);
+    return insert(out_data);
 
 }
 
 //=============================================================================
 //
-//			The TemplCommandIn class
+//            The TemplCommandIn class
 //
 //
-// description :	This class is a derived class of the Command class.
-//			It is used to create a command from a pointer to a
-//			object method which will execute the command.
-//			This class is for command without inout  nor output
-//			paremeters.
-//			This class is also a base class for the template Command
-//			class
+// description :    This class is a derived class of the Command class.
+//            It is used to create a command from a pointer to a
+//            object method which will execute the command.
+//            This class is for command without inout  nor output
+//            paremeters.
+//            This class is also a base class for the template Command
+//            class
 //
 //=============================================================================
 
@@ -1601,14 +1601,14 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    level        The command display level
  *
  */
-	TemplCommandIn(const std::string &cmd_name,
-		       void (DeviceImpl::*exe_method)(INARG),
-		       Tango::DispLevel level);
+    TemplCommandIn(const std::string &cmd_name,
+               void (DeviceImpl::*exe_method)(INARG),
+               Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommandIn object for a command with a
@@ -1617,16 +1617,16 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    level        The command display level
  *
  */
-	TemplCommandIn(const std::string &cmd_name,
-		       void (DeviceImpl::*exe_method)(INARG),
-		       bool (DeviceImpl::*state_method)(const CORBA::Any &),
-		       Tango::DispLevel level);
+    TemplCommandIn(const std::string &cmd_name,
+               void (DeviceImpl::*exe_method)(INARG),
+               bool (DeviceImpl::*state_method)(const CORBA::Any &),
+               Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommandIn object for a command with a
@@ -1634,17 +1634,17 @@ public:
  * input and output command parameters.
  * The input and output command data type are automatically determined.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	in_desc		The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    in_desc        The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommandIn(const std::string &cmd_name,
-		       void (DeviceImpl::*exe_method)(INARG),
-		       const std::string &in_desc,const std::string &out_desc,
-		       Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommandIn(const std::string &cmd_name,
+               void (DeviceImpl::*exe_method)(INARG),
+               const std::string &in_desc,const std::string &out_desc,
+               Tango::DispLevel level = Tango::OPERATOR);
 
 /**
  * Constructs a newly allocated TemplCommandIn object for a command with a
@@ -1652,22 +1652,22 @@ public:
  * input and output command parameters.
  * The input and output command data type are automatically determined.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	in_desc	The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    in_desc    The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommandIn(const std::string &cmd_name,
-		       void (DeviceImpl::*exe_method)(INARG),
-		       bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
-		       const std::string &in_desc = "",const std::string &out_desc = "",
-		       Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommandIn(const std::string &cmd_name,
+               void (DeviceImpl::*exe_method)(INARG),
+               bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+               const std::string &in_desc = "",const std::string &out_desc = "",
+               Tango::DispLevel level = Tango::OPERATOR);
 //@}
 
-	~TemplCommandIn() {}
+    ~TemplCommandIn() {}
 
 /**@name Miscellaneous methods */
 //@{
@@ -1678,7 +1678,7 @@ public:
  * automatically determined from the class template specialisation
  *
  */
-	void init_types();
+    void init_types();
 
 /**
  * Invoke the command execution method given at object creation time.
@@ -1696,7 +1696,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
 //@}
 
 private:
@@ -1704,15 +1704,15 @@ private:
     {
     };
 
-	void (DeviceImpl::*exe_ptr_in)(INARG);
+    void (DeviceImpl::*exe_ptr_in)(INARG);
     std::unique_ptr<TemplCommandInExt>    ext;           // Class extension
 };
 
 //+-------------------------------------------------------------------------
 //
-// method : 		TempCommandIn class constructors
+// method :         TempCommandIn class constructors
 //
-// description : 	instance constructor
+// description :     instance constructor
 //
 //--------------------------------------------------------------------------
 
@@ -1720,40 +1720,40 @@ template <typename INARG>
 TemplCommandIn<INARG>::TemplCommandIn(const std::string &s,void (DeviceImpl::*f)(INARG),Tango::DispLevel level)
 :TemplCommand(s,level),exe_ptr_in(f),ext(nullptr)
 {
-	allowed_ptr = NULL;
-	init_types();
+    allowed_ptr = NULL;
+    init_types();
 }
 
 template <typename INARG>
 TemplCommandIn<INARG>::TemplCommandIn(const std::string &s,void (DeviceImpl::*f)(INARG),bool (DeviceImpl::*a)(const CORBA::Any &),Tango::DispLevel level)
 :TemplCommand(s,level),exe_ptr_in(f),ext(nullptr)
 {
-	allowed_ptr = a;
-	init_types();
+    allowed_ptr = a;
+    init_types();
 }
 
 template <typename INARG>
 TemplCommandIn<INARG>::TemplCommandIn(const std::string &s,void (DeviceImpl::*f)(INARG),const std::string &in_desc,const std::string &out_desc,Tango::DispLevel level)
 :TemplCommand(s,in_desc,out_desc,level),exe_ptr_in(f),ext(nullptr)
 {
-	allowed_ptr = NULL;
-	init_types();
+    allowed_ptr = NULL;
+    init_types();
 }
 
 template <typename INARG>
 TemplCommandIn<INARG>::TemplCommandIn(const std::string &s,void (DeviceImpl::*f)(INARG),bool (DeviceImpl::*a)(const CORBA::Any &),const std::string &in_desc,const std::string &out_desc,Tango::DispLevel level)
 :TemplCommand(s,in_desc,out_desc,level),exe_ptr_in(f),ext(nullptr)
 {
-	allowed_ptr = a;
-	init_types();
+    allowed_ptr = a;
+    init_types();
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		init_types
+// method :         init_types
 //
-// description : 	Initialise input and output type from the template
-//			class specialisation parameters.
+// description :     Initialise input and output type from the template
+//            class specialisation parameters.
 //
 //--------------------------------------------------------------------------
 
@@ -1761,24 +1761,24 @@ template <typename INARG>
 void TemplCommandIn<INARG>::init_types()
 {
 
-	out_type = Tango::DEV_VOID;
+    out_type = Tango::DEV_VOID;
 //
 // Set intput type
 //
-	set_type(typeid(INARG),in_type);
+    set_type(typeid(INARG),in_type);
 
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		execute
+// method :         execute
 //
-// description : 	Execute the method associated with the command
-//			(stored in the exe_ptr data)
+// description :     Execute the method associated with the command
+//            (stored in the exe_ptr data)
 //
 // input : - dev_ptr : pointer to the device on which the command must be
-//		       executed
-//	   - in_any : Incoming command data
+//               executed
+//       - in_any : Incoming command data
 //
 // This method returns a pointer to an Any object with the command outing
 // data.
@@ -1793,25 +1793,25 @@ CORBA::Any *TemplCommandIn<INARG>::execute(DeviceImpl *dev_ptr,const CORBA::Any 
 // Execute the command associated method
 //
 
-	INARG in_data;
-	extract(in_any,in_data);
-	(dev_ptr->*exe_ptr_in)(in_data);
-	return insert();
+    INARG in_data;
+    extract(in_any,in_data);
+    (dev_ptr->*exe_ptr_in)(in_data);
+    return insert();
 }
 
 
 //=============================================================================
 //
-//			The TemplCommandOut class
+//            The TemplCommandOut class
 //
 //
-// description :	This class is a derived class of the Command class.
-//			It is used to create a command from a pointer to a
-//			object method which will execute the command.
-//			This class is for command without inout nor output
-//			parameters.
-//			This class is also a base class for the template Command
-//			class
+// description :    This class is a derived class of the Command class.
+//            It is used to create a command from a pointer to a
+//            object method which will execute the command.
+//            This class is for command without inout nor output
+//            parameters.
+//            This class is also a base class for the template Command
+//            class
 //
 //=============================================================================
 
@@ -1843,13 +1843,13 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    level        The command display level
  *
  */
-	TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
- 			Tango::DispLevel level);
+    TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
+             Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommandOut object for a command with a
@@ -1858,15 +1858,15 @@ public:
  * The input and output parameter description are set to the default String
  * "Uninitialised".
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    level        The command display level
  *
  */
-	TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
-		     bool (DeviceImpl::*state_method)(const CORBA::Any &),
-		     Tango::DispLevel level);
+    TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
+             bool (DeviceImpl::*state_method)(const CORBA::Any &),
+             Tango::DispLevel level);
 
 /**
  * Constructs a newly allocated TemplCommandOut object for a command with a
@@ -1874,16 +1874,16 @@ public:
  * input and output command parameters.
  * The input and output command data type are automatically determined.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	in_desc		The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    in_desc        The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
-			const std::string &in_desc,const std::string &out_desc,
-			Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
+            const std::string &in_desc,const std::string &out_desc,
+            Tango::DispLevel level = Tango::OPERATOR);
 
 /**
  * Constructs a newly allocated TemplCommandIn object for a command with a
@@ -1891,21 +1891,21 @@ public:
  * input and output command parameters.
  * The input and output command data type are automatically determined.
  *
- * @param 	cmd_name	The command name
- * @param	exe_method	Pointer to the command execution method
- * @param	state_method 	Pointer to the command allowed method
- * @param	in_desc	The command input parameter description
- * @param	out_desc	The command output parameter description
- * @param	level		The command display level
+ * @param     cmd_name    The command name
+ * @param    exe_method    Pointer to the command execution method
+ * @param    state_method     Pointer to the command allowed method
+ * @param    in_desc    The command input parameter description
+ * @param    out_desc    The command output parameter description
+ * @param    level        The command display level
  *
  */
-	TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
-		        bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
-		        const std::string &in_desc = "",const std::string &out_desc = "",
-			Tango::DispLevel level = Tango::OPERATOR);
+    TemplCommandOut(const std::string &cmd_name,OUTARG (DeviceImpl::*exe_method)(),
+                bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+                const std::string &in_desc = "",const std::string &out_desc = "",
+            Tango::DispLevel level = Tango::OPERATOR);
 //@}
 
-	~TemplCommandOut() {}
+    ~TemplCommandOut() {}
 
 /**@name Miscellaneous methods */
 //@{
@@ -1916,7 +1916,7 @@ public:
  * automatically determined from the class template specialisation
  *
  */
-	void init_types();
+    void init_types();
 
 /**
  * Invoke the command execution method given at object creation time.
@@ -1935,7 +1935,7 @@ public:
  * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a> to read
  * <b>DevFailed</b> exception specification
  */
-	CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute (DeviceImpl *dev, const CORBA::Any &in_any);
 //@}
 
 private:
@@ -1943,15 +1943,15 @@ private:
     {
     };
 
-	OUTARG (DeviceImpl::*exe_ptr_out)();
+    OUTARG (DeviceImpl::*exe_ptr_out)();
   std::unique_ptr<TemplCommandOutExt>      ext;           // Class extension
 };
 
 //+-------------------------------------------------------------------------
 //
-// method : 		TempCommandOut class constructors
+// method :         TempCommandOut class constructors
 //
-// description : 	instance constructor
+// description :     instance constructor
 //
 //--------------------------------------------------------------------------
 
@@ -1959,64 +1959,64 @@ template <typename OUTARG>
 TemplCommandOut<OUTARG>::TemplCommandOut(const std::string &s,OUTARG (DeviceImpl::*f)(),Tango::DispLevel level)
 :TemplCommand(s,level),exe_ptr_out(f),ext(nullptr)
 {
-	allowed_ptr = NULL;
-	init_types();
+    allowed_ptr = NULL;
+    init_types();
 }
 
 template <typename OUTARG>
 TemplCommandOut<OUTARG>::TemplCommandOut(const std::string &s,OUTARG (DeviceImpl::*f)(),bool (DeviceImpl::*a)(const CORBA::Any &),Tango::DispLevel level)
 :TemplCommand(s,level),exe_ptr_out(f),ext(nullptr)
 {
-	allowed_ptr = a;
-	init_types();
+    allowed_ptr = a;
+    init_types();
 }
 
 template <typename OUTARG>
 TemplCommandOut<OUTARG>::TemplCommandOut(const std::string &s,OUTARG (DeviceImpl::*f)(),const std::string &in_desc,const std::string &out_desc,Tango::DispLevel level)
 :TemplCommand(s,in_desc,out_desc,level),exe_ptr_out(f),ext(nullptr)
 {
-	allowed_ptr = NULL;
-	init_types();
+    allowed_ptr = NULL;
+    init_types();
 }
 
 template <typename OUTARG>
 TemplCommandOut<OUTARG>::TemplCommandOut(const std::string &s,OUTARG (DeviceImpl::*f)(),bool (DeviceImpl::*a)(const CORBA::Any &),const std::string &in_desc,const std::string &out_desc,Tango::DispLevel level)
 :TemplCommand(s,in_desc,out_desc,level),exe_ptr_out(f),ext(nullptr)
 {
-	allowed_ptr = a;
-	init_types();
+    allowed_ptr = a;
+    init_types();
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		init_types
+// method :         init_types
 //
-// description : 	Initialise input and output type from the template
-//			class specialisation parameters.
+// description :     Initialise input and output type from the template
+//            class specialisation parameters.
 //
 //--------------------------------------------------------------------------
 
 template <typename OUTARG>
 void TemplCommandOut<OUTARG>::init_types()
 {
-	in_type = Tango::DEV_VOID;
+    in_type = Tango::DEV_VOID;
 //
 // Set output type
 //
 
-	set_type(typeid(OUTARG),out_type);
+    set_type(typeid(OUTARG),out_type);
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		execute
+// method :         execute
 //
-// description : 	Execute the method associated with the command
-//			(stored in the exe_ptr data)
+// description :     Execute the method associated with the command
+//            (stored in the exe_ptr data)
 //
 // input : - dev_ptr : pointer to the device on which the command must be
-//		       executed
-//	   - in_any : Incoming command data
+//               executed
+//       - in_any : Incoming command data
 //
 // This method returns a pointer to an Any object with the command outing
 // data.
@@ -2031,7 +2031,7 @@ CORBA::Any *TemplCommandOut<OUTARG>::execute(DeviceImpl *dev_ptr,TANGO_UNUSED(co
 // Execute the command associated method
 //
 
-	return insert((dev_ptr->*exe_ptr_out)());
+    return insert((dev_ptr->*exe_ptr_out)());
 }
 
 } // End of Tango namespace

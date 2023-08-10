@@ -9,7 +9,7 @@
 // author(s) :  N.Leclercq - SOLEIL
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -91,7 +91,7 @@ void Logging::init (const std::string& ds_name, // dserver name
                     int cmd_line_level,         // cmd. line verbose level
                     bool use_db,                // true if using the TANGO-db
                     Database &db,               // Db object or null
-                    Util *tg)					// Tango::Util object
+                    Util *tg)                    // Tango::Util object
 {
   // logging path env. var. name
   const char*  kTangoLogPathVar = "TANGO_LOG_PATH";
@@ -280,11 +280,11 @@ void Logging::add_logging_target (const Tango::DevVarStringArray *argin)
         o << "No device name matching pattern  <" << pattern << ">" << std::ends;
         TANGO_THROW_EXCEPTION(API_DeviceNotFound, o.str());
       }
-	  // Check that none of the concerned device(s) is locked by another client
-	  DServer *adm_dev = Util::instance()->get_dserver_device();
-	  for (unsigned int j = 0; j < dl.size(); j++) {
-		adm_dev->check_lock_owner(dl[j],"add_logging_target",(dl[j]->get_name()).c_str());
-	  }
+      // Check that none of the concerned device(s) is locked by another client
+      DServer *adm_dev = Util::instance()->get_dserver_device();
+      for (unsigned int j = 0; j < dl.size(); j++) {
+        adm_dev->check_lock_owner(dl[j],"add_logging_target",(dl[j]->get_name()).c_str());
+      }
       // for each device matching pattern...
       for (unsigned int j = 0; j < dl.size(); j++) {
         // ...add logging target
@@ -539,11 +539,11 @@ void Logging::remove_logging_target (const Tango::DevVarStringArray *argin)
               o << "No device name matching pattern  <" << pattern << ">" << std::ends;
               TANGO_THROW_EXCEPTION(API_DeviceNotFound, o.str());
       }
-	  // Check that none of the concerned device(s) is locked by another client
-	  DServer *adm_dev = Util::instance()->get_dserver_device();
-	  for (unsigned int j = 0; j < dl.size(); j++) {
-		adm_dev->check_lock_owner(dl[j],"remove_logging_target",(dl[j]->get_name()).c_str());
-	  }
+      // Check that none of the concerned device(s) is locked by another client
+      DServer *adm_dev = Util::instance()->get_dserver_device();
+      for (unsigned int j = 0; j < dl.size(); j++) {
+        adm_dev->check_lock_owner(dl[j],"remove_logging_target",(dl[j]->get_name()).c_str());
+      }
       // get target type and name from argin (syntax type::name)
       type_name = (*argin)[i++];
       std::transform(type_name.begin(), type_name.end(), type_name.begin(), ::tolower);
@@ -725,11 +725,11 @@ void Logging::set_logging_level (const DevVarLongStringArray *argin)
       std::transform(pattern.begin(), pattern.end(), pattern.begin(), ::tolower);
       // get devices which name matches the pattern pattern
       dl = Util::instance()->get_device_list(pattern);
-	  // Check that none of the concerned device(s) is locked by another client
-	  DServer *adm_dev = Util::instance()->get_dserver_device();
-	  for (unsigned int j = 0; j < dl.size(); j++) {
-		adm_dev->check_lock_owner(dl[j],"set_logging_level",(dl[j]->get_name()).c_str());
-	  }
+      // Check that none of the concerned device(s) is locked by another client
+      DServer *adm_dev = Util::instance()->get_dserver_device();
+      for (unsigned int j = 0; j < dl.size(); j++) {
+        adm_dev->check_lock_owner(dl[j],"set_logging_level",(dl[j]->get_name()).c_str());
+      }
       // for each device in dl
       for (unsigned int j = 0; j < dl.size(); j++) {
         // get device's logger (created if does not already exist)

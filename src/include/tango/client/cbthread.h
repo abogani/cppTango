@@ -3,14 +3,14 @@
 // file :               cbthread.h
 //
 // description :        Include for the CallBackThread object.
-//			This class implements the callback thread
+//            This class implements the callback thread
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -44,20 +44,20 @@ namespace Tango
 class CbThreadCmd: public omni_mutex
 {
 public:
-	CbThreadCmd():stop(false) {}
-	void stop_thread() {omni_mutex_lock sync(*this);stop=true;}
-	void start_thread() {omni_mutex_lock sync(*this);stop=false;}
-	bool is_stopped() {omni_mutex_lock sync(*this);return stop;}
+    CbThreadCmd():stop(false) {}
+    void stop_thread() {omni_mutex_lock sync(*this);stop=true;}
+    void start_thread() {omni_mutex_lock sync(*this);stop=false;}
+    bool is_stopped() {omni_mutex_lock sync(*this);return stop;}
 
-	bool stop;
+    bool stop;
 };
 
 //=============================================================================
 //
-//			The CallBackThread class
+//            The CallBackThread class
 //
-// description :	Class to store all the necessary information for the
-//			polling thread. It's run() method is the thread code
+// description :    Class to store all the necessary information for the
+//            polling thread. It's run() method is the thread code
 //
 //=============================================================================
 
@@ -65,14 +65,14 @@ public:
 class CallBackThread: public omni_thread
 {
 public:
-	CallBackThread(CbThreadCmd &cmd,AsynReq *as):shared_cmd(cmd),
-						     asyn_ptr(as) {}
+    CallBackThread(CbThreadCmd &cmd,AsynReq *as):shared_cmd(cmd),
+                             asyn_ptr(as) {}
 
-	void *run_undetached(void *);
-	void start() {start_undetached();}
+    void *run_undetached(void *);
+    void start() {start_undetached();}
 
-	CbThreadCmd	&shared_cmd;
-	AsynReq		*asyn_ptr;
+    CbThreadCmd    &shared_cmd;
+    AsynReq        *asyn_ptr;
 };
 
 

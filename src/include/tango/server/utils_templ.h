@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -40,16 +40,16 @@ namespace Tango
 //+---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Util::fill_attr_polling_buffer
+//        Util::fill_attr_polling_buffer
 //
 // description :
-//		Fill attribute polling buffer with your own data
+//        Fill attribute polling buffer with your own data
 //
 // args :
-//		in :
-// 			- dev : The device
-//			- att_name : The attribute name
-//			- data : The attribute data to be stored in the polling buffer
+//        in :
+//             - dev : The device
+//            - att_name : The attribute name
+//            - data : The attribute data to be stored in the polling buffer
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -239,12 +239,12 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
 
             try
             {
-            	if (idl_vers >= 5)
-				{
-					aid.data_5 = new Tango::AttributeValueList_5(1);
-					aid.data_5->length(1);
+                if (idl_vers >= 5)
+                {
+                    aid.data_5 = new Tango::AttributeValueList_5(1);
+                    aid.data_5->length(1);
                     (*aid.data_5)[0].value.union_no_data(true);
-				}
+                }
                 else if (idl_vers == 4)
                 {
                     aid.data_4 = new Tango::AttributeValueList_4(1);
@@ -365,8 +365,8 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
 // Init remaining fields
 //
 
-				if (idl_vers >= 5)
-				{
+                if (idl_vers >= 5)
+                {
                     (*aid.data_5)[0].r_dim.dim_x = (data.get_data())[i].x;
                     (*aid.data_5)[0].r_dim.dim_y = (data.get_data())[i].y;
 
@@ -376,7 +376,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
                         (*aid.data_5)[0].w_dim.dim_x = assoc_att.get_w_dim_x();
                         (*aid.data_5)[0].w_dim.dim_y = assoc_att.get_w_dim_y();
                     }
-				}
+                }
                 else if (idl_vers == 4)
                 {
                     (*aid.data_4)[0].r_dim.dim_x = (data.get_data())[i].x;
@@ -414,12 +414,12 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
 
             if (attr_failed == false)
             {
-            	if (idl_vers >= 5)
-				{
+                if (idl_vers >= 5)
+                {
                     auto when = make_poll_time((*aid.data_5)[0].time);
                     auto zero = PollClock::duration::zero();
                     (*ite)->insert_data(aid.data_5,when,zero);
-				}
+                }
                 else if (idl_vers == 4)
                 {
                     auto when = make_poll_time((*aid.data_4)[0].time);
@@ -443,14 +443,14 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         catch (Tango::DevFailed &)
         {
             if (attr_failed == false)
-			{
-				if (idl_vers >= 5)
-					delete aid.data_5;
+            {
+                if (idl_vers >= 5)
+                    delete aid.data_5;
                 else if (idl_vers == 4)
                     delete aid.data_4;
-				else
+                else
                     delete aid.data_3;
-			}
+            }
             else
                 delete save_except;
         }
@@ -463,16 +463,16 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
 //+---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Util::fill_cmd_polling_buffer
+//        Util::fill_cmd_polling_buffer
 //
 // description :
-//		Fill command polling buffer with your own data
+//        Fill command polling buffer with your own data
 //
 // args :
-//		in :
-// 			- dev : The device
-//			- cmd_name : The command name
-//			- data : The command data to be stored in the polling buffer
+//        in :
+//             - dev : The device
+//            - cmd_name : The command name
+//            - data : The command data to be stored in the polling buffer
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -576,10 +576,10 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,CmdHist
 //
 
             T *tmp_ptr = (data.get_data())[i].ptr;
-			(*any_ptr) <<= (*tmp_ptr);
+            (*any_ptr) <<= (*tmp_ptr);
 
-			if ((data.get_data())[i].release == true)
-				delete tmp_ptr;
+            if ((data.get_data())[i].release == true)
+                delete tmp_ptr;
         }
 
 //

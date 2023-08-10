@@ -14,7 +14,7 @@ void print_changes(std::string &desc, std::string &server, DbData &db_data) {
         TEST_LOG << "   " << it->name;
         for (size_t i = 0; i < it->value_string.size(); i++)
             TEST_LOG << ((i == 0) ? (" = ") : (" , ")) << it->value_string[i];
-//			TEST_LOG << "   " << ((i == 0) ? ((str << it->value_string[i], (str >> nb_prop && str.eof()) ? " : " : (" = " + it->value_string[i]))) : (" , " + it->value_string[i]));
+//            TEST_LOG << "   " << ((i == 0) ? ((str << it->value_string[i], (str >> nb_prop && str.eof()) ? " : " : (" = " + it->value_string[i]))) : (" , " + it->value_string[i]));
         TEST_LOG << std::endl;
         ++it;
     }

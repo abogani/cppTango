@@ -3,17 +3,17 @@
 // file :               cbthread.cpp
 //
 // description :        C++ source code for the CallBackThread class.
-//			This class is used in automatic callback mode.
-//			The thread mainly waits on aa asynchronous callback
-//			request and will call the get_asynch_replies() call
-//			to fire the callback when the answer is received
+//            This class is used in automatic callback mode.
+//            The thread mainly waits on aa asynchronous callback
+//            request and will call the get_asynch_replies() call
+//            to fire the callback when the answer is received
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -44,13 +44,13 @@ namespace Tango
 
 //+-------------------------------------------------------------------------
 //
-// method : 		CallBackThread::CallBackThread
+// method :         CallBackThread::CallBackThread
 //
-// description : 	Two constructors for the PollObj class. The first one
-//			constructs a PollObji nstance with the default polling
-//			ring depth
-//			The second one create a PollObj instance with a
-//			specified polling ring depth
+// description :     Two constructors for the PollObj class. The first one
+//            constructs a PollObji nstance with the default polling
+//            ring depth
+//            The second one create a PollObj instance with a
+//            specified polling ring depth
 //
 // argument : in :
 //
@@ -59,35 +59,35 @@ namespace Tango
 
 void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
 {
-	while(shared_cmd.is_stopped() == false)
-	{
-		try
-		{
-			{
-				omni_mutex_lock sync(*asyn_ptr);
-				if (asyn_ptr->get_cb_request_nb_i() == 0)
-				{
-					asyn_ptr->wait();
-				}
-			}
+    while(shared_cmd.is_stopped() == false)
+    {
+        try
+        {
+            {
+                omni_mutex_lock sync(*asyn_ptr);
+                if (asyn_ptr->get_cb_request_nb_i() == 0)
+                {
+                    asyn_ptr->wait();
+                }
+            }
 
-			if (asyn_ptr->get_cb_request_nb() != 0)
-				ApiUtil::instance()->get_asynch_replies(0);
-		}
-		catch (omni_thread_fatal &)
-		{
-			std::cerr << "OUPS !! A omni thread fatal exception !!!!!!!!" << std::endl;
+            if (asyn_ptr->get_cb_request_nb() != 0)
+                ApiUtil::instance()->get_asynch_replies(0);
+        }
+        catch (omni_thread_fatal &)
+        {
+            std::cerr << "OUPS !! A omni thread fatal exception !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
-			time_t t = time(NULL);
-			std::cerr << ctime(&t);
+            time_t t = time(NULL);
+            std::cerr << ctime(&t);
 #endif
-			std::cerr << "Trying to re-enter the main loop" << std::endl;
-		}
-	}
+            std::cerr << "Trying to re-enter the main loop" << std::endl;
+        }
+    }
 
-	omni_thread::exit();
+    omni_thread::exit();
 
-	return NULL;
+    return NULL;
 
 }
 

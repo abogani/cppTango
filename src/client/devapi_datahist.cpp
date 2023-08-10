@@ -1,13 +1,13 @@
 //
-// devapi_datahist.cpp 	- C++ source code file for TANGO devapi class
-//			  DeviceDataHistory and DeviceAttributeHistory
+// devapi_datahist.cpp     - C++ source code file for TANGO devapi class
+//              DeviceDataHistory and DeviceAttributeHistory
 //
-// programmer(s) 	- Emmanuel Taurel (taurel@esrf.fr)
+// programmer(s)     - Emmanuel Taurel (taurel@esrf.fr)
 //
-// original 		- June 2002
+// original         - June 2002
 //
 // Copyright (C) :      2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -246,10 +246,10 @@ DeviceDataHistory &DeviceDataHistory::operator=(DeviceDataHistory &&rval)
 
 //+-------------------------------------------------------------------------
 //
-// operator overloading : 	<<
+// operator overloading :     <<
 //
-// description : 	Friend function to ease printing instance of the
-//			DeviceDataHistory class
+// description :     Friend function to ease printing instance of the
+//            DeviceDataHistory class
 //
 //--------------------------------------------------------------------------
 
@@ -725,10 +725,10 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(DeviceAttributeHistory
 
 //+-------------------------------------------------------------------------
 //
-// operator overloading : 	<<
+// operator overloading :     <<
 //
-// description : 	Friend function to ease printing instance of the
-//			DeviceAttributeHistory class
+// description :     Friend function to ease printing instance of the
+//            DeviceAttributeHistory class
 //
 //--------------------------------------------------------------------------
 

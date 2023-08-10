@@ -2,180 +2,180 @@
 
 int main()
 {
-	Database *dbase = new Database();
-	TEST_LOG << '\n' << "new Database returned" << '\n' << endl;
+    Database *dbase = new Database();
+    TEST_LOG << '\n' << "new Database returned" << '\n' << endl;
 
-	try
-	{
+    try
+    {
 
-		string str("my_obj");
+        string str("my_obj");
 
 //
 // Try to put object properties
 //
 
-		DbData da;
-		DbDatum speed("speed"), acceleration("acceleration");
-		speed << (long)22;
-		acceleration << (long)123;
-		da.push_back(speed);
-		da.push_back(acceleration);
+        DbData da;
+        DbDatum speed("speed"), acceleration("acceleration");
+        speed << (long)22;
+        acceleration << (long)123;
+        da.push_back(speed);
+        da.push_back(acceleration);
 
-		dbase->put_property(str,da);
+        dbase->put_property(str,da);
 
-		TEST_LOG << "   Put object property --> OK" << endl;
+        TEST_LOG << "   Put object property --> OK" << endl;
 
 //
 // Get prop. value
 //
 
-		DbData db;
-		db.push_back(DbDatum("speed"));
-		db.push_back(DbDatum("acceleration"));
+        DbData db;
+        db.push_back(DbDatum("speed"));
+        db.push_back(DbDatum("acceleration"));
 
-		dbase->get_property(str,db);
+        dbase->get_property(str,db);
 
-		long lg1,lg2;
-		db[0] >> lg1;
-		db[1] >> lg2;
+        long lg1,lg2;
+        db[0] >> lg1;
+        db[1] >> lg2;
 
-		assert ( lg1 == 22 );
-		assert ( lg2 == 123 );
+        assert ( lg1 == 22 );
+        assert ( lg2 == 123 );
 
-		TEST_LOG << "   Get object property --> OK" << endl;
+        TEST_LOG << "   Get object property --> OK" << endl;
 
 //
 // Update property
 //
 
-		DbData dc;
-		DbDatum speeda("speed");
-		speeda << (long)44;
-		dc.push_back(speeda);
+        DbData dc;
+        DbDatum speeda("speed");
+        speeda << (long)44;
+        dc.push_back(speeda);
 
-		dbase->put_property(str,dc);
+        dbase->put_property(str,dc);
 
-		DbData dd;
-		dd.push_back(DbDatum("speed"));
+        DbData dd;
+        dd.push_back(DbDatum("speed"));
 
-		dbase->get_property(str,dd);
+        dbase->get_property(str,dd);
 
-		long lg10;
-		dd[0] >> lg10;
+        long lg10;
+        dd[0] >> lg10;
 
-		assert ( lg10 == 44 );
+        assert ( lg10 == 44 );
 
-		TEST_LOG << "   Update object property --> OK" << endl;
+        TEST_LOG << "   Update object property --> OK" << endl;
 
 //
 // Delete prop
 //
 
-		DbData de;
-		de.push_back(DbDatum("speed"));
-		de.push_back(DbDatum("acceleration"));
+        DbData de;
+        de.push_back(DbDatum("speed"));
+        de.push_back(DbDatum("acceleration"));
 
-		dbase->delete_property(str,de);
+        dbase->delete_property(str,de);
 
-		DbData df;
-		df.push_back(DbDatum("speed"));
-		df.push_back(DbDatum("acceleration"));
+        DbData df;
+        df.push_back(DbDatum("speed"));
+        df.push_back(DbDatum("acceleration"));
 
-		dbase->get_property(str,df);
+        dbase->get_property(str,df);
 
-		assert( df[0].is_empty() == true );
-		assert( df[1].is_empty() == true );
+        assert( df[0].is_empty() == true );
+        assert( df[1].is_empty() == true );
 
-		TEST_LOG << "   Delete object property --> OK" << endl;
+        TEST_LOG << "   Delete object property --> OK" << endl;
 
 //
 // Try to put object properties
 //
 
-		DbData da_v;
-		DbDatum speed_v("vect");
-		vector<double> vf;
-		vf.push_back(1.2345);
-		vf.push_back(5.0);
-		vf.push_back(4.5678);
-		vf.push_back(2.0);
-		speed_v << vf;
-		da_v.push_back(speed_v);
+        DbData da_v;
+        DbDatum speed_v("vect");
+        vector<double> vf;
+        vf.push_back(1.2345);
+        vf.push_back(5.0);
+        vf.push_back(4.5678);
+        vf.push_back(2.0);
+        speed_v << vf;
+        da_v.push_back(speed_v);
 
-		dbase->put_property(str,da_v);
+        dbase->put_property(str,da_v);
 
-		TEST_LOG << "   Put object property (for vectors) --> OK" << endl;
+        TEST_LOG << "   Put object property (for vectors) --> OK" << endl;
 
 //
 // Get prop. value
 //
 
-		DbData db_v1;
-		db_v1.push_back(DbDatum("vect"));
+        DbData db_v1;
+        db_v1.push_back(DbDatum("vect"));
 
-		dbase->get_property(str,db_v1);
+        dbase->get_property(str,db_v1);
 
-		vector<double> vf1;
-		db_v1[0] >> vf1;
+        vector<double> vf1;
+        db_v1[0] >> vf1;
 
-		assert ( vf1[0] == 1.2345 );
-		assert ( vf1[1] == 5 );
-		assert ( vf1[2] == 4.5678 );
-		assert ( vf1[3] == 2);
+        assert ( vf1[0] == 1.2345 );
+        assert ( vf1[1] == 5 );
+        assert ( vf1[2] == 4.5678 );
+        assert ( vf1[3] == 2);
 
-		TEST_LOG << "   Get object property (for vectors) --> OK" << endl;
+        TEST_LOG << "   Get object property (for vectors) --> OK" << endl;
 
 //
 // Delete prop
 //
 
-		DbData de_v;
-		de_v.push_back(DbDatum("vect"));
+        DbData de_v;
+        de_v.push_back(DbDatum("vect"));
 
-		dbase->delete_property(str,de_v);
+        dbase->delete_property(str,de_v);
 
-		DbData df_v;
-		df_v.push_back(DbDatum("vect"));
+        DbData df_v;
+        df_v.push_back(DbDatum("vect"));
 
-		dbase->get_property(str,df_v);
+        dbase->get_property(str,df_v);
 
-		assert( df_v[0].is_empty() == true );
+        assert( df_v[0].is_empty() == true );
 
-		TEST_LOG << "   Delete object property (for vectors) --> OK" << endl;
+        TEST_LOG << "   Delete object property (for vectors) --> OK" << endl;
 
 //
 // Database copy ctor
 //
 
-		Database db2 = *dbase;
+        Database db2 = *dbase;
 
-		vector<string> vs;
-		DeviceData ddata;
-		ddata = db2.command_inout("DbInfo");
-		ddata >> vs;
+        vector<string> vs;
+        DeviceData ddata;
+        ddata = db2.command_inout("DbInfo");
+        ddata >> vs;
 
-		TEST_LOG << "   Database call after copy construction --> OK" << endl;
+        TEST_LOG << "   Database call after copy construction --> OK" << endl;
 
 //
 // Database assignment operator
 //
 
-		Database db3;
-		db3 = db2;
+        Database db3;
+        db3 = db2;
 
-		ddata = db3.command_inout("DbInfo");
-		ddata >> vs;
+        ddata = db3.command_inout("DbInfo");
+        ddata >> vs;
 
-		TEST_LOG << "   Database call after assignement operator --> OK" << endl;
+        TEST_LOG << "   Database call after assignement operator --> OK" << endl;
 
-	}
+    }
 
-	catch (Tango::DevFailed &e)
-	{
-		Except::print_exception(e);
-		exit(-1);
-	}
+    catch (Tango::DevFailed &e)
+    {
+        Except::print_exception(e);
+        exit(-1);
+    }
 
-	delete dbase;
-	return 0;
+    delete dbase;
+    return 0;
 }

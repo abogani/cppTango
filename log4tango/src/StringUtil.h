@@ -2,13 +2,13 @@
 // StringUtil.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -68,8 +68,8 @@ public:
   @return The actual number of segments (limited by maxSegments).
   **/
   static unsigned int split(std::vector<std::string>& v,
-				                    const std::string& s, char delimiter,
-				                    unsigned int maxSegments = INT_MAX);
+                                    const std::string& s, char delimiter,
+                                    unsigned int maxSegments = INT_MAX);
 
   /**
   splits a string into string segments based on the given delimiter

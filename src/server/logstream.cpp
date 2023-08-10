@@ -1,16 +1,16 @@
 //+=============================================================================
 //
-// file :		      LogStream.cpp
+// file :              LogStream.cpp
 //
 // description :  A TLS helper class
 //
-// project :	    TANGO
+// project :        TANGO
 //
-// author(s) :	  N.Leclercq - SOLEIL
+// author(s) :      N.Leclercq - SOLEIL
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -59,7 +59,7 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevFaile
     }
   }
   exception_tag++;
-	return ls;
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -69,14 +69,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevFaile
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarCharArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -86,14 +86,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarCh
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarShortArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -103,14 +103,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarSh
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarLongArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -120,14 +120,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarLo
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarFloatArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -137,14 +137,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarFl
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarDoubleArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
   }
-	return ls;
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -154,14 +154,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarDo
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarUShortArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -171,14 +171,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarUS
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarULongArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i];
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i];
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -188,14 +188,14 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarUL
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarStringArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		ls << "Element number [" << i << "]: " << v[i].in();
-		if (i < (nb_elt - 1))
-			ls << std::endl;
-	}
-	return ls;
+    long nb_elt = v.length();
+    for (long i = 0;i < nb_elt;i++)
+    {
+        ls << "Element number [" << i << "]: " << v[i].in();
+        if (i < (nb_elt - 1))
+            ls << std::endl;
+    }
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -205,52 +205,52 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const DevVarSt
 //-----------------------------------------------------------------------------
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const Attribute &a)
 {
-	Tango::AttributeConfig conf;
-	(const_cast<Attribute &>(a)).get_properties(conf);
+    Tango::AttributeConfig conf;
+    (const_cast<Attribute &>(a)).get_properties(conf);
 
         ls << "Attribute name: " << conf.name.in() << std::endl;
-	ls << "Attribute data_type: " << (CmdArgType)conf.data_type << std::endl;
-	ls << "Attribute data_format: ";
+    ls << "Attribute data_type: " << (CmdArgType)conf.data_type << std::endl;
+    ls << "Attribute data_format: ";
 
         switch (conf.data_format)
-	{
-	  case Tango::FMT_UNKNOWN:
-	  	  break;
+    {
+      case Tango::FMT_UNKNOWN:
+            break;
 
-	  case Tango::SCALAR :
-		  ls << "scalar" << std::endl;
-		  break;
+      case Tango::SCALAR :
+          ls << "scalar" << std::endl;
+          break;
 
-	  case Tango::SPECTRUM :
-		  ls << "spectrum, max_dim_x: "
+      case Tango::SPECTRUM :
+          ls << "spectrum, max_dim_x: "
             << conf.max_dim_x << std::endl;
-		  break;
+          break;
 
-	  case Tango::IMAGE :
-		  ls << "image, max_dim_x: "
+      case Tango::IMAGE :
+          ls << "image, max_dim_x: "
             << conf.max_dim_x
             << ", max_dim_y: "
             << conf.max_dim_y
             << std::endl;
-		  break;
-	}
+          break;
+    }
 
-	if (conf.writable == static_cast<unsigned char>(true))
-	  ls << "Attribute is writable" << std::endl;
-	else
-	  ls << "Attribute is not writable" << std::endl;
-	ls << "Attribute label: " << conf.label.in() << std::endl;
-	ls << "Attribute description: " << conf.description.in() << std::endl;
-	ls << "Attribute unit: " << conf.unit.in() << std::endl;
-	ls << "Attribute standard unit: " << conf.standard_unit.in() << std::endl;
-	ls << "Attribute display unit: " << conf.display_unit.in() << std::endl;
-	ls << "Attribute format: " << conf.format.in() << std::endl;
-	ls << "Attribute min alarm: " << conf.min_alarm.in() << std::endl;
-	ls << "Attribute max alarm: " << conf.max_alarm.in() << std::endl;
-	ls << "Attribute min value: " << conf.min_value.in() << std::endl;
-	ls << "Attribute max value: " << conf.max_value.in() << std::endl;
-	ls << "Attribute writable_attr_name: " << conf.writable_attr_name.in() << std::endl;
-	return ls;
+    if (conf.writable == static_cast<unsigned char>(true))
+      ls << "Attribute is writable" << std::endl;
+    else
+      ls << "Attribute is not writable" << std::endl;
+    ls << "Attribute label: " << conf.label.in() << std::endl;
+    ls << "Attribute description: " << conf.description.in() << std::endl;
+    ls << "Attribute unit: " << conf.unit.in() << std::endl;
+    ls << "Attribute standard unit: " << conf.standard_unit.in() << std::endl;
+    ls << "Attribute display unit: " << conf.display_unit.in() << std::endl;
+    ls << "Attribute format: " << conf.format.in() << std::endl;
+    ls << "Attribute min alarm: " << conf.min_alarm.in() << std::endl;
+    ls << "Attribute max alarm: " << conf.max_alarm.in() << std::endl;
+    ls << "Attribute min value: " << conf.min_value.in() << std::endl;
+    ls << "Attribute max value: " << conf.max_value.in() << std::endl;
+    ls << "Attribute writable_attr_name: " << conf.writable_attr_name.in() << std::endl;
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -261,8 +261,8 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const Attribut
 log4tango::LoggerStream&  operator<< (log4tango::LoggerStream& ls, const AttrProperty& ap)
 {
   AttrProperty& ap_ = const_cast<AttrProperty&>(ap);
-	ls << "Attr.Property: name:" << ap_.get_name() << " - value:" << ap_.get_value() << std::endl;
-	return ls;
+    ls << "Attr.Property: name:" << ap_.get_name() << " - value:" << ap_.get_value() << std::endl;
+    return ls;
 }
 
 //+----------------------------------------------------------------------------
@@ -300,7 +300,7 @@ log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const Attr& a)
 log4tango::LoggerStream& operator<< (log4tango::LoggerStream& ls, const AttrManip& m)
 {
   ls << m.to_string();
-	return ls;
+    return ls;
 }
 
 } // Tango namespace

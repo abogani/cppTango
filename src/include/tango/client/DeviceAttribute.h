@@ -5,7 +5,7 @@
 //
 //
 // Copyright (C) :      2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -30,10 +30,10 @@
 
 
 /****************************************************************************************
- * 																						*
- * 					The DeviceAttribute class											*
- * 					-------------------------											*
- * 																						*
+ *                                                                                         *
+ *                     The DeviceAttribute class                                            *
+ *                     -------------------------                                            *
+ *                                                                                         *
  ***************************************************************************************/
 
 
@@ -77,24 +77,24 @@ public :
 //
 // constructor methods
 //
-	enum except_flags
-	{
-		isempty_flag = 0,
-		wrongtype_flag,
-		failed_flag,
-		unknown_format_flag,
-		numFlags
-	};
+    enum except_flags
+    {
+        isempty_flag = 0,
+        wrongtype_flag,
+        failed_flag,
+        unknown_format_flag,
+        numFlags
+    };
 
 
-	DeviceAttribute(const DeviceAttribute&);
-	DeviceAttribute & operator=(const DeviceAttribute &);
-	DeviceAttribute(DeviceAttribute &&);
-	DeviceAttribute & operator=(DeviceAttribute &&);
+    DeviceAttribute(const DeviceAttribute&);
+    DeviceAttribute & operator=(const DeviceAttribute &);
+    DeviceAttribute(DeviceAttribute &&);
+    DeviceAttribute & operator=(DeviceAttribute &&);
 
-	void deep_copy(const DeviceAttribute &);
+    void deep_copy(const DeviceAttribute &);
 
-	DeviceAttribute(AttributeValue);
+    DeviceAttribute(AttributeValue);
 
 ///@publicsection
 /**@name Constructors */
@@ -105,7 +105,7 @@ public :
  * Default constructor. The instance is empty
  *
  */
-	DeviceAttribute();
+    DeviceAttribute();
 /**
  * Create a DeviceAttribute object from attribute name and value for scalar attribute
  *
@@ -142,7 +142,7 @@ public :
  * @param [in] name The attribute name
  * @param [in] val The attribute value
  */
-	DeviceAttribute(const std::string &name, short val);
+    DeviceAttribute(const std::string &name, short val);
 /**
  * Create a DeviceAttribute object from attribute name and value for spectrum attribute
  *
@@ -177,7 +177,7 @@ public :
  * @param [in] name The attribute name
  * @param [in] val The attribute value
  */
-	DeviceAttribute(const std::string &name, const std::vector<short> &val);
+    DeviceAttribute(const std::string &name, const std::vector<short> &val);
 /**
  * Create a DeviceAttribute object from attribute name and value for image attribute
  *
@@ -216,153 +216,153 @@ public :
  * @param [in] dim_x The attribute X dimension
  * @param [in] dim_y The attribute Y dimension
  */
-	DeviceAttribute(const std::string &name, const std::vector<short> &val,int dim_x,int dim_y);
+    DeviceAttribute(const std::string &name, const std::vector<short> &val,int dim_x,int dim_y);
 //@}
 ///@privatesection
-	DeviceAttribute(const std::string&, DevLong);
-	DeviceAttribute(const std::string&, double);
-	DeviceAttribute(const std::string&, const std::string&);
-	DeviceAttribute(const std::string&, const char *);
-	DeviceAttribute(const std::string&, float);
-	DeviceAttribute(const std::string&, bool);
-	DeviceAttribute(const std::string&, unsigned short);
-	DeviceAttribute(const std::string&, unsigned char);
-	DeviceAttribute(const std::string&, DevLong64);
-	DeviceAttribute(const std::string&, DevULong);
-	DeviceAttribute(const std::string&, DevULong64);
-	DeviceAttribute(const std::string&, DevState);
-	DeviceAttribute(const std::string&, const DevEncoded &);
+    DeviceAttribute(const std::string&, DevLong);
+    DeviceAttribute(const std::string&, double);
+    DeviceAttribute(const std::string&, const std::string&);
+    DeviceAttribute(const std::string&, const char *);
+    DeviceAttribute(const std::string&, float);
+    DeviceAttribute(const std::string&, bool);
+    DeviceAttribute(const std::string&, unsigned short);
+    DeviceAttribute(const std::string&, unsigned char);
+    DeviceAttribute(const std::string&, DevLong64);
+    DeviceAttribute(const std::string&, DevULong);
+    DeviceAttribute(const std::string&, DevULong64);
+    DeviceAttribute(const std::string&, DevState);
+    DeviceAttribute(const std::string&, const DevEncoded &);
 
-	DeviceAttribute(const std::string&, const std::vector<DevLong> &);
-	DeviceAttribute(const std::string&, const std::vector<double> &);
-	DeviceAttribute(const std::string&, const std::vector<std::string> &);
-	DeviceAttribute(const std::string&, const std::vector<float> &);
-	DeviceAttribute(const std::string&, const std::vector<bool> &);
-	DeviceAttribute(const std::string&, const std::vector<unsigned short> &);
-	DeviceAttribute(const std::string&, const std::vector<unsigned char> &);
-	DeviceAttribute(const std::string&, const std::vector<DevLong64> &);
-	DeviceAttribute(const std::string&, const std::vector<DevULong> &);
-	DeviceAttribute(const std::string&, const std::vector<DevULong64> &);
-	DeviceAttribute(const std::string&, const std::vector<DevState> &);
+    DeviceAttribute(const std::string&, const std::vector<DevLong> &);
+    DeviceAttribute(const std::string&, const std::vector<double> &);
+    DeviceAttribute(const std::string&, const std::vector<std::string> &);
+    DeviceAttribute(const std::string&, const std::vector<float> &);
+    DeviceAttribute(const std::string&, const std::vector<bool> &);
+    DeviceAttribute(const std::string&, const std::vector<unsigned short> &);
+    DeviceAttribute(const std::string&, const std::vector<unsigned char> &);
+    DeviceAttribute(const std::string&, const std::vector<DevLong64> &);
+    DeviceAttribute(const std::string&, const std::vector<DevULong> &);
+    DeviceAttribute(const std::string&, const std::vector<DevULong64> &);
+    DeviceAttribute(const std::string&, const std::vector<DevState> &);
 
-	DeviceAttribute(const std::string&, const std::vector<DevLong> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<double> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<std::string> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<float> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<bool> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<unsigned short> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<unsigned char> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<DevLong64> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<DevULong> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<DevULong64> &,int,int);
-	DeviceAttribute(const std::string&, const std::vector<DevState> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<DevLong> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<double> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<std::string> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<float> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<bool> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<unsigned short> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<unsigned char> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<DevLong64> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<DevULong> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<DevULong64> &,int,int);
+    DeviceAttribute(const std::string&, const std::vector<DevState> &,int,int);
 
-	DeviceAttribute(const char *, short);
-	DeviceAttribute(const char *, DevLong);
-	DeviceAttribute(const char *, double);
-	DeviceAttribute(const char *, const std::string&);
-	DeviceAttribute(const char *, const char *);
-	DeviceAttribute(const char *, float);
-	DeviceAttribute(const char *, bool);
-	DeviceAttribute(const char *, unsigned short);
-	DeviceAttribute(const char *, unsigned char);
-	DeviceAttribute(const char *, DevLong64);
-	DeviceAttribute(const char *, DevULong);
-	DeviceAttribute(const char *, DevULong64);
-	DeviceAttribute(const char *, DevState);
-	DeviceAttribute(const char *, const DevEncoded &);
+    DeviceAttribute(const char *, short);
+    DeviceAttribute(const char *, DevLong);
+    DeviceAttribute(const char *, double);
+    DeviceAttribute(const char *, const std::string&);
+    DeviceAttribute(const char *, const char *);
+    DeviceAttribute(const char *, float);
+    DeviceAttribute(const char *, bool);
+    DeviceAttribute(const char *, unsigned short);
+    DeviceAttribute(const char *, unsigned char);
+    DeviceAttribute(const char *, DevLong64);
+    DeviceAttribute(const char *, DevULong);
+    DeviceAttribute(const char *, DevULong64);
+    DeviceAttribute(const char *, DevState);
+    DeviceAttribute(const char *, const DevEncoded &);
 
-	DeviceAttribute(const char *, const std::vector<short> &);
-	DeviceAttribute(const char *, const std::vector<DevLong> &);
-	DeviceAttribute(const char *, const std::vector<double> &);
-	DeviceAttribute(const char *, const std::vector<std::string> &);
-	DeviceAttribute(const char *, const std::vector<float> &);
-	DeviceAttribute(const char *, const std::vector<bool> &);
-	DeviceAttribute(const char *, const std::vector<unsigned short> &);
-	DeviceAttribute(const char *, const std::vector<unsigned char> &);
-	DeviceAttribute(const char *, const std::vector<DevLong64> &);
-	DeviceAttribute(const char *, const std::vector<DevULong> &);
-	DeviceAttribute(const char *, const std::vector<DevULong64> &);
-	DeviceAttribute(const char *, const std::vector<DevState> &);
+    DeviceAttribute(const char *, const std::vector<short> &);
+    DeviceAttribute(const char *, const std::vector<DevLong> &);
+    DeviceAttribute(const char *, const std::vector<double> &);
+    DeviceAttribute(const char *, const std::vector<std::string> &);
+    DeviceAttribute(const char *, const std::vector<float> &);
+    DeviceAttribute(const char *, const std::vector<bool> &);
+    DeviceAttribute(const char *, const std::vector<unsigned short> &);
+    DeviceAttribute(const char *, const std::vector<unsigned char> &);
+    DeviceAttribute(const char *, const std::vector<DevLong64> &);
+    DeviceAttribute(const char *, const std::vector<DevULong> &);
+    DeviceAttribute(const char *, const std::vector<DevULong64> &);
+    DeviceAttribute(const char *, const std::vector<DevState> &);
 
-	DeviceAttribute(const char *, const std::vector<short> &,int,int);
-	DeviceAttribute(const char *, const std::vector<DevLong> &,int,int);
-	DeviceAttribute(const char *, const std::vector<double> &,int,int);
-	DeviceAttribute(const char *, const std::vector<std::string> &,int,int);
-	DeviceAttribute(const char *, const std::vector<float> &,int,int);
-	DeviceAttribute(const char *, const std::vector<bool> &,int,int);
-	DeviceAttribute(const char *, const std::vector<unsigned short> &,int,int);
-	DeviceAttribute(const char *, const std::vector<unsigned char> &,int,int);
-	DeviceAttribute(const char *, const std::vector<DevLong64> &,int,int);
-	DeviceAttribute(const char *, const std::vector<DevULong> &,int,int);
-	DeviceAttribute(const char *, const std::vector<DevULong64> &,int,int);
-	DeviceAttribute(const char *, const std::vector<DevState> &,int,int);
+    DeviceAttribute(const char *, const std::vector<short> &,int,int);
+    DeviceAttribute(const char *, const std::vector<DevLong> &,int,int);
+    DeviceAttribute(const char *, const std::vector<double> &,int,int);
+    DeviceAttribute(const char *, const std::vector<std::string> &,int,int);
+    DeviceAttribute(const char *, const std::vector<float> &,int,int);
+    DeviceAttribute(const char *, const std::vector<bool> &,int,int);
+    DeviceAttribute(const char *, const std::vector<unsigned short> &,int,int);
+    DeviceAttribute(const char *, const std::vector<unsigned char> &,int,int);
+    DeviceAttribute(const char *, const std::vector<DevLong64> &,int,int);
+    DeviceAttribute(const char *, const std::vector<DevULong> &,int,int);
+    DeviceAttribute(const char *, const std::vector<DevULong64> &,int,int);
+    DeviceAttribute(const char *, const std::vector<DevState> &,int,int);
 
-	template <typename T> DeviceAttribute(const std::string &,T);
-	template <typename T> DeviceAttribute(const char *,T);
-	template <typename T> DeviceAttribute(const std::string &,const std::vector<T> &);
-	template <typename T> DeviceAttribute(const char *,const std::vector<T> &);
-	template <typename T> DeviceAttribute(const std::string &,const std::vector<T> &,int,int);
-	template <typename T> DeviceAttribute(const char *,const std::vector<T> &,int,int);
+    template <typename T> DeviceAttribute(const std::string &,T);
+    template <typename T> DeviceAttribute(const char *,T);
+    template <typename T> DeviceAttribute(const std::string &,const std::vector<T> &);
+    template <typename T> DeviceAttribute(const char *,const std::vector<T> &);
+    template <typename T> DeviceAttribute(const std::string &,const std::vector<T> &,int,int);
+    template <typename T> DeviceAttribute(const char *,const std::vector<T> &,int,int);
 
-	template <typename T> void base_val(T);
-	template <typename T> void base_vect(const std::vector<T> &);
-	template <typename T> void base_vect_size(const std::vector<T> &);
+    template <typename T> void base_val(T);
+    template <typename T> void base_vect(const std::vector<T> &);
+    template <typename T> void base_vect_size(const std::vector<T> &);
 
-	template <typename T> void operator << (T);
-	template <typename T> void operator << (const std::vector<T> &);
-	template <typename T> void insert(std::vector<T> &,int,int);
+    template <typename T> void operator << (T);
+    template <typename T> void operator << (const std::vector<T> &);
+    template <typename T> void insert(std::vector<T> &,int,int);
 
-	template <typename T> bool operator >> (T &);
-	template <typename T> bool operator >> (std::vector<T> &);
-	template <typename T> bool extract_read (std::vector<T> &);
-	template <typename T> bool extract_set(std::vector<T> &);
+    template <typename T> bool operator >> (T &);
+    template <typename T> bool operator >> (std::vector<T> &);
+    template <typename T> bool extract_read (std::vector<T> &);
+    template <typename T> bool extract_set(std::vector<T> &);
 
-	template <typename T> bool template_type_check(T &);
+    template <typename T> bool template_type_check(T &);
 
 
 
-	virtual ~DeviceAttribute();
+    virtual ~DeviceAttribute();
 
-	AttrQuality 		quality;
-	AttrDataFormat		data_format;
-	int					data_type;
-	std::string 				name;
-	int 				dim_x;
-	int 				dim_y;
-	int 				w_dim_x;
-	int 				w_dim_y;
-	TimeVal 			time;
+    AttrQuality         quality;
+    AttrDataFormat        data_format;
+    int                    data_type;
+    std::string                 name;
+    int                 dim_x;
+    int                 dim_y;
+    int                 w_dim_x;
+    int                 w_dim_y;
+    TimeVal             time;
 
     void set_w_dim_x(int val) {w_dim_x = val;}
     void set_w_dim_y(int val) {w_dim_y = val;}
     void set_error_list(DevErrorList *ptr) {err_list = ptr;}
 
-	DevVarEncodedArray_var &get_Encoded_data() {return EncodedSeq;}
+    DevVarEncodedArray_var &get_Encoded_data() {return EncodedSeq;}
     DevErrorList_var &get_error_list() {return err_list;}
 
-	DevVarLongArray_var 	LongSeq;
-	DevVarShortArray_var 	ShortSeq;
-	DevVarDoubleArray_var 	DoubleSeq;
-	DevVarStringArray_var 	StringSeq;
-	DevVarFloatArray_var	FloatSeq;
-	DevVarBooleanArray_var	BooleanSeq;
-	DevVarUShortArray_var	UShortSeq;
-	DevVarCharArray_var	UCharSeq;
-	DevVarLong64Array_var	Long64Seq;
-	DevVarULongArray_var	ULongSeq;
-	DevVarULong64Array_var	ULong64Seq;
-	DevVarStateArray_var	StateSeq;
-	DevVarEncodedArray_var	EncodedSeq;
+    DevVarLongArray_var     LongSeq;
+    DevVarShortArray_var     ShortSeq;
+    DevVarDoubleArray_var     DoubleSeq;
+    DevVarStringArray_var     StringSeq;
+    DevVarFloatArray_var    FloatSeq;
+    DevVarBooleanArray_var    BooleanSeq;
+    DevVarUShortArray_var    UShortSeq;
+    DevVarCharArray_var    UCharSeq;
+    DevVarLong64Array_var    Long64Seq;
+    DevVarULongArray_var    ULongSeq;
+    DevVarULong64Array_var    ULong64Seq;
+    DevVarStateArray_var    StateSeq;
+    DevVarEncodedArray_var    EncodedSeq;
 
-	DevErrorList_var		err_list;
+    DevErrorList_var        err_list;
 
 //
 // For the state attribute
 //
 
-	DevState				d_state;
-	bool					d_state_filled;
+    DevState                d_state;
+    bool                    d_state_filled;
 
 //
 // Insert operators for  C++ types
@@ -505,7 +505,7 @@ public :
  * @param [in] val The attribute value
  * @exception WrongData if requested
  */
-	void operator << (short val);
+    void operator << (short val);
 /**
  * Insert attribute data for DevEncoded attribute
  *
@@ -522,7 +522,7 @@ public :
  * @param [in] length The DevEncoded data length
  * @exception WrongData if requested
  */
-	void insert(const char *str,unsigned char *data,unsigned int length);
+    void insert(const char *str,unsigned char *data,unsigned int length);
 /**
  * Insert attribute data for image attribute (from C++ vector)
  *
@@ -548,7 +548,7 @@ public :
  * @param [in] dim_y The attribute Y dimension
  * @exception WrongData if requested
  */
-	void insert(std::vector<short> &datum,int dim_x,int dim_y);
+    void insert(std::vector<short> &datum,int dim_x,int dim_y);
 /**
  * Insert attribute data for image attribute (from CORBA sequence by reference)
  *
@@ -574,7 +574,7 @@ public :
  * @param [in] dim_y The attribute Y dimension
  * @exception WrongData if requested
  */
-	void insert(const DevVarShortArray &datum,int dim_x,int dim_y);
+    void insert(const DevVarShortArray &datum,int dim_x,int dim_y);
 /**
  * Insert attribute data for image attribute (from CORBA sequence by pointer)
  *
@@ -601,7 +601,7 @@ public :
  * @param [in] dim_y The attribute Y dimension
  * @exception WrongData if requested
  */
-	void insert(DevVarShortArray *datum,int dim_x,int dim_y);
+    void insert(DevVarShortArray *datum,int dim_x,int dim_y);
 /**
  * Extract attribute data
  *
@@ -661,7 +661,7 @@ public :
  * @param [out] data The attribute data
  * @exception WrongData if requested, DevFailed from device
  */
-	bool operator >> (short &data);
+    bool operator >> (short &data);
 /**
  * Extract attribute data for DevEncoded attribute
  *
@@ -677,7 +677,7 @@ public :
  * @param [out] length The DevEncoded data length
  * @exception WrongData if requested, DevFailed from device
  */
-	bool extract(const char *&str,unsigned char *&data,unsigned int &length);
+    bool extract(const char *&str,unsigned char *&data,unsigned int &length);
 /**
  * Extract only read part of attribute data
  *
@@ -704,7 +704,7 @@ public :
  * @param [out] data The attribute data
  * @exception WrongData if requested, DevFailed from device
  */
-	bool extract_read (std::vector<std::string> &data);
+    bool extract_read (std::vector<std::string> &data);
 /**
  * Extract only written part of attribute data
  *
@@ -731,194 +731,194 @@ public :
  * @param [out] data The attribute data
  * @exception WrongData if requested, DevFailed from device
  */
-	bool extract_set  (std::vector<std::string> &data);
+    bool extract_set  (std::vector<std::string> &data);
 //@}
 ///@privatesection
-//	void operator << (short);
-	void operator << (DevLong);
-	void operator << (double);
-	void operator << (const std::string &);
-	void operator << (float);
-	void operator << (bool);
-	void operator << (unsigned short);
-	void operator << (unsigned char);
-	void operator << (DevLong64);
-	void operator << (DevULong);
-	void operator << (DevULong64);
-	void operator << (DevState);
-	void operator << (const DevEncoded &);
-	void operator << (DevString);
-	void operator << (const char *);
+//    void operator << (short);
+    void operator << (DevLong);
+    void operator << (double);
+    void operator << (const std::string &);
+    void operator << (float);
+    void operator << (bool);
+    void operator << (unsigned short);
+    void operator << (unsigned char);
+    void operator << (DevLong64);
+    void operator << (DevULong);
+    void operator << (DevULong64);
+    void operator << (DevState);
+    void operator << (const DevEncoded &);
+    void operator << (DevString);
+    void operator << (const char *);
 
-	void operator << (const std::vector<short> &);
-	void operator << (const std::vector<DevLong> &);
-	void operator << (const std::vector<double> &);
-	void operator << (const std::vector<std::string> &);
-	void operator << (const std::vector<float> &);
-	void operator << (const std::vector<bool> &);
-	void operator << (const std::vector<unsigned short> &);
-	void operator << (const std::vector<unsigned char> &);
-	void operator << (const std::vector<DevLong64> &);
-	void operator << (const std::vector<DevULong> &);
-	void operator << (const std::vector<DevULong64> &);
-	void operator << (const std::vector<DevState> &);
+    void operator << (const std::vector<short> &);
+    void operator << (const std::vector<DevLong> &);
+    void operator << (const std::vector<double> &);
+    void operator << (const std::vector<std::string> &);
+    void operator << (const std::vector<float> &);
+    void operator << (const std::vector<bool> &);
+    void operator << (const std::vector<unsigned short> &);
+    void operator << (const std::vector<unsigned char> &);
+    void operator << (const std::vector<DevLong64> &);
+    void operator << (const std::vector<DevULong> &);
+    void operator << (const std::vector<DevULong64> &);
+    void operator << (const std::vector<DevState> &);
 
-	void operator << (const DevVarShortArray &datum);
-	void operator << (const DevVarLongArray &datum);
-	void operator << (const DevVarDoubleArray &datum);
-	void operator << (const DevVarStringArray &datum);
-	void operator << (const DevVarFloatArray &datum);
-	void operator << (const DevVarBooleanArray &datum);
-	void operator << (const DevVarUShortArray &datum);
-	void operator << (const DevVarCharArray &datum);
-	void operator << (const DevVarLong64Array &datum);
-	void operator << (const DevVarULongArray &datum);
-	void operator << (const DevVarULong64Array &datum);
-	void operator << (const DevVarStateArray &datum);
+    void operator << (const DevVarShortArray &datum);
+    void operator << (const DevVarLongArray &datum);
+    void operator << (const DevVarDoubleArray &datum);
+    void operator << (const DevVarStringArray &datum);
+    void operator << (const DevVarFloatArray &datum);
+    void operator << (const DevVarBooleanArray &datum);
+    void operator << (const DevVarUShortArray &datum);
+    void operator << (const DevVarCharArray &datum);
+    void operator << (const DevVarLong64Array &datum);
+    void operator << (const DevVarULongArray &datum);
+    void operator << (const DevVarULong64Array &datum);
+    void operator << (const DevVarStateArray &datum);
 
-	void operator << (DevVarShortArray *datum);
-	void operator << (DevVarLongArray *datum);
-	void operator << (DevVarDoubleArray *datum);
-	void operator << (DevVarStringArray *datum);
-	void operator << (DevVarFloatArray *datum);
-	void operator << (DevVarBooleanArray *datum);
-	void operator << (DevVarUShortArray *datum);
-	void operator << (DevVarCharArray *datum);
-	void operator << (DevVarLong64Array *datum);
-	void operator << (DevVarULongArray *datum);
-	void operator << (DevVarULong64Array *datum);
-	void operator << (DevVarStateArray *datum);
-	void operator << (TANGO_UNUSED(DevVarEncodedArray *datum)) {} 	// For template stuff
+    void operator << (DevVarShortArray *datum);
+    void operator << (DevVarLongArray *datum);
+    void operator << (DevVarDoubleArray *datum);
+    void operator << (DevVarStringArray *datum);
+    void operator << (DevVarFloatArray *datum);
+    void operator << (DevVarBooleanArray *datum);
+    void operator << (DevVarUShortArray *datum);
+    void operator << (DevVarCharArray *datum);
+    void operator << (DevVarLong64Array *datum);
+    void operator << (DevVarULongArray *datum);
+    void operator << (DevVarULong64Array *datum);
+    void operator << (DevVarStateArray *datum);
+    void operator << (TANGO_UNUSED(DevVarEncodedArray *datum)) {}     // For template stuff
 
 //
 // Insert methods
 //
 
-//	void insert(std::vector<short> &,int,int);
-	void insert(const std::vector<DevLong> &,int,int);
-	void insert(const std::vector<double> &,int,int);
-	void insert(const std::vector<std::string> &,int,int);
-	void insert(const std::vector<float> &,int,int);
-	void insert(const std::vector<bool> &,int,int);
-	void insert(const std::vector<unsigned short> &,int,int);
-	void insert(const std::vector<unsigned char> &,int,int);
-	void insert(const std::vector<DevLong64> &,int,int);
-	void insert(const std::vector<DevULong> &,int,int);
-	void insert(const std::vector<DevULong64> &,int,int);
-	void insert(const std::vector<DevState> &,int,int);
+//    void insert(std::vector<short> &,int,int);
+    void insert(const std::vector<DevLong> &,int,int);
+    void insert(const std::vector<double> &,int,int);
+    void insert(const std::vector<std::string> &,int,int);
+    void insert(const std::vector<float> &,int,int);
+    void insert(const std::vector<bool> &,int,int);
+    void insert(const std::vector<unsigned short> &,int,int);
+    void insert(const std::vector<unsigned char> &,int,int);
+    void insert(const std::vector<DevLong64> &,int,int);
+    void insert(const std::vector<DevULong> &,int,int);
+    void insert(const std::vector<DevULong64> &,int,int);
+    void insert(const std::vector<DevState> &,int,int);
 
-//	void insert(const DevVarShortArray &datum,int,int);
-	void insert(const DevVarLongArray &datum,int,int);
-	void insert(const DevVarDoubleArray &datum,int,int);
-	void insert(const DevVarStringArray &datum,int,int);
-	void insert(const DevVarFloatArray &datum,int,int);
-	void insert(const DevVarBooleanArray &datum,int,int);
-	void insert(const DevVarUShortArray &datum,int,int);
-	void insert(const DevVarCharArray &datum,int,int);
-	void insert(const DevVarLong64Array &datum,int,int);
-	void insert(const DevVarULongArray &datum,int,int);
-	void insert(const DevVarULong64Array &datum,int,int);
-	void insert(const DevVarStateArray &datum,int,int);
+//    void insert(const DevVarShortArray &datum,int,int);
+    void insert(const DevVarLongArray &datum,int,int);
+    void insert(const DevVarDoubleArray &datum,int,int);
+    void insert(const DevVarStringArray &datum,int,int);
+    void insert(const DevVarFloatArray &datum,int,int);
+    void insert(const DevVarBooleanArray &datum,int,int);
+    void insert(const DevVarUShortArray &datum,int,int);
+    void insert(const DevVarCharArray &datum,int,int);
+    void insert(const DevVarLong64Array &datum,int,int);
+    void insert(const DevVarULongArray &datum,int,int);
+    void insert(const DevVarULong64Array &datum,int,int);
+    void insert(const DevVarStateArray &datum,int,int);
 
-//	void insert(DevVarShortArray *datum,int,int);
-	void insert(DevVarLongArray *datum,int,int);
-	void insert(DevVarDoubleArray *datum,int,int);
-	void insert(DevVarStringArray *datum,int,int);
-	void insert(DevVarFloatArray *datum,int,int);
-	void insert(DevVarBooleanArray *datum,int,int);
-	void insert(DevVarUShortArray *datum,int,int);
-	void insert(DevVarCharArray *datum,int,int);
-	void insert(DevVarLong64Array *datum,int,int);
-	void insert(DevVarULongArray *datum,int,int);
-	void insert(DevVarULong64Array *datum,int,int);
-	void insert(DevVarStateArray *datum,int,int);
+//    void insert(DevVarShortArray *datum,int,int);
+    void insert(DevVarLongArray *datum,int,int);
+    void insert(DevVarDoubleArray *datum,int,int);
+    void insert(DevVarStringArray *datum,int,int);
+    void insert(DevVarFloatArray *datum,int,int);
+    void insert(DevVarBooleanArray *datum,int,int);
+    void insert(DevVarUShortArray *datum,int,int);
+    void insert(DevVarCharArray *datum,int,int);
+    void insert(DevVarLong64Array *datum,int,int);
+    void insert(DevVarULongArray *datum,int,int);
+    void insert(DevVarULong64Array *datum,int,int);
+    void insert(DevVarStateArray *datum,int,int);
 
-	void insert(char *&,unsigned char *&,unsigned int);     // Deprecated. For compatibility purpose
-//	void insert(const char *str,unsigned char *data,unsigned int length);
-	void insert(const std::string &,std::vector<unsigned char> &);
-	void insert(std::string &,std::vector<unsigned char> &);      // Deprecated. For compatibility purpose
-	void insert(const char *,DevVarCharArray *);
+    void insert(char *&,unsigned char *&,unsigned int);     // Deprecated. For compatibility purpose
+//    void insert(const char *str,unsigned char *data,unsigned int length);
+    void insert(const std::string &,std::vector<unsigned char> &);
+    void insert(std::string &,std::vector<unsigned char> &);      // Deprecated. For compatibility purpose
+    void insert(const char *,DevVarCharArray *);
 
 //
 // Extract operators for  C++ types
 //
 
-//	bool operator >> (short &);
-	bool operator >> (DevLong &);
-	bool operator >> (double &);
-	bool operator >> (std::string&);
-	bool operator >> (float &);
-	bool operator >> (bool &);
-	bool operator >> (unsigned short &);
-	bool operator >> (unsigned char &);
-	bool operator >> (DevLong64 &);
-	bool operator >> (DevULong &);
-	bool operator >> (DevULong64 &);
-	bool operator >> (DevState &);
-	bool operator >> (DevEncoded &);
+//    bool operator >> (short &);
+    bool operator >> (DevLong &);
+    bool operator >> (double &);
+    bool operator >> (std::string&);
+    bool operator >> (float &);
+    bool operator >> (bool &);
+    bool operator >> (unsigned short &);
+    bool operator >> (unsigned char &);
+    bool operator >> (DevLong64 &);
+    bool operator >> (DevULong &);
+    bool operator >> (DevULong64 &);
+    bool operator >> (DevState &);
+    bool operator >> (DevEncoded &);
 
-	bool operator >> (std::vector<std::string>&);
-	bool operator >> (std::vector<short>&);
-	bool operator >> (std::vector<DevLong>&);
-	bool operator >> (std::vector<double>&);
-	bool operator >> (std::vector<float>&);
-	bool operator >> (std::vector<bool>&);
-	bool operator >> (std::vector<unsigned short>&);
-	bool operator >> (std::vector<unsigned char>&);
-	bool operator >> (std::vector<DevLong64>&);
-	bool operator >> (std::vector<DevULong>&);
-	bool operator >> (std::vector<DevULong64>&);
-	bool operator >> (std::vector<DevState>&);
+    bool operator >> (std::vector<std::string>&);
+    bool operator >> (std::vector<short>&);
+    bool operator >> (std::vector<DevLong>&);
+    bool operator >> (std::vector<double>&);
+    bool operator >> (std::vector<float>&);
+    bool operator >> (std::vector<bool>&);
+    bool operator >> (std::vector<unsigned short>&);
+    bool operator >> (std::vector<unsigned char>&);
+    bool operator >> (std::vector<DevLong64>&);
+    bool operator >> (std::vector<DevULong>&);
+    bool operator >> (std::vector<DevULong64>&);
+    bool operator >> (std::vector<DevState>&);
 
-	bool operator >> (DevVarShortArray* &datum);
-	bool operator >> (DevVarLongArray* &datum);
-	bool operator >> (DevVarDoubleArray* &datum);
-	bool operator >> (DevVarStringArray* &datum);
-	bool operator >> (DevVarFloatArray* &datum);
-	bool operator >> (DevVarBooleanArray* &datum);
-	bool operator >> (DevVarUShortArray* &datum);
-	bool operator >> (DevVarCharArray* &datum);
-	bool operator >> (DevVarLong64Array * &datum);
-	bool operator >> (DevVarULongArray * &datum);
-	bool operator >> (DevVarULong64Array * &datum);
-	bool operator >> (DevVarStateArray * &datum);
-	bool operator >> (DevVarEncodedArray *&datum);
+    bool operator >> (DevVarShortArray* &datum);
+    bool operator >> (DevVarLongArray* &datum);
+    bool operator >> (DevVarDoubleArray* &datum);
+    bool operator >> (DevVarStringArray* &datum);
+    bool operator >> (DevVarFloatArray* &datum);
+    bool operator >> (DevVarBooleanArray* &datum);
+    bool operator >> (DevVarUShortArray* &datum);
+    bool operator >> (DevVarCharArray* &datum);
+    bool operator >> (DevVarLong64Array * &datum);
+    bool operator >> (DevVarULongArray * &datum);
+    bool operator >> (DevVarULong64Array * &datum);
+    bool operator >> (DevVarStateArray * &datum);
+    bool operator >> (DevVarEncodedArray *&datum);
 
 //
 // Extract_xxx methods
 //
 
-//	bool extract_read (std::vector<std::string>&);
-	bool extract_read (std::vector<short>&);
-	bool extract_read (std::vector<DevLong>&);
-	bool extract_read (std::vector<double>&);
-	bool extract_read (std::vector<float>&);
-	bool extract_read (std::vector<bool>&);
-	bool extract_read (std::vector<unsigned short>&);
-	bool extract_read (std::vector<unsigned char>&);
-	bool extract_read (std::vector<DevLong64>&);
-	bool extract_read (std::vector<DevULong>&);
-	bool extract_read (std::vector<DevULong64>&);
-	bool extract_read (std::vector<DevState>&);
-	bool extract_read (std::string &,std::vector<unsigned char> &);
+//    bool extract_read (std::vector<std::string>&);
+    bool extract_read (std::vector<short>&);
+    bool extract_read (std::vector<DevLong>&);
+    bool extract_read (std::vector<double>&);
+    bool extract_read (std::vector<float>&);
+    bool extract_read (std::vector<bool>&);
+    bool extract_read (std::vector<unsigned short>&);
+    bool extract_read (std::vector<unsigned char>&);
+    bool extract_read (std::vector<DevLong64>&);
+    bool extract_read (std::vector<DevULong>&);
+    bool extract_read (std::vector<DevULong64>&);
+    bool extract_read (std::vector<DevState>&);
+    bool extract_read (std::string &,std::vector<unsigned char> &);
 
-//	bool extract_set  (std::vector<std::string>&);
-	bool extract_set  (std::vector<short>&);
-	bool extract_set  (std::vector<DevLong>&);
-	bool extract_set  (std::vector<double>&);
-	bool extract_set  (std::vector<float>&);
-	bool extract_set  (std::vector<bool>&);
-	bool extract_set  (std::vector<unsigned short>&);
-	bool extract_set  (std::vector<unsigned char>&);
-	bool extract_set  (std::vector<DevLong64>&);
-	bool extract_set  (std::vector<DevULong>&);
-	bool extract_set  (std::vector<DevULong64>&);
-	bool extract_set  (std::vector<DevState>&);
-	bool extract_set  (std::string &,std::vector<unsigned char> &);
+//    bool extract_set  (std::vector<std::string>&);
+    bool extract_set  (std::vector<short>&);
+    bool extract_set  (std::vector<DevLong>&);
+    bool extract_set  (std::vector<double>&);
+    bool extract_set  (std::vector<float>&);
+    bool extract_set  (std::vector<bool>&);
+    bool extract_set  (std::vector<unsigned short>&);
+    bool extract_set  (std::vector<unsigned char>&);
+    bool extract_set  (std::vector<DevLong64>&);
+    bool extract_set  (std::vector<DevULong>&);
+    bool extract_set  (std::vector<DevULong64>&);
+    bool extract_set  (std::vector<DevState>&);
+    bool extract_set  (std::string &,std::vector<unsigned char> &);
 
-//	bool extract(const char *&,unsigned char *&,unsigned int &);
-	bool extract(char *&,unsigned char *&,unsigned int &);      // Deprecated. For compatibility purpose
-	bool extract(std::string &,std::vector<unsigned char> &);
+//    bool extract(const char *&,unsigned char *&,unsigned int &);
+    bool extract(char *&,unsigned char *&,unsigned int &);      // Deprecated. For compatibility purpose
+    bool extract(std::string &,std::vector<unsigned char> &);
 
 ///@publicsection
 
@@ -945,7 +945,7 @@ public :
  *
  * @param [in] fl The exception flag
  */
-	void exceptions(std::bitset<numFlags> fl) {exceptions_flags = fl;}
+    void exceptions(std::bitset<numFlags> fl) {exceptions_flags = fl;}
 /**
  * Get exception flag
  *
@@ -965,10 +965,10 @@ public :
  *
  * @return The exception flag
  */
-	std::bitset<numFlags> exceptions() const
-	{
-		return exceptions_flags;
-	}
+    std::bitset<numFlags> exceptions() const
+    {
+        return exceptions_flags;
+    }
 /**
  * Reset one exception flag
  *
@@ -976,7 +976,7 @@ public :
  *
  * @param [in] fl The exception flag
  */
-	void reset_exceptions(except_flags fl) {exceptions_flags.reset((size_t)fl);}
+    void reset_exceptions(except_flags fl) {exceptions_flags.reset((size_t)fl);}
 /**
  * Set one exception flag
  *
@@ -998,7 +998,7 @@ public :
  * There is another usage example in the DeviceAttribute::exceptions() method documentation.
  * @param [in] fl The exception flag
  */
-	void set_exceptions(except_flags fl) {exceptions_flags.set((size_t)fl);}
+    void set_exceptions(except_flags fl) {exceptions_flags.set((size_t)fl);}
 /**
  * Get instance extraction state
  *
@@ -1022,7 +1022,7 @@ public :
  *
  * @return The error bit set.
  */
-	std::bitset<numFlags> state() {return ext->ext_state;}
+    std::bitset<numFlags> state() {return ext->ext_state;}
 /**
  * Check if the call failed
  *
@@ -1030,18 +1030,18 @@ public :
  *
  * @return A boolean set to true if the call failed
  */
-	bool has_failed() const
-	{
-		const DevErrorList* errors = err_list.operator->();
-		if (errors)
-		{
-			return 0 != errors->length();
-		}
-		else
-		{
-			return false;
-		}
-	}
+    bool has_failed() const
+    {
+        const DevErrorList* errors = err_list.operator->();
+        if (errors)
+        {
+            return 0 != errors->length();
+        }
+        else
+        {
+            return false;
+        }
+    }
 /**
  * Get the error stack
  *
@@ -1120,7 +1120,7 @@ public :
  *
  * @return The error stack
  */
-	const DevErrorList &get_err_stack() {return err_list.in();}
+    const DevErrorList &get_err_stack() {return err_list.in();}
 //@}
 /**@name Miscellaneous methods */
 //@{
@@ -1150,7 +1150,7 @@ public :
  * @return Boolean set to true if the instance is empty
  * @exception WrongData if requested
  */
-	bool is_empty() const;
+    bool is_empty() const;
 /**
  * Returns the name of the attribute
  *
@@ -1158,7 +1158,7 @@ public :
  *
  * @return The attribute name
  */
-	std::string &get_name() {return name;}
+    std::string &get_name() {return name;}
 /**
  * Set attribute name
  *
@@ -1166,7 +1166,7 @@ public :
  *
  * @param na The attribute name
  */
-	void set_name(const std::string &na) {name =  na;}
+    void set_name(const std::string &na) {name =  na;}
 /**
  * Set attribute name
  *
@@ -1174,7 +1174,7 @@ public :
  *
  * @param na The attribute name
  */
-	void set_name(const char *na) {std::string str(na);name = str;}
+    void set_name(const char *na) {std::string str(na);name = str;}
 /**
  * Get attribute X dimension
  *
@@ -1182,7 +1182,7 @@ public :
  *
  * @return The attribute X dimension
  */
-	int get_dim_x() {return dim_x;}
+    int get_dim_x() {return dim_x;}
 /**
  * Get attribute Y dimension
  *
@@ -1190,7 +1190,7 @@ public :
  *
  * @return The attribute Y dimension
  */
-	int get_dim_y() {return dim_y;}
+    int get_dim_y() {return dim_y;}
 /**
  * Get the attribute write X dimension
  *
@@ -1198,7 +1198,7 @@ public :
  *
  * @return The attribute write X dimension
  */
-	int get_written_dim_x() {return w_dim_x;}
+    int get_written_dim_x() {return w_dim_x;}
 /**
  * Get the attribute write Y dimension
  *
@@ -1206,7 +1206,7 @@ public :
  *
  * @return The attribute write Y dimension
  */
-	int get_written_dim_y() {return w_dim_y;}
+    int get_written_dim_y() {return w_dim_y;}
 /**
  * Get the attribute read dimensions
  *
@@ -1214,7 +1214,7 @@ public :
  *
  * @return The attribute read dimensions
  */
-	AttributeDimension get_r_dimension();
+    AttributeDimension get_r_dimension();
 /**
  * Get the attribute write dimensions
  *
@@ -1222,7 +1222,7 @@ public :
  *
  * @return The attribute write dimensions
  */
-	AttributeDimension get_w_dimension();
+    AttributeDimension get_w_dimension();
 /**
  * Get the number of read value
  *
@@ -1230,7 +1230,7 @@ public :
  *
  * @return The read value number
  */
-	long get_nb_read();
+    long get_nb_read();
 /**
  * Get the number of written value
  *
@@ -1261,7 +1261,7 @@ public :
  *
  * @return The read value number
  */
-	long get_nb_written();
+    long get_nb_written();
 /**
  * Get attribute quality factor
  *
@@ -1274,7 +1274,7 @@ public :
  *
  * @return The attribute quality
  */
-	AttrQuality &get_quality() {return quality;}
+    AttrQuality &get_quality() {return quality;}
 /**
  * Get attribute data type
  *
@@ -1282,7 +1282,7 @@ public :
  *
  * @return The attribute data type
  */
-	int get_type() const;
+    int get_type() const;
 /**
  * Get attribute data format
  *
@@ -1292,7 +1292,7 @@ public :
  *
  * @return The attribute data format
  */
-	AttrDataFormat get_data_format();
+    AttrDataFormat get_data_format();
 /**
  * Get attribute read date
  *
@@ -1300,10 +1300,10 @@ public :
  *
  * @return The attribute read date
  */
-	TimeVal &get_date() {return time;}
+    TimeVal &get_date() {return time;}
 //@}
 ///@privatesection
-	friend std::ostream &operator<<(std::ostream &, const DeviceAttribute &);
+    friend std::ostream &operator<<(std::ostream &, const DeviceAttribute &);
 /**
  * Update internal data sequence with buffer.
  * copies data_length elements starting from offset position from buffer to the internal sequence.
@@ -1315,11 +1315,11 @@ public :
     void update_internal_sequence(const T* buffer, std::size_t offset, std::size_t data_length);
 protected :
 ///@privatesection
-	std::bitset<numFlags> 	exceptions_flags;
-	void del_mem(int);
-	bool check_for_data();
-	bool check_wrong_type_exception();
-	int  check_set_value_size(int seq_length);
+    std::bitset<numFlags>     exceptions_flags;
+    void del_mem(int);
+    bool check_for_data();
+    bool check_wrong_type_exception();
+    int  check_set_value_size(int seq_length);
 
     class DeviceAttributeExt
     {

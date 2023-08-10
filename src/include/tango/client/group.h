@@ -1841,11 +1841,11 @@ bool GroupAttrReply::operator>> (T& dest)
     if (exception_enabled)
     {
       Tango::DevErrorList errors(1);
-	    errors.length(1);
-	    errors[0].severity = Tango::ERR;
-	    errors[0].desc = Tango::string_dup("no available data");
-	    errors[0].reason = Tango::string_dup("no data - group member is disabled");
-	    errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+        errors.length(1);
+        errors[0].severity = Tango::ERR;
+        errors[0].desc = Tango::string_dup("no available data");
+        errors[0].reason = Tango::string_dup("no data - group member is disabled");
+        errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
       DevFailed df(errors);
       throw df;
     }
@@ -1877,11 +1877,11 @@ bool GroupAttrReply::operator>> (T& dest)
       if (exception_enabled)
       {
         Tango::DevErrorList errors(1);
-	      errors.length(1);
-	      errors[0].severity = Tango::ERR;
-	      errors[0].desc = Tango::string_dup("unknown exception caught");
-	      errors[0].reason = Tango::string_dup("an error occurred while trying to extract data");
-	      errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+          errors.length(1);
+          errors[0].severity = Tango::ERR;
+          errors[0].desc = Tango::string_dup("unknown exception caught");
+          errors[0].reason = Tango::string_dup("an error occurred while trying to extract data");
+          errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
         DevFailed df(errors);
         GroupReply::exception_m = df;
         throw GroupReply::exception_m;
@@ -1925,7 +1925,7 @@ long Group::command_inout_asynch_i (const std::string& c, /*const*/ std::vector<
   if (gsize != static_cast<long>(d.size()))
   {
     TangoSys_OMemStream desc;
-	  desc << "the size of the input argument list must equal the number of device in the group"
+      desc << "the size of the input argument list must equal the number of device in the group"
          << " [expected:"
          << gsize
          << " - got:"
@@ -1997,7 +1997,7 @@ long Group::write_attribute_asynch_i (const std::string& a, /*const*/ std::vecto
   if (gsize != static_cast<long>(d.size()))
   {
     TangoSys_OMemStream desc;
-	  desc << "the size of the input argument list must equal the number of device in the group"
+      desc << "the size of the input argument list must equal the number of device in the group"
          << " [expected:"
          << gsize
          << " - got:"

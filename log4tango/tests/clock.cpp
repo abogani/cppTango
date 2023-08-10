@@ -1,8 +1,8 @@
 //
 // Copyright (C) :  2004,2005,2006,2007,2008,2009,2010
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -49,7 +49,7 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
     return 0;
 }
 #else
-#include <sys/time.h>			// for struct timeval
+#include <sys/time.h>            // for struct timeval
 #endif
 #ifdef __osf__
 #    include <machine/builtins.h>       // for __RPCC()
@@ -72,34 +72,34 @@ bool Clock::UsingCPU  = std::getenv("CLOCK_USE_CPU") ? true : false;
 usec_t Clock::time(void)
 {
     if (UsingCPU) {
-	static bool warn = true;
+    static bool warn = true;
 
-	if (warn) {
-	    std::cout << "Using CPU clock." << std::endl;
-	    warn = false;
-	}
+    if (warn) {
+        std::cout << "Using CPU clock." << std::endl;
+        warn = false;
+    }
 
 #ifdef __osf__
-	return (usec_t) __RPCC();
+    return (usec_t) __RPCC();
 #elif __linux__ && __i386__
-	{
-	    unsigned long tsc;
+    {
+        unsigned long tsc;
 
-	    rdtscl(tsc);
-	    return (usec_t) tsc;
-	}
+        rdtscl(tsc);
+        return (usec_t) tsc;
+    }
 #else
-	{
-	    std::cerr << "CPU clock not implemented for this architecture" << std::endl;
-	    UsingCPU = false;
-	    return Clock::time();
-	}
+    {
+        std::cerr << "CPU clock not implemented for this architecture" << std::endl;
+        UsingCPU = false;
+        return Clock::time();
+    }
 #endif
     } else {
-	struct timeval tv;
+    struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-	return (usec_t) (tv.tv_sec * UsecPerSec + tv.tv_usec);
+    gettimeofday(&tv, NULL);
+    return (usec_t) (tv.tv_sec * UsecPerSec + tv.tv_usec);
     }
 }
 
@@ -122,7 +122,7 @@ Clock::~Clock(void)
 usec_t Clock::elapsed(void) const
 {
     if (!active())
-	return _elapsed;
+    return _elapsed;
 
     return time() - _start;
 }

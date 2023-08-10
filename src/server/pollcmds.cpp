@@ -3,17 +3,17 @@
 // file :               PollCmds.cpp
 //
 // description :        C++ source for the DServerClass and for the
-//			command class defined for this class. The singleton
-//			class derived from DeviceClass. It implements the
-//			command list and all properties and methods required
-//			by the DServer once per process.
+//            command class defined for this class. The singleton
+//            class derived from DeviceClass. It implements the
+//            command list and all properties and methods required
+//            by the DServer once per process.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -45,346 +45,346 @@ namespace Tango
 
 //+-------------------------------------------------------------------------
 //
-// method : 		PolledDeviceCmd::PolledDeviceCmd
+// method :         PolledDeviceCmd::PolledDeviceCmd
 //
-// description : 	constructors for Command class PolledDevice
+// description :     constructors for Command class PolledDevice
 //
 //--------------------------------------------------------------------------
 
 PolledDeviceCmd::PolledDeviceCmd(const char *name,
-			         Tango::CmdArgType in,
-			         Tango::CmdArgType out,
-			         const char *out_desc):Command(name,in,out)
+                     Tango::CmdArgType in,
+                     Tango::CmdArgType out,
+                     const char *out_desc):Command(name,in,out)
 {
-	set_out_type_desc(out_desc);
+    set_out_type_desc(out_desc);
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		PolledDeviceCmd::execute
+// method :         PolledDeviceCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *PolledDeviceCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
 
-	TANGO_LOG_DEBUG << "PolledDevice::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "PolledDevice::execute(): arrived " << std::endl;
 
 //
 // Call the device method and return to caller
 //
 
-	return insert((static_cast<DServer *>(device))->polled_device());
+    return insert((static_cast<DServer *>(device))->polled_device());
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		DevPollStatusCmd::DevPollStatusCmd
+// method :         DevPollStatusCmd::DevPollStatusCmd
 //
-// description : 	constructors for Command class DevPollStatus
+// description :     constructors for Command class DevPollStatus
 //
 //--------------------------------------------------------------------------
 
 DevPollStatusCmd::DevPollStatusCmd(const char *name,
-			           Tango::CmdArgType in,
-			           Tango::CmdArgType out,
-			           const char *in_desc,
-				   const char *out_desc):Command(name,in,out)
+                       Tango::CmdArgType in,
+                       Tango::CmdArgType out,
+                       const char *in_desc,
+                   const char *out_desc):Command(name,in,out)
 {
-	set_in_type_desc(in_desc);
-	set_out_type_desc(out_desc);
+    set_in_type_desc(in_desc);
+    set_out_type_desc(out_desc);
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		DevPollStatusCmd::execute
+// method :         DevPollStatusCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *DevPollStatusCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
 
-	TANGO_LOG_DEBUG << "DevPollStatus::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "DevPollStatus::execute(): arrived " << std::endl;
 
 //
 // Extract the input string
 //
 
-	const char *tmp_name;
-	if ((in_any >>= tmp_name) == false)
-	{
-		TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : string");
-	}
-	std::string d_name(tmp_name);
-	TANGO_LOG_DEBUG << "Received string = " << d_name << std::endl;
+    const char *tmp_name;
+    if ((in_any >>= tmp_name) == false)
+    {
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : string");
+    }
+    std::string d_name(tmp_name);
+    TANGO_LOG_DEBUG << "Received string = " << d_name << std::endl;
 
 //
 // Call the device method and return to caller
 //
 
-	return insert((static_cast<DServer *>(device))->dev_poll_status(d_name));
+    return insert((static_cast<DServer *>(device))->dev_poll_status(d_name));
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		AddObjPollingCmd::AddObjPollingCmd
+// method :         AddObjPollingCmd::AddObjPollingCmd
 //
-// description : 	constructors for Command class DevPollStatus
+// description :     constructors for Command class DevPollStatus
 //
 //--------------------------------------------------------------------------
 
 AddObjPollingCmd::AddObjPollingCmd(const char *name,
-			           Tango::CmdArgType in,
-			           Tango::CmdArgType out,
-			           const std::string &in_desc):Command(name,in,out)
+                       Tango::CmdArgType in,
+                       Tango::CmdArgType out,
+                       const std::string &in_desc):Command(name,in,out)
 {
-	set_in_type_desc(in_desc);
+    set_in_type_desc(in_desc);
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		AddObjPollingCmd::execute
+// method :         AddObjPollingCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *AddObjPollingCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
 
-	TANGO_LOG_DEBUG << "AddObjPolling::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "AddObjPolling::execute(): arrived " << std::endl;
 
 //
 // Extract the input structure
 //
 
-	const DevVarLongStringArray *tmp_data;
-	if ((in_any >>= tmp_data) == false)
-	{
-		TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarLongStringArray");
-	}
+    const DevVarLongStringArray *tmp_data;
+    if ((in_any >>= tmp_data) == false)
+    {
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarLongStringArray");
+    }
 
 //
 // Call the device method and return to caller
 //
 
-	(static_cast<DServer *>(device))->add_obj_polling(tmp_data);
+    (static_cast<DServer *>(device))->add_obj_polling(tmp_data);
 
 //
 // Return to caller
 //
 
-	CORBA::Any *ret = return_empty_any("AddObjPolling");
-	return ret;
+    CORBA::Any *ret = return_empty_any("AddObjPolling");
+    return ret;
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		UpdObjPollingPeriodCmd::UpdObjPollingPeriodCmd
+// method :         UpdObjPollingPeriodCmd::UpdObjPollingPeriodCmd
 //
-// description : 	constructors for Command class UpdObjPolledPeriod
+// description :     constructors for Command class UpdObjPolledPeriod
 //
 //--------------------------------------------------------------------------
 
 UpdObjPollingPeriodCmd::UpdObjPollingPeriodCmd(const char *name,
-			           	       Tango::CmdArgType in,
-			           	       Tango::CmdArgType out,
-				       const std::string &in_desc):Command(name,in,out)
+                                  Tango::CmdArgType in,
+                                  Tango::CmdArgType out,
+                       const std::string &in_desc):Command(name,in,out)
 {
-	set_in_type_desc(in_desc);
+    set_in_type_desc(in_desc);
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		UpdObjPollingPeriodCmd::execute
+// method :         UpdObjPollingPeriodCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *UpdObjPollingPeriodCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
 
-	TANGO_LOG_DEBUG << "UpdObjPollingPeriod::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "UpdObjPollingPeriod::execute(): arrived " << std::endl;
 
 //
 // Extract the input structure
 //
 
-	const DevVarLongStringArray *tmp_data;
-	if ((in_any >>= tmp_data) == false)
-	{
-		TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarLongStringArray");
-	}
+    const DevVarLongStringArray *tmp_data;
+    if ((in_any >>= tmp_data) == false)
+    {
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarLongStringArray");
+    }
 
 //
 // Call the device method and return to caller
 //
 
-	(static_cast<DServer *>(device))->upd_obj_polling_period(tmp_data);
+    (static_cast<DServer *>(device))->upd_obj_polling_period(tmp_data);
 
 //
 // Return to caller
 //
 
-	CORBA::Any *ret = return_empty_any("UpdObjPollingPeriod");
-	return ret;
+    CORBA::Any *ret = return_empty_any("UpdObjPollingPeriod");
+    return ret;
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		RemObjPollingCmd::RemObjPollingCmd
+// method :         RemObjPollingCmd::RemObjPollingCmd
 //
-// description : 	constructors for Command class RemObjPolled
+// description :     constructors for Command class RemObjPolled
 //
 //--------------------------------------------------------------------------
 
 RemObjPollingCmd::RemObjPollingCmd(const char *name,
-			           Tango::CmdArgType in,
-			           Tango::CmdArgType out,
-			           const std::string &in_desc):Command(name,in,out)
+                       Tango::CmdArgType in,
+                       Tango::CmdArgType out,
+                       const std::string &in_desc):Command(name,in,out)
 {
-	set_in_type_desc(in_desc);
+    set_in_type_desc(in_desc);
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		RemObjPollingCmd::execute
+// method :         RemObjPollingCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *RemObjPollingCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
 {
 
-	TANGO_LOG_DEBUG << "RemObjPolling::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "RemObjPolling::execute(): arrived " << std::endl;
 
 //
 // Extract the input structure
 //
 
-	const DevVarStringArray *tmp_data;
-	if ((in_any >>= tmp_data) == false)
-	{
-		TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarStringArray");
-	}
+    const DevVarStringArray *tmp_data;
+    if ((in_any >>= tmp_data) == false)
+    {
+        TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType, "Imcompatible command argument type, expected type is : DevVarStringArray");
+    }
 
 //
 // Call the device method and return to caller
 //
 
-	(static_cast<DServer *>(device))->rem_obj_polling(tmp_data);
+    (static_cast<DServer *>(device))->rem_obj_polling(tmp_data);
 
 //
 // Return to caller
 //
 
-	CORBA::Any *ret = return_empty_any("RemObjPolling");
-	return ret;
+    CORBA::Any *ret = return_empty_any("RemObjPolling");
+    return ret;
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		StartPollingCmd::StartPollingCmd
+// method :         StartPollingCmd::StartPollingCmd
 //
-// description : 	constructors for Command class RemObjPolled
+// description :     constructors for Command class RemObjPolled
 //
 //--------------------------------------------------------------------------
 
 StopPollingCmd::StopPollingCmd(const char *name,
-			       Tango::CmdArgType in,
-			       Tango::CmdArgType out):Command(name,in,out)
+                   Tango::CmdArgType in,
+                   Tango::CmdArgType out):Command(name,in,out)
 {
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		StartPollingCmd::execute
+// method :         StartPollingCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *StopPollingCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
 
-	TANGO_LOG_DEBUG << "StopPolling::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "StopPolling::execute(): arrived " << std::endl;
 
 //
 // Call the device method and return to caller
 //
 
-	(static_cast<DServer *>(device))->stop_polling();
+    (static_cast<DServer *>(device))->stop_polling();
 
 //
 // Return to caller
 //
 
-	CORBA::Any *ret = return_empty_any("StopPolling");
-	return ret;
+    CORBA::Any *ret = return_empty_any("StopPolling");
+    return ret;
 }
 
 //+-------------------------------------------------------------------------
 //
-// method : 		StartPollingCmd::StartPollingCmd
+// method :         StartPollingCmd::StartPollingCmd
 //
-// description : 	constructors for Command class RemObjPolled
+// description :     constructors for Command class RemObjPolled
 //
 //--------------------------------------------------------------------------
 
 StartPollingCmd::StartPollingCmd(const char *name,
-			         Tango::CmdArgType in,
-			         Tango::CmdArgType out):Command(name,in,out)
+                     Tango::CmdArgType in,
+                     Tango::CmdArgType out):Command(name,in,out)
 {
 }
 
 
 //+-------------------------------------------------------------------------
 //
-// method : 		StartPollingCmd::execute
+// method :         StartPollingCmd::execute
 //
-// description : 	Trigger the execution of the method really implemented
-//			the command in the DServer class
+// description :     Trigger the execution of the method really implemented
+//            the command in the DServer class
 //
 //--------------------------------------------------------------------------
 
 CORBA::Any *StartPollingCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
 
-	TANGO_LOG_DEBUG << "StartPolling::execute(): arrived " << std::endl;
+    TANGO_LOG_DEBUG << "StartPolling::execute(): arrived " << std::endl;
 
 //
 // Call the device method and return to caller
 //
 
-	(static_cast<DServer *>(device))->start_polling();
+    (static_cast<DServer *>(device))->start_polling();
 
 //
 // Return to caller
 //
 
-	CORBA::Any *ret = return_empty_any("StartPolling");
-	return ret;
+    CORBA::Any *ret = return_empty_any("StartPolling");
+    return ret;
 }
 
 } // End of Tango namespace

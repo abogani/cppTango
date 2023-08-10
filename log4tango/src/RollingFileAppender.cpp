@@ -2,13 +2,13 @@
 // RollingFileAppender.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -82,7 +82,7 @@ namespace log4tango {
             ::remove(old_name.str().c_str());
             size_t n = _file_name.length() + 1;
             for(unsigned int i = _max_backup_index; i > 1; i--) {
-            	std::string newName = old_name.str();
+                std::string newName = old_name.str();
                 old_name.seekp(n, std::ios::beg);
                 old_name << i-1 << std::ends;
                 ::rename(old_name.str().c_str(), newName.c_str());

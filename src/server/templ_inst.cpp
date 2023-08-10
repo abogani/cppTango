@@ -3,14 +3,14 @@
 // file :               templ_inst.cpp
 //
 // description :        C++ source code to instantiate template methods/class in order to have explicit instanciation
-//						This makes user life easier in term of getting bug fixes (no re-compilation needed)
+//                        This makes user life easier in term of getting bug fixes (no re-compilation needed)
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //

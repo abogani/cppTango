@@ -9,44 +9,44 @@
 class EventCallBack : public CountingCallBack<Tango::DevIntrChangeEventData>
 {
 public:
-	std::string cb_err_reason;
+    std::string cb_err_reason;
 
 private:
-	bool process_event(Tango::DevIntrChangeEventData* event) override
-	{
-		TS_ASSERT_EQUALS(event->errors.length(), 1u);
-		cb_err_reason = event->errors[0].reason;
+    bool process_event(Tango::DevIntrChangeEventData* event) override
+    {
+        TS_ASSERT_EQUALS(event->errors.length(), 1u);
+        cb_err_reason = event->errors[0].reason;
 
-		return event->err;
-	}
+        return event->err;
+    }
 };
 
 class DevIntrNotRunningTest : public CxxTest::TestSuite
 {
 public:
-	SUITE_NAME()
-	{
+    SUITE_NAME()
+    {
 
-		CxxTest::TangoPrinter::validate_args();
-	}
+        CxxTest::TangoPrinter::validate_args();
+    }
 
-	virtual ~SUITE_NAME() { }
+    virtual ~SUITE_NAME() { }
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
 //
 // Tests -------------------------------------------------------
 //
-	void test_not_running_error()
-	{
+    void test_not_running_error()
+    {
     try
     {
       // connect to a defined device which is not running
@@ -63,13 +63,13 @@ public:
     catch (Tango::DevFailed &e)
     {
       Except::print_exception(e);
-	  TS_FAIL("Unexpected exception");
+      TS_FAIL("Unexpected exception");
     }
     catch (CORBA::Exception &e)
     {
       Except::print_exception(e);
-	  TS_FAIL("Unexpected exception");
-	}
+      TS_FAIL("Unexpected exception");
+    }
   }
 };
 

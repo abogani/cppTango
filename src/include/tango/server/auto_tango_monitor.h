@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -38,51 +38,51 @@ namespace Tango
 //-------------------------------------------------------------------------------------------------------------------
 //
 // class :
-//		AutoTangoMonitor
+//        AutoTangoMonitor
 //
 // description :
-//		This class is only a helper class used to get a TangoMonitor object during its construction and to
-//		it during its destruction. It makes developer life easier.
+//        This class is only a helper class used to get a TangoMonitor object during its construction and to
+//        it during its destruction. It makes developer life easier.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 class AutoTangoMonitor
 {
 public:
-	AutoTangoMonitor(Tango::DeviceImpl *dev, bool force = false);
+    AutoTangoMonitor(Tango::DeviceImpl *dev, bool force = false);
 
-	AutoTangoMonitor(Tango::DeviceClass *dev_cl);
+    AutoTangoMonitor(Tango::DeviceClass *dev_cl);
 
-	AutoTangoMonitor(Tango::TangoMonitor *m);
+    AutoTangoMonitor(Tango::TangoMonitor *m);
 
-	~AutoTangoMonitor();
+    ~AutoTangoMonitor();
 
 private:
-	TangoMonitor 				*mon;
-	omni_thread::ensure_self	auto_self;
+    TangoMonitor                 *mon;
+    omni_thread::ensure_self    auto_self;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 //
 // class :
-//		NoSyncModelTangoMonitor
+//        NoSyncModelTangoMonitor
 //
 // description :
-//		This class is only a helper class used to get a TangoMonitor object during its construction and to
-//		it during its destruction only if the device server process is in NO_SYNC synchronisation model
+//        This class is only a helper class used to get a TangoMonitor object during its construction and to
+//        it during its destruction only if the device server process is in NO_SYNC synchronisation model
 //
 //--------------------------------------------------------------------------------------------------------------------
 
 class NoSyncModelTangoMonitor
 {
 public:
-	NoSyncModelTangoMonitor(Tango::DeviceImpl *dev);
+    NoSyncModelTangoMonitor(Tango::DeviceImpl *dev);
 
-	~NoSyncModelTangoMonitor();
+    ~NoSyncModelTangoMonitor();
 
 private:
-	TangoMonitor 			*mon;
-	omni_thread::ensure_self	auto_self;
+    TangoMonitor             *mon;
+    omni_thread::ensure_self    auto_self;
 };
 
 

@@ -8,7 +8,7 @@
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -38,70 +38,70 @@ namespace Tango
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DServer::event_subscription_change()
+//        DServer::event_subscription_change()
 //
 // description :
-//		method to execute the command EventSubscriptionChange command.
+//        method to execute the command EventSubscriptionChange command.
 //
 // args :
-//		in :
-// 			- argin : The command input argument
+//        in :
+//             - argin : The command input argument
 //
 // returns :
-//		The command output data (Tango lib release number)
+//        The command output data (Tango lib release number)
 //
 //------------------------------------------------------------------------------------------------------------------
 DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin)
 {
     if (argin->length() < 4)
     {
-		TangoSys_OMemStream o;
-		o << "Not enough input arguments, needs 4 i.e. device name, attribute name, action, event name" << std::ends;
+        TangoSys_OMemStream o;
+        o << "Not enough input arguments, needs 4 i.e. device name, attribute name, action, event name" << std::ends;
 
-		TANGO_THROW_EXCEPTION(API_WrongNumberOfArgs, o.str());
-	}
+        TANGO_THROW_EXCEPTION(API_WrongNumberOfArgs, o.str());
+    }
 
-	std::string dev_name, attr_name, action, event;
-	dev_name = (*argin)[0];
-	attr_name = (*argin)[1];
-	action = (*argin)[2];
-	event = (*argin)[3];
+    std::string dev_name, attr_name, action, event;
+    dev_name = (*argin)[0];
+    attr_name = (*argin)[1];
+    action = (*argin)[2];
+    event = (*argin)[3];
 
-	TANGO_LOG_DEBUG << "EventSubscriptionChangeCmd: subscription for device " << dev_name << " attribute " << attr_name << " action " << action << " event " << event << std::endl;
+    TANGO_LOG_DEBUG << "EventSubscriptionChangeCmd: subscription for device " << dev_name << " attribute " << attr_name << " action " << action << " event " << event << std::endl;
 
-	Tango::Util *tg = Tango::Util::instance();
+    Tango::Util *tg = Tango::Util::instance();
 
 //
 // If we receive this command while the DS is in its shuting down sequence, do nothing
 //
 
-	if (tg->get_heartbeat_thread_object() == NULL)
-	{
-     	TangoSys_OMemStream o;
-		o << "The device server is shutting down! You can no longer subscribe for events" << std::ends;
+    if (tg->get_heartbeat_thread_object() == NULL)
+    {
+         TangoSys_OMemStream o;
+        o << "The device server is shutting down! You can no longer subscribe for events" << std::ends;
 
-		TANGO_THROW_EXCEPTION(API_ShutdownInProgress, o.str());
-	}
+        TANGO_THROW_EXCEPTION(API_ShutdownInProgress, o.str());
+    }
 
 //
 // If the EventSupplier object is not created, create it right now
 //
 
-	NotifdEventSupplier *ev;
-	if ((ev = tg->get_notifd_event_supplier()) == NULL)
-	{
-		tg->create_notifd_event_supplier();
-		ev = tg->get_notifd_event_supplier();
-	}
+    NotifdEventSupplier *ev;
+    if ((ev = tg->get_notifd_event_supplier()) == NULL)
+    {
+        tg->create_notifd_event_supplier();
+        ev = tg->get_notifd_event_supplier();
+    }
 
 //
 // If we are using a file as database, gives port number to event supplier
 //
 
-	if (Util::instance()->use_file_db() && ev != NULL)
-	{
-		ev->file_db_svr();
-	}
+    if (Util::instance()->use_file_db() && ev != NULL)
+    {
+        ev->file_db_svr();
+    }
 
 //
 // Check if the request comes from a Tango 6 client (without client identification)
@@ -110,30 +110,30 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
 // device from class 1 and device from classs 2)
 //
 
-	int client_release = 0;
-	client_addr *cl = get_client_ident();
+    int client_release = 0;
+    client_addr *cl = get_client_ident();
 
-	if (cl == NULL)
-		client_release = 4;
-	else
-	{
-		if (cl->client_ident == true)
-			client_release = 4;
-		else
-			client_release = 3;
-	}
+    if (cl == NULL)
+        client_release = 4;
+    else
+    {
+        if (cl->client_ident == true)
+            client_release = 4;
+        else
+            client_release = 3;
+    }
 
-	DeviceImpl* dev_impl = nullptr;
-	try
-	{
-		dev_impl = tg->get_device_by_name(dev_name);
-	}
-	catch (Tango::DevFailed &e)
-	{
-		TangoSys_OMemStream o;
-		o << "Device " << dev_name << " not found" << std::ends;
-		TANGO_RETHROW_EXCEPTION(e, API_DeviceNotFound, o.str());
-	}
+    DeviceImpl* dev_impl = nullptr;
+    try
+    {
+        dev_impl = tg->get_device_by_name(dev_name);
+    }
+    catch (Tango::DevFailed &e)
+    {
+        TangoSys_OMemStream o;
+        o << "Device " << dev_name << " not found" << std::ends;
+        TANGO_RETHROW_EXCEPTION(e, API_DeviceNotFound, o.str());
+    }
 
     event_subscription(*dev_impl, attr_name, action, event, NOTIFD, client_release);
     if (action == "subscribe")
@@ -145,15 +145,15 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
 // Init one subscription command flag in Eventsupplier
 //
 
-	if (ev != NULL && ev->get_one_subscription_cmd() == false)
-		ev->set_one_subscription_cmd(true);
+    if (ev != NULL && ev->get_one_subscription_cmd() == false)
+        ev->set_one_subscription_cmd(true);
 
 //
 // Return to caller
 //
 
-	Tango::DevLong ret_val = (Tango::DevLong)tg->get_tango_lib_release();
-	return ret_val;
+    Tango::DevLong ret_val = (Tango::DevLong)tg->get_tango_lib_release();
+    return ret_val;
 }
 
 
@@ -176,191 +176,191 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
 //
 //--------------------------------------------------------------------------------------------------------------------
 void DServer::event_subscription(
-	DeviceImpl &device,
-	const std::string &obj_name,
-	const std::string &action,
-	const std::string &event,
-	ChannelType channel_type,
-	int client_lib_version)
+    DeviceImpl &device,
+    const std::string &obj_name,
+    const std::string &action,
+    const std::string &event,
+    ChannelType channel_type,
+    int client_lib_version)
 {
-	if (event == EventName[INTERFACE_CHANGE_EVENT] || event == EventName[PIPE_EVENT])
-	{
-		// These events are always accepted.
-		return;
-	}
+    if (event == EventName[INTERFACE_CHANGE_EVENT] || event == EventName[PIPE_EVENT])
+    {
+        // These events are always accepted.
+        return;
+    }
 
-	// Otherwise assume the event is for an attribute.
-	Attribute &attribute = device.get_device_attr()->get_attr_by_name(obj_name.c_str());
+    // Otherwise assume the event is for an attribute.
+    Attribute &attribute = device.get_device_attr()->get_attr_by_name(obj_name.c_str());
 
 //
 // Refuse subscription on forwarded attribute and notifd
 //
 
-	if (channel_type == NOTIFD)
-	{
-		if (attribute.is_fwd_att() == true)
-		{
-			std::stringstream ss;
-			ss << "The attribute " << obj_name << " is a forwarded attribute.";
-			ss << "\nIt is not supported to subscribe events from forwarded attribute using Tango < 9. Please update!!";
+    if (channel_type == NOTIFD)
+    {
+        if (attribute.is_fwd_att() == true)
+        {
+            std::stringstream ss;
+            ss << "The attribute " << obj_name << " is a forwarded attribute.";
+            ss << "\nIt is not supported to subscribe events from forwarded attribute using Tango < 9. Please update!!";
 
-			TANGO_THROW_EXCEPTION(API_NotSupportedFeature, ss.str());
-		}
-	}
-	else
-	{
-		if (attribute.is_fwd_att() == true && client_lib_version < 5)
-		{
-			std::stringstream ss;
-			ss << "The attribute " << obj_name << " is a forwarded attribute.";
-			ss << "\nIt is not supported to subscribe events from forwarded attribute using Tango < 9. Please update!!";
+            TANGO_THROW_EXCEPTION(API_NotSupportedFeature, ss.str());
+        }
+    }
+    else
+    {
+        if (attribute.is_fwd_att() == true && client_lib_version < 5)
+        {
+            std::stringstream ss;
+            ss << "The attribute " << obj_name << " is a forwarded attribute.";
+            ss << "\nIt is not supported to subscribe events from forwarded attribute using Tango < 9. Please update!!";
 
-			TANGO_THROW_EXCEPTION(API_NotSupportedFeature, ss.str());
-		}
-	}
+            TANGO_THROW_EXCEPTION(API_NotSupportedFeature, ss.str());
+        }
+    }
 
-	// Return early if action is not subscribe. This is the only action that
-	// we currently expect but it is checked here for backwards compatibility.
-	if (action != "subscribe")
-	{
-		return;
-	}
+    // Return early if action is not subscribe. This is the only action that
+    // we currently expect but it is checked here for backwards compatibility.
+    if (action != "subscribe")
+    {
+        return;
+    }
 
-	if (event == "user_event")
-	{
-		// No restrictions.
-	}
-	else if (event.find(CONF_TYPE_EVENT) != std::string::npos)
-	{
-		// No restrictions.
-	}
-	else if (event == "data_ready")
-	{
-		if (attribute.is_fwd_att() == false && attribute.is_data_ready_event() == false)
-		{
-			TangoSys_OMemStream o;
-			o << "The attribute ";
-			o << obj_name;
-			o << " is not data ready event enabled" << std::ends;
+    if (event == "user_event")
+    {
+        // No restrictions.
+    }
+    else if (event.find(CONF_TYPE_EVENT) != std::string::npos)
+    {
+        // No restrictions.
+    }
+    else if (event == "data_ready")
+    {
+        if (attribute.is_fwd_att() == false && attribute.is_data_ready_event() == false)
+        {
+            TangoSys_OMemStream o;
+            o << "The attribute ";
+            o << obj_name;
+            o << " is not data ready event enabled" << std::ends;
 
-			TANGO_THROW_EXCEPTION(API_AttributeNotDataReadyEnabled, o.str());
-		}
-	}
-	else
-	{
+            TANGO_THROW_EXCEPTION(API_AttributeNotDataReadyEnabled, o.str());
+        }
+    }
+    else
+    {
 
 //
 // If the polling is necessary to send events, check whether the polling is started for the requested attribute.
 //
 
-		if (attribute.is_polled() == false )
-		{
-			TangoSys_OMemStream o;
-			o << "The polling (necessary to send events) for the attribute ";
-			o << obj_name;
-			o << " is not started" << std::ends;
+        if (attribute.is_polled() == false )
+        {
+            TangoSys_OMemStream o;
+            o << "The polling (necessary to send events) for the attribute ";
+            o << obj_name;
+            o << " is not started" << std::ends;
 
-			if ( event == "change")
-			{
-				if (attribute.is_fwd_att() == false && attribute.is_change_event() == false)
-				{
-					TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
-				}
-			}
-			else if ( event == "archive")
-			{
-				if (attribute.is_fwd_att() == false && attribute.is_archive_event() == false)
-				{
-					TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
-				}
-			}
-			else
-			{
-				if (attribute.is_fwd_att() == false)
-				{
-					TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
-				}
-			}
-		}
+            if ( event == "change")
+            {
+                if (attribute.is_fwd_att() == false && attribute.is_change_event() == false)
+                {
+                    TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
+                }
+            }
+            else if ( event == "archive")
+            {
+                if (attribute.is_fwd_att() == false && attribute.is_archive_event() == false)
+                {
+                    TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
+                }
+            }
+            else
+            {
+                if (attribute.is_fwd_att() == false)
+                {
+                    TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
+                }
+            }
+        }
 
-		if (event == "change")
-		{
-			TANGO_LOG_DEBUG << "DServer::event_subscription(): update change subscription\n";
+        if (event == "change")
+        {
+            TANGO_LOG_DEBUG << "DServer::event_subscription(): update change subscription\n";
 
 //
 // Check if the attribute has some of the change properties defined
 //
 
-			if (attribute.get_name_lower() != "state")
-			{
-				if ((attribute.get_data_type() != Tango::DEV_STRING) &&
-					(attribute.get_data_type() != Tango::DEV_BOOLEAN) &&
-					(attribute.get_data_type() != Tango::DEV_ENCODED) &&
-					(attribute.get_data_type() != Tango::DEV_STATE) &&
-					(attribute.get_data_type() != Tango::DEV_ENUM))
-				{
-					if ( attribute.is_check_change_criteria() == true )
-					{
-						if ((attribute.rel_change[0] == INT_MAX) &&
-							(attribute.rel_change[1] == INT_MAX) &&
-							(attribute.abs_change[0] == INT_MAX) &&
-							(attribute.abs_change[1] == INT_MAX))
-						{
-							TangoSys_OMemStream o;
-							o << "Event properties (abs_change or rel_change) for attribute ";
-							o << obj_name;
-							o << " are not set" << std::ends;
+            if (attribute.get_name_lower() != "state")
+            {
+                if ((attribute.get_data_type() != Tango::DEV_STRING) &&
+                    (attribute.get_data_type() != Tango::DEV_BOOLEAN) &&
+                    (attribute.get_data_type() != Tango::DEV_ENCODED) &&
+                    (attribute.get_data_type() != Tango::DEV_STATE) &&
+                    (attribute.get_data_type() != Tango::DEV_ENUM))
+                {
+                    if ( attribute.is_check_change_criteria() == true )
+                    {
+                        if ((attribute.rel_change[0] == INT_MAX) &&
+                            (attribute.rel_change[1] == INT_MAX) &&
+                            (attribute.abs_change[0] == INT_MAX) &&
+                            (attribute.abs_change[1] == INT_MAX))
+                        {
+                            TangoSys_OMemStream o;
+                            o << "Event properties (abs_change or rel_change) for attribute ";
+                            o << obj_name;
+                            o << " are not set" << std::ends;
 
-							TANGO_THROW_EXCEPTION(API_EventPropertiesNotSet, o.str());
-						}
-					}
-				}
-			}
-		}
-		else if (event == "archive")
-		{
+                            TANGO_THROW_EXCEPTION(API_EventPropertiesNotSet, o.str());
+                        }
+                    }
+                }
+            }
+        }
+        else if (event == "archive")
+        {
 
 //
 // Check if the attribute has some of the archive properties defined
 //
 
-			if (attribute.get_name_lower() != "state")
-			{
-				if ((attribute.get_data_type() != Tango::DEV_STRING) &&
-					(attribute.get_data_type() != Tango::DEV_BOOLEAN) &&
-					(attribute.get_data_type() != Tango::DEV_ENCODED) &&
-					(attribute.get_data_type() != Tango::DEV_STATE) &&
-					(attribute.get_data_type() != Tango::DEV_ENUM))
-				{
-					if ( attribute.is_check_archive_criteria() == true )
-					{
-						if ((attribute.archive_abs_change[0] == INT_MAX) &&
-							(attribute.archive_abs_change[1] == INT_MAX) &&
-							(attribute.archive_rel_change[0] == INT_MAX) &&
-							(attribute.archive_rel_change[1] == INT_MAX) &&
-							(attribute.archive_period        == INT_MAX))
-						{
-							TangoSys_OMemStream o;
-							o << "Archive event properties (archive_abs_change or archive_rel_change or archive_period) for attribute ";
-							o << obj_name;
-							o << " are not set" << std::ends;
+            if (attribute.get_name_lower() != "state")
+            {
+                if ((attribute.get_data_type() != Tango::DEV_STRING) &&
+                    (attribute.get_data_type() != Tango::DEV_BOOLEAN) &&
+                    (attribute.get_data_type() != Tango::DEV_ENCODED) &&
+                    (attribute.get_data_type() != Tango::DEV_STATE) &&
+                    (attribute.get_data_type() != Tango::DEV_ENUM))
+                {
+                    if ( attribute.is_check_archive_criteria() == true )
+                    {
+                        if ((attribute.archive_abs_change[0] == INT_MAX) &&
+                            (attribute.archive_abs_change[1] == INT_MAX) &&
+                            (attribute.archive_rel_change[0] == INT_MAX) &&
+                            (attribute.archive_rel_change[1] == INT_MAX) &&
+                            (attribute.archive_period        == INT_MAX))
+                        {
+                            TangoSys_OMemStream o;
+                            o << "Archive event properties (archive_abs_change or archive_rel_change or archive_period) for attribute ";
+                            o << obj_name;
+                            o << " are not set" << std::ends;
 
-							TANGO_THROW_EXCEPTION(API_EventPropertiesNotSet, o.str());
-						}
-					}
-				}
-			}
-		}
-	}
+                            TANGO_THROW_EXCEPTION(API_EventPropertiesNotSet, o.str());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 //
 // Set channel type in attribute object
 //
 
-	if (channel_type == ZMQ)
-		attribute.set_use_zmq_event();
-	else
-		attribute.set_use_notifd_event();
+    if (channel_type == ZMQ)
+        attribute.set_use_zmq_event();
+    else
+        attribute.set_use_notifd_event();
 }
 
 MulticastParameters DServer::get_multicast_parameters(
@@ -381,7 +381,7 @@ MulticastParameters DServer::get_multicast_parameters(
 //
 // Check if multicast has to be used for event transport (only for ZMQ event)
 // Don't forget syntax in attribute mcast_event string:
-// 			event_name:ip_address:port:rate:ivl
+//             event_name:ip_address:port:rate:ivl
 // The last two are not optionals
 //
 
@@ -551,7 +551,7 @@ void DServer::store_subscribed_client_info(
 
         if (client_lib_version != 0)
         {
-	        Tango::Util *tg = Tango::Util::instance();
+            Tango::Util *tg = Tango::Util::instance();
             EventType event_type = CHANGE_EVENT;
             std::string mutable_event_name = event_name;
             tg->event_name_2_event_type(mutable_event_name, event_type);
@@ -581,31 +581,31 @@ void DServer::store_subscribed_client_info(
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DServer::zmq_event_subscription_change()
+//        DServer::zmq_event_subscription_change()
 //
 // description :
-//		method to execute the command ZmqEventSubscriptionChange command.
+//        method to execute the command ZmqEventSubscriptionChange command.
 //
 // args :
-// 		in :
-//			- argin : The command input argument
+//         in :
+//            - argin : The command input argument
 //
 // returns :
-//		The command output data (Tango lib release number)
+//        The command output data (Tango lib release number)
 //
 //-------------------------------------------------------------------------------------------------------------------
 DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVarStringArray *argin)
 {
     if (argin->length() > 1 && argin->length() < 4)
     {
-		TangoSys_OMemStream o;
-		o << "Not enough input arguments, needs at least 4 i.e. device name, attribute/pipe name, action, event name, <Tango lib release>" << std::ends;
+        TangoSys_OMemStream o;
+        o << "Not enough input arguments, needs at least 4 i.e. device name, attribute/pipe name, action, event name, <Tango lib release>" << std::ends;
 
-		TANGO_THROW_EXCEPTION(API_WrongNumberOfArgs, o.str());
-	}
+        TANGO_THROW_EXCEPTION(API_WrongNumberOfArgs, o.str());
+    }
 
     Tango::Util *tg = Tango::Util::instance();
-	Tango::DevVarLongStringArray *ret_data = nullptr;
+    Tango::DevVarLongStringArray *ret_data = nullptr;
 
     if (argin->length() == 1)
     {
@@ -623,7 +623,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 // It's just the call to help debugging. Returns event configuration
 //
 
-		ret_data = new Tango::DevVarLongStringArray();
+        ret_data = new Tango::DevVarLongStringArray();
         ret_data->svalue.length(2);
 
         ret_data->lvalue.length(1);
@@ -639,14 +639,14 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
             tmp_str = "Event: ";
             std::string ev_end = ev->get_event_endpoint();
             if (ev_end.size() != 0)
-				tmp_str = "Event: " + ev_end;
-			size_t nb_mcast = ev->get_mcast_event_nb();
-			if (nb_mcast != 0)
-			{
-				if (ev_end.size() != 0)
-					tmp_str = tmp_str + "\n";
-				tmp_str = tmp_str + "Some event(s) sent using multicast protocol";
-			}
+                tmp_str = "Event: " + ev_end;
+            size_t nb_mcast = ev->get_mcast_event_nb();
+            if (nb_mcast != 0)
+            {
+                if (ev_end.size() != 0)
+                    tmp_str = tmp_str + "\n";
+                tmp_str = tmp_str + "Some event(s) sent using multicast protocol";
+            }
             ret_data->svalue[1] = Tango::string_dup(tmp_str.c_str());
 
             size_t nb_alt = ev->get_alternate_heartbeat_endpoint().size();
@@ -717,42 +717,42 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 
         bool intr_change = false;
         if (event == EventName[INTERFACE_CHANGE_EVENT])
-			intr_change = true;
+            intr_change = true;
 
         bool pipe_event = false;
         if (event == EventName[PIPE_EVENT])
-			pipe_event = true;
+            pipe_event = true;
 
         obj_name_lower = obj_name;
         std::transform(obj_name_lower.begin(),obj_name_lower.end(),obj_name_lower.begin(),::tolower);
 
         int client_release = 4;
-		if (event == EventName[ATTR_CONF_EVENT])
-			client_release = 3;
+        if (event == EventName[ATTR_CONF_EVENT])
+            client_release = 3;
 
         if (argin->length() == 5)
         {
-			std::stringstream ss;
-			ss << (*argin)[4];
-			ss >> client_release;
+            std::stringstream ss;
+            ss << (*argin)[4];
+            ss >> client_release;
 
-			if (client_release == 0)
-			{
-				std::string::size_type pos = event.find(EVENT_COMPAT);
-				if (pos != std::string::npos)
-				{
-					std::string client_lib_str = event.substr(pos + 3,1);
-					std::stringstream ss;
-					ss << client_lib_str;
-					ss >> client_release;
-					event.erase(0,EVENT_COMPAT_IDL5_SIZE);
-				}
-				else
-				{
-					if (event == EventName[ATTR_CONF_EVENT])
-						client_release = 3;
-					else
-					{
+            if (client_release == 0)
+            {
+                std::string::size_type pos = event.find(EVENT_COMPAT);
+                if (pos != std::string::npos)
+                {
+                    std::string client_lib_str = event.substr(pos + 3,1);
+                    std::stringstream ss;
+                    ss << client_lib_str;
+                    ss >> client_release;
+                    event.erase(0,EVENT_COMPAT_IDL5_SIZE);
+                }
+                else
+                {
+                    if (event == EventName[ATTR_CONF_EVENT])
+                        client_release = 3;
+                    else
+                    {
 
 //
 // Check if the request comes from a Tango 6 client (without client identification)
@@ -761,21 +761,21 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 // device from class 1 and device from classs 2)
 //
 
-						client_addr *cl = get_client_ident();
+                        client_addr *cl = get_client_ident();
 
-						if (cl == NULL)
-							client_release = 4;
-						else
-						{
-							if (cl->client_ident == true)
-								client_release = 4;
-							else
-								client_release = 3;
-						}
-					}
-				}
-			}
-		}
+                        if (cl == NULL)
+                            client_release = 4;
+                        else
+                        {
+                            if (cl->client_ident == true)
+                                client_release = 4;
+                            else
+                                client_release = 3;
+                        }
+                    }
+                }
+            }
+        }
 
         TANGO_LOG_DEBUG << "ZmqEventSubscriptionChangeCmd: subscription for device " << dev_name << " attribute/pipe " << obj_name << " action " << action << " event " << event << " client lib = " << client_release << std::endl;
 
@@ -821,7 +821,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
             TANGO_RETHROW_EXCEPTION(e, API_DeviceNotFound, o.str());
         }
 
-		long idl_vers = dev->get_dev_idl_version();
+        long idl_vers = dev->get_dev_idl_version();
         if (idl_vers < 4)
         {
             TangoSys_OMemStream o;
@@ -832,15 +832,15 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         }
 
         if (client_release > idl_vers)
-			client_release = idl_vers;
+            client_release = idl_vers;
 
 //
 // Call common method (common between old and new command)
 //
 
-		std::string::size_type pos = event.find(EVENT_COMPAT);
-		if (pos != std::string::npos)
-			event.erase(0,EVENT_COMPAT_IDL5_SIZE);
+        std::string::size_type pos = event.find(EVENT_COMPAT);
+        if (pos != std::string::npos)
+            event.erase(0,EVENT_COMPAT_IDL5_SIZE);
 
         event_subscription(*dev, obj_name, action, event, ZMQ, client_release);
 
@@ -868,7 +868,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 
         ev_name = ev_name + dev->get_name_lower();
         if (intr_change == false)
-			ev_name = ev_name + '/' + obj_name_lower;
+            ev_name = ev_name + '/' + obj_name_lower;
         if (Util::instance()->use_file_db() && ev != NULL)
             ev_name = ev_name + MODIFIER_DBASE_NO;
         ev_name = ev_name + '.' +  event;
@@ -912,7 +912,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 // Init event counter in Event Supplier
 //
 
-		ev->init_event_cptr(ev_name);
+        ev->init_event_cptr(ev_name);
 
 //
 // Init one subscription command flag in Eventsupplier
@@ -925,18 +925,18 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 // For forwarded attribute, eventually subscribe to events coming from root attribute
 //
 
-		if (intr_change == false && pipe_event == false)
-		{
-			Attribute &attribute = dev->get_device_attr()->get_attr_by_name(obj_name.c_str());
-			EventType et;
-			tg->event_name_2_event_type(event,et);
+        if (intr_change == false && pipe_event == false)
+        {
+            Attribute &attribute = dev->get_device_attr()->get_attr_by_name(obj_name.c_str());
+            EventType et;
+            tg->event_name_2_event_type(event,et);
 
-			if (attribute.is_fwd_att() == true && et != ATTR_CONF_EVENT)
-			{
-				FwdAttribute &fwd_att = static_cast<FwdAttribute &>(attribute);
-				std::string root_name = fwd_att.get_fwd_dev_name() + "/" + fwd_att.get_fwd_att_name();
-				RootAttRegistry &rar = tg->get_root_att_reg();
-				bool already_there = rar.is_event_subscribed(root_name,et);
+            if (attribute.is_fwd_att() == true && et != ATTR_CONF_EVENT)
+            {
+                FwdAttribute &fwd_att = static_cast<FwdAttribute &>(attribute);
+                std::string root_name = fwd_att.get_fwd_dev_name() + "/" + fwd_att.get_fwd_att_name();
+                RootAttRegistry &rar = tg->get_root_att_reg();
+                bool already_there = rar.is_event_subscribed(root_name,et);
 
 //
 // We unsubscribe and subscribe. This is mandatory for following case: The appli is killed and re-started
@@ -944,17 +944,17 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 // for the root attribute is sent at subscription time
 //
 
-				if (already_there == true)
-					rar.unsubscribe_user_event(fwd_att.get_fwd_dev_name(),fwd_att.get_fwd_att_name(),et);
-				rar.subscribe_user_event(fwd_att.get_fwd_dev_name(),fwd_att.get_fwd_att_name(),et);
-			}
-		}
+                if (already_there == true)
+                    rar.unsubscribe_user_event(fwd_att.get_fwd_dev_name(),fwd_att.get_fwd_att_name(),et);
+                rar.subscribe_user_event(fwd_att.get_fwd_dev_name(),fwd_att.get_fwd_att_name(),et);
+            }
+        }
 
 //
 // Init data returned by command
 //
 
-		ret_data = new Tango::DevVarLongStringArray();
+        ret_data = new Tango::DevVarLongStringArray();
         ret_data->lvalue.length(6);
         ret_data->svalue.length(2);
 
@@ -1036,27 +1036,27 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         ret_data->svalue[size + 1] = Tango::string_dup(channel_name.c_str());
     }
 
-	return ret_data;
+    return ret_data;
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DServer::event_confirm_subscription()
+//        DServer::event_confirm_subscription()
 //
 // description :
-//		method to execute the command EventConfirmSubscription command.
+//        method to execute the command EventConfirmSubscription command.
 //
 // args :
-// 		in :
-//			- argin : The command input argument
+//         in :
+//            - argin : The command input argument
 //
 //------------------------------------------------------------------------------------------------------------------
 void DServer::event_confirm_subscription(const Tango::DevVarStringArray *argin)
 {
 
 
-	Tango::Util *tg = Tango::Util::instance();
+    Tango::Util *tg = Tango::Util::instance();
 
 //
 // A loop for each event
@@ -1064,69 +1064,69 @@ void DServer::event_confirm_subscription(const Tango::DevVarStringArray *argin)
 
     unsigned int nb_event = argin->length() / 3;
 
-	std::string old_dev;
-	DeviceImpl *dev = NULL;
+    std::string old_dev;
+    DeviceImpl *dev = NULL;
 
-	for (unsigned int loop = 0;loop < nb_event;loop++)
-	{
-		std::string dev_name, obj_name, event;
-		int base = loop * 3;
-		dev_name = (*argin)[base];
-		obj_name = (*argin)[base + 1];
-		event = (*argin)[base + 2];
+    for (unsigned int loop = 0;loop < nb_event;loop++)
+    {
+        std::string dev_name, obj_name, event;
+        int base = loop * 3;
+        dev_name = (*argin)[base];
+        obj_name = (*argin)[base + 1];
+        event = (*argin)[base + 2];
 
-		TANGO_LOG_DEBUG << "EventConfirmSubscriptionCmd: confirm subscription for device " << dev_name << " attribute/pipe " << obj_name << " event " << event << std::endl;
+        TANGO_LOG_DEBUG << "EventConfirmSubscriptionCmd: confirm subscription for device " << dev_name << " attribute/pipe " << obj_name << " event " << event << std::endl;
 
 //
 // Find device
 //
 
-		if (old_dev != dev_name)
-		{
-        	try
-        	{
-           		dev = tg->get_device_by_name(dev_name);
-        	}
-        	catch (Tango::DevFailed &e)
-        	{
-            	TangoSys_OMemStream o;
-            	o << "Device " << dev_name << " not found" << std::ends;
-            	TANGO_RETHROW_EXCEPTION(e, API_DeviceNotFound, o.str());
-        	}
+        if (old_dev != dev_name)
+        {
+            try
+            {
+                   dev = tg->get_device_by_name(dev_name);
+            }
+            catch (Tango::DevFailed &e)
+            {
+                TangoSys_OMemStream o;
+                o << "Device " << dev_name << " not found" << std::ends;
+                TANGO_RETHROW_EXCEPTION(e, API_DeviceNotFound, o.str());
+            }
 
-			old_dev = dev_name;
-		}
+            old_dev = dev_name;
+        }
 
 //
 // Call common method (common between old and new command)
 //
 
-		std::string action("subscribe");
-		int client_lib = 0;
-		std::string client_lib_str;
+        std::string action("subscribe");
+        int client_lib = 0;
+        std::string client_lib_str;
 
-		std::string::size_type pos = event.find(EVENT_COMPAT);
-		if (pos != std::string::npos)
-		{
-			client_lib_str = event.substr(pos + 3,1);
-			std::stringstream ss;
-			ss << client_lib_str;
-			ss >> client_lib;
-			event.erase(0,EVENT_COMPAT_IDL5_SIZE);
-		}
-		else
-		{
-			if (event == EventName[ATTR_CONF_EVENT])
-				client_lib = 3;
-			else
-				client_lib = 4;		// Command implemented only with Tango 8 -> IDL 4 for event data
-		}
+        std::string::size_type pos = event.find(EVENT_COMPAT);
+        if (pos != std::string::npos)
+        {
+            client_lib_str = event.substr(pos + 3,1);
+            std::stringstream ss;
+            ss << client_lib_str;
+            ss >> client_lib;
+            event.erase(0,EVENT_COMPAT_IDL5_SIZE);
+        }
+        else
+        {
+            if (event == EventName[ATTR_CONF_EVENT])
+                client_lib = 3;
+            else
+                client_lib = 4;        // Command implemented only with Tango 8 -> IDL 4 for event data
+        }
 
-		event_subscription(*dev, obj_name, action, event, ZMQ, client_lib);
-		store_subscribed_client_info(*dev, obj_name, event, client_lib);
-	}
+        event_subscription(*dev, obj_name, action, event, ZMQ, client_lib);
+        store_subscribed_client_info(*dev, obj_name, event, client_lib);
+    }
 
 }
 
 
-}	// namespace
+}    // namespace

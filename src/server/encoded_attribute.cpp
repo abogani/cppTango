@@ -1,12 +1,12 @@
 ///=============================================================================
 //
-// file :		encoded_attribute.cpp
+// file :        encoded_attribute.cpp
 //
-// description :	Management of Tango::DevEncoded format
+// description :    Management of Tango::DevEncoded format
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		JL Pons
+// author(s) :        JL Pons
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
 //                      European Synchrotron Radiation Facility

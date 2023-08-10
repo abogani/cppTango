@@ -1,9 +1,9 @@
 //
-// dbapi.h -	include file for TANGO database api
+// dbapi.h -    include file for TANGO database api
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -27,10 +27,10 @@
 #define _DBDEVICE_H
 
 /****************************************************************************************
- * 																						*
- * 					The DbDevice class													*
- * 					------------------													*
- * 																						*
+ *                                                                                         *
+ *                     The DbDevice class                                                    *
+ *                     ------------------                                                    *
+ *                                                                                         *
  ***************************************************************************************/
 
 /**
@@ -51,10 +51,10 @@
 class DbDevice
 {
 private :
-	std::string 		name;
-	Database 	*dbase;
-	int 		db_ind;
-	bool 		ext_dbase;
+    std::string         name;
+    Database     *dbase;
+    int         db_ind;
+    bool         ext_dbase;
 
     class DbDeviceExt
     {
@@ -73,21 +73,21 @@ public :
  * A constructor for a DbDevice object for a device in the TANGO database specified by the TANGO_HOST
  * environment variable.
  *
- * @param [in] dev_name	The device name
+ * @param [in] dev_name    The device name
  *
  */
-	DbDevice(const std::string &dev_name);
+    DbDevice(const std::string &dev_name);
 /**
  * Create a DbDevice object using a specified database
  *
  * A constructor for a DbDevice object for the device in the specified database. This method reuses the
  * Database supplied by the programmer.
  *
- * @param [in] dev_name	The device name
+ * @param [in] dev_name    The device name
  * @param [in] db The database object
  *
  */
-	DbDevice(const std::string &dev_name, Database *db);
+    DbDevice(const std::string &dev_name, Database *db);
 //@}
 
 
@@ -102,7 +102,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	DbDevImportInfo import_device();
+    DbDevImportInfo import_device();
 /**
  * Export device info to the database
  *
@@ -112,7 +112,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void export_device(const DbDevExportInfo &dev_info);
+    void export_device(const DbDevExportInfo &dev_info);
 //@}
 
 /**@name Property oriented methods */
@@ -127,7 +127,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void get_property(DbData &db);
+    void get_property(DbData &db);
 /**
  * Update device property in database
  *
@@ -138,7 +138,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void put_property(const DbData &db);
+    void put_property(const DbData &db);
 /**
  * Remove device property from database
  *
@@ -149,7 +149,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_property(const DbData &db);
+    void delete_property(const DbData &db);
 /**
  * Get device attribute property from database
  *
@@ -160,7 +160,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void get_attribute_property(DbData &db);
+    void get_attribute_property(DbData &db);
 /**
  * Update device attribute property in database
  *
@@ -171,7 +171,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void put_attribute_property(const DbData &db);
+    void put_attribute_property(const DbData &db);
 /**
  * Remove device attribute property from database
  *
@@ -182,7 +182,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_attribute_property(const DbData &db);
+    void delete_attribute_property(const DbData &db);
 /**
  * Get device pipe property from database
  *
@@ -193,7 +193,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void get_pipe_property(DbData &db);
+    void get_pipe_property(DbData &db);
 /**
  * Update device pipe property in database
  *
@@ -204,7 +204,7 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void put_pipe_property(const DbData &db);
+    void put_pipe_property(const DbData &db);
 /**
  * Remove device pipe property from database
  *
@@ -215,19 +215,19 @@ public :
  *
  * @exception ConnectionFailed, CommunnicationFailed, DevFailed from device
  */
-	void delete_pipe_property(const DbData &db);
+    void delete_pipe_property(const DbData &db);
 //@}
 
 /// @privatesection
 
-	DbDevice(const std::string &,const std::string &,const std::string &);
-	~DbDevice();
-	void set_name(const std::string &new_name) {name = new_name;}
-	Database *get_dbase();
-	void set_dbase(Database *db) {dbase = db;}
+    DbDevice(const std::string &,const std::string &,const std::string &);
+    ~DbDevice();
+    void set_name(const std::string &new_name) {name = new_name;}
+    Database *get_dbase();
+    void set_dbase(Database *db) {dbase = db;}
 
-	AccessControlType check_access_control();
-	void clear_access_except_errors();
-	void get_property_list(const std::string &,std::vector<std::string> &);
+    AccessControlType check_access_control();
+    void clear_access_except_errors();
+    void get_property_list(const std::string &,std::vector<std::string> &);
 };
 #endif /* _DBDEVICE_H */

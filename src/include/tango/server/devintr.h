@@ -1,16 +1,16 @@
 //===================================================================================================================
 //
-// file :		devintr.h
+// file :        devintr.h
 //
-// description :	Include file for the DevIntr class
-//					This class is used for the device interface change event generation
+// description :    Include file for the DevIntr class
+//                    This class is used for the device interface change event generation
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -41,46 +41,46 @@ namespace Tango
 class DevIntr
 {
 public:
-	DevIntr() {}
+    DevIntr() {}
 
-	void get_interface(DeviceImpl *);
-	bool has_changed(DeviceImpl *);
+    void get_interface(DeviceImpl *);
+    bool has_changed(DeviceImpl *);
 
 protected:
 
 private:
-	struct CmdIntr
-	{
-		std::string			name;
-		CmdArgType		in_type;
-		CmdArgType		out_type;
+    struct CmdIntr
+    {
+        std::string            name;
+        CmdArgType        in_type;
+        CmdArgType        out_type;
 
-		bool operator<(const struct CmdIntr &rhs) const {return name < rhs.name;}
-		bool operator==(const struct CmdIntr &) const;
-	};
+        bool operator<(const struct CmdIntr &rhs) const {return name < rhs.name;}
+        bool operator==(const struct CmdIntr &) const;
+    };
 
-	struct AttrIntr
-	{
-		std::string			name;
-		AttrWriteType	writable;
-		long			data_type;
-		AttrDataFormat	data_format;
-		long			max_x;
-		long			max_y;
-		bool			mem;
-		bool			mem_init;
-		std::string			writable_attr_name;
-		std::vector<std::string>	enum_labels;
+    struct AttrIntr
+    {
+        std::string            name;
+        AttrWriteType    writable;
+        long            data_type;
+        AttrDataFormat    data_format;
+        long            max_x;
+        long            max_y;
+        bool            mem;
+        bool            mem_init;
+        std::string            writable_attr_name;
+        std::vector<std::string>    enum_labels;
 
-		bool operator<(const struct AttrIntr &rhs) const {return name < rhs.name;}
-		bool operator==(const struct AttrIntr &) const;
-	};
+        bool operator<(const struct AttrIntr &rhs) const {return name < rhs.name;}
+        bool operator==(const struct AttrIntr &) const;
+    };
 
-	std::vector<CmdIntr>		cmds;
-	std::vector<AttrIntr>	atts;
+    std::vector<CmdIntr>        cmds;
+    std::vector<AttrIntr>    atts;
 
-	void build_cmd_interfaces(DeviceImpl *,std::vector<CmdIntr> &);
-	void build_att_interfaces(DeviceImpl *,std::vector<AttrIntr> &);
+    void build_cmd_interfaces(DeviceImpl *,std::vector<CmdIntr> &);
+    void build_att_interfaces(DeviceImpl *,std::vector<AttrIntr> &);
 };
 
 } // End of Tango namespace
