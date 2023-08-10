@@ -144,6 +144,7 @@ else()
 endif()
 
 include(configure/find_and_check_omniidl.cmake)
+include(configure/clang-format.cmake)
 
 if(TANGO_ZMQ_BASE)
     message("Using TANGO_ZMQ_BASE=${TANGO_ZMQ_BASE}")

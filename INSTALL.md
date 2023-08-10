@@ -73,6 +73,7 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 | `CMAKE_DISABLE_PRECOMPILE_HEADERS` | `OFF`                                  | Precompiled headers (makes compilation much faster)
 | `CMAKE_INSTALL_PREFIX`             | `/usr/local` or `C:/Program Files`     | Desired install path
 | `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                  | Allows to increase the verbosity level with `ON`
+| `TANGO_CLANG_FORMAT`               | `OFF`                                  | Adds a target `clang-format` for automatic C++ source code formatting
 | `TANGO_CPPZMQ_BASE`                |                                        | cppzmq installed path
 | `TANGO_ENABLE_COVERAGE`            | `OFF`                                  | Instrument code for coverage analysis
 | `TANGO_ENABLE_SANITIZER`           | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
