@@ -19,9 +19,6 @@ endif()
 
 message("Tango library is '${TANGO_LIBRARY_NAME}'")
 
-#dump version into a file, later used by AppVeyor
-file(WRITE ${PROJECT_BINARY_DIR}/VERSION ${LIBRARY_VERSION})
-
 #include and link directories
 
 include_directories(SYSTEM ${PTHREAD_WIN_PKG_INCLUDE_DIRS})
