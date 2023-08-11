@@ -71,8 +71,9 @@ PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
 
 the dependencies we need are:
  * cppzmq
- * JPEG
+ * JPEG (optional)
  * omniORB4
+ * pthread (optional, windows only)
  * tangoidl
  * ZeroMQ
 
@@ -95,6 +96,7 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `TANGO_OMNIIDL_PATH`               |                                        | omniORB4 search path for omniidl
 | `TANGO_USE_JPEG`                   | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires Clang)
+| `TANGO_USE_PTHREAD`                | `OFF`                                  | On windows platforms, build with pthread library.
 | `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                  | Treat compiler warnings as errors
 
 cppTango supports unity builds to speed up the compilation. Please see the
@@ -299,7 +301,7 @@ cmake --build . --target install
 cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release                             \
       -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                               \
       -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" \
-      -DPTHREAD_WIN="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
+      -Dpthread_ROOT="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
 ```
 
 - Compile with `cmake --build .`

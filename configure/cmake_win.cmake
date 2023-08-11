@@ -21,11 +21,7 @@ message("Tango library is '${TANGO_LIBRARY_NAME}'")
 
 #include and link directories
 
-include_directories(SYSTEM ${PTHREAD_WIN_PKG_INCLUDE_DIRS})
 set(WIN32_LIBS "ws2_32.lib;mswsock.lib;advapi32.lib;comctl32.lib;odbc32.lib;")
-if(PTHREAD_WIN)
-    link_directories(${PTHREAD_WIN}/lib)
-endif()
 
 set_target_properties(tango PROPERTIES
     COMPILE_DEFINITIONS "${windows_defs}"
@@ -50,6 +46,12 @@ target_compile_options(tango PRIVATE "/Zi")
 target_link_libraries(tango
     PRIVATE
         ${WIN32_LIBS})
+
+if(TANGO_USE_PTHREAD)
+    target_link_libraries(tango
+        PRIVATE
+            pthread::pthread)
+endif()
 
 set_property(TARGET tango PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
 

@@ -1,6 +1,7 @@
 include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
+option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
@@ -99,19 +100,12 @@ if(TANGO_USE_JPEG)
     find_package(JPEG REQUIRED)
 endif()
 
-if(PTHREAD_WIN)
-    message("Using PTHREAD_WIN=${PTHREAD_WIN}")
-    add_definitions(-DHAVE_PTHREAD_NP_H)
-    set(PTHREAD_WIN_PKG_INCLUDE_DIRS ${PTHREAD_WIN}/include)
-    link_directories(${PTHREAD_WIN}/lib)
-    link_directories(${PTHREAD_WIN}/bin)
-
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(PTHREAD_WIN_PKG_LIBRARIES_DYN "pthreadVC2d.lib")
-        set(PTHREAD_WIN_PKG_LIBRARIES_STA "pthreadVC2-sd.lib")
+if(TANGO_USE_PTHREAD)
+    if(WIN32)
+        find_package(pthread REQUIRED)
     else()
-        set(PTHREAD_WIN_PKG_LIBRARIES_DYN "pthreadVC2.lib")
-        set(PTHREAD_WIN_PKG_LIBRARIES_STA "pthreadVC2-s.lib")
+        message(WARNING "You cannot use TANGO_USE_PTHREAD on non windows
+        platforms")
     endif()
 endif()
 

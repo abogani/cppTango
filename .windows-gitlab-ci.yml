@@ -30,7 +30,7 @@ windows-build:
     TANGO_OMNI_ROOT: dependencies/omniORB
     TANGO_IDL_SOURCE: dependencies/source/tango-idl
     TANGO_IDL_ROOT: dependencies/tango-idl
-    PTHREAD_WIN: dependencies/pthread
+    PTHREAD_ROOT: dependencies/pthread
     WIX_TOOLSET_LOCATION: dependencies/wix
     PYTHON_LOCATION: dependencies/python
     TANGO_WARNINGS_AS_ERRORS: "ON"
@@ -89,8 +89,8 @@ windows-build:
     # pthread
     - $FILENAME="pthreads-win32-${PTHREAD_VERSION}_${VC_ARCH_VER}.zip"
     - curl.exe -JOL https://github.com/tango-controls/Pthread_WIN32/releases/download/${PTHREAD_VERSION}/${FILENAME}
-    - md -Force ${PTHREAD_WIN}
-    - Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_WIN}
+    - md -Force ${PTHREAD_ROOT}
+    - Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_ROOT}
     # nasm (for libjpeg-turbo)
     - curl.exe -L ${NASM_DOWNLOAD_LINK} -o nasm.exe
     - ./nasm.exe /S /v/qn
@@ -151,7 +151,8 @@ windows-build:
         -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}"
         -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}"
         -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}"
-        -DPTHREAD_WIN="${PTHREAD_WIN}"
+        -Dpthread_ROOT="${PTHREAD_ROOT}"
+        -DTANGO_USE_PTHREAD=ON
         -DTANGO_USE_JPEG=ON
         -DJPEG_DEBUG_POSTFIX=d
         -DBUILD_TESTING="${BUILD_TESTING}"
