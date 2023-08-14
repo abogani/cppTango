@@ -329,7 +329,7 @@ void FwdTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
  *                and store them in the attribute list
  */
 //--------------------------------------------------------
-void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &)
+void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::attribute_factory_before) ENABLED START -----*/
 	/* clang-format on */
