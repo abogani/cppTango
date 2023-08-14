@@ -1,4 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest::main.cpp) ENABLED START -----*/
+	/* clang-format on */
 //=============================================================================
 //
 // file :        main.cpp
@@ -79,4 +80,5 @@ int main(int argc,char *argv[])
 	return(0);
 }
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::main.cpp

@@ -1,4 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTestStateMachine.cpp) ENABLED START -----*/
+	/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTestStateMachine.cpp
@@ -32,6 +33,7 @@
 
 #include "FwdTest.h"
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::FwdTestStateMachine.cpp
 
 //================================================================

@@ -1,4 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest.h) ENABLED START -----*/
+	/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTest.h
@@ -37,6 +38,7 @@
 #include <tango/tango.h>
 
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest.h
 
 /**
@@ -47,18 +49,22 @@
 namespace FwdTest_ns
 {
 /*----- PROTECTED REGION ID(FwdTest::Additional Class Declarations) ENABLED START -----*/
+	/* clang-format on */
 
 //	Additional Class Declarations
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Class Declarations
 
 class FwdTest : public Tango::Device_5Impl
 {
 
 /*----- PROTECTED REGION ID(FwdTest::Data Members) ENABLED START -----*/
+	/* clang-format on */
 
 //	Add your own data members
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Data Members
 
 
@@ -135,16 +141,20 @@ public:
 
 
 /*----- PROTECTED REGION ID(FwdTest::Additional Method prototypes) ENABLED START -----*/
+	/* clang-format on */
 
 //	Additional Method prototypes
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Method prototypes
 };
 
 /*----- PROTECTED REGION ID(FwdTest::Additional Classes Definitions) ENABLED START -----*/
+	/* clang-format on */
 
 //	Additional Classes Definitions
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Classes Definitions
 
 }	//	End of namespace

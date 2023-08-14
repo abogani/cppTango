@@ -1,4 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTest::ClassFactory.cpp) ENABLED START -----*/
+	/* clang-format on */
 //=============================================================================
 //
 // file :        ClassFactory.cpp
@@ -48,4 +49,5 @@ void Tango::DServer::class_factory()
 	//	Add method class init if needed
 	add_class(FwdTest_ns::FwdTestClass::init("FwdTest"));
 }
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::ClassFactory.cpp

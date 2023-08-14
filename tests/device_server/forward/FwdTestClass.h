@@ -1,4 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTestClass.h) ENABLED START -----*/
+	/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTestClass.h
@@ -42,12 +43,14 @@
 #include "FwdTest.h"
 
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass.h
 
 
 namespace FwdTest_ns
 {
 /*----- PROTECTED REGION ID(FwdTestClass::classes for dynamic creation) ENABLED START -----*/
+	/* clang-format on */
 
 class FwdAttrScaSh: public Tango::FwdAttr
 {
@@ -84,6 +87,7 @@ public:
 	~FwdAttrScaSta() {}
 };
 
+	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass::classes for dynamic creation
 
 /**
@@ -93,8 +97,10 @@ public:
 class FwdTestClass : public Tango::DeviceClass
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::Additionnal DServer data members) ENABLED START -----*/
+	/* clang-format on */
 
 
+	/* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::Additionnal DServer data members
 
 	public:
