@@ -74,13 +74,13 @@ namespace FwdTest_ns
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTest::FwdTest()
- *	Description : Constructors for a Tango device
+ *	Method     : FwdTest::FwdTest()
+ *	Description: Constructors for a Tango device
  *                implementing the classFwdTest
  */
 //--------------------------------------------------------
 FwdTest::FwdTest(Tango::DeviceClass *cl, std::string &s)
- : Tango::Device_5Impl(cl, s.c_str())
+ : TANGO_BASE_CLASS(cl, s.c_str())
 {
 	/*----- PROTECTED REGION ID(FwdTest::constructor_1) ENABLED START -----*/
 	/* clang-format on */
@@ -91,7 +91,7 @@ FwdTest::FwdTest(Tango::DeviceClass *cl, std::string &s)
 }
 //--------------------------------------------------------
 FwdTest::FwdTest(Tango::DeviceClass *cl, const char *s)
- : Tango::Device_5Impl(cl, s)
+ : TANGO_BASE_CLASS(cl, s)
 {
 	/*----- PROTECTED REGION ID(FwdTest::constructor_2) ENABLED START -----*/
 	/* clang-format on */
@@ -102,7 +102,7 @@ FwdTest::FwdTest(Tango::DeviceClass *cl, const char *s)
 }
 //--------------------------------------------------------
 FwdTest::FwdTest(Tango::DeviceClass *cl, const char *s, const char *d)
- : Tango::Device_5Impl(cl, s, d)
+ : TANGO_BASE_CLASS(cl, s, d)
 {
 	/*----- PROTECTED REGION ID(FwdTest::constructor_3) ENABLED START -----*/
 	/* clang-format on */
@@ -111,11 +111,16 @@ FwdTest::FwdTest(Tango::DeviceClass *cl, const char *s, const char *d)
 	/* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::constructor_3
 }
+//--------------------------------------------------------
+FwdTest::~FwdTest()
+{
+	delete_device();
+}
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTest::delete_device()
- *	Description : will be called at device destruction or at init command
+ *	Method     : FwdTest::delete_device()
+ *	Description: will be called at device destruction or at init command
  */
 //--------------------------------------------------------
 void FwdTest::delete_device()
@@ -132,8 +137,8 @@ void FwdTest::delete_device()
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTest::init_device()
- *	Description : will be called at device initialization.
+ *	Method     : FwdTest::init_device()
+ *	Description: will be called at device initialization.
  */
 //--------------------------------------------------------
 void FwdTest::init_device()
@@ -149,7 +154,6 @@ void FwdTest::init_device()
 
 	//	No device property to be read from database
 
-
 	/*----- PROTECTED REGION ID(FwdTest::init_device) ENABLED START -----*/
 	/* clang-format on */
 
@@ -162,13 +166,13 @@ void FwdTest::init_device()
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTest::always_executed_hook()
- *	Description : method always executed before any command is executed
+ *	Method     : FwdTest::always_executed_hook()
+ *	Description: method always executed before any command is executed
  */
 //--------------------------------------------------------
 void FwdTest::always_executed_hook()
 {
-	INFO_STREAM << "FwdTest::always_executed_hook()  " << device_name << std::endl;
+	DEBUG_STREAM << "FwdTest::always_executed_hook()  " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(FwdTest::always_executed_hook) ENABLED START -----*/
 	/* clang-format on */
 
@@ -180,13 +184,13 @@ void FwdTest::always_executed_hook()
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTest::read_attr_hardware()
- *	Description : Hardware acquisition for attributes
+ *	Method     : FwdTest::read_attr_hardware()
+ *	Description: Hardware acquisition for attributes
  */
 //--------------------------------------------------------
 void FwdTest::read_attr_hardware(TANGO_UNUSED(std::vector<long> &attr_list))
 {
-	DEBUG_STREAM << "FwdTest::read_attr_hardware(vector<long> &attr_list) entering... " << std::endl;
+	DEBUG_STREAM << "FwdTest::read_attr_hardware(std::vector<long> &attr_list) entering... " << std::endl;
 	/*----- PROTECTED REGION ID(FwdTest::read_attr_hardware) ENABLED START -----*/
 	/* clang-format on */
 
@@ -199,8 +203,8 @@ void FwdTest::read_attr_hardware(TANGO_UNUSED(std::vector<long> &attr_list))
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTest::add_dynamic_attributes()
- *	Description : Create the dynamic attributes if any
+ *	Method     : FwdTest::add_dynamic_attributes()
+ *	Description: Create the dynamic attributes if any
  *                for specified device.
  */
 //--------------------------------------------------------
@@ -215,6 +219,21 @@ void FwdTest::add_dynamic_attributes()
 	/*----- PROTECTED REGION END -----*/	//	FwdTest::add_dynamic_attributes
 }
 
+//--------------------------------------------------------
+/**
+ *	Method     : FwdTest::add_dynamic_commands()
+ *	Description: Create the dynamic commands if any
+ *                for specified device.
+ */
+//--------------------------------------------------------
+void FwdTest::add_dynamic_commands()
+{
+	/*----- PROTECTED REGION ID(FwdTest::add_dynamic_commands) ENABLED START -----*/
+	/* clang-format on */
+	//	Add your own code to create and add dynamic commands if any
+	/* clang-format off */
+	/*----- PROTECTED REGION END -----*/	//	FwdTest::add_dynamic_commands
+}
 
 /*----- PROTECTED REGION ID(FwdTest::namespace_ending) ENABLED START -----*/
 	/* clang-format on */

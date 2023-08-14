@@ -48,6 +48,11 @@
  */
 //-------------------------------------------------------------------
 extern "C" {
+#ifdef _TG_WINDOWS_
+
+__declspec(dllexport)
+
+#endif
 
 	Tango::DeviceClass *_create_FwdTest_class(const char *name) {
 		return FwdTest_ns::FwdTestClass::init(name);
@@ -61,6 +66,9 @@ namespace FwdTest_ns
 //===================================================================
 FwdTestClass *FwdTestClass::_instance = NULL;
 
+//===================================================================
+//	Class constants
+//===================================================================
 //--------------------------------------------------------
 /**
  * method : 		FwdTestClass::FwdTestClass(std::string &s)
@@ -139,7 +147,7 @@ FwdTestClass *FwdTestClass::instance()
 {
 	if (_instance == NULL)
 	{
-		std::cerr << "Class is not initialised !!" << std::endl;
+		std::cerr << "Class is not initialized !!" << std::endl;
 		exit(-1);
 	}
 	return _instance;
@@ -156,8 +164,8 @@ FwdTestClass *FwdTestClass::instance()
 //===================================================================
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::get_class_property()
- *	Description : Get the class property for specified name.
+ *	Method     : FwdTestClass::get_class_property()
+ *	Description: Get the class property for specified name.
  */
 //--------------------------------------------------------
 Tango::DbDatum FwdTestClass::get_class_property(std::string &prop_name)
@@ -171,8 +179,8 @@ Tango::DbDatum FwdTestClass::get_class_property(std::string &prop_name)
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::get_default_device_property()
- *	Description : Return the default value for device property.
+ *	Method     : FwdTestClass::get_default_device_property()
+ *	Description: Return the default value for device property.
  */
 //--------------------------------------------------------
 Tango::DbDatum FwdTestClass::get_default_device_property(std::string &prop_name)
@@ -186,8 +194,8 @@ Tango::DbDatum FwdTestClass::get_default_device_property(std::string &prop_name)
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::get_default_class_property()
- *	Description : Return the default value for class property.
+ *	Method     : FwdTestClass::get_default_class_property()
+ *	Description: Return the default value for class property.
  */
 //--------------------------------------------------------
 Tango::DbDatum FwdTestClass::get_default_class_property(std::string &prop_name)
@@ -202,8 +210,8 @@ Tango::DbDatum FwdTestClass::get_default_class_property(std::string &prop_name)
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::set_default_property()
- *	Description : Set default property (class and device) for wizard.
+ *	Method     : FwdTestClass::set_default_property()
+ *	Description: Set default property (class and device) for wizard.
  *                For each property, add to wizard property name and description.
  *                If default value has been set, add it to wizard property and
  *                store it in a DbDatum.
@@ -223,17 +231,19 @@ void FwdTestClass::set_default_property()
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::write_class_property()
- *	Description : Set class description fields as property in database
+ *	Method     : FwdTestClass::write_class_property()
+ *	Description: Set class description fields as property in database
  */
 //--------------------------------------------------------
 void FwdTestClass::write_class_property()
 {
 	//	First time, check if database used
-	if (!Tango::Util::instance()->use_db())
+	if (Tango::Util::_UseDb == false)
 		return;
 
 	Tango::DbData	data;
+	std::string	classname = get_name();
+	std::string	header;
 
 	//	Put title
 	Tango::DbDatum	title("ProjectTitle");
@@ -251,7 +261,7 @@ void FwdTestClass::write_class_property()
 	//  Put inheritance
 	Tango::DbDatum	inher_datum("InheritedFrom");
 	std::vector<std::string> inheritance;
-	inheritance.push_back("Tango::Device_4Impl");
+	inheritance.push_back("TANGO_BASE_CLASS");
 	inher_datum << inheritance;
 	data.push_back(inher_datum);
 
@@ -265,8 +275,8 @@ void FwdTestClass::write_class_property()
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::device_factory()
- *	Description : Create the device object(s)
+ *	Method     : FwdTestClass::device_factory()
+ *	Description: Create the device object(s)
  *                and store them in the device list
  */
 //--------------------------------------------------------
@@ -298,7 +308,7 @@ void FwdTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 		dev->add_dynamic_attributes();
 
 		//	Check before if database used.
-		if (Tango::Util::instance()->use_db() && !Tango::Util::instance()->use_file_db())
+		if ((Tango::Util::_UseDb == true) && (Tango::Util::_FileDb == false))
 			export_device(dev);
 		else
 			export_device(dev, dev->get_name().c_str());
@@ -314,12 +324,12 @@ void FwdTestClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 }
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::attribute_factory()
- *	Description : Create the attribute object(s)
+ *	Method     : FwdTestClass::attribute_factory()
+ *	Description: Create the attribute object(s)
  *                and store them in the attribute list
  */
 //--------------------------------------------------------
-void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
+void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &)
 {
 	/*----- PROTECTED REGION ID(FwdTestClass::attribute_factory_before) ENABLED START -----*/
 	/* clang-format on */
@@ -347,6 +357,7 @@ void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 
 	/* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::attribute_factory_before
+
 	//	Create a list of static attributes
 	create_static_attribute_list(get_class_attr()->get_attr_list());
 	/*----- PROTECTED REGION ID(FwdTestClass::attribute_factory_after) ENABLED START -----*/
@@ -359,8 +370,28 @@ void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 }
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::command_factory()
- *	Description : Create the command object(s)
+ *	Method     : FwdTestClass::pipe_factory()
+ *	Description: Create the pipe object(s)
+ *                and store them in the pipe list
+ */
+//--------------------------------------------------------
+void FwdTestClass::pipe_factory()
+{
+	/*----- PROTECTED REGION ID(FwdTestClass::pipe_factory_before) ENABLED START -----*/
+	/* clang-format on */
+	//	Add your own code
+	/* clang-format off */
+	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::pipe_factory_before
+	/*----- PROTECTED REGION ID(FwdTestClass::pipe_factory_after) ENABLED START -----*/
+	/* clang-format on */
+	//	Add your own code
+	/* clang-format off */
+	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::pipe_factory_after
+}
+//--------------------------------------------------------
+/**
+ *	Method     : FwdTestClass::command_factory()
+ *	Description: Create the command object(s)
  *                and store them in the command list
  */
 //--------------------------------------------------------
@@ -393,7 +424,7 @@ void FwdTestClass::command_factory()
  * method : 		FwdTestClass::create_static_attribute_list
  * description : 	Create the a list of static attributes
  *
- * @param	att_list	the ceated attribute list
+ * @param	att_list	the created attribute list
  */
 //--------------------------------------------------------
 void FwdTestClass::create_static_attribute_list(std::vector<Tango::Attr *> &att_list)
@@ -401,7 +432,7 @@ void FwdTestClass::create_static_attribute_list(std::vector<Tango::Attr *> &att_
 	for (unsigned long i=0 ; i<att_list.size() ; i++)
 	{
 		std::string att_name(att_list[i]->get_name());
-		std::transform(att_name.begin(), att_name.end(), att_name.begin(), ::tolower);
+		transform(att_name.begin(), att_name.end(), att_name.begin(), ::tolower);
 		defaultAttList.push_back(att_name);
 	}
 
@@ -459,14 +490,14 @@ void FwdTestClass::erase_dynamic_attributes(const Tango::DevVarStringArray *devl
 
 //--------------------------------------------------------
 /**
- *	Method      : FwdTestClass::get_attr_by_name()
- *	Description : returns Tango::Attr * object found by name
+ *	Method     : FwdTestClass::get_attr_object_by_name()
+ *	Description: returns Tango::Attr * object found by name
  */
 //--------------------------------------------------------
 Tango::Attr *FwdTestClass::get_attr_object_by_name(std::vector<Tango::Attr *> &att_list, std::string attname)
 {
 	std::vector<Tango::Attr *>::iterator it;
-	for (it=att_list.begin() ; it<att_list.end() ; it++)
+	for (it=att_list.begin() ; it<att_list.end() ; ++it)
 		if ((*it)->get_name()==attname)
 			return (*it);
 	//	Attr does not exist

@@ -41,10 +41,21 @@
 	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest.h
 
+#ifdef TANGO_LOG
+	// cppTango after c934adea (Merge branch 'remove-cout-definition' into 'main', 2022-05-23)
+	// nothing to do
+#else
+	// cppTango 9.3-backports and older
+	#define TANGO_LOG       cout
+	#define TANGO_LOG_INFO  cout2
+	#define TANGO_LOG_DEBUG cout3
+#endif // TANGO_LOG
+
 /**
  *  FwdTest class description:
  *
  */
+
 
 namespace FwdTest_ns
 {
@@ -56,7 +67,7 @@ namespace FwdTest_ns
 	/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::Additional Class Declarations
 
-class FwdTest : public Tango::Device_5Impl
+class FwdTest : public TANGO_BASE_CLASS
 {
 
 /*----- PROTECTED REGION ID(FwdTest::Data Members) ENABLED START -----*/
@@ -96,7 +107,7 @@ public:
 	/**
 	 * The device object destructor.
 	 */
-	~FwdTest() {delete_device();}
+	~FwdTest();
 
 
 //	Miscellaneous methods
@@ -119,8 +130,8 @@ public:
 public:
 	//--------------------------------------------------------
 	/*
-	 *	Method      : FwdTest::read_attr_hardware()
-	 *	Description : Hardware acquisition for attributes.
+	 *	Method     : FwdTest::read_attr_hardware()
+	 *	Description: Hardware acquisition for attributes.
 	 */
 	//--------------------------------------------------------
 	virtual void read_attr_hardware(std::vector<long> &attr_list);
@@ -128,17 +139,26 @@ public:
 
 	//--------------------------------------------------------
 	/**
-	 *	Method      : FwdTest::add_dynamic_attributes()
-	 *	Description : Add dynamic attributes if any.
+	 *	Method     : FwdTest::add_dynamic_attributes()
+	 *	Description: Add dynamic attributes if any.
 	 */
 	//--------------------------------------------------------
 	void add_dynamic_attributes();
 
 
 
+
 //	Command related methods
 public:
 
+
+	//--------------------------------------------------------
+	/**
+	 *	Method     : FwdTest::add_dynamic_commands()
+	 *	Description: Add dynamic commands if any.
+	 */
+	//--------------------------------------------------------
+	void add_dynamic_commands();
 
 /*----- PROTECTED REGION ID(FwdTest::Additional Method prototypes) ENABLED START -----*/
 	/* clang-format on */
