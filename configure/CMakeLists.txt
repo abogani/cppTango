@@ -108,7 +108,7 @@ function(tango_find_omniorb_version)
         endif()
 
         file(STRINGS ${acconfig} version_info
-            REGEX "^#define[ \t]+OMNI_PACKAGE_VERSION.*$")
+            REGEX "^#define[ \t]+(OMNI_)?PACKAGE_VERSION.*$")
         list(LENGTH version_info version_info_length)
 
         if (NOT version_info_length EQUAL 1)
@@ -117,7 +117,7 @@ function(tango_find_omniorb_version)
             return()
         endif()
 
-        string(REGEX REPLACE "^#define[ \t]+OMNI_PACKAGE_VERSION[ \t]+\"(([0-9]+\\.?)+)\"" "\\2" version ${version_info})
+        string(REGEX REPLACE "^#define[ \t]+(OMNI_)?PACKAGE_VERSION[ \t]+\"(([0-9]+\\.?)+)\"" "\\2" version ${version_info})
     endif()
 
     set(OMNIORB_VERSION ${version} CACHE STRING "omniORB version")
