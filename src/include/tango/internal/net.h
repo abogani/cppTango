@@ -4,10 +4,23 @@
 #include <vector>
 #include <string>
 
+#ifndef _TG_WINDOWS_
+#include <unistd.h>
+#endif
+
 namespace Tango
 {
 namespace detail
 {
+
+#if defined(MAXHOSTNAMELEN)
+constexpr std::size_t TANGO_MAX_HOSTNAME_LEN{MAXHOSTNAMELEN + 1};
+#else
+// Windows needs 255 + 1.
+// Let's assume that all other OSes also need 255 + 1.
+constexpr std::size_t TANGO_MAX_HOSTNAME_LEN{256};
+#endif
+
 
 /// @brief Return true if the given endpoint is a valid IPv4 address
 bool is_ip_address(const std::string &endpoint);

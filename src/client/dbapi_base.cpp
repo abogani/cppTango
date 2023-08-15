@@ -30,6 +30,7 @@
 
 #include <tango/tango.h>
 #include <tango/client/accessproxy.h>
+#include <tango/internal/net.h>
 
 using namespace CORBA;
 
@@ -239,8 +240,8 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
 
 		if (db_host_lower == "localhost")
 		{
-			char h_name[80];
-			int res = gethostname(h_name,80);
+			char h_name[Tango::detail::TANGO_MAX_HOSTNAME_LEN];
+			int res = gethostname(h_name, Tango::detail::TANGO_MAX_HOSTNAME_LEN);
 			if (res == 0)
 			{
 				db_host = h_name;

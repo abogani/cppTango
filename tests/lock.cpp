@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #endif
 
+#include <tango/internal/net.h>
 #include "common.h"
 
 #include "locked_device_cmd.h"
@@ -127,8 +128,8 @@ int main(int argc, char **argv)
 #else
 		assert ( the_locker.li.LockerPid == getpid() );
 #endif
-		char h_name[80];
-		gethostname(h_name,80);
+		char h_name[Tango::detail::TANGO_MAX_HOSTNAME_LEN];
+		gethostname(h_name, Tango::detail::TANGO_MAX_HOSTNAME_LEN);
 		string my_host(h_name);
 
 		string::size_type pos;
