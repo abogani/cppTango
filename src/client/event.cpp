@@ -1098,9 +1098,15 @@ int EventConsumer::subscribe_event (DeviceProxy *device,
 				   const std::vector<std::string> &filters,
 					bool stateless)
 {
-	if ((device == NULL) || (callback == NULL))
+	if (!device)
 	{
-		TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs, "Device or callback pointer NULL");
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"DeviceProxy* must be a valid and non-null pointer.");
+	}
+	else if (!callback)
+	{
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"CallBack* must be a valid and non-null pointer.");
 	}
 
 	return (subscribe_event (device, attribute, event, callback, NULL, filters, stateless));
@@ -1133,9 +1139,15 @@ int EventConsumer::subscribe_event (DeviceProxy *device,
 				   const std::vector<std::string> &filters,
 				   bool stateless)
 {
-	if ((device == NULL) || (event_queue_size < 0))
+	if (!device)
 	{
-		TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs, "Device pointer is NULL or the event queue size is invalid");
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"DeviceProxy* must be a valid and non-null pointer");
+	}
+	else if (event_queue_size < 0)
+	{
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"Event queue size must be positive");
 	}
 
 	// create an event queue object
@@ -1283,9 +1295,20 @@ int EventConsumer::subscribe_event (DeviceProxy *device,
 				   CallBack *callback,
 				   bool stateless)
 {
-	if ((device == NULL) || (callback == NULL) || (event != INTERFACE_CHANGE_EVENT))
+	if (!device)
 	{
-		TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs, "Device,callback pointer NULL or unsupported event type");
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"DeviceProxy* must be a valid and non-null pointer.");
+	}
+	else if (event != INTERFACE_CHANGE_EVENT)
+	{
+ TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"Only INTERFACE_CHANGE_EVENT is supported.");
+	}
+	else if (stateless && !callback)
+	{
+	 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"Callback* is a null pointer and stateless mode is used.");
 	}
 
 	std::vector<std::string> filters;
@@ -1298,9 +1321,20 @@ int EventConsumer::subscribe_event (DeviceProxy *device,
 				   int event_queue_size,
 				   bool stateless)
 {
-	if ((device == NULL) || (event != INTERFACE_CHANGE_EVENT))
+	if (!device)
 	{
-		TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs, "Device NULL or unsupported event type");
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"DeviceProxy* must be a valid and non-null pointer.");
+	}
+	else if (event != INTERFACE_CHANGE_EVENT)
+	{
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"Only INTERFACE_CHANGE_EVENT is supported.");
+	}
+	else if (event_queue_size < 0)
+	{
+		 TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs,
+                       	"Event queue size must be positive");
 	}
 
 	std::vector<std::string> filters;

@@ -30,6 +30,7 @@ void EventCallBack::push_event(Tango::DevIntrChangeEventData* event_data)
 		{
 			TEST_LOG << "Error send to callback" << std::endl;
 			Tango::Except::print_error_stack(event_data->errors);
+			cb_err++;
 		}
 	}
 	catch (...)
@@ -70,7 +71,7 @@ int main(int argc, char **argv)
 		cb.cb_err = 0;
 
 //
-// subscribe to a data ready event
+// subscribe to a interface change event
 //
 
 		int eve_id1 = device->subscribe_event(Tango::INTERFACE_CHANGE_EVENT,&cb);
@@ -80,6 +81,7 @@ int main(int argc, char **argv)
 //
 
 		assert (cb.cb_executed == 1);
+		assert (cb.cb_err == 0);
 		assert (cb.dev_start == true);
 
 		size_t old_cmd_nb = cb.nb_cmd;
@@ -100,6 +102,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 2);
+		assert (cb.cb_err == 0);
 		assert (cb.nb_cmd == old_cmd_nb + 1);
 		assert (cb.nb_att == old_att_nb);
 
@@ -112,6 +115,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 3);
+		assert (cb.cb_err == 0);
 		assert (cb.nb_cmd == old_cmd_nb);
 		assert (cb.nb_att == old_att_nb);
 
@@ -126,6 +130,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 4);
+		assert (cb.cb_err == 0);
 		assert (cb.nb_cmd == old_cmd_nb + 3);
 		assert (cb.nb_att == old_att_nb);
 
@@ -139,6 +144,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 4);
+		assert (cb.cb_err == 0);
 		std::string adm_name = device->adm_name();
 		DeviceProxy adm(adm_name);
 
@@ -148,6 +154,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 5);
+		assert (cb.cb_err == 0);
 		assert (cb.nb_cmd == old_cmd_nb);
 		assert (cb.nb_att == old_att_nb);
 
@@ -164,6 +171,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		assert (cb.cb_executed == 6);
+		assert (cb.cb_err == 0);
 		assert (cb.nb_cmd == old_cmd_nb + 1);
 		assert (cb.nb_att == old_att_nb);
 
@@ -171,6 +179,7 @@ int main(int argc, char **argv)
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 
 		assert (cb.cb_executed == 7);
+		assert (cb.cb_err == 0);
 		assert (cb.nb_cmd == old_cmd_nb);
 		assert (cb.nb_att == old_att_nb);
 		assert (cb.dev_start == false);

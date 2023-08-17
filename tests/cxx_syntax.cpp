@@ -2,6 +2,7 @@
 #define SyntaxTestSuite_h
 
 #include "cxx_common.h"
+#include <tango/internal/utils.h>
 
 #undef SUITE_NAME
 #define SUITE_NAME SyntaxTestSuite
@@ -260,6 +261,16 @@ public:
 						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 		delete device2;
 	}
-};
 
+  void test_IDL_version_check()
+  {
+	using Tango::detail::IDLVersionIsTooOld;
+
+    TS_ASSERT(IDLVersionIsTooOld(1, 2));
+    TS_ASSERT(!IDLVersionIsTooOld(1, 1));
+
+    TS_ASSERT(!IDLVersionIsTooOld(0, 1));
+    TS_ASSERT(!IDLVersionIsTooOld(0, 0));
+  }
+};
 #endif // SyntaxTestSuite_h
