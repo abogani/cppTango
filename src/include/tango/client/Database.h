@@ -109,7 +109,7 @@ public :
  * @param [in] orb	The CORBA ORB pointer. Default value is fine for 99 % of cases
  *
  */
-	Database(CORBA::ORB *orb=NULL);
+	Database(CORBA::ORB_var orb=CORBA::ORB::_nil());
 // @}
 
 /**@name General methods */
@@ -1810,7 +1810,7 @@ public :
 
 
 ///@privatesection
-	Database(const std::string &host, int port, CORBA::ORB *orb=NULL);
+	Database(const std::string &host, int port, CORBA::ORB_var orb=CORBA::ORB::_nil());
 	Database(const std::string &file);
 
 	Database(const Database &);
@@ -1844,7 +1844,7 @@ public :
 	void set_orig_tango_host(const std::string &_s) {ext->orig_tango_host=_s;}
 
 #ifdef _TG_WINDOWS_
-	Database(CORBA::ORB *orb,std::string &,std::string &);
+	Database(CORBA::ORB_var orb,std::string &,std::string &);
 	long get_tango_host_from_reg(char **,std::string &,std::string &);
 #endif
 

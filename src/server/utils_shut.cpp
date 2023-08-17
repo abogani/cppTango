@@ -151,7 +151,7 @@ void Util::shutdown_ds()
 //
 
 	TANGO_LOG_DEBUG << "Going to shutdown ORB" << std::endl;
-	CORBA::ORB_ptr loc_orb = get_orb();
+	CORBA::ORB_var loc_orb = get_orb();
 	loc_orb->shutdown(true);
 
 	TANGO_LOG_DEBUG << "ORB shutdown" << std::endl;

@@ -172,7 +172,7 @@ public :
  * @throws WrongNameSyntax, ConnectionFailed
  *
  */
-	DeviceProxy(const std::string &name, CORBA::ORB *orb=NULL);
+	DeviceProxy(const std::string &name, CORBA::ORB_var orb=CORBA::ORB::_nil());
 /**
  * Create a DeviceProxy instance.
  *
@@ -197,17 +197,17 @@ public :
  * @throws WrongNameSyntax, ConnectionFailed
  *
  */
-	DeviceProxy(const char *name, CORBA::ORB *orb=NULL);
+	DeviceProxy(const char *name, CORBA::ORB_var orb=CORBA::ORB::_nil());
 //@}
 /// @privatesection
-	DeviceProxy(const std::string &name, bool ch_access, CORBA::ORB *orb=NULL);
-	DeviceProxy(const char *, bool ch_access, CORBA::ORB *orb=NULL);
+	DeviceProxy(const std::string &name, bool ch_access, CORBA::ORB_var orb=CORBA::ORB::_nil());
+	DeviceProxy(const char *, bool ch_access, CORBA::ORB_var orb=CORBA::ORB::_nil());
 
 	DeviceProxy(const DeviceProxy &);
 	DeviceProxy & operator=(const DeviceProxy &);
 	virtual ~DeviceProxy();
 
-	DeviceProxy():Connection((CORBA::ORB *)NULL),db_dev(NULL),adm_device(NULL),lock_ctr(0),ext_proxy(nullptr)
+	DeviceProxy():Connection(CORBA::ORB::_nil()),db_dev(NULL),adm_device(NULL),lock_ctr(0),ext_proxy(nullptr)
 	{dbase_used = false;}
 /// @publicsection
 

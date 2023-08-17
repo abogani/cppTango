@@ -50,7 +50,7 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-Database::Database(ORB *orb_in) : Connection(orb_in),
+Database::Database(CORBA::ORB_var orb_in) : Connection(orb_in),
 ext(new DatabaseExt),
 access_proxy(NULL),access_checked(false),access_service_defined(false),db_tg(NULL)
 {
@@ -84,7 +84,7 @@ access_proxy(NULL),access_checked(false),access_service_defined(false),db_tg(NUL
 }
 
 #ifdef _TG_WINDOWS_
-Database::Database(ORB *orb_in,std::string&ds_exec_name,std::string&ds_inst_name) : Connection(orb_in),
+Database::Database(CORBA::ORB_var orb_in,std::string&ds_exec_name,std::string&ds_inst_name) : Connection(orb_in),
 ext(new DatabaseExt),
 access_proxy(NULL),access_checked(false),access_service_defined(false),db_tg(NULL)
 {
@@ -279,12 +279,12 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
 
 //-----------------------------------------------------------------------------
 //
-// Database::Database(std::stringhost, int port, ORB *orb) - constructor to
+// Database::Database(std::stringhost, int port, CORBA::ORB_var orb) - constructor to
 //           create connection to TANGO Database with host, port, orb specified.
 //
 //-----------------------------------------------------------------------------
 
-Database::Database(const std::string&in_host, int in_port, ORB *orb_in) : Connection(orb_in),
+Database::Database(const std::string&in_host, int in_port, CORBA::ORB_var orb_in) : Connection(orb_in),
 ext(new DatabaseExt),
 access_proxy(NULL),access_checked(false),access_service_defined(false),db_tg(NULL)
 {

@@ -49,7 +49,7 @@ DeviceData::DeviceData()
 //
 
     ApiUtil *au = ApiUtil::instance();
-    if (CORBA::is_nil(au->get_orb()) == true)
+    if (au->is_orb_nil() == true)
     {
         au->create_orb();
     }

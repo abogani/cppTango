@@ -248,7 +248,6 @@ ApiUtil::~ApiUtil()
             catch (...)
             {}
         }
-        CORBA::release(_orb);
     }
 
 }

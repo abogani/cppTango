@@ -131,7 +131,6 @@ void *NotifdEventConsumer::run_undetached(void *arg)
 
 		orb_->destroy();
 
-		CORBA::release(orb_);
 	}
 
 	return (void *)NULL;
