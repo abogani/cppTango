@@ -42,7 +42,7 @@ namespace Tango
 // Some general interest define
 //
 
-#define TANGO_BASE_CLASS Tango::Device_5Impl
+#define TANGO_BASE_CLASS Tango::Device_6Impl
 
 #define TBS(s) #s
 #define XTBS(s) TBS(s)
@@ -53,7 +53,7 @@ const char *const TgLibMajorVers = XTBS(TANGO_VERSION_MAJOR);
 
 const int TgLibVersNb = TANGO_VERSION_MAJOR * 10000 + TANGO_VERSION_MINOR * 100 + TANGO_VERSION_PATCH;
 
-const int DevVersion = 5; // IDL version number
+const int DevVersion = 6; // IDL version number
 const int DefaultMaxSeq = 20;
 const int DefaultBlackBoxDepth = 50;
 const int DefaultPollRingDepth = 10;

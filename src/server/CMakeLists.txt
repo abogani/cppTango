@@ -18,6 +18,7 @@ set(SOURCES attrdesc.cpp
             device_3.cpp
             device_4.cpp
             device_5.cpp
+            device_6.cpp
             deviceclass.cpp
             devicelog.cpp
             devintr.cpp
