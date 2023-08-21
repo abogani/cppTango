@@ -113,7 +113,7 @@ llvm-latest:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v2
+    OS_TYPE: llvm-latest:v3
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
@@ -430,7 +430,7 @@ libcpp:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v2
+    OS_TYPE: llvm-latest:v3
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_USE_LIBCPP: "ON"
