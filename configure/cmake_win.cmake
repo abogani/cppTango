@@ -12,7 +12,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 if(BUILD_SHARED_LIBS)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    set_target_properties(tango PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 else()
     set(TANGO_LIBRARY_NAME ${TANGO_LIBRARY_NAME}-static)
 endif()
