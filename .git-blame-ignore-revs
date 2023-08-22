@@ -1,2 +1,6 @@
 # pre-commit CI: Make the code clean
 3eecacd1a5ab8d7b512e1aeee216c8067633315c
+# Replace tabs with 4 spaces
+c91114a1cbb26776dad0cdc3b60f9443b9947915
+# Apply automatic code formatting with clang-format
+edc1f497dcf730b4a0860c66085b763ed5e7842b
