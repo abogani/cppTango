@@ -42,15 +42,15 @@
 
 //	Add class header files if needed
 
-
 /**
  *	Create TestCppTango1022 Class singleton and store it in DServer object.
  */
 
 void Tango::DServer::class_factory()
 {
-	//	Add method class init if needed
-	add_class(TestCppTango1022_ns::TestCppTango1022Class::init("TestCppTango1022"));
+    //	Add method class init if needed
+    add_class(TestCppTango1022_ns::TestCppTango1022Class::init("TestCppTango1022"));
 }
+
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::ClassFactory.cpp

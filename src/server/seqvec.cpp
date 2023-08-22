@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -45,180 +45,211 @@ namespace Tango
 
 //=============================================================================
 //
-//			The sequence print facilities functions
+//            The sequence print facilities functions
 //
-// description :	These methods allow an easy way to print all sequence
-//			element using the following syntax
-//				TANGO_LOG << seq << std::endl;
+// description :    These methods allow an easy way to print all sequence
+//            element using the following syntax
+//                TANGO_LOG << seq << std::endl;
 //
 //=============================================================================
 
-
-std::ostream &operator<<(std::ostream &o,const DevVarCharArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarCharArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << (short)v[i] << std::dec;
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << (short) v[i] << std::dec;
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarShortArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarShortArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarLongArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarLongArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarLong64Array &v)
+std::ostream &operator<<(std::ostream &o, const DevVarLong64Array &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarFloatArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarFloatArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarDoubleArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarDoubleArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarBooleanArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarBooleanArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = ";
-		if (v[i] == true)
-			o << "true";
-		else
-			o << "false";
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = ";
+        if(v[i] == true)
+        {
+            o << "true";
+        }
+        else
+        {
+            o << "false";
+        }
 
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarUShortArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarUShortArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarULongArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarULongArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarULong64Array &v)
+std::ostream &operator<<(std::ostream &o, const DevVarULong64Array &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarStringArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarStringArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i].in();
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i].in();
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarStateArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarStateArray &v)
 {
-	long nb_elt = v.length();
-	for (long i = 0;i < nb_elt;i++)
-	{
-		o << "Element number [" << i << "] = " << v[i];
-		if (i < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long i = 0; i < nb_elt; i++)
+    {
+        o << "Element number [" << i << "] = " << v[i];
+        if(i < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
 
-std::ostream &operator<<(std::ostream &o,const DevVarEncodedArray &v)
+std::ostream &operator<<(std::ostream &o, const DevVarEncodedArray &v)
 {
-	long nb_elt = v.length();
-	for (long loop = 0;loop < nb_elt;loop++)
-	{
-		o << "Encoding string: " << v[loop].encoded_format << std::endl;
-		long nb_data_elt = v[loop].encoded_data.length();
-		for (long i = 0;i < nb_data_elt;i++)
-		{
-			o << "Data element number [" << i << "] = " << (int)v[loop].encoded_data[i];
-			if (i < (nb_data_elt - 1))
-				o << '\n';
-		}
-		if (loop < (nb_elt - 1))
-			o << '\n';
-	}
-	return o;
+    long nb_elt = v.length();
+    for(long loop = 0; loop < nb_elt; loop++)
+    {
+        o << "Encoding string: " << v[loop].encoded_format << std::endl;
+        long nb_data_elt = v[loop].encoded_data.length();
+        for(long i = 0; i < nb_data_elt; i++)
+        {
+            o << "Data element number [" << i << "] = " << (int) v[loop].encoded_data[i];
+            if(i < (nb_data_elt - 1))
+            {
+                o << '\n';
+            }
+        }
+        if(loop < (nb_elt - 1))
+        {
+            o << '\n';
+        }
+    }
+    return o;
 }
-} // End of Tango namespace
+} // namespace Tango

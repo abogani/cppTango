@@ -2,13 +2,13 @@
 // LoggerStream.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -28,20 +28,22 @@
 #include <tango/common/log4tango/Portability.h>
 
 #ifdef LOG4TANGO_HAVE_UNISTD_H
-#  include <unistd.h>
+  #include <unistd.h>
 #endif
 
 #include <tango/common/log4tango/LoggerStream.h>
 #include <tango/common/log4tango/Logger.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
-namespace {
-constexpr LoggerStream::SourceLocation DefaultSourceLocation {"(unknown)", 0};
+namespace
+{
+constexpr LoggerStream::SourceLocation DefaultSourceLocation{"(unknown)", 0};
 }
 
-LoggerStream::LoggerStream (Logger& logger, Level::Value level, bool filter)
-  : _logger(logger),
+LoggerStream::LoggerStream(Logger &logger, Level::Value level, bool filter) :
+    _logger(logger),
     _level(level),
     _filter(filter),
     _buffer(new std::ostringstream),
@@ -51,37 +53,39 @@ LoggerStream::LoggerStream (Logger& logger, Level::Value level, bool filter)
 
 LoggerStream::~LoggerStream()
 {
-  flush();
-  if (_buffer) {
-    delete _buffer;
-    _buffer = 0;
-  }
+    flush();
+    if(_buffer)
+    {
+        delete _buffer;
+        _buffer = 0;
+    }
 }
 
-LoggerStream::LoggerStream(LoggerStream && other)
-  : _logger(other._logger),
+LoggerStream::LoggerStream(LoggerStream &&other) :
+    _logger(other._logger),
     _level(other._level),
     _filter(other._filter),
     _buffer(other._buffer),
     _source_location(std::move(other._source_location))
 {
-  other._buffer = nullptr;
+    other._buffer = nullptr;
 }
 
-void LoggerStream::flush (void)
+void LoggerStream::flush(void)
 {
-  if (_buffer && _buffer->tellp() > 0)
-  {
-    if (_filter) {
-      _logger.log(
-        _source_location.file, _source_location.line, _level, _buffer->str());
-    } else {
-      _logger.log_unconditionally(
-        _source_location.file, _source_location.line, _level, _buffer->str());
+    if(_buffer && _buffer->tellp() > 0)
+    {
+        if(_filter)
+        {
+            _logger.log(_source_location.file, _source_location.line, _level, _buffer->str());
+        }
+        else
+        {
+            _logger.log_unconditionally(_source_location.file, _source_location.line, _level, _buffer->str());
+        }
+        _buffer->str("");
+        _source_location = DefaultSourceLocation;
     }
-    _buffer->str("");
-    _source_location = DefaultSourceLocation;
-  }
 }
 
 } // namespace log4tango

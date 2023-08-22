@@ -2,13 +2,13 @@
 // LayoutAppender.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -33,31 +33,30 @@
 #include <tango/common/log4tango/Appender.h>
 #include <tango/common/log4tango/PatternLayout.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // class : LayoutAppender (superclass for appenders that require a Layout)
 //-----------------------------------------------------------------------------
 class LayoutAppender : public Appender
 {
-public:
+  public:
+    typedef PatternLayout DefaultLayoutType;
 
-  typedef PatternLayout DefaultLayoutType;
+    LayoutAppender(const std::string &name);
 
-  LayoutAppender(const std::string& name);
+    virtual ~LayoutAppender();
 
-  virtual ~LayoutAppender();
+    virtual bool requires_layout() const;
 
-  virtual bool requires_layout() const;
+    virtual void set_layout(Layout *layout = 0);
 
-  virtual void set_layout (Layout* layout = 0);
+  protected:
+    Layout &get_layout();
 
-protected:
-
-  Layout& get_layout();
-
-private:
-  Layout* _layout;
+  private:
+    Layout *_layout;
 };
 
 } // namespace log4tango

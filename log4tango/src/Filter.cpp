@@ -2,13 +2,13 @@
 // Filter.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -27,57 +27,63 @@
 
 #ifdef APPENDERS_HAVE_FILTERS
 
-#include <tango/common/log4tango/Portability.h>
-#include <tango/common/log4tango/Filter.h>
+  #include <tango/common/log4tango/Portability.h>
+  #include <tango/common/log4tango/Filter.h>
 
-namespace log4tango {
-
-Filter::Filter()
-  : _chain(0)
+namespace log4tango
 {
-  //no-op
+
+Filter::Filter() :
+    _chain(0)
+{
+    // no-op
 }
 
 Filter::~Filter()
 {
-  if (_chain) {
-    delete _chain;
-    _chain = 0;
-  }
-}
-
-void Filter::set_chained_filter (Filter* filter)
-{
-  if (filter != _chain) {
-    if (_chain) {
-      delete _chain;
+    if(_chain)
+    {
+        delete _chain;
+        _chain = 0;
     }
-    _chain = filter;
-  }
 }
 
-Filter* Filter::get_end_of_chain (void)
+void Filter::set_chained_filter(Filter *filter)
 {
-  Filter* end = this;
-  while(end->get_chained_filter()) {
-    end = end->get_chained_filter();
-  }
-  return end;
+    if(filter != _chain)
+    {
+        if(_chain)
+        {
+            delete _chain;
+        }
+        _chain = filter;
+    }
 }
 
-void Filter::append_chained_filter (Filter* filter)
+Filter *Filter::get_end_of_chain(void)
 {
-  Filter* end = get_end_of_chain();
-  end->set_chained_filter(filter);
+    Filter *end = this;
+    while(end->get_chained_filter())
+    {
+        end = end->get_chained_filter();
+    }
+    return end;
 }
 
-Filter::Decision Filter::decide (const LoggingEvent& event)
+void Filter::append_chained_filter(Filter *filter)
 {
-  Filter::Decision decision = _decide(event);
-  if ((Filter::NEUTRAL == decision) && get_chained_filter()) {
-    decision = get_chained_filter()->decide(event);
-  }
-  return decision;
+    Filter *end = get_end_of_chain();
+    end->set_chained_filter(filter);
+}
+
+Filter::Decision Filter::decide(const LoggingEvent &event)
+{
+    Filter::Decision decision = _decide(event);
+    if((Filter::NEUTRAL == decision) && get_chained_filter())
+    {
+        decision = get_chained_filter()->decide(event);
+    }
+    return decision;
 }
 
 } // namespace log4tango

@@ -3,15 +3,15 @@
 // file :               BlackBox.h
 //
 // description :        Include for the BlackBox object. This class implements the black box objects which keep tracks
-//						of all operation invoke on a device or attribute retrieved.
-//						This black box is managed as a circular buffer
+//                        of all operation invoke on a device or attribute retrieved.
+//                        This black box is managed as a circular buffer
 //
 // project :            TANGO
 //
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -36,7 +36,7 @@
 
 #include <tango/tango.h>
 #ifdef _TG_WINDOWS_
-#include <winsock.h>
+  #include <winsock.h>
 #endif
 #include <time.h>
 #include <omniORB4/omniInterceptors.h>
@@ -46,7 +46,7 @@
 namespace Tango
 {
 
-#define		IP_ADDR_BUFFER_SIZE		80
+#define IP_ADDR_BUFFER_SIZE 80
 
 // client call interceptor for remote calls
 // will be removed once omniORB 4.3 is adopted
@@ -76,196 +76,202 @@ CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::i
 // However, for the moment, we only use it for local calls. It will also be used for remote ones once we adopt ominitORB
 // 4.3. See also cppTango issue #865 for details.
 ///==================================================================================================================
-void client_call_interceptor(omniCallDescriptor* d, omniServant* s);
+void client_call_interceptor(omniCallDescriptor *d, omniServant *s);
 
-class client_addr: public omni_thread::value_t
+class client_addr : public omni_thread::value_t
 {
-public:
-	client_addr() {
-		client_ip[0]='\0';
-		::memset(java_ident, 0, sizeof(DevULong64) * 2);
-	}
-	client_addr(const char *addr) {
-		strcpy(client_ip,addr);
-	}
-	~client_addr() {}
+  public:
+    client_addr()
+    {
+        client_ip[0] = '\0';
+        ::memset(java_ident, 0, sizeof(DevULong64) * 2);
+    }
 
-	client_addr(const client_addr &);
-	client_addr & operator=(const client_addr &);
-	bool operator==(const client_addr &);
-	bool operator!=(const client_addr &);
+    client_addr(const char *addr)
+    {
+        strcpy(client_ip, addr);
+    }
 
-	bool			client_ident = false;
-	char			client_ip[IP_ADDR_BUFFER_SIZE];
-	LockerLanguage		client_lang = LockerLanguage::CPP;
-	TangoSys_Pid		client_pid = 0;
-	std::string		java_main_class;
-	DevULong64		java_ident[2];
+    ~client_addr() { }
 
-	int client_ip_2_client_name(std::string &) const;
-	friend std::ostream &operator<<(std::ostream &o_str,const client_addr &ca);
+    client_addr(const client_addr &);
+    client_addr &operator=(const client_addr &);
+    bool operator==(const client_addr &);
+    bool operator!=(const client_addr &);
+
+    bool client_ident = false;
+    char client_ip[IP_ADDR_BUFFER_SIZE];
+    LockerLanguage client_lang = LockerLanguage::CPP;
+    TangoSys_Pid client_pid = 0;
+    std::string java_main_class;
+    DevULong64 java_ident[2];
+
+    int client_ip_2_client_name(std::string &) const;
+    friend std::ostream &operator<<(std::ostream &o_str, const client_addr &ca);
 };
 
 //==================================================================================================================
 //
-//			The BlackBoxElt class
+//            The BlackBoxElt class
 //
 // description :
-//		Class to store all the necessary information which will be stored and returned to client on request
+//        Class to store all the necessary information which will be stored and returned to client on request
 //
 //==================================================================================================================
 
-#define 	DEFAULT_ATTR_NB		10
+#define DEFAULT_ATTR_NB 10
 
 enum BlackBoxElt_ReqType
 {
-	Req_Unknown,
-	Req_Operation,
-	Req_Attribute
+    Req_Unknown,
+    Req_Operation,
+    Req_Attribute
 };
 
 enum BlackBoxElt_AttrType
 {
-	Attr_Unknown,
-	Attr_Name,
-	Attr_Description,
-	Attr_State,
-	Attr_Status,
-	Attr_AdmName
+    Attr_Unknown,
+    Attr_Name,
+    Attr_Description,
+    Attr_State,
+    Attr_Status,
+    Attr_AdmName
 };
 
 enum BlackBoxElt_OpType
 {
-	Op_Unknown,
-	Op_Command_inout,
-	Op_BlackBox,
-	Op_Ping,
-	Op_Info,
-	Op_Command_list,
-	Op_Command,
-	Op_Get_Attr_Config,
-	Op_Set_Attr_Config,
-	Op_Read_Attr,
-	Op_Write_Attr,
-	Op_Command_inout_2,
-	Op_Command_list_2,
-	Op_Command_2,
-	Op_Get_Attr_Config_2,
-	Op_Read_Attr_2,
-	Op_Command_inout_history_2,
-	Op_Read_Attr_history_2,
-	Op_Read_Attr_3,
-	Op_Write_Attr_3,
-	Op_Read_Attr_history_3,
-	Op_Info_3,
-	Op_Get_Attr_Config_3,
-	Op_Set_Attr_Config_3,
-	Op_Read_Attr_history_4,
-	Op_Command_inout_history_4,
-	Op_Command_inout_4,
-	Op_Write_Attr_4,
-	Op_Read_Attr_4,
-	Op_Set_Attr_Config_4,
-	Op_Write_Read_Attributes_4,
-	Op_Get_Attr_Config_5,
-	Op_Set_Attr_Config_5,
-	Op_Read_Attr_5,
-	Op_Write_Read_Attributes_5,
-	Op_Read_Attr_history_5,
-	Op_Get_Pipe_Config_5,
-	Op_Set_Pipe_Config_5,
-	Op_Read_Pipe_5,
-	Op_Write_Pipe_5,
-	Op_Write_Read_Pipe_5
+    Op_Unknown,
+    Op_Command_inout,
+    Op_BlackBox,
+    Op_Ping,
+    Op_Info,
+    Op_Command_list,
+    Op_Command,
+    Op_Get_Attr_Config,
+    Op_Set_Attr_Config,
+    Op_Read_Attr,
+    Op_Write_Attr,
+    Op_Command_inout_2,
+    Op_Command_list_2,
+    Op_Command_2,
+    Op_Get_Attr_Config_2,
+    Op_Read_Attr_2,
+    Op_Command_inout_history_2,
+    Op_Read_Attr_history_2,
+    Op_Read_Attr_3,
+    Op_Write_Attr_3,
+    Op_Read_Attr_history_3,
+    Op_Info_3,
+    Op_Get_Attr_Config_3,
+    Op_Set_Attr_Config_3,
+    Op_Read_Attr_history_4,
+    Op_Command_inout_history_4,
+    Op_Command_inout_4,
+    Op_Write_Attr_4,
+    Op_Read_Attr_4,
+    Op_Set_Attr_Config_4,
+    Op_Write_Read_Attributes_4,
+    Op_Get_Attr_Config_5,
+    Op_Set_Attr_Config_5,
+    Op_Read_Attr_5,
+    Op_Write_Read_Attributes_5,
+    Op_Read_Attr_history_5,
+    Op_Get_Pipe_Config_5,
+    Op_Set_Pipe_Config_5,
+    Op_Read_Pipe_5,
+    Op_Write_Pipe_5,
+    Op_Write_Read_Pipe_5
 };
 
 class BlackBoxElt
 {
-public:
-	BlackBoxElt();
-	~BlackBoxElt();
+  public:
+    BlackBoxElt();
+    ~BlackBoxElt();
 
-	BlackBoxElt_ReqType		req_type;
-	BlackBoxElt_AttrType	attr_type;
-	BlackBoxElt_OpType		op_type;
-	std::string					cmd_name;
-	std::vector<std::string>			attr_names;
-	std::chrono::system_clock::time_point when;
-	char					host_ip_str[IP_ADDR_BUFFER_SIZE];
-	DevSource				source;
+    BlackBoxElt_ReqType req_type;
+    BlackBoxElt_AttrType attr_type;
+    BlackBoxElt_OpType op_type;
+    std::string cmd_name;
+    std::vector<std::string> attr_names;
+    std::chrono::system_clock::time_point when;
+    char host_ip_str[IP_ADDR_BUFFER_SIZE];
+    DevSource source;
 
-	bool					client_ident;
-	LockerLanguage			client_lang;
-	TangoSys_Pid			client_pid;
-	std::string					java_main_class;
+    bool client_ident;
+    LockerLanguage client_lang;
+    TangoSys_Pid client_pid;
+    std::string java_main_class;
 };
 
-inline bool operator<(const BlackBoxElt &,const BlackBoxElt &)
+inline bool operator<(const BlackBoxElt &, const BlackBoxElt &)
 {
-	return true;
+    return true;
 }
 
-inline bool operator==(const BlackBoxElt &,const BlackBoxElt &)
+inline bool operator==(const BlackBoxElt &, const BlackBoxElt &)
 {
-	return true;
+    return true;
 }
 
 //==================================================================================================================
 //
-//			The BlackBox class
+//            The BlackBox class
 //
 // description :
-//		Class to implement the black box itself. This is mainly a vector of BlackBoxElt managed as a circular vector
+//        Class to implement the black box itself. This is mainly a vector of BlackBoxElt managed as a circular vector
 //
 //===================================================================================================================
 
 class BlackBox
 {
-public:
-	BlackBox();
-	BlackBox(long);
+  public:
+    BlackBox();
+    BlackBox(long);
 
-	void insert_corba_attr(BlackBoxElt_AttrType);
-	void insert_cmd(const char *,long vers=1,DevSource=Tango::DEV);
-	void insert_attr(const Tango::DevVarStringArray &,long vers=1,DevSource=Tango::DEV);
-	void insert_attr(const Tango::DevVarStringArray &,const ClntIdent &,long vers=1,DevSource=Tango::DEV);
-	void insert_attr(const char *,const ClntIdent &,long);
-	void insert_attr(const Tango::AttributeValueList &,long vers=1);
-	void insert_attr(const Tango::AttributeValueList_4 &,const ClntIdent &,long vers);
-	void insert_attr(const Tango::DevPipeData &,const ClntIdent &,long vers);
-	void insert_wr_attr(const Tango::AttributeValueList_4 &,const Tango::DevVarStringArray &,const ClntIdent &,long vers);
-	void insert_op(BlackBoxElt_OpType);
-	void insert_op(BlackBoxElt_OpType,const ClntIdent &);
+    void insert_corba_attr(BlackBoxElt_AttrType);
+    void insert_cmd(const char *, long vers = 1, DevSource = Tango::DEV);
+    void insert_attr(const Tango::DevVarStringArray &, long vers = 1, DevSource = Tango::DEV);
+    void insert_attr(const Tango::DevVarStringArray &, const ClntIdent &, long vers = 1, DevSource = Tango::DEV);
+    void insert_attr(const char *, const ClntIdent &, long);
+    void insert_attr(const Tango::AttributeValueList &, long vers = 1);
+    void insert_attr(const Tango::AttributeValueList_4 &, const ClntIdent &, long vers);
+    void insert_attr(const Tango::DevPipeData &, const ClntIdent &, long vers);
+    void insert_wr_attr(const Tango::AttributeValueList_4 &,
+                        const Tango::DevVarStringArray &,
+                        const ClntIdent &,
+                        long vers);
+    void insert_op(BlackBoxElt_OpType);
+    void insert_op(BlackBoxElt_OpType, const ClntIdent &);
 
-	void insert_cmd_nl(const char *,long,DevSource);
-	void insert_cmd_cl_ident(const char *,const ClntIdent &,long vers=1,DevSource=Tango::DEV);
-	void add_cl_ident(const ClntIdent &,client_addr *);
-	void update_client_host(client_addr *);
+    void insert_cmd_nl(const char *, long, DevSource);
+    void insert_cmd_cl_ident(const char *, const ClntIdent &, long vers = 1, DevSource = Tango::DEV);
+    void add_cl_ident(const ClntIdent &, client_addr *);
+    void update_client_host(client_addr *);
 
-	Tango::DevVarStringArray *read(long);
+    Tango::DevVarStringArray *read(long);
 
-private:
+  private:
+    void inc_indexes();
+    void get_client_host();
+    void build_info_as_str(long);
+    std::string timestamp_unix_to_str(const std::chrono::system_clock::time_point &);
+    void add_source(long);
+    void insert_op_nl(BlackBoxElt_OpType);
+    void insert_attr_nl(const Tango::AttributeValueList &, long);
+    void insert_attr_nl_4(const Tango::AttributeValueList_4 &);
+    void insert_attr_wr_nl(const Tango::AttributeValueList_4 &, const Tango::DevVarStringArray &, long);
 
-	void inc_indexes();
-	void get_client_host();
-	void build_info_as_str(long);
-	std::string timestamp_unix_to_str(const std::chrono::system_clock::time_point &);
-	void add_source(long);
-	void insert_op_nl(BlackBoxElt_OpType);
-	void insert_attr_nl(const Tango::AttributeValueList &,long);
-	void insert_attr_nl_4(const Tango::AttributeValueList_4 &);
-	void insert_attr_wr_nl(const Tango::AttributeValueList_4 &,const Tango::DevVarStringArray &,long);
+    std::vector<BlackBoxElt> box;
+    long insert_elt;
+    long nb_elt;
+    long max_elt;
 
-	std::vector<BlackBoxElt>	box;
-	long				insert_elt;
-	long				nb_elt;
-	long				max_elt;
+    omni_mutex sync;
 
-	omni_mutex			sync;
-
-	std::string				elt_str;
+    std::string elt_str;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _BLACKBOX_ */

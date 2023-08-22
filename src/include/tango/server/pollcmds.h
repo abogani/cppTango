@@ -4,19 +4,19 @@
 //
 // description :        Include for the DServerClass class. This class is a
 //                      singleton class i.e only one object of this class
-//			can be created.
-//			It contains all properties and methods
-//			which the DServer requires only once e.g. the
-//			commands.
-//			This file also includes class declaration for all the
-//			commands available on device of the DServer class
+//            can be created.
+//            It contains all properties and methods
+//            which the DServer requires only once e.g. the
+//            commands.
+//            This file also includes class declaration for all the
+//            commands available on device of the DServer class
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -49,177 +49,145 @@ namespace Tango
 
 //=============================================================================
 //
-//			The PolledDevice class
+//            The PolledDevice class
 //
-// description :	Class to implement the PolledDevice command.
-//			This class returns the name list of device actually
-//			polled
+// description :    Class to implement the PolledDevice command.
+//            This class returns the name list of device actually
+//            polled
 //
 //=============================================================================
-
 
 class PolledDeviceCmd : public Command
 {
-public:
+  public:
+    PolledDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
+    ~PolledDeviceCmd() { }
 
-	PolledDeviceCmd(const char *cmd_name,
-		        Tango::CmdArgType in,
-		        Tango::CmdArgType out,
-		        const char *desc);
-	~PolledDeviceCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevPollStatus class
+//            The DevPollStatus class
 //
-// description :	Class to implement the DevPollStatus command.
-//			This class returns status of all commands and/or
-//			attribute polled for a device
+// description :    Class to implement the DevPollStatus command.
+//            This class returns status of all commands and/or
+//            attribute polled for a device
 //
 //=============================================================================
-
 
 class DevPollStatusCmd : public Command
 {
-public:
+  public:
+    DevPollStatusCmd(
+        const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
+    ~DevPollStatusCmd() { }
 
-	DevPollStatusCmd(const char *cmd_name,
-		        Tango::CmdArgType in,
-		        Tango::CmdArgType out,
-			const char *in_desc,
-		        const char *out_desc);
-	~DevPollStatusCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The AddObjPolling class
+//            The AddObjPolling class
 //
-// description :	Class to implement the AddObjPolling command.
-//			This command add a new command/attribute in the list
-//			of command/attribute to be polled
+// description :    Class to implement the AddObjPolling command.
+//            This command add a new command/attribute in the list
+//            of command/attribute to be polled
 //
 //=============================================================================
-
 
 class AddObjPollingCmd : public Command
 {
-public:
+  public:
+    AddObjPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
+    ~AddObjPollingCmd() { }
 
-	AddObjPollingCmd(const char *cmd_name,
-		        Tango::CmdArgType in,
-		        Tango::CmdArgType out,
-			const std::string &in_desc);
-	~AddObjPollingCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The UpdObjPollingPeriod class
+//            The UpdObjPollingPeriod class
 //
-// description :	Class to implement the UpdObjPollingPeriod command.
-//			This command updates an object update period
+// description :    Class to implement the UpdObjPollingPeriod command.
+//            This command updates an object update period
 //
 //=============================================================================
-
 
 class UpdObjPollingPeriodCmd : public Command
 {
-public:
+  public:
+    UpdObjPollingPeriodCmd(const char *cmd_name,
+                           Tango::CmdArgType in,
+                           Tango::CmdArgType out,
+                           const std::string &in_desc);
 
+    ~UpdObjPollingPeriodCmd() { }
 
-	UpdObjPollingPeriodCmd(const char *cmd_name,
-		               Tango::CmdArgType in,
-		               Tango::CmdArgType out,
-			       const std::string &in_desc);
-	~UpdObjPollingPeriodCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The RemObjPolling class
+//            The RemObjPolling class
 //
-// description :	Class to implement the RemObjPolling command.
-//			This command removes one object of the device polling
-//			list
+// description :    Class to implement the RemObjPolling command.
+//            This command removes one object of the device polling
+//            list
 //
 //=============================================================================
-
 
 class RemObjPollingCmd : public Command
 {
-public:
+  public:
+    RemObjPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
+    ~RemObjPollingCmd() { }
 
-	RemObjPollingCmd(const char *cmd_name,
-		         Tango::CmdArgType in,
-		         Tango::CmdArgType out,
-			 const std::string &in_desc);
-	~RemObjPollingCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
 //=============================================================================
 //
-//			The StopPolling class
+//            The StopPolling class
 //
-// description :	Class to implement the StopPolling command.
-//			This command stops the polling thread
+// description :    Class to implement the StopPolling command.
+//            This command stops the polling thread
 //
 //=============================================================================
-
 
 class StopPollingCmd : public Command
 {
-public:
+  public:
+    StopPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
+    ~StopPollingCmd() { }
 
-	StopPollingCmd(const char *cmd_name,
-		       Tango::CmdArgType in,
-		       Tango::CmdArgType out);
-	~StopPollingCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The StartPolling class
+//            The StartPolling class
 //
-// description :	Class to implement the StartPolling command.
-//			This command starts the polling thread
+// description :    Class to implement the StartPolling command.
+//            This command starts the polling thread
 //
 //=============================================================================
-
 
 class StartPollingCmd : public Command
 {
-public:
+  public:
+    StartPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
+    ~StartPollingCmd() { }
 
-	StartPollingCmd(const char *cmd_name,
-		       Tango::CmdArgType in,
-		       Tango::CmdArgType out);
-	~StartPollingCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _POLLCMDS_H

@@ -2,13 +2,13 @@
 // StringUtil.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -30,60 +30,68 @@
 #include <stdio.h>
 
 #if defined(_MSC_VER)
-    #define VSNPRINTF _vsnprintf
+  #define VSNPRINTF _vsnprintf
 #else
-    #define VSNPRINTF vsnprintf
+  #define VSNPRINTF vsnprintf
 #endif // _MSC_VER
 
-namespace log4tango {
+namespace log4tango
+{
 
-    std::string StringUtil::vform(const char* format, va_list args) {
-	size_t size = 1024;
-	char* buffer = new char[size];
+std::string StringUtil::vform(const char *format, va_list args)
+{
+    size_t size = 1024;
+    char *buffer = new char[size];
 
-	while (1) {
-	    int n = VSNPRINTF(buffer, size, format, args);
+    while(1)
+    {
+        int n = VSNPRINTF(buffer, size, format, args);
 
-	    // If that worked, return a string.
-	    if ((n > -1) && (static_cast<size_t>(n) < size)) {
-		std::string s(buffer);
-		delete [] buffer;
-		return s;
-	    }
-
-	    // Else try again with more space.
-            size = (n > -1) ?
-                n + 1 :   // ISO/IEC 9899:1999
-                size * 2; // twice the old size
-
-	    delete [] buffer;
-	    buffer = new char[size];
-	}
-    }
-
-    std::string StringUtil::trim(const std::string& s) {
-        // test for null string
-        if(s.empty())
+        // If that worked, return a string.
+        if((n > -1) && (static_cast<size_t>(n) < size))
+        {
+            std::string s(buffer);
+            delete[] buffer;
             return s;
+        }
 
-        // find first non-space character
-        std::string::size_type b = s.find_first_not_of(" \t");
-        if(b == std::string::npos) // No non-spaces
-            return "";
+        // Else try again with more space.
+        size = (n > -1) ? n + 1 : // ISO/IEC 9899:1999
+                   size * 2;      // twice the old size
 
-        // find last non-space character
-        std::string::size_type e = s.find_last_not_of(" \t");
-
-        // return the remaining characters
-        return std::string(s, b, e - b + 1);
+        delete[] buffer;
+        buffer = new char[size];
     }
-
-    unsigned int StringUtil::split(std::vector<std::string>& v,
-				   const std::string& s,
-				   char delimiter, unsigned int maxSegments) {
-        v.clear();
-        std::back_insert_iterator<std::vector<std::string> > it(v);
-        return split(it, s, delimiter, maxSegments);
-    }
-
 }
+
+std::string StringUtil::trim(const std::string &s)
+{
+    // test for null string
+    if(s.empty())
+    {
+        return s;
+    }
+
+    // find first non-space character
+    std::string::size_type b = s.find_first_not_of(" \t");
+    if(b == std::string::npos) // No non-spaces
+    {
+        return "";
+    }
+
+    // find last non-space character
+    std::string::size_type e = s.find_last_not_of(" \t");
+
+    // return the remaining characters
+    return std::string(s, b, e - b + 1);
+}
+
+unsigned int
+    StringUtil::split(std::vector<std::string> &v, const std::string &s, char delimiter, unsigned int maxSegments)
+{
+    v.clear();
+    std::back_insert_iterator<std::vector<std::string>> it(v);
+    return split(it, s, delimiter, maxSegments);
+}
+
+} // namespace log4tango

@@ -9,7 +9,7 @@
 // author(s) :    N.Leclercq - SOLEIL
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -34,7 +34,6 @@
 #ifndef _LOGGING_H_
 #define _LOGGING_H_
 
-
 #include <cstring>
 #include <tango/server/tango_current_function.h>
 
@@ -47,10 +46,10 @@ constexpr auto PathSeparator = '\\';
 #else
 constexpr auto PathSeparator = '/';
 #endif
-inline const char* basename(const char* path)
+inline const char *basename(const char *path)
 {
     auto last_dir_sep = std::strrchr(path, PathSeparator);
-    if (last_dir_sep == nullptr)
+    if(last_dir_sep == nullptr)
     {
         // No separator, the path does not contains directory components.
         return path;
@@ -61,190 +60,181 @@ inline const char* basename(const char* path)
     // as long as the path is null-terminated.
     return last_dir_sep + 1;
 }
-} // logging_detail
-} // Tango
+} // namespace logging_detail
+} // namespace Tango
 
 // A shortcut to the core logger ------------------------------
 #define API_LOGGER Tango::Logging::get_core_logger()
 
 #ifdef _TANGO_LIB //== compiling TANGO lib ====================
 
-#define TANGO_LOG                                                \
-    if (API_LOGGER)                                         \
-      API_LOGGER->get_stream(log4tango::Level::INFO, false) \
-        << log4tango::_begin_log              \
-        << log4tango::LoggerStream::SourceLocation{ \
-            ::Tango::logging_detail::basename(__FILE__), __LINE__}
+  #define TANGO_LOG                                                               \
+      if(API_LOGGER)                                                              \
+          API_LOGGER->get_stream(log4tango::Level::INFO, false)                   \
+              << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+          {                                                                       \
+              ::Tango::logging_detail::basename(__FILE__), __LINE__               \
+          }
 
 #else
 
-#define TANGO_LOG std::cout
+  #define TANGO_LOG std::cout
 
 #endif //== compiling TANGO lib ===============================
 
 // Map. TANGO_LOG_INFO to INFO level --------------------------------
-#define TANGO_LOG_INFO                             \
-  if (API_LOGGER && API_LOGGER->is_info_enabled()) \
-    API_LOGGER->info_stream()                      \
-      << log4tango::_begin_log       \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define TANGO_LOG_INFO                                                                                \
+    if(API_LOGGER && API_LOGGER->is_info_enabled())                                                   \
+        API_LOGGER->info_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                             \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                     \
+        }
 
 // Map. TANGO_LOG_DEBUG to DEBUG level -------------------------------
-#define TANGO_LOG_DEBUG                                       \
-  if (API_LOGGER && API_LOGGER->is_debug_enabled()) \
-    API_LOGGER->debug_stream()                      \
-      << log4tango::_begin_log        \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define TANGO_LOG_DEBUG                                                                                \
+    if(API_LOGGER && API_LOGGER->is_debug_enabled())                                                   \
+        API_LOGGER->debug_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                              \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                      \
+        }
 
-namespace Tango {
+namespace Tango
+{
 
 class Util;
 
-extern log4tango::Logger* _core_logger;
+extern log4tango::Logger *_core_logger;
 
 class Logging
 {
-public:
-  /**
-   * Initializes the Tango Logging service (TLS)
-   **/
-  static void init (const std::string& ds_name,
-                    int cmd_line_level,
-                    bool use_tango_db,
-                    Database &db,
-                    Util *tg);
-  /**
-   * Shutdown the Tango Logging service
-   **/
-  static void cleanup (void);
+  public:
+    /**
+     * Initializes the Tango Logging service (TLS)
+     **/
+    static void init(const std::string &ds_name, int cmd_line_level, bool use_tango_db, Database &db, Util *tg);
+    /**
+     * Shutdown the Tango Logging service
+     **/
+    static void cleanup(void);
 
-  /**
-   * Returns the core logger substitute
-   **/
-  static log4tango::Logger* get_core_logger (void);
+    /**
+     * Returns the core logger substitute
+     **/
+    static log4tango::Logger *get_core_logger(void);
 
-  /**
-   * Implementation of the DServer AddLoggingTarget Tango command
-   **/
-  static void add_logging_target (const DevVarStringArray *argin);
+    /**
+     * Implementation of the DServer AddLoggingTarget Tango command
+     **/
+    static void add_logging_target(const DevVarStringArray *argin);
 
-  /**
-   * Implementation of the DServer AddLoggingTarget Tango command
-   **/
-  static void add_logging_target (log4tango::Logger* logger,
-                                  const std::string& tg_type,
-                                  const std::string& tg_name,
-                                  int throw_exception = 1);
+    /**
+     * Implementation of the DServer AddLoggingTarget Tango command
+     **/
+    static void add_logging_target(log4tango::Logger *logger,
+                                   const std::string &tg_type,
+                                   const std::string &tg_name,
+                                   int throw_exception = 1);
 
-  /**
-   * Implementation of the DServer AddLoggingTarget Tango command
-   **/
-  static void add_logging_target (log4tango::Logger* logger,
-                                  const std::string& tg_type_name,
-                                  int throw_exception = 1);
+    /**
+     * Implementation of the DServer AddLoggingTarget Tango command
+     **/
+    static void add_logging_target(log4tango::Logger *logger, const std::string &tg_type_name, int throw_exception = 1);
 
-  /**
-   * Implementation of the DServer RemoveLoggingTarget Tango command
-   **/
-  static void remove_logging_target (const DevVarStringArray *argin);
+    /**
+     * Implementation of the DServer RemoveLoggingTarget Tango command
+     **/
+    static void remove_logging_target(const DevVarStringArray *argin);
 
-  /**
-   * Implementation of the DServer GetLoggingTarget Tango command
-   **/
-  static DevVarStringArray* get_logging_target (const std::string& dev_name);
+    /**
+     * Implementation of the DServer GetLoggingTarget Tango command
+     **/
+    static DevVarStringArray *get_logging_target(const std::string &dev_name);
 
-  /**
-   * Implementation of the DServer SetLoggingLevel Tango command
-   **/
-  static void set_logging_level (const DevVarLongStringArray *argin);
+    /**
+     * Implementation of the DServer SetLoggingLevel Tango command
+     **/
+    static void set_logging_level(const DevVarLongStringArray *argin);
 
-  /**
-   * Implementation of the DServer GetLoggingLevel Tango command
-   **/
-  static DevVarLongStringArray* get_logging_level (const DevVarStringArray *argin);
+    /**
+     * Implementation of the DServer GetLoggingLevel Tango command
+     **/
+    static DevVarLongStringArray *get_logging_level(const DevVarStringArray *argin);
 
-  /**
-   * Implementation of the DServer StartLogging Tango command
-   **/
-  static void  start_logging (void);
+    /**
+     * Implementation of the DServer StartLogging Tango command
+     **/
+    static void start_logging(void);
 
-  /**
-   * Implementation of the DServer StopLogging Tango command
-   **/
-  static void  stop_logging (void);
+    /**
+     * Implementation of the DServer StopLogging Tango command
+     **/
+    static void stop_logging(void);
 
-  /**
-   * Converts a Tango logging level into a log4tango level
-   **/
-  static log4tango::Level::Value tango_to_log4tango_level (Tango::LogLevel tango_level,
-                                                           bool throw_exception = true);
+    /**
+     * Converts a Tango logging level into a log4tango level
+     **/
+    static log4tango::Level::Value tango_to_log4tango_level(Tango::LogLevel tango_level, bool throw_exception = true);
 
-  /**
-   * Converts a Tango logging level into a log4tango level
-   **/
-  static log4tango::Level::Value tango_to_log4tango_level (const std::string& tango_level,
-                                                           bool throw_exception = true);
+    /**
+     * Converts a Tango logging level into a log4tango level
+     **/
+    static log4tango::Level::Value tango_to_log4tango_level(const std::string &tango_level,
+                                                            bool throw_exception = true);
 
-  /**
-   * Converts a log4tango level into a Tango logging level
-   **/
-  static Tango::LogLevel log4tango_to_tango_level (log4tango::Level::Value log4tango_level);
+    /**
+     * Converts a log4tango level into a Tango logging level
+     **/
+    static Tango::LogLevel log4tango_to_tango_level(log4tango::Level::Value log4tango_level);
 
+    /**
+     * Modify the rolling file threshold of the given Logger
+     **/
+    static void set_rolling_file_threshold(log4tango::Logger *logger, size_t rtf);
 
-  /**
-   * Modify the rolling file threshold of the given Logger
-   **/
-  static void set_rolling_file_threshold(log4tango::Logger* logger, size_t rtf);
+  private:
+    /**
+     *
+     **/
+    static void kill_zombie_appenders(void);
 
-private:
-  /**
-   *
-   **/
-  static void kill_zombie_appenders (void);
+    /**
+     *
+     **/
+    static std::string dev_to_file_name(const std::string &_dev_name);
 
-  /**
-   *
-   **/
-  static std::string dev_to_file_name (const std::string& _dev_name);
+    /**
+     *
+     **/
+    static int get_target_type_and_name(const std::string &input, std::string &type, std::string &name);
 
-  /**
-   *
-   **/
-  static int get_target_type_and_name (const std::string& input,
-                                       std::string& type,
-                                       std::string& name);
+    /**
+     *
+     **/
+    static int create_log_dir(const std::string &full_path);
 
-  /**
-   *
-   **/
-  static int create_log_dir (const std::string& full_path);
+    /**
+     * Protect the Logging class against instanciation and copy
+     **/
+    Logging(const Logging &);
+    ~Logging();
+    const Logging &operator=(const Logging &);
 
-  /**
-   * Protect the Logging class against instanciation and copy
-   **/
-   Logging (const Logging&);
-   ~Logging();
-   const Logging& operator= (const Logging&);
+    /**
+     *
+     **/
+    static std::string _log_path;
 
-  /**
-   *
-   **/
-   static std::string _log_path;
+    /**
+     *
+     **/
+    static size_t _rft;
 
-  /**
-   *
-   **/
-   static size_t _rft;
-
-  /**
-   *
-   **/
-   static int _cmd_line_level;
+    /**
+     *
+     **/
+    static int _cmd_line_level;
 };
 
-} // namespace tango
-
+} // namespace Tango
 
 #endif // _LOGGING_H_

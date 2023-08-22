@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -40,27 +40,27 @@ namespace Tango
 //+---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Util::fill_attr_polling_buffer
+//        Util::fill_attr_polling_buffer
 //
 // description :
-//		Fill attribute polling buffer with your own data
+//        Fill attribute polling buffer with your own data
 //
 // args :
-//		in :
-// 			- dev : The device
-//			- att_name : The attribute name
-//			- data : The attribute data to be stored in the polling buffer
+//        in :
+//             - dev : The device
+//            - att_name : The attribute name
+//            - data : The attribute data to be stored in the polling buffer
 //
 //----------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHistoryStack<T>  &data)
+void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, AttrHistoryStack<T> &data)
 {
-//
-// Check that the device is polled
-//
+    //
+    // Check that the device is polled
+    //
 
-    if (dev->is_polled() == false)
+    if(dev->is_polled() == false)
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -68,30 +68,32 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         TANGO_THROW_EXCEPTION(API_DeviceNotPolled, o.str());
     }
 
-//
-// Attribute name in lower case letters and check that it is marked as polled
-//
+    //
+    // Attribute name in lower case letters and check that it is marked as polled
+    //
 
     std::string obj_name(att_name);
-    std::transform(obj_name.begin(),obj_name.end(),obj_name.begin(),::tolower);
+    std::transform(obj_name.begin(), obj_name.end(), obj_name.begin(), ::tolower);
 
-    dev->get_polled_obj_by_type_name(Tango::POLL_ATTR,obj_name);
+    dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
 
-//
-// Get a reference on the Attribute object
-//
+    //
+    // Get a reference on the Attribute object
+    //
 
     Tango::Attribute &att = dev->get_device_attr()->get_attr_by_name(att_name.c_str());
     Tango::WAttribute *w_att_ptr = NULL;
     Tango::AttrWriteType w_type = att.get_writable();
-    if (w_type == Tango::READ_WRITE)
+    if(w_type == Tango::READ_WRITE)
+    {
         w_att_ptr = &(dev->get_device_attr()->get_w_attr_by_name(att_name.c_str()));
+    }
 
-//
-// Check that it is not a WRITE only attribute
-//
+    //
+    // Check that it is not a WRITE only attribute
+    //
 
-    if (w_type == Tango::WRITE)
+    if(w_type == Tango::WRITE)
     {
         TangoSys_OMemStream o;
         o << "Attribute " << att_name;
@@ -100,16 +102,16 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         TANGO_THROW_EXCEPTION(API_DeviceNotPolled, o.str());
     }
 
-//
-// If the attribute is not READ_WRITE, the ptr to written part should always be NULL
-//
+    //
+    // If the attribute is not READ_WRITE, the ptr to written part should always be NULL
+    //
 
     size_t nb_elt = data.length();
-    if (w_type != READ_WRITE)
+    if(w_type != READ_WRITE)
     {
-        for (size_t i = 0;i < nb_elt;i++)
+        for(size_t i = 0; i < nb_elt; i++)
         {
-            if ((data.get_data())[i].wr_ptr != NULL)
+            if((data.get_data())[i].wr_ptr != NULL)
             {
                 TangoSys_OMemStream o;
                 o << "The attribute " << att_name;
@@ -122,12 +124,12 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         }
     }
 
-//
-// For device implementing IDL 3, DevEncoded data type is not supported
-//
+    //
+    // For device implementing IDL 3, DevEncoded data type is not supported
+    //
 
     long idl_vers = dev->get_dev_idl_version();
-    if ((att.get_data_type() == DEV_ENCODED) && (idl_vers == 3))
+    if((att.get_data_type() == DEV_ENCODED) && (idl_vers == 3))
     {
         TangoSys_OMemStream o;
         o << "The attribute " << att_name;
@@ -138,18 +140,17 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature, o.str());
     }
 
-//
-// DevEncoded data type is not supported for spectrum or image attribute
-// Paranoid code? This case should never happens!
-//
+    //
+    // DevEncoded data type is not supported for spectrum or image attribute
+    // Paranoid code? This case should never happens!
+    //
 
-    if ((att.get_data_type() == DEV_ENCODED) &&
-        (att.get_data_format() != Tango::SCALAR) &&
-        (w_type == Tango::READ_WRITE))
+    if((att.get_data_type() == DEV_ENCODED) && (att.get_data_format() != Tango::SCALAR) &&
+       (w_type == Tango::READ_WRITE))
     {
-        for (size_t i = 0;i < nb_elt;i++)
+        for(size_t i = 0; i < nb_elt; i++)
         {
-            if ((data.get_data())[i].wr_ptr != NULL)
+            if((data.get_data())[i].wr_ptr != NULL)
             {
                 TangoSys_OMemStream o;
                 o << "The attribute " << att_name;
@@ -162,11 +163,11 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         }
     }
 
-//
-// Check that the device IDL is at least 3
-//
+    //
+    // Check that the device IDL is at least 3
+    //
 
-    if (idl_vers <= 2)
+    if(idl_vers <= 2)
     {
         TangoSys_OMemStream o;
         o << "The device " << dev->get_name() << " is too old to support this feature. ";
@@ -175,13 +176,13 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature, o.str());
     }
 
-//
-// Check that history is not larger than polling buffer
-//
+    //
+    // Check that history is not larger than polling buffer
+    //
 
     unsigned long nb_poll = dev->get_attr_poll_ring_depth(att_name);
 
-    if (nb_elt > nb_poll)
+    if(nb_elt > nb_poll)
     {
         TangoSys_OMemStream o;
         o << "The polling buffer depth for attribute " << att_name;
@@ -192,39 +193,39 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         TANGO_THROW_EXCEPTION(API_DeviceNotPolled, o.str());
     }
 
-//
-// A loop on each record
-//
+    //
+    // A loop on each record
+    //
 
     unsigned long i;
     Tango::DevFailed *save_except;
     AttributeIdlData aid;
     bool attr_failed;
 
-//
-// Take the device monitor before the loop
-// In case of large element number, it is time cousuming to take/release the monitor in the loop
-//
+    //
+    // Take the device monitor before the loop
+    // In case of large element number, it is time cousuming to take/release the monitor in the loop
+    //
 
     dev->get_poll_monitor().get_monitor();
 
-//
-// The loop for each element
-//
+    //
+    // The loop for each element
+    //
 
-    for (i = 0;i < nb_elt;i++)
+    for(i = 0; i < nb_elt; i++)
     {
         save_except = NULL;
         attr_failed = false;
 
-        if ((data.get_data())[i].err.length() != 0)
+        if((data.get_data())[i].err.length() != 0)
         {
             attr_failed = true;
             try
             {
                 save_except = new Tango::DevFailed((data.get_data())[i].err);
             }
-            catch (std::bad_alloc &)
+            catch(std::bad_alloc &)
             {
                 dev->get_poll_monitor().rel_monitor();
                 TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
@@ -232,20 +233,19 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
         }
         else
         {
-
-//
-// Allocate memory for the AttributeValueList sequence
-//
+            //
+            // Allocate memory for the AttributeValueList sequence
+            //
 
             try
             {
-            	if (idl_vers >= 5)
-				{
-					aid.data_5 = new Tango::AttributeValueList_5(1);
-					aid.data_5->length(1);
+                if(idl_vers >= 5)
+                {
+                    aid.data_5 = new Tango::AttributeValueList_5(1);
+                    aid.data_5->length(1);
                     (*aid.data_5)[0].value.union_no_data(true);
-				}
-                else if (idl_vers == 4)
+                }
+                else if(idl_vers == 4)
                 {
                     aid.data_4 = new Tango::AttributeValueList_4(1);
                     aid.data_4->length(1);
@@ -257,18 +257,18 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
                     aid.data_3->length(1);
                 }
             }
-            catch (std::bad_alloc &)
+            catch(std::bad_alloc &)
             {
                 dev->get_poll_monitor().rel_monitor();
                 TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
             }
 
-//
-// Init name,date and quality factor
-//
+            //
+            // Init name,date and quality factor
+            //
 
             Tango::AttrQuality qu = (data.get_data())[i].qual;
-            if (idl_vers >= 5)
+            if(idl_vers >= 5)
             {
                 (*aid.data_5)[0].time = make_TimeVal((data.get_data())[i].tp);
 
@@ -283,7 +283,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
                 (*aid.data_5)[0].data_format = att.get_data_format();
                 (*aid.data_5)[0].data_type = att.get_data_type();
             }
-            else if (idl_vers == 4)
+            else if(idl_vers == 4)
             {
                 (*aid.data_4)[0].time = make_TimeVal((data.get_data())[i].tp);
 
@@ -309,44 +309,46 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
                 (*aid.data_3)[0].r_dim.dim_x = 0;
                 (*aid.data_3)[0].r_dim.dim_y = 0;
             }
-            if ((qu == Tango::ATTR_VALID) ||
-                (qu == Tango::ATTR_ALARM) ||
-                (qu == Tango::ATTR_WARNING) ||
-                (qu == Tango::ATTR_CHANGING))
+            if((qu == Tango::ATTR_VALID) || (qu == Tango::ATTR_ALARM) || (qu == Tango::ATTR_WARNING) ||
+               (qu == Tango::ATTR_CHANGING))
             {
+                //
+                // Set Attribute object value
+                //
 
-//
-// Set Attribute object value
-//
-
-                att.set_value(const_cast<T*>((data.get_data())[i].ptr),
-                          (data.get_data())[i].x,
-                          (data.get_data())[i].y,
-                          (data.get_data())[i].release);
+                att.set_value(const_cast<T *>((data.get_data())[i].ptr),
+                              (data.get_data())[i].x,
+                              (data.get_data())[i].y,
+                              (data.get_data())[i].release);
                 att.set_date((data.get_data())[i].tp);
-                att.set_quality(qu,false);
+                att.set_quality(qu, false);
 
-//
-// Init remaining fields in AttributeValueList
-//
+                //
+                // Init remaining fields in AttributeValueList
+                //
 
-                if (w_type == Tango::READ_WITH_WRITE)
-                    dev->get_device_attr()->add_write_value(att);
-                else if (w_type == Tango::READ_WRITE)
+                if(w_type == Tango::READ_WITH_WRITE)
                 {
-                    if ((data.get_data())[i].wr_ptr != NULL)
+                    dev->get_device_attr()->add_write_value(att);
+                }
+                else if(w_type == Tango::READ_WRITE)
+                {
+                    if((data.get_data())[i].wr_ptr != NULL)
                     {
-                        w_att_ptr->set_write_value((T *)(data.get_data())[i].wr_ptr,
-                                                (data.get_data())[i].wr_x,
-                                                (data.get_data())[i].wr_y);
+                        w_att_ptr->set_write_value(
+                            (T *) (data.get_data())[i].wr_ptr, (data.get_data())[i].wr_x, (data.get_data())[i].wr_y);
                         dev->get_device_attr()->add_write_value(att);
 
-                        if ((data.get_data())[i].release == true)
+                        if((data.get_data())[i].release == true)
                         {
-                            if (att.get_data_format() == Tango::SCALAR)
-                                delete (data.get_data())[i].wr_ptr;
+                            if(att.get_data_format() == Tango::SCALAR)
+                            {
+                                delete(data.get_data())[i].wr_ptr;
+                            }
                             else
-                                delete [] (data.get_data())[i].wr_ptr;
+                            {
+                                delete[](data.get_data())[i].wr_ptr;
+                            }
                         }
                     }
                     else
@@ -355,34 +357,34 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
                     }
                 }
 
-//
-// Insert data into the AttributeValue object
-//
+                //
+                // Insert data into the AttributeValue object
+                //
 
-                dev->data_into_net_object(att,aid,0,w_type,true);
+                dev->data_into_net_object(att, aid, 0, w_type, true);
 
-//
-// Init remaining fields
-//
+                //
+                // Init remaining fields
+                //
 
-				if (idl_vers >= 5)
-				{
+                if(idl_vers >= 5)
+                {
                     (*aid.data_5)[0].r_dim.dim_x = (data.get_data())[i].x;
                     (*aid.data_5)[0].r_dim.dim_y = (data.get_data())[i].y;
 
-                    if ((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
+                    if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
                     {
                         WAttribute &assoc_att = dev->get_device_attr()->get_w_attr_by_ind(att.get_assoc_ind());
                         (*aid.data_5)[0].w_dim.dim_x = assoc_att.get_w_dim_x();
                         (*aid.data_5)[0].w_dim.dim_y = assoc_att.get_w_dim_y();
                     }
-				}
-                else if (idl_vers == 4)
+                }
+                else if(idl_vers == 4)
                 {
                     (*aid.data_4)[0].r_dim.dim_x = (data.get_data())[i].x;
                     (*aid.data_4)[0].r_dim.dim_y = (data.get_data())[i].y;
 
-                    if ((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
+                    if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
                     {
                         WAttribute &assoc_att = dev->get_device_attr()->get_w_attr_by_ind(att.get_assoc_ind());
                         (*aid.data_4)[0].w_dim.dim_x = assoc_att.get_w_dim_x();
@@ -394,7 +396,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
                     (*aid.data_3)[0].r_dim.dim_x = (data.get_data())[i].x;
                     (*aid.data_3)[0].r_dim.dim_y = (data.get_data())[i].y;
 
-                    if ((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
+                    if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
                     {
                         WAttribute &assoc_att = dev->get_device_attr()->get_w_attr_by_ind(att.get_assoc_ind());
                         (*aid.data_3)[0].w_dim.dim_x = assoc_att.get_w_dim_x();
@@ -404,57 +406,64 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
             }
         }
 
-//
-// Fill one slot of polling buffer
-//
+        //
+        // Fill one slot of polling buffer
+        //
 
         try
         {
-            std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR,obj_name);
+            std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
 
-            if (attr_failed == false)
+            if(attr_failed == false)
             {
-            	if (idl_vers >= 5)
-				{
+                if(idl_vers >= 5)
+                {
                     auto when = make_poll_time((*aid.data_5)[0].time);
                     auto zero = PollClock::duration::zero();
-                    (*ite)->insert_data(aid.data_5,when,zero);
-				}
-                else if (idl_vers == 4)
+                    (*ite)->insert_data(aid.data_5, when, zero);
+                }
+                else if(idl_vers == 4)
                 {
                     auto when = make_poll_time((*aid.data_4)[0].time);
                     auto zero = PollClock::duration::zero();
-                    (*ite)->insert_data(aid.data_4,when,zero);
+                    (*ite)->insert_data(aid.data_4, when, zero);
                 }
                 else
                 {
                     auto when = make_poll_time((*aid.data_3)[0].time);
                     auto zero = PollClock::duration::zero();
-                    (*ite)->insert_data(aid.data_3,when,zero);
+                    (*ite)->insert_data(aid.data_3, when, zero);
                 }
             }
             else
             {
                 auto when = make_poll_time((data.get_data())[i].tp);
                 auto zero = PollClock::duration::zero();
-                (*ite)->insert_except(save_except,when,zero);
+                (*ite)->insert_except(save_except, when, zero);
             }
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
-            if (attr_failed == false)
-			{
-				if (idl_vers >= 5)
-					delete aid.data_5;
-                else if (idl_vers == 4)
+            if(attr_failed == false)
+            {
+                if(idl_vers >= 5)
+                {
+                    delete aid.data_5;
+                }
+                else if(idl_vers == 4)
+                {
                     delete aid.data_4;
-				else
+                }
+                else
+                {
                     delete aid.data_3;
-			}
+                }
+            }
             else
+            {
                 delete save_except;
+            }
         }
-
     }
 
     dev->get_poll_monitor().rel_monitor();
@@ -463,28 +472,27 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev,std::string &att_name,AttrHi
 //+---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Util::fill_cmd_polling_buffer
+//        Util::fill_cmd_polling_buffer
 //
 // description :
-//		Fill command polling buffer with your own data
+//        Fill command polling buffer with your own data
 //
 // args :
-//		in :
-// 			- dev : The device
-//			- cmd_name : The command name
-//			- data : The command data to be stored in the polling buffer
+//        in :
+//             - dev : The device
+//            - cmd_name : The command name
+//            - data : The command data to be stored in the polling buffer
 //
 //----------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,CmdHistoryStack<T>  &data)
+void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name, CmdHistoryStack<T> &data)
 {
+    //
+    // Check that the device is polled
+    //
 
-//
-// Check that the device is polled
-//
-
-    if (dev->is_polled() == false)
+    if(dev->is_polled() == false)
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -492,23 +500,23 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,CmdHist
         TANGO_THROW_EXCEPTION(API_DeviceNotPolled, o.str());
     }
 
-//
-// Command name in lower case letters and check that it is marked as polled
-//
+    //
+    // Command name in lower case letters and check that it is marked as polled
+    //
 
     std::string obj_name(cmd_name);
-    std::transform(obj_name.begin(),obj_name.end(),obj_name.begin(),::tolower);
+    std::transform(obj_name.begin(), obj_name.end(), obj_name.begin(), ::tolower);
 
-    dev->get_polled_obj_by_type_name(Tango::POLL_CMD,obj_name);
+    dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
 
-//
-// Check that history is not larger than polling buffer
-//
+    //
+    // Check that history is not larger than polling buffer
+    //
 
     size_t nb_elt = data.length();
     long nb_poll = dev->get_cmd_poll_ring_depth(cmd_name);
 
-    if (nb_elt > (size_t)nb_poll)
+    if(nb_elt > (size_t) nb_poll)
     {
         TangoSys_OMemStream o;
         o << "The polling buffer depth for command " << cmd_name;
@@ -519,36 +527,36 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,CmdHist
         TANGO_THROW_EXCEPTION(API_DeviceNotPolled, o.str());
     }
 
-//
-// Take the device monitor before the loop
-// In case of large element number, it is time cousuming to take/release the monitor in the loop
-// In case of large element number, it is time cousuming to take/release the monitor in the loop
-//
+    //
+    // Take the device monitor before the loop
+    // In case of large element number, it is time cousuming to take/release the monitor in the loop
+    // In case of large element number, it is time cousuming to take/release the monitor in the loop
+    //
 
     dev->get_poll_monitor().get_monitor();
 
-//
-// A loop on each record
-//
+    //
+    // A loop on each record
+    //
 
     size_t i;
     Tango::DevFailed *save_except;
     bool cmd_failed;
     CORBA::Any *any_ptr = nullptr;
 
-    for (i = 0;i < nb_elt;i++)
+    for(i = 0; i < nb_elt; i++)
     {
         save_except = NULL;
         cmd_failed = false;
 
-        if ((data.get_data())[i].err.length() != 0)
+        if((data.get_data())[i].err.length() != 0)
         {
             cmd_failed = true;
             try
             {
                 save_except = new Tango::DevFailed((data.get_data())[i].err);
             }
-            catch (std::bad_alloc &)
+            catch(std::bad_alloc &)
             {
                 dev->get_poll_monitor().rel_monitor();
                 TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
@@ -556,59 +564,67 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev,std::string &cmd_name,CmdHist
         }
         else
         {
-
-//
-// Allocate memory for the Any object
-//
+            //
+            // Allocate memory for the Any object
+            //
 
             try
             {
                 any_ptr = new CORBA::Any();
             }
-            catch (std::bad_alloc &)
+            catch(std::bad_alloc &)
             {
                 dev->get_poll_monitor().rel_monitor();
                 TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
             }
 
-//
-// Set command value in Any object
-//
+            //
+            // Set command value in Any object
+            //
 
             T *tmp_ptr = (data.get_data())[i].ptr;
-			(*any_ptr) <<= (*tmp_ptr);
+            (*any_ptr) <<= (*tmp_ptr);
 
-			if ((data.get_data())[i].release == true)
-				delete tmp_ptr;
+            if((data.get_data())[i].release == true)
+            {
+                delete tmp_ptr;
+            }
         }
 
-//
-// Fill one slot of polling buffer
-//
+        //
+        // Fill one slot of polling buffer
+        //
 
         try
         {
-            std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD,obj_name);
+            std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
             auto when = make_poll_time((data.get_data())[i].tp);
             auto zero = PollClock::duration::zero();
-            if (cmd_failed == false)
-                (*ite)->insert_data(any_ptr,when,zero);
+            if(cmd_failed == false)
+            {
+                (*ite)->insert_data(any_ptr, when, zero);
+            }
             else
-                (*ite)->insert_except(save_except,when,zero);
+            {
+                (*ite)->insert_except(save_except, when, zero);
+            }
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
-            if (cmd_failed == false)
+            if(cmd_failed == false)
+            {
                 delete any_ptr;
+            }
             else
+            {
                 delete save_except;
+            }
         }
-
     }
 
     dev->get_poll_monitor().rel_monitor();
 }
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* UTILS_TPP */

@@ -2,13 +2,13 @@
 // LoggingEvent.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -30,15 +30,15 @@
 #include <tango/common/log4tango/Portability.h>
 #include <tango/common/log4tango/LoggingEvent.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
-
-LoggingEvent::LoggingEvent (const std::string& _logger_name,
-                            const std::string& _message,
-                            Level::Value _level,
-                            const std::string& _file_path,
-                            int _line_number)
-  : logger_name(_logger_name),
+LoggingEvent::LoggingEvent(const std::string &_logger_name,
+                           const std::string &_message,
+                           Level::Value _level,
+                           const std::string &_file_path,
+                           int _line_number) :
+    logger_name(_logger_name),
     message(_message),
     level(_level),
     thread_id(std::this_thread::get_id()),
@@ -46,9 +46,9 @@ LoggingEvent::LoggingEvent (const std::string& _logger_name,
     file_path(_file_path),
     line_number(_line_number)
 {
-  //-- thread_name = threading::get_thread_id();
+    //-- thread_name = threading::get_thread_id();
 }
 
-LoggingEvent::LoggingEvent (const LoggingEvent& _src) = default;
+LoggingEvent::LoggingEvent(const LoggingEvent &_src) = default;
 
 } // namespace log4tango

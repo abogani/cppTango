@@ -6,183 +6,189 @@
 #undef SUITE_NAME
 #define SUITE_NAME DynCmdTestSuite
 
-class DynCmdTestSuite: public CxxTest::TestSuite
+class DynCmdTestSuite : public CxxTest::TestSuite
 {
-protected:
+  protected:
+    DeviceProxy *device1, *device2;
+    string device1_name;
+    string device2_name;
 
-	DeviceProxy 			*device1,*device2;
-	string 					device1_name;
-	string					device2_name;
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
-public:
-	SUITE_NAME()
-	{
-//
-// Arguments check -------------------------------------------------
-//
+        string full_ds_name;
 
-		string full_ds_name;
+        // user arguments, obtained from the command line sequentially
+        device1_name = CxxTest::TangoPrinter::get_param("device1");
+        device2_name = CxxTest::TangoPrinter::get_param("device2");
 
-		// user arguments, obtained from the command line sequentially
-		device1_name = CxxTest::TangoPrinter::get_param("device1");
-		device2_name = CxxTest::TangoPrinter::get_param("device2");
+        // always add this line, otherwise arguments will not be parsed correctly
+        CxxTest::TangoPrinter::validate_args();
 
-		// always add this line, otherwise arguments will not be parsed correctly
-		CxxTest::TangoPrinter::validate_args();
+        //
+        // Initialization --------------------------------------------------
+        //
 
+        try
+        {
+            device1 = new DeviceProxy(device1_name);
+            device1->ping();
 
-//
-// Initialization --------------------------------------------------
-//
+            device2 = new DeviceProxy(device2_name);
+            device2->ping();
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
 
-		try
-		{
-			device1 = new DeviceProxy(device1_name);
-			device1->ping();
+    virtual ~SUITE_NAME()
+    {
+        delete device1;
+        delete device2;
+    }
 
-			device2 = new DeviceProxy(device2_name);
-			device2->ping();
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
-	}
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-	virtual ~SUITE_NAME()
-	{
-		delete device1;
-		delete device2;
-	}
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+    //
+    // Tests -------------------------------------------------------
+    //
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+    // Test dynamic command installed at class level
 
-//
-// Tests -------------------------------------------------------
-//
+    void test_dynamic_command_at_class_level()
+    {
+        // Add a dynamic command
 
-// Test dynamic command installed at class level
+        Tango::DevLong device_level = 0;
+        DeviceData din, dout;
+        din << device_level;
 
-	void test_dynamic_command_at_class_level()
-	{
-		// Add a dynamic command
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand", din));
 
-		Tango::DevLong device_level = 0;
-		DeviceData din,dout;
-		din << device_level;
+        // Execute command
 
-		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand",din));
+        TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("Added_cmd"));
+        float receiv;
+        dout >> receiv;
+        TS_ASSERT_EQUALS(receiv, 4.0);
 
-		// Execute command
+        // Command in command list?
 
-		TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("Added_cmd"));
-		float receiv;
-		dout >> receiv;
-		TS_ASSERT_EQUALS(receiv, 4.0);
+        CommandInfo ci = device1->command_query("Added_cmd");
+        TS_ASSERT_EQUALS(ci.cmd_name, "Added_cmd");
+        TS_ASSERT_EQUALS(ci.in_type, DEV_VOID);
+        TS_ASSERT_EQUALS(ci.out_type, DEV_FLOAT);
 
-		// Command in command list?
+        CommandInfoList *cil = nullptr;
+        TS_ASSERT_THROWS_NOTHING(cil = device1->command_list_query());
+        bool found = false;
+        size_t nb_cmd = cil->size();
+        for(size_t loop = 0; loop < nb_cmd; loop++)
+        {
+            if((*cil)[loop].cmd_name == "Added_cmd")
+            {
+                found = true;
+            }
+        }
 
-		CommandInfo ci = device1->command_query("Added_cmd");
-		TS_ASSERT_EQUALS(ci.cmd_name, "Added_cmd");
-		TS_ASSERT_EQUALS(ci.in_type, DEV_VOID);
-		TS_ASSERT_EQUALS(ci.out_type, DEV_FLOAT);
+        TS_ASSERT(found);
 
-		CommandInfoList *cil = nullptr;
-		TS_ASSERT_THROWS_NOTHING(cil = device1->command_list_query());
-		bool found = false;
-		size_t nb_cmd = cil->size();
-		for (size_t loop = 0;loop < nb_cmd;loop++)
-		{
-			if ((*cil)[loop].cmd_name == "Added_cmd")
-				found = true;
-		}
+        // Command also in command list for device 2
 
-		TS_ASSERT(found);
+        CommandInfoList *cil2 = nullptr;
+        TS_ASSERT_THROWS_NOTHING(cil2 = device2->command_list_query());
+        found = false;
+        nb_cmd = cil2->size();
+        for(size_t loop = 0; loop < nb_cmd; loop++)
+        {
+            if((*cil2)[loop].cmd_name == "Added_cmd")
+            {
+                found = true;
+            }
+        }
 
-		// Command also in command list for device 2
+        TS_ASSERT(found);
 
-		CommandInfoList *cil2 = nullptr;
-		TS_ASSERT_THROWS_NOTHING(cil2 = device2->command_list_query());
-		found = false;
-		nb_cmd = cil2->size();
-		for (size_t loop = 0;loop < nb_cmd;loop++)
-		{
-			if ((*cil2)[loop].cmd_name == "Added_cmd")
-				found = true;
-		}
+        // Remove command
 
-		TS_ASSERT(found);
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IORemoveCommand"));
+    }
 
-		// Remove command
+    // Test dynamic command installed at device level
 
-		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IORemoveCommand"));
-	}
+    void test_dynamic_command_at_device_level()
+    {
+        // Add a dynamic command
 
-// Test dynamic command installed at device level
+        Tango::DevLong device_level = 1;
+        DeviceData din, dout;
+        din << device_level;
 
-	void test_dynamic_command_at_device_level()
-	{
-		// Add a dynamic command
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand", din));
 
-		Tango::DevLong device_level = 1;
-		DeviceData din,dout;
-		din << device_level;
+        // Execute command
 
-		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOAddCommand",din));
+        TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("Added_cmd"));
+        float receiv;
+        dout >> receiv;
+        TS_ASSERT_EQUALS(receiv, 4.0);
 
-		// Execute command
+        // Command in command list?
 
-		TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("Added_cmd"));
-		float receiv;
-		dout >> receiv;
-		TS_ASSERT_EQUALS(receiv, 4.0);
+        CommandInfo ci = device1->command_query("Added_cmd");
+        TS_ASSERT_EQUALS(ci.cmd_name, "Added_cmd");
+        TS_ASSERT_EQUALS(ci.in_type, DEV_VOID);
+        TS_ASSERT_EQUALS(ci.out_type, DEV_FLOAT);
 
-		// Command in command list?
+        CommandInfoList *cil = nullptr;
+        TS_ASSERT_THROWS_NOTHING(cil = device1->command_list_query());
+        bool found = false;
+        size_t nb_cmd = cil->size();
+        for(size_t loop = 0; loop < nb_cmd; loop++)
+        {
+            if((*cil)[loop].cmd_name == "Added_cmd")
+            {
+                found = true;
+            }
+        }
 
-		CommandInfo ci = device1->command_query("Added_cmd");
-		TS_ASSERT_EQUALS(ci.cmd_name, "Added_cmd");
-		TS_ASSERT_EQUALS(ci.in_type, DEV_VOID);
-		TS_ASSERT_EQUALS(ci.out_type, DEV_FLOAT);
+        TS_ASSERT(found);
 
-		CommandInfoList *cil = nullptr;
-		TS_ASSERT_THROWS_NOTHING(cil = device1->command_list_query());
-		bool found = false;
-		size_t nb_cmd = cil->size();
-		for (size_t loop = 0;loop < nb_cmd;loop++)
-		{
-			if ((*cil)[loop].cmd_name == "Added_cmd")
-				found = true;
-		}
+        // Command should not be in command list for device 2
 
-		TS_ASSERT(found);
+        CommandInfoList *cil2 = nullptr;
+        TS_ASSERT_THROWS_NOTHING(cil2 = device2->command_list_query());
+        found = false;
+        nb_cmd = cil2->size();
+        for(size_t loop = 0; loop < nb_cmd; loop++)
+        {
+            if((*cil2)[loop].cmd_name == "Added_cmd")
+            {
+                found = true;
+            }
+        }
 
-		// Command should not be in command list for device 2
+        TS_ASSERT(!found);
 
-		CommandInfoList *cil2 = nullptr;
-		TS_ASSERT_THROWS_NOTHING(cil2 = device2->command_list_query());
-		found = false;
-		nb_cmd = cil2->size();
-		for (size_t loop = 0;loop < nb_cmd;loop++)
-		{
-			if ((*cil2)[loop].cmd_name == "Added_cmd")
-				found = true;
-		}
+        // Remove command
 
-		TS_ASSERT(!found);
-
-		// Remove command
-
-		TS_ASSERT_THROWS_NOTHING(device1->command_inout("IORemoveCommand"));
-	}
+        TS_ASSERT_THROWS_NOTHING(device1->command_inout("IORemoveCommand"));
+    }
 };
 
 #endif // DynCmdTestSuite_h

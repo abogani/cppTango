@@ -1,17 +1,17 @@
 //=================================================================================================================
 //
-// file :		ClassPipe.h
+// file :        ClassPipe.h
 //
-// description :	Include file for the Tango pipe.
-//					MultiClassAttribute : A class to manage all the class level definition of pipes.
-//					There is one instance of this class for each Tango class
+// description :    Include file for the Tango pipe.
+//                    MultiClassAttribute : A class to manage all the class level definition of pipes.
+//                    There is one instance of this class for each Tango class
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -41,37 +41,49 @@ namespace Tango
 
 //=================================================================================================================
 //
-//			The PipeProperty class
+//            The PipeProperty class
 //
 //
-// description :	This class is used to store a pair of pipe prop name, pipe prop value. Both name and value are
-//					stored as strings
+// description :    This class is used to store a pair of pipe prop name, pipe prop value. Both name and value are
+//                    stored as strings
 //
 //=================================================================================================================
 
 class PipeProperty
 {
-public:
-	PipeProperty(const std::string &name,const std::string &value):prop_name(name),prop_value(value) {}
-	~PipeProperty();
+  public:
+    PipeProperty(const std::string &name, const std::string &value) :
+        prop_name(name),
+        prop_value(value)
+    {
+    }
 
-	PipeProperty(const PipeProperty &);
-	PipeProperty & operator=(const PipeProperty &);
+    ~PipeProperty();
 
-	PipeProperty(PipeProperty &&);
-	PipeProperty & operator=(PipeProperty &&);
+    PipeProperty(const PipeProperty &);
+    PipeProperty &operator=(const PipeProperty &);
 
-	const std::string &get_value() {return prop_value;}
-	const std::string &get_name() {return prop_name;}
+    PipeProperty(PipeProperty &&);
+    PipeProperty &operator=(PipeProperty &&);
 
-private:
-	std::string			prop_name;
-	std::string			prop_value;
+    const std::string &get_value()
+    {
+        return prop_value;
+    }
+
+    const std::string &get_name()
+    {
+        return prop_name;
+    }
+
+  private:
+    std::string prop_name;
+    std::string prop_value;
 };
 
 //=================================================================================================================
 //
-//			The MultiClassPipe class
+//            The MultiClassPipe class
 //
 //
 // description :
@@ -82,19 +94,19 @@ class DeviceClass;
 
 class MultiClassPipe
 {
-public:
-	MultiClassPipe();
-	~MultiClassPipe();
+  public:
+    MultiClassPipe();
+    ~MultiClassPipe();
 
-	void init_class_pipe(DeviceClass *);
+    void init_class_pipe(DeviceClass *);
 
-	std::vector<Tango::PipeProperty> &get_prop_list(const std::string &);
-/*	PipeProperty &get_prop(const string &prop_name);*/
+    std::vector<Tango::PipeProperty> &get_prop_list(const std::string &);
+    /*    PipeProperty &get_prop(const string &prop_name);*/
 
-protected:
-	std::map<std::string,std::vector<Tango::PipeProperty> >		pipe_prop_list;			// pipe_name - prop list
+  protected:
+    std::map<std::string, std::vector<Tango::PipeProperty>> pipe_prop_list; // pipe_name - prop list
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _CLASS_ATTRIBUTE_H

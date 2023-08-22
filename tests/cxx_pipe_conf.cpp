@@ -6,375 +6,371 @@
 #undef SUITE_NAME
 #define SUITE_NAME PipeConfTestSuite
 
-class PipeConfTestSuite: public CxxTest::TestSuite
+class PipeConfTestSuite : public CxxTest::TestSuite
 {
-protected:
-	DeviceProxy 			*device1;
-	DeviceProxy				*device2;
-	string 					device1_name;
-	string					device2_name;
-	DeviceProxy 			*root_admin;
+  protected:
+    DeviceProxy *device1;
+    DeviceProxy *device2;
+    string device1_name;
+    string device2_name;
+    DeviceProxy *root_admin;
 
-public:
-	SUITE_NAME()
-	{
-//
-// Arguments check -------------------------------------------------
-//
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
-		// user arguments, obtained from the command line sequentially
-		device1_name = CxxTest::TangoPrinter::get_param("device1");
-		device2_name = CxxTest::TangoPrinter::get_param("device2");
-		string full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
+        // user arguments, obtained from the command line sequentially
+        device1_name = CxxTest::TangoPrinter::get_param("device1");
+        device2_name = CxxTest::TangoPrinter::get_param("device2");
+        string full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
 
-		// always add this line, otherwise arguments will not be parsed correctly
-		CxxTest::TangoPrinter::validate_args();
+        // always add this line, otherwise arguments will not be parsed correctly
+        CxxTest::TangoPrinter::validate_args();
 
+        //
+        // Initialization --------------------------------------------------
+        //
 
-//
-// Initialization --------------------------------------------------
-//
+        try
+        {
+            device1 = new DeviceProxy(device1_name);
+            device1->ping();
 
-		try
-		{
-			device1 = new DeviceProxy(device1_name);
-			device1->ping();
+            device2 = new DeviceProxy(device2_name);
+            device2->ping();
 
-			device2 = new DeviceProxy(device2_name);
-			device2->ping();
+            string root_adm_name("dserver/");
+            root_adm_name = root_adm_name + full_ds_name;
+            root_admin = new DeviceProxy(root_adm_name);
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
 
-			string root_adm_name("dserver/");
-			root_adm_name = root_adm_name + full_ds_name;
-			root_admin = new DeviceProxy(root_adm_name);
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
-	}
+    virtual ~SUITE_NAME()
+    {
+        delete device1;
+        delete device2;
+        delete root_admin;
+    }
 
-	virtual ~SUITE_NAME()
-	{
-		delete device1;
-		delete device2;
-		delete root_admin;
-	}
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+    //
+    // Tests -------------------------------------------------------
+    //
 
-//
-// Tests -------------------------------------------------------
-//
+    // Test pipe config
 
+    void test_pipe_with_default_conf(void)
+    {
+        PipeInfo pi;
+        pi = device1->get_pipe_config("PipeConf1");
 
-// Test pipe config
+        TS_ASSERT_EQUALS(pi.name, "PipeConf1");
+        TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
+        TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
 
-	void test_pipe_with_default_conf(void)
-	{
-		PipeInfo pi;
-		pi = device1->get_pipe_config("PipeConf1");
+        TS_ASSERT_EQUALS(pi.label, "PipeConf1");
+        TS_ASSERT_EQUALS(pi.description, "No description");
+    }
 
-		TS_ASSERT_EQUALS(pi.name, "PipeConf1");
-		TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
-		TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
+    void test_pipe_with_user_conf(void)
+    {
+        PipeInfo pi;
+        pi = device1->get_pipe_config("PipeConf2");
 
-		TS_ASSERT_EQUALS(pi.label, "PipeConf1");
-		TS_ASSERT_EQUALS(pi.description, "No description");
-	}
+        TS_ASSERT_EQUALS(pi.name, "PipeConf2");
+        TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
+        TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
 
-	void test_pipe_with_user_conf(void)
-	{
-		PipeInfo pi;
-		pi = device1->get_pipe_config("PipeConf2");
+        TS_ASSERT_EQUALS(pi.label, "PipeLabel");
+        TS_ASSERT_EQUALS(pi.description, "A Tango pipe with user defined desc");
+    }
 
-		TS_ASSERT_EQUALS(pi.name, "PipeConf2");
-		TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
-		TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
+    void test_pipe_with_user_and_db_conf(void)
+    {
+        PipeInfo pi;
+        pi = device1->get_pipe_config("PipeConf3");
 
-		TS_ASSERT_EQUALS(pi.label, "PipeLabel");
-		TS_ASSERT_EQUALS(pi.description, "A Tango pipe with user defined desc");
-	}
+        TS_ASSERT_EQUALS(pi.name, "PipeConf3");
+        TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
+        TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
 
-	void test_pipe_with_user_and_db_conf(void)
-	{
-		PipeInfo pi;
-		pi = device1->get_pipe_config("PipeConf3");
+        TS_ASSERT_EQUALS(pi.label, "OverWrittenPipeLabel");
+        TS_ASSERT_EQUALS(pi.description, "No description");
+    }
 
-		TS_ASSERT_EQUALS(pi.name, "PipeConf3");
-		TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
-		TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
+    void test_pipe_with_db_class_device_conf(void)
+    {
+        PipeInfo pi;
+        pi = device1->get_pipe_config("PipeConf4");
 
-		TS_ASSERT_EQUALS(pi.label, "OverWrittenPipeLabel");
-		TS_ASSERT_EQUALS(pi.description, "No description");
-	}
+        TS_ASSERT_EQUALS(pi.name, "PipeConf4");
+        TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
+        TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
 
-	void test_pipe_with_db_class_device_conf(void)
-	{
-		PipeInfo pi;
-		pi = device1->get_pipe_config("PipeConf4");
+        TS_ASSERT_EQUALS(pi.label, "DB_class_def_label");
+        TS_ASSERT_EQUALS(pi.description, "DB_device_def_desc");
+    }
 
-		TS_ASSERT_EQUALS(pi.name, "PipeConf4");
-		TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
-		TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
+    void test_pipe_with_db_class_conf(void)
+    {
+        PipeInfo pi;
+        pi = device1->get_pipe_config("PipeConf5");
 
-		TS_ASSERT_EQUALS(pi.label, "DB_class_def_label");
-		TS_ASSERT_EQUALS(pi.description, "DB_device_def_desc");
-	}
+        TS_ASSERT_EQUALS(pi.name, "PipeConf5");
+        TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
+        TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
 
-	void test_pipe_with_db_class_conf(void)
-	{
-		PipeInfo pi;
-		pi = device1->get_pipe_config("PipeConf5");
+        TS_ASSERT_EQUALS(pi.label, "ClassDefinedLabel");
+        TS_ASSERT_EQUALS(pi.description, "No description");
+    }
 
-		TS_ASSERT_EQUALS(pi.name, "PipeConf5");
-		TS_ASSERT_EQUALS(pi.disp_level, OPERATOR);
-		TS_ASSERT_EQUALS(pi.writable, PIPE_READ);
+    /**
+     * The following tests check that class and device level defined properties override user defined ones,
+     * i.e. db->put_device_pipe_property => db->put_class_pipe_property => user (DevTestClass::pipe_factory)
+     *
+     */
+    void test_pipe_conf_return_to_xxx_no_class_no_lib(void)
+    {
+        string pipe_name("PipeConf1");
+        check_description(pipe_name, "Dev desc", "No description", "No description", "No description");
+    }
 
-		TS_ASSERT_EQUALS(pi.label, "ClassDefinedLabel");
-		TS_ASSERT_EQUALS(pi.description, "No description");
-	}
+    void test_pipe_conf_return_to_xxx_class_no_lib(void)
+    {
+        string pipe_name("PipeConf7");
+        check_description(pipe_name, "Dev desc", "AnotherClassDefinedDesc", "No description", "No description");
+    }
 
-
-	/**
-	 * The following tests check that class and device level defined properties override user defined ones,
-	 * i.e. db->put_device_pipe_property => db->put_class_pipe_property => user (DevTestClass::pipe_factory)
-	 *
-	 */
-	void test_pipe_conf_return_to_xxx_no_class_no_lib(void)
-	{
-		string pipe_name("PipeConf1");
-        check_description(pipe_name,"Dev desc","No description","No description","No description");
- 	}
-
-	void test_pipe_conf_return_to_xxx_class_no_lib(void)
-	{
-		string pipe_name("PipeConf7");
-        check_description(pipe_name,"Dev desc","AnotherClassDefinedDesc","No description","No description");
-	}
-
-	void test_pipe_conf_return_to_xxx_no_class_lib(void)
-	{
+    void test_pipe_conf_return_to_xxx_no_class_lib(void)
+    {
         string pipe_name("PipeConf2");
-        check_description(pipe_name,"Dev desc","A Tango pipe with user defined desc","A Tango pipe with user defined desc","No description");
-	}
+        check_description(pipe_name,
+                          "Dev desc",
+                          "A Tango pipe with user defined desc",
+                          "A Tango pipe with user defined desc",
+                          "No description");
+    }
 
-	void test_pipe_conf_return_to_xxx_class_lib(void)
-	{
+    void test_pipe_conf_return_to_xxx_class_lib(void)
+    {
         string pipe_name("PipeConf6");
-        check_description(pipe_name,"Dev desc","ClassDefinedDesc","UserDefinedDesc","No description");
-	}
+        check_description(pipe_name, "Dev desc", "ClassDefinedDesc", "UserDefinedDesc", "No description");
+    }
 
-	void test_pipe_conf_on_diff_devices(void)
-	{
-		Tango::PipeInfo pi;
-		Tango::PipeInfo pi2;
-		Tango::PipeInfoList pi_list;
+    void test_pipe_conf_on_diff_devices(void)
+    {
+        Tango::PipeInfo pi;
+        Tango::PipeInfo pi2;
+        Tango::PipeInfoList pi_list;
 
-		string pipe_name("PipeConf1");
-		pi = device1->get_pipe_config(pipe_name);
+        string pipe_name("PipeConf1");
+        pi = device1->get_pipe_config(pipe_name);
 
-		pi.description = "toto";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi.description = "toto";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, "toto");
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, "toto");
 
-		pi2 = device2->get_pipe_config(pipe_name);
-TEST_LOG << "pi2.description = " << pi2.description << endl;
-		TS_ASSERT_EQUALS(pi2.description, "No description");
+        pi2 = device2->get_pipe_config(pipe_name);
+        TEST_LOG << "pi2.description = " << pi2.description << endl;
+        TS_ASSERT_EQUALS(pi2.description, "No description");
 
-// Return to lib
+        // Return to lib
 
-		pi.description = "not specified";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi.description = "not specified";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi = device1->get_pipe_config(pipe_name);
-		assert (pi.description == "No description");
-	}
+        pi = device1->get_pipe_config(pipe_name);
+        assert(pi.description == "No description");
+    }
 
-	void check_description(string &pipe_name,
-                       		const char *dev_desc,
-                       		const char *class_desc,
-                       		const char *user_desc,
-                       		const char *lib_desc)
-	{
+    void check_description(
+        string &pipe_name, const char *dev_desc, const char *class_desc, const char *user_desc, const char *lib_desc)
+    {
+        // Set-up
 
-// Set-up
+        Tango::PipeInfo pi;
+        Tango::PipeInfoList pi_list;
 
-		Tango::PipeInfo pi;
-		Tango::PipeInfoList pi_list;
+        pi = device1->get_pipe_config(pipe_name);
 
-		pi = device1->get_pipe_config(pipe_name);
+        pi.description = dev_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = dev_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, dev_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, dev_desc);
+        // Return to class
 
-// Return to class
+        pi.description = "Nan";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = "Nan";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, class_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, class_desc);
+        Tango::DeviceData dd;
+        string dev_name = device1->name();
+        dd << dev_name;
+        root_admin->command_inout("DevRestart", dd);
 
-		Tango::DeviceData dd;
-		string dev_name = device1->name();
-		dd << dev_name;
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, class_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, class_desc);
+        pi.description = dev_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = dev_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        // Return to user
 
-// Return to user
+        pi.description = "";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = "";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, user_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, user_desc);
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, user_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, user_desc);
+        pi.description = dev_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = dev_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        // Return to lib
 
-// Return to lib
+        pi.description = "not specified";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = "not specified";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        assert(pi.description == lib_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		assert (pi.description == lib_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, lib_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, lib_desc);
+        pi.description = dev_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = dev_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        // Return to class bis
 
-// Return to class bis
+        pi.description = "Nan";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = "Nan";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, class_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, class_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, class_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, class_desc);
+        //  Return to user bis
 
-//  Return to user bis
+        pi.description = "";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = "";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, user_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, user_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, user_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, user_desc);
+        // return to lib bis
 
-// return to lib bis
+        pi.description = "Not specified";
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = "Not specified";
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, lib_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, lib_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, lib_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, lib_desc);
+        // User input == user default
 
-// User input == user default
+        pi.description = dev_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = dev_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi.description = user_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = user_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, user_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, user_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		root_admin->command_inout("DevRestart",dd);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, user_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, user_desc);
+        // User input == class default
 
-// User input == class default
+        pi.description = dev_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = dev_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi.description = class_desc;
+        pi_list.clear();
+        pi_list.push_back(pi);
+        device1->set_pipe_config(pi_list);
 
-		pi.description = class_desc;
-		pi_list.clear();
-		pi_list.push_back(pi);
-		device1->set_pipe_config(pi_list);
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, class_desc);
 
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, class_desc);
+        root_admin->command_inout("DevRestart", dd);
 
-		root_admin->command_inout("DevRestart",dd);
-
-		pi = device1->get_pipe_config(pipe_name);
-		TS_ASSERT_EQUALS(pi.description, class_desc);
-	}
-
+        pi = device1->get_pipe_config(pipe_name);
+        TS_ASSERT_EQUALS(pi.description, class_desc);
+    }
 };
 
 #endif // PipeTestSuite_h

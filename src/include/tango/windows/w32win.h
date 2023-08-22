@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -44,43 +44,50 @@ class CoutBuf;
 
 class W32Win
 {
-public:
-        W32Win(Util *,int);
-        ~W32Win();
+  public:
+    W32Win(Util *, int);
+    ~W32Win();
 
-	HWND get_win() {return win;}
-	CoutBuf *get_output_buffer() {return pcb;}
+    HWND get_win()
+    {
+        return win;
+    }
 
-private:
-	HWND win;
+    CoutBuf *get_output_buffer()
+    {
+        return pcb;
+    }
 
-	CoutBuf *pcb;
-	void RegisterTangoClass(HINSTANCE);
-	void InitInstance(HINSTANCE,int);
+  private:
+    HWND win;
+
+    CoutBuf *pcb;
+    void RegisterTangoClass(HINSTANCE);
+    void InitInstance(HINSTANCE, int);
 };
 
 //
 // Some define for the main window drawing
 //
 
-#define		X_FACTOR	2
-#define		Y_FACTOR	1.3
-#define		TOO_LARGE_TXT	"Your text is too large for this window !!"
-#define		MAIN_TXT	"Tango\nDevice\nServer"
+#define X_FACTOR 2
+#define Y_FACTOR 1.3
+#define TOO_LARGE_TXT "Your text is too large for this window !!"
+#define MAIN_TXT "Tango\nDevice\nServer"
 
 //
 //  Some functions for windows window management!!!
 //
 
-LRESULT CALLBACK TangoWndProc(HWND, UINT, WPARAM, LPARAM );
+LRESULT CALLBACK TangoWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK AboutProc(HWND, UINT, WPARAM, LPARAM);
-void SetDebugLevel(LogLevel,HMENU,bool);
-void all_dev(Util *,LogLevel);
-int get_all_dev_log_level(Util *,LogLevel &);
-void NoDebugLevel(HMENU,bool);
+void SetDebugLevel(LogLevel, HMENU, bool);
+void all_dev(Util *, LogLevel);
+int get_all_dev_log_level(Util *, LogLevel &);
+void NoDebugLevel(HMENU, bool);
 void add_cout_appender(Util *);
 void all_dev_add_cout(Util *);
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _COUTBUF_H */

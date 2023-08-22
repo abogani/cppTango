@@ -2,13 +2,13 @@
 // AppenderAttachable.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -34,12 +34,13 @@
 #include <mutex>
 #include <tango/common/log4tango/Appender.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 /**
  * A map of appenders
  **/
-typedef std::map<std::string, Appender*> AppenderMap;
+typedef std::map<std::string, Appender *> AppenderMap;
 
 /**
  * A map of appenders iterator
@@ -49,8 +50,7 @@ typedef AppenderMap::iterator AppenderMapIterator;
 /**
  * Define what is a list of appenders
  **/
-typedef std::vector<Appender*> AppenderList;
-
+typedef std::vector<Appender *> AppenderList;
 
 //-----------------------------------------------------------------------------
 // class : AppenderAttachable
@@ -58,22 +58,21 @@ typedef std::vector<Appender*> AppenderList;
 class AppenderAttachable
 {
   public:
-
     /**
      * Constructor.
      **/
-    AppenderAttachable ();
+    AppenderAttachable();
 
     /**
      * Destructor.
      **/
-    virtual ~AppenderAttachable ();
+    virtual ~AppenderAttachable();
 
     /**
      * Adds an Appender. Does nothing if the appender is NULL
      * or already attached.
      **/
-    void add_appender (Appender* appender);
+    void add_appender(Appender *appender);
 
     /**
      * Get all previously added appenders as a vector.
@@ -81,7 +80,7 @@ class AppenderAttachable
      * the returned list when it is no longer needed (the
      * Appender class is ref-counted).
      **/
-    AppenderList get_all_appenders (void);
+    AppenderList get_all_appenders(void);
 
     /**
      * Get an appender by name.
@@ -90,13 +89,13 @@ class AppenderAttachable
      * ref-counted). Returns 0 if there is no Appender named
      * "name" currently attached.
      **/
-    Appender* get_appender (const std::string& name);
+    Appender *get_appender(const std::string &name);
 
     /**
      * Returns true if the specified appender is in list of
      * attached appanders, false otherwise.
      **/
-    bool is_attached (Appender* appender);
+    bool is_attached(Appender *appender);
 
     /**
      * Removes all appenders for this Logger.
@@ -106,16 +105,15 @@ class AppenderAttachable
     /**
      * Remove the appender passed as parameter from the list of appenders.
      **/
-    void remove_appender(Appender* appender);
+    void remove_appender(Appender *appender);
 
     /**
      * Remove the appender with the name passed as parameter from the
      * list of appenders.
      **/
-    void remove_appender(const std::string& name);
+    void remove_appender(const std::string &name);
 
   protected:
-
     /**
      * Appenders repository.
      **/
@@ -126,8 +124,8 @@ class AppenderAttachable
      **/
     std::mutex _appendersMutex;
 
-    AppenderAttachable (const AppenderAttachable& other);
-    AppenderAttachable& operator=(const AppenderAttachable& other);
+    AppenderAttachable(const AppenderAttachable &other);
+    AppenderAttachable &operator=(const AppenderAttachable &other);
 };
 
 } // namespace log4tango

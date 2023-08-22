@@ -2,13 +2,13 @@
 // AppenderAttachable.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -26,89 +26,96 @@
 // along with Log4Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 #include <tango/common/log4tango/Portability.h>
 #include <tango/common/log4tango/AppenderAttachable.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 using Guard = std::lock_guard<std::mutex>;
 
-AppenderAttachable::AppenderAttachable ()
+AppenderAttachable::AppenderAttachable()
 {
-  // no-op ctor.
+    // no-op ctor.
 }
 
-AppenderAttachable::~AppenderAttachable ()
+AppenderAttachable::~AppenderAttachable()
 {
-  remove_all_appenders();
+    remove_all_appenders();
 }
 
-void AppenderAttachable::add_appender (Appender* appender)
+void AppenderAttachable::add_appender(Appender *appender)
 {
-  if (appender) {
+    if(appender)
+    {
+        Guard guard(_appendersMutex);
+        _appenders.emplace(appender->get_name(), appender);
+    }
+}
+
+AppenderList AppenderAttachable::get_all_appenders(void)
+{
     Guard guard(_appendersMutex);
-    _appenders.emplace(appender->get_name(), appender);
-  }
+    AppenderList al(0);
+    AppenderMapIterator it = _appenders.begin();
+    AppenderMapIterator end = _appenders.end();
+    for(; it != end; ++it)
+    {
+        al.push_back(it->second);
+    }
+    return al;
 }
 
-AppenderList AppenderAttachable::get_all_appenders (void)
+Appender *AppenderAttachable::get_appender(const std::string &name)
 {
-  Guard guard(_appendersMutex);
-  AppenderList al(0);
-  AppenderMapIterator it = _appenders.begin();
-  AppenderMapIterator end = _appenders.end();
-  for (; it != end ; ++it) {
-    al.push_back(it->second);
-  }
-  return al;
+    Guard guard(_appendersMutex);
+    AppenderMapIterator it = _appenders.find(name);
+    if(it != _appenders.end())
+    {
+        return it->second;
+    }
+    return 0;
 }
 
-Appender* AppenderAttachable::get_appender (const std::string& name)
+bool AppenderAttachable::is_attached(Appender *appender)
 {
-  Guard guard(_appendersMutex);
-  AppenderMapIterator it = _appenders.find(name);
-  if (it != _appenders.end()) {
-    return it->second;
-  }
-  return 0;
+    Guard guard(_appendersMutex);
+    if(appender && _appenders.find(appender->get_name()) != _appenders.end())
+    {
+        return true;
+    }
+    return false;
 }
 
-bool AppenderAttachable::is_attached (Appender* appender)
+void AppenderAttachable::remove_all_appenders(void)
 {
-  Guard guard(_appendersMutex);
-  if (appender && _appenders.find(appender->get_name()) != _appenders.end()) {
-    return true;
-  }
-  return false;
+    Guard guard(_appendersMutex);
+    AppenderMapIterator it = _appenders.begin();
+    AppenderMapIterator end = _appenders.end();
+    for(; it != end; ++it)
+    {
+        delete it->second;
+    }
+    _appenders.clear();
 }
 
-void AppenderAttachable::remove_all_appenders (void)
+void AppenderAttachable::remove_appender(Appender *appender)
 {
-  Guard guard(_appendersMutex);
-  AppenderMapIterator it = _appenders.begin();
-  AppenderMapIterator end = _appenders.end();
-  for (; it != end ; ++it) {
-    delete it->second;
-  }
-  _appenders.clear();
+    if(appender)
+    {
+        remove_appender(appender->get_name());
+    }
 }
 
-void AppenderAttachable::remove_appender(Appender* appender)
+void AppenderAttachable::remove_appender(const std::string &name)
 {
-  if (appender) {
-    remove_appender(appender->get_name());
-  }
-}
-
-void AppenderAttachable::remove_appender(const std::string& name)
-{
-  Guard guard(_appendersMutex);
-  AppenderMapIterator it = _appenders.find(name);
-  if (it != _appenders.end()) {
-    delete it->second;
-    _appenders.erase(it);
-  }
+    Guard guard(_appendersMutex);
+    AppenderMapIterator it = _appenders.find(name);
+    if(it != _appenders.end())
+    {
+        delete it->second;
+        _appenders.erase(it);
+    }
 }
 
 } // namespace log4tango

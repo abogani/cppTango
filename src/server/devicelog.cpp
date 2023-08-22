@@ -1,15 +1,15 @@
 //+=============================================================================
 //
-// file :	  DeviceLog.cpp
+// file :      DeviceLog.cpp
 //
 // description :  Logging oriented methods of the DeviceImpl class
 //
-// project :	  TANGO
+// project :      TANGO
 //
-// author(s) :	  N.Leclercq - SOLEIL
+// author(s) :      N.Leclercq - SOLEIL
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -98,7 +98,6 @@
 
 #include <tango/tango.h>
 
-
 #include <tango/server/logging.h>
 
 namespace Tango
@@ -107,165 +106,196 @@ namespace Tango
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::get_logger_i
 //--------------------------------------------------------------------------
-log4tango::Logger* DeviceImpl::get_logger_i (void)
+log4tango::Logger *DeviceImpl::get_logger_i(void)
 {
-  try {
-    // trace
-    TANGO_LOG_DEBUG << "Entering DeviceImpl::get_logger_i" << std::endl;
-    // instantiate the logger (
-    // shame on me for a such huggly impl. but polymorphism
-    // can't be used here !
-    if (logger == 0) {
-      if (TG_strcasecmp(device_class->get_name().c_str(), "DServer") == 0) {
-        logger = Logging::get_core_logger();
-      }
-      else {
-        // get device name
-        std::string dev_name(device_name);
-        // avoid case sensitive troubles
-        std::transform(dev_name.begin(),
-                       dev_name.end(),
-                       dev_name.begin(),
-                       ::tolower);
-        // instantiate the logger using device name
-        logger = new log4tango::Logger(dev_name);
-        if (logger == 0) {
-          logger = Logging::get_core_logger();
+    try
+    {
+        // trace
+        TANGO_LOG_DEBUG << "Entering DeviceImpl::get_logger_i" << std::endl;
+        // instantiate the logger (
+        // shame on me for a such huggly impl. but polymorphism
+        // can't be used here !
+        if(logger == 0)
+        {
+            if(TG_strcasecmp(device_class->get_name().c_str(), "DServer") == 0)
+            {
+                logger = Logging::get_core_logger();
+            }
+            else
+            {
+                // get device name
+                std::string dev_name(device_name);
+                // avoid case sensitive troubles
+                std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
+                // instantiate the logger using device name
+                logger = new log4tango::Logger(dev_name);
+                if(logger == 0)
+                {
+                    logger = Logging::get_core_logger();
+                }
+                // set default level
+                logger->set_level(log4tango::Level::WARN);
+                // save current level
+                saved_log_level = log4tango::Level::WARN;
+            }
         }
-        // set default level
-        logger->set_level(log4tango::Level::WARN);
-        // save current level
-        saved_log_level = log4tango::Level::WARN;
-      }
+        // trace
+        TANGO_LOG_DEBUG << "Leaving DeviceImpl::get_logger_i" << std::endl;
     }
-    // trace
-    TANGO_LOG_DEBUG << "Leaving DeviceImpl::get_logger_i" << std::endl;
-  } catch (...) {
-    // save our souls...
-   logger = Logging::get_core_logger();
-  }
-  return logger;
+    catch(...)
+    {
+        // save our souls...
+        logger = Logging::get_core_logger();
+    }
+    return logger;
 }
 
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::init_logger
 //--------------------------------------------------------------------------
-void DeviceImpl::init_logger (void)
+void DeviceImpl::init_logger(void)
 {
-  try {
-    // trace
-    TANGO_LOG_DEBUG << "Entering DeviceImpl::init_logger" << std::endl;
-    // get Tango::Util instance
-    Tango::Util *tg = Tango::Util::instance();
-    // get cmd line logging level then ...
-    int trace_level = tg->get_trace_level();
-    // ... convert it to log4tango level
-    log4tango::Level::Value cmd_line_level = log4tango::Level::OFF;
-    if (trace_level > 4)
-    	cmd_line_level = log4tango::Level::DEBUG;
-    bool level_set_from_cmd_line = true;
-    // are we initializing the dserver's logger
-    log4tango::Logger* the_logger = get_logger();
-    if (the_logger != Logging::get_core_logger())
+    try
     {
-      // does the logging level set from cmd line?
-      if (trace_level <= 0) {
-        level_set_from_cmd_line = false;
-        cmd_line_level = log4tango::Level::OFF;
-      } else if (trace_level <= 2) {
-        cmd_line_level = log4tango::Level::INFO;
-      } else {
-        cmd_line_level = log4tango::Level::DEBUG;
-      }
-      // add a console target if logging level set from cmd line
-      if (level_set_from_cmd_line) {
-        // add a console target if logging level set from cmd line
-        Logging::add_logging_target(the_logger, kLogTargetConsole, 0);
-      }
+        // trace
+        TANGO_LOG_DEBUG << "Entering DeviceImpl::init_logger" << std::endl;
+        // get Tango::Util instance
+        Tango::Util *tg = Tango::Util::instance();
+        // get cmd line logging level then ...
+        int trace_level = tg->get_trace_level();
+        // ... convert it to log4tango level
+        log4tango::Level::Value cmd_line_level = log4tango::Level::OFF;
+        if(trace_level > 4)
+        {
+            cmd_line_level = log4tango::Level::DEBUG;
+        }
+        bool level_set_from_cmd_line = true;
+        // are we initializing the dserver's logger
+        log4tango::Logger *the_logger = get_logger();
+        if(the_logger != Logging::get_core_logger())
+        {
+            // does the logging level set from cmd line?
+            if(trace_level <= 0)
+            {
+                level_set_from_cmd_line = false;
+                cmd_line_level = log4tango::Level::OFF;
+            }
+            else if(trace_level <= 2)
+            {
+                cmd_line_level = log4tango::Level::INFO;
+            }
+            else
+            {
+                cmd_line_level = log4tango::Level::DEBUG;
+            }
+            // add a console target if logging level set from cmd line
+            if(level_set_from_cmd_line)
+            {
+                // add a console target if logging level set from cmd line
+                Logging::add_logging_target(the_logger, kLogTargetConsole, 0);
+            }
+        }
+        if(!tg->use_db())
+        {
+            // done if we are not using the database
+            if(level_set_from_cmd_line)
+            {
+                the_logger->set_level(cmd_line_level);
+            }
+            TANGO_LOG_DEBUG << "Leaving DeviceImpl::init_logger" << std::endl;
+            return;
+        }
+        // get both logging level and targets from database
+        DbData db_data;
+        db_data.push_back(DbDatum("logging_level"));
+        db_data.push_back(DbDatum("logging_target"));
+        db_data.push_back(DbDatum("logging_rft"));
+        try
+        {
+            db_dev->get_property(db_data);
+        }
+        catch(...)
+        {
+            // error: set logging level then return
+            the_logger->set_level(cmd_line_level);
+            return;
+        }
+        // set logging level (if not set from cmd line)
+        std::string log_level_property;
+        if(!level_set_from_cmd_line && db_data[0].is_empty() == false)
+        {
+            db_data[0] >> log_level_property;
+            // avoid case sensitive troubles
+            std::transform(log_level_property.begin(), log_level_property.end(), log_level_property.begin(), ::toupper);
+            TANGO_LOG_DEBUG << "Initial logging level set to [" << log_level_property << "]" << std::endl;
+            // convert from string to log4tango level
+            log4tango::Level::Value log4tango_level = log4tango::Level::WARN;
+            try
+            {
+                log4tango_level = Logging::tango_to_log4tango_level(log_level_property, false);
+            }
+            catch(...)
+            {
+                // ignore exception
+            }
+            // set logger's level (from property)
+            the_logger->set_level(log4tango_level);
+        }
+        else
+        {
+            // set logger's level (from cmd line)
+            if(the_logger != Logging::get_core_logger())
+            {
+                the_logger->set_level(cmd_line_level);
+            }
+        }
+        // save current logging level
+        saved_log_level = the_logger->get_level();
+        // get rolling threshold for file targets
+        long rft_property = static_cast<long>(kDefaultRollingThreshold);
+        if(db_data[2].is_empty() == false)
+        {
+            db_data[2] >> rft_property;
+        }
+        // save current rolling threshold
+        rft = static_cast<size_t>(rft_property);
+        // set logging targets
+        std::vector<std::string> log_target_property;
+        if(db_data[1].is_empty() == false)
+        {
+            db_data[1] >> log_target_property;
+            // attach targets to logger
+            for(unsigned int i = 0; i < log_target_property.size(); i++)
+            {
+                Logging::add_logging_target(the_logger, log_target_property[i], 0);
+            }
+        }
+        // set rolling file threshold for file targets
+        Logging::set_rolling_file_threshold(the_logger, rft);
+        // trace
+        TANGO_LOG_DEBUG << "Leaving DeviceImpl::init_logger" << std::endl;
     }
-    if (!tg->use_db()) {
-      // done if we are not using the database
-      if (level_set_from_cmd_line)
-        the_logger->set_level(cmd_line_level);
-      TANGO_LOG_DEBUG << "Leaving DeviceImpl::init_logger" << std::endl;
-      return;
+    catch(...)
+    {
+        // igore any exception
     }
-    // get both logging level and targets from database
-    DbData db_data;
-    db_data.push_back(DbDatum("logging_level"));
-    db_data.push_back(DbDatum("logging_target"));
-    db_data.push_back(DbDatum("logging_rft"));
-    try {
-      db_dev->get_property(db_data);
-    } catch (...) {
-      // error: set logging level then return
-      the_logger->set_level(cmd_line_level);
-      return;
-    }
-    // set logging level (if not set from cmd line)
-    std::string log_level_property;
-    if (!level_set_from_cmd_line && db_data[0].is_empty() == false) {
-      db_data[0] >> log_level_property;
-      // avoid case sensitive troubles
-      std::transform(log_level_property.begin(), log_level_property.end(),
-                     log_level_property.begin(), ::toupper);
-      TANGO_LOG_DEBUG << "Initial logging level set to [" << log_level_property << "]" << std::endl;
-      // convert from string to log4tango level
-      log4tango::Level::Value log4tango_level = log4tango::Level::WARN;
-      try {
-          log4tango_level = Logging::tango_to_log4tango_level(log_level_property, false);
-      } catch (...) {
-         // ignore exception
-      }
-      // set logger's level (from property)
-      the_logger->set_level(log4tango_level);
-    }
-    else {
-      // set logger's level (from cmd line)
-		if (the_logger != Logging::get_core_logger())
-      		the_logger->set_level(cmd_line_level);
-    }
-    // save current logging level
-    saved_log_level = the_logger->get_level();
-    // get rolling threshold for file targets
-    long rft_property = static_cast<long>(kDefaultRollingThreshold);
-    if (db_data[2].is_empty() == false) {
-      db_data[2] >> rft_property;
-    }
-    // save current rolling threshold
-    rft = static_cast<size_t>(rft_property);
-    // set logging targets
-    std::vector<std::string> log_target_property;
-    if (db_data[1].is_empty() == false) {
-      db_data[1] >> log_target_property;
-      // attach targets to logger
-      for (unsigned int i = 0; i < log_target_property.size(); i++) {
-              Logging::add_logging_target(the_logger, log_target_property[i], 0);
-      }
-    }
-    // set rolling file threshold for file targets
-    Logging::set_rolling_file_threshold(the_logger, rft);
-    // trace
-    TANGO_LOG_DEBUG << "Leaving DeviceImpl::init_logger" << std::endl;
-  }
-  catch (...) {
-    // igore any exception
-  }
 }
 
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::start_logging
 //--------------------------------------------------------------------------
-void DeviceImpl::start_logging (void) {
-  get_logger()->set_level(saved_log_level);
+void DeviceImpl::start_logging(void)
+{
+    get_logger()->set_level(saved_log_level);
 }
 
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::stop_logging
 //--------------------------------------------------------------------------
-void DeviceImpl::stop_logging (void) {
-  saved_log_level = get_logger()->get_level();
-  get_logger()->set_level(log4tango::Level::OFF);
+void DeviceImpl::stop_logging(void)
+{
+    saved_log_level = get_logger()->get_level();
+    get_logger()->set_level(log4tango::Level::OFF);
 }
 
 } // namespace Tango

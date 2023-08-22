@@ -2,10 +2,10 @@
 //
 // C++ source code file for TANGO api class ApiUtil
 //
-// programmer 	- Emmanuel Taurel (taurel@esrf.fr)
+// programmer     - Emmanuel Taurel (taurel@esrf.fr)
 //
 // Copyright (C) :      2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -21,7 +21,7 @@
 // You should have received a copy of the GNU Lesser General Public License along with Tango.
 // If not, see <http://www.gnu.org/licenses/>.
 //
-// original 	- May 2002
+// original     - May 2002
 //
 //
 //
@@ -34,19 +34,18 @@
 #include <iomanip>
 
 #ifndef _TG_WINDOWS_
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <net/if.h>
-#include <sys/ioctl.h>
-#include <netdb.h>
-#include <signal.h>
-#include <ifaddrs.h>
-#include <netinet/in.h>    // FreeBSD
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <net/if.h>
+  #include <sys/ioctl.h>
+  #include <netdb.h>
+  #include <signal.h>
+  #include <ifaddrs.h>
+  #include <netinet/in.h> // FreeBSD
 #else
-#include <ws2tcpip.h>
-#include <process.h>
+  #include <ws2tcpip.h>
+  #include <process.h>
 #endif
-
 
 namespace Tango
 {
@@ -69,16 +68,18 @@ void _t_handler(TANGO_UNUSED(int signum))
 
 ApiUtil *ApiUtil::instance()
 {
-	omni_mutex_lock lo(inst_mutex);
+    omni_mutex_lock lo(inst_mutex);
 
-	if (_instance == nullptr)
-		_instance = new ApiUtil();
-	return _instance;
+    if(_instance == nullptr)
+    {
+        _instance = new ApiUtil();
+    }
+    return _instance;
 }
 
 void ApiUtil::cleanup()
 {
-    if (_instance != nullptr)
+    if(_instance != nullptr)
     {
         delete _instance;
         _instance = nullptr;
@@ -88,24 +89,30 @@ void ApiUtil::cleanup()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::ApiUtil()
+//        ApiUtil::ApiUtil()
 //
 // description :
-//		Constructor of the ApiUtil class.
+//        Constructor of the ApiUtil class.
 //
 //------------------------------------------------------------------------------------------------------------------
 
-ApiUtil::ApiUtil()
-    : exit_lock_installed(false), reset_already_executed_flag(false), ext(new ApiUtilExt),
-      notifd_event_consumer(NULL), cl_pid(0), user_connect_timeout(-1), zmq_event_consumer(NULL), user_sub_hwm(-1)
+ApiUtil::ApiUtil() :
+    exit_lock_installed(false),
+    reset_already_executed_flag(false),
+    ext(new ApiUtilExt),
+    notifd_event_consumer(NULL),
+    cl_pid(0),
+    user_connect_timeout(-1),
+    zmq_event_consumer(NULL),
+    user_sub_hwm(-1)
 {
     _orb = CORBA::ORB::_nil();
 
-//
-// Check if it is created from a device server
-//
+    //
+    // Check if it is created from a device server
+    //
 
-    if (Util::_constructed == true)
+    if(Util::_constructed == true)
     {
         in_serv = true;
     }
@@ -114,28 +121,28 @@ ApiUtil::ApiUtil()
         in_serv = false;
     }
 
-//
-// Create the Asynchronous polling request Id generator
-//
+    //
+    // Create the Asynchronous polling request Id generator
+    //
 
     UniqIdent *ui = new UniqIdent();
 
-//
-// Create the table used to store asynchronous polling requests
-//
+    //
+    // Create the table used to store asynchronous polling requests
+    //
 
     asyn_p_table = new AsynReq(ui);
 
-//
-// Set the asynchronous callback mode to "ON_CALL"
-//
+    //
+    // Set the asynchronous callback mode to "ON_CALL"
+    //
 
     auto_cb = PULL_CALLBACK;
     cb_thread_ptr = NULL;
 
-//
-// Get the process PID
-//
+    //
+    // Get the process PID
+    //
 
 #ifdef _TG_WINDOWS_
     cl_pid = _getpid();
@@ -143,33 +150,33 @@ ApiUtil::ApiUtil()
     cl_pid = getpid();
 #endif
 
-//
-// Check if the user has defined his own connection timeout
-//
+    //
+    // Check if the user has defined his own connection timeout
+    //
 
     std::string var;
-    if (get_env_var("TANGOconnectTimeout", var) == 0)
+    if(get_env_var("TANGOconnectTimeout", var) == 0)
     {
         int user_to = -1;
         std::istringstream iss(var);
         iss >> user_to;
-        if (iss)
+        if(iss)
         {
             user_connect_timeout = user_to;
         }
     }
 
-//
-// Check if the user has defined his own subscriber hwm (fpr zmq event tuning)
-//
+    //
+    // Check if the user has defined his own subscriber hwm (fpr zmq event tuning)
+    //
 
     var.clear();
-    if (get_env_var("TANGO_EVENT_BUFFER_HWM", var) == 0)
+    if(get_env_var("TANGO_EVENT_BUFFER_HWM", var) == 0)
     {
         int sub_hwm = -1;
         std::istringstream iss(var);
         iss >> sub_hwm;
-        if (iss)
+        if(iss)
         {
             user_sub_hwm = sub_hwm;
         }
@@ -179,43 +186,42 @@ ApiUtil::ApiUtil()
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::~ApiUtil()
+//        ApiUtil::~ApiUtil()
 //
 // description :
-//		Destructor of the ApiUtil class.
+//        Destructor of the ApiUtil class.
 //
 //------------------------------------------------------------------------------------------------------------------
 
 ApiUtil::~ApiUtil()
 {
-
-//
-// Release Asyn stuff
-//
+    //
+    // Release Asyn stuff
+    //
 
     delete asyn_p_table;
 
-    if (cb_thread_ptr != NULL)
+    if(cb_thread_ptr != NULL)
     {
         cb_thread_cmd.stop_thread();
         cb_thread_ptr->join(0);
     }
 
-//
-// Kill any remaining locking threads
-//
+    //
+    // Kill any remaining locking threads
+    //
 
     clean_locking_threads();
 
-//
-// Release event stuff (in case it is necessary)
-//
+    //
+    // Release event stuff (in case it is necessary)
+    //
 
     bool event_was_used = false;
 
-    if (ext.get() != NULL)
+    if(ext.get() != NULL)
     {
-        if ((notifd_event_consumer != NULL) || (zmq_event_consumer != NULL))
+        if((notifd_event_consumer != NULL) || (zmq_event_consumer != NULL))
         {
             event_was_used = true;
             leavefunc();
@@ -224,48 +230,48 @@ ApiUtil::~ApiUtil()
         }
     }
 
-//
-// Delete the database object
-//
+    //
+    // Delete the database object
+    //
 
-    for (unsigned int i = 0; i < db_vect.size(); i++)
+    for(unsigned int i = 0; i < db_vect.size(); i++)
     {
         delete db_vect[i];
     }
 
-//
-// Properly shutdown the ORB
-//
+    //
+    // Properly shutdown the ORB
+    //
 
-    if ((in_serv == false) && (CORBA::is_nil(_orb) == false))
+    if((in_serv == false) && (CORBA::is_nil(_orb) == false))
     {
-        if (event_was_used == false)
+        if(event_was_used == false)
         {
             try
             {
                 _orb->destroy();
             }
-            catch (...)
-            {}
+            catch(...)
+            {
+            }
         }
     }
-
 }
 
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::set_sig_handler()
+//        ApiUtil::set_sig_handler()
 //
 // description :
-//		Install a signal handler for SIGINT and SIGTERM but only if nothing is already installed
+//        Install a signal handler for SIGINT and SIGTERM but only if nothing is already installed
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 void ApiUtil::set_sig_handler()
 {
 #ifndef _TG_WINDOWS_
-    if (in_serv == false)
+    if(in_serv == false)
     {
         struct sigaction sa, old_action;
 
@@ -273,17 +279,17 @@ void ApiUtil::set_sig_handler()
         sigemptyset(&sa.sa_mask);
         sa.sa_flags = SA_RESTART;
 
-        if (sigaction(SIGTERM, NULL, &old_action) != -1)
+        if(sigaction(SIGTERM, NULL, &old_action) != -1)
         {
-            if (old_action.sa_handler == NULL)
+            if(old_action.sa_handler == NULL)
             {
                 sigaction(SIGTERM, &sa, NULL);
             }
         }
 
-        if (sigaction(SIGINT, NULL, &old_action) != -1)
+        if(sigaction(SIGINT, NULL, &old_action) != -1)
         {
-            if (old_action.sa_handler == NULL)
+            if(old_action.sa_handler == NULL)
             {
                 sigaction(SIGINT, &sa, NULL);
             }
@@ -295,10 +301,10 @@ void ApiUtil::set_sig_handler()
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::create_orb()
+//        ApiUtil::create_orb()
 //
 // description :
-//		Create the CORBA orb object
+//        Create the CORBA orb object
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -307,24 +313,24 @@ void ApiUtil::create_orb()
     int _argc;
     char **_argv;
 
-//
-// pass dummy arguments to init() because we don't have access to argc and argv
-//
+    //
+    // pass dummy arguments to init() because we don't have access to argc and argv
+    //
 
     _argc = 1;
     _argv = (char **) malloc(sizeof(char *));
     _argv[0] = (char *) "dummy";
 
-//
-// Get user signal handler for SIGPIPE (ORB_init call install a SIG_IGN for SIGPIPE. This could be annoying in case
-// the user uses SIGPIPE)
-//
+    //
+    // Get user signal handler for SIGPIPE (ORB_init call install a SIG_IGN for SIGPIPE. This could be annoying in case
+    // the user uses SIGPIPE)
+    //
 
 #ifndef _TG_WINDOWS_
     struct sigaction sa;
     sa.sa_handler = NULL;
 
-    if (sigaction(SIGPIPE, NULL, &sa) == -1)
+    if(sigaction(SIGPIPE, NULL, &sa) == -1)
     {
         sa.sa_handler = NULL;
     }
@@ -332,31 +338,30 @@ void ApiUtil::create_orb()
 
     // Init the ORB
 
-    const char *options[][2] = {
-        {"clientCallTimeOutPeriod", CLNT_TIMEOUT_STR},
-        {"verifyObjectExistsAndType", "0"},
-        {"maxGIOPConnectionPerServer", MAX_GIOP_PER_SERVER},
-        {"giopMaxMsgSize", MAX_TRANSFER_SIZE},
-        {"throwTransientOnTimeOut", "1"},
-        {"exceptionIdInAny","0"},
-        {0, 0}};
+    const char *options[][2] = {{"clientCallTimeOutPeriod", CLNT_TIMEOUT_STR},
+                                {"verifyObjectExistsAndType", "0"},
+                                {"maxGIOPConnectionPerServer", MAX_GIOP_PER_SERVER},
+                                {"giopMaxMsgSize", MAX_TRANSFER_SIZE},
+                                {"throwTransientOnTimeOut", "1"},
+                                {"exceptionIdInAny", "0"},
+                                {0, 0}};
 
     _orb = CORBA::ORB_init(_argc, _argv, "omniORB4", options);
 
     free(_argv);
 
-//
-// Restore SIGPIPE handler
-//
+    //
+    // Restore SIGPIPE handler
+    //
 
 #ifndef _TG_WINDOWS_
-    if (sa.sa_handler != NULL)
+    if(sa.sa_handler != NULL)
     {
         struct sigaction sb;
 
         sb = sa;
 
-        if (sigaction(SIGPIPE, &sb, NULL) == -1)
+        if(sigaction(SIGPIPE, &sb, NULL) == -1)
         {
             std::cerr << "Can re-install user signal handler for SIGPIPE!" << std::endl;
         }
@@ -367,10 +372,10 @@ void ApiUtil::create_orb()
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method :
-// 		ApiUtil::get_db_ind()
+//         ApiUtil::get_db_ind()
 //
 // description :
-//		Retrieve a Tango database object created from the TANGO_HOST environment variable
+//        Retrieve a Tango database object created from the TANGO_HOST environment variable
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -378,133 +383,127 @@ int ApiUtil::get_db_ind()
 {
     omni_mutex_lock lo(the_mutex);
 
-    for (unsigned int i = 0; i < db_vect.size(); i++)
+    for(unsigned int i = 0; i < db_vect.size(); i++)
     {
-        if (db_vect[i]->get_from_env_var() == true)
+        if(db_vect[i]->get_from_env_var() == true)
         {
             return i;
         }
     }
 
-//
-// The database object has not been found, create it
-//
+    //
+    // The database object has not been found, create it
+    //
 
     db_vect.push_back(new Database());
 
     return (db_vect.size() - 1);
-
 }
 
 int ApiUtil::get_db_ind(const std::string &host, int port)
 {
     omni_mutex_lock lo(the_mutex);
 
-    for (unsigned int i = 0; i < db_vect.size(); i++)
+    for(unsigned int i = 0; i < db_vect.size(); i++)
     {
-        if (db_vect[i]->get_db_port_num() == port)
+        if(db_vect[i]->get_db_port_num() == port)
         {
-            if (db_vect[i]->get_db_host() == host)
+            if(db_vect[i]->get_db_host() == host)
             {
                 return i;
             }
         }
     }
 
-//
-// The database object has not been found, create it
-//
+    //
+    // The database object has not been found, create it
+    //
 
     db_vect.push_back(new Database(host, port));
 
     return (db_vect.size() - 1);
-
 }
-
 
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_asynch_replies()
+//        ApiUtil::get_asynch_replies()
 //
 // description :
-//		Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
-//		not yet arrived. Fire callback for replies already arrived
+//        Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
+//        not yet arrived. Fire callback for replies already arrived
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void ApiUtil::get_asynch_replies()
 {
-
-//
-// First get all replies from ORB buffers
-//
+    //
+    // First get all replies from ORB buffers
+    //
 
     try
     {
-        while (_orb->poll_next_response() == true)
+        while(_orb->poll_next_response() == true)
         {
             CORBA::Request_ptr req;
             _orb->get_next_response(req);
 
-//
-// Retrieve this request in the cb request map and mark it as "arrived" in both maps
-//
+            //
+            // Retrieve this request in the cb request map and mark it as "arrived" in both maps
+            //
 
             TgRequest &tg_req = asyn_p_table->get_request(req);
 
             tg_req.arrived = true;
             asyn_p_table->mark_as_arrived(req);
 
-//
-// Process request
-//
+            //
+            // Process request
+            //
 
             process_request(tg_req.dev, tg_req, req);
         }
     }
-    catch (CORBA::BAD_INV_ORDER &e)
+    catch(CORBA::BAD_INV_ORDER &e)
     {
-        if (e.minor() != omni::BAD_INV_ORDER_RequestNotSentYet)
+        if(e.minor() != omni::BAD_INV_ORDER_RequestNotSentYet)
         {
             throw;
         }
     }
 
-//
-// For all replies already there
-//
+    //
+    // For all replies already there
+    //
 
     std::multimap<Connection *, TgRequest>::iterator pos;
     std::multimap<Connection *, TgRequest> &req_table = asyn_p_table->get_cb_dev_table();
 
-    for (pos = req_table.begin(); pos != req_table.end(); ++pos)
+    for(pos = req_table.begin(); pos != req_table.end(); ++pos)
     {
-        if (pos->second.arrived == true)
+        if(pos->second.arrived == true)
         {
             process_request(pos->first, pos->second, pos->second.request);
         }
-
     }
-
 }
 
-void ApiUtil::process_request(Connection* connection, const TgRequest& tg_req, CORBA::Request_ptr& req)
+void ApiUtil::process_request(Connection *connection, const TgRequest &tg_req, CORBA::Request_ptr &req)
 {
-    switch (tg_req.req_type)
+    switch(tg_req.req_type)
     {
-        case TgRequest::CMD_INOUT :
-            connection->Cb_Cmd_Request(req, tg_req.cb_ptr);
-            break;
+    case TgRequest::CMD_INOUT:
+        connection->Cb_Cmd_Request(req, tg_req.cb_ptr);
+        break;
 
-        case TgRequest::READ_ATTR :
-            connection->Cb_ReadAttr_Request(req, tg_req.cb_ptr);
-            break;
+    case TgRequest::READ_ATTR:
+        connection->Cb_ReadAttr_Request(req, tg_req.cb_ptr);
+        break;
 
-        case TgRequest::WRITE_ATTR :
-        case TgRequest::WRITE_ATTR_SINGLE :
-            connection->Cb_WriteAttr_Request(req, tg_req.cb_ptr);
-            break;
+    case TgRequest::WRITE_ATTR:
+    case TgRequest::WRITE_ATTR_SINGLE:
+        connection->Cb_WriteAttr_Request(req, tg_req.cb_ptr);
+        break;
     }
     connection->dec_asynch_counter(CALL_BACK);
     asyn_p_table->remove_request(connection, req);
@@ -513,128 +512,126 @@ void ApiUtil::process_request(Connection* connection, const TgRequest& tg_req, C
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_asynch_replies()
+//        ApiUtil::get_asynch_replies()
 //
 // description :
-//		Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
-//		not yet arrived. Fire callback for replies already arrived
+//        Try to obtain data returned by a command asynchronously requested. This method does not block if the reply is
+//        not yet arrived. Fire callback for replies already arrived
 //
 // arg(s) :
-//		in :
-//			- call_timeout : The timeout value in mS
+//        in :
+//            - call_timeout : The timeout value in mS
 //
 //-----------------------------------------------------------------------------
 
 void ApiUtil::get_asynch_replies(long call_timeout)
 {
-//
-// For all replies already there
-//
+    //
+    // For all replies already there
+    //
 
     std::multimap<Connection *, TgRequest>::iterator pos;
     std::multimap<Connection *, TgRequest> &req_table = asyn_p_table->get_cb_dev_table();
 
-    for (pos = req_table.begin(); pos != req_table.end(); ++pos)
+    for(pos = req_table.begin(); pos != req_table.end(); ++pos)
     {
-        if (pos->second.arrived == true)
+        if(pos->second.arrived == true)
         {
-            switch (pos->second.req_type)
+            switch(pos->second.req_type)
             {
-                case TgRequest::CMD_INOUT :
-                    pos->first->Cb_Cmd_Request(pos->second.request, pos->second.cb_ptr);
-                    break;
+            case TgRequest::CMD_INOUT:
+                pos->first->Cb_Cmd_Request(pos->second.request, pos->second.cb_ptr);
+                break;
 
-                case TgRequest::READ_ATTR :
-                    pos->first->Cb_ReadAttr_Request(pos->second.request, pos->second.cb_ptr);
-                    break;
+            case TgRequest::READ_ATTR:
+                pos->first->Cb_ReadAttr_Request(pos->second.request, pos->second.cb_ptr);
+                break;
 
-                case TgRequest::WRITE_ATTR :
-                case TgRequest::WRITE_ATTR_SINGLE :
-                    pos->first->Cb_WriteAttr_Request(pos->second.request, pos->second.cb_ptr);
-                    break;
+            case TgRequest::WRITE_ATTR:
+            case TgRequest::WRITE_ATTR_SINGLE:
+                pos->first->Cb_WriteAttr_Request(pos->second.request, pos->second.cb_ptr);
+                break;
             }
             pos->first->dec_asynch_counter(CALL_BACK);
             asyn_p_table->remove_request(pos->first, pos->second.request);
         }
-
     }
 
-//
-// If they are requests already sent but without being replied yet
-//
+    //
+    // If they are requests already sent but without being replied yet
+    //
 
-    if (asyn_p_table->get_cb_request_nb() != 0)
+    if(asyn_p_table->get_cb_request_nb() != 0)
     {
         CORBA::Request_ptr req;
 
-        if (call_timeout != 0)
+        if(call_timeout != 0)
         {
-
-//
-// A timeout has been specified. Wait if there are still request without replies but not more than the specified
-// timeout. Leave method if the timeout is not arrived but there is no more request without reply
-//
+            //
+            // A timeout has been specified. Wait if there are still request without replies but not more than the
+            // specified timeout. Leave method if the timeout is not arrived but there is no more request without reply
+            //
 
             long nb = call_timeout / 20;
 
-            while ((nb > 0) && (asyn_p_table->get_cb_request_nb() != 0))
+            while((nb > 0) && (asyn_p_table->get_cb_request_nb() != 0))
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                 nb--;
 
                 try
                 {
-                    if (_orb->poll_next_response() == true)
+                    if(_orb->poll_next_response() == true)
                     {
                         _orb->get_next_response(req);
 
-//
-// Retrieve this request in the cb request map and mark it as "arrived" in both maps
-//
+                        //
+                        // Retrieve this request in the cb request map and mark it as "arrived" in both maps
+                        //
 
                         TgRequest &tg_req = asyn_p_table->get_request(req);
 
                         tg_req.arrived = true;
                         asyn_p_table->mark_as_arrived(req);
 
-//
-// Is it a request for our device, process it ?
-//
+                        //
+                        // Is it a request for our device, process it ?
+                        //
 
-                        switch (tg_req.req_type)
+                        switch(tg_req.req_type)
                         {
-                            case TgRequest::CMD_INOUT :
-                                tg_req.dev->Cb_Cmd_Request(req, tg_req.cb_ptr);
-                                break;
+                        case TgRequest::CMD_INOUT:
+                            tg_req.dev->Cb_Cmd_Request(req, tg_req.cb_ptr);
+                            break;
 
-                            case TgRequest::READ_ATTR :
-                                tg_req.dev->Cb_ReadAttr_Request(req, tg_req.cb_ptr);
-                                break;
+                        case TgRequest::READ_ATTR:
+                            tg_req.dev->Cb_ReadAttr_Request(req, tg_req.cb_ptr);
+                            break;
 
-                            case TgRequest::WRITE_ATTR :
-                            case TgRequest::WRITE_ATTR_SINGLE :
-                                tg_req.dev->Cb_WriteAttr_Request(req, tg_req.cb_ptr);
-                                break;
+                        case TgRequest::WRITE_ATTR:
+                        case TgRequest::WRITE_ATTR_SINGLE:
+                            tg_req.dev->Cb_WriteAttr_Request(req, tg_req.cb_ptr);
+                            break;
                         }
 
                         tg_req.dev->dec_asynch_counter(CALL_BACK);
                         asyn_p_table->remove_request(tg_req.dev, req);
                     }
                 }
-                catch (CORBA::BAD_INV_ORDER &e)
+                catch(CORBA::BAD_INV_ORDER &e)
                 {
-                    if (e.minor() != omni::BAD_INV_ORDER_RequestNotSentYet)
+                    if(e.minor() != omni::BAD_INV_ORDER_RequestNotSentYet)
                     {
                         throw;
                     }
                 }
             }
 
-//
-// Throw exception if the timeout has expired but there are still request without replies
-//
+            //
+            // Throw exception if the timeout has expired but there are still request without replies
+            //
 
-            if ((nb == 0) && (asyn_p_table->get_cb_request_nb() != 0))
+            if((nb == 0) && (asyn_p_table->get_cb_request_nb() != 0))
             {
                 TangoSys_OMemStream desc;
                 desc << "Still some reply(ies) for asynchronous callback call(s) to be received" << std::ends;
@@ -643,51 +640,51 @@ void ApiUtil::get_asynch_replies(long call_timeout)
         }
         else
         {
-//
-// If timeout is set to 0, this means wait until all the requests sent to this device has sent their replies
-//
+            //
+            // If timeout is set to 0, this means wait until all the requests sent to this device has sent their replies
+            //
 
-            while (asyn_p_table->get_cb_request_nb() != 0)
+            while(asyn_p_table->get_cb_request_nb() != 0)
             {
                 try
                 {
                     _orb->get_next_response(req);
 
-//
-// Retrieve this request in the cb request map and mark it as "arrived" in both maps
-//
+                    //
+                    // Retrieve this request in the cb request map and mark it as "arrived" in both maps
+                    //
 
                     TgRequest &tg_req = asyn_p_table->get_request(req);
 
                     tg_req.arrived = true;
                     asyn_p_table->mark_as_arrived(req);
 
-//
-// Process the reply
-//
+                    //
+                    // Process the reply
+                    //
 
-                    switch (tg_req.req_type)
+                    switch(tg_req.req_type)
                     {
-                        case TgRequest::CMD_INOUT :
-                            tg_req.dev->Cb_Cmd_Request(req, tg_req.cb_ptr);
-                            break;
+                    case TgRequest::CMD_INOUT:
+                        tg_req.dev->Cb_Cmd_Request(req, tg_req.cb_ptr);
+                        break;
 
-                        case TgRequest::READ_ATTR :
-                            tg_req.dev->Cb_ReadAttr_Request(req, tg_req.cb_ptr);
-                            break;
+                    case TgRequest::READ_ATTR:
+                        tg_req.dev->Cb_ReadAttr_Request(req, tg_req.cb_ptr);
+                        break;
 
-                        case TgRequest::WRITE_ATTR :
-                        case TgRequest::WRITE_ATTR_SINGLE :
-                            tg_req.dev->Cb_WriteAttr_Request(req, tg_req.cb_ptr);
-                            break;
+                    case TgRequest::WRITE_ATTR:
+                    case TgRequest::WRITE_ATTR_SINGLE:
+                        tg_req.dev->Cb_WriteAttr_Request(req, tg_req.cb_ptr);
+                        break;
                     }
 
                     tg_req.dev->dec_asynch_counter(CALL_BACK);
                     asyn_p_table->remove_request(tg_req.dev, req);
                 }
-                catch (CORBA::BAD_INV_ORDER &e)
+                catch(CORBA::BAD_INV_ORDER &e)
                 {
-                    if (e.minor() != omni::BAD_INV_ORDER_RequestNotSentYet)
+                    if(e.minor() != omni::BAD_INV_ORDER_RequestNotSentYet)
                     {
                         throw;
                     }
@@ -695,34 +692,31 @@ void ApiUtil::get_asynch_replies(long call_timeout)
             }
         }
     }
-
 }
 
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::set_asynch_cb_sub_model()
+//        ApiUtil::set_asynch_cb_sub_model()
 //
 // description :
-//		Set the callback automatic mode (Fired by dedicated call or automatically fired by a separate thread)
+//        Set the callback automatic mode (Fired by dedicated call or automatically fired by a separate thread)
 //
 // arg(s) :
-//		in :
-//			- mode : The new callback mode
+//        in :
+//            - mode : The new callback mode
 //
 //--------------------------------------------------------------------------------------------------------------------
 
 void ApiUtil::set_asynch_cb_sub_model(cb_sub_model mode)
 {
-
-    if (auto_cb == PULL_CALLBACK)
+    if(auto_cb == PULL_CALLBACK)
     {
-        if (mode == PUSH_CALLBACK)
+        if(mode == PUSH_CALLBACK)
         {
-
-//
-// In this case, delete the old object in case it is needed, create a new thread and start it
-//
+            //
+            // In this case, delete the old object in case it is needed, create a new thread and start it
+            //
 
             delete cb_thread_ptr;
             cb_thread_ptr = NULL;
@@ -736,29 +730,27 @@ void ApiUtil::set_asynch_cb_sub_model(cb_sub_model mode)
     }
     else
     {
-        if (mode == PULL_CALLBACK)
+        if(mode == PULL_CALLBACK)
         {
-
-//
-// Ask the thread to stop and to exit
-//
+            //
+            // Ask the thread to stop and to exit
+            //
 
             cb_thread_cmd.stop_thread();
             auto_cb = PULL_CALLBACK;
             asyn_p_table->signal();
         }
     }
-
 }
 
 //-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::create_xxx_event_consumer()
+//        ApiUtil::create_xxx_event_consumer()
 //
 // description :
-//		Create the event consumer. This will automatically start a new thread which is waiting in a CORBA::run()
-//		indefintely for events. It will then trigger the events.
+//        Create the event consumer. This will automatically start a new thread which is waiting in a CORBA::run()
+//        indefintely for events. It will then trigger the events.
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -785,14 +777,14 @@ ZmqEventConsumer *ApiUtil::get_zmq_event_consumer()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::clean_locking_threads()
+//        ApiUtil::clean_locking_threads()
 //
 // description :
-//		Ask all remaining locking threads to exit
+//        Ask all remaining locking threads to exit
 //
 // args :
-//		in :
-//			- clean :
+//        in :
+//            - clean :
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -800,12 +792,12 @@ void ApiUtil::clean_locking_threads(bool clean)
 {
     omni_mutex_lock oml(lock_th_map);
 
-    if (lock_threads.empty() == false)
+    if(lock_threads.empty() == false)
     {
         std::map<std::string, LockingThread>::iterator pos;
-        for (pos = lock_threads.begin(); pos != lock_threads.end(); ++pos)
+        for(pos = lock_threads.begin(); pos != lock_threads.end(); ++pos)
         {
-            if (pos->second.shared->suicide == true)
+            if(pos->second.shared->suicide == true)
             {
                 delete pos->second.shared;
                 delete pos->second.mon;
@@ -816,7 +808,7 @@ void ApiUtil::clean_locking_threads(bool clean)
                     omni_mutex_lock sync(*(pos->second.mon));
 
                     pos->second.shared->cmd_pending = true;
-                    if (clean == true)
+                    if(clean == true)
                     {
                         pos->second.shared->cmd_code = LOCK_UNLOCK_ALL_EXIT;
                     }
@@ -829,7 +821,7 @@ void ApiUtil::clean_locking_threads(bool clean)
 
                     TANGO_LOG_DEBUG << "Cmd sent to locking thread" << std::endl;
 
-                    if (pos->second.shared->cmd_pending == true)
+                    if(pos->second.shared->cmd_pending == true)
                     {
                         pos->second.mon->wait(DEFAULT_TIMEOUT);
                     }
@@ -839,7 +831,7 @@ void ApiUtil::clean_locking_threads(bool clean)
             }
         }
 
-        if (clean == false)
+        if(clean == false)
         {
             lock_threads.clear();
         }
@@ -849,17 +841,18 @@ void ApiUtil::clean_locking_threads(bool clean)
 //-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::attr_to_device()
+//        ApiUtil::attr_to_device()
 //
 // description :
 //
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeValue_3 *attr_value_3,
-                             long vers, DeviceAttribute *dev_attr)
+void ApiUtil::attr_to_device(const AttributeValue *attr_value,
+                             const AttributeValue_3 *attr_value_3,
+                             long vers,
+                             DeviceAttribute *dev_attr)
 {
-
     const DevVarLongArray *tmp_seq_lo;
     CORBA::Long *tmp_lo;
     const DevVarShortArray *tmp_seq_sh;
@@ -887,7 +880,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
 
     CORBA::ULong max, len;
 
-    if (vers == 3)
+    if(vers == 3)
     {
         dev_attr->name = attr_value_3->name;
         dev_attr->quality = attr_value_3->quality;
@@ -907,10 +900,10 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
         dev_attr->dim_y = attr_value->dim_y;
     }
 
-    if (dev_attr->quality != Tango::ATTR_INVALID)
+    if(dev_attr->quality != Tango::ATTR_INVALID)
     {
         CORBA::TypeCode_var ty;
-        if (vers == 3)
+        if(vers == 3)
         {
             ty = attr_value_3->value.type();
         }
@@ -919,7 +912,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
             ty = attr_value->value.type();
         }
 
-        if (ty->kind() == CORBA::tk_enum)
+        if(ty->kind() == CORBA::tk_enum)
         {
             dev_attr->data_type = Tango::DEV_STATE;
             attr_value_3->value >>= dev_attr->d_state;
@@ -929,299 +922,299 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value, const AttributeVa
 
         CORBA::TypeCode_var ty_alias = ty->content_type();
         CORBA::TypeCode_var ty_seq = ty_alias->content_type();
-        switch (ty_seq->kind())
+        switch(ty_seq->kind())
         {
-            case CORBA::tk_long:
-                dev_attr->data_type = Tango::DEV_LONG;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_lo;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_lo;
-                }
-                max = tmp_seq_lo->maximum();
-                len = tmp_seq_lo->length();
-                if (tmp_seq_lo->release() == true)
-                {
-                    tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
-                }
-                else
-                {
-                    tmp_lo = const_cast<CORBA::Long *>(tmp_seq_lo->get_buffer());
-                    dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, false);
-                }
-                break;
+        case CORBA::tk_long:
+            dev_attr->data_type = Tango::DEV_LONG;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_lo;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_lo;
+            }
+            max = tmp_seq_lo->maximum();
+            len = tmp_seq_lo->length();
+            if(tmp_seq_lo->release() == true)
+            {
+                tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
+                dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
+            }
+            else
+            {
+                tmp_lo = const_cast<CORBA::Long *>(tmp_seq_lo->get_buffer());
+                dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, false);
+            }
+            break;
 
-            case CORBA::tk_longlong:
-                dev_attr->data_type = Tango::DEV_LONG64;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_64;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_64;
-                }
-                max = tmp_seq_64->maximum();
-                len = tmp_seq_64->length();
-                if (tmp_seq_64->release() == true)
-                {
-                    tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_64))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
-                }
-                else
-                {
-                    tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq_64->get_buffer());
-                    dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, false);
-                }
-                break;
+        case CORBA::tk_longlong:
+            dev_attr->data_type = Tango::DEV_LONG64;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_64;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_64;
+            }
+            max = tmp_seq_64->maximum();
+            len = tmp_seq_64->length();
+            if(tmp_seq_64->release() == true)
+            {
+                tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_64))->get_buffer((CORBA::Boolean) true);
+                dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
+            }
+            else
+            {
+                tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq_64->get_buffer());
+                dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, false);
+            }
+            break;
 
-            case CORBA::tk_short:
-                dev_attr->data_type = Tango::DEV_SHORT;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_sh;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_sh;
-                }
-                max = tmp_seq_sh->maximum();
-                len = tmp_seq_sh->length();
-                if (tmp_seq_sh->release() == true)
-                {
-                    tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
-                }
-                else
-                {
-                    tmp_sh = const_cast<CORBA::Short *>(tmp_seq_sh->get_buffer());
-                    dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, false);
-                }
-                break;
+        case CORBA::tk_short:
+            dev_attr->data_type = Tango::DEV_SHORT;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_sh;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_sh;
+            }
+            max = tmp_seq_sh->maximum();
+            len = tmp_seq_sh->length();
+            if(tmp_seq_sh->release() == true)
+            {
+                tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
+                dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
+            }
+            else
+            {
+                tmp_sh = const_cast<CORBA::Short *>(tmp_seq_sh->get_buffer());
+                dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, false);
+            }
+            break;
 
-            case CORBA::tk_double:
-                dev_attr->data_type = Tango::DEV_DOUBLE;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_db;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_db;
-                }
-                max = tmp_seq_db->maximum();
-                len = tmp_seq_db->length();
-                if (tmp_seq_db->release() == true)
-                {
-                    tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
-                }
-                else
-                {
-                    tmp_db = const_cast<CORBA::Double *>(tmp_seq_db->get_buffer());
-                    dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, false);
-                }
-                break;
+        case CORBA::tk_double:
+            dev_attr->data_type = Tango::DEV_DOUBLE;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_db;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_db;
+            }
+            max = tmp_seq_db->maximum();
+            len = tmp_seq_db->length();
+            if(tmp_seq_db->release() == true)
+            {
+                tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
+                dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
+            }
+            else
+            {
+                tmp_db = const_cast<CORBA::Double *>(tmp_seq_db->get_buffer());
+                dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, false);
+            }
+            break;
 
-            case CORBA::tk_string:
-                dev_attr->data_type = Tango::DEV_STRING;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_str;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_str;
-                }
-                max = tmp_seq_str->maximum();
-                len = tmp_seq_str->length();
-                if (tmp_seq_str->release() == true)
-                {
-                    tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
-                }
-                else
-                {
-                    tmp_str = const_cast<char **>(tmp_seq_str->get_buffer());
-                    dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, false);
-                }
-                break;
+        case CORBA::tk_string:
+            dev_attr->data_type = Tango::DEV_STRING;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_str;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_str;
+            }
+            max = tmp_seq_str->maximum();
+            len = tmp_seq_str->length();
+            if(tmp_seq_str->release() == true)
+            {
+                tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
+                dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
+            }
+            else
+            {
+                tmp_str = const_cast<char **>(tmp_seq_str->get_buffer());
+                dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, false);
+            }
+            break;
 
-            case CORBA::tk_float:
-                dev_attr->data_type = Tango::DEV_FLOAT;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_fl;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_fl;
-                }
-                max = tmp_seq_fl->maximum();
-                len = tmp_seq_fl->length();
-                if (tmp_seq_fl->release() == true)
-                {
-                    tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
-                }
-                else
-                {
-                    tmp_fl = const_cast<CORBA::Float *>(tmp_seq_fl->get_buffer());
-                    dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, false);
-                }
-                break;
+        case CORBA::tk_float:
+            dev_attr->data_type = Tango::DEV_FLOAT;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_fl;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_fl;
+            }
+            max = tmp_seq_fl->maximum();
+            len = tmp_seq_fl->length();
+            if(tmp_seq_fl->release() == true)
+            {
+                tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
+                dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
+            }
+            else
+            {
+                tmp_fl = const_cast<CORBA::Float *>(tmp_seq_fl->get_buffer());
+                dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, false);
+            }
+            break;
 
-            case CORBA::tk_boolean:
-                dev_attr->data_type = Tango::DEV_BOOLEAN;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_boo;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_boo;
-                }
-                max = tmp_seq_boo->maximum();
-                len = tmp_seq_boo->length();
-                if (tmp_seq_boo->release() == true)
-                {
-                    tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
-                }
-                else
-                {
-                    tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq_boo->get_buffer());
-                    dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, false);
-                }
-                break;
+        case CORBA::tk_boolean:
+            dev_attr->data_type = Tango::DEV_BOOLEAN;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_boo;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_boo;
+            }
+            max = tmp_seq_boo->maximum();
+            len = tmp_seq_boo->length();
+            if(tmp_seq_boo->release() == true)
+            {
+                tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
+                dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
+            }
+            else
+            {
+                tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq_boo->get_buffer());
+                dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, false);
+            }
+            break;
 
-            case CORBA::tk_ushort:
-                dev_attr->data_type = Tango::DEV_USHORT;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_ush;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_ush;
-                }
-                max = tmp_seq_ush->maximum();
-                len = tmp_seq_ush->length();
-                if (tmp_seq_ush->release() == true)
-                {
-                    tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
-                }
-                else
-                {
-                    tmp_ush = const_cast<CORBA::UShort *>(tmp_seq_ush->get_buffer());
-                    dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, false);
-                }
-                break;
+        case CORBA::tk_ushort:
+            dev_attr->data_type = Tango::DEV_USHORT;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_ush;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_ush;
+            }
+            max = tmp_seq_ush->maximum();
+            len = tmp_seq_ush->length();
+            if(tmp_seq_ush->release() == true)
+            {
+                tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
+                dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
+            }
+            else
+            {
+                tmp_ush = const_cast<CORBA::UShort *>(tmp_seq_ush->get_buffer());
+                dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, false);
+            }
+            break;
 
-            case CORBA::tk_octet:
-                dev_attr->data_type = Tango::DEV_UCHAR;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_uch;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_uch;
-                }
-                max = tmp_seq_uch->maximum();
-                len = tmp_seq_uch->length();
-                if (tmp_seq_uch->release() == true)
-                {
-                    tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
-                }
-                else
-                {
-                    tmp_uch = const_cast<CORBA::Octet *>(tmp_seq_uch->get_buffer());
-                    dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, false);
-                }
-                break;
+        case CORBA::tk_octet:
+            dev_attr->data_type = Tango::DEV_UCHAR;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_uch;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_uch;
+            }
+            max = tmp_seq_uch->maximum();
+            len = tmp_seq_uch->length();
+            if(tmp_seq_uch->release() == true)
+            {
+                tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
+                dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
+            }
+            else
+            {
+                tmp_uch = const_cast<CORBA::Octet *>(tmp_seq_uch->get_buffer());
+                dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, false);
+            }
+            break;
 
-            case CORBA::tk_ulong:
-                dev_attr->data_type = Tango::DEV_ULONG;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_ulo;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_ulo;
-                }
-                max = tmp_seq_ulo->maximum();
-                len = tmp_seq_ulo->length();
-                if (tmp_seq_ulo->release() == true)
-                {
-                    tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
-                }
-                else
-                {
-                    tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq_ulo->get_buffer());
-                    dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, false);
-                }
-                break;
+        case CORBA::tk_ulong:
+            dev_attr->data_type = Tango::DEV_ULONG;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_ulo;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_ulo;
+            }
+            max = tmp_seq_ulo->maximum();
+            len = tmp_seq_ulo->length();
+            if(tmp_seq_ulo->release() == true)
+            {
+                tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
+                dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
+            }
+            else
+            {
+                tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq_ulo->get_buffer());
+                dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, false);
+            }
+            break;
 
-            case CORBA::tk_ulonglong:
-                dev_attr->data_type = Tango::DEV_ULONG64;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_u64;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_u64;
-                }
-                max = tmp_seq_u64->maximum();
-                len = tmp_seq_u64->length();
-                if (tmp_seq_u64->release() == true)
-                {
-                    tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_u64))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
-                }
-                else
-                {
-                    tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq_u64->get_buffer());
-                    dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, false);
-                }
-                break;
+        case CORBA::tk_ulonglong:
+            dev_attr->data_type = Tango::DEV_ULONG64;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_u64;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_u64;
+            }
+            max = tmp_seq_u64->maximum();
+            len = tmp_seq_u64->length();
+            if(tmp_seq_u64->release() == true)
+            {
+                tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_u64))->get_buffer((CORBA::Boolean) true);
+                dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
+            }
+            else
+            {
+                tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq_u64->get_buffer());
+                dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, false);
+            }
+            break;
 
-            case CORBA::tk_enum:
-                dev_attr->data_type = Tango::DEV_STATE;
-                if (vers == 3)
-                {
-                    attr_value_3->value >>= tmp_seq_state;
-                }
-                else
-                {
-                    attr_value->value >>= tmp_seq_state;
-                }
-                max = tmp_seq_state->maximum();
-                len = tmp_seq_state->length();
-                if (tmp_seq_state->release() == true)
-                {
-                    tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
-                    dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
-                }
-                else
-                {
-                    tmp_state = const_cast<Tango::DevState *>(tmp_seq_state->get_buffer());
-                    dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, false);
-                }
-                break;
+        case CORBA::tk_enum:
+            dev_attr->data_type = Tango::DEV_STATE;
+            if(vers == 3)
+            {
+                attr_value_3->value >>= tmp_seq_state;
+            }
+            else
+            {
+                attr_value->value >>= tmp_seq_state;
+            }
+            max = tmp_seq_state->maximum();
+            len = tmp_seq_state->length();
+            if(tmp_seq_state->release() == true)
+            {
+                tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
+                dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
+            }
+            else
+            {
+                tmp_state = const_cast<Tango::DevState *>(tmp_seq_state->get_buffer());
+                dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, false);
+            }
+            break;
 
-            default:
-                dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
-                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+        default:
+            dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+            TANGO_THROW_ON_DEFAULT(ty_seq->kind());
         }
     }
 }
@@ -1240,16 +1233,16 @@ void ApiUtil::attr_to_device(const AttributeValue_5 *attr_value_5, TANGO_UNUSED(
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::device_to_attr()
+//        ApiUtil::device_to_attr()
 //
 // description :
-//		initialize one AttributeValue instance from a DeviceAttribute one
+//        initialize one AttributeValue instance from a DeviceAttribute one
 //
 // arg(s) :
-//		in :
-//			- dev_attr : The DeviceAttribute instance taken as source
-//		out :
-//			- att : The AttributeValue used as destination
+//        in :
+//            - dev_attr : The DeviceAttribute instance taken as source
+//        out :
+//            - att : The AttributeValue used as destination
 //
 //---------------------------------------------------------------------------------------------------------------
 
@@ -1262,118 +1255,117 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue_4 &
     att.w_dim.dim_y = dev_attr.dim_y;
     att.data_format = Tango::FMT_UNKNOWN;
 
-    if (dev_attr.LongSeq.operator->() != NULL)
+    if(dev_attr.LongSeq.operator->() != NULL)
     {
         att.value.long_att_value(dev_attr.LongSeq.in());
     }
-    else if (dev_attr.ShortSeq.operator->() != NULL)
+    else if(dev_attr.ShortSeq.operator->() != NULL)
     {
         att.value.short_att_value(dev_attr.ShortSeq.in());
     }
-    else if (dev_attr.DoubleSeq.operator->() != NULL)
+    else if(dev_attr.DoubleSeq.operator->() != NULL)
     {
         att.value.double_att_value(dev_attr.DoubleSeq.in());
     }
-    else if (dev_attr.StringSeq.operator->() != NULL)
+    else if(dev_attr.StringSeq.operator->() != NULL)
     {
         att.value.string_att_value(dev_attr.StringSeq.in());
     }
-    else if (dev_attr.FloatSeq.operator->() != NULL)
+    else if(dev_attr.FloatSeq.operator->() != NULL)
     {
         att.value.float_att_value(dev_attr.FloatSeq.in());
     }
-    else if (dev_attr.BooleanSeq.operator->() != NULL)
+    else if(dev_attr.BooleanSeq.operator->() != NULL)
     {
         att.value.bool_att_value(dev_attr.BooleanSeq.in());
     }
-    else if (dev_attr.UShortSeq.operator->() != NULL)
+    else if(dev_attr.UShortSeq.operator->() != NULL)
     {
         att.value.ushort_att_value(dev_attr.UShortSeq.in());
     }
-    else if (dev_attr.UCharSeq.operator->() != NULL)
+    else if(dev_attr.UCharSeq.operator->() != NULL)
     {
         att.value.uchar_att_value(dev_attr.UCharSeq.in());
     }
-    else if (dev_attr.Long64Seq.operator->() != NULL)
+    else if(dev_attr.Long64Seq.operator->() != NULL)
     {
         att.value.long64_att_value(dev_attr.Long64Seq.in());
     }
-    else if (dev_attr.ULongSeq.operator->() != NULL)
+    else if(dev_attr.ULongSeq.operator->() != NULL)
     {
         att.value.ulong_att_value(dev_attr.ULongSeq.in());
     }
-    else if (dev_attr.ULong64Seq.operator->() != NULL)
+    else if(dev_attr.ULong64Seq.operator->() != NULL)
     {
         att.value.ulong64_att_value(dev_attr.ULong64Seq.in());
     }
-    else if (dev_attr.StateSeq.operator->() != NULL)
+    else if(dev_attr.StateSeq.operator->() != NULL)
     {
         att.value.state_att_value(dev_attr.StateSeq.in());
     }
-    else if (dev_attr.EncodedSeq.operator->() != NULL)
+    else if(dev_attr.EncodedSeq.operator->() != NULL)
     {
         att.value.encoded_att_value(dev_attr.EncodedSeq.in());
     }
 }
 
-void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &att,const std::string &d_name)
+void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &att, const std::string &d_name)
 {
-
     att.name = dev_attr.name.c_str();
     att.quality = dev_attr.quality;
     att.time = dev_attr.time;
     att.dim_x = dev_attr.dim_x;
     att.dim_y = dev_attr.dim_y;
 
-    if (dev_attr.LongSeq.operator->() != NULL)
+    if(dev_attr.LongSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.LongSeq.in();
     }
-    else if (dev_attr.ShortSeq.operator->() != NULL)
+    else if(dev_attr.ShortSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.ShortSeq.in();
     }
-    else if (dev_attr.DoubleSeq.operator->() != NULL)
+    else if(dev_attr.DoubleSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.DoubleSeq.in();
     }
-    else if (dev_attr.StringSeq.operator->() != NULL)
+    else if(dev_attr.StringSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.StringSeq.in();
     }
-    else if (dev_attr.FloatSeq.operator->() != NULL)
+    else if(dev_attr.FloatSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.FloatSeq.in();
     }
-    else if (dev_attr.BooleanSeq.operator->() != NULL)
+    else if(dev_attr.BooleanSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.BooleanSeq.in();
     }
-    else if (dev_attr.UShortSeq.operator->() != NULL)
+    else if(dev_attr.UShortSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.UShortSeq.in();
     }
-    else if (dev_attr.UCharSeq.operator->() != NULL)
+    else if(dev_attr.UCharSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.UCharSeq.in();
     }
-    else if (dev_attr.Long64Seq.operator->() != NULL)
+    else if(dev_attr.Long64Seq.operator->() != NULL)
     {
         att.value <<= dev_attr.Long64Seq.in();
     }
-    else if (dev_attr.ULongSeq.operator->() != NULL)
+    else if(dev_attr.ULongSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.ULongSeq.in();
     }
-    else if (dev_attr.ULong64Seq.operator->() != NULL)
+    else if(dev_attr.ULong64Seq.operator->() != NULL)
     {
         att.value <<= dev_attr.ULong64Seq.in();
     }
-    else if (dev_attr.StateSeq.operator->() != NULL)
+    else if(dev_attr.StateSeq.operator->() != NULL)
     {
         att.value <<= dev_attr.StateSeq.in();
     }
-    else if (dev_attr.EncodedSeq.operator->() != NULL)
+    else if(dev_attr.EncodedSeq.operator->() != NULL)
     {
         TangoSys_OMemStream desc;
         desc << "Device " << d_name;
@@ -1385,16 +1377,16 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &at
 //------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::AttributeInfoEx_to_AttributeConfig()
+//        ApiUtil::AttributeInfoEx_to_AttributeConfig()
 //
 // description :
-//		Initialize one AttributeConfig instance from a AttributeInfoEx one
+//        Initialize one AttributeConfig instance from a AttributeInfoEx one
 //
 // arg(s) :
-//		in :
-//			- aie : The AttributeInfoEx instance taken as source
-//		out :
-//			- att_conf_5 : The AttributeConfig used as destination
+//        in :
+//            - aie : The AttributeInfoEx instance taken as source
+//        out :
+//            - att_conf_5 : The AttributeConfig used as destination
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -1417,38 +1409,38 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
     att_conf_5->writable_attr_name = aie->writable_attr_name.c_str();
     att_conf_5->level = aie->disp_level;
     att_conf_5->root_attr_name = aie->root_attr_name.c_str();
-    switch (aie->memorized)
+    switch(aie->memorized)
     {
-        case NOT_KNOWN:
-        case NONE:
-            att_conf_5->memorized = false;
-            att_conf_5->mem_init = false;
-            break;
+    case NOT_KNOWN:
+    case NONE:
+        att_conf_5->memorized = false;
+        att_conf_5->mem_init = false;
+        break;
 
-        case MEMORIZED:
-            att_conf_5->memorized = true;
-            att_conf_5->mem_init = false;
-            break;
+    case MEMORIZED:
+        att_conf_5->memorized = true;
+        att_conf_5->mem_init = false;
+        break;
 
-        case MEMORIZED_WRITE_INIT:
-            att_conf_5->memorized = true;
-            att_conf_5->mem_init = true;
-            break;
+    case MEMORIZED_WRITE_INIT:
+        att_conf_5->memorized = true;
+        att_conf_5->mem_init = true;
+        break;
 
-        default:
-            TANGO_THROW_ON_DEFAULT(aie->memorized);
+    default:
+        TANGO_THROW_ON_DEFAULT(aie->memorized);
     }
     att_conf_5->enum_labels.length(aie->enum_labels.size());
-    for (size_t j = 0; j < aie->enum_labels.size(); j++)
+    for(size_t j = 0; j < aie->enum_labels.size(); j++)
     {
         att_conf_5->enum_labels[j] = string_dup(aie->enum_labels[j].c_str());
     }
     att_conf_5->extensions.length(aie->extensions.size());
-    for (size_t j = 0; j < aie->extensions.size(); j++)
+    for(size_t j = 0; j < aie->extensions.size(); j++)
     {
         att_conf_5->extensions[j] = string_dup(aie->extensions[j].c_str());
     }
-    for (size_t j = 0; j < aie->sys_extensions.size(); j++)
+    for(size_t j = 0; j < aie->sys_extensions.size(); j++)
     {
         att_conf_5->sys_extensions[j] = string_dup(aie->sys_extensions[j].c_str());
     }
@@ -1459,20 +1451,20 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
     att_conf_5->att_alarm.max_warning = aie->alarms.max_warning.c_str();
     att_conf_5->att_alarm.delta_t = aie->alarms.delta_t.c_str();
     att_conf_5->att_alarm.delta_val = aie->alarms.delta_val.c_str();
-    for (size_t j = 0; j < aie->alarms.extensions.size(); j++)
+    for(size_t j = 0; j < aie->alarms.extensions.size(); j++)
     {
         att_conf_5->att_alarm.extensions[j] = string_dup(aie->alarms.extensions[j].c_str());
     }
 
     att_conf_5->event_prop.ch_event.rel_change = aie->events.ch_event.rel_change.c_str();
     att_conf_5->event_prop.ch_event.abs_change = aie->events.ch_event.abs_change.c_str();
-    for (size_t j = 0; j < aie->events.ch_event.extensions.size(); j++)
+    for(size_t j = 0; j < aie->events.ch_event.extensions.size(); j++)
     {
         att_conf_5->event_prop.ch_event.extensions[j] = string_dup(aie->events.ch_event.extensions[j].c_str());
     }
 
     att_conf_5->event_prop.per_event.period = aie->events.per_event.period.c_str();
-    for (size_t j = 0; j < aie->events.per_event.extensions.size(); j++)
+    for(size_t j = 0; j < aie->events.per_event.extensions.size(); j++)
     {
         att_conf_5->event_prop.per_event.extensions[j] = string_dup(aie->events.per_event.extensions[j].c_str());
     }
@@ -1480,29 +1472,28 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
     att_conf_5->event_prop.arch_event.rel_change = aie->events.arch_event.archive_rel_change.c_str();
     att_conf_5->event_prop.arch_event.abs_change = aie->events.arch_event.archive_abs_change.c_str();
     att_conf_5->event_prop.arch_event.period = aie->events.arch_event.archive_period.c_str();
-    for (size_t j = 0; j < aie->events.ch_event.extensions.size(); j++)
+    for(size_t j = 0; j < aie->events.ch_event.extensions.size(); j++)
     {
         att_conf_5->event_prop.arch_event.extensions[j] = string_dup(aie->events.arch_event.extensions[j].c_str());
     }
 }
 
-
 //-------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_env_var()
+//        ApiUtil::get_env_var()
 //
 // description :
-//		Get environment variable
+//        Get environment variable
 //
 // arg(s) :
-//		in :
-//			- env_var_name : The environment variable name
-//		out :
-//			- env_var : Reference to the string initialised with the env. variable value (if found)
+//        in :
+//            - env_var_name : The environment variable name
+//        out :
+//            - env_var : Reference to the string initialised with the env. variable value (if found)
 //
 // return :
-//		0 if the env. variable is found and -1 otherwise
+//        0 if the env. variable is found and -1 otherwise
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1515,14 +1506,14 @@ int ApiUtil::get_env_var(const char *env_var_name, std::string &env_var)
 //---------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::get_ip_from_if()
+//        ApiUtil::get_ip_from_if()
 //
 // description :
-//		Get host IP address from its network interface
+//        Get host IP address from its network interface
 //
 // arg(s) :
-//		out :
-//			- ip_adr_list : Host IP address
+//        out :
+//            - ip_adr_list : Host IP address
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1530,52 +1521,47 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 {
     omni_mutex_lock oml(lock_th_map);
 
-    if (host_ip_adrs.empty() == true)
+    if(host_ip_adrs.empty() == true)
     {
 #ifndef _TG_WINDOWS_
         struct ifaddrs *ifaddr, *ifa;
         int family, s;
         char host[NI_MAXHOST];
 
-        if (getifaddrs(&ifaddr) == -1)
+        if(getifaddrs(&ifaddr) == -1)
         {
             std::cerr << "ApiUtil::get_ip_from_if: getifaddrs() failed: " << strerror(errno) << std::endl;
 
             TANGO_THROW_EXCEPTION(API_SystemCallFailed, strerror(errno));
         }
 
-//
-// Walk through linked list, maintaining head pointer so we can free list later. The ifa_addr field points to a
-// structure containing the interface address. (The sa_family subfield should be consulted to determine the format
-// of the address structure.)
-//
+        //
+        // Walk through linked list, maintaining head pointer so we can free list later. The ifa_addr field points to a
+        // structure containing the interface address. (The sa_family subfield should be consulted to determine the
+        // format of the address structure.)
+        //
 
-        for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
+        for(ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
         {
-            if (ifa->ifa_addr != NULL)
+            if(ifa->ifa_addr != NULL)
             {
                 family = ifa->ifa_addr->sa_family;
 
-//
-// Only get IP V4 addresses
-//
+                //
+                // Only get IP V4 addresses
+                //
 
-/*              if(family == AF_INET || family == AF_INET6)
+                /*              if(family == AF_INET || family == AF_INET6)
+                                {
+                                    s = getnameinfo(ifa->ifa_addr,(family == AF_INET) ? sizeof(struct sockaddr_in) :
+                   sizeof(struct sockaddr_in6), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);*/
+
+                if(family == AF_INET)
                 {
-                    s = getnameinfo(ifa->ifa_addr,(family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
-                                    host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);*/
+                    s = getnameinfo(
+                        ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
 
-                if (family == AF_INET)
-                {
-                    s = getnameinfo(ifa->ifa_addr,
-                                    sizeof(struct sockaddr_in),
-                                    host,
-                                    NI_MAXHOST,
-                                    NULL,
-                                    0,
-                                    NI_NUMERICHOST);
-
-                    if (s != 0)
+                    if(s != 0)
                     {
                         std::cerr << "ApiUtil::get_ip_from_if: getnameinfo() failed: " << gai_strerror(s);
                         std::cerr << "ApiUtil::get_ip_from_if: not getting info from remaining ifaddrs";
@@ -1601,18 +1587,12 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 
         int sock = socket(AF_INET, SOCK_STREAM, 0);
 
-        INTERFACE_INFO info[64];  // Assume max 64 interfaces
+        INTERFACE_INFO info[64]; // Assume max 64 interfaces
         DWORD retlen;
 
-        if (WSAIoctl(sock,
-                     SIO_GET_INTERFACE_LIST,
-                     NULL,
-                     0,
-                     (LPVOID) & info,
-                     sizeof(info),
-                     (LPDWORD) & retlen,
-                     NULL,
-                     NULL) == SOCKET_ERROR)
+        if(WSAIoctl(
+               sock, SIO_GET_INTERFACE_LIST, NULL, 0, (LPVOID) &info, sizeof(info), (LPDWORD) &retlen, NULL, NULL) ==
+           SOCKET_ERROR)
         {
             closesocket(sock);
 
@@ -1632,26 +1612,27 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
         //
 
         int numAddresses = retlen / sizeof(INTERFACE_INFO);
-        for (int i = 0; i < numAddresses; i++)
+        for(int i = 0; i < numAddresses; i++)
         {
-            if (info[i].iiFlags & IFF_UP)
+            if(info[i].iiFlags & IFF_UP)
             {
-                if (info[i].iiAddress.Address.sa_family == AF_INET || info[i].iiAddress.Address.sa_family == AF_INET6)
+                if(info[i].iiAddress.Address.sa_family == AF_INET || info[i].iiAddress.Address.sa_family == AF_INET6)
                 {
                     struct sockaddr *addr = (struct sockaddr *) &info[i].iiAddress.AddressIn;
                     char dest[NI_MAXHOST];
                     socklen_t addrlen = sizeof(sockaddr);
 
                     int result = getnameinfo(addr, addrlen, dest, sizeof(dest), 0, 0, NI_NUMERICHOST);
-                    if (result != 0)
+                    if(result != 0)
                     {
                         std::cerr << "Warning: getnameinfo failed" << std::endl;
                         std::cerr << "Unable to convert IP address to string (getnameinfo)." << std::endl;
 
-                        TANGO_THROW_EXCEPTION(API_SystemCallFailed, "Can't convert IP address to string (getnameinfo)!");
+                        TANGO_THROW_EXCEPTION(API_SystemCallFailed,
+                                              "Can't convert IP address to string (getnameinfo)!");
                     }
                     std::string tmp_str(dest);
-                    if (tmp_str != "0.0.0.0" && tmp_str != "0:0:0:0:0:0:0:0" && tmp_str != "::")
+                    if(tmp_str != "0.0.0.0" && tmp_str != "0:0:0:0:0:0:0:0" && tmp_str != "::")
                     {
                         host_ip_adrs.push_back(tmp_str);
                     }
@@ -1661,9 +1642,9 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 #endif
     }
 
-//
-// Copy host IP addresses into caller vector
-//
+    //
+    // Copy host IP addresses into caller vector
+    //
 
     ip_adr_list.clear();
     copy(host_ip_adrs.begin(), host_ip_adrs.end(), back_inserter(ip_adr_list));
@@ -1672,64 +1653,62 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		ApiUtil::print_error_message
+//        ApiUtil::print_error_message
 //
 // description :
-//		Print error message on stderr but first print date
+//        Print error message on stderr but first print date
 //
 // argument :
-//		in :
-//			- mess : The user error message
+//        in :
+//            - mess : The user error message
 //
 //---------------------------------------------------------------------------------------------------------------------
 
 void ApiUtil::print_error_message(const char *mess)
 {
     std::tm tm = Tango_localtime(time(NULL));
-    std::cerr << std::put_time(&tm,"%c") << ": " << mess << std::endl;
+    std::cerr << std::put_time(&tm, "%c") << ": " << mess << std::endl;
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // function
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the AttributeInfo class
+//        Friend function to ease printing instance of the AttributeInfo class
 //
 //-----------------------------------------------------------------------------------------------------------------
 
 std::ostream &operator<<(std::ostream &o_str, const AttributeInfo &p)
 {
-
-
-//
-// Print all these properties
-//
+    //
+    // Print all these properties
+    //
 
     o_str << "Attribute name = " << p.name << std::endl;
-    o_str << "Attribute data_type = " << (CmdArgType)p.data_type << std::endl;
+    o_str << "Attribute data_type = " << (CmdArgType) p.data_type << std::endl;
 
     o_str << "Attribute data_format = ";
-    switch (p.data_format)
+    switch(p.data_format)
     {
-        case Tango::FMT_UNKNOWN:
-            break;
+    case Tango::FMT_UNKNOWN:
+        break;
 
-        case Tango::SCALAR :
-            o_str << "scalar" << std::endl;
-            break;
+    case Tango::SCALAR:
+        o_str << "scalar" << std::endl;
+        break;
 
-        case Tango::SPECTRUM :
-            o_str << "spectrum, max_dim_x = " << p.max_dim_x << std::endl;
-            break;
+    case Tango::SPECTRUM:
+        o_str << "spectrum, max_dim_x = " << p.max_dim_x << std::endl;
+        break;
 
-        case Tango::IMAGE :
-            o_str << "image, max_dim_x = " << p.max_dim_x << ", max_dim_y = " << p.max_dim_y << std::endl;
-            break;
+    case Tango::IMAGE:
+        o_str << "image, max_dim_x = " << p.max_dim_x << ", max_dim_y = " << p.max_dim_y << std::endl;
+        break;
     }
 
-    if ((p.writable == Tango::WRITE) || (p.writable == Tango::READ_WRITE))
+    if((p.writable == Tango::WRITE) || (p.writable == Tango::READ_WRITE))
     {
         o_str << "Attribute is writable" << std::endl;
     }
@@ -1755,10 +1734,10 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfo &p)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	=
+//         operator overloading :     =
 //
 // description :
-//		Assignement operator for the AttributeInfoEx class from a AttributeConfig_2 pointer
+//        Assignement operator for the AttributeInfoEx class from a AttributeConfig_2 pointer
 //
 //----------------------------------------------------------------------------------------------------------------
 
@@ -1782,7 +1761,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_2 *att_2)
     max_alarm = att_2->max_alarm;
     writable_attr_name = att_2->writable_attr_name;
     extensions.resize(att_2->extensions.length());
-    for (unsigned int j = 0; j < att_2->extensions.length(); j++)
+    for(unsigned int j = 0; j < att_2->extensions.length(); j++)
     {
         extensions[j] = att_2->extensions[j];
     }
@@ -1794,10 +1773,10 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_2 *att_2)
 //+---------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	=
+//         operator overloading :     =
 //
 // description :
-//		Assignement operator for the AttributeInfoEx class from a AttributeConfig_3 pointer
+//        Assignement operator for the AttributeInfoEx class from a AttributeConfig_3 pointer
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -1821,7 +1800,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_3 *att_3)
     max_alarm = att_3->att_alarm.max_alarm;
     writable_attr_name = att_3->writable_attr_name;
     extensions.resize(att_3->sys_extensions.length());
-    for (unsigned int j = 0; j < att_3->sys_extensions.length(); j++)
+    for(unsigned int j = 0; j < att_3->sys_extensions.length(); j++)
     {
         extensions[j] = att_3->sys_extensions[j];
     }
@@ -1834,7 +1813,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_3 *att_3)
     alarms.delta_t = att_3->att_alarm.delta_t;
     alarms.delta_val = att_3->att_alarm.delta_val;
     alarms.extensions.resize(att_3->att_alarm.extensions.length());
-    for (unsigned int j = 0; j < att_3->att_alarm.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_3->att_alarm.extensions.length(); j++)
     {
         alarms.extensions[j] = att_3->att_alarm.extensions[j];
     }
@@ -1842,14 +1821,14 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_3 *att_3)
     events.ch_event.abs_change = att_3->event_prop.ch_event.abs_change;
     events.ch_event.rel_change = att_3->event_prop.ch_event.rel_change;
     events.ch_event.extensions.resize(att_3->event_prop.ch_event.extensions.length());
-    for (unsigned int j = 0; j < att_3->event_prop.ch_event.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_3->event_prop.ch_event.extensions.length(); j++)
     {
         events.ch_event.extensions[j] = att_3->event_prop.ch_event.extensions[j];
     }
 
     events.per_event.period = att_3->event_prop.per_event.period;
     events.per_event.extensions.resize(att_3->event_prop.per_event.extensions.length());
-    for (unsigned int j = 0; j < att_3->event_prop.per_event.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_3->event_prop.per_event.extensions.length(); j++)
     {
         events.per_event.extensions[j] = att_3->event_prop.per_event.extensions[j];
     }
@@ -1858,7 +1837,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_3 *att_3)
     events.arch_event.archive_rel_change = att_3->event_prop.arch_event.rel_change;
     events.arch_event.archive_period = att_3->event_prop.arch_event.period;
     events.arch_event.extensions.resize(att_3->event_prop.arch_event.extensions.length());
-    for (unsigned int j = 0; j < att_3->event_prop.arch_event.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_3->event_prop.arch_event.extensions.length(); j++)
     {
         events.arch_event.extensions[j] = att_3->event_prop.arch_event.extensions[j];
     }
@@ -1869,10 +1848,10 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_3 *att_3)
 //+---------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	=
+//         operator overloading :     =
 //
 // description :
-//		Assignement operator for the AttributeInfoEx class from a AttributeConfig_5 pointer
+//        Assignement operator for the AttributeInfoEx class from a AttributeConfig_5 pointer
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -1896,19 +1875,19 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
     max_alarm = att_5->att_alarm.max_alarm;
     writable_attr_name = att_5->writable_attr_name;
     extensions.resize(att_5->sys_extensions.length());
-    for (unsigned int j = 0; j < att_5->sys_extensions.length(); j++)
+    for(unsigned int j = 0; j < att_5->sys_extensions.length(); j++)
     {
         extensions[j] = att_5->sys_extensions[j];
     }
     disp_level = att_5->level;
     root_attr_name = att_5->root_attr_name;
-    if (att_5->memorized == false)
+    if(att_5->memorized == false)
     {
         memorized = NONE;
     }
     else
     {
-        if (att_5->mem_init == false)
+        if(att_5->mem_init == false)
         {
             memorized = MEMORIZED;
         }
@@ -1918,7 +1897,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
         }
     }
     enum_labels.clear();
-    for (unsigned int j = 0; j < att_5->enum_labels.length(); j++)
+    for(unsigned int j = 0; j < att_5->enum_labels.length(); j++)
     {
         enum_labels.push_back(att_5->enum_labels[j].in());
     }
@@ -1930,7 +1909,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
     alarms.delta_t = att_5->att_alarm.delta_t;
     alarms.delta_val = att_5->att_alarm.delta_val;
     alarms.extensions.resize(att_5->att_alarm.extensions.length());
-    for (unsigned int j = 0; j < att_5->att_alarm.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_5->att_alarm.extensions.length(); j++)
     {
         alarms.extensions[j] = att_5->att_alarm.extensions[j];
     }
@@ -1938,14 +1917,14 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
     events.ch_event.abs_change = att_5->event_prop.ch_event.abs_change;
     events.ch_event.rel_change = att_5->event_prop.ch_event.rel_change;
     events.ch_event.extensions.resize(att_5->event_prop.ch_event.extensions.length());
-    for (unsigned int j = 0; j < att_5->event_prop.ch_event.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_5->event_prop.ch_event.extensions.length(); j++)
     {
         events.ch_event.extensions[j] = att_5->event_prop.ch_event.extensions[j];
     }
 
     events.per_event.period = att_5->event_prop.per_event.period;
     events.per_event.extensions.resize(att_5->event_prop.per_event.extensions.length());
-    for (unsigned int j = 0; j < att_5->event_prop.per_event.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_5->event_prop.per_event.extensions.length(); j++)
     {
         events.per_event.extensions[j] = att_5->event_prop.per_event.extensions[j];
     }
@@ -1954,7 +1933,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
     events.arch_event.archive_rel_change = att_5->event_prop.arch_event.rel_change;
     events.arch_event.archive_period = att_5->event_prop.arch_event.period;
     events.arch_event.extensions.resize(att_5->event_prop.arch_event.extensions.length());
-    for (unsigned int j = 0; j < att_5->event_prop.arch_event.extensions.length(); j++)
+    for(unsigned int j = 0; j < att_5->event_prop.arch_event.extensions.length(); j++)
     {
         events.arch_event.extensions[j] = att_5->event_prop.arch_event.extensions[j];
     }
@@ -1965,80 +1944,78 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the AttributeInfo class
+//        Friend function to ease printing instance of the AttributeInfo class
 //
 //-----------------------------------------------------------------------------------------------------------------
 
 std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
 {
-
-
-//
-// Print all these properties
-//
+    //
+    // Print all these properties
+    //
 
     o_str << "Attribute name = " << p.name << std::endl;
-    o_str << "Attribute data_type = " << (CmdArgType)p.data_type << std::endl;
+    o_str << "Attribute data_type = " << (CmdArgType) p.data_type << std::endl;
 
     if(p.data_type == Tango::DEV_ENUM)
     {
-        for (size_t loop = 0; loop < p.enum_labels.size(); loop++)
+        for(size_t loop = 0; loop < p.enum_labels.size(); loop++)
         {
             o_str << "\tEnumeration label = " << p.enum_labels[loop] << std::endl;
         }
     }
 
     o_str << "Attribute data_format = " << p.data_format;
-    switch (p.data_format)
+    switch(p.data_format)
     {
-        case Tango::SPECTRUM :
-            o_str << ", max_dim_x = " << p.max_dim_x << std::endl;
-            break;
+    case Tango::SPECTRUM:
+        o_str << ", max_dim_x = " << p.max_dim_x << std::endl;
+        break;
 
-        case Tango::IMAGE :
-            o_str << ", max_dim_x = " << p.max_dim_x << ", max_dim_y = " << p.max_dim_y << std::endl;
-            break;
-        case Tango::SCALAR:
-            // do nothing
-            break;
-        default:
-            TANGO_THROW_ON_DEFAULT(p.data_format);
+    case Tango::IMAGE:
+        o_str << ", max_dim_x = " << p.max_dim_x << ", max_dim_y = " << p.max_dim_y << std::endl;
+        break;
+    case Tango::SCALAR:
+        // do nothing
+        break;
+    default:
+        TANGO_THROW_ON_DEFAULT(p.data_format);
     }
 
     o_str << "Attribute writable type = " << p.writable << std::endl;
 
-    if ((p.writable == Tango::WRITE) || (p.writable == Tango::READ_WRITE))
+    if((p.writable == Tango::WRITE) || (p.writable == Tango::READ_WRITE))
     {
-        switch (p.memorized)
+        switch(p.memorized)
         {
-            case NOT_KNOWN:
-                o_str << "Device/Appli too old to send/receive attribute memorisation data" << std::endl;
-                break;
+        case NOT_KNOWN:
+            o_str << "Device/Appli too old to send/receive attribute memorisation data" << std::endl;
+            break;
 
-            case NONE:
-                o_str << "Attribute is not memorized" << std::endl;
-                break;
+        case NONE:
+            o_str << "Attribute is not memorized" << std::endl;
+            break;
 
-            case MEMORIZED:
-                o_str << "Attribute is memorized" << std::endl;
-                break;
+        case MEMORIZED:
+            o_str << "Attribute is memorized" << std::endl;
+            break;
 
-            case MEMORIZED_WRITE_INIT:
-                o_str << "Attribute is memorized and the memorized value is written at initialisation" << std::endl;
-                break;
+        case MEMORIZED_WRITE_INIT:
+            o_str << "Attribute is memorized and the memorized value is written at initialisation" << std::endl;
+            break;
 
-            default:
-                TANGO_THROW_ON_DEFAULT(p.data_format);
+        default:
+            TANGO_THROW_ON_DEFAULT(p.data_format);
         }
     }
 
     o_str << "Attribute display level = " << p.disp_level << std::endl;
 
     o_str << "Attribute writable_attr_name = " << p.writable_attr_name << std::endl;
-    if (p.root_attr_name.empty() == false)
+    if(p.root_attr_name.empty() == false)
     {
         o_str << "Root attribute name = " << p.root_attr_name << std::endl;
     }
@@ -2052,7 +2029,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     o_str << "Attribute max value = " << p.max_value << std::endl;
 
     unsigned int i;
-    for (i = 0; i < p.extensions.size(); i++)
+    for(i = 0; i < p.extensions.size(); i++)
     {
         o_str << "Attribute extensions " << i + 1 << " = " << p.extensions[i] << std::endl;
     }
@@ -2081,7 +2058,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     p.alarms.delta_val.empty() == true ? o_str << "Not specified" : o_str << p.alarms.delta_val;
     o_str << std::endl;
 
-    for (i = 0; i < p.alarms.extensions.size(); i++)
+    for(i = 0; i < p.alarms.extensions.size(); i++)
     {
         o_str << "Attribute alarm extensions " << i + 1 << " = " << p.alarms.extensions[i] << std::endl;
     }
@@ -2094,7 +2071,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     p.events.ch_event.rel_change.empty() == true ? o_str << "Not specified" : o_str << p.events.ch_event.rel_change;
     o_str << std::endl;
 
-    for (i = 0; i < p.events.ch_event.extensions.size(); i++)
+    for(i = 0; i < p.events.ch_event.extensions.size(); i++)
     {
         o_str << "Attribute alarm : change event extensions " << i + 1 << " = " << p.events.ch_event.extensions[i]
               << std::endl;
@@ -2104,35 +2081,35 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     p.events.per_event.period.empty() == true ? o_str << "Not specified" : o_str << p.events.per_event.period;
     o_str << std::endl;
 
-    for (i = 0; i < p.events.per_event.extensions.size(); i++)
+    for(i = 0; i < p.events.per_event.extensions.size(); i++)
     {
         o_str << "Attribute alarm : periodic event extensions " << i + 1 << " = " << p.events.per_event.extensions[i]
               << std::endl;
     }
 
     o_str << "Attribute event : archive event absolute change = ";
-    p.events.arch_event.archive_abs_change.empty() == true ? o_str << "Not specified" : o_str
-        << p.events.arch_event.archive_abs_change;
+    p.events.arch_event.archive_abs_change.empty() == true ? o_str << "Not specified"
+                                                           : o_str << p.events.arch_event.archive_abs_change;
     o_str << std::endl;
 
     o_str << "Attribute event : archive event relative change = ";
-    p.events.arch_event.archive_rel_change.empty() == true ? o_str << "Not specified" : o_str
-        << p.events.arch_event.archive_rel_change;
+    p.events.arch_event.archive_rel_change.empty() == true ? o_str << "Not specified"
+                                                           : o_str << p.events.arch_event.archive_rel_change;
     o_str << std::endl;
 
     o_str << "Attribute event : archive event period = ";
-    p.events.arch_event.archive_period.empty() == true ? o_str << "Not specified" : o_str
-        << p.events.arch_event.archive_period;
+    p.events.arch_event.archive_period.empty() == true ? o_str << "Not specified"
+                                                       : o_str << p.events.arch_event.archive_period;
     o_str << std::endl;
 
-    for (i = 0; i < p.events.arch_event.extensions.size(); i++)
+    for(i = 0; i < p.events.arch_event.extensions.size(); i++)
     {
-        if (i == 0)
+        if(i == 0)
         {
             o_str << std::endl;
         }
         o_str << "Attribute alarm : archive event extensions " << i + 1 << " = " << p.events.arch_event.extensions[i];
-        if (i != p.events.arch_event.extensions.size() - 1)
+        if(i != p.events.arch_event.extensions.size() - 1)
         {
             o_str << std::endl;
         }
@@ -2144,26 +2121,25 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // function :
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Friend function to ease printing instance of the PipeInfo class
+//        Friend function to ease printing instance of the PipeInfo class
 //
 //-----------------------------------------------------------------------------------------------------------------
 
 std::ostream &operator<<(std::ostream &o_str, const PipeInfo &p)
 {
-
-//
-// Print all these properties
-//
+    //
+    // Print all these properties
+    //
 
     o_str << "Pipe name = " << p.name << std::endl;
     o_str << "Pipe label = " << p.label << std::endl;
     o_str << "Pipe description = " << p.description << std::endl;
 
     o_str << "Pipe writable type = ";
-    if (p.writable == PIPE_READ)
+    if(p.writable == PIPE_READ)
     {
         o_str << "READ" << std::endl;
     }
@@ -2175,9 +2151,9 @@ std::ostream &operator<<(std::ostream &o_str, const PipeInfo &p)
     o_str << "Pipe display level = " << p.disp_level << std::endl;
 
     unsigned int i;
-    for (i = 0; i < p.extensions.size(); i++)
+    for(i = 0; i < p.extensions.size(); i++)
     {
-        if (i == 0)
+        if(i == 0)
         {
             o_str << std::endl;
         }
@@ -2187,4 +2163,4 @@ std::ostream &operator<<(std::ostream &o_str, const PipeInfo &p)
     return o_str;
 }
 
-} // End of tango namespace
+} // namespace Tango

@@ -1,8 +1,8 @@
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						Synchrotron SOLEIL
-//                		L'Orme des Merisiers
-//                		Saint-Aubin - BP 48 - France
+//                        Synchrotron SOLEIL
+//                        L'Orme des Merisiers
+//                        Saint-Aubin - BP 48 - France
 //
 // This file is part of Tango.
 //
@@ -25,29 +25,33 @@
 #include <sstream>
 #include <string>
 
-template<class T>   class XString{
+template <class T>
+class XString
+{
+  public:
+    static T convertFromString(const std::string &s)
+    {
+        std::istringstream in(s);
+        T x;
+        if(in >> x)
+        {
+            return x;
+        }
+        // some sort of error handling goes here...
+        return 0;
+    }
 
-public:
+    //
+    static std::string convertToString(const T &t)
+    {
+        std::ostringstream out;
 
-	static	T convertFromString(const std::string& s)
-	{
-		std::istringstream in(s);
-		T x;
-		if (in >> x)
-			return x;
-		// some sort of error handling goes here...
-		return 0;
-	}
-//
-	static	std::string convertToString(const T & t)
-	{
-		std::ostringstream out ;
-
-		if (out << std::fixed << t   )
-			return out.str();
-		// some sort of error handling goes here...
-		return 0;
-	}
-
+        if(out << std::fixed << t)
+        {
+            return out.str();
+        }
+        // some sort of error handling goes here...
+        return 0;
+    }
 };
 #endif

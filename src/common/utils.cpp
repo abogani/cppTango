@@ -8,7 +8,7 @@ namespace detail
 
 bool IDLVersionIsTooOld(int version, int desiredVersion)
 {
-  return version > detail::INVALID_IDL_VERSION && version < desiredVersion;
+    return version > detail::INVALID_IDL_VERSION && version < desiredVersion;
 }
 
 } // namespace detail

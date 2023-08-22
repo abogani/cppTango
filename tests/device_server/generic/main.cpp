@@ -23,41 +23,39 @@
 #include <tango/server/dserverclass.h>
 #include <tango/server/dserversignal.h>
 
-
-int main(int argc,char *argv[])
+int main(int argc, char *argv[])
 {
-	Tango::Util *tg = nullptr;
-	try
-	{
+    Tango::Util *tg = nullptr;
+    try
+    {
+        tg = Tango::Util::init(argc, argv);
 
-		tg = Tango::Util::init(argc,argv);
+        tg->server_init();
 
-		tg->server_init();
+        tg->server_run();
+    }
+    catch(std::bad_alloc &)
+    {
+        std::cout << "Can't allocate memory to store device object !!!" << std::endl;
+        std::cout << "Exiting" << std::endl;
+    }
+    catch(Tango::DevFailed &e)
+    {
+        Tango::Except::print_exception(e);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
 
-		tg->server_run();
-	}
-	catch (std::bad_alloc&)
-	{
-		std::cout << "Can't allocate memory to store device object !!!" << std::endl;
-		std::cout << "Exiting" << std::endl;
-	}
-	catch (Tango::DevFailed &e)
-	{
-		Tango::Except::print_exception(e);
-	}
-	catch (CORBA::Exception &e)
-	{
-		Tango::Except::print_exception(e);
+        std::cout << "Received a CORBA_Exception" << std::endl;
+        std::cout << "Exiting" << std::endl;
+    }
 
-		std::cout << "Received a CORBA_Exception" << std::endl;
-		std::cout << "Exiting" << std::endl;
-	}
+    // Destroy the ORB (and properly release its resources)
+    if(tg)
+    {
+        tg->server_cleanup();
+    }
 
-  // Destroy the ORB (and properly release its resources)
-  if(tg)
-  {
-    tg->server_cleanup();
-  }
-
-	return(0);
+    return (0);
 }

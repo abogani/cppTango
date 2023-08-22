@@ -1,17 +1,17 @@
 //+==================================================================================================================
 //
-// file :		Device.cpp
+// file :        Device.cpp
 //
-// description :	C++ source code for the DeviceImpl class. This class is the root class for all derived Device
-//					classes. It is an abstract class. The DeviceImpl class is the CORBA servant which is "exported"
-//					onto the network and accessed by the client.
+// description :    C++ source code for the DeviceImpl class. This class is the root class for all derived Device
+//                    classes. It is an abstract class. The DeviceImpl class is the CORBA servant which is "exported"
+//                    onto the network and accessed by the client.
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -46,402 +46,456 @@
 namespace Tango
 {
 
-    namespace
+namespace
+{
+template <class T>
+T &get_any_value(Tango::AttrValUnion &);
+
+template <class T>
+void set_union_value(Tango::AttrValUnion &val, T &arr);
+
+template <class T>
+T &get_union_value(Tango::AttrValUnion &val);
+
+template <class T>
+void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bool del_seq);
+
+template <class T>
+void data_in_net_object(AttributeIdlData &aid, long index, long vers, PollObj *polled_att);
+
+template <>
+inline Tango::DevVarShortArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarShortArray tmp;
+    val.short_att_value(tmp);
+    return val.short_att_value();
+}
+
+template <>
+inline Tango::DevVarLongArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarLongArray tmp;
+    val.long_att_value(tmp);
+    return val.long_att_value();
+}
+
+template <>
+inline Tango::DevVarLong64Array &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarLong64Array tmp;
+    val.long64_att_value(tmp);
+    return val.long64_att_value();
+}
+
+template <>
+inline Tango::DevVarDoubleArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarDoubleArray tmp;
+    val.double_att_value(tmp);
+    return val.double_att_value();
+}
+
+template <>
+inline Tango::DevVarFloatArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarFloatArray tmp;
+    val.float_att_value(tmp);
+    return val.float_att_value();
+}
+
+template <>
+inline Tango::DevVarStringArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarStringArray tmp;
+    val.string_att_value(tmp);
+    return val.string_att_value();
+}
+
+template <>
+inline Tango::DevVarBooleanArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarBooleanArray tmp;
+    val.bool_att_value(tmp);
+    return val.bool_att_value();
+}
+
+template <>
+inline Tango::DevVarUShortArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarUShortArray tmp;
+    val.ushort_att_value(tmp);
+    return val.ushort_att_value();
+}
+
+template <>
+inline Tango::DevVarUCharArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarCharArray tmp;
+    val.uchar_att_value(tmp);
+    return val.uchar_att_value();
+}
+
+template <>
+inline Tango::DevVarULongArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarULongArray tmp;
+    val.ulong_att_value(tmp);
+    return val.ulong_att_value();
+}
+
+template <>
+inline Tango::DevVarULong64Array &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarULong64Array tmp;
+    val.ulong64_att_value(tmp);
+    return val.ulong64_att_value();
+}
+
+template <>
+inline Tango::DevVarStateArray &get_any_value(Tango::AttrValUnion &val)
+{
+    Tango::DevVarStateArray tmp;
+    val.state_att_value(tmp);
+    return val.state_att_value();
+}
+
+template <>
+inline Tango::DevVarShortArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.short_att_value();
+}
+
+template <>
+inline Tango::DevVarLongArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.long_att_value();
+}
+
+template <>
+inline Tango::DevVarLong64Array &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.long64_att_value();
+}
+
+template <>
+inline Tango::DevVarDoubleArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.double_att_value();
+}
+
+template <>
+inline Tango::DevVarFloatArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.float_att_value();
+}
+
+template <>
+inline Tango::DevVarStringArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.string_att_value();
+}
+
+template <>
+inline Tango::DevVarBooleanArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.bool_att_value();
+}
+
+template <>
+inline Tango::DevVarUShortArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.ushort_att_value();
+}
+
+template <>
+inline Tango::DevVarUCharArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.uchar_att_value();
+}
+
+template <>
+inline Tango::DevVarULongArray &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.ulong_att_value();
+}
+
+template <>
+inline Tango::DevVarULong64Array &get_union_value(Tango::AttrValUnion &val)
+{
+    return val.ulong64_att_value();
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarShortArray &arr)
+{
+    val.short_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarLongArray &arr)
+{
+    val.long_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarLong64Array &arr)
+{
+    val.long64_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarDoubleArray &arr)
+{
+    val.double_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarFloatArray &arr)
+{
+    val.float_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarStringArray &arr)
+{
+    val.string_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarBooleanArray &arr)
+{
+    val.bool_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarUShortArray &arr)
+{
+    val.ushort_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarUCharArray &arr)
+{
+    val.uchar_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarULongArray &arr)
+{
+    val.ulong_att_value(arr);
+}
+
+template <>
+inline void set_union_value(Tango::AttrValUnion &val, Tango::DevVarULong64Array &arr)
+{
+    val.ulong64_att_value(arr);
+}
+
+template <class T>
+inline void data_in_net_object(AttributeIdlData &aid, long index, long vers, PollObj *polled_att)
+{
+    if(aid.data_5 != nullptr)
     {
-        template<class T>
-        T& get_any_value(Tango::AttrValUnion&);
-
-        template<class T>
-        void set_union_value(Tango::AttrValUnion& val, T& arr);
-
-        template<class T>
-        T& get_union_value(Tango::AttrValUnion& val);
-
-        template<class T>
-        void data_in_object(Attribute &att, AttributeIdlData &aid,
-                                            long index, bool del_seq);
-
-        template<class T>
-        void data_in_net_object(AttributeIdlData &aid,
-                                            long index, long vers, PollObj *polled_att);
-
-        template<>
-        inline Tango::DevVarShortArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarShortArray tmp;
-            val.short_att_value(tmp);
-            return val.short_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarLongArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarLongArray tmp;
-            val.long_att_value(tmp);
-            return val.long_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarLong64Array& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarLong64Array tmp;
-            val.long64_att_value(tmp);
-            return val.long64_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarDoubleArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarDoubleArray tmp;
-            val.double_att_value(tmp);
-            return val.double_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarFloatArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarFloatArray tmp;
-            val.float_att_value(tmp);
-            return val.float_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarStringArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarStringArray tmp;
-            val.string_att_value(tmp);
-            return val.string_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarBooleanArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarBooleanArray tmp;
-            val.bool_att_value(tmp);
-            return val.bool_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarUShortArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarUShortArray tmp;
-            val.ushort_att_value(tmp);
-            return val.ushort_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarUCharArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarCharArray tmp;
-            val.uchar_att_value(tmp);
-            return val.uchar_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarULongArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarULongArray tmp;
-            val.ulong_att_value(tmp);
-            return val.ulong_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarULong64Array& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarULong64Array tmp;
-            val.ulong64_att_value(tmp);
-            return val.ulong64_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarStateArray& get_any_value(Tango::AttrValUnion& val)
-        {
-            Tango::DevVarStateArray tmp;
-            val.state_att_value(tmp);
-            return val.state_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarShortArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.short_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarLongArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.long_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarLong64Array& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.long64_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarDoubleArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.double_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarFloatArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.float_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarStringArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.string_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarBooleanArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.bool_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarUShortArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.ushort_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarUCharArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.uchar_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarULongArray& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.ulong_att_value();
-        }
-
-        template<>
-        inline Tango::DevVarULong64Array& get_union_value(Tango::AttrValUnion& val)
-        {
-            return val.ulong64_att_value();
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarShortArray& arr)
-        {
-            val.short_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarLongArray& arr)
-        {
-            val.long_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarLong64Array& arr)
-        {
-            val.long64_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarDoubleArray& arr)
-        {
-            val.double_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarFloatArray& arr)
-        {
-            val.float_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarStringArray& arr)
-        {
-            val.string_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarBooleanArray& arr)
-        {
-            val.bool_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarUShortArray& arr)
-        {
-            val.ushort_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarUCharArray& arr)
-        {
-            val.uchar_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarULongArray& arr)
-        {
-            val.ulong_att_value(arr);
-        }
-
-        template<>
-        inline void set_union_value(Tango::AttrValUnion& val, Tango::DevVarULong64Array& arr)
-        {
-            val.ulong64_att_value(arr);
-        }
-
-        template<class T>
-        inline void data_in_net_object(AttributeIdlData &aid,
-                                                     long index, long vers, PollObj *polled_att)
-        {
-            if (aid.data_5 != nullptr)
-            {
-                AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                set_union_value((*aid.data_5)[index].value, get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value));
-            }
-            else if (aid.data_4 != nullptr)
-            {
-                if (vers >= 5)
-                {
-                    AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                    set_union_value((*aid.data_4)[index].value, get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value));
-                }
-                else
-                {
-                    AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
-                    set_union_value((*aid.data_4)[index].value, get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value));
-                }
-            }
-            else
-            {
-                typename tango_type_traits<T>::ArrayType* tmp;
-                if (vers >= 5)
-                {
-                    AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                    typename tango_type_traits<T>::ArrayType &union_seq = get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value);
-                    tmp = new typename tango_type_traits<T>::ArrayType(union_seq.length(),
-                            union_seq.length(),
-                            const_cast<T *>(union_seq.get_buffer()),
-                            false);
-                }
-                else if (vers == 4)
-                {
-                    AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
-                    typename tango_type_traits<T>::ArrayType &union_seq = get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value);
-                    tmp = new typename tango_type_traits<T>::ArrayType(union_seq.length(),
-                            union_seq.length(),
-                            const_cast<T *>(union_seq.get_buffer()),
-                            false);
-                }
-                else
-                {
-                    const typename tango_type_traits<T>::ArrayType* tmp_cst;
-                    AttributeValue_3 &att_val = polled_att->get_last_attr_value_3(false);
-                    att_val.value >>= tmp_cst;
-                    tmp = new typename tango_type_traits<T>::ArrayType(tmp_cst->length(),
-                            tmp_cst->length(),
-                            const_cast<T *>(tmp_cst->get_buffer()),
-                            false);
-                }
-                (*aid.data_3)[index].value <<= tmp;
-            }
-        }
-
-        template<class T>
-        inline void data_in_object(Attribute &att, AttributeIdlData &aid,
-                                                long index, bool del_seq)
-        {
-            auto* ptr = *(att.get_value_storage<T>());
-            if (aid.data_5 != nullptr)
-            {
-                auto& the_seq = get_any_value<T>((*aid.data_5)[index].value);
-                the_seq.replace(ptr->length(),ptr->length(),ptr->get_buffer(),ptr->release());
-                if (ptr->release())
-                {
-                    ptr->get_buffer(true);
-                }
-            }
-            else if (aid.data_4 != nullptr)
-            {
-                auto& the_seq = get_any_value<T>((*aid.data_4)[index].value);
-                the_seq.replace(ptr->length(),ptr->length(),ptr->get_buffer(),ptr->release());
-                if (ptr->release() == true)
-                    ptr->get_buffer(true);
-            }
-            else
-            {
-                (*aid.data_3)[index].value <<= *ptr;
-            }
-
-            if (del_seq)
-            {
-                delete ptr;
-            }
-        }
-
+        AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
+        set_union_value((*aid.data_5)[index].value,
+                        get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value));
     }
+    else if(aid.data_4 != nullptr)
+    {
+        if(vers >= 5)
+        {
+            AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
+            set_union_value((*aid.data_4)[index].value,
+                            get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value));
+        }
+        else
+        {
+            AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
+            set_union_value((*aid.data_4)[index].value,
+                            get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value));
+        }
+    }
+    else
+    {
+        typename tango_type_traits<T>::ArrayType *tmp;
+        if(vers >= 5)
+        {
+            AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
+            typename tango_type_traits<T>::ArrayType &union_seq =
+                get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value);
+            tmp = new typename tango_type_traits<T>::ArrayType(
+                union_seq.length(), union_seq.length(), const_cast<T *>(union_seq.get_buffer()), false);
+        }
+        else if(vers == 4)
+        {
+            AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
+            typename tango_type_traits<T>::ArrayType &union_seq =
+                get_union_value<typename tango_type_traits<T>::ArrayType>(att_val.value);
+            tmp = new typename tango_type_traits<T>::ArrayType(
+                union_seq.length(), union_seq.length(), const_cast<T *>(union_seq.get_buffer()), false);
+        }
+        else
+        {
+            const typename tango_type_traits<T>::ArrayType *tmp_cst;
+            AttributeValue_3 &att_val = polled_att->get_last_attr_value_3(false);
+            att_val.value >>= tmp_cst;
+            tmp = new typename tango_type_traits<T>::ArrayType(
+                tmp_cst->length(), tmp_cst->length(), const_cast<T *>(tmp_cst->get_buffer()), false);
+        }
+        (*aid.data_3)[index].value <<= tmp;
+    }
+}
+
+template <class T>
+inline void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bool del_seq)
+{
+    auto *ptr = *(att.get_value_storage<T>());
+    if(aid.data_5 != nullptr)
+    {
+        auto &the_seq = get_any_value<T>((*aid.data_5)[index].value);
+        the_seq.replace(ptr->length(), ptr->length(), ptr->get_buffer(), ptr->release());
+        if(ptr->release())
+        {
+            ptr->get_buffer(true);
+        }
+    }
+    else if(aid.data_4 != nullptr)
+    {
+        auto &the_seq = get_any_value<T>((*aid.data_4)[index].value);
+        the_seq.replace(ptr->length(), ptr->length(), ptr->get_buffer(), ptr->release());
+        if(ptr->release() == true)
+        {
+            ptr->get_buffer(true);
+        }
+    }
+    else
+    {
+        (*aid.data_3)[index].value <<= *ptr;
+    }
+
+    if(del_seq)
+    {
+        delete ptr;
+    }
+}
+
+} // namespace
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::DeviceImpl
+// method :        DeviceImpl::DeviceImpl
 //
-// description :	constructors for the device_impl class from the class object
-//			pointer, the device name, the description field,
-//			the =aqmz and the status.
+// description :    constructors for the device_impl class from the class object
+//            pointer, the device name, the description field,
+//            the =aqmz and the status.
 //
-// argument : in :	- cl_ptr : The class object pointer
-//			- d_name : The device name
-//			- de : The device description (default to "A TANGO device")
-//			- st : The device state (default to UNKNOWN)
-//			- sta : The device status (default to "Not initialised")
+// argument : in :    - cl_ptr : The class object pointer
+//            - d_name : The device name
+//            - de : The device description (default to "A TANGO device")
+//            - st : The device state (default to UNKNOWN)
+//            - sta : The device status (default to "Not initialised")
 //
 //--------------------------------------------------------------------------
 
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const char *d_name,
-                       const char *de, Tango::DevState st, const char *sta)
-    : device_name(d_name), desc(de), device_status(sta),
-      device_state(st), device_class(cl_ptr), ext(new DeviceImplExt),
-      logger(NULL), saved_log_level(log4tango::Level::WARN), rft(Tango::kDefaultRollingThreshold), poll_old_factor(0),
-      idl_version(1),
-      exported(false), polled(false), poll_ring_depth(0), only_one(d_name),
-      store_in_bb(true), poll_mon("cache"), att_conf_mon("att_config"),
-      state_from_read(false), device_locked(false),
-      locker_client(NULL), old_locker_client(NULL), lock_ctr(0),
-      min_poll_period(0), run_att_conf_loop(true), force_alarm_state(false), with_fwd_att(false),
-      event_intr_change_subscription(0), intr_change_ev(false), devintr_thread(nullptr)
+DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const char *d_name, const char *de, Tango::DevState st, const char *sta) :
+    device_name(d_name),
+    desc(de),
+    device_status(sta),
+    device_state(st),
+    device_class(cl_ptr),
+    ext(new DeviceImplExt),
+    logger(NULL),
+    saved_log_level(log4tango::Level::WARN),
+    rft(Tango::kDefaultRollingThreshold),
+    poll_old_factor(0),
+    idl_version(1),
+    exported(false),
+    polled(false),
+    poll_ring_depth(0),
+    only_one(d_name),
+    store_in_bb(true),
+    poll_mon("cache"),
+    att_conf_mon("att_config"),
+    state_from_read(false),
+    device_locked(false),
+    locker_client(NULL),
+    old_locker_client(NULL),
+    lock_ctr(0),
+    min_poll_period(0),
+    run_att_conf_loop(true),
+    force_alarm_state(false),
+    with_fwd_att(false),
+    event_intr_change_subscription(0),
+    intr_change_ev(false),
+    devintr_thread(nullptr)
 {
     real_ctor();
 }
 
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name, const std::string &de,
-                       Tango::DevState st, const std::string &sta)
-    : device_name(d_name), desc(de), device_status(sta),
-      device_state(st), device_class(cl_ptr), ext(new DeviceImplExt),
-      logger(NULL), saved_log_level(log4tango::Level::WARN), rft(Tango::kDefaultRollingThreshold), poll_old_factor(0),
-      idl_version(1),
-      exported(false), polled(false), poll_ring_depth(0), only_one(d_name.c_str()),
-      store_in_bb(true), poll_mon("cache"), att_conf_mon("att_config"),
-      state_from_read(false), device_locked(false),
-      locker_client(NULL), old_locker_client(NULL), lock_ctr(0),
-      min_poll_period(0), run_att_conf_loop(true), force_alarm_state(false), with_fwd_att(false),
-      event_intr_change_subscription(0), intr_change_ev(false), devintr_thread(nullptr)
+DeviceImpl::DeviceImpl(
+    DeviceClass *cl_ptr, const std::string &d_name, const std::string &de, Tango::DevState st, const std::string &sta) :
+    device_name(d_name),
+    desc(de),
+    device_status(sta),
+    device_state(st),
+    device_class(cl_ptr),
+    ext(new DeviceImplExt),
+    logger(NULL),
+    saved_log_level(log4tango::Level::WARN),
+    rft(Tango::kDefaultRollingThreshold),
+    poll_old_factor(0),
+    idl_version(1),
+    exported(false),
+    polled(false),
+    poll_ring_depth(0),
+    only_one(d_name.c_str()),
+    store_in_bb(true),
+    poll_mon("cache"),
+    att_conf_mon("att_config"),
+    state_from_read(false),
+    device_locked(false),
+    locker_client(NULL),
+    old_locker_client(NULL),
+    lock_ctr(0),
+    min_poll_period(0),
+    run_att_conf_loop(true),
+    force_alarm_state(false),
+    with_fwd_att(false),
+    event_intr_change_subscription(0),
+    intr_change_ev(false),
+    devintr_thread(nullptr)
 {
     real_ctor();
 }
 
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name)
-    : device_name(d_name), device_class(cl_ptr), ext(new DeviceImplExt),
-      logger(NULL), saved_log_level(log4tango::Level::WARN), rft(Tango::kDefaultRollingThreshold), poll_old_factor(0),
-      idl_version(1),
-      exported(false), polled(false), poll_ring_depth(0), only_one(d_name.c_str()),
-      store_in_bb(true), poll_mon("cache"), att_conf_mon("att_config"),
-      state_from_read(false), device_locked(false),
-      locker_client(NULL), old_locker_client(NULL), lock_ctr(0),
-      min_poll_period(0), run_att_conf_loop(true), force_alarm_state(false), with_fwd_att(false),
-      event_intr_change_subscription(0), intr_change_ev(false), devintr_thread(nullptr)
+DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name) :
+    device_name(d_name),
+    device_class(cl_ptr),
+    ext(new DeviceImplExt),
+    logger(NULL),
+    saved_log_level(log4tango::Level::WARN),
+    rft(Tango::kDefaultRollingThreshold),
+    poll_old_factor(0),
+    idl_version(1),
+    exported(false),
+    polled(false),
+    poll_ring_depth(0),
+    only_one(d_name.c_str()),
+    store_in_bb(true),
+    poll_mon("cache"),
+    att_conf_mon("att_config"),
+    state_from_read(false),
+    device_locked(false),
+    locker_client(NULL),
+    old_locker_client(NULL),
+    lock_ctr(0),
+    min_poll_period(0),
+    run_att_conf_loop(true),
+    force_alarm_state(false),
+    with_fwd_att(false),
+    event_intr_change_subscription(0),
+    intr_change_ev(false),
+    devintr_thread(nullptr)
 {
     desc = "A Tango device";
     device_state = Tango::UNKNOWN;
@@ -450,16 +504,34 @@ DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name)
     real_ctor();
 }
 
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name, const std::string &description)
-    : device_name(d_name), device_class(cl_ptr), ext(new DeviceImplExt),
-      logger(NULL), saved_log_level(log4tango::Level::WARN), rft(Tango::kDefaultRollingThreshold), poll_old_factor(0),
-      idl_version(1),
-      exported(false), polled(false), poll_ring_depth(0), only_one(d_name.c_str()),
-      store_in_bb(true), poll_mon("cache"), att_conf_mon("att_config"),
-      state_from_read(false), device_locked(false),
-      locker_client(NULL), old_locker_client(NULL), lock_ctr(0),
-      min_poll_period(0), run_att_conf_loop(true), force_alarm_state(false), with_fwd_att(false),
-      event_intr_change_subscription(0), intr_change_ev(false), devintr_thread(nullptr)
+DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name, const std::string &description) :
+    device_name(d_name),
+    device_class(cl_ptr),
+    ext(new DeviceImplExt),
+    logger(NULL),
+    saved_log_level(log4tango::Level::WARN),
+    rft(Tango::kDefaultRollingThreshold),
+    poll_old_factor(0),
+    idl_version(1),
+    exported(false),
+    polled(false),
+    poll_ring_depth(0),
+    only_one(d_name.c_str()),
+    store_in_bb(true),
+    poll_mon("cache"),
+    att_conf_mon("att_config"),
+    state_from_read(false),
+    device_locked(false),
+    locker_client(NULL),
+    old_locker_client(NULL),
+    lock_ctr(0),
+    min_poll_period(0),
+    run_att_conf_loop(true),
+    force_alarm_state(false),
+    with_fwd_att(false),
+    event_intr_change_subscription(0),
+    intr_change_ev(false),
+    devintr_thread(nullptr)
 {
     desc = description;
     device_state = Tango::UNKNOWN;
@@ -475,30 +547,29 @@ void DeviceImpl::real_ctor()
 
     device_prev_state = device_state;
 
-//
-// Init lower case device name
-//
+    //
+    // Init lower case device name
+    //
 
     device_name_lower = device_name;
-    std::transform(device_name_lower.begin(), device_name_lower.end(),
-              device_name_lower.begin(), ::tolower);
+    std::transform(device_name_lower.begin(), device_name_lower.end(), device_name_lower.begin(), ::tolower);
 
-//
-//  Write the device name into the per thread data for sub device diagnostics
-//
+    //
+    //  Write the device name into the per thread data for sub device diagnostics
+    //
 
     Tango::Util *tg = Tango::Util::instance();
     tg->get_sub_dev_diag().set_associated_device(device_name_lower);
 
-//
-// Create the DbDevice object
-//
+    //
+    // Create the DbDevice object
+    //
 
     try
     {
         db_dev = new DbDevice(device_name, Tango::Util::instance()->get_database());
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         throw;
     }
@@ -510,40 +581,39 @@ void DeviceImpl::real_ctor()
     idl_version = 1;
     devintr_shared.th_running = false;
 
-//
-// Create the multi attribute object
-//
+    //
+    // Create the multi attribute object
+    //
 
     dev_attr = new MultiAttribute(device_name, device_class, this);
 
-//
-// Create device pipe and finish the pipe config init since we now have device name
-//
+    //
+    // Create device pipe and finish the pipe config init since we now have device name
+    //
 
     device_class->create_device_pipe(device_class, this);
     end_pipe_config();
 
-//
-// Build adm device name
-//
+    //
+    // Build adm device name
+    //
 
     adm_device_name = "dserver/";
     adm_device_name = adm_device_name + Util::instance()->get_ds_name();
 
-//
-// Init logging
-//
+    //
+    // Init logging
+    //
 
     init_logger();
-
 }
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::stop_polling
+// method :        DeviceImpl::stop_polling
 //
-// description :	Stop all polling for a device. if the device is
-//			polled, call this method before deleting it.
+// description :    Stop all polling for a device. if the device is
+//            polled, call this method before deleting it.
 //
 // argin(s) : - with_db_upd : Is it necessary to update db ?
 //
@@ -553,25 +623,25 @@ void DeviceImpl::stop_polling(bool with_db_upd)
 {
     Tango::Util *tg = Tango::Util::instance();
 
-//
-// If the vector of polling info is empty, no need to do anything (polling
-// already stopped for all devices)
-//
+    //
+    // If the vector of polling info is empty, no need to do anything (polling
+    // already stopped for all devices)
+    //
 
     std::vector<PollingThreadInfo *> &v_th_info = tg->get_polling_threads_info();
-    if (v_th_info.empty() == true)
+    if(v_th_info.empty() == true)
     {
         return;
     }
 
-//
-// Find out which thread is in charge of the device.
-//
+    //
+    // Find out which thread is in charge of the device.
+    //
 
     PollingThreadInfo *th_info;
 
     int poll_th_id = tg->get_polling_thread_id_by_name(device_name.c_str());
-    if (poll_th_id == 0)
+    if(poll_th_id == 0)
     {
         TangoSys_OMemStream o;
         o << "Can't find a polling thread for device " << device_name << std::ends;
@@ -585,7 +655,7 @@ void DeviceImpl::stop_polling(bool with_db_upd)
 
     {
         omni_mutex_lock sync(mon);
-        if (shared_cmd.cmd_pending == true)
+        if(shared_cmd.cmd_pending == true)
         {
             mon.wait();
         }
@@ -595,36 +665,35 @@ void DeviceImpl::stop_polling(bool with_db_upd)
 
         mon.signal();
 
-//
-// Wait for thread to execute command
-//
+        //
+        // Wait for thread to execute command
+        //
 
-        while (shared_cmd.cmd_pending == true)
+        while(shared_cmd.cmd_pending == true)
         {
             int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-            if ((shared_cmd.cmd_pending == true) && (interupted == false))
+            if((shared_cmd.cmd_pending == true) && (interupted == false))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!");
-
             }
         }
     }
 
     is_polled(false);
 
-//
-// Update the pool conf first locally.
-// Also update the map<device name,thread id>
-// If this device was the only one for a polling thread, kill the thread
-// Then in Db if possible
-//
+    //
+    // Update the pool conf first locally.
+    // Also update the map<device name,thread id>
+    // If this device was the only one for a polling thread, kill the thread
+    // Then in Db if possible
+    //
 
     bool kill_thread = false;
     int ind;
 
-    if ((ind = tg->get_dev_entry_in_pool_conf(device_name_lower)) == -1)
+    if((ind = tg->get_dev_entry_in_pool_conf(device_name_lower)) == -1)
     {
         TangoSys_OMemStream o;
         o << "Can't find entry for device " << device_name << " in polling threads pool configuration !" << std::ends;
@@ -634,10 +703,10 @@ void DeviceImpl::stop_polling(bool with_db_upd)
     std::vector<std::string> &pool_conf = tg->get_poll_pool_conf();
     std::string &conf_entry = pool_conf[ind];
     std::string::size_type pos;
-    if ((pos = conf_entry.find(',')) != std::string::npos)
+    if((pos = conf_entry.find(',')) != std::string::npos)
     {
         pos = conf_entry.find(device_name_lower);
-        if ((pos + device_name_lower.size()) != conf_entry.size())
+        if((pos + device_name_lower.size()) != conf_entry.size())
         {
             conf_entry.erase(pos, device_name_lower.size() + 1);
         }
@@ -655,11 +724,11 @@ void DeviceImpl::stop_polling(bool with_db_upd)
 
     tg->remove_dev_from_polling_map(device_name_lower);
 
-//
-// Kill the thread if needed and join
-//
+    //
+    // Kill the thread if needed and join
+    //
 
-    if (kill_thread == true)
+    if(kill_thread == true)
     {
         TangoMonitor &mon = th_info->poll_mon;
         PollThCmd &shared_cmd = th_info->shared_data;
@@ -680,11 +749,11 @@ void DeviceImpl::stop_polling(bool with_db_upd)
         tg->remove_polling_thread_info_by_id(poll_th_id);
     }
 
-//
-// Update db
-//
+    //
+    // Update db
+    //
 
-    if ((with_db_upd == true) && (Tango::Util::instance()->use_db()))
+    if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
     {
         DbData send_data;
         send_data.push_back(DbDatum("polling_threads_pool_conf"));
@@ -694,13 +763,12 @@ void DeviceImpl::stop_polling(bool with_db_upd)
     }
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::~DeviceImpl
+// method :        DeviceImpl::~DeviceImpl
 //
-// description :	Destructor for the device class. It simply frees
-//			the memory allocated for the black box object
+// description :    Destructor for the device class. It simply frees
+//            the memory allocated for the black box object
 //
 //--------------------------------------------------------------------------
 
@@ -708,47 +776,47 @@ DeviceImpl::~DeviceImpl()
 {
     TANGO_LOG_DEBUG << "Entering DeviceImpl destructor for device " << device_name << std::endl;
 
-//
-// Call user delete_device method
-//
+    //
+    // Call user delete_device method
+    //
 
     delete_device();
 
-//
-// Delete the black box
-//
+    //
+    // Delete the black box
+    //
 
     delete blackbox_ptr;
 
-//
-// Delete the DbDevice object
-//
+    //
+    // Delete the DbDevice object
+    //
 
     delete db_dev;
 
-//
-// Unregister the signal from signal handler
-//
+    //
+    // Unregister the signal from signal handler
+    //
 
     DServerSignal::instance()->unregister_dev_signal(this);
 
-//
-// Delete the multi attribute object
-//
+    //
+    // Delete the multi attribute object
+    //
 
     delete dev_attr;
 
-//
-// Clean up previously executed in extension destructor
-// Deletes memory for ring buffer used for polling
-//
+    //
+    // Clean up previously executed in extension destructor
+    // Deletes memory for ring buffer used for polling
+    //
 
-    for (unsigned long i = 0; i < poll_obj_list.size(); i++)
+    for(unsigned long i = 0; i < poll_obj_list.size(); i++)
     {
-        delete (poll_obj_list[i]);
+        delete(poll_obj_list[i]);
     }
 
-    if (logger && logger != Logging::get_core_logger())
+    if(logger && logger != Logging::get_core_logger())
     {
         logger->remove_all_appenders();
         delete logger;
@@ -758,18 +826,17 @@ DeviceImpl::~DeviceImpl()
     delete locker_client;
     delete old_locker_client;
 
-//
-// Delete the extension class instance
-//
+    //
+    // Delete the extension class instance
+    //
 
-
-//
-// Clear our ptr in the device class vector
-//
+    //
+    // Clear our ptr in the device class vector
+    //
 
     std::vector<DeviceImpl *> &dev_vect = get_device_class()->get_device_list();
     std::vector<DeviceImpl *>::iterator ite = find(dev_vect.begin(), dev_vect.end(), this);
-    if (ite != dev_vect.end())
+    if(ite != dev_vect.end())
     {
         *ite = NULL;
     }
@@ -779,25 +846,24 @@ DeviceImpl::~DeviceImpl()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::black_box_create
+// method :        DeviceImpl::black_box_create
 //
-// description :	Private method to create the device black box.
-//			The black box depth is a resource with a default
-//			value if the resource is not defined
+// description :    Private method to create the device black box.
+//            The black box depth is a resource with a default
+//            value if the resource is not defined
 //
 //--------------------------------------------------------------------------
 
 void DeviceImpl::black_box_create()
 {
-
-//
-// If the black box depth object attribute is null, create one with the
-// default depth
-//
+    //
+    // If the black box depth object attribute is null, create one with the
+    // default depth
+    //
 
     try
     {
-        if (blackbox_depth == 0)
+        if(blackbox_depth == 0)
         {
             blackbox_ptr = new BlackBox();
         }
@@ -806,7 +872,7 @@ void DeviceImpl::black_box_create()
             blackbox_ptr = new BlackBox(blackbox_depth);
         }
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         throw;
     }
@@ -814,33 +880,32 @@ void DeviceImpl::black_box_create()
 
 //+----------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_dev_system_resource()
+// method :        DeviceImpl::get_dev_system_resource()
 //
-// description :	Method to retrieve some basic device resources
-//			The resources to be retrived are :
-//				- The black box depth
-//				- The device description
-//				- The polling ring buffer depth
-//				- The polled command(s)
-//				- The polled attribute(s)
-//				- The non automatic polled command list
-//				- The non automatic polled attribute list
-//				- The polling too old factor
-//				- The command polling ring depth (if any)
-//				- The attribute polling ring depth (if any)
+// description :    Method to retrieve some basic device resources
+//            The resources to be retrived are :
+//                - The black box depth
+//                - The device description
+//                - The polling ring buffer depth
+//                - The polled command(s)
+//                - The polled attribute(s)
+//                - The non automatic polled command list
+//                - The non automatic polled attribute list
+//                - The polling too old factor
+//                - The command polling ring depth (if any)
+//                - The attribute polling ring depth (if any)
 //
 //-----------------------------------------------------------------------------
 
 void DeviceImpl::get_dev_system_resource()
 {
-
-//
-// Try to retrieve resources for device black box depth and device
-// description
-//
+    //
+    // Try to retrieve resources for device black box depth and device
+    // description
+    //
 
     Tango::Util *tg = Tango::Util::instance();
-    if (tg->use_db())
+    if(tg->use_db())
     {
         DbData db_data;
 
@@ -862,45 +927,46 @@ void DeviceImpl::get_dev_system_resource()
         {
             db_dev->get_property(db_data);
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
             TangoSys_OMemStream o;
-            o << "Database error while trying to retrieve device prperties for device " << device_name.c_str() << std::ends;
+            o << "Database error while trying to retrieve device prperties for device " << device_name.c_str()
+              << std::ends;
 
             TANGO_THROW_EXCEPTION(API_DatabaseAccess, o.str());
         }
 
-        if (db_data[0].is_empty() == false)
+        if(db_data[0].is_empty() == false)
         {
             db_data[0] >> blackbox_depth;
         }
-        if (db_data[1].is_empty() == false)
+        if(db_data[1].is_empty() == false)
         {
             db_data[1] >> desc;
         }
-        if (db_data[2].is_empty() == false)
+        if(db_data[2].is_empty() == false)
         {
             long tmp_depth;
             db_data[2] >> tmp_depth;
             set_poll_ring_depth(tmp_depth);
         }
-        if (db_data[3].is_empty() == false)
+        if(db_data[3].is_empty() == false)
         {
             db_data[3] >> get_polled_cmd();
         }
-        if (db_data[4].is_empty() == false)
+        if(db_data[4].is_empty() == false)
         {
             db_data[4] >> get_polled_attr();
         }
-        if (db_data[5].is_empty() == false)
+        if(db_data[5].is_empty() == false)
         {
             db_data[5] >> get_non_auto_polled_cmd();
         }
-        if (db_data[6].is_empty() == false)
+        if(db_data[6].is_empty() == false)
         {
             db_data[6] >> get_non_auto_polled_attr();
         }
-        if (db_data[7].is_empty() == false)
+        if(db_data[7].is_empty() == false)
         {
             long tmp_poll;
             db_data[7] >> tmp_poll;
@@ -910,100 +976,104 @@ void DeviceImpl::get_dev_system_resource()
         {
             set_poll_old_factor(DEFAULT_POLL_OLD_FACTOR);
         }
-        if (db_data[8].is_empty() == false)
+        if(db_data[8].is_empty() == false)
         {
             db_data[8] >> cmd_poll_ring_depth;
             unsigned long nb_prop = cmd_poll_ring_depth.size();
-            if ((nb_prop % 2) == 1)
+            if((nb_prop % 2) == 1)
             {
                 cmd_poll_ring_depth.clear();
                 TangoSys_OMemStream o;
-                o << "System property cmd_poll_ring_depth for device " << device_name << " has wrong syntax" << std::ends;
+                o << "System property cmd_poll_ring_depth for device " << device_name << " has wrong syntax"
+                  << std::ends;
                 TANGO_THROW_EXCEPTION(API_BadConfigurationProperty, o.str());
             }
-            for (unsigned int i = 0; i < nb_prop; i = i + 2)
+            for(unsigned int i = 0; i < nb_prop; i = i + 2)
             {
                 std::transform(cmd_poll_ring_depth[i].begin(),
-                          cmd_poll_ring_depth[i].end(),
-                          cmd_poll_ring_depth[i].begin(),
-                          ::tolower);
+                               cmd_poll_ring_depth[i].end(),
+                               cmd_poll_ring_depth[i].begin(),
+                               ::tolower);
             }
         }
-        if (db_data[9].is_empty() == false)
+        if(db_data[9].is_empty() == false)
         {
             db_data[9] >> attr_poll_ring_depth;
             unsigned long nb_prop = attr_poll_ring_depth.size();
-            if ((attr_poll_ring_depth.size() % 2) == 1)
+            if((attr_poll_ring_depth.size() % 2) == 1)
             {
                 attr_poll_ring_depth.clear();
                 TangoSys_OMemStream o;
-                o << "System property attr_poll_ring_depth for device " << device_name << " has wrong syntax" << std::ends;
+                o << "System property attr_poll_ring_depth for device " << device_name << " has wrong syntax"
+                  << std::ends;
                 TANGO_THROW_EXCEPTION(API_BadConfigurationProperty, o.str());
             }
-            for (unsigned int i = 0; i < nb_prop; i = i + 2)
+            for(unsigned int i = 0; i < nb_prop; i = i + 2)
             {
                 std::transform(attr_poll_ring_depth[i].begin(),
-                          attr_poll_ring_depth[i].end(),
-                          attr_poll_ring_depth[i].begin(),
-                          ::tolower);
+                               attr_poll_ring_depth[i].end(),
+                               attr_poll_ring_depth[i].begin(),
+                               ::tolower);
             }
         }
 
-//
-// The min. period related properties
-//
+        //
+        // The min. period related properties
+        //
 
-        if (db_data[10].is_empty() == false)
+        if(db_data[10].is_empty() == false)
         {
             db_data[10] >> min_poll_period;
         }
 
-        if (db_data[11].is_empty() == false)
+        if(db_data[11].is_empty() == false)
         {
             db_data[11] >> cmd_min_poll_period;
             unsigned long nb_prop = cmd_min_poll_period.size();
-            if ((cmd_min_poll_period.size() % 2) == 1)
+            if((cmd_min_poll_period.size() % 2) == 1)
             {
                 cmd_min_poll_period.clear();
                 TangoSys_OMemStream o;
-                o << "System property cmd_min_poll_period for device " << device_name << " has wrong syntax" << std::ends;
+                o << "System property cmd_min_poll_period for device " << device_name << " has wrong syntax"
+                  << std::ends;
                 TANGO_THROW_EXCEPTION(API_BadConfigurationProperty, o.str());
             }
-            for (unsigned int i = 0; i < nb_prop; i = i + 2)
+            for(unsigned int i = 0; i < nb_prop; i = i + 2)
             {
                 std::transform(cmd_min_poll_period[i].begin(),
-                          cmd_min_poll_period[i].end(),
-                          cmd_min_poll_period[i].begin(),
-                          ::tolower);
+                               cmd_min_poll_period[i].end(),
+                               cmd_min_poll_period[i].begin(),
+                               ::tolower);
             }
         }
 
-        if (db_data[12].is_empty() == false)
+        if(db_data[12].is_empty() == false)
         {
             db_data[12] >> attr_min_poll_period;
             unsigned long nb_prop = attr_min_poll_period.size();
-            if ((attr_min_poll_period.size() % 2) == 1)
+            if((attr_min_poll_period.size() % 2) == 1)
             {
                 attr_min_poll_period.clear();
                 TangoSys_OMemStream o;
-                o << "System property attr_min_poll_period for device " << device_name << " has wrong syntax" << std::ends;
+                o << "System property attr_min_poll_period for device " << device_name << " has wrong syntax"
+                  << std::ends;
                 TANGO_THROW_EXCEPTION(API_BadConfigurationProperty, o.str());
             }
-            for (unsigned int i = 0; i < nb_prop; i = i + 2)
+            for(unsigned int i = 0; i < nb_prop; i = i + 2)
             {
                 std::transform(attr_min_poll_period[i].begin(),
-                          attr_min_poll_period[i].end(),
-                          attr_min_poll_period[i].begin(),
-                          ::tolower);
+                               attr_min_poll_period[i].end(),
+                               attr_min_poll_period[i].begin(),
+                               ::tolower);
             }
         }
 
-//
-// Since Tango V5 (IDL V3), State and Status are now polled as attributes
-// Change properties if necessary
-//
+        //
+        // Since Tango V5 (IDL V3), State and Status are now polled as attributes
+        // Change properties if necessary
+        //
 
-        if ((get_polled_cmd()).size() != 0)
+        if((get_polled_cmd()).size() != 0)
         {
             poll_lists_2_v5();
         }
@@ -1012,11 +1082,11 @@ void DeviceImpl::get_dev_system_resource()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::_default_POA
+// method :        DeviceImpl::_default_POA
 //
-// description :	Return a pointer to the POA on which the device should
-//			be activated. This method is required by CORBA to
-//			create a POA with the IMPLICIT_ACTIVATION policy
+// description :    Return a pointer to the POA on which the device should
+//            be activated. This method is required by CORBA to
+//            create a POA with the IMPLICIT_ACTIVATION policy
 //
 //--------------------------------------------------------------------------
 
@@ -1027,17 +1097,17 @@ PortableServer::POA_ptr DeviceImpl::_default_POA()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::register_signal
+// method :        DeviceImpl::register_signal
 //
-// description :	Method to register a device on a signal. When the
-//			signal is sent to the process, the signal_handler
-//			method of this class will be executed
+// description :    Method to register a device on a signal. When the
+//            signal is sent to the process, the signal_handler
+//            method of this class will be executed
 //
-// in : 		signo : The signal number
+// in :         signo : The signal number
 //
 //--------------------------------------------------------------------------
 
-#ifndef  _TG_WINDOWS_
+#ifndef _TG_WINDOWS_
 void DeviceImpl::register_signal(long signo, bool hand)
 {
     TANGO_LOG_DEBUG << "DeviceImpl::register_signal() arrived for signal " << signo << std::endl;
@@ -1047,23 +1117,23 @@ void DeviceImpl::register_signal(long signo, bool hand)
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::register_signal method()" << std::endl;
 }
 #else
-                                                                                                                        void DeviceImpl::register_signal(long signo)
+void DeviceImpl::register_signal(long signo)
 {
-	TANGO_LOG_DEBUG << "DeviceImpl::register_signal() arrived for signal " << signo << std::endl;
+    TANGO_LOG_DEBUG << "DeviceImpl::register_signal() arrived for signal " << signo << std::endl;
 
-	DServerSignal::instance()->register_dev_signal(signo,this);
+    DServerSignal::instance()->register_dev_signal(signo, this);
 
-	TANGO_LOG_DEBUG << "Leaving DeviceImpl::register_signal method()" << std::endl;
+    TANGO_LOG_DEBUG << "Leaving DeviceImpl::register_signal method()" << std::endl;
 }
 #endif
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::unregister_signal
+// method :        DeviceImpl::unregister_signal
 //
-// description :	Method to unregister a device on a signal.
+// description :    Method to unregister a device on a signal.
 //
-// in : 		signo : The signal number
+// in :         signo : The signal number
 //
 //--------------------------------------------------------------------------
 
@@ -1078,14 +1148,14 @@ void DeviceImpl::unregister_signal(long signo)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::signal_handler
+// method :        DeviceImpl::signal_handler
 //
-// description :	This is the signal handler for the device. This method
-//			is defined as virtual and therefore, can be redefined
-//			by DS programmers in their own classes derived from
-//			DeviceImpl
+// description :    This is the signal handler for the device. This method
+//            is defined as virtual and therefore, can be redefined
+//            by DS programmers in their own classes derived from
+//            DeviceImpl
 //
-// in : 		signo : The signal number
+// in :         signo : The signal number
 //
 //--------------------------------------------------------------------------
 
@@ -1096,17 +1166,16 @@ void DeviceImpl::signal_handler(long signo)
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::signal_handler method()" << std::endl;
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::check_command_exist
+// method :        DeviceImpl::check_command_exist
 //
-// description :	This method check that a comamnd is supported by
-//			the device and does not need input value.
-//			The method throws an exception if the
-//			command is not defined or needs an input value
+// description :    This method check that a comamnd is supported by
+//            the device and does not need input value.
+//            The method throws an exception if the
+//            command is not defined or needs an input value
 //
-// in : 		cmd_name : The command name
+// in :         cmd_name : The command name
 //
 //--------------------------------------------------------------------------
 
@@ -1114,11 +1183,11 @@ void DeviceImpl::check_command_exists(const std::string &cmd_name)
 {
     std::vector<Command *> &cmd_list = device_class->get_command_list();
     unsigned long i;
-    for (i = 0; i < cmd_list.size(); i++)
+    for(i = 0; i < cmd_list.size(); i++)
     {
-        if (cmd_list[i]->get_lower_name() == cmd_name)
+        if(cmd_list[i]->get_lower_name() == cmd_name)
         {
-            if (cmd_list[i]->get_in_type() != Tango::DEV_VOID)
+            if(cmd_list[i]->get_in_type() != Tango::DEV_VOID)
             {
                 TangoSys_OMemStream o;
                 o << "Command " << cmd_name << " cannot be polled because it needs input value" << std::ends;
@@ -1135,13 +1204,13 @@ void DeviceImpl::check_command_exists(const std::string &cmd_name)
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_command
+// method :        DeviceImpl::get_command
 //
-// description :	This method returns a pointer to command object.
-//			The method throws an exception if the
-//			command is not defined
+// description :    This method returns a pointer to command object.
+//            The method throws an exception if the
+//            command is not defined
 //
-// in : 		cmd_name : The command name
+// in :         cmd_name : The command name
 //
 //--------------------------------------------------------------------------
 
@@ -1149,9 +1218,9 @@ Command *DeviceImpl::get_command(const std::string &cmd_name)
 {
     std::vector<Command *> cmd_list = device_class->get_command_list();
     unsigned long i;
-    for (i = 0; i < cmd_list.size(); i++)
+    for(i = 0; i < cmd_list.size(); i++)
     {
-        if (cmd_list[i]->get_lower_name() == cmd_name)
+        if(cmd_list[i]->get_lower_name() == cmd_name)
         {
             return cmd_list[i];
         }
@@ -1161,41 +1230,40 @@ Command *DeviceImpl::get_command(const std::string &cmd_name)
     o << "Command " << cmd_name << " not found" << std::ends;
     TANGO_THROW_EXCEPTION(API_CommandNotFound, o.str());
 
-//
-// This piece of code is added for VC++ compiler. As they advice, I have try to
-// use the __decspec(noreturn) for the throw_exception method, but it seems
-// that it does not work !
-//
+    //
+    // This piece of code is added for VC++ compiler. As they advice, I have try to
+    // use the __decspec(noreturn) for the throw_exception method, but it seems
+    // that it does not work !
+    //
 
     return NULL;
 }
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_polled_obj_by_type_name
+// method :        DeviceImpl::get_polled_obj_by_type_name
 //
-// description :	This method check that a comamnd is supported by
-//			the device and does not need input value.
-//			The method throws an exception if the
-//			command is not defined or needs an input value
+// description :    This method check that a comamnd is supported by
+//            the device and does not need input value.
+//            The method throws an exception if the
+//            command is not defined or needs an input value
 //
-// in : 		cmd_name : The command name
+// in :         cmd_name : The command name
 //
 //--------------------------------------------------------------------------
 
-std::vector<PollObj *>::iterator DeviceImpl::get_polled_obj_by_type_name(
-    Tango::PollObjType obj_type,
-    const std::string &obj_name)
+std::vector<PollObj *>::iterator DeviceImpl::get_polled_obj_by_type_name(Tango::PollObjType obj_type,
+                                                                         const std::string &obj_name)
 {
     std::vector<PollObj *> &po_list = get_poll_obj_list();
     std::vector<PollObj *>::iterator ite;
-    for (ite = po_list.begin(); ite < po_list.end(); ++ite)
+    for(ite = po_list.begin(); ite < po_list.end(); ++ite)
     {
         omni_mutex_lock sync(**ite);
         {
-            if ((*ite)->get_type_i() == obj_type)
+            if((*ite)->get_type_i() == obj_type)
             {
-                if ((*ite)->get_name_i() == obj_name)
+                if((*ite)->get_name_i() == obj_name)
                 {
                     return ite;
                 }
@@ -1211,19 +1279,19 @@ std::vector<PollObj *>::iterator DeviceImpl::get_polled_obj_by_type_name(
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_cmd_poll_ring_depth
+//        DeviceImpl::get_cmd_poll_ring_depth
 //
 // description :
-//		This method returns the polling buffer depth. Most of the times, this is defined at device level
-//		via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
-//		device "cmd_poll_ring_depth" property.
+//        This method returns the polling buffer depth. Most of the times, this is defined at device level
+//        via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
+//        device "cmd_poll_ring_depth" property.
 //
 // args :
-// 		in :
-//			- cmd_name : The command name
+//         in :
+//            - cmd_name : The command name
 //
 // return :
-// 		This method returns the polling buffer depth
+//         This method returns the polling buffer depth
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1231,12 +1299,12 @@ long DeviceImpl::get_cmd_poll_ring_depth(const std::string &cmd_name)
 {
     long ret;
 
-    if (cmd_poll_ring_depth.size() == 0)
+    if(cmd_poll_ring_depth.size() == 0)
     {
-//
-// No specific depth defined
-//
-        if (poll_ring_depth == 0)
+        //
+        // No specific depth defined
+        //
+        if(poll_ring_depth == 0)
         {
             ret = DefaultPollRingDepth;
         }
@@ -1248,17 +1316,17 @@ long DeviceImpl::get_cmd_poll_ring_depth(const std::string &cmd_name)
     else
     {
         unsigned long k;
-//
-// Try to find command in list of specific polling buffer depth
-//
+        //
+        // Try to find command in list of specific polling buffer depth
+        //
 
-        for (k = 0; k < cmd_poll_ring_depth.size(); k = k + 2)
+        for(k = 0; k < cmd_poll_ring_depth.size(); k = k + 2)
         {
-            if (cmd_poll_ring_depth[k] == cmd_name)
+            if(cmd_poll_ring_depth[k] == cmd_name)
             {
                 TangoSys_MemStream s;
                 s << cmd_poll_ring_depth[k + 1];
-                if (!(s >> ret))
+                if(!(s >> ret))
                 {
                     TangoSys_OMemStream o;
                     o << "System property cmd_poll_ring_depth for device " << device_name << " has wrong syntax"
@@ -1268,13 +1336,13 @@ long DeviceImpl::get_cmd_poll_ring_depth(const std::string &cmd_name)
                 break;
             }
         }
-        if (k >= cmd_poll_ring_depth.size())
+        if(k >= cmd_poll_ring_depth.size())
         {
-//
-// Not found
-//
+            //
+            // Not found
+            //
 
-            if (poll_ring_depth == 0)
+            if(poll_ring_depth == 0)
             {
                 ret = DefaultPollRingDepth;
             }
@@ -1291,19 +1359,19 @@ long DeviceImpl::get_cmd_poll_ring_depth(const std::string &cmd_name)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_attr_poll_ring_depth
+//        DeviceImpl::get_attr_poll_ring_depth
 //
 // description :
-//		This method returns the polling buffer depth. Most of the times, this is defined at device level
-//		via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
-//		device "attr_poll_ring_depth" property.
+//        This method returns the polling buffer depth. Most of the times, this is defined at device level
+//        via the device "poll_ring_depth" property. Nevertheless, in some cases, this value can be overwritten via the
+//        device "attr_poll_ring_depth" property.
 //
 // args :
-// 		in :
-//			- attr_name : The attribute name
+//         in :
+//            - attr_name : The attribute name
 //
 // return :
-// 		This method returns the polling buffer depth
+//         This method returns the polling buffer depth
 //
 //--------------------------------------------------------------------------
 
@@ -1311,20 +1379,19 @@ long DeviceImpl::get_attr_poll_ring_depth(const std::string &attr_name)
 {
     long ret;
 
-    if (attr_poll_ring_depth.size() == 0)
+    if(attr_poll_ring_depth.size() == 0)
     {
-        if ((attr_name == "state") || (attr_name == "status"))
+        if((attr_name == "state") || (attr_name == "status"))
         {
             ret = get_cmd_poll_ring_depth(attr_name);
         }
         else
         {
+            //
+            // No specific depth defined
+            //
 
-//
-// No specific depth defined
-//
-
-            if (poll_ring_depth == 0)
+            if(poll_ring_depth == 0)
             {
                 ret = DefaultPollRingDepth;
             }
@@ -1337,17 +1404,17 @@ long DeviceImpl::get_attr_poll_ring_depth(const std::string &attr_name)
     else
     {
         unsigned long k;
-//
-// Try to find command in list of specific polling buffer depth
-//
+        //
+        // Try to find command in list of specific polling buffer depth
+        //
 
-        for (k = 0; k < attr_poll_ring_depth.size(); k = k + 2)
+        for(k = 0; k < attr_poll_ring_depth.size(); k = k + 2)
         {
-            if (attr_poll_ring_depth[k] == attr_name)
+            if(attr_poll_ring_depth[k] == attr_name)
             {
                 TangoSys_MemStream s;
                 s << attr_poll_ring_depth[k + 1];
-                if (!(s >> ret))
+                if(!(s >> ret))
                 {
                     TangoSys_OMemStream o;
                     o << "System property attr_poll_ring_depth for device " << device_name << " has wrong syntax"
@@ -1357,19 +1424,19 @@ long DeviceImpl::get_attr_poll_ring_depth(const std::string &attr_name)
                 break;
             }
         }
-        if (k >= attr_poll_ring_depth.size())
+        if(k >= attr_poll_ring_depth.size())
         {
-            if ((attr_name == "state") || (attr_name == "status"))
+            if((attr_name == "state") || (attr_name == "status"))
             {
                 ret = get_cmd_poll_ring_depth(attr_name);
             }
             else
             {
-//
-// Not found
-//
+                //
+                // Not found
+                //
 
-                if (poll_ring_depth == 0)
+                if(poll_ring_depth == 0)
                 {
                     ret = DefaultPollRingDepth;
                 }
@@ -1387,12 +1454,12 @@ long DeviceImpl::get_attr_poll_ring_depth(const std::string &attr_name)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::dev_state
+//        DeviceImpl::dev_state
 //
 // description :
-//		The default method called by the DevState command. If the device is ON, this method checks attribute
-//		with a defined alarm and set the state to ALARM if one of these attribute is in alarm. Otherwise, simply
-//		returns device state
+//        The default method called by the DevState command. If the device is ON, this method checks attribute
+//        with a defined alarm and set the state to ALARM if one of these attribute is in alarm. Otherwise, simply
+//        returns device state
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1400,29 +1467,27 @@ Tango::DevState DeviceImpl::dev_state()
 {
     NoSyncModelTangoMonitor mon(this);
 
-//
-// If we need to run att. conf loop, do it.
-// If the flag to force state is true, do not call state computation method, simply set it to ALARM
-//
+    //
+    // If we need to run att. conf loop, do it.
+    // If the flag to force state is true, do not call state computation method, simply set it to ALARM
+    //
 
-    if (run_att_conf_loop == true)
+    if(run_att_conf_loop == true)
     {
         att_conf_loop();
     }
 
-    if (device_state != Tango::FAULT && force_alarm_state == true)
+    if(device_state != Tango::FAULT && force_alarm_state == true)
     {
         return Tango::ALARM;
     }
     else
     {
-        if ((device_state == Tango::ON) ||
-            (device_state == Tango::ALARM))
+        if((device_state == Tango::ON) || (device_state == Tango::ALARM))
         {
-
-//
-// Build attribute lists
-//
+            //
+            // Build attribute lists
+            //
 
             long vers = get_dev_idl_version();
             bool set_alrm = false;
@@ -1432,15 +1497,15 @@ Tango::DevState DeviceImpl::dev_state()
             std::vector<long> attr_polled_list;
             long nb_wanted_attr;
 
-            if (vers >= 3)
+            if(vers >= 3)
             {
-                if (state_from_read == true)
+                if(state_from_read == true)
                 {
                     std::vector<long>::iterator ite = attr_list_2.begin();
-                    while (ite != attr_list_2.end())
+                    while(ite != attr_list_2.end())
                     {
                         Attribute &att = dev_attr->get_attr_by_ind(*ite);
-                        if (att.is_polled() == true)
+                        if(att.is_polled() == true)
                         {
                             ite = attr_list_2.erase(ite);
                         }
@@ -1454,10 +1519,10 @@ Tango::DevState DeviceImpl::dev_state()
                 else
                 {
                     std::vector<long>::iterator ite = attr_list.begin();
-                    while (ite != attr_list.end())
+                    while(ite != attr_list.end())
                     {
                         Attribute &att = dev_attr->get_attr_by_ind(*ite);
-                        if (att.is_polled() == true)
+                        if(att.is_polled() == true)
                         {
                             ite = attr_list.erase(ite);
                         }
@@ -1476,34 +1541,32 @@ Tango::DevState DeviceImpl::dev_state()
 
             TANGO_LOG_DEBUG << "State: Number of attribute(s) to read: " << nb_wanted_attr << std::endl;
 
-            if (nb_wanted_attr != 0)
+            if(nb_wanted_attr != 0)
             {
+                //
+                // Read the hardware
+                //
 
-//
-// Read the hardware
-//
-
-                if (state_from_read == false)
+                if(state_from_read == false)
                 {
                     read_attr_hardware(attr_list);
                 }
 
-//
-// Set attr value
-//
+                //
+                // Set attr value
+                //
 
                 long i, j;
                 std::vector<Tango::Attr *> &attr_vect = device_class->get_class_attr()->get_attr_list();
 
-                for (i = 0; i < nb_wanted_attr; i++)
+                for(i = 0; i < nb_wanted_attr; i++)
                 {
-
-//
-// Starting with IDL 3, it is possible that some of the alarmed attribute have already been read.
-//
+                    //
+                    // Starting with IDL 3, it is possible that some of the alarmed attribute have already been read.
+                    //
 
                     long idx;
-                    if ((vers >= 3) && (state_from_read == true))
+                    if((vers >= 3) && (state_from_read == true))
                     {
                         idx = attr_list_2[i];
                     }
@@ -1517,28 +1580,27 @@ Tango::DevState DeviceImpl::dev_state()
 
                     try
                     {
-                        if (vers < 3)
+                        if(vers < 3)
                         {
                             read_attr(att);
                         }
                         else
                         {
-
-//
-// Otherwise, get it from device
-//
+                            //
+                            // Otherwise, get it from device
+                            //
 
                             att.wanted_date(false);
                             att.set_value_flag(false);
 
-                            if (attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::READ_REQ) == false)
+                            if(attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::READ_REQ) == false)
                             {
                                 att.wanted_date(true);
                                 continue;
                             }
                             attr_vect[att.get_attr_idx()]->read(this, att);
                             Tango::AttrQuality qua = att.get_quality();
-                            if ((qua != Tango::ATTR_INVALID) && (att.get_value_flag() == false))
+                            if((qua != Tango::ATTR_INVALID) && (att.get_value_flag() == false))
                             {
                                 TangoSys_OMemStream o;
 
@@ -1551,20 +1613,19 @@ Tango::DevState DeviceImpl::dev_state()
                             }
                         }
                     }
-                    catch (Tango::DevFailed &)
+                    catch(Tango::DevFailed &)
                     {
-                        if (!att.get_value_flag())
+                        if(!att.get_value_flag())
                         {
-                            WARN_STREAM
-                                << "Attribute has no value, forcing INVALID quality for: "
-                                << att.get_name() << std::endl;
+                            WARN_STREAM << "Attribute has no value, forcing INVALID quality for: " << att.get_name()
+                                        << std::endl;
                             att.set_quality(Tango::ATTR_INVALID);
                         }
 
-                        for (j = 0; j < i; j++)
+                        for(j = 0; j < i; j++)
                         {
                             long idx;
-                            if ((vers >= 3) && (state_from_read == true))
+                            if((vers >= 3) && (state_from_read == true))
                             {
                                 idx = attr_list_2[j];
                             }
@@ -1573,9 +1634,9 @@ Tango::DevState DeviceImpl::dev_state()
                                 idx = attr_list[j];
                             }
                             Tango::Attribute &tmp_att = dev_attr->get_attr_by_ind(idx);
-                            if (att.get_wanted_date() == false)
+                            if(att.get_wanted_date() == false)
                             {
-                                if (tmp_att.get_quality() != Tango::ATTR_INVALID)
+                                if(tmp_att.get_quality() != Tango::ATTR_INVALID)
                                 {
                                     tmp_att.delete_seq();
                                 }
@@ -1587,14 +1648,14 @@ Tango::DevState DeviceImpl::dev_state()
                     }
                 }
 
-//
-// Check alarm level
-//
+                //
+                // Check alarm level
+                //
 
-                if (dev_attr->check_alarm() == true)
+                if(dev_attr->check_alarm() == true)
                 {
                     set_alrm = true;
-                    if (device_state != Tango::ALARM)
+                    if(device_state != Tango::ALARM)
                     {
                         device_state = Tango::ALARM;
                         ext->alarm_state_kernel = time(NULL);
@@ -1602,21 +1663,20 @@ Tango::DevState DeviceImpl::dev_state()
                 }
                 else
                 {
-                    if (ext->alarm_state_kernel > ext->alarm_state_user)
+                    if(ext->alarm_state_kernel > ext->alarm_state_user)
                     {
                         device_state = Tango::ON;
                     }
                 }
 
+                //
+                // Free the sequence created to store the attribute value
+                //
 
-//
-// Free the sequence created to store the attribute value
-//
-
-                for (long i = 0; i < nb_wanted_attr; i++)
+                for(long i = 0; i < nb_wanted_attr; i++)
                 {
                     long idx;
-                    if ((vers >= 3) && (state_from_read == true))
+                    if((vers >= 3) && (state_from_read == true))
                     {
                         idx = attr_list_2[i];
                     }
@@ -1625,9 +1685,9 @@ Tango::DevState DeviceImpl::dev_state()
                         idx = attr_list[i];
                     }
                     Tango::Attribute &att = dev_attr->get_attr_by_ind(idx);
-                    if (att.get_wanted_date() == false)
+                    if(att.get_wanted_date() == false)
                     {
-                        if (att.get_quality() != Tango::ATTR_INVALID)
+                        if(att.get_quality() != Tango::ATTR_INVALID)
                         {
                             att.delete_seq();
                         }
@@ -1637,24 +1697,22 @@ Tango::DevState DeviceImpl::dev_state()
             }
             else
             {
-                if (ext->alarm_state_kernel > ext->alarm_state_user)
+                if(ext->alarm_state_kernel > ext->alarm_state_user)
                 {
                     device_state = Tango::ON;
                 }
             }
 
+            //
+            // Check if one of the remaining attributes has its quality factor set to ALARM or WARNING. It is not
+            // necessary to do this if we have already detected that the state must switch to ALARM
+            //
 
-
-//
-// Check if one of the remaining attributes has its quality factor set to ALARM or WARNING. It is not necessary to do
-// this if we have already detected that the state must switch to ALARM
-//
-
-            if ((set_alrm == false) && (device_state != Tango::ALARM))
+            if((set_alrm == false) && (device_state != Tango::ALARM))
             {
-                if (dev_attr->is_att_quality_alarmed() == true)
+                if(dev_attr->is_att_quality_alarmed() == true)
                 {
-                    if (device_state != Tango::ALARM)
+                    if(device_state != Tango::ALARM)
                     {
                         device_state = Tango::ALARM;
                         ext->alarm_state_kernel = time(NULL);
@@ -1674,11 +1732,11 @@ Tango::DevState DeviceImpl::dev_state()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::dev_status
+//        DeviceImpl::dev_status
 //
 // description :
-//		The default method called by the DevStatus command. If the device is ON, this method add Attribute status
-//		for all device attribute in alarm state.
+//        The default method called by the DevStatus command. If the device is ON, this method add Attribute status
+//        for all device attribute in alarm state.
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -1687,21 +1745,21 @@ Tango::ConstDevString DeviceImpl::dev_status()
     NoSyncModelTangoMonitor mon(this);
     const char *returned_str;
 
-    if (run_att_conf_loop == true)
+    if(run_att_conf_loop == true)
     {
         att_conf_loop();
     }
 
-    if (device_state != Tango::FAULT && force_alarm_state == true)
+    if(device_state != Tango::FAULT && force_alarm_state == true)
     {
         alarm_status = "The device is in ALARM state.";
 
-//
-// First add message for attribute with wrong conf. in db
-//
+        //
+        // First add message for attribute with wrong conf. in db
+        //
 
         size_t nb_wrong_att = att_wrong_db_conf.size();
-        if (nb_wrong_att != 0)
+        if(nb_wrong_att != 0)
         {
             alarm_status = alarm_status + "\nAttribute";
             build_att_list_in_status_mess(nb_wrong_att, DeviceImpl::CONF);
@@ -1709,24 +1767,24 @@ Tango::ConstDevString DeviceImpl::dev_status()
             alarm_status = alarm_status + "\nTry accessing the faulty attribute(s) to get more information";
         }
 
-//
-// Add message for memorized attributes which failed during device startup
-//
+        //
+        // Add message for memorized attributes which failed during device startup
+        //
 
         nb_wrong_att = att_mem_failed.size();
-        if (nb_wrong_att != 0)
+        if(nb_wrong_att != 0)
         {
             alarm_status = alarm_status + "\nMemorized attribute";
             build_att_list_in_status_mess(nb_wrong_att, DeviceImpl::MEM);
             alarm_status = alarm_status + "failed during device startup sequence";
         }
 
-//
-// Add message for forwarded attributes wrongly configured
-//
+        //
+        // Add message for forwarded attributes wrongly configured
+        //
 
         nb_wrong_att = fwd_att_wrong_conf.size();
-        if (nb_wrong_att != 0)
+        if(nb_wrong_att != 0)
         {
             build_att_list_in_status_mess(nb_wrong_att, DeviceImpl::FWD);
         }
@@ -1735,11 +1793,11 @@ Tango::ConstDevString DeviceImpl::dev_status()
     }
     else
     {
-        if (device_status == StatusNotSet)
+        if(device_status == StatusNotSet)
         {
             alarm_status = "The device is in ";
             alarm_status = alarm_status + DevStateName[device_state] + " state.";
-            if (device_state == Tango::ALARM)
+            if(device_state == Tango::ALARM)
             {
                 dev_attr->read_alarm(alarm_status);
                 dev_attr->add_alarmed_quality_factor(alarm_status);
@@ -1748,7 +1806,7 @@ Tango::ConstDevString DeviceImpl::dev_status()
         }
         else
         {
-            if (device_state == Tango::ALARM)
+            if(device_state == Tango::ALARM)
             {
                 alarm_status = device_status;
                 dev_attr->read_alarm(alarm_status);
@@ -1767,20 +1825,19 @@ Tango::ConstDevString DeviceImpl::dev_status()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::command_inout
+// method :        DeviceImpl::command_inout
 //
-// description :	Method called for each command_inout operation executed
-//			from any client
-//			The call to this method is in a try bloc for the
-//			Tango::DevFailed exception (generated by the idl
-//			compiler in the tango_skel.cpp file). Therefore, it
-//			is not necessary to propagate by re-throw the exceptions
-//			thrown by the underlying functions/methods.
+// description :    Method called for each command_inout operation executed
+//            from any client
+//            The call to this method is in a try bloc for the
+//            Tango::DevFailed exception (generated by the idl
+//            compiler in the tango_skel.cpp file). Therefore, it
+//            is not necessary to propagate by re-throw the exceptions
+//            thrown by the underlying functions/methods.
 //
 //--------------------------------------------------------------------------
 
-CORBA::Any *DeviceImpl::command_inout(const char *in_cmd,
-                                      const CORBA::Any &in_any)
+CORBA::Any *DeviceImpl::command_inout(const char *in_cmd, const CORBA::Any &in_any)
 {
     AutoTangoMonitor sync(this);
 
@@ -1789,41 +1846,40 @@ CORBA::Any *DeviceImpl::command_inout(const char *in_cmd,
 
     TANGO_LOG_DEBUG << "DeviceImpl::command_inout(): command received : " << command << std::endl;
 
-//
-//  Write the device name into the per thread data for
-//  sub device diagnostics.
-//  Keep the old name, to put it back at the end!
-//  During device access inside the same server,
-//  the thread stays the same!
-//
+    //
+    //  Write the device name into the per thread data for
+    //  sub device diagnostics.
+    //  Keep the old name, to put it back at the end!
+    //  During device access inside the same server,
+    //  the thread stays the same!
+    //
     SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
     std::string last_associated_device = sub.get_associated_device();
     sub.set_associated_device(get_name());
 
-//
-// Catch all exceptions to set back the associated device after execution
-//
+    //
+    // Catch all exceptions to set back the associated device after execution
+    //
 
     try
     {
+        //
+        // Record operation request in black box
+        //
 
-//
-// Record operation request in black box
-//
-
-        if (store_in_bb == true)
+        if(store_in_bb == true)
         {
             blackbox_ptr->insert_cmd(in_cmd);
         }
         store_in_bb = true;
 
-//
-// Execute command
-//
+        //
+        // Execute command
+        //
 
         out_any = device_class->command_handler(this, command, in_any);
     }
-    catch (...)
+    catch(...)
     {
         // set back the device attribution for the thread
         // and rethrow the exception.
@@ -1834,9 +1890,9 @@ CORBA::Any *DeviceImpl::command_inout(const char *in_cmd,
     // set back the device attribution for the thread
     sub.set_associated_device(last_associated_device);
 
-//
-// Return value to the caller
-//
+    //
+    // Return value to the caller
+    //
 
     TANGO_LOG_DEBUG << "DeviceImpl::command_inout(): leaving method for command " << in_cmd << std::endl;
     return (out_any);
@@ -1844,13 +1900,13 @@ CORBA::Any *DeviceImpl::command_inout(const char *in_cmd,
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::name
+// method :        DeviceImpl::name
 //
-// description :	Method called when a client request the name attribute
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the name attribute
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -1860,16 +1916,16 @@ char *DeviceImpl::name()
     {
         TANGO_LOG_DEBUG << "DeviceImpl::name arrived" << std::endl;
 
-//
-// Record attribute request in black box
-//
+        //
+        // Record attribute request in black box
+        //
 
         blackbox_ptr->insert_corba_attr(Attr_Name);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         CORBA::IMP_LIMIT lim;
-        if (strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
+        if(strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
         {
             lim.minor(TG_IMP_MINOR_TO);
         }
@@ -1880,7 +1936,7 @@ char *DeviceImpl::name()
         TANGO_LOG_DEBUG << "Leaving DeviceImpl::name throwing IMP_LIMIT" << std::endl;
         throw lim;
     }
-    catch (...)
+    catch(...)
     {
         CORBA::IMP_LIMIT lim;
         lim.minor(TG_IMP_MINOR_NON_DEVFAILED);
@@ -1888,9 +1944,9 @@ char *DeviceImpl::name()
         throw lim;
     }
 
-//
-// Return data to caller
-//
+    //
+    // Return data to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::name" << std::endl;
     return CORBA::string_dup(device_name.c_str());
@@ -1898,13 +1954,13 @@ char *DeviceImpl::name()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::adm_name
+// method :        DeviceImpl::adm_name
 //
-// description :	Method called when a client request the adm_name attribute
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the adm_name attribute
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -1914,16 +1970,16 @@ char *DeviceImpl::adm_name()
     {
         TANGO_LOG_DEBUG << "DeviceImpl::adm_name arrived" << std::endl;
 
-//
-// Record attribute request in black box
-//
+        //
+        // Record attribute request in black box
+        //
 
         blackbox_ptr->insert_corba_attr(Attr_AdmName);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         CORBA::IMP_LIMIT lim;
-        if (strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
+        if(strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
         {
             lim.minor(TG_IMP_MINOR_TO);
         }
@@ -1934,7 +1990,7 @@ char *DeviceImpl::adm_name()
         TANGO_LOG_DEBUG << "Leaving DeviceImpl::adm_name throwing IMP_LIMIT" << std::endl;
         throw lim;
     }
-    catch (...)
+    catch(...)
     {
         CORBA::IMP_LIMIT lim;
         lim.minor(TG_IMP_MINOR_NON_DEVFAILED);
@@ -1942,25 +1998,24 @@ char *DeviceImpl::adm_name()
         throw lim;
     }
 
-//
-// Return data to caller
-//
+    //
+    // Return data to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::adm_name" << std::endl;
     return CORBA::string_dup(adm_device_name.c_str());
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::description
+// method :        DeviceImpl::description
 //
-// description :	Method called when a client request the description
-//			attribute
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the description
+//            attribute
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -1970,16 +2025,16 @@ char *DeviceImpl::description()
     {
         TANGO_LOG_DEBUG << "DeviceImpl::description arrived" << std::endl;
 
-//
-// Record attribute request in black box
-//
+        //
+        // Record attribute request in black box
+        //
 
         blackbox_ptr->insert_corba_attr(Attr_Description);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         CORBA::IMP_LIMIT lim;
-        if (strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
+        if(strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
         {
             lim.minor(TG_IMP_MINOR_TO);
         }
@@ -1990,7 +2045,7 @@ char *DeviceImpl::description()
         TANGO_LOG_DEBUG << "Leaving DeviceImpl::description throwing IMP_LIMIT" << std::endl;
         throw lim;
     }
-    catch (...)
+    catch(...)
     {
         CORBA::IMP_LIMIT lim;
         lim.minor(TG_IMP_MINOR_NON_DEVFAILED);
@@ -1998,9 +2053,9 @@ char *DeviceImpl::description()
         throw lim;
     }
 
-//
-// Return data to caller
-//
+    //
+    // Return data to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::description" << std::endl;
     return CORBA::string_dup(desc.c_str());
@@ -2008,10 +2063,10 @@ char *DeviceImpl::description()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::state
+// method :        DeviceImpl::state
 //
-// description :	Method called when a client request the state
-//			attribute
+// description :    Method called when a client request the state
+//            attribute
 //
 //--------------------------------------------------------------------------
 
@@ -2025,42 +2080,42 @@ Tango::DevState DeviceImpl::state()
         AutoTangoMonitor sync(this);
         TANGO_LOG_DEBUG << "DeviceImpl::state (attribute) arrived" << std::endl;
 
-//
-//  Write the device name into the per thread data for
-//  sub device diagnostics.
-//  Keep the old name, to put it back at the end!
-//  During device access inside the same server,
-//  the thread stays the same!
-//
+        //
+        //  Write the device name into the per thread data for
+        //  sub device diagnostics.
+        //  Keep the old name, to put it back at the end!
+        //  During device access inside the same server,
+        //  the thread stays the same!
+        //
 
         SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
         last_associated_device = sub.get_associated_device();
         sub.set_associated_device(get_name());
 
-//
-// Record attribute request in black box
-//
+        //
+        // Record attribute request in black box
+        //
 
         blackbox_ptr->insert_corba_attr(Attr_State);
 
         always_executed_hook();
 
-//
-// Return data to caller. If the state_cmd throw an exception, catch it and do
-// not re-throw it because we are in a CORBA attribute implementation
+        //
+        // Return data to caller. If the state_cmd throw an exception, catch it and do
+        // not re-throw it because we are in a CORBA attribute implementation
 
         tmp = dev_state();
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
-        if (last_associated_device.size() > 0)
+        if(last_associated_device.size() > 0)
         {
             // set back the device attribution for the thread
             (Tango::Util::instance())->get_sub_dev_diag().set_associated_device(last_associated_device);
         }
 
         CORBA::IMP_LIMIT lim;
-        if (strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
+        if(strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
         {
             lim.minor(TG_IMP_MINOR_TO);
         }
@@ -2071,9 +2126,9 @@ Tango::DevState DeviceImpl::state()
         TANGO_LOG_DEBUG << "Leaving DeviceImpl::state (attribute) throwing IMP_LIMIT" << std::endl;
         throw lim;
     }
-    catch (...)
+    catch(...)
     {
-        if (last_associated_device.size() > 0)
+        if(last_associated_device.size() > 0)
         {
             // set back the device attribution for the thread
             (Tango::Util::instance())->get_sub_dev_diag().set_associated_device(last_associated_device);
@@ -2085,7 +2140,7 @@ Tango::DevState DeviceImpl::state()
         throw lim;
     }
 
-    if (last_associated_device.size() > 0)
+    if(last_associated_device.size() > 0)
     {
         // set back the device attribution for the thread
         (Tango::Util::instance())->get_sub_dev_diag().set_associated_device(last_associated_device);
@@ -2097,14 +2152,14 @@ Tango::DevState DeviceImpl::state()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::status
+// method :        DeviceImpl::status
 //
-// description :	Method called when a client request the description
-//			status
-//			This method is called for a IDL attribute which can
-//			not throw exception to client ==> There is no point
-//			to check if the allocation done by the string_dup
-//			function failed.
+// description :    Method called when a client request the description
+//            status
+//            This method is called for a IDL attribute which can
+//            not throw exception to client ==> There is no point
+//            to check if the allocation done by the string_dup
+//            function failed.
 //
 //--------------------------------------------------------------------------
 
@@ -2118,52 +2173,52 @@ char *DeviceImpl::status()
         AutoTangoMonitor sync(this);
         TANGO_LOG_DEBUG << "DeviceImpl::status (attribute) arrived" << std::endl;
 
-//
-//  Write the device name into the per thread data for
-//  sub device diagnostics.
-//  Keep the old name, to put it back at the end!
-//  During device access inside the same server,
-//  the thread stays the same!
-//
+        //
+        //  Write the device name into the per thread data for
+        //  sub device diagnostics.
+        //  Keep the old name, to put it back at the end!
+        //  During device access inside the same server,
+        //  the thread stays the same!
+        //
 
         SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
         last_associated_device = sub.get_associated_device();
         sub.set_associated_device(get_name());
 
-//
-// Record attribute request in black box
-//
+        //
+        // Record attribute request in black box
+        //
 
         blackbox_ptr->insert_corba_attr(Attr_Status);
 
-//
-// Return data to caller. If the status_cmd method throw exception, catch it
-// and forget it because we are in a CORBA attribute implementation
-//
+        //
+        // Return data to caller. If the status_cmd method throw exception, catch it
+        // and forget it because we are in a CORBA attribute implementation
+        //
 
         always_executed_hook();
         tmp = CORBA::string_dup(dev_status());
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
-        if (last_associated_device.size() > 0)
+        if(last_associated_device.size() > 0)
         {
             // set back the device attribution for the thread
             (Tango::Util::instance())->get_sub_dev_diag().set_associated_device(last_associated_device);
         }
 
-        if (strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
+        if(strcmp(e.errors[0].reason, API_CommandTimedOut) == 0)
         {
             tmp = CORBA::string_dup("Not able to acquire device monitor");
         }
         else
         {
-            tmp = CORBA::string_dup("Got exception	when trying to build device status");
+            tmp = CORBA::string_dup("Got exception    when trying to build device status");
         }
     }
-    catch (...)
+    catch(...)
     {
-        if (last_associated_device.size() > 0)
+        if(last_associated_device.size() > 0)
         {
             // set back the device attribution for the thread
             (Tango::Util::instance())->get_sub_dev_diag().set_associated_device(last_associated_device);
@@ -2174,7 +2229,7 @@ char *DeviceImpl::status()
         throw lim;
     }
 
-    if (last_associated_device.size() > 0)
+    if(last_associated_device.size() > 0)
     {
         // set back the device attribution for the thread
         (Tango::Util::instance())->get_sub_dev_diag().set_associated_device(last_associated_device);
@@ -2186,15 +2241,14 @@ char *DeviceImpl::status()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::black_box
+// method :        DeviceImpl::black_box
 //
-// description :	CORBA operation to read n element(s) of the black-box.
-//			This method returns black box element as strings
+// description :    CORBA operation to read n element(s) of the black-box.
+//            This method returns black box element as strings
 //
-// argument: in :	- n : Number of elt to read
+// argument: in :    - n : Number of elt to read
 //
 //--------------------------------------------------------------------------
-
 
 Tango::DevVarStringArray *DeviceImpl::black_box(CORBA::Long n)
 {
@@ -2202,9 +2256,9 @@ Tango::DevVarStringArray *DeviceImpl::black_box(CORBA::Long n)
 
     Tango::DevVarStringArray *ret = blackbox_ptr->read((long) n);
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_BlackBox);
 
@@ -2212,25 +2266,23 @@ Tango::DevVarStringArray *DeviceImpl::black_box(CORBA::Long n)
     return ret;
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::command_list_query
+// method :        DeviceImpl::command_list_query
 //
-// description :	CORBA operation to read the device command list.
-//			This method returns command info in a sequence of
-//			DevCmdInfo
+// description :    CORBA operation to read the device command list.
+//            This method returns command info in a sequence of
+//            DevCmdInfo
 //
 //--------------------------------------------------------------------------
-
 
 Tango::DevCmdInfoList *DeviceImpl::command_list_query()
 {
     TANGO_LOG_DEBUG << "DeviceImpl::command_list_query arrived" << std::endl;
 
-//
-// Retrieve number of command and allocate memory to send back info
-//
+    //
+    // Retrieve number of command and allocate memory to send back info
+    //
 
     long nb_cmd = device_class->get_command_list().size();
     TANGO_LOG_DEBUG << nb_cmd << " command(s) for device" << std::endl;
@@ -2241,11 +2293,11 @@ Tango::DevCmdInfoList *DeviceImpl::command_list_query()
         back = new Tango::DevCmdInfoList(nb_cmd);
         back->length(nb_cmd);
 
-//
-// Populate the vector
-//
+        //
+        // Populate the vector
+        //
 
-        for (long i = 0; i < nb_cmd; i++)
+        for(long i = 0; i < nb_cmd; i++)
         {
             Tango::DevCmdInfo tmp;
             tmp.cmd_name = CORBA::string_dup(((device_class->get_command_list())[i]->get_name()).c_str());
@@ -2253,7 +2305,7 @@ Tango::DevCmdInfoList *DeviceImpl::command_list_query()
             tmp.in_type = (long) ((device_class->get_command_list())[i]->get_in_type());
             tmp.out_type = (long) ((device_class->get_command_list())[i]->get_out_type());
             std::string &str_in = (device_class->get_command_list())[i]->get_in_type_desc();
-            if (str_in.size() != 0)
+            if(str_in.size() != 0)
             {
                 tmp.in_type_desc = CORBA::string_dup(str_in.c_str());
             }
@@ -2262,7 +2314,7 @@ Tango::DevCmdInfoList *DeviceImpl::command_list_query()
                 tmp.in_type_desc = CORBA::string_dup(NotSet);
             }
             std::string &str_out = (device_class->get_command_list())[i]->get_out_type_desc();
-            if (str_out.size() != 0)
+            if(str_out.size() != 0)
             {
                 tmp.out_type_desc = CORBA::string_dup(str_out.c_str());
             }
@@ -2274,33 +2326,32 @@ Tango::DevCmdInfoList *DeviceImpl::command_list_query()
             (*back)[i] = tmp;
         }
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_Command_list);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::command_list_query" << std::endl;
     return back;
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::command_query
+// method :        DeviceImpl::command_query
 //
-// description :	CORBA operation to read a device command info.
-//			This method returns command info for a specific
-//			command.
+// description :    CORBA operation to read a device command info.
+//            This method returns command info for a specific
+//            command.
 //
 //
 //--------------------------------------------------------------------------
@@ -2313,35 +2364,35 @@ Tango::DevCmdInfo *DeviceImpl::command_query(const char *command)
     std::string cmd(command);
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
 
-//
-// Allocate memory for the stucture sent back to caller. The ORB will free it
-//
+    //
+    // Allocate memory for the stucture sent back to caller. The ORB will free it
+    //
 
     try
     {
         back = new Tango::DevCmdInfo();
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
 
-//
-// Try to retrieve the command in the command list
-//
+    //
+    // Try to retrieve the command in the command list
+    //
 
     long i;
     long nb_cmd = device_class->get_command_list().size();
-    for (i = 0; i < nb_cmd; i++)
+    for(i = 0; i < nb_cmd; i++)
     {
-        if (device_class->get_command_list()[i]->get_lower_name() == cmd)
+        if(device_class->get_command_list()[i]->get_lower_name() == cmd)
         {
             back->cmd_name = CORBA::string_dup(((device_class->get_command_list())[i]->get_name()).c_str());
             back->cmd_tag = (long) ((device_class->get_command_list())[i]->get_disp_level());
             back->in_type = (long) ((device_class->get_command_list())[i]->get_in_type());
             back->out_type = (long) ((device_class->get_command_list())[i]->get_out_type());
             std::string &str_in = (device_class->get_command_list())[i]->get_in_type_desc();
-            if (str_in.size() != 0)
+            if(str_in.size() != 0)
             {
                 back->in_type_desc = CORBA::string_dup(str_in.c_str());
             }
@@ -2350,7 +2401,7 @@ Tango::DevCmdInfo *DeviceImpl::command_query(const char *command)
                 back->in_type_desc = CORBA::string_dup(NotSet);
             }
             std::string &str_out = (device_class->get_command_list())[i]->get_out_type_desc();
-            if (str_out.size() != 0)
+            if(str_out.size() != 0)
             {
                 back->out_type_desc = CORBA::string_dup(str_out.c_str());
             }
@@ -2362,14 +2413,14 @@ Tango::DevCmdInfo *DeviceImpl::command_query(const char *command)
         }
     }
 
-    if (i == nb_cmd)
+    if(i == nb_cmd)
     {
         delete back;
         TANGO_LOG_DEBUG << "DeviceImpl::command_query(): command " << command << " not found" << std::endl;
 
-//
-// throw an exception to client
-//
+        //
+        // throw an exception to client
+        //
 
         TangoSys_OMemStream o;
 
@@ -2377,29 +2428,27 @@ Tango::DevCmdInfo *DeviceImpl::command_query(const char *command)
         TANGO_THROW_EXCEPTION(API_CommandNotFound, o.str());
     }
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_Command);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::command_query" << std::endl;
     return back;
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::info
+// method :        DeviceImpl::info
 //
-// description :	CORBA operation to get device info
+// description :    CORBA operation to get device info
 //
 //--------------------------------------------------------------------------
-
 
 Tango::DevInfo *DeviceImpl::info()
 {
@@ -2407,47 +2456,47 @@ Tango::DevInfo *DeviceImpl::info()
 
     Tango::DevInfo *back = NULL;
 
-//
-// Allocate memory for the stucture sent back to caller. The ORB will free it
-//
+    //
+    // Allocate memory for the stucture sent back to caller. The ORB will free it
+    //
 
     try
     {
         back = new Tango::DevInfo();
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
 
-//
-// Retrieve server host
-//
+    //
+    // Retrieve server host
+    //
 
     Tango::Util *tango_ptr = Tango::Util::instance();
     back->server_host = CORBA::string_dup(tango_ptr->get_host_name().c_str());
 
-//
-// Fill-in remaining structure fields
-//
+    //
+    // Fill-in remaining structure fields
+    //
 
     back->dev_class = CORBA::string_dup(device_class->get_name().c_str());
     back->server_id = CORBA::string_dup(tango_ptr->get_ds_name().c_str());
     back->server_version = DevVersion;
 
-//
-// Build the complete info sent in the doc_url string
-//
+    //
+    // Build the complete info sent in the doc_url string
+    //
 
     std::string doc_url("Doc URL = ");
     doc_url = doc_url + device_class->get_doc_url();
 
-//
-// Add TAG if it exist
-//
+    //
+    // Add TAG if it exist
+    //
 
     std::string &svn_tag = device_class->get_svn_tag();
-    if (svn_tag.size() != 0)
+    if(svn_tag.size() != 0)
     {
         doc_url = doc_url + "\nSVN Tag = ";
         doc_url = doc_url + svn_tag;
@@ -2455,19 +2504,19 @@ Tango::DevInfo *DeviceImpl::info()
     else
     {
         std::string &cvs_tag = device_class->get_cvs_tag();
-        if (cvs_tag.size() != 0)
+        if(cvs_tag.size() != 0)
         {
             doc_url = doc_url + "\nCVS Tag = ";
             doc_url = doc_url + cvs_tag;
         }
     }
 
-//
-// Add SCM location if defined
-//
+    //
+    // Add SCM location if defined
+    //
 
     std::string &svn_location = device_class->get_svn_location();
-    if (svn_location.size() != 0)
+    if(svn_location.size() != 0)
     {
         doc_url = doc_url + "\nSVN Location = ";
         doc_url = doc_url + svn_location;
@@ -2475,7 +2524,7 @@ Tango::DevInfo *DeviceImpl::info()
     else
     {
         std::string &cvs_location = device_class->get_cvs_location();
-        if (cvs_location.size() != 0)
+        if(cvs_location.size() != 0)
         {
             doc_url = doc_url + "\nCVS Location = ";
             doc_url = doc_url + cvs_location;
@@ -2484,15 +2533,15 @@ Tango::DevInfo *DeviceImpl::info()
 
     back->doc_url = CORBA::string_dup(doc_url.c_str());
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_Info);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::info" << std::endl;
     return back;
@@ -2500,37 +2549,36 @@ Tango::DevInfo *DeviceImpl::info()
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::ping
+// method :        DeviceImpl::ping
 //
-// description :	CORBA operation to ping if a device to see it is alive
+// description :    CORBA operation to ping if a device to see it is alive
 //
 //--------------------------------------------------------------------------
-
 
 void DeviceImpl::ping()
 {
     TANGO_LOG_DEBUG << "DeviceImpl::ping arrived" << std::endl;
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_Ping);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::ping" << std::endl;
 }
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_attribute_config
+// method :        DeviceImpl::get_attribute_config
 //
-// description :	CORBA operation to get attribute configuration.
+// description :    CORBA operation to get attribute configuration.
 //
-// argument: in :	- names: name of attribute(s)
+// argument: in :    - names: name of attribute(s)
 //
 // This method returns a pointer to a AttributeConfigList with one AttributeConfig
 // structure for each atribute
@@ -2548,33 +2596,33 @@ Tango::AttributeConfigList *DeviceImpl::get_attribute_config(const Tango::DevVar
     Tango::AttributeConfigList *back = NULL;
     bool all_attr = false;
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_Get_Attr_Config);
 
-//
-// Get attribute number and device version
-//
+    //
+    // Get attribute number and device version
+    //
 
     long nb_dev_attr = dev_attr->get_attr_nb();
     long vers = get_dev_idl_version();
 
-//
-// Check if the caller want to get config for all attribute
-// If the device implements IDL 3 (State and status as attributes)
-// and the client is an old one (not able to read state/status as
-// attribute), decrement attribute number
-//
+    //
+    // Check if the caller want to get config for all attribute
+    // If the device implements IDL 3 (State and status as attributes)
+    // and the client is an old one (not able to read state/status as
+    // attribute), decrement attribute number
+    //
 
     std::string in_name(names[0]);
-    if (nb_attr == 1)
+    if(nb_attr == 1)
     {
-        if (in_name == AllAttr)
+        if(in_name == AllAttr)
         {
             all_attr = true;
-            if (vers < 3)
+            if(vers < 3)
             {
                 nb_attr = nb_dev_attr;
             }
@@ -2583,36 +2631,36 @@ Tango::AttributeConfigList *DeviceImpl::get_attribute_config(const Tango::DevVar
                 nb_attr = nb_dev_attr - 2;
             }
         }
-        else if (in_name == AllAttr_3)
+        else if(in_name == AllAttr_3)
         {
             all_attr = true;
             nb_attr = nb_dev_attr;
         }
     }
 
-//
-// Allocate memory for the AttributeConfig structures
-//
+    //
+    // Allocate memory for the AttributeConfig structures
+    //
 
     try
     {
         back = new Tango::AttributeConfigList(nb_attr);
         back->length(nb_attr);
     }
-    catch (std::bad_alloc &)
+    catch(std::bad_alloc &)
     {
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
 
-//
-// Fill in these structures
-//
+    //
+    // Fill in these structures
+    //
 
-    for (long i = 0; i < nb_attr; i++)
+    for(long i = 0; i < nb_attr; i++)
     {
         try
         {
-            if (all_attr == true)
+            if(all_attr == true)
             {
                 Attribute &attr = dev_attr->get_attr_by_ind(i);
                 attr.get_properties((*back)[i]);
@@ -2623,16 +2671,16 @@ Tango::AttributeConfigList *DeviceImpl::get_attribute_config(const Tango::DevVar
                 attr.get_properties((*back)[i]);
             }
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
             delete back;
             throw;
         }
     }
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::get_attribute_config" << std::endl;
 
@@ -2641,14 +2689,14 @@ Tango::AttributeConfigList *DeviceImpl::get_attribute_config(const Tango::DevVar
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::set_attribute_config
+// method :        DeviceImpl::set_attribute_config
 //
-// description :	CORBA operation to set attribute configuration locally
-//			and in the Tango database
+// description :    CORBA operation to set attribute configuration locally
+//            and in the Tango database
 //
-// argument: in :	- new_conf: The new attribute(s) configuration. One
-//				    AttributeConfig structure is needed for each
-//				    attribute to update
+// argument: in :    - new_conf: The new attribute(s) configuration. One
+//                    AttributeConfig structure is needed for each
+//                    attribute to update
 //
 //--------------------------------------------------------------------------
 
@@ -2657,52 +2705,52 @@ void DeviceImpl::set_attribute_config(const Tango::AttributeConfigList &new_conf
     AutoTangoMonitor sync(this, true);
     TANGO_LOG_DEBUG << "DeviceImpl::set_attribute_config arrived" << std::endl;
 
-//
-// The attribute conf. is protected by two monitors. One protects access between
-// get and set attribute conf. The second one protects access between set and
-// usage. This is the classical device monitor
-//
+    //
+    // The attribute conf. is protected by two monitors. One protects access between
+    // get and set attribute conf. The second one protects access between set and
+    // usage. This is the classical device monitor
+    //
 
     TangoMonitor &mon1 = get_att_conf_monitor();
     AutoTangoMonitor sync1(&mon1);
 
-//
-// Record operation request in black box
-//
+    //
+    // Record operation request in black box
+    //
 
     blackbox_ptr->insert_op(Op_Set_Attr_Config);
 
-//
-// Check if device is locked
-//
+    //
+    // Check if device is locked
+    //
 
     check_lock("set_attribute_config");
 
-//
-// Return exception if the device does not have any attribute
-//
+    //
+    // Return exception if the device does not have any attribute
+    //
 
     long nb_dev_attr = dev_attr->get_attr_nb();
-    if (nb_dev_attr == 0)
+    if(nb_dev_attr == 0)
     {
         TANGO_THROW_EXCEPTION(API_AttrNotFound, "The device does not have any attribute");
     }
 
-//
-// Update attribute config first in database, then locally
-// Finally send attr conf. event
-//
+    //
+    // Update attribute config first in database, then locally
+    // Finally send attr conf. event
+    //
 
     long nb_attr = new_conf.length();
     long i;
 
     try
     {
-        for (i = 0; i < nb_attr; i++)
+        for(i = 0; i < nb_attr; i++)
         {
             std::string tmp_name(new_conf[i].name);
             std::transform(tmp_name.begin(), tmp_name.end(), tmp_name.begin(), ::tolower);
-            if ((tmp_name == "state") || (tmp_name == "status"))
+            if((tmp_name == "state") || (tmp_name == "status"))
             {
                 TANGO_THROW_EXCEPTION(API_AttrNotFound, "Cannot set config for attribute state or status");
             }
@@ -2711,62 +2759,58 @@ void DeviceImpl::set_attribute_config(const Tango::AttributeConfigList &new_conf
             bool old_alarm = attr.is_alarmed().any();
             std::vector<Attribute::AttPropDb> v_db;
             attr.set_properties(new_conf[i], device_name, false, v_db);
-            if (Tango::Util::instance()->use_db())
+            if(Tango::Util::instance()->use_db())
             {
                 attr.upd_database(v_db);
             }
 
-//
-// In case the attribute quality factor was set to ALARM, reset it to VALID
-//
+            //
+            // In case the attribute quality factor was set to ALARM, reset it to VALID
+            //
 
-            if ((attr.get_quality() == Tango::ATTR_ALARM) &&
-                (old_alarm == true) &&
-                (attr.is_alarmed().any() == false))
+            if((attr.get_quality() == Tango::ATTR_ALARM) && (old_alarm == true) && (attr.is_alarmed().any() == false))
             {
                 attr.set_quality(Tango::ATTR_VALID);
             }
 
-//
-// Send the event
-//
+            //
+            // Send the event
+            //
 
             push_att_conf_event(&attr);
         }
-
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
-
-//
-// Re build the list of "alarmable" attribute
-//
+        //
+        // Re build the list of "alarmable" attribute
+        //
 
         dev_attr->get_alarm_list().clear();
-        for (long j = 0; j < nb_dev_attr; j++)
+        for(long j = 0; j < nb_dev_attr; j++)
         {
             Attribute &att = dev_attr->get_attr_by_ind(j);
-            if (att.is_alarmed().any() == true)
+            if(att.is_alarmed().any() == true)
             {
-                if (att.get_writable() != Tango::WRITE)
+                if(att.get_writable() != Tango::WRITE)
                 {
                     dev_attr->get_alarm_list().push_back(j);
                 }
             }
         }
 
-//
-// Change the exception reason flag
-//
+        //
+        // Change the exception reason flag
+        //
 
         TangoSys_OMemStream o;
 
         o << e.errors[0].reason;
-        if (i != 0)
+        if(i != 0)
         {
             o << "\nAll previous attribute(s) have been successfully updated";
         }
-        if (i != (nb_attr - 1))
+        if(i != (nb_attr - 1))
         {
             o << "\nAll remaining attribute(s) have not been updated";
         }
@@ -2778,39 +2822,38 @@ void DeviceImpl::set_attribute_config(const Tango::AttributeConfigList &new_conf
         throw;
     }
 
-//
-// Re build the list of "alarmable" attribute
-//
+    //
+    // Re build the list of "alarmable" attribute
+    //
 
     dev_attr->get_alarm_list().clear();
-    for (i = 0; i < nb_dev_attr; i++)
+    for(i = 0; i < nb_dev_attr; i++)
     {
         Tango::Attribute &attr = dev_attr->get_attr_by_ind(i);
         Tango::AttrWriteType w_type = attr.get_writable();
-        if (attr.is_alarmed().any() == true)
+        if(attr.is_alarmed().any() == true)
         {
-            if (w_type != Tango::WRITE)
+            if(w_type != Tango::WRITE)
             {
                 dev_attr->get_alarm_list().push_back(i);
             }
         }
     }
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::set_attribute_config" << std::endl;
 }
 
-
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::read_attributes
+// method :        DeviceImpl::read_attributes
 //
-// description :	CORBA operation to read attribute(s) value.
+// description :    CORBA operation to read attribute(s) value.
 //
-// argument: in :	- names: name of attribute(s) to be read
+// argument: in :    - names: name of attribute(s) to be read
 //
 // This method returns a pointer to a AttributeConfigList with one AttributeValue
 // structure for each atribute. This structure contains the attribute value, the
@@ -2826,67 +2869,66 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
 
     TANGO_LOG_DEBUG << "DeviceImpl::read_attributes arrived" << std::endl;
 
-//
-//  Write the device name into the per thread data for
-//  sub device diagnostics.
-//  Keep the old name, to put it back at the end!
-//  During device access inside the same server,
-//  the thread stays the same!
-//
+    //
+    //  Write the device name into the per thread data for
+    //  sub device diagnostics.
+    //  Keep the old name, to put it back at the end!
+    //  During device access inside the same server,
+    //  the thread stays the same!
+    //
     SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
     std::string last_associated_device = sub.get_associated_device();
     sub.set_associated_device(get_name());
 
-// Catch all execeptions to set back the associated device after
-// execution
+    // Catch all execeptions to set back the associated device after
+    // execution
     try
     {
+        //
+        // Record operation request in black box
+        //
 
-//
-// Record operation request in black box
-//
-
-        if (store_in_bb == true)
+        if(store_in_bb == true)
         {
             blackbox_ptr->insert_attr(names);
         }
         store_in_bb = true;
 
-//
-// Return exception if the device does not have any attribute
-// For device implementing IDL 3, substract 2 to the attributes
-// number for state and status which could be read only by
-// a "new" client
-//
+        //
+        // Return exception if the device does not have any attribute
+        // For device implementing IDL 3, substract 2 to the attributes
+        // number for state and status which could be read only by
+        // a "new" client
+        //
 
         long vers = get_dev_idl_version();
         long nb_dev_attr = dev_attr->get_attr_nb();
 
-        if (nb_dev_attr == 0)
+        if(nb_dev_attr == 0)
         {
             TANGO_THROW_EXCEPTION(API_AttrNotFound, "The device does not have any attribute");
         }
-        if (vers >= 3)
+        if(vers >= 3)
         {
             nb_dev_attr = nb_dev_attr - 2;
         }
 
-//
-// Build a sequence with the names of the attribute to be read.
-// This is necessary in case of the "AllAttr" shortcut is used
-// If all attributes are wanted, build this list
-//
+        //
+        // Build a sequence with the names of the attribute to be read.
+        // This is necessary in case of the "AllAttr" shortcut is used
+        // If all attributes are wanted, build this list
+        //
 
         long i;
         Tango::DevVarStringArray real_names(nb_dev_attr);
         long nb_names = names.length();
-        if (nb_names == 1)
+        if(nb_names == 1)
         {
             std::string att_name(names[0]);
-            if (att_name == AllAttr)
+            if(att_name == AllAttr)
             {
                 real_names.length(nb_dev_attr);
-                for (i = 0; i < nb_dev_attr; i++)
+                for(i = 0; i < nb_dev_attr; i++)
                 {
                     real_names[i] = dev_attr->get_attr_by_ind(i).get_name().c_str();
                 }
@@ -2901,34 +2943,33 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
             real_names = names;
         }
 
-
-//
-// Retrieve index of wanted attributes in the device attribute list and clear
-// their value set flag
-//
-// In IDL release 3, possibility to write spectrum and
-// images attributes have been added. This implies some
-// changes in the struture returned for a read_attributes
-// Throw exception if users want to use these new features
-// through an old interface
-//
-//
+        //
+        // Retrieve index of wanted attributes in the device attribute list and clear
+        // their value set flag
+        //
+        // In IDL release 3, possibility to write spectrum and
+        // images attributes have been added. This implies some
+        // changes in the struture returned for a read_attributes
+        // Throw exception if users want to use these new features
+        // through an old interface
+        //
+        //
 
         nb_names = real_names.length();
         std::vector<long> wanted_attr;
         std::vector<long> wanted_w_attr;
 
-        for (i = 0; i < nb_names; i++)
+        for(i = 0; i < nb_names; i++)
         {
             long j = dev_attr->get_attr_ind_by_name(real_names[i]);
-            if ((dev_attr->get_attr_by_ind(j).get_writable() == Tango::READ_WRITE) ||
-                (dev_attr->get_attr_by_ind(j).get_writable() == Tango::READ_WITH_WRITE))
+            if((dev_attr->get_attr_by_ind(j).get_writable() == Tango::READ_WRITE) ||
+               (dev_attr->get_attr_by_ind(j).get_writable() == Tango::READ_WITH_WRITE))
             {
                 wanted_w_attr.push_back(j);
                 wanted_attr.push_back(j);
                 Attribute &att = dev_attr->get_attr_by_ind(wanted_attr.back());
                 Tango::AttrDataFormat format_type = att.get_data_format();
-                if ((format_type == Tango::SPECTRUM) || (format_type == Tango::IMAGE))
+                if((format_type == Tango::SPECTRUM) || (format_type == Tango::IMAGE))
                 {
                     TangoSys_OMemStream o;
                     o << "Client too old to get data for attribute " << real_names[i].in();
@@ -2941,12 +2982,12 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
             }
             else
             {
-                if (dev_attr->get_attr_by_ind(j).get_writable() == Tango::WRITE)
+                if(dev_attr->get_attr_by_ind(j).get_writable() == Tango::WRITE)
                 {
                     wanted_w_attr.push_back(j);
                     Attribute &att = dev_attr->get_attr_by_ind(wanted_w_attr.back());
                     Tango::AttrDataFormat format_type = att.get_data_format();
-                    if ((format_type == Tango::SPECTRUM) || (format_type == Tango::IMAGE))
+                    if((format_type == Tango::SPECTRUM) || (format_type == Tango::IMAGE))
                     {
                         TangoSys_OMemStream o;
                         o << "Client too old to get data for attribute " << real_names[i].in();
@@ -2967,30 +3008,30 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
         long nb_wanted_attr = wanted_attr.size();
         long nb_wanted_w_attr = wanted_w_attr.size();
 
-//
-// Call the always_executed_hook
-//
+        //
+        // Call the always_executed_hook
+        //
 
         always_executed_hook();
 
-//
-// Read the hardware for readable attribute
-//
+        //
+        // Read the hardware for readable attribute
+        //
 
-        if (nb_wanted_attr != 0)
+        if(nb_wanted_attr != 0)
         {
             read_attr_hardware(wanted_attr);
         }
 
-//
-// Set attr value (for readable attribute)
-//
+        //
+        // Set attr value (for readable attribute)
+        //
 
         std::vector<Tango::Attr *> &attr_vect = device_class->get_class_attr()->get_attr_list();
 
-        for (i = 0; i < nb_wanted_attr; i++)
+        for(i = 0; i < nb_wanted_attr; i++)
         {
-            if (vers < 3)
+            if(vers < 3)
             {
                 read_attr(dev_attr->get_attr_by_ind(wanted_attr[i]));
             }
@@ -2998,7 +3039,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
             {
                 Attribute &att = dev_attr->get_attr_by_ind(wanted_attr[i]);
                 long idx = att.get_attr_idx();
-                if (idx == -1)
+                if(idx == -1)
                 {
                     TangoSys_OMemStream o;
 
@@ -3008,7 +3049,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                     TANGO_THROW_EXCEPTION(API_NotSupportedFeature, o.str());
                 }
 
-                if (attr_vect[idx]->is_allowed(this, Tango::READ_REQ) == false)
+                if(attr_vect[idx]->is_allowed(this, Tango::READ_REQ) == false)
                 {
                     TangoSys_OMemStream o;
 
@@ -3021,46 +3062,45 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
             }
         }
 
-//
-// Set attr value for writable attribute
-//
+        //
+        // Set attr value for writable attribute
+        //
 
-        for (i = 0; i < nb_wanted_w_attr; i++)
+        for(i = 0; i < nb_wanted_w_attr; i++)
         {
             Tango::AttrWriteType w_type = dev_attr->get_attr_by_ind(wanted_w_attr[i]).get_writable();
-            if ((w_type == Tango::READ_WITH_WRITE) ||
-                (w_type == Tango::WRITE))
+            if((w_type == Tango::READ_WITH_WRITE) || (w_type == Tango::WRITE))
             {
                 dev_attr->get_attr_by_ind(wanted_w_attr[i]).set_rvalue();
             }
         }
 
-//
-// Allocate memory for the AttributeValue structures
-//
+        //
+        // Allocate memory for the AttributeValue structures
+        //
 
         try
         {
             back = new Tango::AttributeValueList(nb_names);
             back->length(nb_names);
         }
-        catch (std::bad_alloc &)
+        catch(std::bad_alloc &)
         {
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
         }
 
-//
-// Build the sequence returned to caller for readable attributes and check
-// that all the wanted attributes set value has been updated
-//
+        //
+        // Build the sequence returned to caller for readable attributes and check
+        // that all the wanted attributes set value has been updated
+        //
 
-        for (i = 0; i < nb_names; i++)
+        for(i = 0; i < nb_names; i++)
         {
             Attribute &att = dev_attr->get_attr_by_name(real_names[i]);
             Tango::AttrQuality qual = att.get_quality();
-            if (qual != Tango::ATTR_INVALID)
+            if(qual != Tango::ATTR_INVALID)
             {
-                if (att.get_value_flag() == false)
+                if(att.get_value_flag() == false)
                 {
                     TangoSys_OMemStream o;
                     delete back;
@@ -3072,7 +3112,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
 
                         std::vector<PollObj *>::iterator ite = get_polled_obj_by_type_name(Tango::POLL_ATTR, att_name);
                         auto upd = (*ite)->get_upd();
-                        if (upd == PollClock::duration::zero())
+                        if(upd == PollClock::duration::zero())
                         {
                             o << "Attribute ";
                             o << att.get_name();
@@ -3086,7 +3126,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                             o << " has not been updated" << std::ends;
                         }
                     }
-                    catch (Tango::DevFailed &)
+                    catch(Tango::DevFailed &)
                     {
                         o << "Read value for attribute ";
                         o << att.get_name();
@@ -3098,17 +3138,14 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                 else
                 {
                     Tango::AttrWriteType w_type = att.get_writable();
-                    if ((w_type == Tango::READ) ||
-                        (w_type == Tango::READ_WRITE) ||
-                        (w_type == Tango::READ_WITH_WRITE))
+                    if((w_type == Tango::READ) || (w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
                     {
-                        if ((w_type == Tango::READ_WRITE) ||
-                            (w_type == Tango::READ_WITH_WRITE))
+                        if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
                         {
                             dev_attr->add_write_value(att);
                         }
 
-                        if ((att.is_alarmed().any() == true) && (qual != Tango::ATTR_INVALID))
+                        if((att.is_alarmed().any() == true) && (qual != Tango::ATTR_INVALID))
                         {
                             att.check_alarm();
                         }
@@ -3120,7 +3157,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                 }
             }
 
-            if (att.get_when().tv_sec == 0)
+            if(att.get_when().tv_sec == 0)
             {
                 att.set_time();
             }
@@ -3132,7 +3169,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
             (*back)[i].dim_y = att.get_y();
         }
     }
-    catch (...)
+    catch(...)
     {
         // set back the device attribution for the thread
         // and rethrow the exception.
@@ -3143,9 +3180,9 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
     // set back the device attribution for the thread
     sub.set_associated_device(last_associated_device);
 
-//
-// Return to caller
-//
+    //
+    // Return to caller
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::read_attributes" << std::endl;
     return back;
@@ -3153,11 +3190,11 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
 
 //+-------------------------------------------------------------------------
 //
-// method :		DeviceImpl::write_attributes
+// method :        DeviceImpl::write_attributes
 //
-// description :	CORBA operation to write attribute(s) value
+// description :    CORBA operation to write attribute(s) value
 //
-// argument: in :	- values: The new attribute(s) value to be set.
+// argument: in :    - values: The new attribute(s) value to be set.
 //
 //--------------------------------------------------------------------------
 
@@ -3166,66 +3203,64 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
     AutoTangoMonitor sync(this, true);
     TANGO_LOG_DEBUG << "DeviceImpl::write_attributes arrived" << std::endl;
 
-
-//
-//  Write the device name into the per thread data for
-//  sub device diagnostics.
-//  Keep the old name, to put it back at the end!
-//  During device access inside the same server,
-//  the thread stays the same!
-//
+    //
+    //  Write the device name into the per thread data for
+    //  sub device diagnostics.
+    //  Keep the old name, to put it back at the end!
+    //  During device access inside the same server,
+    //  the thread stays the same!
+    //
     SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
     std::string last_associated_device = sub.get_associated_device();
     sub.set_associated_device(get_name());
 
-// Catch all execeptions to set back the associated device after
-// execution
+    // Catch all execeptions to set back the associated device after
+    // execution
     try
     {
-
-//
-// Record operation request in black box
-//
+        //
+        // Record operation request in black box
+        //
 
         blackbox_ptr->insert_attr(values);
 
-//
-// Check if the device is locked
-//
+        //
+        // Check if the device is locked
+        //
 
         check_lock("write_attributes");
 
-//
-// Return exception if the device does not have any attribute
-//
+        //
+        // Return exception if the device does not have any attribute
+        //
 
         long nb_dev_attr = dev_attr->get_attr_nb();
-        if (nb_dev_attr == 0)
+        if(nb_dev_attr == 0)
         {
             TANGO_THROW_EXCEPTION(API_AttrNotFound, "The device does not have any attribute");
         }
 
-//
-// Retrieve index of wanted attributes in the device attribute list
-//
+        //
+        // Retrieve index of wanted attributes in the device attribute list
+        //
 
         long nb_updated_attr = values.length();
         std::vector<long> updated_attr;
 
         long i;
-        for (i = 0; i < nb_updated_attr; i++)
+        for(i = 0; i < nb_updated_attr; i++)
         {
             updated_attr.push_back(dev_attr->get_attr_ind_by_name(values[i].name));
         }
 
-//
-// Check that these attributes are writable
-//
+        //
+        // Check that these attributes are writable
+        //
 
-        for (i = 0; i < nb_updated_attr; i++)
+        for(i = 0; i < nb_updated_attr; i++)
         {
-            if ((dev_attr->get_attr_by_ind(updated_attr[i]).get_writable() == Tango::READ) ||
-                (dev_attr->get_attr_by_ind(updated_attr[i]).get_writable() == Tango::READ_WITH_WRITE))
+            if((dev_attr->get_attr_by_ind(updated_attr[i]).get_writable() == Tango::READ) ||
+               (dev_attr->get_attr_by_ind(updated_attr[i]).get_writable() == Tango::READ_WITH_WRITE))
             {
                 TangoSys_OMemStream o;
 
@@ -3237,26 +3272,26 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
             }
         }
 
-//
-// Call the always_executed_hook
-//
+        //
+        // Call the always_executed_hook
+        //
 
         always_executed_hook();
 
-//
-// Set attribute internal value
-//
+        //
+        // Set attribute internal value
+        //
 
-        for (i = 0; i < nb_updated_attr; i++)
+        for(i = 0; i < nb_updated_attr; i++)
         {
             try
             {
                 dev_attr->get_w_attr_by_ind(updated_attr[i])
                     .check_written_value(values[i].value, (unsigned long) 1, (unsigned long) 0);
             }
-            catch (Tango::DevFailed &)
+            catch(Tango::DevFailed &)
             {
-                for (long j = 0; j < i; j++)
+                for(long j = 0; j < i; j++)
                 {
                     dev_attr->get_w_attr_by_ind(updated_attr[j]).rollback();
                 }
@@ -3265,15 +3300,15 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
             }
         }
 
-//
-// Write the hardware
-//
+        //
+        // Write the hardware
+        //
 
         long vers = get_dev_idl_version();
-        if (vers < 3)
+        if(vers < 3)
         {
             write_attr_hardware(updated_attr);
-            for (i = 0; i < nb_updated_attr; i++)
+            for(i = 0; i < nb_updated_attr; i++)
             {
                 WAttribute &att = dev_attr->get_w_attr_by_ind(updated_attr[i]);
                 att.copy_data(values[i].value);
@@ -3283,11 +3318,11 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
         {
             std::vector<long> att_in_db;
 
-            for (i = 0; i < nb_updated_attr; i++)
+            for(i = 0; i < nb_updated_attr; i++)
             {
                 WAttribute &att = dev_attr->get_w_attr_by_ind(updated_attr[i]);
                 std::vector<Tango::Attr *> &attr_vect = device_class->get_class_attr()->get_attr_list();
-                if (attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::WRITE_REQ) == false)
+                if(attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::WRITE_REQ) == false)
                 {
                     TangoSys_OMemStream o;
 
@@ -3295,35 +3330,34 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
                     o << att.get_name();
                     o << ". The device state is " << Tango::DevStateName[get_state()] << std::ends;
 
-
                     TANGO_THROW_EXCEPTION(API_AttrNotAllowed, o.str());
                 }
                 attr_vect[att.get_attr_idx()]->write(this, att);
                 att.copy_data(values[i].value);
-                if (att.is_memorized() == true)
+                if(att.is_memorized() == true)
                 {
                     att_in_db.push_back(i);
                 }
-                if (att.is_alarmed().test(Attribute::rds) == true)
+                if(att.is_alarmed().test(Attribute::rds) == true)
                 {
                     att.set_written_date();
                 }
             }
 
-            if ((Tango::Util::instance()->use_db()) && (att_in_db.empty() == false))
+            if((Tango::Util::instance()->use_db()) && (att_in_db.empty() == false))
             {
                 try
                 {
                     static_cast<Device_3Impl *>(this)->write_attributes_in_db(att_in_db, updated_attr);
                 }
-                catch (Tango::DevFailed &e)
+                catch(Tango::DevFailed &e)
                 {
                     TANGO_RETHROW_EXCEPTION(e, API_AttrNotAllowed, "Failed to store memorized attribute value in db");
                 }
             }
         }
     }
-    catch (...)
+    catch(...)
     {
         // set back the device attribution for the thread
         // and rethrow the exception.
@@ -3334,44 +3368,43 @@ void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
     // set back the device attribution for the thread
     sub.set_associated_device(last_associated_device);
 
-//
-// Return to caller.
-//
+    //
+    // Return to caller.
+    //
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::write_attributes" << std::endl;
 }
 
-
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::add_attribute
+//        DeviceImpl::add_attribute
 //
 // description :
-//		Add attribute to the device attribute(s) list
+//        Add attribute to the device attribute(s) list
 //
 // argument:
-//		in :
-//			- new_attr: The new attribute to be added.
+//        in :
+//            - new_attr: The new attribute to be added.
 //
 //--------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::add_attribute(Tango::Attr *new_attr)
 {
-//
-// Take the device monitor in order to protect the attribute list
-//
+    //
+    // Take the device monitor in order to protect the attribute list
+    //
 
     AutoTangoMonitor sync(this, true);
 
     std::vector<Tango::Attr *> &attr_list = device_class->get_class_attr()->get_attr_list();
     long old_attr_nb = attr_list.size();
 
-//
-// Check that this attribute is not already defined for this device. If it is already there, immediately returns.
-// Trick : If you add an attribute to a device, this attribute will be inserted in the device class attribute list.
-// Therefore, all devices created after this attribute addition will also have this attribute.
-//
+    //
+    // Check that this attribute is not already defined for this device. If it is already there, immediately returns.
+    // Trick : If you add an attribute to a device, this attribute will be inserted in the device class attribute list.
+    // Therefore, all devices created after this attribute addition will also have this attribute.
+    //
 
     std::string &attr_name = new_attr->get_name();
     bool already_there = true;
@@ -3379,23 +3412,22 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
     try
     {
         Tango::Attribute &al_attr = dev_attr->get_attr_by_name(attr_name.c_str());
-        if ((al_attr.get_data_type() != new_attr->get_type()) ||
-            (al_attr.get_data_format() != new_attr->get_format()) ||
-            (al_attr.get_writable() != new_attr->get_writable()))
+        if((al_attr.get_data_type() != new_attr->get_type()) || (al_attr.get_data_format() != new_attr->get_format()) ||
+           (al_attr.get_writable() != new_attr->get_writable()))
         {
             throw_ex = true;
         }
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         already_there = false;
     }
 
-//
-// Throw exception if the device already have an attribute with the same name but with a different definition
-//
+    //
+    // Throw exception if the device already have an attribute with the same name but with a different definition
+    //
 
-    if (throw_ex == true)
+    if(throw_ex == true)
     {
         TangoSys_OMemStream o;
 
@@ -3406,23 +3438,23 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
         TANGO_THROW_EXCEPTION(API_AttrNotFound, o.str());
     }
 
-    if (already_there == true)
+    if(already_there == true)
     {
         delete new_attr;
         return;
     }
 
-//
-// If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
-// change event, get device interface.
-//
+    //
+    // If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
+    // change event, get device interface.
+    //
 
     ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
     bool ev_client = event_supplier_zmq->any_dev_intr_client(this);
 
-    if (idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
+    if(idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
     {
-        if (ev_client == true)
+        if(ev_client == true)
         {
             bool th_running;
             {
@@ -3430,52 +3462,49 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
                 th_running = devintr_shared.th_running;
             }
 
-            if (th_running == false)
+            if(th_running == false)
             {
                 devintr_shared.interface.get_interface(this);
             }
         }
     }
 
-//
-// Add this attribute in the MultiClassAttribute attr_list vector if it does not already exist
-//
+    //
+    // Add this attribute in the MultiClassAttribute attr_list vector if it does not already exist
+    //
 
     bool need_free = false;
     long i;
 
-    for (i = 0; i < old_attr_nb; i++)
+    for(i = 0; i < old_attr_nb; i++)
     {
-        if ((attr_list[i]->get_name() == attr_name) && (attr_list[i]->get_cl_name() == new_attr->get_cl_name()))
+        if((attr_list[i]->get_name() == attr_name) && (attr_list[i]->get_cl_name() == new_attr->get_cl_name()))
         {
             need_free = true;
             break;
         }
     }
 
-    if (i == old_attr_nb)
+    if(i == old_attr_nb)
     {
         attr_list.push_back(new_attr);
 
-//
-// Get all the properties defined for this attribute at class level
-//
+        //
+        // Get all the properties defined for this attribute at class level
+        //
 
-        device_class->get_class_attr()->init_class_attribute(
-            device_class->get_name(),
-            old_attr_nb);
+        device_class->get_class_attr()->init_class_attribute(device_class->get_name(), old_attr_nb);
     }
     else
     {
+        //
+        // An attribute with the same name is already defined within the class. Check if the data type, data format and
+        // write type are the same
+        //
 
-//
-// An attribute with the same name is already defined within the class. Check if the data type, data format and
-// write type are the same
-//
-
-        if ((attr_list[i]->get_type() != new_attr->get_type()) ||
-            (attr_list[i]->get_format() != new_attr->get_format()) ||
-            (attr_list[i]->get_writable() != new_attr->get_writable()))
+        if((attr_list[i]->get_type() != new_attr->get_type()) ||
+           (attr_list[i]->get_format() != new_attr->get_format()) ||
+           (attr_list[i]->get_writable() != new_attr->get_writable()))
         {
             TangoSys_OMemStream o;
 
@@ -3487,11 +3516,11 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
         }
     }
 
-//
-// Add the attribute to the MultiAttribute object
-//
+    //
+    // Add the attribute to the MultiAttribute object
+    //
 
-    if (new_attr->is_fwd() == true)
+    if(new_attr->is_fwd() == true)
     {
         dev_attr->add_fwd_attribute(device_name, device_class, i, new_attr);
     }
@@ -3500,45 +3529,43 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
         dev_attr->add_attribute(device_name, device_class, i);
     }
 
-//
-// Eventually start or update device interface change event thread
-//
+    //
+    // Eventually start or update device interface change event thread
+    //
 
     push_dev_intr(ev_client);
 
-//
-// If attribute has to be polled (set by Pogo), start polling now
-//
+    //
+    // If attribute has to be polled (set by Pogo), start polling now
+    //
 
     long per = new_attr->get_polling_period();
-    if ((!is_attribute_polled(attr_name)) && (per != 0))
+    if((!is_attribute_polled(attr_name)) && (per != 0))
     {
         poll_attribute(attr_name, per);
     }
 
-//
-// Free memory if needed
-//
+    //
+    // Free memory if needed
+    //
 
-    if (need_free == true)
+    if(need_free == true)
     {
         delete new_attr;
     }
-
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_attribute
+//        DeviceImpl::remove_attribute
 //
 // description :
-//		Remove attribute to the device attribute(s) list
+//        Remove attribute to the device attribute(s) list
 //
 // argument:
-//		in :
-//			- rem_attr: The attribute to be deleted.
+//        in :
+//            - rem_attr: The attribute to be deleted.
 //          - free_it : Free Attr object flag
 //          - clean_db : Clean attribute related info in db
 //
@@ -3546,16 +3573,15 @@ void DeviceImpl::add_attribute(Tango::Attr *new_attr)
 
 void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clean_db)
 {
-
-//
-// Take the device monitor in order to protect the attribute list
-//
+    //
+    // Take the device monitor in order to protect the attribute list
+    //
 
     AutoTangoMonitor sync(this, true);
 
-//
-// Check that the class support this attribute
-//
+    //
+    // Check that the class support this attribute
+    //
 
     const std::string &attr_name = rem_attr->get_name();
 
@@ -3563,7 +3589,7 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
     {
         dev_attr->get_attr_by_name(attr_name.c_str());
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         TangoSys_OMemStream o;
 
@@ -3573,17 +3599,17 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
         TANGO_THROW_EXCEPTION(API_AttrNotFound, o.str());
     }
 
-//
-// If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
-// change event, get device interface.
-//
+    //
+    // If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
+    // change event, get device interface.
+    //
 
     ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
     bool ev_client = event_supplier_zmq->any_dev_intr_client(this);
 
-    if (idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
+    if(idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
     {
-        if (ev_client == true)
+        if(ev_client == true)
         {
             bool th_running;
             {
@@ -3591,16 +3617,16 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
                 th_running = devintr_shared.th_running;
             }
 
-            if (th_running == false)
+            if(th_running == false)
             {
                 devintr_shared.interface.get_interface(this);
             }
         }
     }
 
-//
-// stop any configured polling for this attribute first!
-//
+    //
+    // stop any configured polling for this attribute first!
+    //
 
     std::vector<std::string> &poll_attr = get_polled_attr();
     std::vector<std::string>::iterator ite_attr;
@@ -3608,13 +3634,13 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
     std::string attr_name_low(attr_name);
     std::transform(attr_name_low.begin(), attr_name_low.end(), attr_name_low.begin(), ::tolower);
 
-//
-// Try to find the attribute in the list of polled attributes
-//
+    //
+    // Try to find the attribute in the list of polled attributes
+    //
 
     Tango::Util *tg = Tango::Util::instance();
     ite_attr = find(poll_attr.begin(), poll_attr.end(), attr_name_low);
-    if (ite_attr != poll_attr.end())
+    if(ite_attr != poll_attr.end())
     {
         // stop the polling and clean-up the database
 
@@ -3627,24 +3653,22 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
         send[1] = CORBA::string_dup("attribute");
         send[2] = CORBA::string_dup(attr_name.c_str());
 
-        if (tg->is_svr_shutting_down() == true)
+        if(tg->is_svr_shutting_down() == true)
         {
+            //
+            // There is no need to stop the polling because we are in the server shutdown sequence and the polling is
+            // already stopped.
+            //
 
-//
-// There is no need to stop the polling because we are in the server shutdown sequence and the polling is
-// already stopped.
-//
-
-            if (clean_db == true && Tango::Util::instance()->use_db())
+            if(clean_db == true && Tango::Util::instance()->use_db())
             {
-
-//
-// Memorize the fact that the dynamic polling properties has to be removed from db.
-// The classical attribute properties as well
-//
+                //
+                // Memorize the fact that the dynamic polling properties has to be removed from db.
+                // The classical attribute properties as well
+                //
 
                 tg->get_polled_dyn_attr_names().push_back(attr_name_low);
-                if (tg->get_full_polled_att_list().size() == 0)
+                if(tg->get_full_polled_att_list().size() == 0)
                 {
                     tg->get_full_polled_att_list() = poll_attr;
                     tg->get_dyn_att_dev_name() = device_name;
@@ -3653,20 +3677,20 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
         }
         else
         {
-            if (tg->is_device_restarting(get_name()) == false)
+            if(tg->is_device_restarting(get_name()) == false)
             {
                 adm_dev->rem_obj_polling(&send, clean_db);
             }
         }
     }
 
-//
-// Now remove all configured attribute properties from the database. Do it in one go if the Db server support this
-//
+    //
+    // Now remove all configured attribute properties from the database. Do it in one go if the Db server support this
+    //
 
-    if (clean_db == true)
+    if(clean_db == true)
     {
-        if ((tg->is_svr_shutting_down() == false) || (tg->get_database()->get_server_release() < 400))
+        if((tg->is_svr_shutting_down() == false) || (tg->get_database()->get_server_release() < 400))
         {
             Tango::Attribute &att_obj = dev_attr->get_attr_by_name(attr_name.c_str());
             att_obj.remove_configuration();
@@ -3674,23 +3698,22 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
         else
         {
             tg->get_all_dyn_attr_names().push_back(attr_name);
-            if (tg->get_dyn_att_dev_name().size() == 0)
+            if(tg->get_dyn_att_dev_name().size() == 0)
             {
                 tg->get_dyn_att_dev_name() = device_name;
             }
-
         }
     }
 
-//
-// Remove attribute in MultiClassAttribute in case there is only one device in the class or it is the last device
-// in this class with this attribute
-//
+    //
+    // Remove attribute in MultiClassAttribute in case there is only one device in the class or it is the last device
+    // in this class with this attribute
+    //
 
     bool update_idx = false;
     unsigned long nb_dev = device_class->get_device_list().size();
 
-    if (nb_dev <= 1)
+    if(nb_dev <= 1)
     {
         device_class->get_class_attr()->remove_attr(attr_name, rem_attr->get_cl_name());
         update_idx = true;
@@ -3699,63 +3722,62 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
     {
         std::vector<Tango::DeviceImpl *> dev_list = device_class->get_device_list();
         unsigned long nb_except = 0;
-        for (unsigned long i = 0; i < nb_dev; i++)
+        for(unsigned long i = 0; i < nb_dev; i++)
         {
             try
             {
                 Attribute &att = dev_list[i]->get_device_attr()->get_attr_by_name(attr_name.c_str());
                 std::vector<Tango::Attr *> &attr_list = device_class->get_class_attr()->get_attr_list();
-                if (attr_list[att.get_attr_idx()]->get_cl_name() != rem_attr->get_cl_name())
+                if(attr_list[att.get_attr_idx()]->get_cl_name() != rem_attr->get_cl_name())
                 {
                     nb_except++;
                 }
             }
-            catch (Tango::DevFailed &)
+            catch(Tango::DevFailed &)
             {
                 nb_except++;
             }
         }
-        if (nb_except == (nb_dev - 1))
+        if(nb_except == (nb_dev - 1))
         {
             device_class->get_class_attr()->remove_attr(attr_name, rem_attr->get_cl_name());
             update_idx = true;
         }
     }
 
-//
-// Now, remove the attribute from the MultiAttribute object
-//
+    //
+    // Now, remove the attribute from the MultiAttribute object
+    //
 
     dev_attr->remove_attribute(attr_name, update_idx);
 
-//
-// Delete Attr object if wanted
-//
+    //
+    // Delete Attr object if wanted
+    //
 
-    if ((free_it == true) && (update_idx == true))
+    if((free_it == true) && (update_idx == true))
     {
         delete rem_attr;
     }
 
-//
-// Eventually start or update device interface change event thread
-//
+    //
+    // Eventually start or update device interface change event thread
+    //
 
     push_dev_intr(ev_client);
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_attribute
+//        DeviceImpl::remove_attribute
 //
 // description :
-//		Remove attribute to the device attribute(s) list
+//        Remove attribute to the device attribute(s) list
 //
 // argument:
-//		in :
-//			- rem_attr: The name of the attribute to be deleted.
+//        in :
+//            - rem_attr: The name of the attribute to be deleted.
 //          - free_it : Free Attr object flag
 //          - clean_db : Clean attribute related info in db
 //
@@ -3763,13 +3785,12 @@ void DeviceImpl::remove_attribute(Tango::Attr *rem_attr, bool free_it, bool clea
 
 void DeviceImpl::remove_attribute(const std::string &rem_attr_name, bool free_it, bool clean_db)
 {
-
     try
     {
         Attr &att = device_class->get_class_attr()->get_attr(rem_attr_name);
         remove_attribute(&att, free_it, clean_db);
     }
-    catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
         TangoSys_OMemStream o;
 
@@ -3778,35 +3799,35 @@ void DeviceImpl::remove_attribute(const std::string &rem_attr_name, bool free_it
 
         TANGO_RETHROW_EXCEPTION(e, API_AttrNotFound, o.str());
     }
-
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::add_command
+//        DeviceImpl::add_command
 //
 // description :
-//		Add command to the device command(s) list
+//        Add command to the device command(s) list
 //
 // argument:
-//		in :
-//			- new_cmd: The new command to be added.
-//			- device_level : flag set to true if the command must be added at the device level (instead of class level)
+//        in :
+//            - new_cmd: The new command to be added.
+//            - device_level : flag set to true if the command must be added at the device level (instead of class
+//            level)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
 {
-//
-// Take the device monitor in order to protect the command list
-//
+    //
+    // Take the device monitor in order to protect the command list
+    //
 
     AutoTangoMonitor sync(this, true);
 
-//
-// Check that this command is not already defined for this device. If it is already there, immediately returns.
-//
+    //
+    // Check that this command is not already defined for this device. If it is already there, immediately returns.
+    //
 
     std::string &cmd_name = new_cmd->get_name();
     bool already_there = true;
@@ -3814,40 +3835,39 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
     try
     {
         Tango::Command &al_cmd = device_class->get_cmd_by_name(cmd_name);
-        if ((al_cmd.get_in_type() != new_cmd->get_in_type()) ||
-            (al_cmd.get_out_type() != new_cmd->get_out_type()))
+        if((al_cmd.get_in_type() != new_cmd->get_in_type()) || (al_cmd.get_out_type() != new_cmd->get_out_type()))
         {
             throw_ex = true;
         }
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         already_there = false;
     }
 
-    if (already_there == false)
+    if(already_there == false)
     {
         already_there = true;
         try
         {
             Tango::Command &al_cmd_dev = get_local_cmd_by_name(cmd_name);
-            if ((al_cmd_dev.get_in_type() != new_cmd->get_in_type()) ||
-                (al_cmd_dev.get_out_type() != new_cmd->get_out_type()))
+            if((al_cmd_dev.get_in_type() != new_cmd->get_in_type()) ||
+               (al_cmd_dev.get_out_type() != new_cmd->get_out_type()))
             {
                 throw_ex = true;
             }
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
             already_there = false;
         }
     }
 
-//
-// Throw exception if the device already have a command with the same name but with a different definition
-//
+    //
+    // Throw exception if the device already have a command with the same name but with a different definition
+    //
 
-    if (throw_ex == true)
+    if(throw_ex == true)
     {
         TangoSys_OMemStream o;
 
@@ -3858,23 +3878,23 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
         TANGO_THROW_EXCEPTION(API_CommandNotFound, o.str());
     }
 
-    if (already_there == true)
+    if(already_there == true)
     {
         delete new_cmd;
         return;
     }
 
-//
-// If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
-// change event, get device interface.
-//
+    //
+    // If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
+    // change event, get device interface.
+    //
 
     ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
     bool ev_client = event_supplier_zmq->any_dev_intr_client(this);
 
-    if (idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
+    if(idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
     {
-        if (ev_client == true)
+        if(ev_client == true)
         {
             bool th_running;
             {
@@ -3882,18 +3902,18 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
                 th_running = devintr_shared.th_running;
             }
 
-            if (th_running == false)
+            if(th_running == false)
             {
                 devintr_shared.interface.get_interface(this);
             }
         }
     }
 
-//
-// Add this command to the command list
-//
+    //
+    // Add this command to the command list
+    //
 
-    if (device_level == false)
+    if(device_level == false)
     {
         std::vector<Tango::Command *> &cmd_list = device_class->get_command_list();
         cmd_list.push_back(new_cmd);
@@ -3904,9 +3924,9 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
         dev_cmd_list.push_back(new_cmd);
     }
 
-//
-// Eventually start or update device interface change event thread
-//
+    //
+    // Eventually start or update device interface change event thread
+    //
 
     push_dev_intr(ev_client);
 }
@@ -3914,14 +3934,14 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_command
+//        DeviceImpl::remove_command
 //
 // description :
-//		Remove command to the device command(s) list
+//        Remove command to the device command(s) list
 //
 // argument:
-//		in :
-//			- rem_cmd: The command to be deleted.
+//        in :
+//            - rem_cmd: The command to be deleted.
 //          - free_it : Free Command object flag
 //          - clean_db : Clean command related info in db
 //
@@ -3929,16 +3949,15 @@ void DeviceImpl::add_command(Tango::Command *new_cmd, bool device_level)
 
 void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clean_db)
 {
-
-//
-// Take the device monitor in order to protect the command list
-//
+    //
+    // Take the device monitor in order to protect the command list
+    //
 
     AutoTangoMonitor sync(this, true);
 
-//
-// Check that the class or the device support this command
-//
+    //
+    // Check that the class or the device support this command
+    //
 
     std::string &cmd_name = rem_cmd->get_name();
     bool device_cmd = false;
@@ -3947,14 +3966,14 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
     {
         device_class->get_cmd_by_name(cmd_name);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         try
         {
             get_local_cmd_by_name(cmd_name);
             device_cmd = true;
         }
-        catch (Tango::DevFailed &)
+        catch(Tango::DevFailed &)
         {
             TangoSys_OMemStream o;
 
@@ -3965,17 +3984,17 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
         }
     }
 
-//
-// If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
-// change event, get device interface.
-//
+    //
+    // If device is IDL 5 or more and if enabled, and if there is some client(s) listening on the device interface
+    // change event, get device interface.
+    //
 
     ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
     bool ev_client = event_supplier_zmq->any_dev_intr_client(this);
 
-    if (idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
+    if(idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true)
     {
-        if (ev_client == true)
+        if(ev_client == true)
         {
             bool th_running;
             {
@@ -3983,16 +4002,16 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
                 th_running = devintr_shared.th_running;
             }
 
-            if (th_running == false)
+            if(th_running == false)
             {
                 devintr_shared.interface.get_interface(this);
             }
         }
     }
 
-//
-// stop any configured polling for this command first!
-//
+    //
+    // stop any configured polling for this command first!
+    //
 
     std::vector<std::string> &poll_cmd = get_polled_cmd();
     std::vector<std::string>::iterator ite_cmd;
@@ -4000,13 +4019,13 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
     std::string cmd_name_low(cmd_name);
     std::transform(cmd_name_low.begin(), cmd_name_low.end(), cmd_name_low.begin(), ::tolower);
 
-//
-// Try to find the command in the list of polled commands
-//
+    //
+    // Try to find the command in the list of polled commands
+    //
 
     Tango::Util *tg = Tango::Util::instance();
     ite_cmd = find(poll_cmd.begin(), poll_cmd.end(), cmd_name_low);
-    if (ite_cmd != poll_cmd.end())
+    if(ite_cmd != poll_cmd.end())
     {
         // stop the polling and clean-up the database
 
@@ -4019,23 +4038,21 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
         send[1] = CORBA::string_dup("command");
         send[2] = CORBA::string_dup(cmd_name.c_str());
 
-        if (tg->is_svr_shutting_down() == true)
+        if(tg->is_svr_shutting_down() == true)
         {
+            //
+            // There is no need to stop the polling because we are in the server shutdown sequence and the polling is
+            // already stopped.
+            //
 
-//
-// There is no need to stop the polling because we are in the server shutdown sequence and the polling is
-// already stopped.
-//
-
-            if (clean_db == true && Tango::Util::instance()->use_db())
+            if(clean_db == true && Tango::Util::instance()->use_db())
             {
-
-//
-// Memorize the fact that the dynamic polling properties has to be removed from db.
-//
+                //
+                // Memorize the fact that the dynamic polling properties has to be removed from db.
+                //
 
                 tg->get_polled_dyn_cmd_names().push_back(cmd_name_low);
-                if (tg->get_full_polled_cmd_list().size() == 0)
+                if(tg->get_full_polled_cmd_list().size() == 0)
                 {
                     tg->get_full_polled_cmd_list() = poll_cmd;
                     tg->get_dyn_cmd_dev_name() = device_name;
@@ -4044,18 +4061,18 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
         }
         else
         {
-            if (tg->is_device_restarting(get_name()) == false)
+            if(tg->is_device_restarting(get_name()) == false)
             {
                 adm_dev->rem_obj_polling(&send, clean_db);
             }
         }
     }
 
-//
-// Now, remove the command from the command list
-//
+    //
+    // Now, remove the command from the command list
+    //
 
-    if (device_cmd == false)
+    if(device_cmd == false)
     {
         device_class->remove_command(cmd_name_low);
     }
@@ -4064,18 +4081,18 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
         remove_local_command(cmd_name_low);
     }
 
-//
-// Delete Command object if wanted
-//
+    //
+    // Delete Command object if wanted
+    //
 
-    if (free_it == true)
+    if(free_it == true)
     {
         delete rem_cmd;
     }
 
-//
-// Eventually start or update device interface change event thread
-//
+    //
+    // Eventually start or update device interface change event thread
+    //
 
     push_dev_intr(ev_client);
 }
@@ -4083,14 +4100,14 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::remove_command
+//        DeviceImpl::remove_command
 //
 // description :
-//		Remove command to the device command(s) list
+//        Remove command to the device command(s) list
 //
 // argument:
-//		in :
-//			- rem_cmd_name: The name of the command to be deleted.
+//        in :
+//            - rem_cmd_name: The name of the command to be deleted.
 //          - free_it : Free Command object flag
 //          - clean_db : Clean command related info in db
 //
@@ -4098,24 +4115,23 @@ void DeviceImpl::remove_command(Tango::Command *rem_cmd, bool free_it, bool clea
 
 void DeviceImpl::remove_command(const std::string &rem_cmd_name, bool free_it, bool clean_db)
 {
-
-//
-// Search for command first at class level and then at device level (for dynamic cmd)
-//
+    //
+    // Search for command first at class level and then at device level (for dynamic cmd)
+    //
 
     try
     {
         Command &cmd = device_class->get_cmd_by_name(rem_cmd_name);
         remove_command(&cmd, free_it, clean_db);
     }
-    catch (Tango::DevFailed &)
+    catch(Tango::DevFailed &)
     {
         try
         {
             Command &cmd = get_local_cmd_by_name(rem_cmd_name);
             remove_command(&cmd, free_it, clean_db);
         }
-        catch (Tango::DevFailed &e)
+        catch(Tango::DevFailed &e)
         {
             TangoSys_OMemStream o;
 
@@ -4125,17 +4141,16 @@ void DeviceImpl::remove_command(const std::string &rem_cmd_name, bool free_it, b
             TANGO_RETHROW_EXCEPTION(e, API_CommandNotFound, o.str());
         }
     }
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::poll_lists_2_v5
+//        DeviceImpl::poll_lists_2_v5
 //
 // description :
-//		Started from Tango V5, state and status are polled as attributes. Previously, they were polled as commands.
-//		If state or status are polled as commands, move them to the list of polled attributes
+//        Started from Tango V5, state and status are polled as attributes. Previously, they were polled as commands.
+//        If state or status are polled as commands, move them to the list of polled attributes
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4149,12 +4164,12 @@ void DeviceImpl::poll_lists_2_v5()
     std::vector<std::string>::iterator ite_state;
     std::vector<std::string>::iterator ite_status;
 
-//
-// Try to find state in list of polled command(s). If found, remove it from poll cmd and move it to poll attr
-//
+    //
+    // Try to find state in list of polled command(s). If found, remove it from poll cmd and move it to poll attr
+    //
 
     ite_state = find(poll_cmd.begin(), poll_cmd.end(), "state");
-    if (ite_state != poll_cmd.end())
+    if(ite_state != poll_cmd.end())
     {
         poll_attr.push_back(*ite_state);
         poll_attr.push_back(*(ite_state + 1));
@@ -4162,12 +4177,12 @@ void DeviceImpl::poll_lists_2_v5()
         db_update = true;
     }
 
-//
-// The same for status
-//
+    //
+    // The same for status
+    //
 
     ite_status = find(poll_cmd.begin(), poll_cmd.end(), "status");
-    if (ite_status != poll_cmd.end())
+    if(ite_status != poll_cmd.end())
     {
         poll_attr.push_back(*ite_status);
         poll_attr.push_back(*(ite_status + 1));
@@ -4175,11 +4190,11 @@ void DeviceImpl::poll_lists_2_v5()
         db_update = true;
     }
 
-//
-// Now update database if needed
-//
+    //
+    // Now update database if needed
+    //
 
-    if (db_update == true)
+    if(db_update == true)
     {
         DbDatum p_cmd("polled_cmd");
         DbDatum p_attr("polled_attr");
@@ -4193,22 +4208,20 @@ void DeviceImpl::poll_lists_2_v5()
 
         get_db_device()->put_property(db_data);
     }
-
 }
-
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::init_cmd_poll_ext_trig
+//        Attribute::init_cmd_poll_ext_trig
 //
 // description :
-//		Write the command name to the list of polled commands in the database. The polling period is set to 0 to
-//		indicate that the polling buffer is filled externally from the device server code.
+//        Write the command name to the list of polled commands in the database. The polling period is set to 0 to
+//        indicate that the polling buffer is filled externally from the device server code.
 //
 // args :
-//		in :
-//			- cmd_name : The command name
+//        in :
+//            - cmd_name : The command name
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -4217,11 +4230,11 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
     std::string cmd_lowercase(cmd_name);
     std::transform(cmd_lowercase.begin(), cmd_lowercase.end(), cmd_lowercase.begin(), ::tolower);
 
-//
-// never do the for the state or status commands, they are handled as attributes!
-//
+    //
+    // never do the for the state or status commands, they are handled as attributes!
+    //
 
-    if (cmd_name == "state" || cmd_name == "status")
+    if(cmd_name == "state" || cmd_name == "status")
     {
         TangoSys_OMemStream o;
 
@@ -4229,18 +4242,18 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
         TANGO_THROW_EXCEPTION(API_CommandNotFound, o.str());
     }
 
-//
-// check whether the command exists for the device and can be polled
-//
+    //
+    // check whether the command exists for the device and can be polled
+    //
 
     check_command_exists(cmd_lowercase);
 
-//
-// check wether the database is used
-//
+    //
+    // check wether the database is used
+    //
 
     Tango::Util *tg = Tango::Util::instance();
-    if (tg->use_db())
+    if(tg->use_db())
     {
         std::vector<std::string> &poll_list = get_polled_cmd();
         Tango::DbData poll_data;
@@ -4248,19 +4261,18 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
 
         poll_data.push_back(Tango::DbDatum("polled_cmd"));
 
-        if (poll_list.empty() == false)
+        if(poll_list.empty() == false)
         {
+            //
+            // search the attribute in the list of polled attributes
+            //
 
-//
-// search the attribute in the list of polled attributes
-//
-
-            for (unsigned int i = 0; i < poll_list.size(); i = i + 2)
+            for(unsigned int i = 0; i < poll_list.size(); i = i + 2)
             {
                 std::string name_lowercase(poll_list[i]);
                 std::transform(name_lowercase.begin(), name_lowercase.end(), name_lowercase.begin(), ::tolower);
 
-                if (name_lowercase == cmd_lowercase)
+                if(name_lowercase == cmd_lowercase)
                 {
                     poll_list[i + 1] = "0";
                     found = true;
@@ -4268,7 +4280,7 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
             }
         }
 
-        if (found == false)
+        if(found == false)
         {
             poll_list.push_back(cmd_lowercase);
             poll_list.push_back("0");
@@ -4282,93 +4294,92 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
 //+--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::init_cmd_poll_period
+//        Attribute::init_cmd_poll_period
 //
 // description :
-//		Checks the specified polling period for all commands of the device. If a polling period is specified for a
-//		command the command name and the period are written to the list of polled commands in the database.
-//		This happens only if the command is not yet in the list of polled commands.
+//        Checks the specified polling period for all commands of the device. If a polling period is specified for a
+//        command the command name and the period are written to the list of polled commands in the database.
+//        This happens only if the command is not yet in the list of polled commands.
 //
 //--------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::init_cmd_poll_period()
 {
-
-//
-// check wether the database is used
-//
+    //
+    // check wether the database is used
+    //
 
     Tango::Util *tg = Tango::Util::instance();
-    if (tg->use_db())
+    if(tg->use_db())
     {
         std::vector<std::string> &poll_list = get_polled_cmd();
         Tango::DbData poll_data;
 
         poll_data.push_back(Tango::DbDatum("polled_cmd"));
 
-//
-// get the command list
-//
+        //
+        // get the command list
+        //
 
         std::vector<Command *> &cmd_list = device_class->get_command_list();
 
-//
-// loop over the command list
-//
+        //
+        // loop over the command list
+        //
 
         unsigned long added_cmd = 0;
         unsigned long i;
-        for (i = 0; i < cmd_list.size(); i++)
+        for(i = 0; i < cmd_list.size(); i++)
         {
             long poll_period;
             poll_period = cmd_list[i]->get_polling_period();
 
-//
-// check the validity of the polling period. must be longer than min polling period
-//
+            //
+            // check the validity of the polling period. must be longer than min polling period
+            //
 
-            if (poll_period < MIN_POLL_PERIOD)
+            if(poll_period < MIN_POLL_PERIOD)
             {
                 continue;
             }
 
-//
-// never do the for the state or status commands, they are handled as attributes!
-//
+            //
+            // never do the for the state or status commands, they are handled as attributes!
+            //
 
             std::string cmd_name = cmd_list[i]->get_lower_name();
-            if (cmd_name == "state" || cmd_name == "status")
+            if(cmd_name == "state" || cmd_name == "status")
             {
                 continue;
             }
 
-//
-// Can only handle commands without input argument
-//
+            //
+            // Can only handle commands without input argument
+            //
 
-            if (cmd_list[i]->get_in_type() != Tango::DEV_VOID)
+            if(cmd_list[i]->get_in_type() != Tango::DEV_VOID)
             {
                 continue;
             }
 
-//
-// search the command in the list of polled commands
-//
+            //
+            // search the command in the list of polled commands
+            //
 
             bool found = false;
-            for (unsigned int i = 0; i < poll_list.size(); i = i + 2)
+            for(unsigned int i = 0; i < poll_list.size(); i = i + 2)
             {
                 std::string name_lowercase(poll_list[i]);
                 std::transform(name_lowercase.begin(), name_lowercase.end(), name_lowercase.begin(), ::tolower);
 
-                if (name_lowercase == cmd_name)
+                if(name_lowercase == cmd_name)
                 {
                     found = true;
                     break;
                 }
             }
 
-            if (found == false)
+            if(found == false)
             {
                 std::string period_str;
                 std::stringstream str;
@@ -4381,11 +4392,11 @@ void DeviceImpl::init_cmd_poll_period()
             }
         }
 
-//
-// only write to the database when a polling need to be added
-//
+        //
+        // only write to the database when a polling need to be added
+        //
 
-        if (added_cmd > 0)
+        if(added_cmd > 0)
         {
             poll_data[0] << poll_list;
             tg->get_database()->put_device_property(device_name, poll_data);
@@ -4396,15 +4407,15 @@ void DeviceImpl::init_cmd_poll_period()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		Attribute::init_attr_poll_ext_trig
+//        Attribute::init_attr_poll_ext_trig
 //
 // description :
-//		Write the attribute name to the list of polled attributes in the database. The polling period is set to 0
-//		to indicate that the polling buffer is filled externally from the device server code.
+//        Write the attribute name to the list of polled attributes in the database. The polling period is set to 0
+//        to indicate that the polling buffer is filled externally from the device server code.
 //
 // args :
-//		in :
-//			- attr_name : The attribute name
+//        in :
+//            - attr_name : The attribute name
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4413,18 +4424,18 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
     std::string attr_lowercase(attr_name);
     std::transform(attr_lowercase.begin(), attr_lowercase.end(), attr_lowercase.begin(), ::tolower);
 
-//
-// check whether the attribute exists for the device and can be polled
-//
+    //
+    // check whether the attribute exists for the device and can be polled
+    //
 
     dev_attr->get_attr_by_name(attr_lowercase.c_str());
 
-//
-// check wether the database is used
-//
+    //
+    // check wether the database is used
+    //
 
     Tango::Util *tg = Tango::Util::instance();
-    if (tg->use_db())
+    if(tg->use_db())
     {
         std::vector<std::string> &poll_list = get_polled_attr();
         Tango::DbData poll_data;
@@ -4432,35 +4443,32 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
 
         poll_data.push_back(Tango::DbDatum("polled_attr"));
 
-//
-// read the polling configuration from the database
-//
+        //
+        // read the polling configuration from the database
+        //
 
-        if (poll_list.empty() == false)
+        if(poll_list.empty() == false)
         {
+            //
+            // search the attribute in the list of polled attributes
+            //
 
-//
-// search the attribute in the list of polled attributes
-//
-
-            for (unsigned int i = 0; i < poll_list.size(); i = i + 2)
+            for(unsigned int i = 0; i < poll_list.size(); i = i + 2)
             {
-
-//
-// Convert to lower case before comparison
-//
+                //
+                // Convert to lower case before comparison
+                //
 
                 std::string name_lowercase(poll_list[i]);
                 std::transform(name_lowercase.begin(), name_lowercase.end(), name_lowercase.begin(), ::tolower);
 
-                if (name_lowercase == attr_lowercase)
+                if(name_lowercase == attr_lowercase)
                 {
-                    if (poll_list[i + 1] == "0")
+                    if(poll_list[i + 1] == "0")
                     {
-
-//
-// The configuration is already correct, no need for further action
-//
+                        //
+                        // The configuration is already correct, no need for further action
+                        //
 
                         return;
                     }
@@ -4473,7 +4481,7 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
             }
         }
 
-        if (found == false)
+        if(found == false)
         {
             poll_list.push_back(attr_lowercase);
             poll_list.push_back("0");
@@ -4487,67 +4495,66 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::init_attr_poll_period
+//        DeviceImpl::init_attr_poll_period
 //
 // description :
-//		Checks the specified polling period for all attributes of the device. If a polling period is specified for an
-//		attribute the attribute name and the period are written to the list of polled attributes in the database.
-//		This happens only if the attribute is not yet in the list of polled attributes.
+//        Checks the specified polling period for all attributes of the device. If a polling period is specified for an
+//        attribute the attribute name and the period are written to the list of polled attributes in the database.
+//        This happens only if the attribute is not yet in the list of polled attributes.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::init_attr_poll_period()
 {
-
-//
-// check wether the database is used
-//
+    //
+    // check wether the database is used
+    //
 
     Tango::Util *tg = Tango::Util::instance();
-    if (tg->use_db())
+    if(tg->use_db())
     {
         std::vector<std::string> &poll_list = get_polled_attr();
         Tango::DbData poll_data;
 
         poll_data.push_back(Tango::DbDatum("polled_attr"));
 
-//
-// get the multi attribute object
-//
+        //
+        // get the multi attribute object
+        //
 
         std::vector<Attribute *> &attr_list = dev_attr->get_attribute_list();
 
-//
-// loop over the attribute list
-//
+        //
+        // loop over the attribute list
+        //
 
         unsigned long added_attr = 0;
         unsigned long i;
-        for (i = 0; i < attr_list.size(); i++)
+        for(i = 0; i < attr_list.size(); i++)
         {
             std::string &attr_name = attr_list[i]->get_name_lower();
 
-//
-// Special case for state and status attributes. They are polled as attribute but they are managed by Pogo as
-// commands (historical reasons). If the polling is set in the state or status defined as command, report this info
-// when they are defined as attributes
-//
+            //
+            // Special case for state and status attributes. They are polled as attribute but they are managed by Pogo
+            // as commands (historical reasons). If the polling is set in the state or status defined as command, report
+            // this info when they are defined as attributes
+            //
 
-            if (attr_name == "state")
+            if(attr_name == "state")
             {
                 Command &state_cmd = device_class->get_cmd_by_name("state");
                 long state_poll_period = state_cmd.get_polling_period();
-                if (state_poll_period != 0)
+                if(state_poll_period != 0)
                 {
                     attr_list[i]->set_polling_period(state_poll_period);
                 }
             }
 
-            if (attr_name == "status")
+            if(attr_name == "status")
             {
                 Command &status_cmd = device_class->get_cmd_by_name("status");
                 long status_poll_period = status_cmd.get_polling_period();
-                if (status_poll_period != 0)
+                if(status_poll_period != 0)
                 {
                     attr_list[i]->set_polling_period(status_poll_period);
                 }
@@ -4556,38 +4563,37 @@ void DeviceImpl::init_attr_poll_period()
             long poll_period;
             poll_period = attr_list[i]->get_polling_period();
 
-//
-// check the validity of the polling period. must be longer than 20ms
-//
+            //
+            // check the validity of the polling period. must be longer than 20ms
+            //
 
-            if (poll_period < MIN_POLL_PERIOD)
+            if(poll_period < MIN_POLL_PERIOD)
             {
                 continue;
             }
 
-//
-// search the attribute in the list of polled attributes
-//
+            //
+            // search the attribute in the list of polled attributes
+            //
 
             bool found = false;
-            for (unsigned int i = 0; i < poll_list.size(); i = i + 2)
+            for(unsigned int i = 0; i < poll_list.size(); i = i + 2)
             {
-
-//
-// Convert to lower case before comparison
-//
+                //
+                // Convert to lower case before comparison
+                //
 
                 std::string name_lowercase(poll_list[i]);
                 std::transform(name_lowercase.begin(), name_lowercase.end(), name_lowercase.begin(), ::tolower);
 
-                if (name_lowercase == attr_name)
+                if(name_lowercase == attr_name)
                 {
                     found = true;
                     break;
                 }
             }
 
-            if (found == false)
+            if(found == false)
             {
                 std::string period_str;
                 std::stringstream str;
@@ -4600,21 +4606,21 @@ void DeviceImpl::init_attr_poll_period()
             }
         }
 
-//
-// only write to the database when a polling need to be added
-//
+        //
+        // only write to the database when a polling need to be added
+        //
 
-        if (added_attr > 0)
+        if(added_attr > 0)
         {
             poll_data[0] << poll_list;
             tg->get_database()->put_device_property(device_name, poll_data);
         }
 
-//
-// Another loop to correctly initialize polling period data in Attribute instance
-//
+        //
+        // Another loop to correctly initialize polling period data in Attribute instance
+        //
 
-        for (unsigned int i = 0; i < poll_list.size(); i = i + 2)
+        for(unsigned int i = 0; i < poll_list.size(); i = i + 2)
         {
             try
             {
@@ -4623,13 +4629,14 @@ void DeviceImpl::init_attr_poll_period()
                 long per;
                 ss << poll_list[i + 1];
                 ss >> per;
-                if (ss)
+                if(ss)
                 {
                     att.set_polling_period(per);
                 }
             }
-            catch (Tango::DevFailed &)
-            {}
+            catch(Tango::DevFailed &)
+            {
+            }
         }
     }
 }
@@ -4637,14 +4644,14 @@ void DeviceImpl::init_attr_poll_period()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::push_att_conf_event
+//        DeviceImpl::push_att_conf_event
 //
 // description :
-//		Push an attribute configuration event
+//        Push an attribute configuration event
 //
 // args :
-//		in :
-//			- attr : The attribute
+//        in :
+//            - attr : The attribute
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4655,45 +4662,45 @@ void DeviceImpl::push_att_conf_event(Attribute *attr)
 
     Tango::Util *tg = Tango::Util::instance();
 
-    if (attr->use_notifd_event() == true)
+    if(attr->use_notifd_event() == true)
     {
         event_supplier_nd = tg->get_notifd_event_supplier();
     }
-    if (attr->use_zmq_event() == true)
+    if(attr->use_zmq_event() == true)
     {
         event_supplier_zmq = tg->get_zmq_event_supplier();
     }
 
-    if ((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
+    if((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
     {
         EventSupplier::SuppliedEventData ad;
         ::memset(&ad, 0, sizeof(ad));
 
         long vers = get_dev_idl_version();
-        if (vers <= 2)
+        if(vers <= 2)
         {
             Tango::AttributeConfig_2 attr_conf_2;
             attr->get_properties(attr_conf_2);
             ad.attr_conf_2 = &attr_conf_2;
-            if (event_supplier_nd != NULL)
+            if(event_supplier_nd != NULL)
             {
                 event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, attr->get_name());
             }
-            if (event_supplier_zmq != NULL)
+            if(event_supplier_zmq != NULL)
             {
                 event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, attr->get_name());
             }
         }
-        else if (vers <= 4)
+        else if(vers <= 4)
         {
             Tango::AttributeConfig_3 attr_conf_3;
             attr->get_properties(attr_conf_3);
             ad.attr_conf_3 = &attr_conf_3;
-            if (event_supplier_nd != NULL)
+            if(event_supplier_nd != NULL)
             {
                 event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, attr->get_name());
             }
-            if (event_supplier_zmq != NULL)
+            if(event_supplier_zmq != NULL)
             {
                 event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, attr->get_name());
             }
@@ -4703,11 +4710,11 @@ void DeviceImpl::push_att_conf_event(Attribute *attr)
             Tango::AttributeConfig_5 attr_conf_5;
             attr->get_properties(attr_conf_5);
             ad.attr_conf_5 = &attr_conf_5;
-            if (event_supplier_nd != NULL)
+            if(event_supplier_nd != NULL)
             {
                 event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, attr->get_name());
             }
-            if (event_supplier_zmq != NULL)
+            if(event_supplier_zmq != NULL)
             {
                 event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, attr->get_name());
             }
@@ -4718,10 +4725,10 @@ void DeviceImpl::push_att_conf_event(Attribute *attr)
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_client_ident()
+//        DeviceImpl::get_client_ident()
 //
 // description :
-//		Get client identification. This method returns a pointer to the client identification
+//        Get client identification. This method returns a pointer to the client identification
 //
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -4734,30 +4741,29 @@ Tango::client_addr *DeviceImpl::get_client_ident()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::lock
+//        DeviceImpl::lock
 //
 // description :
-//		Lock the device
+//        Lock the device
 //
 // args :
-//		in :
-//			- cl : The client identification
-//			- validity : The lock validity
+//        in :
+//            - cl : The client identification
+//            - validity : The lock validity
 //
 //-----------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::lock(client_addr *cl, int validity)
 {
+    //
+    // Check if the device is already locked and if it is a valid lock. If the lock is not valid any more, clear it
+    //
 
-//
-// Check if the device is already locked and if it is a valid lock. If the lock is not valid any more, clear it
-//
-
-    if (device_locked == true)
+    if(device_locked == true)
     {
-        if (valid_lock() == true)
+        if(valid_lock() == true)
         {
-            if (*cl != *(locker_client))
+            if(*cl != *(locker_client))
             {
                 TangoSys_OMemStream o;
                 o << "Device " << get_name() << " is already locked by another client" << std::ends;
@@ -4770,12 +4776,12 @@ void DeviceImpl::lock(client_addr *cl, int validity)
         }
     }
 
-//
-// Lock the device
-//
+    //
+    // Lock the device
+    //
 
     device_locked = true;
-    if (locker_client == NULL)
+    if(locker_client == NULL)
     {
         locker_client = new client_addr(*cl);
     }
@@ -4784,11 +4790,11 @@ void DeviceImpl::lock(client_addr *cl, int validity)
     lock_validity = validity;
     lock_ctr++;
 
-//
-// Also lock root device(s) in case it is needed (due to forwarded attributes)
-//
+    //
+    // Also lock root device(s) in case it is needed (due to forwarded attributes)
+    //
 
-    if (get_with_fwd_att() == true)
+    if(get_with_fwd_att() == true)
     {
         lock_root_devices(validity, true);
     }
@@ -4797,30 +4803,29 @@ void DeviceImpl::lock(client_addr *cl, int validity)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::relock
+//        DeviceImpl::relock
 //
 // description :
-//		ReLock the device
+//        ReLock the device
 //
 // args :
-//		in :
-//			- cl : The client identification
+//        in :
+//            - cl : The client identification
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::relock(client_addr *cl)
 {
+    //
+    // Check if the device is already locked and if it is a valid lock. A ReLock is valid only if the device is already
+    // locked by the same client and if this lock is valid
+    //
 
-//
-// Check if the device is already locked and if it is a valid lock. A ReLock is valid only if the device is already
-// locked by the same client and if this lock is valid
-//
-
-    if (device_locked == true)
+    if(device_locked == true)
     {
-        if (valid_lock() == true)
+        if(valid_lock() == true)
         {
-            if (*cl != *(locker_client))
+            if(*cl != *(locker_client))
             {
                 TangoSys_OMemStream o;
                 o << get_name() << ": ";
@@ -4846,39 +4851,37 @@ void DeviceImpl::relock(client_addr *cl)
         o << "Device " << get_name() << " is not locked. Can't re-lock it" << std::ends;
         TANGO_THROW_EXCEPTION(API_DeviceNotLocked, o.str());
     }
-
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::unlock
+//        DeviceImpl::unlock
 //
 // description :
-//		Unlock the device
+//        Unlock the device
 //
 // args :
-//		in :
-//			- forced : Flag set to true if the unlock is forced
+//        in :
+//            - forced : Flag set to true if the unlock is forced
 //
 //-----------------------------------------------------------------------------------------------------------------
 
 Tango::DevLong DeviceImpl::unlock(bool forced)
 {
+    //
+    // Check if the device is already locked and if it is a valid lock. If the lock is not valid any more, clear it
+    //
 
-//
-// Check if the device is already locked and if it is a valid lock. If the lock is not valid any more, clear it
-//
-
-    if (device_locked == true)
+    if(device_locked == true)
     {
-        if (valid_lock() == true)
+        if(valid_lock() == true)
         {
             client_addr *cl = get_client_ident();
 
-            if (forced == false)
+            if(forced == false)
             {
-                if (*cl != *(locker_client))
+                if(*cl != *(locker_client))
                 {
                     TangoSys_OMemStream o;
                     o << "Device " << get_name() << " is locked by another client, can't unlock it" << std::ends;
@@ -4888,11 +4891,11 @@ Tango::DevLong DeviceImpl::unlock(bool forced)
         }
     }
 
-    if (lock_ctr > 0)
+    if(lock_ctr > 0)
     {
         lock_ctr--;
     }
-    if ((lock_ctr <= 0) || (forced == true))
+    if((lock_ctr <= 0) || (forced == true))
     {
         basic_unlock(forced);
     }
@@ -4903,21 +4906,21 @@ Tango::DevLong DeviceImpl::unlock(bool forced)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::basic_unlock
+//        DeviceImpl::basic_unlock
 //
 // description :
-//		Mark the device as unlocked
+//        Mark the device as unlocked
 //
 // args :
-//		in :
-//			- forced : Flag set to true if the unlock is forced
+//        in :
+//            - forced : Flag set to true if the unlock is forced
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::basic_unlock(bool forced)
 {
     device_locked = false;
-    if (forced == true)
+    if(forced == true)
     {
         old_locker_client = locker_client;
     }
@@ -4928,11 +4931,11 @@ void DeviceImpl::basic_unlock(bool forced)
     locker_client = NULL;
     lock_ctr = 0;
 
-//
-// Also unlock root device(s) in case it is needed (due to forwarded attributes)
-//
+    //
+    // Also unlock root device(s) in case it is needed (due to forwarded attributes)
+    //
 
-    if (get_with_fwd_att() == true)
+    if(get_with_fwd_att() == true)
     {
         lock_root_devices(0, false);
     }
@@ -4941,18 +4944,18 @@ void DeviceImpl::basic_unlock(bool forced)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::valid_lock
+//        DeviceImpl::valid_lock
 //
 // description :
-//		Check lock validity (according to lock validity time). This method returns true if the lock is still valid.
-//		Otherwise, returns false
+//        Check lock validity (according to lock validity time). This method returns true if the lock is still valid.
+//        Otherwise, returns false
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 bool DeviceImpl::valid_lock()
 {
     time_t now = time(NULL);
-    if (now > (locking_date + lock_validity))
+    if(now > (locking_date + lock_validity))
     {
         return false;
     }
@@ -4965,18 +4968,18 @@ bool DeviceImpl::valid_lock()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::lock_status
+//        DeviceImpl::lock_status
 //
 // description :
-//		Build a device locking status
-//		This method returns a sequence with longs and strings. The strings contain:
-//			1 - The locker process hostname
-//			2 - The java main class (in case of Java locker)
-//			3 - A string which summarizes the locking status
-// 		The longs contain:
-//			1 - A locked flag (0 means not locked, 1 means locked)
-//			2 - The locker process PID (C++ client)
-//			3 - The locker UUID (Java client) which needs 4 longs
+//        Build a device locking status
+//        This method returns a sequence with longs and strings. The strings contain:
+//            1 - The locker process hostname
+//            2 - The java main class (in case of Java locker)
+//            3 - A string which summarizes the locking status
+//         The longs contain:
+//            1 - A locked flag (0 means not locked, 1 means locked)
+//            2 - The locker process PID (C++ client)
+//            3 - The locker UUID (Java client) which needs 4 longs
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -4986,13 +4989,13 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
     dvlsa->lvalue.length(6);
     dvlsa->svalue.length(3);
 
-//
-// Check if the device is already locked and if it is a valid lock. If the lock is not valid any more, clear it
-//
+    //
+    // Check if the device is already locked and if it is a valid lock. If the lock is not valid any more, clear it
+    //
 
-    if (device_locked == true)
+    if(device_locked == true)
     {
-        if (valid_lock() == true)
+        if(valid_lock() == true)
         {
             lock_stat = "Device " + device_name + " is locked by ";
             std::ostringstream ostr;
@@ -5003,7 +5006,7 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
             dvlsa->lvalue[1] = locker_client->client_pid;
             const char *tmp = locker_client->client_ip;
             dvlsa->svalue[1] = CORBA::string_dup(tmp);
-            if (locker_client->client_lang == Tango::JAVA)
+            if(locker_client->client_lang == Tango::JAVA)
             {
                 dvlsa->svalue[2] = CORBA::string_dup(locker_client->java_main_class.c_str());
 
@@ -5018,7 +5021,7 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
             else
             {
                 dvlsa->svalue[2] = CORBA::string_dup("Not defined");
-                for (long loop = 2; loop < 6; loop++)
+                for(long loop = 2; loop < 6; loop++)
                 {
                     dvlsa->lvalue[loop] = 0;
                 }
@@ -5030,7 +5033,7 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
             lock_stat = "Device " + device_name + " is not locked";
             dvlsa->svalue[1] = CORBA::string_dup("Not defined");
             dvlsa->svalue[2] = CORBA::string_dup("Not defined");
-            for (long loop = 0; loop < 6; loop++)
+            for(long loop = 0; loop < 6; loop++)
             {
                 dvlsa->lvalue[loop] = 0;
             }
@@ -5041,7 +5044,7 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
         lock_stat = "Device " + device_name + " is not locked";
         dvlsa->svalue[1] = CORBA::string_dup("Not defined");
         dvlsa->svalue[2] = CORBA::string_dup("Not defined");
-        for (long loop = 0; loop < 6; loop++)
+        for(long loop = 0; loop < 6; loop++)
         {
             dvlsa->lvalue[loop] = 0;
         }
@@ -5055,18 +5058,18 @@ Tango::DevVarLongStringArray *DeviceImpl::lock_status()
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::set_locking_param
+//        DeviceImpl::set_locking_param
 //
 // description :
-//		Restore device locking parameter
+//        Restore device locking parameter
 //
 // args :
-//		in :
-//			- cl : Locker
-//		  	- old_cl : Previous locker
-//		  	- date : Locking date
-//		  	- ctr : Locking counter
-//		  	- valid : Locking validity
+//        in :
+//            - cl : Locker
+//              - old_cl : Previous locker
+//              - date : Locking date
+//              - ctr : Locking counter
+//              - valid : Locking validity
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -5080,40 +5083,38 @@ void DeviceImpl::set_locking_param(client_addr *cl, client_addr *old_cl, time_t 
     lock_validity = valid;
 }
 
-
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::check_lock
+//        DeviceImpl::check_lock
 //
 // description :
-//		Method called for each command_inout operation executed from any client on a Tango device.
+//        Method called for each command_inout operation executed from any client on a Tango device.
 //
 // argument:
-//		in :
-//			- meth : Method name (for error message)
-//			- cmd : Command name
+//        in :
+//            - meth : Method name (for error message)
+//            - cmd : Command name
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::check_lock(const char *meth, const char *cmd)
 {
-    if (device_locked == true)
+    if(device_locked == true)
     {
-        if (valid_lock() == true)
+        if(valid_lock() == true)
         {
             client_addr *cl = get_client_ident();
-            if (cl->client_ident == false)
+            if(cl->client_ident == false)
             {
+                //
+                // Old client, before throwing the exception, in case the CORBA operation is a command_inout, checks if
+                // the command is an "allowed" one
+                //
 
-//
-// Old client, before throwing the exception, in case the CORBA operation is a command_inout, checks if the command
-// is an "allowed" one
-//
-
-                if (cmd != NULL)
+                if(cmd != NULL)
                 {
-                    if (device_class->is_command_allowed(cmd) == false)
+                    if(device_class->is_command_allowed(cmd) == false)
                     {
                         throw_locked_exception(meth);
                     }
@@ -5124,17 +5125,16 @@ void DeviceImpl::check_lock(const char *meth, const char *cmd)
                 }
             }
 
-            if (*cl != *(locker_client))
+            if(*cl != *(locker_client))
             {
+                //
+                // Wrong client, before throwing the exception, in case the CORBA operation is a command_inout, checks
+                // if the command is an "allowed" one
+                //
 
-//
-// Wrong client, before throwing the exception, in case the CORBA operation is a command_inout, checks if the command
-// is an "allowed" one
-//
-
-                if (cmd != NULL)
+                if(cmd != NULL)
                 {
-                    if (device_class->is_command_allowed(cmd) == false)
+                    if(device_class->is_command_allowed(cmd) == false)
                     {
                         throw_locked_exception(meth);
                     }
@@ -5153,9 +5153,9 @@ void DeviceImpl::check_lock(const char *meth, const char *cmd)
     else
     {
         client_addr *cl = get_client_ident();
-        if (old_locker_client != NULL)
+        if(old_locker_client != NULL)
         {
-            if (*cl == (*old_locker_client))
+            if(*cl == (*old_locker_client))
             {
                 TangoSys_OMemStream o;
                 TangoSys_OMemStream o2;
@@ -5172,14 +5172,14 @@ void DeviceImpl::check_lock(const char *meth, const char *cmd)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::throw_locked_exception()
+//        DeviceImpl::throw_locked_exception()
 //
 // description :
-//		Throw a DeviceLocked exception
+//        Throw a DeviceLocked exception
 //
 // argument:
-//		in :
-//			- meth : Method name
+//        in :
+//            - meth : Method name
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -5195,402 +5195,417 @@ void DeviceImpl::throw_locked_exception(const char *meth)
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::data_into_net_obj
+//        DeviceImpl::data_into_net_obj
 //
 // description :
-//		Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
-//		it's an Any object. Then, it is an IDL union
+//        Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
+//        it's an Any object. Then, it is an IDL union
 //
 // argument:
-//		in :
-//			- att :
-//			- aid :
-//			- index :
-//			- w_type :
-//			- del_seq :
+//        in :
+//            - att :
+//            - aid :
+//            - index :
+//            - w_type :
+//            - del_seq :
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::data_into_net_object(Attribute &att, AttributeIdlData &aid,
-                                      long index, AttrWriteType w_type, bool del_seq)
+void DeviceImpl::data_into_net_object(
+    Attribute &att, AttributeIdlData &aid, long index, AttrWriteType w_type, bool del_seq)
 {
+    //
+    // A big switch according to attribute data type
+    //
 
-//
-// A big switch according to attribute data type
-//
-
-    switch (att.get_data_type())
+    switch(att.get_data_type())
     {
-        case Tango::DEV_SHORT :
-        case Tango::DEV_ENUM :
-        {
-            data_in_object<Tango::DevVarShortArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
+    {
+        data_in_object<Tango::DevVarShortArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_LONG :
-        {
-            data_in_object<Tango::DevVarLongArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_LONG:
+    {
+        data_in_object<Tango::DevVarLongArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_LONG64 :
-        {
-            data_in_object<Tango::DevVarLong64Array>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_LONG64:
+    {
+        data_in_object<Tango::DevVarLong64Array>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_DOUBLE :
-        {
-            data_in_object<Tango::DevVarDoubleArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_DOUBLE:
+    {
+        data_in_object<Tango::DevVarDoubleArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_STRING :
-        {
-            data_in_object<Tango::DevVarStringArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_STRING:
+    {
+        data_in_object<Tango::DevVarStringArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_FLOAT :
-        {
-            data_in_object<Tango::DevVarFloatArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_FLOAT:
+    {
+        data_in_object<Tango::DevVarFloatArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_BOOLEAN :
-        {
-            data_in_object<Tango::DevVarBooleanArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_BOOLEAN:
+    {
+        data_in_object<Tango::DevVarBooleanArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_USHORT :
-        {
-            data_in_object<Tango::DevVarUShortArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_USHORT:
+    {
+        data_in_object<Tango::DevVarUShortArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_UCHAR :
-        {
-            data_in_object<Tango::DevVarCharArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_UCHAR:
+    {
+        data_in_object<Tango::DevVarCharArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_ULONG :
-        {
-            data_in_object<Tango::DevVarULongArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_ULONG:
+    {
+        data_in_object<Tango::DevVarULongArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_ULONG64 :
-        {
-            data_in_object<Tango::DevVarULong64Array>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_ULONG64:
+    {
+        data_in_object<Tango::DevVarULong64Array>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_STATE :
-        {
-            data_in_object<Tango::DevVarStateArray>(att, aid, index, del_seq);
-            break;
-        }
+    case Tango::DEV_STATE:
+    {
+        data_in_object<Tango::DevVarStateArray>(att, aid, index, del_seq);
+        break;
+    }
 
-        case Tango::DEV_ENCODED :
+    case Tango::DEV_ENCODED:
+    {
+        if(aid.data_3 != nullptr)
         {
-            if (aid.data_3 != nullptr)
+            (*aid.data_3)[index].err_list.length(1);
+            (*aid.data_3)[index].err_list[0].severity = Tango::ERR;
+            (*aid.data_3)[index].err_list[0].reason = Tango::string_dup(API_NotSupportedFeature);
+            (*aid.data_3)[index].err_list[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+            (*aid.data_3)[index].err_list[0].desc =
+                Tango::string_dup("The DevEncoded data type is available only for device implementing IDL 4 and above");
+            (*aid.data_3)[index].quality = Tango::ATTR_INVALID;
+            (*aid.data_3)[index].name = Tango::string_dup(att.get_name().c_str());
+            clear_att_dim((*aid.data_3)[index]);
+        }
+        else
+        {
+            Tango::DevVarEncodedArray *ptr = att.get_encoded_value();
+            if(aid.data_5 != nullptr)
             {
-                (*aid.data_3)[index].err_list.length(1);
-                (*aid.data_3)[index].err_list[0].severity = Tango::ERR;
-                (*aid.data_3)[index].err_list[0].reason = Tango::string_dup(API_NotSupportedFeature);
-                (*aid.data_3)[index].err_list[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                (*aid.data_3)[index].err_list[0].desc = Tango::string_dup(
-                    "The DevEncoded data type is available only for device implementing IDL 4 and above");
-                (*aid.data_3)[index].quality = Tango::ATTR_INVALID;
-                (*aid.data_3)[index].name = Tango::string_dup(att.get_name().c_str());
-                clear_att_dim((*aid.data_3)[index]);
-            }
-            else
-            {
-                Tango::DevVarEncodedArray *ptr = att.get_encoded_value();
-                if (aid.data_5 != nullptr)
+                (*aid.data_5)[index].value.encoded_att_value(dummy_encoded_att_value);
+                DevVarEncodedArray &the_seq = (*aid.data_5)[index].value.encoded_att_value();
+
+                if((w_type == Tango::READ) || (w_type == Tango::WRITE))
                 {
-                    (*aid.data_5)[index].value.encoded_att_value(dummy_encoded_att_value);
-                    DevVarEncodedArray &the_seq = (*aid.data_5)[index].value.encoded_att_value();
-
-                    if ((w_type == Tango::READ) || (w_type == Tango::WRITE))
-                    {
-                        the_seq.length(1);
-                    }
-                    else
-                    {
-                        the_seq.length(2);
-                    }
-
-                    the_seq[0].encoded_format = CORBA::string_dup((*ptr)[0].encoded_format);
-
-                    if (ptr->release() == true)
-                    {
-                        unsigned long nb_data = (*ptr)[0].encoded_data.length();
-                        the_seq[0].encoded_data
-                            .replace(nb_data, nb_data, (*ptr)[0].encoded_data.get_buffer(true), true);
-                        (*ptr)[0].encoded_data.replace(0, 0, NULL, false);
-                    }
-                    else
-                    {
-                        the_seq[0].encoded_data.replace((*ptr)[0].encoded_data.length(),
-                                                        (*ptr)[0].encoded_data.length(),
-                                                        (*ptr)[0].encoded_data.get_buffer());
-                    }
-
-                    if ((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
-                    {
-                        the_seq[1].encoded_format = CORBA::string_dup((*ptr)[1].encoded_format);
-                        the_seq[1].encoded_data.replace((*ptr)[1].encoded_data.length(),
-                                                        (*ptr)[1].encoded_data.length(),
-                                                        (*ptr)[1].encoded_data.get_buffer());
-                    }
+                    the_seq.length(1);
                 }
                 else
                 {
-                    (*aid.data_4)[index].value.encoded_att_value(dummy_encoded_att_value);
-                    DevVarEncodedArray &the_seq = (*aid.data_4)[index].value.encoded_att_value();
-
-                    if ((w_type == Tango::READ) || (w_type == Tango::WRITE))
-                    {
-                        the_seq.length(1);
-                    }
-                    else
-                    {
-                        the_seq.length(2);
-                    }
-
-                    the_seq[0].encoded_format = CORBA::string_dup((*ptr)[0].encoded_format);
-
-                    if (ptr->release() == true)
-                    {
-                        unsigned long nb_data = (*ptr)[0].encoded_data.length();
-                        the_seq[0].encoded_data
-                            .replace(nb_data, nb_data, (*ptr)[0].encoded_data.get_buffer(true), true);
-                        (*ptr)[0].encoded_data.replace(0, 0, NULL, false);
-                    }
-                    else
-                    {
-                        the_seq[0].encoded_data.replace((*ptr)[0].encoded_data.length(),
-                                                        (*ptr)[0].encoded_data.length(),
-                                                        (*ptr)[0].encoded_data.get_buffer());
-                    }
-
-                    if ((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
-                    {
-                        the_seq[1].encoded_format = CORBA::string_dup((*ptr)[1].encoded_format);
-                        the_seq[1].encoded_data.replace((*ptr)[1].encoded_data.length(),
-                                                        (*ptr)[1].encoded_data.length(),
-                                                        (*ptr)[1].encoded_data.get_buffer());
-                    }
+                    the_seq.length(2);
                 }
-                if (del_seq == true)
+
+                the_seq[0].encoded_format = CORBA::string_dup((*ptr)[0].encoded_format);
+
+                if(ptr->release() == true)
                 {
-                    delete ptr;
+                    unsigned long nb_data = (*ptr)[0].encoded_data.length();
+                    the_seq[0].encoded_data.replace(nb_data, nb_data, (*ptr)[0].encoded_data.get_buffer(true), true);
+                    (*ptr)[0].encoded_data.replace(0, 0, NULL, false);
+                }
+                else
+                {
+                    the_seq[0].encoded_data.replace((*ptr)[0].encoded_data.length(),
+                                                    (*ptr)[0].encoded_data.length(),
+                                                    (*ptr)[0].encoded_data.get_buffer());
+                }
+
+                if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
+                {
+                    the_seq[1].encoded_format = CORBA::string_dup((*ptr)[1].encoded_format);
+                    the_seq[1].encoded_data.replace((*ptr)[1].encoded_data.length(),
+                                                    (*ptr)[1].encoded_data.length(),
+                                                    (*ptr)[1].encoded_data.get_buffer());
                 }
             }
-            break;
+            else
+            {
+                (*aid.data_4)[index].value.encoded_att_value(dummy_encoded_att_value);
+                DevVarEncodedArray &the_seq = (*aid.data_4)[index].value.encoded_att_value();
+
+                if((w_type == Tango::READ) || (w_type == Tango::WRITE))
+                {
+                    the_seq.length(1);
+                }
+                else
+                {
+                    the_seq.length(2);
+                }
+
+                the_seq[0].encoded_format = CORBA::string_dup((*ptr)[0].encoded_format);
+
+                if(ptr->release() == true)
+                {
+                    unsigned long nb_data = (*ptr)[0].encoded_data.length();
+                    the_seq[0].encoded_data.replace(nb_data, nb_data, (*ptr)[0].encoded_data.get_buffer(true), true);
+                    (*ptr)[0].encoded_data.replace(0, 0, NULL, false);
+                }
+                else
+                {
+                    the_seq[0].encoded_data.replace((*ptr)[0].encoded_data.length(),
+                                                    (*ptr)[0].encoded_data.length(),
+                                                    (*ptr)[0].encoded_data.get_buffer());
+                }
+
+                if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
+                {
+                    the_seq[1].encoded_format = CORBA::string_dup((*ptr)[1].encoded_format);
+                    the_seq[1].encoded_data.replace((*ptr)[1].encoded_data.length(),
+                                                    (*ptr)[1].encoded_data.length(),
+                                                    (*ptr)[1].encoded_data.get_buffer());
+                }
+            }
+            if(del_seq == true)
+            {
+                delete ptr;
+            }
         }
+        break;
+    }
     }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::polled_data_into_net_obj
+//        DeviceImpl::polled_data_into_net_obj
 //
 // description :
-//		Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
-//		it's an Any object. Then, it is an IDL union
+//        Put the attribute data within the object used on the wire to transfer the attribute. For IDL release <= 3,
+//        it's an Any object. Then, it is an IDL union
 //
 // argument:
-//		in :
-//			- aid :
-//			- index :
-//			- type :
-//			- vers : Device IDl version
-//			- polled_att :
-//			- names :
+//        in :
+//            - aid :
+//            - index :
+//            - type :
+//            - vers : Device IDl version
+//            - polled_att :
+//            - names :
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::polled_data_into_net_object(AttributeIdlData &aid,
-                                             long index, long type, long vers, PollObj *polled_att,
-                                             const DevVarStringArray &names)
+void DeviceImpl::polled_data_into_net_object(
+    AttributeIdlData &aid, long index, long type, long vers, PollObj *polled_att, const DevVarStringArray &names)
 {
     const Tango::DevVarStateArray *tmp_state;
     Tango::DevVarStateArray *new_tmp_state;
     Tango::DevState sta;
 
-    switch (type)
+    switch(type)
     {
-        case Tango::DEV_SHORT :
-        case Tango::DEV_ENUM :
-            data_in_net_object<Tango::DevShort>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
+        data_in_net_object<Tango::DevShort>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_DOUBLE :
-            data_in_net_object<Tango::DevDouble>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_DOUBLE:
+        data_in_net_object<Tango::DevDouble>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_LONG :
-            data_in_net_object<Tango::DevLong>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_LONG:
+        data_in_net_object<Tango::DevLong>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_LONG64 :
-            data_in_net_object<Tango::DevLong64>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_LONG64:
+        data_in_net_object<Tango::DevLong64>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_STRING :
-            data_in_net_object<Tango::DevString>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_STRING:
+        data_in_net_object<Tango::DevString>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_FLOAT :
-            data_in_net_object<Tango::DevFloat>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_FLOAT:
+        data_in_net_object<Tango::DevFloat>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_BOOLEAN :
-            data_in_net_object<Tango::DevBoolean>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_BOOLEAN:
+        data_in_net_object<Tango::DevBoolean>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_USHORT :
-            data_in_net_object<Tango::DevUShort>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_USHORT:
+        data_in_net_object<Tango::DevUShort>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_UCHAR :
-            data_in_net_object<Tango::DevUChar>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_UCHAR:
+        data_in_net_object<Tango::DevUChar>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_ULONG :
-            data_in_net_object<Tango::DevULong>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_ULONG:
+        data_in_net_object<Tango::DevULong>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_ULONG64 :
-            data_in_net_object<Tango::DevULong64>(aid, index, vers, polled_att);
-            break;
+    case Tango::DEV_ULONG64:
+        data_in_net_object<Tango::DevULong64>(aid, index, vers, polled_att);
+        break;
 
-        case Tango::DEV_STATE :
-            if (aid.data_5 != nullptr)
+    case Tango::DEV_STATE:
+        if(aid.data_5 != nullptr)
+        {
+            AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
+            if(att_val.value._d() == DEVICE_STATE)
+            {
+                sta = att_val.value.dev_state_att();
+                (*aid.data_5)[index].value.dev_state_att(sta);
+            }
+            else if(att_val.value._d() == ATT_STATE)
+            {
+                DevVarStateArray &union_seq = att_val.value.state_att_value();
+                (*aid.data_5)[index].value.state_att_value(union_seq);
+            }
+        }
+        else if(aid.data_4 != nullptr)
+        {
+            if(vers >= 5)
             {
                 AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                if (att_val.value._d() == DEVICE_STATE)
+                if(att_val.value._d() == DEVICE_STATE)
                 {
                     sta = att_val.value.dev_state_att();
-                    (*aid.data_5)[index].value.dev_state_att(sta);
+                    (*aid.data_4)[index].value.dev_state_att(sta);
                 }
-                else if (att_val.value._d() == ATT_STATE)
+                else if(att_val.value._d() == ATT_STATE)
                 {
                     DevVarStateArray &union_seq = att_val.value.state_att_value();
-                    (*aid.data_5)[index].value.state_att_value(union_seq);
-                }
-            }
-            else if (aid.data_4 != nullptr)
-            {
-                if (vers >= 5)
-                {
-                    AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                    if (att_val.value._d() == DEVICE_STATE)
-                    {
-                        sta = att_val.value.dev_state_att();
-                        (*aid.data_4)[index].value.dev_state_att(sta);
-                    }
-                    else if (att_val.value._d() == ATT_STATE)
-                    {
-                        DevVarStateArray &union_seq = att_val.value.state_att_value();
-                        (*aid.data_4)[index].value.state_att_value(union_seq);
-                    }
-                }
-                else
-                {
-                    AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
-                    if (att_val.value._d() == DEVICE_STATE)
-                    {
-                        sta = att_val.value.dev_state_att();
-                        (*aid.data_4)[index].value.dev_state_att(sta);
-                    }
-                    else if (att_val.value._d() == ATT_STATE)
-                    {
-                        DevVarStateArray &union_seq = att_val.value.state_att_value();
-                        (*aid.data_4)[index].value.state_att_value(union_seq);
-                    }
+                    (*aid.data_4)[index].value.state_att_value(union_seq);
                 }
             }
             else
             {
-                if (vers >= 5)
+                AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
+                if(att_val.value._d() == DEVICE_STATE)
                 {
-                    AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                    if (att_val.value._d() == DEVICE_STATE)
-                    {
-                        sta = att_val.value.dev_state_att();
-                        (*aid.data_3)[index].value <<= sta;
-                    }
-                    else if (att_val.value._d() == ATT_STATE)
-                    {
-                        DevVarStateArray &union_seq = att_val.value.state_att_value();
-                        new_tmp_state = new DevVarStateArray(union_seq.length(),
-                                                             union_seq.length(),
-                                                             const_cast<DevState *>(union_seq.get_buffer()),
-                                                             false);
-                        (*aid.data_3)[index].value <<= new_tmp_state;
-                    }
+                    sta = att_val.value.dev_state_att();
+                    (*aid.data_4)[index].value.dev_state_att(sta);
                 }
-                else if (vers == 4)
+                else if(att_val.value._d() == ATT_STATE)
                 {
-                    AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
-                    if (att_val.value._d() == DEVICE_STATE)
-                    {
-                        sta = att_val.value.dev_state_att();
-                        (*aid.data_3)[index].value <<= sta;
-                    }
-                    else if (att_val.value._d() == ATT_STATE)
-                    {
-                        DevVarStateArray &union_seq = att_val.value.state_att_value();
-                        new_tmp_state = new DevVarStateArray(union_seq.length(),
-                                                             union_seq.length(),
-                                                             const_cast<DevState *>(union_seq.get_buffer()),
-                                                             false);
-                        (*aid.data_3)[index].value <<= new_tmp_state;
-                    }
+                    DevVarStateArray &union_seq = att_val.value.state_att_value();
+                    (*aid.data_4)[index].value.state_att_value(union_seq);
+                }
+            }
+        }
+        else
+        {
+            if(vers >= 5)
+            {
+                AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
+                if(att_val.value._d() == DEVICE_STATE)
+                {
+                    sta = att_val.value.dev_state_att();
+                    (*aid.data_3)[index].value <<= sta;
+                }
+                else if(att_val.value._d() == ATT_STATE)
+                {
+                    DevVarStateArray &union_seq = att_val.value.state_att_value();
+                    new_tmp_state = new DevVarStateArray(
+                        union_seq.length(), union_seq.length(), const_cast<DevState *>(union_seq.get_buffer()), false);
+                    (*aid.data_3)[index].value <<= new_tmp_state;
+                }
+            }
+            else if(vers == 4)
+            {
+                AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
+                if(att_val.value._d() == DEVICE_STATE)
+                {
+                    sta = att_val.value.dev_state_att();
+                    (*aid.data_3)[index].value <<= sta;
+                }
+                else if(att_val.value._d() == ATT_STATE)
+                {
+                    DevVarStateArray &union_seq = att_val.value.state_att_value();
+                    new_tmp_state = new DevVarStateArray(
+                        union_seq.length(), union_seq.length(), const_cast<DevState *>(union_seq.get_buffer()), false);
+                    (*aid.data_3)[index].value <<= new_tmp_state;
+                }
+            }
+            else
+            {
+                AttributeValue_3 &att_val = polled_att->get_last_attr_value_3(false);
+                CORBA::TypeCode_var ty;
+                ty = att_val.value.type();
+
+                if(ty->kind() == CORBA::tk_enum)
+                {
+                    att_val.value >>= sta;
+                    (*aid.data_3)[index].value <<= sta;
                 }
                 else
                 {
-                    AttributeValue_3 &att_val = polled_att->get_last_attr_value_3(false);
-                    CORBA::TypeCode_var ty;
-                    ty = att_val.value.type();
-
-                    if (ty->kind() == CORBA::tk_enum)
-                    {
-                        att_val.value >>= sta;
-                        (*aid.data_3)[index].value <<= sta;
-                    }
-                    else
-                    {
-                        att_val.value >>= tmp_state;
-                        new_tmp_state = new DevVarStateArray(tmp_state->length(), tmp_state->length(),
-                                                             const_cast<DevState *>(tmp_state->get_buffer()), false);
-                        (*aid.data_3)[index].value <<= new_tmp_state;
-                    }
+                    att_val.value >>= tmp_state;
+                    new_tmp_state = new DevVarStateArray(tmp_state->length(),
+                                                         tmp_state->length(),
+                                                         const_cast<DevState *>(tmp_state->get_buffer()),
+                                                         false);
+                    (*aid.data_3)[index].value <<= new_tmp_state;
                 }
             }
-            break;
+        }
+        break;
 
-        case Tango::DEV_ENCODED:
-            if (aid.data_5 != nullptr)
+    case Tango::DEV_ENCODED:
+        if(aid.data_5 != nullptr)
+        {
+            AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
+            DevVarEncodedArray &polled_seq = att_val.value.encoded_att_value();
+
+            unsigned int nb_encoded = polled_seq.length();
+
+            (*aid.data_5)[index].value.encoded_att_value(dummy_encoded_att_value);
+            DevVarEncodedArray &the_seq = (*aid.data_5)[index].value.encoded_att_value();
+
+            the_seq.length(nb_encoded);
+            for(unsigned int loop = 0; loop < nb_encoded; loop++)
+            {
+                the_seq[loop].encoded_format = CORBA::string_dup(polled_seq[loop].encoded_format);
+                unsigned char *tmp_enc = polled_seq[loop].encoded_data.get_buffer();
+                unsigned int nb_data = polled_seq[loop].encoded_data.length();
+                the_seq[loop].encoded_data.replace(nb_data, nb_data, tmp_enc);
+            }
+        }
+        else if(aid.data_4 != nullptr)
+        {
+            if(vers == 5)
             {
                 AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
                 DevVarEncodedArray &polled_seq = att_val.value.encoded_att_value();
 
                 unsigned int nb_encoded = polled_seq.length();
 
-                (*aid.data_5)[index].value.encoded_att_value(dummy_encoded_att_value);
-                DevVarEncodedArray &the_seq = (*aid.data_5)[index].value.encoded_att_value();
+                (*aid.data_4)[index].value.encoded_att_value(dummy_encoded_att_value);
+                DevVarEncodedArray &the_seq = (*aid.data_4)[index].value.encoded_att_value();
 
                 the_seq.length(nb_encoded);
-                for (unsigned int loop = 0; loop < nb_encoded; loop++)
+                for(unsigned int loop = 0; loop < nb_encoded; loop++)
                 {
                     the_seq[loop].encoded_format = CORBA::string_dup(polled_seq[loop].encoded_format);
                     unsigned char *tmp_enc = polled_seq[loop].encoded_data.get_buffer();
@@ -5598,78 +5613,57 @@ void DeviceImpl::polled_data_into_net_object(AttributeIdlData &aid,
                     the_seq[loop].encoded_data.replace(nb_data, nb_data, tmp_enc);
                 }
             }
-            else if (aid.data_4 != nullptr)
-            {
-                if (vers == 5)
-                {
-                    AttributeValue_5 &att_val = polled_att->get_last_attr_value_5(false);
-                    DevVarEncodedArray &polled_seq = att_val.value.encoded_att_value();
-
-                    unsigned int nb_encoded = polled_seq.length();
-
-                    (*aid.data_4)[index].value.encoded_att_value(dummy_encoded_att_value);
-                    DevVarEncodedArray &the_seq = (*aid.data_4)[index].value.encoded_att_value();
-
-                    the_seq.length(nb_encoded);
-                    for (unsigned int loop = 0; loop < nb_encoded; loop++)
-                    {
-                        the_seq[loop].encoded_format = CORBA::string_dup(polled_seq[loop].encoded_format);
-                        unsigned char *tmp_enc = polled_seq[loop].encoded_data.get_buffer();
-                        unsigned int nb_data = polled_seq[loop].encoded_data.length();
-                        the_seq[loop].encoded_data.replace(nb_data, nb_data, tmp_enc);
-                    }
-                }
-                else
-                {
-                    AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
-                    DevVarEncodedArray &polled_seq = att_val.value.encoded_att_value();
-
-                    unsigned int nb_encoded = polled_seq.length();
-
-                    (*aid.data_4)[index].value.encoded_att_value(dummy_encoded_att_value);
-                    DevVarEncodedArray &the_seq = (*aid.data_4)[index].value.encoded_att_value();
-
-                    the_seq.length(nb_encoded);
-                    for (unsigned int loop = 0; loop < nb_encoded; loop++)
-                    {
-                        the_seq[loop].encoded_format = CORBA::string_dup(polled_seq[loop].encoded_format);
-                        unsigned char *tmp_enc = polled_seq[loop].encoded_data.get_buffer();
-                        unsigned int nb_data = polled_seq[loop].encoded_data.length();
-                        the_seq[loop].encoded_data.replace(nb_data, nb_data, tmp_enc);
-                    }
-                }
-            }
             else
             {
-                TangoSys_OMemStream o;
-                o << "Data type for attribute " << names[index] << " is DEV_ENCODED.";
-                o << " It's not possible to retrieve this data type through the interface you are using (IDL V3)"
-                  << std::ends;
+                AttributeValue_4 &att_val = polled_att->get_last_attr_value_4(false);
+                DevVarEncodedArray &polled_seq = att_val.value.encoded_att_value();
 
-                (*aid.data_3)[index].err_list.length(1);
-                (*aid.data_3)[index].err_list[0].severity = Tango::ERR;
-                (*aid.data_3)[index].err_list[0].reason = Tango::string_dup(API_NotSupportedFeature);
-                (*aid.data_3)[index].err_list[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+                unsigned int nb_encoded = polled_seq.length();
 
-                std::string s = o.str();
-                (*aid.data_3)[index].err_list[0].desc = Tango::string_dup(s.c_str());
-                (*aid.data_3)[index].quality = Tango::ATTR_INVALID;
-                (*aid.data_3)[index].name = Tango::string_dup(names[index]);
-                clear_att_dim((*aid.data_3)[index]);
+                (*aid.data_4)[index].value.encoded_att_value(dummy_encoded_att_value);
+                DevVarEncodedArray &the_seq = (*aid.data_4)[index].value.encoded_att_value();
+
+                the_seq.length(nb_encoded);
+                for(unsigned int loop = 0; loop < nb_encoded; loop++)
+                {
+                    the_seq[loop].encoded_format = CORBA::string_dup(polled_seq[loop].encoded_format);
+                    unsigned char *tmp_enc = polled_seq[loop].encoded_data.get_buffer();
+                    unsigned int nb_data = polled_seq[loop].encoded_data.length();
+                    the_seq[loop].encoded_data.replace(nb_data, nb_data, tmp_enc);
+                }
             }
-            break;
+        }
+        else
+        {
+            TangoSys_OMemStream o;
+            o << "Data type for attribute " << names[index] << " is DEV_ENCODED.";
+            o << " It's not possible to retrieve this data type through the interface you are using (IDL V3)"
+              << std::ends;
+
+            (*aid.data_3)[index].err_list.length(1);
+            (*aid.data_3)[index].err_list[0].severity = Tango::ERR;
+            (*aid.data_3)[index].err_list[0].reason = Tango::string_dup(API_NotSupportedFeature);
+            (*aid.data_3)[index].err_list[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+
+            std::string s = o.str();
+            (*aid.data_3)[index].err_list[0].desc = Tango::string_dup(s.c_str());
+            (*aid.data_3)[index].quality = Tango::ATTR_INVALID;
+            (*aid.data_3)[index].name = Tango::string_dup(names[index]);
+            clear_att_dim((*aid.data_3)[index]);
+        }
+        break;
     }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//			DeviceImpl::att_conf_loop
+//            DeviceImpl::att_conf_loop
 //
 // description :
-//			Set flags in DeviceImpl if any of the device attributes has some wrong configuration in DB generating
-//			startup exception when the server started.
-//			In DeviceImpl class, this method set the force_alarm_state flag and fills in the
+//            Set flags in DeviceImpl if any of the device attributes has some wrong configuration in DB generating
+//            startup exception when the server started.
+//            In DeviceImpl class, this method set the force_alarm_state flag and fills in the
 //          att_wrong_db_conf vector with attribute name(s) (for device status)
 //
 //--------------------------------------------------------------------------------------------------------------------
@@ -5678,9 +5672,9 @@ void DeviceImpl::att_conf_loop()
 {
     std::vector<Attribute *> &att_list = get_device_attr()->get_attribute_list();
 
-//
-// Reset data before the new loop
-//
+    //
+    // Reset data before the new loop
+    //
 
     std::vector<std::string> &wrong_conf_att_list = get_att_wrong_db_conf();
     wrong_conf_att_list.clear();
@@ -5690,17 +5684,16 @@ void DeviceImpl::att_conf_loop()
 
     force_alarm_state = false;
 
-//
-// Run the loop for wrong attribute conf. or memorized att which failed at startup
-//
+    //
+    // Run the loop for wrong attribute conf. or memorized att which failed at startup
+    //
 
-    for (size_t i = 0; i < att_list.size(); ++i)
+    for(size_t i = 0; i < att_list.size(); ++i)
     {
-        if (att_list[i]->is_startup_exception() == true ||
-            att_list[i]->is_mem_exception() == true)
+        if(att_list[i]->is_startup_exception() == true || att_list[i]->is_mem_exception() == true)
         {
             force_alarm_state = true;
-            if (att_list[i]->is_startup_exception() == true)
+            if(att_list[i]->is_startup_exception() == true)
             {
                 wrong_conf_att_list.push_back(att_list[i]->get_name());
             }
@@ -5711,7 +5704,7 @@ void DeviceImpl::att_conf_loop()
         }
     }
 
-    if (force_alarm_state == false && fwd_att_wrong_conf.empty() == false)
+    if(force_alarm_state == false && fwd_att_wrong_conf.empty() == false)
     {
         force_alarm_state = true;
     }
@@ -5722,7 +5715,7 @@ void DeviceImpl::att_conf_loop()
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::check_att_conf
+//        DeviceImpl::check_att_conf
 //
 // description :
 //
@@ -5732,7 +5725,7 @@ void DeviceImpl::check_att_conf()
 {
     dev_attr->check_idl_release(this);
 
-    if (run_att_conf_loop == true)
+    if(run_att_conf_loop == true)
     {
         att_conf_loop();
     }
@@ -5741,36 +5734,35 @@ void DeviceImpl::check_att_conf()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::build_att_list_in_status_mess
+//        DeviceImpl::build_att_list_in_status_mess
 //
 // description :
-//		Build device status message in case of device with some
-//			- att with wrong conf. in db
-//			- some memorized attribute failed during the startup phase
-//			- some wrongly configured forwarded attributes
+//        Build device status message in case of device with some
+//            - att with wrong conf. in db
+//            - some memorized attribute failed during the startup phase
+//            - some wrongly configured forwarded attributes
 //
 // argument:
-//		in :
-//			- nb_att : Number of attributes in error
-//			- att_type : Type of attribute error (conf or mem)
+//        in :
+//            - nb_att : Number of attributes in error
+//            - att_type : Type of attribute error (conf or mem)
 //
 //---------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_type)
 {
+    //
+    // First, the wrongly configured forwarded attributes case
+    //
 
-//
-// First, the wrongly configured forwarded attributes case
-//
-
-    if (att_type == Tango::DeviceImpl::FWD)
+    if(att_type == Tango::DeviceImpl::FWD)
     {
         std::stringstream alarm_msg;
         alarm_msg << alarm_status;
-        for (size_t i = 0; i < nb_att; ++i)
+        for(size_t i = 0; i < nb_att; ++i)
         {
             alarm_msg << "\nForwarded attribute " + fwd_att_wrong_conf[i].att_name;
-            if (fwd_att_wrong_conf[i].fae != FWD_ROOT_DEV_NOT_STARTED)
+            if(fwd_att_wrong_conf[i].fae != FWD_ROOT_DEV_NOT_STARTED)
             {
                 alarm_msg << " is not correctly configured! ";
             }
@@ -5781,7 +5773,7 @@ void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_t
 
             alarm_msg << "\nRoot attribute name = ";
             alarm_msg << fwd_att_wrong_conf[i].full_root_att_name;
-            if (fwd_att_wrong_conf[i].fae != FWD_ROOT_DEV_NOT_STARTED)
+            if(fwd_att_wrong_conf[i].fae != FWD_ROOT_DEV_NOT_STARTED)
             {
                 alarm_msg << "\nYou can update it using the Jive tool";
             }
@@ -5797,25 +5789,23 @@ void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_t
                 std::string local_att_name = tg->get_root_att_reg().get_local_att_name(root_name);
                 alarm_msg << local_att_name;
             }
-
         }
         alarm_status = alarm_msg.str();
     }
     else
     {
+        //
+        // For wrong conf. in db or memorized attributes which failed at startup
+        //
 
-//
-// For wrong conf. in db or memorized attributes which failed at startup
-//
-
-        if (nb_att > 1)
+        if(nb_att > 1)
         {
             alarm_status = alarm_status + "s";
         }
         alarm_status = alarm_status + " ";
-        for (size_t i = 0; i < nb_att; ++i)
+        for(size_t i = 0; i < nb_att; ++i)
         {
-            if (att_type == Tango::DeviceImpl::CONF)
+            if(att_type == Tango::DeviceImpl::CONF)
             {
                 alarm_status = alarm_status + att_wrong_db_conf[i];
             }
@@ -5824,13 +5814,13 @@ void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_t
                 alarm_status = alarm_status + att_mem_failed[i];
             }
 
-            if ((nb_att > 1) && (i <= nb_att - 2))
+            if((nb_att > 1) && (i <= nb_att - 2))
             {
                 alarm_status = alarm_status + ", ";
             }
         }
 
-        if (nb_att == 1)
+        if(nb_att == 1)
         {
             alarm_status = alarm_status + " has ";
         }
@@ -5844,15 +5834,15 @@ void DeviceImpl::build_att_list_in_status_mess(size_t nb_att, AttErrorType att_t
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::is_there_subscriber
+//        DeviceImpl::is_there_subscriber
 //
 // description :
-//		Returns true if there is some subscriber(s) listening on the event
+//        Returns true if there is some subscriber(s) listening on the event
 //
 // argument:
-//		in :
-//			- att_name : The attribute name
-//			- event_type : The event type
+//        in :
+//            - att_name : The attribute name
+//            - event_type : The event type
 //
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -5862,39 +5852,39 @@ bool DeviceImpl::is_there_subscriber(const std::string &att_name, EventType even
 
     bool ret = false;
 
-    switch (event_type)
+    switch(event_type)
     {
-        case CHANGE_EVENT:
-            ret = att.change_event_subscribed();
-            break;
+    case CHANGE_EVENT:
+        ret = att.change_event_subscribed();
+        break;
 
-        case QUALITY_EVENT:
-            ret = att.quality_event_subscribed();
-            break;
+    case QUALITY_EVENT:
+        ret = att.quality_event_subscribed();
+        break;
 
-        case PERIODIC_EVENT:
-            ret = att.periodic_event_subscribed();
-            break;
+    case PERIODIC_EVENT:
+        ret = att.periodic_event_subscribed();
+        break;
 
-        case ARCHIVE_EVENT:
-            ret = att.archive_event_subscribed();
-            break;
+    case ARCHIVE_EVENT:
+        ret = att.archive_event_subscribed();
+        break;
 
-        case USER_EVENT:
-            ret = att.user_event_subscribed();
-            break;
+    case USER_EVENT:
+        ret = att.user_event_subscribed();
+        break;
 
-        case ATTR_CONF_EVENT:
-            ret = att.attr_conf_event_subscribed();
-            break;
+    case ATTR_CONF_EVENT:
+        ret = att.attr_conf_event_subscribed();
+        break;
 
-        case DATA_READY_EVENT:
-            ret = att.data_ready_event_subscribed();
-            break;
+    case DATA_READY_EVENT:
+        ret = att.data_ready_event_subscribed();
+        break;
 
-        default:
-            TANGO_THROW_EXCEPTION(API_UnsupportedFeature, "Unsupported event type");
-            break;
+    default:
+        TANGO_THROW_EXCEPTION(API_UnsupportedFeature, "Unsupported event type");
+        break;
     }
 
     return ret;
@@ -5903,25 +5893,25 @@ bool DeviceImpl::is_there_subscriber(const std::string &att_name, EventType even
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::rem_wrong_fwd_att
+//        DeviceImpl::rem_wrong_fwd_att
 //
 // description :
-//		Remove one forwarded attribute from the list of errored forwarded attribute
+//        Remove one forwarded attribute from the list of errored forwarded attribute
 //
 // argument:
-//		in :
-//			- root_att_name : The root attribute name to be removed
+//        in :
+//            - root_att_name : The root attribute name to be removed
 //
 //---------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::rem_wrong_fwd_att(const std::string &root_att_name)
 {
     std::vector<FwdWrongConf>::iterator ite;
-    for (ite = fwd_att_wrong_conf.begin(); ite != fwd_att_wrong_conf.end(); ++ite)
+    for(ite = fwd_att_wrong_conf.begin(); ite != fwd_att_wrong_conf.end(); ++ite)
     {
         std::string local_name(ite->full_root_att_name);
         std::transform(local_name.begin(), local_name.end(), local_name.begin(), ::tolower);
-        if (local_name == root_att_name)
+        if(local_name == root_att_name)
         {
             fwd_att_wrong_conf.erase(ite);
             break;
@@ -5932,26 +5922,26 @@ void DeviceImpl::rem_wrong_fwd_att(const std::string &root_att_name)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::update_wrong_fwd_att
+//        DeviceImpl::update_wrong_fwd_att
 //
 // description :
-//		Update error code for one forwarded attribute in the list of errored forwarded attribute
+//        Update error code for one forwarded attribute in the list of errored forwarded attribute
 //
 // argument:
-//		in :
-//			- root_att_name : The root attribute name to be removed
-//			- err : The new error code
+//        in :
+//            - root_att_name : The root attribute name to be removed
+//            - err : The new error code
 //
 //---------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::update_wrong_conf_att(const std::string &root_att_name, FwdAttError err)
 {
     std::vector<FwdWrongConf>::iterator ite;
-    for (ite = fwd_att_wrong_conf.begin(); ite != fwd_att_wrong_conf.end(); ++ite)
+    for(ite = fwd_att_wrong_conf.begin(); ite != fwd_att_wrong_conf.end(); ++ite)
     {
         std::string local_name(ite->full_root_att_name);
         std::transform(local_name.begin(), local_name.end(), local_name.begin(), ::tolower);
-        if (local_name == root_att_name)
+        if(local_name == root_att_name)
         {
             ite->fae = err;
             break;
@@ -5962,51 +5952,51 @@ void DeviceImpl::update_wrong_conf_att(const std::string &root_att_name, FwdAttE
 //----------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::lock_root_devices
+//        DeviceImpl::lock_root_devices
 //
 // description :
-//		Lock/Unlock all root devices for all the forwarded attributes defined for this device
+//        Lock/Unlock all root devices for all the forwarded attributes defined for this device
 //
 // argument:
-//		in :
-//			- validity : The lock validity interval (used only in case of locking)
-//			- lock_action : Flag set to true if root device(s) must be locked. If false, root devices will be unlocked
+//        in :
+//            - validity : The lock validity interval (used only in case of locking)
+//            - lock_action : Flag set to true if root device(s) must be locked. If false, root devices will be unlocked
 //
 //---------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::lock_root_devices(int validity, bool lock_action)
 {
-//
-// Get list of root device(s)
-//
+    //
+    // Get list of root device(s)
+    //
 
     std::vector<std::string> root_devs;
     std::vector<std::string>::iterator ite;
     std::vector<Attribute *> att_list = dev_attr->get_attribute_list();
-    for (size_t j = 0; j < att_list.size(); j++)
+    for(size_t j = 0; j < att_list.size(); j++)
     {
-        if (att_list[j]->is_fwd_att() == true)
+        if(att_list[j]->is_fwd_att() == true)
         {
             FwdAttribute *fwd_att = static_cast<FwdAttribute *>(att_list[j]);
             const std::string &dev_name = fwd_att->get_fwd_dev_name();
             ite = find(root_devs.begin(), root_devs.end(), dev_name);
-            if (ite == root_devs.end())
+            if(ite == root_devs.end())
             {
                 root_devs.push_back(dev_name);
             }
         }
     }
 
-//
-// Lock/Unlock all these devices
-//
+    //
+    // Lock/Unlock all these devices
+    //
 
     RootAttRegistry &rar = Util::instance()->get_root_att_reg();
-    for (size_t loop = 0; loop < root_devs.size(); loop++)
+    for(size_t loop = 0; loop < root_devs.size(); loop++)
     {
         DeviceProxy *dp = rar.get_root_att_dp(root_devs[loop]);
 
-        if (lock_action == true)
+        if(lock_action == true)
         {
             dp->lock(validity);
         }
@@ -6019,11 +6009,11 @@ void DeviceImpl::lock_root_devices(int validity, bool lock_action)
 
 //+----------------------------------------------------------------------------
 //
-// method :		DeviceImpl::get_local_cmd_by_name
+// method :        DeviceImpl::get_local_cmd_by_name
 //
-// description :	Get a reference to a local Command object
+// description :    Get a reference to a local Command object
 //
-// in : 	cmd_name : The command name
+// in :     cmd_name : The command name
 //
 //-----------------------------------------------------------------------------
 
@@ -6031,10 +6021,11 @@ Command &DeviceImpl::get_local_cmd_by_name(const std::string &cmd_name)
 {
     std::vector<Command *>::iterator pos;
 
-    pos = find_if(command_list.begin(), command_list.end(),
+    pos = find_if(command_list.begin(),
+                  command_list.end(),
                   [&](Command *cmd) -> bool
                   {
-                      if (cmd_name.size() != cmd->get_lower_name().size())
+                      if(cmd_name.size() != cmd->get_lower_name().size())
                       {
                           return false;
                       }
@@ -6043,7 +6034,7 @@ Command &DeviceImpl::get_local_cmd_by_name(const std::string &cmd_name)
                       return cmd->get_lower_name() == tmp_name;
                   });
 
-    if (pos == command_list.end())
+    if(pos == command_list.end())
     {
         TANGO_LOG_DEBUG << "DeviceImpl::get_cmd_by_name throwing exception" << std::endl;
         TangoSys_OMemStream o;
@@ -6057,11 +6048,11 @@ Command &DeviceImpl::get_local_cmd_by_name(const std::string &cmd_name)
 
 //+----------------------------------------------------------------------------
 //
-// method :		DeviceImpl::remove_local_command
+// method :        DeviceImpl::remove_local_command
 //
-// description :	Delete a command from the local command list
+// description :    Delete a command from the local command list
 //
-// in : 	cmd_name : The command name (in lower case letter)
+// in :     cmd_name : The command name (in lower case letter)
 //
 //-----------------------------------------------------------------------------
 
@@ -6069,17 +6060,18 @@ void DeviceImpl::remove_local_command(const std::string &cmd_name)
 {
     std::vector<Command *>::iterator pos;
 
-    pos = find_if(command_list.begin(), command_list.end(),
+    pos = find_if(command_list.begin(),
+                  command_list.end(),
                   [&](Command *cmd) -> bool
                   {
-                      if (cmd_name.size() != cmd->get_lower_name().size())
+                      if(cmd_name.size() != cmd->get_lower_name().size())
                       {
                           return false;
                       }
                       return cmd->get_lower_name() == cmd_name;
                   });
 
-    if (pos == command_list.end())
+    if(pos == command_list.end())
     {
         TANGO_LOG_DEBUG << "DeviceImpl::remove_local_command throwing exception" << std::endl;
         TangoSys_OMemStream o;
@@ -6094,10 +6086,10 @@ void DeviceImpl::remove_local_command(const std::string &cmd_name)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::get_event_subscription_states
+//        DeviceImpl::get_event_subscription_states
 //
 // description :
-//		Return event info for the device with events subscribed
+//        Return event info for the device with events subscribed
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -6116,20 +6108,20 @@ DeviceEventSubscriptionState DeviceImpl::get_event_subscription_state()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::set_event_subscription_state
+//        DeviceImpl::set_event_subscription_state
 //
 // description :
 //      Set device interface change event subscription time
 //
 // argument :
-// 		in :
-//			- eve : One structure in this vector for each device event subscribed
+//         in :
+//            - eve : One structure in this vector for each device event subscribed
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void DeviceImpl::set_event_subscription_state(const DeviceEventSubscriptionState& events)
+void DeviceImpl::set_event_subscription_state(const DeviceEventSubscriptionState &events)
 {
-    if (events.has_dev_intr_change_event_clients)
+    if(events.has_dev_intr_change_event_clients)
     {
         set_event_intr_change_subscription(time(NULL));
     }
@@ -6141,28 +6133,27 @@ void DeviceImpl::set_event_subscription_state(const DeviceEventSubscriptionState
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::push_dev_intr
+//        DeviceImpl::push_dev_intr
 //
 // description :
-//		Start or update device interface change event thread
+//        Start or update device interface change event thread
 //
 // argument :
-// 		in :
-//			- ev_client : Flag set to true if some clients are listening on the event
+//         in :
+//            - ev_client : Flag set to true if some clients are listening on the event
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::push_dev_intr(bool ev_client)
 {
+    //
+    // If device is IDL 5 or more and if enabled, push a device interface change event but only if there is some
+    // client(s) listening on the event.
+    // This is done by starting a dedicated thread (if not already started). The rule of this thread is to delayed
+    // the event in case of attributes/commands added/removed in a loop in order to minimize the event number.
+    //
 
-//
-// If device is IDL 5 or more and if enabled, push a device interface change event but only if there is some
-// client(s) listening on the event.
-// This is done by starting a dedicated thread (if not already started). The rule of this thread is to delayed
-// the event in case of attributes/commands added/removed in a loop in order to minimize the event number.
-//
-
-    if (idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true && ev_client == true)
+    if(idl_version >= MIN_IDL_DEV_INTR && is_intr_change_ev_enable() == true && ev_client == true)
     {
         bool th_running;
         {
@@ -6170,7 +6161,7 @@ void DeviceImpl::push_dev_intr(bool ev_client)
             th_running = devintr_shared.th_running;
         }
 
-        if (th_running == false)
+        if(th_running == false)
         {
             devintr_shared.cmd_pending = false;
             devintr_thread = new DevIntrThread(devintr_shared, devintr_mon, this);
@@ -6191,11 +6182,11 @@ void DeviceImpl::push_dev_intr(bool ev_client)
 
             TANGO_LOG_DEBUG << "Cmd sent to device interface change thread" << std::endl;
 
-            while (devintr_shared.cmd_pending == true)
+            while(devintr_shared.cmd_pending == true)
             {
                 interupted = devintr_mon.wait(DEFAULT_TIMEOUT);
 
-                if ((devintr_shared.cmd_pending == true) && (interupted == 0))
+                if((devintr_shared.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Device interface change event thread blocked !!!");
@@ -6208,11 +6199,11 @@ void DeviceImpl::push_dev_intr(bool ev_client)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::end_pipe_config
+//        DeviceImpl::end_pipe_config
 //
 // description :
-//		Get all pipe properties defined at device level and aggregate all the pipe properties defined at different
-//		level (device, user default, class default
+//        Get all pipe properties defined at device level and aggregate all the pipe properties defined at different
+//        level (device, user default, class default
 //
 //------------------------------------------------------------------------------------------------------------------
 
@@ -6223,48 +6214,48 @@ void DeviceImpl::end_pipe_config()
     std::vector<Pipe *> &pipe_list = device_class->get_pipe_list(device_name_lower);
     size_t nb_pipe = pipe_list.size();
 
-//
-// First get device pipe configuration from db
-//
+    //
+    // First get device pipe configuration from db
+    //
 
     TANGO_LOG_DEBUG << nb_pipe << " pipe(s)" << std::endl;
 
-    if (nb_pipe != 0)
+    if(nb_pipe != 0)
     {
         Tango::Util *tg = Tango::Util::instance();
         Tango::DbData db_list;
 
-        if (tg->use_db())
+        if(tg->use_db())
         {
-            for (size_t i = 0; i < nb_pipe; i++)
+            for(size_t i = 0; i < nb_pipe; i++)
             {
                 db_list.push_back(DbDatum(pipe_list[i]->get_name()));
             }
 
-//
-// On some small and old computers, this request could take time if at the same time some other processes also access
-// the device pipe properties table. This has been experimented at ESRF. Increase timeout to cover this case
-//
-
+            //
+            // On some small and old computers, this request could take time if at the same time some other processes
+            // also access the device pipe properties table. This has been experimented at ESRF. Increase timeout to
+            // cover this case
+            //
 
             int old_db_timeout = 0;
-            if (!tg->use_file_db())
+            if(!tg->use_file_db())
             {
                 old_db_timeout = tg->get_database()->get_timeout_millis();
             }
             try
             {
-                if (old_db_timeout != 0)
+                if(old_db_timeout != 0)
                 {
                     tg->get_database()->set_timeout_millis(6000);
                 }
                 tg->get_database()->get_device_pipe_property(device_name, db_list, tg->get_db_cache());
-                if (old_db_timeout != 0)
+                if(old_db_timeout != 0)
                 {
                     tg->get_database()->set_timeout_millis(old_db_timeout);
                 }
             }
-            catch (Tango::DevFailed &)
+            catch(Tango::DevFailed &)
             {
                 TANGO_LOG_DEBUG << "Exception while accessing database" << std::endl;
 
@@ -6275,16 +6266,16 @@ void DeviceImpl::end_pipe_config()
                 TANGO_THROW_EXCEPTION(API_DatabaseAccess, ss.str());
             }
 
-//
-// A loop for each pipe
-//
+            //
+            // A loop for each pipe
+            //
 
             long ind = 0;
-            for (size_t i = 0; i < nb_pipe; i++)
+            for(size_t i = 0; i < nb_pipe; i++)
             {
-//
-// If pipe has some properties defined at device level, build a vector of PipeProperty with them
-//
+                //
+                // If pipe has some properties defined at device level, build a vector of PipeProperty with them
+                //
 
                 long nb_prop = 0;
                 std::vector<PipeProperty> dev_prop;
@@ -6292,13 +6283,13 @@ void DeviceImpl::end_pipe_config()
                 db_list[ind] >> nb_prop;
                 ind++;
 
-                for (long j = 0; j < nb_prop; j++)
+                for(long j = 0; j < nb_prop; j++)
                 {
-                    if (db_list[ind].size() > 1)
+                    if(db_list[ind].size() > 1)
                     {
                         std::string tmp(db_list[ind].value_string[0]);
                         long nb = db_list[ind].size();
-                        for (int k = 1; k < nb; k++)
+                        for(int k = 1; k < nb; k++)
                         {
                             tmp = tmp + ",";
                             tmp = tmp + db_list[ind].value_string[k];
@@ -6314,9 +6305,9 @@ void DeviceImpl::end_pipe_config()
 
                 Pipe *pi_ptr = pipe_list[i];
 
-//
-// Call method which will aggregate prop definition retrieved at different levels
-//
+                //
+                // Call method which will aggregate prop definition retrieved at different levels
+                //
 
                 set_pipe_prop(dev_prop, pi_ptr, LABEL);
                 set_pipe_prop(dev_prop, pi_ptr, DESCRIPTION);
@@ -6330,36 +6321,36 @@ void DeviceImpl::end_pipe_config()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//		DeviceImpl::set_pipe_prop
+//        DeviceImpl::set_pipe_prop
 //
 // description :
-//		Set a pipe property. A pipe property can be defined at device level in DB, by a user default or at
-//		class level in DB. Properties defined in DB at device level are given to the method as the first
-//		parameter. If the user has defined some user default, the pipe object already has them. The properties
-//		defined at class level are available in the MultiClassPipe object available in the DeviceClass instance
+//        Set a pipe property. A pipe property can be defined at device level in DB, by a user default or at
+//        class level in DB. Properties defined in DB at device level are given to the method as the first
+//        parameter. If the user has defined some user default, the pipe object already has them. The properties
+//        defined at class level are available in the MultiClassPipe object available in the DeviceClass instance
 //
 // argument :
-//		in:
-//			- dev_prop : Pipe properties defined at device level
-//			- pi_ptr : Pipe instance pointer
-//			- ppt : Property type (label or description)
+//        in:
+//            - dev_prop : Pipe properties defined at device level
+//            - pi_ptr : Pipe instance pointer
+//            - ppt : Property type (label or description)
 //
 //------------------------------------------------------------------------------------------------------------------
 
 void DeviceImpl::set_pipe_prop(std::vector<PipeProperty> &dev_prop, Pipe *pi_ptr, PipePropType ppt)
 {
     TANGO_LOG_DEBUG << "Entering set_pipe_prop() method" << std::endl;
-//
-// Final init of pipe prop with following priorities:
-// - Device pipe
-// - User default
-// - Class pipe
-// The pipe instance we have here already has config set to user default (if any)
-//
+    //
+    // Final init of pipe prop with following priorities:
+    // - Device pipe
+    // - User default
+    // - Class pipe
+    // The pipe instance we have here already has config set to user default (if any)
+    //
 
     bool found = false;
     std::string req_p_name;
-    if (ppt == LABEL)
+    if(ppt == LABEL)
     {
         req_p_name = "label";
     }
@@ -6369,21 +6360,21 @@ void DeviceImpl::set_pipe_prop(std::vector<PipeProperty> &dev_prop, Pipe *pi_ptr
     }
 
     std::vector<PipeProperty>::iterator dev_ite;
-    for (dev_ite = dev_prop.begin(); dev_ite != dev_prop.end(); ++dev_ite)
+    for(dev_ite = dev_prop.begin(); dev_ite != dev_prop.end(); ++dev_ite)
     {
         std::string p_name = dev_ite->get_name();
         std::transform(p_name.begin(), p_name.end(), p_name.begin(), ::tolower);
 
-        if (p_name == req_p_name)
+        if(p_name == req_p_name)
         {
             found = true;
             break;
         }
     }
 
-    if (found == true)
+    if(found == true)
     {
-        if (ppt == LABEL)
+        if(ppt == LABEL)
         {
             pi_ptr->set_label(dev_ite->get_value());
         }
@@ -6394,14 +6385,13 @@ void DeviceImpl::set_pipe_prop(std::vector<PipeProperty> &dev_prop, Pipe *pi_ptr
     }
     else
     {
-
-//
-// Prop not defined at device level. If the prop is still the lib default one, search if it is defined at class
-// level
-//
+        //
+        // Prop not defined at device level. If the prop is still the lib default one, search if it is defined at class
+        // level
+        //
 
         bool still_default;
-        if (ppt == LABEL)
+        if(ppt == LABEL)
         {
             still_default = pi_ptr->is_label_lib_default();
         }
@@ -6410,29 +6400,30 @@ void DeviceImpl::set_pipe_prop(std::vector<PipeProperty> &dev_prop, Pipe *pi_ptr
             still_default = pi_ptr->is_desc_lib_default();
         }
 
-        if (still_default == true)
+        if(still_default == true)
         {
             try
             {
-                std::vector<PipeProperty> &cl_pi_prop = device_class->get_class_pipe()->get_prop_list(pi_ptr->get_name());
+                std::vector<PipeProperty> &cl_pi_prop =
+                    device_class->get_class_pipe()->get_prop_list(pi_ptr->get_name());
 
                 bool found = false;
                 std::vector<PipeProperty>::iterator class_ite;
-                for (class_ite = cl_pi_prop.begin(); class_ite != cl_pi_prop.end(); ++class_ite)
+                for(class_ite = cl_pi_prop.begin(); class_ite != cl_pi_prop.end(); ++class_ite)
                 {
                     std::string p_name = class_ite->get_name();
                     std::transform(p_name.begin(), p_name.end(), p_name.begin(), ::tolower);
 
-                    if (p_name == req_p_name)
+                    if(p_name == req_p_name)
                     {
                         found = true;
                         break;
                     }
                 }
 
-                if (found == true)
+                if(found == true)
                 {
-                    if (ppt == LABEL)
+                    if(ppt == LABEL)
                     {
                         pi_ptr->set_label(class_ite->get_value());
                     }
@@ -6442,8 +6433,9 @@ void DeviceImpl::set_pipe_prop(std::vector<PipeProperty> &dev_prop, Pipe *pi_ptr
                     }
                 }
             }
-            catch (Tango::DevFailed &)
-            {}
+            catch(Tango::DevFailed &)
+            {
+            }
         }
     }
 
@@ -6456,9 +6448,9 @@ PipeEventSubscriptionStates DeviceImpl::get_pipe_event_subscription_states()
 
     try
     {
-        for (const auto& pipe : device_class->get_pipe_list(device_name_lower))
+        for(const auto &pipe : device_class->get_pipe_list(device_name_lower))
         {
-            if (pipe->is_pipe_event_subscribed())
+            if(pipe->is_pipe_event_subscribed())
             {
                 PipeEventSubscriptionState events{};
                 events.pipe_name = pipe->get_name();
@@ -6467,7 +6459,7 @@ PipeEventSubscriptionStates DeviceImpl::get_pipe_event_subscription_states()
             }
         }
     }
-    catch (const DevFailed&)
+    catch(const DevFailed &)
     {
         // No pipes for this device, sliently ignore
     }
@@ -6475,12 +6467,12 @@ PipeEventSubscriptionStates DeviceImpl::get_pipe_event_subscription_states()
     return result;
 }
 
-void DeviceImpl::set_pipe_event_subscription_states(const PipeEventSubscriptionStates& events)
+void DeviceImpl::set_pipe_event_subscription_states(const PipeEventSubscriptionStates &events)
 {
-    for (const auto& pipe_events : events)
+    for(const auto &pipe_events : events)
     {
-        auto& pipe = device_class->get_pipe_by_name(pipe_events.pipe_name, device_name_lower);
-        if (pipe_events.has_pipe_event_clients)
+        auto &pipe = device_class->get_pipe_by_name(pipe_events.pipe_name, device_name_lower);
+        if(pipe_events.has_pipe_event_clients)
         {
             const auto now = time(nullptr);
             pipe.set_event_subscription(now);
@@ -6488,4 +6480,4 @@ void DeviceImpl::set_pipe_event_subscription_states(const PipeEventSubscriptionS
     }
 }
 
-} // End of Tango namespace
+} // namespace Tango

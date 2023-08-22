@@ -1,13 +1,13 @@
 ///=============================================================================
 //
-// file :		encoded_format.h
+// file :        encoded_format.h
 //
-// description :	Include file for the defined Tango::DevEncoded format
-//					string
+// description :    Include file for the defined Tango::DevEncoded format
+//                    string
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E. Taurel
+// author(s) :        E. Taurel
 //
 // Copyright (C) :      2011,2012,2013,2014,2015
 //                      European Synchrotron Radiation Facility
@@ -44,22 +44,22 @@ namespace Tango
 // Jpeg encoding
 //
 
-#define 		JPEG_GRAY_8		"JPEG_GRAY8"
-#define			JPEG_RGB  		"JPEG_RGB"
+#define JPEG_GRAY_8 "JPEG_GRAY8"
+#define JPEG_RGB "JPEG_RGB"
 
 //
 // Gray encoding
 //
 
-#define			GRAY_8			"GRAY8"
-#define			GRAY_16			"GRAY16"
+#define GRAY_8 "GRAY8"
+#define GRAY_16 "GRAY16"
 
 //
 // RGB
 //
 
-#define			RGB_24			"RGB24"
+#define RGB_24 "RGB24"
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _ENCODED_FORMAT_H

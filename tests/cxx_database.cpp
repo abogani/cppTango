@@ -8,233 +8,225 @@
 #undef SUITE_NAME
 #define SUITE_NAME DatabaseTestSuite
 
-class DatabaseTestSuite: public CxxTest::TestSuite
+class DatabaseTestSuite : public CxxTest::TestSuite
 {
-protected:
-	DeviceProxy *device1;
-	string device1_name;
-	string dev_alias;
-	string att_alias;
-	Database *db;
+  protected:
+    DeviceProxy *device1;
+    string device1_name;
+    string dev_alias;
+    string att_alias;
+    Database *db;
 
-public:
-	SUITE_NAME()
-	{
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
-//
-// Arguments check -------------------------------------------------
-//
+        device1_name = CxxTest::TangoPrinter::get_param("device1");
+        dev_alias = CxxTest::TangoPrinter::get_param("devicealias");
+        att_alias = CxxTest::TangoPrinter::get_param("attributealias");
 
-		device1_name = CxxTest::TangoPrinter::get_param("device1");
-		dev_alias = CxxTest::TangoPrinter::get_param("devicealias");
-		att_alias = CxxTest::TangoPrinter::get_param("attributealias");
+        CxxTest::TangoPrinter::validate_args();
 
-		CxxTest::TangoPrinter::validate_args();
+        // Initialization --------------------------------------------------
 
+        try
+        {
+            device1 = new DeviceProxy(device1_name);
+            db = new Database();
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
 
-// Initialization --------------------------------------------------
+    virtual ~SUITE_NAME()
+    {
+        //
+        // Clean up --------------------------------------------------------
+        //
 
+        delete device1;
+        delete db;
+    }
 
-		try
-		{
-			device1 = new DeviceProxy(device1_name);
-			db = new Database();
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-	}
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
-	virtual ~SUITE_NAME()
-	{
+    //
+    // Tests -------------------------------------------------------
+    //
 
-//
-// Clean up --------------------------------------------------------
-//
+    // The get_device_info call
 
-		delete device1;
-		delete db;
-	}
+    void test_get_device_info()
+    {
+        DbDevFullInfo dbfi = db->get_device_info(device1_name);
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+        DeviceData dd, dd_in;
+        dd_in << device1_name;
+        dd = db->command_inout("DbImportDevice", dd_in);
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+        const DevVarLongStringArray *dvlsa;
+        dd >> dvlsa;
 
-//
-// Tests -------------------------------------------------------
-//
+        TS_ASSERT_EQUALS(dbfi.name, device1_name);
+        TS_ASSERT_EQUALS(dbfi.ds_full_name, string(dvlsa->svalue[3]));
+        TS_ASSERT_EQUALS(dbfi.exported, 1);
+        TS_ASSERT_EQUALS(dbfi.class_name, string(dvlsa->svalue[5]));
+        TS_ASSERT_EQUALS(dbfi.host, string(dvlsa->svalue[4]));
+        TS_ASSERT_EQUALS(dbfi.pid, dvlsa->lvalue[1]);
+    }
 
+    // The device alias
 
-// The get_device_info call
+    void test_device_alias_calls()
+    {
+        string d_alias, d_name;
 
-	void test_get_device_info()
-	{
-		DbDevFullInfo dbfi = db->get_device_info(device1_name);
+        db->get_alias_from_device(device1_name, d_alias);
+        TS_ASSERT_EQUALS(d_alias, dev_alias);
 
-		DeviceData dd,dd_in;
-		dd_in << device1_name;
-		dd = db->command_inout("DbImportDevice",dd_in);
+        db->get_device_from_alias(dev_alias, d_name);
+        TS_ASSERT_EQUALS(d_name, device1_name);
+    }
 
-		const DevVarLongStringArray *dvlsa;
-		dd >> dvlsa;
+    // The attribute alias
 
-		TS_ASSERT_EQUALS(dbfi.name, device1_name);
-		TS_ASSERT_EQUALS(dbfi.ds_full_name, string(dvlsa->svalue[3]));
-		TS_ASSERT_EQUALS(dbfi.exported, 1);
-		TS_ASSERT_EQUALS(dbfi.class_name, string(dvlsa->svalue[5]));
-		TS_ASSERT_EQUALS(dbfi.host, string(dvlsa->svalue[4]));
-		TS_ASSERT_EQUALS(dbfi.pid, dvlsa->lvalue[1]);
-	}
+    void test_attribute_alias_calls()
+    {
+        string a_alias, a_name;
 
-// The device alias
+        string full_att_name(device1_name);
+        full_att_name = full_att_name + "/Short_attr";
 
-	void test_device_alias_calls()
-	{
-		string d_alias,d_name;
+        db->get_alias_from_attribute(full_att_name, a_alias);
+        TS_ASSERT_EQUALS(a_alias, att_alias);
 
-		db->get_alias_from_device(device1_name,d_alias);
-		TS_ASSERT_EQUALS(d_alias, dev_alias);
+        db->get_attribute_from_alias(att_alias, a_name);
+        transform(a_name.begin(), a_name.end(), a_name.begin(), ::tolower);
+        transform(full_att_name.begin(), full_att_name.end(), full_att_name.begin(), ::tolower);
+        TS_ASSERT_EQUALS(a_name, full_att_name);
+    }
 
-		db->get_device_from_alias(dev_alias,d_name);
-		TS_ASSERT_EQUALS(d_name, device1_name);
-	}
+    // Pipe class oriented calls
 
-// The attribute alias
+    void test_class_pipe_oriented_calls()
+    {
+        DbDatum velocity("_tst_pipe"), vel_min("_tst_pipe_propA"), vel_max("_tst_pipe_propB");
+        DbData db_data;
 
-	void test_attribute_alias_calls()
-	{
-		string a_alias,a_name;
+        velocity << (short) 2;
+        vel_min << 3.0;
+        vel_max << 33.0;
 
-		string full_att_name(device1_name);
-		full_att_name = full_att_name + "/Short_attr";
+        db_data.push_back(velocity);
+        db_data.push_back(vel_min);
+        db_data.push_back(vel_max);
 
-		db->get_alias_from_attribute(full_att_name,a_alias);
-		TS_ASSERT_EQUALS(a_alias, att_alias);
+        TS_ASSERT_THROWS_NOTHING(db->put_class_pipe_property("MyStepperMotor", db_data));
 
-		db->get_attribute_from_alias(att_alias,a_name);
-		transform(a_name.begin(),a_name.end(),a_name.begin(),::tolower);
-		transform(full_att_name.begin(),full_att_name.end(),full_att_name.begin(),::tolower);
-		TS_ASSERT_EQUALS(a_name, full_att_name);
-	}
+        DbData get_db_data;
+        get_db_data.push_back(DbDatum("_tst_pipe"));
 
-// Pipe class oriented calls
+        TS_ASSERT_THROWS_NOTHING(db->get_class_pipe_property("MyStepperMotor", get_db_data));
 
-	void test_class_pipe_oriented_calls()
-	{
-		DbDatum velocity("_tst_pipe"), vel_min("_tst_pipe_propA"), vel_max("_tst_pipe_propB");
-		DbData db_data;
+        short nb_prop;
+        get_db_data[0] >> nb_prop;
+        TS_ASSERT_EQUALS(nb_prop, 2);
 
-		velocity << (short)2;
-		vel_min << 3.0;
-		vel_max << 33.0;
+        float propA, propB;
+        string prop1_name, prop2_name;
+        TS_ASSERT_EQUALS(get_db_data[1].name, "_tst_pipe_propA");
+        TS_ASSERT_EQUALS(get_db_data[2].name, "_tst_pipe_propB");
 
-		db_data.push_back(velocity);
-		db_data.push_back(vel_min);
-		db_data.push_back(vel_max);
+        get_db_data[1] >> propA;
+        get_db_data[2] >> propB;
+        TS_ASSERT_EQUALS(propA, 3.0);
+        TS_ASSERT_EQUALS(propB, 33.0);
 
-		TS_ASSERT_THROWS_NOTHING(db->put_class_pipe_property("MyStepperMotor",db_data));
+        DbDatum db_datum;
+        TS_ASSERT_THROWS_NOTHING(db_datum = db->get_class_pipe_list("MyStepperMotor", "*"));
 
-		DbData get_db_data;
-		get_db_data.push_back(DbDatum("_tst_pipe"));
+        vector<string> pipe_list;
+        db_datum >> pipe_list;
 
-		TS_ASSERT_THROWS_NOTHING(db->get_class_pipe_property("MyStepperMotor",get_db_data));
+        TS_ASSERT_EQUALS(pipe_list.size(), 1u);
+        TS_ASSERT_EQUALS(pipe_list[0], "_tst_pipe");
 
-		short nb_prop;
-		get_db_data[0] >> nb_prop;
-		TS_ASSERT_EQUALS(nb_prop, 2);
+        DbData del_db_data;
+        del_db_data.push_back(DbDatum("_tst_pipe"));
+        del_db_data.push_back(DbDatum("_tst_pipe_propA"));
+        del_db_data.push_back(DbDatum("_tst_pipe_propB"));
 
-		float propA, propB;
-		string prop1_name,prop2_name;
-		TS_ASSERT_EQUALS(get_db_data[1].name, "_tst_pipe_propA");
-		TS_ASSERT_EQUALS(get_db_data[2].name, "_tst_pipe_propB");
+        TS_ASSERT_THROWS_NOTHING(db->delete_class_pipe_property("MyStepperMotor", del_db_data));
+    }
 
-		get_db_data[1] >> propA;
-		get_db_data[2] >> propB;
-		TS_ASSERT_EQUALS(propA, 3.0);
-		TS_ASSERT_EQUALS(propB, 33.0);
+    // Pipe device oriented calls
 
-		DbDatum db_datum;
- 		TS_ASSERT_THROWS_NOTHING(db_datum = db->get_class_pipe_list("MyStepperMotor","*"));
+    void test_device_pipe_oriented_calls()
+    {
+        DbDatum velocity("_tst_pipe"), vel_min("_tst_pipe_propA"), vel_max("_tst_pipe_propB");
+        DbData db_data;
 
-		vector<string> pipe_list;
-		db_datum >> pipe_list;
+        velocity << (short) 2;
+        vel_min << 3.0;
+        vel_max << 33.0;
 
-		TS_ASSERT_EQUALS(pipe_list.size(), 1u);
-		TS_ASSERT_EQUALS(pipe_list[0], "_tst_pipe");
+        db_data.push_back(velocity);
+        db_data.push_back(vel_min);
+        db_data.push_back(vel_max);
 
+        TS_ASSERT_THROWS_NOTHING(db->put_device_pipe_property("a/b/c", db_data));
 
-		DbData del_db_data;
-		del_db_data.push_back(DbDatum("_tst_pipe"));
-		del_db_data.push_back(DbDatum("_tst_pipe_propA"));
-		del_db_data.push_back(DbDatum("_tst_pipe_propB"));
+        DbData get_db_data;
+        get_db_data.push_back(DbDatum("_tst_pipe"));
 
-		TS_ASSERT_THROWS_NOTHING(db->delete_class_pipe_property("MyStepperMotor", del_db_data));
-	}
+        TS_ASSERT_THROWS_NOTHING(db->get_device_pipe_property("a/b/c", get_db_data));
 
-// Pipe device oriented calls
+        short nb_prop;
+        get_db_data[0] >> nb_prop;
+        TS_ASSERT_EQUALS(nb_prop, 2);
 
-	void test_device_pipe_oriented_calls()
-	{
-		DbDatum velocity("_tst_pipe"), vel_min("_tst_pipe_propA"), vel_max("_tst_pipe_propB");
-		DbData db_data;
+        float propA, propB;
+        string prop1_name, prop2_name;
+        TS_ASSERT_EQUALS(get_db_data[1].name, "_tst_pipe_propA");
+        TS_ASSERT_EQUALS(get_db_data[2].name, "_tst_pipe_propB");
 
-		velocity << (short)2;
-		vel_min << 3.0;
-		vel_max << 33.0;
+        get_db_data[1] >> propA;
+        get_db_data[2] >> propB;
+        TS_ASSERT_EQUALS(propA, 3.0);
+        TS_ASSERT_EQUALS(propB, 33.0);
 
-		db_data.push_back(velocity);
-		db_data.push_back(vel_min);
-		db_data.push_back(vel_max);
+        vector<string> pipe_list;
+        TS_ASSERT_THROWS_NOTHING(db->get_device_pipe_list("a/b/c", pipe_list));
 
-		TS_ASSERT_THROWS_NOTHING(db->put_device_pipe_property("a/b/c",db_data));
+        TS_ASSERT_EQUALS(pipe_list.size(), 1u);
+        TS_ASSERT_EQUALS(pipe_list[0], "_tst_pipe");
 
-		DbData get_db_data;
-		get_db_data.push_back(DbDatum("_tst_pipe"));
+        DbData del_db_data;
+        del_db_data.push_back(DbDatum("_tst_pipe"));
+        del_db_data.push_back(DbDatum("_tst_pipe_propA"));
+        del_db_data.push_back(DbDatum("_tst_pipe_propB"));
 
-		TS_ASSERT_THROWS_NOTHING(db->get_device_pipe_property("a/b/c",get_db_data));
+        TS_ASSERT_THROWS_NOTHING(db->delete_device_pipe_property("a/b/c", del_db_data));
 
-		short nb_prop;
-		get_db_data[0] >> nb_prop;
-		TS_ASSERT_EQUALS(nb_prop, 2);
+        TS_ASSERT_THROWS_NOTHING(db->put_device_pipe_property("a/b/c", db_data));
 
-		float propA, propB;
-		string prop1_name,prop2_name;
-		TS_ASSERT_EQUALS(get_db_data[1].name, "_tst_pipe_propA");
-		TS_ASSERT_EQUALS(get_db_data[2].name, "_tst_pipe_propB");
-
-		get_db_data[1] >> propA;
-		get_db_data[2] >> propB;
-		TS_ASSERT_EQUALS(propA, 3.0);
-		TS_ASSERT_EQUALS(propB, 33.0);
-
-		vector<string> pipe_list;
- 		TS_ASSERT_THROWS_NOTHING(db->get_device_pipe_list("a/b/c",pipe_list));
-
-		TS_ASSERT_EQUALS(pipe_list.size(), 1u);
-		TS_ASSERT_EQUALS(pipe_list[0], "_tst_pipe");
-
-		DbData del_db_data;
-		del_db_data.push_back(DbDatum("_tst_pipe"));
-		del_db_data.push_back(DbDatum("_tst_pipe_propA"));
-		del_db_data.push_back(DbDatum("_tst_pipe_propB"));
-
-		TS_ASSERT_THROWS_NOTHING(db->delete_device_pipe_property("a/b/c", del_db_data));
-
-		TS_ASSERT_THROWS_NOTHING(db->put_device_pipe_property("a/b/c",db_data));
-
-		DbData del_all;
-		del_all.push_back(DbDatum("_tst_pipe"));
-		TS_ASSERT_THROWS_NOTHING(db->delete_all_device_pipe_property("a/b/c",del_all));
-	}
-
+        DbData del_all;
+        del_all.push_back(DbDatum("_tst_pipe"));
+        TS_ASSERT_THROWS_NOTHING(db->delete_all_device_pipe_property("a/b/c", del_all));
+    }
 };
 #endif // DatabaseTestSuite_h

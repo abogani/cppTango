@@ -15,10 +15,9 @@
 //
 //-----------------------------------------------------------------------------
 
-IOArray1::IOArray1(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Command(name,in,out,in_desc,out_desc)
+IOArray1::IOArray1(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -39,15 +38,18 @@ IOArray1::IOArray1(const char *name,Tango::CmdArgType in,
 
 bool IOArray1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -64,24 +66,24 @@ bool IOArray1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOArray1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IOArray1::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
 {
-  try {
-    Tango::DevVarLongArray *argout;
-    argout = new Tango::DevVarLongArray();
-
-    argout->length(4);
-    (*argout)[0] = 10;
-    (*argout)[1] = 20;
-    (*argout)[2] = 30;
-    (*argout)[3] = 40;
-
-    return insert(argout);
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::DevVarLongArray *argout;
+        argout = new Tango::DevVarLongArray();
+
+        argout->length(4);
+        (*argout)[0] = 10;
+        (*argout)[1] = 20;
+        (*argout)[2] = 30;
+        (*argout)[3] = 40;
+
+        return insert(argout);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }

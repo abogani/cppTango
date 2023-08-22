@@ -2,13 +2,13 @@
 // FileAppender.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -28,115 +28,124 @@
 
 #include <tango/common/log4tango/Portability.h>
 #ifdef LOG4TANGO_HAVE_IO_H
-# include <io.h>
+  #include <io.h>
 #endif
 #ifdef LOG4TANGO_HAVE_UNISTD_H
-# include <unistd.h>
+  #include <unistd.h>
 #endif
 #include <fcntl.h>
 #include <tango/common/log4tango/FileAppender.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 #if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable : 4996) //non compliant POSIX names (close for _close, ...)
+  #pragma warning(push)
+  #pragma warning(disable : 4996) // non compliant POSIX names (close for _close, ...)
 #endif
 
-FileAppender::FileAppender(const std::string& name,
-                           const std::string& file_name,
-                           bool append,
-                           mode_t mode)
- : LayoutAppender(name),
-   _file_name(file_name),
-   _flags(O_CREAT | O_APPEND | O_WRONLY),
-  _mode(mode)
+FileAppender::FileAppender(const std::string &name, const std::string &file_name, bool append, mode_t mode) :
+    LayoutAppender(name),
+    _file_name(file_name),
+    _flags(O_CREAT | O_APPEND | O_WRONLY),
+    _mode(mode)
 {
-  if (!append) {
-    _flags |= O_TRUNC;
-  }
-  _fd = ::open(_file_name.c_str(), _flags, _mode);
+    if(!append)
+    {
+        _flags |= O_TRUNC;
+    }
+    _fd = ::open(_file_name.c_str(), _flags, _mode);
 }
 
-FileAppender::FileAppender (const std::string& name, int fd)
- : LayoutAppender(name),
-   _file_name(""),
-   _fd(fd),
-   _flags(O_CREAT | O_APPEND | O_WRONLY),
-   _mode(00644)
+FileAppender::FileAppender(const std::string &name, int fd) :
+    LayoutAppender(name),
+    _file_name(""),
+    _fd(fd),
+    _flags(O_CREAT | O_APPEND | O_WRONLY),
+    _mode(00644)
 {
-  //no-op
+    // no-op
 }
 
 FileAppender::~FileAppender()
 {
-  close();
+    close();
 }
 
-void FileAppender::close (void)
+void FileAppender::close(void)
 {
-  if (_fd != -1) {
-    ::close(_fd);
-    _fd = -1;
-  }
-}
-
-bool FileAppender::is_valid (void) const
-{
-  return (_fd < 0) ? false : true;
-}
-
-void FileAppender::set_append (bool append)
-{
-  if (append) {
-    _flags &= ~O_TRUNC;
-  } else {
-    _flags |= O_TRUNC;
-  }
-}
-
-bool FileAppender::get_append (void) const
-{
-  return (_flags & O_TRUNC) == 0;
-}
-
-void FileAppender::set_mode (mode_t mode)
-{
-  _mode = mode;
-}
-
-mode_t FileAppender::get_mode (void) const
-{
-  return _mode;
-}
-
-int FileAppender::_append (const LoggingEvent& event)
-{
-  std::string message(get_layout().format(event));
-  // Messages longer than sizeof(uint) will be truncated.
-  if (!::write(_fd, message.data(), static_cast<unsigned int>(message.length()))) {
-    return -1;
-  }
-  return 0;
-}
-
-bool FileAppender::reopen (void)
-{
-  if (_file_name != "") {
-    int fd = ::open(_file_name.c_str(), _flags, _mode);
-    if (fd < 0) {
-      return false;
-    } else {
-      if (_fd != -1) {
+    if(_fd != -1)
+    {
         ::close(_fd);
-      }
-      _fd = fd;
+        _fd = -1;
     }
-  }
-  return true;
+}
+
+bool FileAppender::is_valid(void) const
+{
+    return (_fd < 0) ? false : true;
+}
+
+void FileAppender::set_append(bool append)
+{
+    if(append)
+    {
+        _flags &= ~O_TRUNC;
+    }
+    else
+    {
+        _flags |= O_TRUNC;
+    }
+}
+
+bool FileAppender::get_append(void) const
+{
+    return (_flags & O_TRUNC) == 0;
+}
+
+void FileAppender::set_mode(mode_t mode)
+{
+    _mode = mode;
+}
+
+mode_t FileAppender::get_mode(void) const
+{
+    return _mode;
+}
+
+int FileAppender::_append(const LoggingEvent &event)
+{
+    std::string message(get_layout().format(event));
+    // Messages longer than sizeof(uint) will be truncated.
+    if(!::write(_fd, message.data(), static_cast<unsigned int>(message.length())))
+    {
+        return -1;
+    }
+    return 0;
+}
+
+bool FileAppender::reopen(void)
+{
+    if(_file_name != "")
+    {
+        int fd = ::open(_file_name.c_str(), _flags, _mode);
+        if(fd < 0)
+        {
+            return false;
+        }
+        else
+        {
+            if(_fd != -1)
+            {
+                ::close(_fd);
+            }
+            _fd = fd;
+        }
+    }
+    return true;
 }
 
 #if defined(_MSC_VER)
-    #pragma warning(pop)
+  #pragma warning(pop)
 #endif
 } // namespace log4tango

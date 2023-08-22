@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -33,41 +33,40 @@
 #ifndef _W_PIPE_TPP
 #define _W_PIPE_TPP
 
-
 namespace Tango
 {
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // Function
-// 		operator overloading : 	>>
+//         operator overloading :     >>
 //
 // description :
-//		Helper function to ease data extraction from WPipe root blob
+//        Helper function to ease data extraction from WPipe root blob
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-WPipe &operator>>(WPipe &_dp,T &datum)
+WPipe &operator>>(WPipe &_dp, T &datum)
 {
-	_dp.get_blob().operator>>(datum);
-	return _dp;
+    _dp.get_blob().operator>>(datum);
+    return _dp;
 }
 
 template <typename T>
-WPipe &operator>>(WPipe &_dp,T *datum)
+WPipe &operator>>(WPipe &_dp, T *datum)
 {
-	_dp.get_blob().operator>>(datum);
-	return _dp;
+    _dp.get_blob().operator>>(datum);
+    return _dp;
 }
 
 template <typename T>
-WPipe &operator>>(WPipe &_dp,DataElement<T> &datum)
+WPipe &operator>>(WPipe &_dp, DataElement<T> &datum)
 {
-	datum.name = _dp.get_blob().get_current_delt_name();
-	_dp.get_blob().operator>>(datum.value);
-	return _dp;
+    datum.name = _dp.get_blob().get_current_delt_name();
+    _dp.get_blob().operator>>(datum.value);
+    return _dp;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 #endif // _W_PIPE_TPP

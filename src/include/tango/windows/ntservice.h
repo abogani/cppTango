@@ -1,5 +1,5 @@
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -32,32 +32,30 @@ namespace Tango
 // used for NT native services
 //
 
-//class NTEventLogger : public OB::Logger,
-//		      public OBCORBA::RefCountLocalObject
+// class NTEventLogger : public OB::Logger,
+//               public OBCORBA::RefCountLocalObject
 class NTEventLogger
 {
-private:
-    	HANDLE eventSource_; 			// The event source
- std::string service_; 			// Service name
-    	DWORD eventId_; 			// The event ID
+  private:
+    HANDLE eventSource_;  // The event source
+    std::string service_; // Service name
+    DWORD eventId_;       // The event ID
 
-    	void emitMessage(int, const char*);
-    	bool installValues(HKEY);
+    void emitMessage(int, const char *);
+    bool installValues(HKEY);
 
-public:
+  public:
+    NTEventLogger(const char *, DWORD);
+    virtual ~NTEventLogger();
 
-    	NTEventLogger(const char*, DWORD);
-    	virtual ~NTEventLogger();
+    bool install();
+    bool uninstall();
 
-    	bool install();
-    	bool uninstall();
-
-    	virtual void info(const char*);
-    	virtual void error(const char*);
-    	virtual void warning(const char*);
-    	virtual void trace(const char*, const char*);
+    virtual void info(const char *);
+    virtual void error(const char *);
+    virtual void warning(const char *);
+    virtual void trace(const char *, const char *);
 };
-
 
 //
 // This class represents an NT service.
@@ -65,55 +63,62 @@ public:
 
 class NTService
 {
-private:
-   	static NTService* instance_; 		// The one and only instance
+  private:
+    static NTService *instance_; // The one and only instance
 
-      std::string full_exec_name_;			// Full executable name
-      std::string exec_name_;			// Executable name
-      std::string name_; 				// The name
-      std::string title_; 				// The title
-    	bool debug_; 				// Are we debugging?
-    	DWORD checkPoint_; 			// Check point value
-    	SERVICE_STATUS status_; 		// Status of the service
-    	SERVICE_STATUS_HANDLE statusHandle_; 	// Status handle
+    std::string full_exec_name_;         // Full executable name
+    std::string exec_name_;              // Executable name
+    std::string name_;                   // The name
+    std::string title_;                  // The title
+    bool debug_;                         // Are we debugging?
+    DWORD checkPoint_;                   // Check point value
+    SERVICE_STATUS status_;              // Status of the service
+    SERVICE_STATUS_HANDLE statusHandle_; // Status handle
 
-   	virtual void start(int, char**, Tango::NTEventLogger *ptr) = 0;
+    virtual void start(int, char **, Tango::NTEventLogger *ptr) = 0;
 
-    	void control(DWORD);
-    	void main(int argc, char** argv);
+    void control(DWORD);
+    void main(int argc, char **argv);
 
-    	friend void WINAPI _OB_serviceCtrl(DWORD);
-    	friend void WINAPI _OB_serviceMain(DWORD, LPTSTR*);
-	friend class Util;
+    friend void WINAPI _OB_serviceCtrl(DWORD);
+    friend void WINAPI _OB_serviceMain(DWORD, LPTSTR *);
+    friend class Util;
 
-protected:
-    	void statusUpdate(DWORD, DWORD = NO_ERROR, DWORD = 0);
-	bool stopped_;
+  protected:
+    void statusUpdate(DWORD, DWORD = NO_ERROR, DWORD = 0);
+    bool stopped_;
 
-public:
-	Tango::NTEventLogger *logger_; 	// The service logger
+  public:
+    Tango::NTEventLogger *logger_; // The service logger
 
-	bool is_installed();
+    bool is_installed();
 
-    	NTService(const char *name);
+    NTService(const char *name);
 
-    	virtual ~NTService();
+    virtual ~NTService();
 
-    	static NTService* instance();
+    static NTService *instance();
 
-    	bool install(char *,bool = false);
-    	bool uninstall(char *);
+    bool install(char *, bool = false);
+    bool uninstall(char *);
 
-    	void run(int, char**);
-    	virtual void stop();
+    void run(int, char **);
+    virtual void stop();
 
-	int options(int,char **);
-	void usage(const char *);
+    int options(int, char **);
+    void usage(const char *);
 
-    	void setDebug() { debug_ = true; }
-    	bool getDebug() const { return debug_; }
+    void setDebug()
+    {
+        debug_ = true;
+    }
+
+    bool getDebug() const
+    {
+        return debug_;
+    }
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif

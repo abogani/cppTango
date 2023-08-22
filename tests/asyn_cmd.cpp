@@ -2,362 +2,377 @@
 
 int main(int argc, char **argv)
 {
-	DeviceProxy *device;
+    DeviceProxy *device;
 
-	if (argc == 1)
-	{
-		TEST_LOG << "usage: %s device" << std::endl;
-		exit(-1);
-	}
+    if(argc == 1)
+    {
+        TEST_LOG << "usage: %s device" << std::endl;
+        exit(-1);
+    }
 
-	std::string device_name = argv[1];
+    std::string device_name = argv[1];
 
-	try
-	{
-		device = new DeviceProxy(device_name);
-	}
-        catch (CORBA::Exception &e)
+    try
+    {
+        device = new DeviceProxy(device_name);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Except::print_exception(e);
+        exit(1);
+    }
+
+    try
+    {
+        // Send a command to check polling without blocking
+
+        DeviceData din, dout;
+        long id;
+        std::vector<short> send;
+        send.push_back(4);
+        send.push_back(2);
+        din << send;
+
+        id = device->command_inout_asynch("IOShortSleep", din);
+
+        // Check if command returned
+
+        bool finish = false;
+        long nb_not_arrived = 0;
+        while(finish == false)
         {
-              	Except::print_exception(e);
-		exit(1);
+            try
+            {
+                dout = device->command_inout_reply(id);
+                short l;
+                dout >> l;
+                assert(l == 8);
+                finish = true;
+            }
+            catch(AsynReplyNotArrived &)
+            {
+                finish = false;
+                TEST_LOG << "Command not yet arrived" << std::endl;
+                nb_not_arrived++;
+            }
+            if(finish == false)
+            {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
         }
+        assert(nb_not_arrived >= 2);
 
+        TEST_LOG << "   Aynchronous command_inout in polling mode --> OK" << std::endl;
 
-	try
-	{
+        // Send a command to check polling with blocking with timeout
 
-// Send a command to check polling without blocking
+        id = device->command_inout_asynch("IOShortSleep", din);
+        //        assert( id == 2);
 
-		DeviceData din,dout;
-		long id;
-		std::vector<short> send;
-		send.push_back(4);
-		send.push_back(2);
-		din << send;
+        // Check if command returned
 
-		id = device->command_inout_asynch("IOShortSleep",din);
+        finish = false;
+        nb_not_arrived = 0;
+        while(finish == false)
+        {
+            try
+            {
+                dout = device->command_inout_reply(id, 200);
+                short l;
+                dout >> l;
+                assert(l == 8);
+                finish = true;
+            }
+            catch(AsynReplyNotArrived &)
+            {
+                TEST_LOG << "Command not yet arrived" << std::endl;
+                nb_not_arrived++;
+            }
+        }
+        assert(nb_not_arrived >= 4);
 
-// Check if command returned
+        TEST_LOG << "   Aynchronous command_inout in blocking mode with call timeout --> OK" << std::endl;
 
-		bool finish = false;
-		long nb_not_arrived = 0;
-		while (finish == false)
-		{
-			try
-			{
-				dout = device->command_inout_reply(id);
-				short l;
-				dout >> l;
-				assert( l == 8 );
-				finish = true;
-			}
-			catch (AsynReplyNotArrived&)
-			{
-				finish = false;
-				TEST_LOG << "Command not yet arrived" << std::endl;
-				nb_not_arrived++;
-			}
-			if (finish == false)
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-		assert ( nb_not_arrived >= 2);
+        // Send a command to check polling with blocking
 
-		TEST_LOG << "   Aynchronous command_inout in polling mode --> OK" << std::endl;
+        id = device->command_inout_asynch("IOShortSleep", din);
+        //        assert( id == 3);
 
-// Send a command to check polling with blocking with timeout
+        // Check if command returned
 
-		id = device->command_inout_asynch("IOShortSleep",din);
-//		assert( id == 2);
+        dout = device->command_inout_reply(id, 0);
+        short l;
+        dout >> l;
 
-// Check if command returned
+        assert(l == 8);
 
-		finish = false;
-		nb_not_arrived = 0;
-		while (finish == false)
-		{
-			try
-			{
-				dout = device->command_inout_reply(id,200);
-				short l;
-				dout >> l;
-				assert( l == 8 );
-				finish = true;
-			}
-			catch (AsynReplyNotArrived&)
-			{
-				TEST_LOG << "Command not yet arrived" << std::endl;
-				nb_not_arrived++;
-			}
-		}
-		assert ( nb_not_arrived >= 4);
+        TEST_LOG << "   Aynchronous command_inout in blocking mode --> OK" << std::endl;
 
-		TEST_LOG << "   Aynchronous command_inout in blocking mode with call timeout --> OK" << std::endl;
+        //---------------------------------------------------------------------------
+        //
+        //            Now test Timeout exception and asynchronous calls
+        //
+        //---------------------------------------------------------------------------
 
-// Send a command to check polling with blocking
+        // Change timeout in order to test asynchronous calls and timeout
 
-		id = device->command_inout_asynch("IOShortSleep",din);
-//		assert( id == 3);
+        /*        device->set_timeout_millis(2000);*/
 
-// Check if command returned
+        // Send a new command
 
-		dout = device->command_inout_reply(id,0);
-		short l;
-		dout >> l;
+        std::vector<short> in;
+        in.push_back(2);
+        in.push_back(6);
+        din << in;
+        id = device->command_inout_asynch("IOShortSleep", din);
 
-		assert( l == 8 );
+        // Check if command returned
 
-		TEST_LOG << "   Aynchronous command_inout in blocking mode --> OK" << std::endl;
+        finish = false;
+        bool to = false;
+        nb_not_arrived = 0;
+        while(finish == false)
+        {
+            try
+            {
+                dout = device->command_inout_reply(id);
+                finish = true;
+            }
+            catch(AsynReplyNotArrived &)
+            {
+                finish = false;
+                nb_not_arrived++;
+                TEST_LOG << "Command not yet arrived" << std::endl;
+            }
+            catch(CommunicationFailed &e)
+            {
+                finish = true;
+                if(strcmp(e.errors[1].reason, API_DeviceTimedOut) == 0)
+                {
+                    to = true;
+                    TEST_LOG << "Timeout exception" << std::endl;
+                }
+                else
+                {
+                    TEST_LOG << "Comm exception" << std::endl;
+                }
+            }
+            if(finish == false)
+            {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        }
+        assert(to == true);
+        assert(nb_not_arrived >= 2);
 
-//---------------------------------------------------------------------------
-//
-//			Now test Timeout exception and asynchronous calls
-//
-//---------------------------------------------------------------------------
+        TEST_LOG << "   Device timeout exception with non blocking command_inout_reply --> OK" << std::endl;
 
-// Change timeout in order to test asynchronous calls and timeout
+        // Send a command to check timeout with polling and blocking with timeout
 
-/*		device->set_timeout_millis(2000);*/
+        id = device->command_inout_asynch("IOShortSleep", din);
 
-// Send a new command
+        // Check if command returned
 
-		std::vector<short> in;
-		in.push_back(2);
-		in.push_back(6);
-		din << in;
-		id = device->command_inout_asynch("IOShortSleep",din);
+        finish = false;
+        to = false;
+        nb_not_arrived = 0;
+        while(finish == false)
+        {
+            try
+            {
+                dout = device->command_inout_reply(id, 500);
+                finish = true;
+            }
+            catch(AsynReplyNotArrived &)
+            {
+                TEST_LOG << "Command not yet arrived" << std::endl;
+                nb_not_arrived++;
+            }
+            catch(CommunicationFailed &e)
+            {
+                finish = true;
+                if(strcmp(e.errors[1].reason, API_DeviceTimedOut) == 0)
+                {
+                    to = true;
+                    TEST_LOG << "Timeout exception" << std::endl;
+                }
+                else
+                {
+                    TEST_LOG << "Comm exception" << std::endl;
+                }
+            }
+        }
+        assert(to == true);
+        assert(nb_not_arrived >= 2);
 
-// Check if command returned
+        TEST_LOG << "   Device timeout with blocking command_inout_reply with call timeout --> OK" << std::endl;
 
-		finish = false;
-		bool to = false;
-		nb_not_arrived = 0;
-		while (finish == false)
-		{
-			try
-			{
-				dout = device->command_inout_reply(id);
-				finish = true;
-			}
-			catch (AsynReplyNotArrived&)
-			{
-				finish = false;
-				nb_not_arrived++;
-				TEST_LOG << "Command not yet arrived" << std::endl;
-			}
-			catch (CommunicationFailed &e)
-			{
-				finish = true;
-				if (strcmp(e.errors[1].reason,API_DeviceTimedOut) == 0)
-				{
-					to = true;
-					TEST_LOG << "Timeout exception" << std::endl;
-				}
-				else
-					TEST_LOG << "Comm exception" << std::endl;
-			}
-			if (finish == false)
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-		assert ( to == true );
-		assert ( nb_not_arrived >= 2 );
+        // Send a command to check polling with blocking
 
-		TEST_LOG << "   Device timeout exception with non blocking command_inout_reply --> OK" << std::endl;
+        id = device->command_inout_asynch("IOShortSleep", din);
 
-// Send a command to check timeout with polling and blocking with timeout
+        // Check if command returned
 
-		id = device->command_inout_asynch("IOShortSleep",din);
+        to = false;
 
-// Check if command returned
+        try
+        {
+            dout = device->command_inout_reply(id, 0);
+            finish = true;
+        }
+        catch(CommunicationFailed &e)
+        {
+            if(strcmp(e.errors[1].reason, API_DeviceTimedOut) == 0)
+            {
+                to = true;
+                TEST_LOG << "Timeout exception" << std::endl;
+            }
+            else
+            {
+                TEST_LOG << "Comm exception" << std::endl;
+            }
+        }
+        assert(to == true);
 
-		finish = false;
-		to = false;
-		nb_not_arrived = 0;
-		while (finish == false)
-		{
-			try
-			{
-				dout = device->command_inout_reply(id,500);
-				finish = true;
-			}
-			catch (AsynReplyNotArrived&)
-			{
-				TEST_LOG << "Command not yet arrived" << std::endl;
-				nb_not_arrived++;
-			}
-			catch (CommunicationFailed &e)
-			{
-				finish = true;
-				if (strcmp(e.errors[1].reason,API_DeviceTimedOut) == 0)
-				{
-					to = true;
-					TEST_LOG << "Timeout exception" << std::endl;
-				}
-				else
-					TEST_LOG << "Comm exception" << std::endl;
-			}
-		}
-		assert( to == true );
-		assert( nb_not_arrived >= 2);
+        TEST_LOG << "   Device timeout with blocking command_inout_reply --> OK" << std::endl;
 
-		TEST_LOG << "   Device timeout with blocking command_inout_reply with call timeout --> OK" << std::endl;
+        //---------------------------------------------------------------------------
+        //
+        //            Now test DevFailed exception sent by server
+        //
+        //---------------------------------------------------------------------------
 
-// Send a command to check polling with blocking
+        TEST_LOG << "   Waiting for server to execute all previous requests" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(4));
 
-		id = device->command_inout_asynch("IOShortSleep",din);
+        // Change timeout in order to test asynchronous calls and DevFailed exception
 
-// Check if command returned
+        //        device->set_timeout_millis(5000);
 
-		to = false;
+        // Send a new command
 
-		try
-		{
-			dout = device->command_inout_reply(id,0);
-			finish = true;
-		}
-		catch (CommunicationFailed &e)
-		{
-			if (strcmp(e.errors[1].reason,API_DeviceTimedOut) == 0)
-			{
-				to = true;
-				TEST_LOG << "Timeout exception" << std::endl;
-			}
-			else
-				TEST_LOG << "Comm exception" << std::endl;
-		}
-		assert(to == true );
+        short in_e = 2;
+        din << in_e;
+        id = device->command_inout_asynch("IOSleepExcept", din);
 
-		TEST_LOG << "   Device timeout with blocking command_inout_reply --> OK" << std::endl;
+        // Check if command returned
 
-//---------------------------------------------------------------------------
-//
-//			Now test DevFailed exception sent by server
-//
-//---------------------------------------------------------------------------
+        finish = false;
+        bool failed = false;
+        nb_not_arrived = 0;
+        while(finish == false)
+        {
+            try
+            {
+                dout = device->command_inout_reply(id);
+                finish = true;
+            }
+            catch(AsynReplyNotArrived &)
+            {
+                finish = false;
+                nb_not_arrived++;
+                TEST_LOG << "Command not yet arrived" << std::endl;
+            }
+            catch(DevFailed &e)
+            {
+                finish = true;
+                if(strcmp(e.errors[0].reason, "aaa") == 0)
+                {
+                    failed = true;
+                    TEST_LOG << "Server exception" << std::endl;
+                }
+                else
+                {
+                    TEST_LOG << "Comm exception" << std::endl;
+                }
+            }
+            if(finish == false)
+            {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        }
+        assert(failed == true);
+        assert(nb_not_arrived >= 2);
 
-		TEST_LOG << "   Waiting for server to execute all previous requests" << std::endl;
-		std::this_thread::sleep_for(std::chrono::seconds(4));
+        TEST_LOG << "   Device exception with non blocking command_inout_reply --> OK" << std::endl;
 
-// Change timeout in order to test asynchronous calls and DevFailed exception
+        // Send a command to check timeout with polling and blocking with timeout
 
-//		device->set_timeout_millis(5000);
+        id = device->command_inout_asynch("IOSleepExcept", din);
 
-// Send a new command
+        // Check if command returned
 
-		short in_e = 2;
-		din << in_e;
-		id = device->command_inout_asynch("IOSleepExcept",din);
+        finish = false;
+        failed = false;
+        while(finish == false)
+        {
+            try
+            {
+                dout = device->command_inout_reply(id, 500);
+                finish = true;
+            }
+            catch(AsynReplyNotArrived &)
+            {
+                TEST_LOG << "Command not yet arrived" << std::endl;
+            }
+            catch(DevFailed &e)
+            {
+                finish = true;
+                if(strcmp(e.errors[0].reason, "aaa") == 0)
+                {
+                    failed = true;
+                    TEST_LOG << "Server exception" << std::endl;
+                }
+                else
+                {
+                    TEST_LOG << "Comm exception" << std::endl;
+                }
+            }
+        }
+        assert(failed == true);
 
-// Check if command returned
+        TEST_LOG << "   Device exception with blocking command_inout_reply with call timeout --> OK" << std::endl;
 
-		finish = false;
-		bool failed = false;
-		nb_not_arrived = 0;
-		while (finish == false)
-		{
-			try
-			{
-				dout = device->command_inout_reply(id);
-				finish = true;
-			}
-			catch (AsynReplyNotArrived&)
-			{
-				finish = false;
-				nb_not_arrived++;
-				TEST_LOG << "Command not yet arrived" << std::endl;
-			}
-			catch (DevFailed &e)
-			{
-				finish = true;
-				if (strcmp(e.errors[0].reason,"aaa") == 0)
-				{
-					failed = true;
-					TEST_LOG << "Server exception" << std::endl;
-				}
-				else
-					TEST_LOG << "Comm exception" << std::endl;
-			}
-			if (finish == false)
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-		assert ( failed == true );
-		assert ( nb_not_arrived >= 2);
+        // Send a command to check polling with blocking
 
-		TEST_LOG << "   Device exception with non blocking command_inout_reply --> OK" << std::endl;
+        id = device->command_inout_asynch("IOSleepExcept", din);
 
-// Send a command to check timeout with polling and blocking with timeout
+        // Check if command returned
 
-		id = device->command_inout_asynch("IOSleepExcept",din);
+        failed = false;
+        try
+        {
+            dout = device->command_inout_reply(id, 0);
+            finish = true;
+        }
+        catch(DevFailed &e)
+        {
+            if(strcmp(e.errors[0].reason, "aaa") == 0)
+            {
+                failed = true;
+                TEST_LOG << "Server exception" << std::endl;
+            }
+            else
+            {
+                TEST_LOG << "Comm exception" << std::endl;
+            }
+        }
+        assert(failed == true);
 
-// Check if command returned
+        TEST_LOG << "   Device exception with blocking command_inout_reply --> OK" << std::endl;
+    }
+    catch(Tango::DevFailed &e)
+    {
+        Except::print_exception(e);
+        exit(-1);
+    }
+    catch(CORBA::Exception &ex)
+    {
+        Except::print_exception(ex);
+        exit(-1);
+    }
 
-		finish = false;
-		failed = false;
-		while (finish == false)
-		{
-			try
-			{
-				dout = device->command_inout_reply(id,500);
-				finish = true;
-			}
-			catch (AsynReplyNotArrived&)
-			{
-				TEST_LOG << "Command not yet arrived" << std::endl;
-			}
-			catch (DevFailed &e)
-			{
-				finish = true;
-				if (strcmp(e.errors[0].reason,"aaa") == 0)
-				{
-					failed = true;
-					TEST_LOG << "Server exception" << std::endl;
-				}
-				else
-					TEST_LOG << "Comm exception" << std::endl;
-			}
-		}
-		assert( failed == true );
+    delete device;
 
-		TEST_LOG << "   Device exception with blocking command_inout_reply with call timeout --> OK" << std::endl;
-
-// Send a command to check polling with blocking
-
-		id = device->command_inout_asynch("IOSleepExcept",din);
-
-// Check if command returned
-
-		failed = false;
-		try
-		{
-			dout = device->command_inout_reply(id,0);
-			finish = true;
-		}
-		catch (DevFailed &e)
-		{
-			if (strcmp(e.errors[0].reason,"aaa") == 0)
-			{
-				failed = true;
-				TEST_LOG << "Server exception" << std::endl;
-			}
-			else
-				TEST_LOG << "Comm exception" << std::endl;
-		}
-		assert(failed == true );
-
-		TEST_LOG << "   Device exception with blocking command_inout_reply --> OK" << std::endl;
-	}
-	catch (Tango::DevFailed &e)
-	{
-		Except::print_exception(e);
-		exit(-1);
-	}
-	catch (CORBA::Exception &ex)
-	{
-		Except::print_exception(ex);
-		exit(-1);
-	}
-
-
-	delete device;
-
-	return 0;
+    return 0;
 }

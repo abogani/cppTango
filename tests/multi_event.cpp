@@ -2,469 +2,484 @@
 
 class EventCallBack : public Tango::CallBack
 {
-	void push_event(Tango::EventData*);
+    void push_event(Tango::EventData *);
 
-public:
-	int cb_executed;
-	int cb_err;
-	int old_sec,old_usec;
-	long val;
-	long val_size;
+  public:
+    int cb_executed;
+    int cb_err;
+    int old_sec, old_usec;
+    long val;
+    long val_size;
 };
 
-void EventCallBack::push_event(Tango::EventData* event_data)
+void EventCallBack::push_event(Tango::EventData *event_data)
 {
-	std::vector<DevLong> value;
-	struct timeval now_timeval = Tango::make_timeval(std::chrono::system_clock::now());
+    std::vector<DevLong> value;
+    struct timeval now_timeval = Tango::make_timeval(std::chrono::system_clock::now());
 
-	TEST_LOG << "date : tv_sec = " << now_timeval.tv_sec;
-	TEST_LOG << ", tv_usec = " << now_timeval.tv_usec << std::endl;
+    TEST_LOG << "date : tv_sec = " << now_timeval.tv_sec;
+    TEST_LOG << ", tv_usec = " << now_timeval.tv_usec << std::endl;
 
-	auto delta_msec = ((now_timeval.tv_sec - old_sec) * 1000) + ((now_timeval.tv_usec - old_usec) / 1000);
+    auto delta_msec = ((now_timeval.tv_sec - old_sec) * 1000) + ((now_timeval.tv_usec - old_usec) / 1000);
 
-	old_sec = now_timeval.tv_sec;
-	old_usec = now_timeval.tv_usec;
+    old_sec = now_timeval.tv_sec;
+    old_usec = now_timeval.tv_usec;
 
-	TEST_LOG << "delta_msec = " << delta_msec << std::endl;
+    TEST_LOG << "delta_msec = " << delta_msec << std::endl;
 
-	cb_executed++;
+    cb_executed++;
 
-	try
-	{
-		TEST_LOG << "StateEventCallBack::push_event(): called attribute " << event_data->attr_name << " event " << event_data->event << "\n";
-		if (!event_data->err)
-		{
-			*(event_data->attr_value) >> value;
-			TEST_LOG << "CallBack value size " << value.size() << std::endl;
-			val = value[2];
-			val_size = value.size();
-			TEST_LOG << "Callback value " << val << std::endl;
-		}
-		else
-		{
-			TEST_LOG << "Error send to callback" << std::endl;
-//			Tango::Except::print_error_stack(event_data->errors);
-			if (strcmp(event_data->errors[0].reason.in(),"bbb") == 0)
-				cb_err++;
-		}
-	}
-	catch (...)
-	{
-		TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
-	}
+    try
+    {
+        TEST_LOG << "StateEventCallBack::push_event(): called attribute " << event_data->attr_name << " event "
+                 << event_data->event << "\n";
+        if(!event_data->err)
+        {
+            *(event_data->attr_value) >> value;
+            TEST_LOG << "CallBack value size " << value.size() << std::endl;
+            val = value[2];
+            val_size = value.size();
+            TEST_LOG << "Callback value " << val << std::endl;
+        }
+        else
+        {
+            TEST_LOG << "Error send to callback" << std::endl;
+            //            Tango::Except::print_error_stack(event_data->errors);
+            if(strcmp(event_data->errors[0].reason.in(), "bbb") == 0)
+            {
+                cb_err++;
+            }
+        }
+    }
+    catch(...)
+    {
+        TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
+    }
 }
 
 //-----------------------------------------------------------------------------------
 
 class EventUnsubCallBack : public Tango::CallBack
 {
-public:
-	EventUnsubCallBack(DeviceProxy *d):Tango::CallBack(),cb_executed(0),dev(d) {}
+  public:
+    EventUnsubCallBack(DeviceProxy *d) :
+        Tango::CallBack(),
+        cb_executed(0),
+        dev(d)
+    {
+    }
 
-	void push_event(Tango::EventData*);
-	void set_ev_id(int e) {ev_id = e;}
+    void push_event(Tango::EventData *);
 
-protected:
-	int 				cb_executed;
-	int 				ev_id;
-	Tango::DeviceProxy 	*dev;
+    void set_ev_id(int e)
+    {
+        ev_id = e;
+    }
+
+  protected:
+    int cb_executed;
+    int ev_id;
+    Tango::DeviceProxy *dev;
 };
 
-void EventUnsubCallBack::push_event(Tango::EventData* event_data)
+void EventUnsubCallBack::push_event(Tango::EventData *event_data)
 {
-	TEST_LOG << "Event received for attribute " << event_data->attr_name << std::endl;
-	cb_executed++;
-	if (cb_executed == 2)
-	{
-		dev->unsubscribe_event(ev_id);
-	}
+    TEST_LOG << "Event received for attribute " << event_data->attr_name << std::endl;
+    cb_executed++;
+    if(cb_executed == 2)
+    {
+        dev->unsubscribe_event(ev_id);
+    }
 }
 
 //---------------------------------------------------------------------------------------------
 
 int main(int argc, char **argv)
 {
-	DeviceProxy *device;
-
-	if (argc == 1)
-	{
-		TEST_LOG << "usage: %s device" << std::endl;
-		exit(-1);
-	}
-
-	std::string device_name = argv[1];
-
-	try
-	{
-		device = new DeviceProxy(device_name);
-	}
-	catch (CORBA::Exception &e)
-	{
-		Except::print_exception(e);
-		exit(1);
-	}
-
-	TEST_LOG << std::endl << "new DeviceProxy(" << device->name() << ") returned" << std::endl << std::endl;
-
-
-	try
-	{
-		std::string att_name("Event_change_tst");
-
-//
-// Test set up (stop polling and clear abs_change and rel_change attribute
-// properties but restart device to take this into account)
-// Set the abs_change to 1
-//
-
-		if (device->is_attribute_polled(att_name))
-			device->stop_poll_attribute(att_name);
-		DbAttribute dba(att_name,device_name);
-		DbData dbd;
-		DbDatum a(att_name);
-		a << (short)2;
-		dbd.push_back(a);
-		dbd.push_back(DbDatum("abs_change"));
-		dbd.push_back(DbDatum("rel_change"));
-		dba.delete_property(dbd);
-
-		dbd.clear();
-		a << (short)1;
-		dbd.push_back(a);
-		DbDatum ch("abs_change");
-		ch << (short)1;
-		dbd.push_back(ch);
-		dba.put_property(dbd);
-
-		DeviceProxy adm_dev(device->adm_name().c_str());
-		DeviceData di;
-		di << device_name;
-		adm_dev.command_inout("DevRestart",di);
-
-		delete device;
-		device = new DeviceProxy(device_name);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+    DeviceProxy *device;
+
+    if(argc == 1)
+    {
+        TEST_LOG << "usage: %s device" << std::endl;
+        exit(-1);
+    }
+
+    std::string device_name = argv[1];
+
+    try
+    {
+        device = new DeviceProxy(device_name);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Except::print_exception(e);
+        exit(1);
+    }
+
+    TEST_LOG << std::endl << "new DeviceProxy(" << device->name() << ") returned" << std::endl << std::endl;
+
+    try
+    {
+        std::string att_name("Event_change_tst");
+
+        //
+        // Test set up (stop polling and clear abs_change and rel_change attribute
+        // properties but restart device to take this into account)
+        // Set the abs_change to 1
+        //
+
+        if(device->is_attribute_polled(att_name))
+        {
+            device->stop_poll_attribute(att_name);
+        }
+        DbAttribute dba(att_name, device_name);
+        DbData dbd;
+        DbDatum a(att_name);
+        a << (short) 2;
+        dbd.push_back(a);
+        dbd.push_back(DbDatum("abs_change"));
+        dbd.push_back(DbDatum("rel_change"));
+        dba.delete_property(dbd);
+
+        dbd.clear();
+        a << (short) 1;
+        dbd.push_back(a);
+        DbDatum ch("abs_change");
+        ch << (short) 1;
+        dbd.push_back(ch);
+        dba.put_property(dbd);
+
+        DeviceProxy adm_dev(device->adm_name().c_str());
+        DeviceData di;
+        di << device_name;
+        adm_dev.command_inout("DevRestart", di);
+
+        delete device;
+        device = new DeviceProxy(device_name);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        //
+        // subscribe 2 times to the same change event
+        //
+
+        int eve_id1, eve_id2;
+        std::vector<std::string> filters;
+        EventCallBack cb;
+        cb.cb_executed = 0;
+        cb.cb_err = 0;
+        cb.old_sec = cb.old_usec = 0;
+
+        // switch on the polling first!
+        device->poll_attribute(att_name, 1000);
+
+        eve_id1 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb, filters);
+        eve_id2 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb, filters);
+
+        //
+        // Check that the attribute is now polled at 1000 mS
+        //
+
+        bool po = device->is_attribute_polled(att_name);
+        TEST_LOG << "attribute polled : " << po << std::endl;
+        assert(po == true);
+
+        int poll_period = device->get_attribute_poll_period(att_name);
+        TEST_LOG << "att polling period : " << poll_period << std::endl;
+        assert(poll_period == 1000);
+
+        TEST_LOG << "   subscribe 2 times to the same event (same callback) --> OK" << std::endl;
+
+        //
+        // Check that first point has been received
+        //
+
+        assert(cb.cb_executed == 2);
+        assert(cb.val == 30);
+        assert(cb.val_size == 4);
+        TEST_LOG << "   Two first point received --> OK" << std::endl;
 
-//
-// subscribe 2 times to the same change event
-//
+        //
+        // Check that callback was called after a positive value change
+        //
 
-		int eve_id1,eve_id2;
-		std::vector<std::string> filters;
-		EventCallBack cb;
-		cb.cb_executed = 0;
-		cb.cb_err = 0;
-		cb.old_sec = cb.old_usec = 0;
+        // A trick for gdb. The thread created by omniORB for the callback execution
+        // is just started during the sleep. Gdb has a breakpoint reached at each thread
+        // creation to display message on the console. This breakpoint is a software
+        // signal which interrupts the sleep.....
+        //
 
-		// switch on the polling first!
-		device->poll_attribute(att_name,1000);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		eve_id1 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb,filters);
-		eve_id2 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb,filters);
+        device->command_inout("IOIncValue");
 
-//
-// Check that the attribute is now polled at 1000 mS
-//
-
-		bool po = device->is_attribute_polled(att_name);
-		TEST_LOG << "attribute polled : " << po << std::endl;
-		assert( po == true);
-
-		int poll_period = device->get_attribute_poll_period(att_name);
-		TEST_LOG << "att polling period : " << poll_period << std::endl;
-		assert( poll_period == 1000);
-
-		TEST_LOG << "   subscribe 2 times to the same event (same callback) --> OK" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-//
-// Check that first point has been received
-//
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb.cb_executed == 6);
+        assert(cb.val == 31);
+        assert(cb.val_size == 4);
 
-		assert (cb.cb_executed == 2);
-		assert (cb.val == 30);
-		assert (cb.val_size == 4);
-		TEST_LOG << "   Two first point received --> OK" << std::endl;
+        TEST_LOG << "   Two CallBacks executed for positive absolute delta --> OK" << std::endl;
 
-//
-// Check that callback was called after a positive value change
-//
+        //
+        // Check that callback was called after a negative value change
+        //
 
-// A trick for gdb. The thread created by omniORB for the callback execution
-// is just started during the sleep. Gdb has a breakpoint reached at each thread
-// creation to display message on the console. This breakpoint is a software
-// signal which interrupts the sleep.....
-//
+        device->command_inout("IODecValue");
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-		device->command_inout("IOIncValue");
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb.cb_executed == 8);
+        assert(cb.val == 30);
+        assert(cb.val_size == 4);
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        TEST_LOG << "   Two CallBacks executed for negative absolute delta --> OK" << std::endl;
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb.cb_executed == 6);
-		assert (cb.val == 31);
-		assert (cb.val_size == 4);
+        //
+        // Force the attribute to throw exception
+        //
 
-		TEST_LOG << "   Two CallBacks executed for positive absolute delta --> OK" << std::endl;
+        std::vector<short> data_in(2);
+        data_in[0] = 1;
+        data_in[1] = 1;
+        di << data_in;
 
-//
-// Check that callback was called after a negative value change
-//
+        device->command_inout("IOAttrThrowEx", di);
 
-		device->command_inout("IODecValue");
+        //
+        // Check that callback was called
+        //
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        TEST_LOG << "Callback cb_err = " << cb.cb_err << std::endl;
+        assert(cb.cb_err == 2);
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb.cb_executed == 8);
-		assert (cb.val == 30);
-		assert (cb.val_size == 4);
+        TEST_LOG << "   Two CallBacks executed when attribute throw exception (only once) --> OK" << std::endl;
 
-		TEST_LOG << "   Two CallBacks executed for negative absolute delta --> OK" << std::endl;
+        //
+        // Attribute does not send exception any more
+        //
 
-//
-// Force the attribute to throw exception
-//
+        data_in[1] = 0;
+        di << data_in;
 
-		std::vector<short> data_in(2);
-		data_in[0] = 1;
-		data_in[1] = 1;
-		di << data_in;
+        device->command_inout("IOAttrThrowEx", di);
 
-		device->command_inout("IOAttrThrowEx",di);
+        //
+        // Check that the event is still received event after a try to subscribe with a null callback
+        //
 
-//
-// Check that callback was called
-//
+        bool ex = false;
 
-		std::this_thread::sleep_for(std::chrono::seconds(3));
-		TEST_LOG << "Callback cb_err = " << cb.cb_err << std::endl;
-		assert (cb.cb_err == 2);
+        try
+        {
+            device->subscribe_event(att_name, Tango::CHANGE_EVENT, (CallBack *) NULL, filters);
+        }
+        catch(Tango::DevFailed &e)
+        {
+            //            Tango::Except::print_exception(e);
+            ex = true;
+            std::string de(e.errors[0].desc);
+        }
 
-		TEST_LOG << "   Two CallBacks executed when attribute throw exception (only once) --> OK" << std::endl;
+        device->command_inout("IOIncValue");
 
-//
-// Attribute does not send exception any more
-//
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-		data_in[1] = 0;
-		di << data_in;
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb.cb_executed == 12);
+        assert(ex == true);
 
-		device->command_inout("IOAttrThrowEx",di);
+        TEST_LOG << "   Two CallBacks executed after a try to subscribe to one attribute with a NULL callback --> OK"
+                 << std::endl;
 
-//
-// Check that the event is still received event after a try to subscribe with a null callback
-//
+        //
+        // unsubscribe one event
+        //
 
-		bool ex = false;
+        device->unsubscribe_event(eve_id1);
 
-		try
-		{
-			device->subscribe_event(att_name,Tango::CHANGE_EVENT,(CallBack *)NULL,filters);
-		}
-		catch (Tango::DevFailed &e)
-		{
-//			Tango::Except::print_exception(e);
-			ex = true;
-			std::string de(e.errors[0].desc);
-		}
+        TEST_LOG << "   unsubscribe one event --> OK" << std::endl;
 
-		device->command_inout("IOIncValue");
+        //
+        // One more callback when value increase
+        //
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb.cb_executed == 12);
-		assert (ex == true);
+        device->command_inout("IOIncValue");
 
-		TEST_LOG << "   Two CallBacks executed after a try to subscribe to one attribute with a NULL callback --> OK" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-//
-// unsubscribe one event
-//
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb.cb_executed == 13);
+        assert(cb.val == 32);
+        assert(cb.val_size == 4);
 
-		device->unsubscribe_event(eve_id1);
+        TEST_LOG << "   One CallBack executed for positive absolute delta --> OK" << std::endl;
 
-		TEST_LOG << "   unsubscribe one event --> OK" << std::endl;
+        //
+        // Check that callback was called after a negative value change
+        //
 
-//
-// One more callback when value increase
-//
+        device->command_inout("IODecValue");
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-		device->command_inout("IOIncValue");
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb.cb_executed == 14);
+        assert(cb.val == 31);
+        assert(cb.val_size == 4);
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        TEST_LOG << "   One CallBack executed for negative absolute delta --> OK" << std::endl;
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb.cb_executed == 13);
-		assert (cb.val == 32);
-		assert (cb.val_size == 4);
+        //
+        // unsubscribe to event
+        //
 
-		TEST_LOG << "   One CallBack executed for positive absolute delta --> OK" << std::endl;
+        device->unsubscribe_event(eve_id2);
 
-//
-// Check that callback was called after a negative value change
-//
+        TEST_LOG << "   unsubscribe_event --> OK" << std::endl;
 
-		device->command_inout("IODecValue");
+        //
+        // With different callback
+        //
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        EventCallBack cb1;
+        cb1.cb_executed = 0;
+        cb1.cb_err = 0;
+        cb1.old_sec = cb.old_usec = 0;
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb.cb_executed == 14);
-		assert (cb.val == 31);
-		assert (cb.val_size == 4);
+        EventCallBack cb2;
+        cb2.cb_executed = 0;
+        cb2.cb_err = 0;
+        cb2.old_sec = cb.old_usec = 0;
 
-		TEST_LOG << "   One CallBack executed for negative absolute delta --> OK" << std::endl;
+        eve_id1 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb1, filters);
+        eve_id2 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb2, filters);
 
-//
-// unsubscribe to event
-//
+        //
+        // Check that first point has been received
+        //
 
-		device->unsubscribe_event(eve_id2);
+        assert(cb1.cb_executed == 1);
+        assert(cb1.val == 31);
+        assert(cb1.val_size == 4);
+        assert(cb2.cb_executed == 1);
+        assert(cb2.val == 31);
+        assert(cb2.val_size == 4);
 
-		TEST_LOG << "   unsubscribe_event --> OK" << std::endl;
+        TEST_LOG << "   subscribe 2 times to the same event (different callbacks) --> OK" << std::endl;
 
-//
-// With different callback
-//
+        //
+        // One more callback when value increase
+        //
 
-		EventCallBack cb1;
-		cb1.cb_executed = 0;
-		cb1.cb_err = 0;
-		cb1.old_sec = cb.old_usec = 0;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		EventCallBack cb2;
-		cb2.cb_executed = 0;
-		cb2.cb_err = 0;
-		cb2.old_sec = cb.old_usec = 0;
+        device->command_inout("IOIncValue");
 
-		eve_id1 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb1,filters);
-		eve_id2 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb2,filters);
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-//
-// Check that first point has been received
-//
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb1.cb_executed == 2);
+        assert(cb1.val == 32);
+        assert(cb1.val_size == 4);
+        assert(cb2.cb_executed == 2);
+        assert(cb2.val == 32);
+        assert(cb2.val_size == 4);
 
-		assert (cb1.cb_executed == 1);
-		assert (cb1.val == 31);
-		assert (cb1.val_size == 4);
-		assert (cb2.cb_executed == 1);
-		assert (cb2.val == 31);
-		assert (cb2.val_size == 4);
+        TEST_LOG << "   Two different CallBacks executed for positive absolute delta --> OK" << std::endl;
 
-		TEST_LOG << "   subscribe 2 times to the same event (different callbacks) --> OK" << std::endl;
+        //
+        // Check that callback was called after a negative value change
+        //
 
-//
-// One more callback when value increase
-//
+        device->command_inout("IODecValue");
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-		device->command_inout("IOIncValue");
+        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
+        assert(cb1.cb_executed == 3);
+        assert(cb1.val == 31);
+        assert(cb1.val_size == 4);
+        assert(cb2.cb_executed == 3);
+        assert(cb2.val == 31);
+        assert(cb2.val_size == 4);
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        TEST_LOG << "   Two different CallBacks executed for negative absolute delta --> OK" << std::endl;
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb1.cb_executed == 2);
-		assert (cb1.val == 32);
-		assert (cb1.val_size == 4);
-		assert (cb2.cb_executed == 2);
-		assert (cb2.val == 32);
-		assert (cb2.val_size == 4);
+        //
+        // unsubscribe to events
+        //
 
-		TEST_LOG << "   Two different CallBacks executed for positive absolute delta --> OK" << std::endl;
+        device->unsubscribe_event(eve_id2);
+        device->unsubscribe_event(eve_id1);
 
-//
-// Check that callback was called after a negative value change
-//
+        TEST_LOG << "   unsubscribe_event --> OK" << std::endl;
 
-		device->command_inout("IODecValue");
+        //
+        // Try to unsubscribe within the callback
+        //
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+        EventUnsubCallBack cb_unsub(device);
 
-		TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-		assert (cb1.cb_executed == 3);
-		assert (cb1.val == 31);
-		assert (cb1.val_size == 4);
-		assert (cb2.cb_executed == 3);
-		assert (cb2.val == 31);
-		assert (cb2.val_size == 4);
+        cb1.cb_executed = 0;
+        cb2.cb_executed = 0;
 
-		TEST_LOG << "   Two different CallBacks executed for negative absolute delta --> OK" << std::endl;
+        eve_id1 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb1, filters);
+        int eve_id3 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb_unsub, filters);
+        eve_id2 = device->subscribe_event(att_name, Tango::CHANGE_EVENT, &cb2, filters);
 
-//
-// unsubscribe to events
-//
+        cb_unsub.set_ev_id(eve_id3);
 
-		device->unsubscribe_event(eve_id2);
-		device->unsubscribe_event(eve_id1);
+        device->command_inout("IOIncValue");
 
-		TEST_LOG << "   unsubscribe_event --> OK" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-//
-// Try to unsubscribe within the callback
-//
+        bool unsub = false;
+        try
+        {
+            device->unsubscribe_event(eve_id3);
+        }
+        catch(Tango::DevFailed &e)
+        {
+            //            Tango::Except::print_exception(e);
+            std::string reason(e.errors[0].reason);
+            if(reason == API_EventNotFound)
+            {
+                unsub = true;
+            }
+        }
 
-		EventUnsubCallBack cb_unsub(device);
+        assert(unsub == true);
 
-		cb1.cb_executed = 0;
-		cb2.cb_executed = 0;
+        device->unsubscribe_event(eve_id2);
+        device->unsubscribe_event(eve_id1);
 
-		eve_id1 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb1,filters);
-		int eve_id3 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb_unsub,filters);
-		eve_id2 = device->subscribe_event(att_name,Tango::CHANGE_EVENT,&cb2,filters);
+        TEST_LOG << "   Event unsubscription within the callback with two other subscribers --> OK" << std::endl;
 
-		cb_unsub.set_ev_id(eve_id3);
+        //
+        // Stop polling
+        //
 
-		device->command_inout("IOIncValue");
+        device->stop_poll_attribute(att_name);
+    }
+    catch(Tango::DevFailed &e)
+    {
+        Except::print_exception(e);
+        exit(-1);
+    }
+    catch(CORBA::Exception &ex)
+    {
+        Except::print_exception(ex);
+        exit(-1);
+    }
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
+    delete device;
 
-		bool unsub = false;
-		try
-		{
-			device->unsubscribe_event(eve_id3);
-		}
-		catch(Tango::DevFailed &e)
-		{
-//			Tango::Except::print_exception(e);
-			std::string reason(e.errors[0].reason);
-			if (reason == API_EventNotFound)
-				unsub = true;
-		}
+    Tango::ApiUtil::cleanup();
 
-		assert (unsub == true);
-
-		device->unsubscribe_event(eve_id2);
-		device->unsubscribe_event(eve_id1);
-
-		TEST_LOG << "   Event unsubscription within the callback with two other subscribers --> OK" << std::endl;
-
-//
-// Stop polling
-//
-
-		device->stop_poll_attribute(att_name);
-	}
-	catch (Tango::DevFailed &e)
-	{
-		Except::print_exception(e);
-		exit(-1);
-	}
-	catch (CORBA::Exception &ex)
-	{
-		Except::print_exception(ex);
-		exit(-1);
-	}
-
-	delete device;
-
-	Tango::ApiUtil::cleanup();
-
-	return 0;
-
+    return 0;
 }

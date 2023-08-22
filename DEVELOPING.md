@@ -71,3 +71,21 @@ The following command sets that up:
 ```
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 ```
+
+## Code formatting
+
+- Our coding style is defined via a .clang-format file in the top level directory.
+  Please configure your editor to use that. In case your editor does not
+  support auto-formatting, you can enable the `clang-format` via
+  `cmake -S . -B build -DTANGO_CLANG_FORMAT=ON` and call it like `cmake --build build --target clang-format`
+- Please refrain from adding "fix formatting" commits as these are in general
+  not necessary and will also not be accepted.
+- The current reference version of clang-format is 16, packages are available
+  for [debian](https://apt.llvm.org),
+  [fedora](https://copr.fedorainfracloud.org/coprs/g/fedora-llvm-team/llvm-snapshots/),
+  [MacOSX](https://formulae.brew.sh/formula/clang-format#default),
+  [Windows](https://github.com/llvm/llvm-project/releases) and possibly more.
+
+For special cases code formatting can be turned off inline, see
+[here](https://clang.llvm.org/docs/ClangFormatStyleOptions.html#disabling-formatting-on-a-piece-of-code)
+for details.

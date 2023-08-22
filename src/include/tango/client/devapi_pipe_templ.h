@@ -9,7 +9,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -33,176 +33,179 @@
 #ifndef _DEVAPI_PIPE_TPP
 #define _DEVAPI_PIPE_TPP
 
-
 namespace Tango
 {
 //+------------------------------------------------------------------------------------------------------------------
 //
 // Function
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Helper function to ease data insertion into DevicePipe/DevicePipeBlob instance
+//        Helper function to ease data insertion into DevicePipe/DevicePipeBlob instance
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-DevicePipe &operator<<(DevicePipe &_dp,T &datum)
+DevicePipe &operator<<(DevicePipe &_dp, T &datum)
 {
-	_dp.get_root_blob().operator<<(datum);
-	return _dp;
+    _dp.get_root_blob().operator<<(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipe &operator<<(DevicePipe &_dp,T *datum)
+DevicePipe &operator<<(DevicePipe &_dp, T *datum)
 {
-	_dp.get_root_blob().operator<<(datum);
-	return _dp;
+    _dp.get_root_blob().operator<<(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipe &operator<<(DevicePipe &_dp,DataElement<T> &datum)
+DevicePipe &operator<<(DevicePipe &_dp, DataElement<T> &datum)
 {
-	_dp.get_root_blob().set_current_delt_name(datum.name);
-	_dp.get_root_blob().operator<<(datum.value);
-	return _dp;
+    _dp.get_root_blob().set_current_delt_name(datum.name);
+    _dp.get_root_blob().operator<<(datum.value);
+    return _dp;
 }
 
 template <typename T>
-DevicePipeBlob &operator<<(DevicePipeBlob &_dp,T &datum)
+DevicePipeBlob &operator<<(DevicePipeBlob &_dp, T &datum)
 {
-	_dp.operator<<(datum);
-	return _dp;
+    _dp.operator<<(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipeBlob &operator<<(DevicePipeBlob &_dp,T *datum)
+DevicePipeBlob &operator<<(DevicePipeBlob &_dp, T *datum)
 {
-	_dp.operator<<(datum);
-	return _dp;
+    _dp.operator<<(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipeBlob &operator<<(DevicePipeBlob &_dp,DataElement<T> &datum)
+DevicePipeBlob &operator<<(DevicePipeBlob &_dp, DataElement<T> &datum)
 {
-	_dp.set_current_delt_name(datum.name);
-	_dp.operator<<(datum.value);
-	return _dp;
+    _dp.set_current_delt_name(datum.name);
+    _dp.operator<<(datum.value);
+    return _dp;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // Function
-// 		operator overloading : 	>>
+//         operator overloading :     >>
 //
 // description :
-//		Helper function to ease data extraction from DevicePipe root blob
+//        Helper function to ease data extraction from DevicePipe root blob
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-DevicePipe &operator>>(DevicePipe &_dp,T &datum)
+DevicePipe &operator>>(DevicePipe &_dp, T &datum)
 {
-	_dp.get_root_blob().operator>>(datum);
-	return _dp;
+    _dp.get_root_blob().operator>>(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipe &operator>>(DevicePipe &_dp,T *datum)
+DevicePipe &operator>>(DevicePipe &_dp, T *datum)
 {
-	_dp.get_root_blob().operator>>(datum);
-	return _dp;
+    _dp.get_root_blob().operator>>(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipe &operator>>(DevicePipe &_dp,DataElement<T> &datum)
+DevicePipe &operator>>(DevicePipe &_dp, DataElement<T> &datum)
 {
-	datum.name = _dp.get_root_blob().get_current_delt_name();
-	_dp.get_root_blob().operator>>(datum.value);
-	return _dp;
+    datum.name = _dp.get_root_blob().get_current_delt_name();
+    _dp.get_root_blob().operator>>(datum.value);
+    return _dp;
 }
 
 template <typename T>
-DevicePipeBlob &operator>>(DevicePipeBlob &_dp,T &datum)
+DevicePipeBlob &operator>>(DevicePipeBlob &_dp, T &datum)
 {
-	_dp.operator>>(datum);
-	return _dp;
+    _dp.operator>>(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipeBlob &operator>>(DevicePipeBlob &_dp,T *datum)
+DevicePipeBlob &operator>>(DevicePipeBlob &_dp, T *datum)
 {
-	_dp.operator>>(datum);
-	return _dp;
+    _dp.operator>>(datum);
+    return _dp;
 }
 
 template <typename T>
-DevicePipeBlob &operator>>(DevicePipeBlob &_dp,DataElement<T> &datum)
+DevicePipeBlob &operator>>(DevicePipeBlob &_dp, DataElement<T> &datum)
 {
-	datum.name = _dp.get_current_delt_name();
-	_dp.operator>>(datum.value);
-	return _dp;
+    datum.name = _dp.get_current_delt_name();
+    _dp.operator>>(datum.value);
+    return _dp;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // Function
-// 		operator overloading : 	>>
+//         operator overloading :     >>
 //
 // description :
-//		Helper function to ease printing of DataElement class instances: For basic type, for vector of basic type
-//		and for CORBA sequence ptr
+//        Helper function to ease printing of DataElement class instances: For basic type, for vector of basic type
+//        and for CORBA sequence ptr
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 std::ostream &operator<<(std::ostream &str, const DataElement<T> &dd)
 {
-	str << "Name = " << dd.name << " - Value = " << dd.value;
-	return str;
+    str << "Name = " << dd.name << " - Value = " << dd.value;
+    return str;
 }
 
 template <>
 std::ostream &operator<<(std::ostream &str, const DataElement<DevString> &dd)
 {
-	str << "Name = " << dd.name << " - Value = " << dd.value;
-	return str;
+    str << "Name = " << dd.name << " - Value = " << dd.value;
+    return str;
 }
 
 template <typename T>
-std::ostream &operator<<(std::ostream &str, const DataElement<std::vector<T> > &dd)
+std::ostream &operator<<(std::ostream &str, const DataElement<std::vector<T>> &dd)
 {
-	str << "Name = " << dd.name << " - Value = ";
-	for (size_t loop = 0;loop < dd.value.size();loop++)
-	{
-		str << dd.value[loop];
-		if (loop <= dd.value.size() - 2)
-			str << ", ";
-	}
-	return str;
+    str << "Name = " << dd.name << " - Value = ";
+    for(size_t loop = 0; loop < dd.value.size(); loop++)
+    {
+        str << dd.value[loop];
+        if(loop <= dd.value.size() - 2)
+        {
+            str << ", ";
+        }
+    }
+    return str;
 }
 
 template <typename T>
 std::ostream &operator<<(std::ostream &str, const DataElement<T *> &dd)
 {
-	str << "Name = " << dd.name << " - Value = ";
-	for (size_t loop = 0;loop < dd.value->length();loop++)
-	{
-		str << (*dd.value)[loop];
-		if (loop <= dd.value->length() - 2)
-			str << ", ";
-	}
-	return str;
+    str << "Name = " << dd.name << " - Value = ";
+    for(size_t loop = 0; loop < dd.value->length(); loop++)
+    {
+        str << (*dd.value)[loop];
+        if(loop <= dd.value->length() - 2)
+        {
+            str << ", ";
+        }
+    }
+    return str;
 }
 
 template <>
 std::ostream &operator<<(std::ostream &str, const DataElement<DevicePipeBlob> &dd)
 {
-	str << "Name = " << dd.name << "- Value = ";
-	dd.value.print(str,0,true);
-	dd.value.print(str,0,false);
-	return str;
+    str << "Name = " << dd.name << "- Value = ";
+    dd.value.print(str, 0, true);
+    dd.value.print(str, 0, false);
+    return str;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 #endif // _DEVAPI_PIPE_TPP

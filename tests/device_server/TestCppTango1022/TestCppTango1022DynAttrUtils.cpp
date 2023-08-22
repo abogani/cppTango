@@ -34,9 +34,9 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #include "TestCppTango1022.h"
 #include "TestCppTango1022Class.h"
+
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::DynAttrUtils.cpp
 
@@ -89,9 +89,9 @@ void TestCppTango1022::add_DoubleAttr_dynamic_attribute(std::string attname)
 	//	delta_t	not set for DoubleAttr
 	//	delta_val	not set for DoubleAttr
 	/*----- PROTECTED REGION ID(TestCppTango1022::att_DoubleAttr_dynamic_attribute) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::att_DoubleAttr_dynamic_attribute
 	doubleattr->set_default_properties(doubleattr_prop);
 	//	Not Polled
@@ -114,9 +114,9 @@ void TestCppTango1022::remove_DoubleAttr_dynamic_attribute(std::string attname)
 	if ((ite=DoubleAttr_data.find(attname))!=DoubleAttr_data.end())
 	{
 		/*----- PROTECTED REGION ID(TestCppTango1022::remove_DoubleAttr_dynamic_attribute) ENABLED START -----*/
-		/* clang-format on */
-		//	Add your own code
-		/* clang-format off */
+        /* clang-format on */
+        //	Add your own code
+        /* clang-format off */
 		/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::remove_DoubleAttr_dynamic_attribute
 		DoubleAttr_data.erase(ite);
 	}

@@ -8,21 +8,22 @@
 #undef SUITE_NAME
 #define SUITE_NAME DServerCmdTestSuite
 
-class DServerCmdTestSuite : public CxxTest::TestSuite {
-protected:
+class DServerCmdTestSuite : public CxxTest::TestSuite
+{
+  protected:
     DeviceProxy *dserver;
     string device1_name, device2_name, device3_name, dserver_name, refpath, outpath, file_name, ref_file, out_file;
     int loglevel, dsloglevel;
 
-public:
-    SUITE_NAME() {
+  public:
+    SUITE_NAME()
+    {
         // output/reference file name
         file_name = "dserver_cmd.out";
 
-
-//
-// Arguments check -------------------------------------------------
-//
+        //
+        // Arguments check -------------------------------------------------
+        //
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device2");
@@ -35,38 +36,39 @@ public:
 
         CxxTest::TangoPrinter::validate_args();
 
+        //
+        // Initialization --------------------------------------------------
+        //
 
-//
-// Initialization --------------------------------------------------
-//
-
-        try {
+        try
+        {
             dserver = new DeviceProxy(dserver_name);
             dserver->ping();
         }
-        catch (CORBA::Exception &e) {
+        catch(CORBA::Exception &e)
+        {
             Except::print_exception(e);
             exit(-1);
         }
 
-//
-// File names ------------------------------------------------------
-//
+        //
+        // File names ------------------------------------------------------
+        //
 
         ref_file = refpath + file_name;
         out_file = outpath + file_name;
         CmpTst::CompareTest::clean_on_startup(ref_file, out_file);
-
     }
 
-    virtual ~SUITE_NAME() {
-
-//
-// Clean up --------------------------------------------------------
-//
+    virtual ~SUITE_NAME()
+    {
+        //
+        // Clean up --------------------------------------------------------
+        //
 
         // clean up in case test suite terminates before logging level is restored to defaults
-        if (CxxTest::TangoPrinter::is_restore_set("logging_level")) {
+        if(CxxTest::TangoPrinter::is_restore_set("logging_level"))
+        {
             DeviceData din;
             DevVarLongStringArray reset_dserver_level;
             reset_dserver_level.lvalue.length(1);
@@ -74,27 +76,32 @@ public:
             reset_dserver_level.svalue.length(1);
             reset_dserver_level.svalue[0] = dserver_name.c_str();
             din << reset_dserver_level;
-            try {
+            try
+            {
                 dserver->command_inout("SetLoggingLevel", din);
             }
-            catch (DevFailed &e) {
+            catch(DevFailed &e)
+            {
                 TEST_LOG << endl << "Exception in suite tearDown():" << endl;
                 Except::print_exception(e);
             }
         }
 
         // clean up in case test suite terminates before logging targets are restored to defaults
-        if (CxxTest::TangoPrinter::is_restore_set("logging_target")) {
+        if(CxxTest::TangoPrinter::is_restore_set("logging_target"))
+        {
             DeviceData din;
             DevVarStringArray remove_logging_target;
             remove_logging_target.length(2);
             remove_logging_target[0] = dserver_name.c_str();
             remove_logging_target[1] = string("file::" + out_file).c_str();
             din << remove_logging_target;
-            try {
+            try
+            {
                 dserver->command_inout("RemoveLoggingTarget", din);
             }
-            catch (DevFailed &e) {
+            catch(DevFailed &e)
+            {
                 TEST_LOG << endl << "Exception in suite tearDown():" << endl;
                 Except::print_exception(e);
             }
@@ -103,21 +110,24 @@ public:
         delete dserver;
     }
 
-    static SUITE_NAME *createSuite() {
+    static SUITE_NAME *createSuite()
+    {
         return new SUITE_NAME();
     }
 
-    static void destroySuite(SUITE_NAME *suite) {
+    static void destroySuite(SUITE_NAME *suite)
+    {
         delete suite;
     }
 
-//
-// Tests -------------------------------------------------------
-//
+    //
+    // Tests -------------------------------------------------------
+    //
 
-// Test dserver class and instances names
+    // Test dserver class and instances names
 
-    void test_dserver_class_and_instances_names(void) {
+    void test_dserver_class_and_instances_names(void)
+    {
         DeviceData dout;
         const DevVarStringArray *str_arr;
 
@@ -127,27 +137,30 @@ public:
         TS_ASSERT_EQUALS(string((*str_arr)[0].in()), "DevTest");
 
         // execute QueryDevice command
-        vector <string> serv_dev_vec, usr_dev_vec;
+        vector<string> serv_dev_vec, usr_dev_vec;
         TS_ASSERT_THROWS_NOTHING(dout = dserver->command_inout("QueryDevice"));
         dout >> str_arr;
-        for (size_t i = 0; i < (*str_arr).length(); i++)
+        for(size_t i = 0; i < (*str_arr).length(); i++)
+        {
             serv_dev_vec.push_back(string((*str_arr)[i].in()));
+        }
 
         usr_dev_vec.push_back("DevTest::" + device1_name);
         usr_dev_vec.push_back("DevTest::" + device2_name);
         usr_dev_vec.push_back("DevTest::" + device3_name);
 
-        sort(serv_dev_vec.begin(), serv_dev_vec.end());    // sort expected and returned device names
-        sort(usr_dev_vec.begin(), usr_dev_vec.end());        // in alphabetical order to compare the vectors
+        sort(serv_dev_vec.begin(), serv_dev_vec.end()); // sort expected and returned device names
+        sort(usr_dev_vec.begin(), usr_dev_vec.end());   // in alphabetical order to compare the vectors
 
         TS_ASSERT_EQUALS(serv_dev_vec[0], usr_dev_vec[0]);
         TS_ASSERT_EQUALS(serv_dev_vec[1], usr_dev_vec[1]);
         TS_ASSERT_EQUALS(serv_dev_vec[2], usr_dev_vec[2]);
     }
 
-// Test trace levels commands
+    // Test trace levels commands
 
-    void test_trace_levels_commands(void) {
+    void test_trace_levels_commands(void)
+    {
         DeviceData din, dout;
 
         // get logging level and check if default
@@ -198,9 +211,10 @@ public:
         TS_ASSERT_EQUALS((*dserver_level_out).svalue[0].in(), dserver_name);
     }
 
-// Test set output file commands
+    // Test set output file commands
 
-    void test_set_output_file_commands(void) {
+    void test_set_output_file_commands(void)
+    {
         DeviceData din, dout;
 
         // check if logging target is not set
@@ -208,7 +222,7 @@ public:
         din << dserver_name;
         TS_ASSERT_THROWS_NOTHING(dout = dserver->command_inout("GetLoggingTarget", din));
         dout >> logging_target_out;
-        TS_ASSERT_EQUALS((*logging_target_out).length(), 1u);//console::cout
+        TS_ASSERT_EQUALS((*logging_target_out).length(), 1u); // console::cout
 
         // set logging level to 5
         DevVarLongStringArray dserver_level_in;
@@ -230,9 +244,10 @@ public:
         fake_logging_target[1] = string("file::/sys/cxx_dserver_cmd.out").c_str();
         din << fake_logging_target;
 
-        TS_ASSERT_THROWS_ASSERT(dserver->command_inout("AddLoggingTarget", din), Tango::DevFailed & e,
-				TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CannotOpenFile);
-				TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(dserver->command_inout("AddLoggingTarget", din),
+                                Tango::DevFailed & e,
+                                TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_CannotOpenFile);
+                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
         // add logging target
         DevVarStringArray logging_target;
@@ -273,14 +288,16 @@ public:
         din << dserver_name;
         TS_ASSERT_THROWS_NOTHING(dout = dserver->command_inout("GetLoggingTarget", din));
         dout >> check_logging_target;
-        TS_ASSERT_EQUALS((*check_logging_target).length(), 1u);//console::cout
+        TS_ASSERT_EQUALS((*check_logging_target).length(), 1u); // console::cout
     }
 
-// Test comparing input with output
+    // Test comparing input with output
 
-    void test_comparing_input_with_output(void) {
-        try {
-            vector <string> v_s;
+    void test_comparing_input_with_output(void)
+    {
+        try
+        {
+            vector<string> v_s;
             v_s.push_back("push_heartbeat_event()");
             v_s.push_back("Sending event heartbeat");
             v_s.push_back("Event heartbeat");
@@ -288,29 +305,31 @@ public:
             v_s.push_back("Sleep for :");
             CmpTst::CompareTest::out_remove_entries(out_file, v_s);
 
-            map <string, string> prop_val_map;
+            map<string, string> prop_val_map;
             prop_val_map["timestamp"] = "10";
             prop_val_map["thread"] = "1";
             CmpTst::CompareTest::out_set_event_properties(out_file, prop_val_map);
 
-
-            map <string, string> key_val_map;
+            map<string, string> key_val_map;
             key_val_map["DSERVER"] = dserver_name;
             key_val_map["FILE"] = out_file;
             CmpTst::CompareTest::ref_replace_keywords(ref_file, key_val_map);
 
-            map <string, string> prefix_num_map;
+            map<string, string> prefix_num_map;
             prefix_num_map["thread = "] = "2";
             CmpTst::CompareTest::out_set_replace_numbers(out_file, prefix_num_map);
 
             CmpTst::CompareTest::compare(ref_file, out_file);
             CmpTst::CompareTest::clean_up(ref_file, out_file);
         }
-        catch (CmpTst::CompareTestException &e) {
-            try {
+        catch(CmpTst::CompareTestException &e)
+        {
+            try
+            {
                 CmpTst::CompareTest::leave_output(ref_file);
             }
-            catch (CmpTst::CompareTestException &in_e) {
+            catch(CmpTst::CompareTestException &in_e)
+            {
                 TEST_LOG << in_e.what() << endl;
             }
             TS_FAIL(e.what());

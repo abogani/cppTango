@@ -1,6 +1,6 @@
 /*
  * Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
- *						European Synchrotron Radiation Facility
+ *                        European Synchrotron Radiation Facility
  *                      BP 220, Grenoble 38043
  *                      FRANCE
  *
@@ -29,43 +29,45 @@
 #ifndef _COUT_APPENDER_H_
 #define _COUT_APPENDER_H_
 
-
-namespace Tango {
+namespace Tango
+{
 
 class CoutAppender : public log4tango::LayoutAppender
 {
-public:
-  /**
-   *
-   **/
-  CoutAppender (const std::string& name);
+  public:
+    /**
+     *
+     **/
+    CoutAppender(const std::string &name);
 
-  /**
-   *
-   **/
-  virtual ~CoutAppender ();
+    /**
+     *
+     **/
+    virtual ~CoutAppender();
 
-  /**
-   *
-   **/
-  inline virtual bool reopen() {
-    return true;
-  }
+    /**
+     *
+     **/
+    inline virtual bool reopen()
+    {
+        return true;
+    }
 
-  /**
-   *
-   **/
-  inline virtual void close() {
-    //no-op
-  }
+    /**
+     *
+     **/
+    inline virtual void close()
+    {
+        // no-op
+    }
 
-protected:
-  /**
-   *
-   **/
-  virtual int _append (const log4tango::LoggingEvent& event);
+  protected:
+    /**
+     *
+     **/
+    virtual int _append(const log4tango::LoggingEvent &event);
 };
 
-} // namespace tango
+} // namespace Tango
 
 #endif // _COUT_APPENDER_H_

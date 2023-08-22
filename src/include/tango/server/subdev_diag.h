@@ -42,61 +42,61 @@ namespace Tango
 
 class SubDevDiag
 {
-private:
-	// Type definition and map to keep the
-	// list of accessed sub devices in a device server.
+  private:
+    // Type definition and map to keep the
+    // list of accessed sub devices in a device server.
 
-	// List structure to store every device
-	// and its sub devices.
-	typedef struct sub_dev_list
-	{
-        bool modified;               // was the list modified?
+    // List structure to store every device
+    // and its sub devices.
+    typedef struct sub_dev_list
+    {
+        bool modified;                        // was the list modified?
         std::vector<std::string> sub_devices; // list of sub devices
-	} SubDeviceList;
+    } SubDeviceList;
 
-	// map and mutex to keep a list of sub devices per device
-	std::map<std::string,SubDeviceList> sub_device_map;
-	omni_mutex                     sub_dev_map_mutex;
+    // map and mutex to keep a list of sub devices per device
+    std::map<std::string, SubDeviceList> sub_device_map;
+    omni_mutex sub_dev_map_mutex;
 
-	// map to keep a list of sub devices per device as read from
-	// the database cache
-	std::map<std::string,SubDeviceList> sub_device_startup_map;
+    // map to keep a list of sub devices per device as read from
+    // the database cache
+    std::map<std::string, SubDeviceList> sub_device_startup_map;
 
-public:
-	// Constructor
-	SubDevDiag() {}
+  public:
+    // Constructor
+    SubDevDiag() { }
 
-	// destructor to free map data
-	~SubDevDiag();
+    // destructor to free map data
+    ~SubDevDiag();
 
-	// Set the device name that should be asscociated to a thread
-	// in the device server
-	void set_associated_device(std::string dev_name);
+    // Set the device name that should be asscociated to a thread
+    // in the device server
+    void set_associated_device(std::string dev_name);
 
-	// Get the device name that is asscociated
-	// with the current thread of the device server
-	std::string get_associated_device();
+    // Get the device name that is asscociated
+    // with the current thread of the device server
+    std::string get_associated_device();
 
-	// Register a sub device for an associated device
-	// in the list of sub devices of the device server
-	void register_sub_device (std::string dev_name, std::string sub_dev_name);
+    // Register a sub device for an associated device
+    // in the list of sub devices of the device server
+    void register_sub_device(std::string dev_name, std::string sub_dev_name);
 
-	// Remove all sub devices for a device of the server
-	void remove_sub_devices (std::string dev_name);
+    // Remove all sub devices for a device of the server
+    void remove_sub_devices(std::string dev_name);
 
-	// Remove all sub devices
-	void remove_sub_devices();
+    // Remove all sub devices
+    void remove_sub_devices();
 
-	// Read the list of registered sub devices
-	Tango::DevVarStringArray *get_sub_devices();
+    // Read the list of registered sub devices
+    Tango::DevVarStringArray *get_sub_devices();
 
-	// Store the list of sub devices when modified into the database
-	void store_sub_devices();
+    // Store the list of sub devices when modified into the database
+    void store_sub_devices();
 
-	// Store the list sub devices at server start-up from the DB cache.
-	void get_sub_devices_from_cache();
+    // Store the list sub devices at server start-up from the DB cache.
+    void get_sub_devices_from_cache();
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* SUBDEV_DIAG */

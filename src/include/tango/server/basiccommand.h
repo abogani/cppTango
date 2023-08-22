@@ -1,19 +1,19 @@
 //=============================================================================
 //
-// file :		BasicCommand.h
+// file :        BasicCommand.h
 //
-// description :	Include for commands which are implemented in all
-//			classes. Classes for 2 commands are defined here:
-//				DevStatus for the DevStatus command
-//				DevState for the DevState command
-//			All these classes inherits from the Command class
+// description :    Include for commands which are implemented in all
+//            classes. Classes for 2 commands are defined here:
+//                DevStatus for the DevStatus command
+//                DevState for the DevState command
+//            All these classes inherits from the Command class
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -45,73 +45,65 @@ namespace Tango
 
 //=============================================================================
 //
-//			The DevStatusCmd class
+//            The DevStatusCmd class
 //
-// description :	Class to implement the DevStatus command. This command
-//			does not take any input argument and return the device
-//			state as a string
+// description :    Class to implement the DevStatus command. This command
+//            does not take any input argument and return the device
+//            state as a string
 //
 //=============================================================================
 
 class DevStatusCmd : public Command
 {
-public:
-	DevStatusCmd(const char *cmd_name,
-		     Tango::CmdArgType in,
-		     Tango::CmdArgType out);
-	~DevStatusCmd() {}
+  public:
+    DevStatusCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	virtual CORBA::Any * execute(DeviceImpl *device,const CORBA::Any &in_any);
+    ~DevStatusCmd() { }
+
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
 //=============================================================================
 //
-//			The DevState class
+//            The DevState class
 //
-// description :	Class to implement the DevState command. This command
-//			does not take any input argument and return the device
-//			state as an enumerated type
+// description :    Class to implement the DevState command. This command
+//            does not take any input argument and return the device
+//            state as an enumerated type
 //
 //=============================================================================
-
 
 class DevStateCmd : public Command
 {
-public:
+  public:
+    DevStateCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	DevStateCmd(const char *cmd_name,
-		    Tango::CmdArgType in,
-		    Tango::CmdArgType out);
-	~DevStateCmd() {}
+    ~DevStateCmd() { }
 
-	virtual CORBA::Any * execute(DeviceImpl *device,const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevInit class
+//            The DevInit class
 //
-// description :	Class to implement the Init command. This command
-//			does not take any input argument and output argument.
-//			It will call the device delete_device method and its
-//			init_device method.
+// description :    Class to implement the Init command. This command
+//            does not take any input argument and output argument.
+//            It will call the device delete_device method and its
+//            init_device method.
 //
 //=============================================================================
-
 
 class DevInitCmd : public Command
 {
-public:
+  public:
+    DevInitCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	DevInitCmd(const char *cmd_name,
-		    Tango::CmdArgType in,
-		    Tango::CmdArgType out);
-	~DevInitCmd() {}
+    ~DevInitCmd() { }
 
-	virtual CORBA::Any * execute(DeviceImpl *device,const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _BASICCOMMAND_H

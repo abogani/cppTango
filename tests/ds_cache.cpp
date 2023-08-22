@@ -1,240 +1,247 @@
 #include "common.h"
 
-const int8_t	kBase = 75;
+const int8_t kBase = 75;
 
 int main(int, char **)
 {
+    try
+    {
+        //
+        // Compute cache size
+        //
 
-	try
-	{
+        // Get a random hostname on which there is notifd deamon running
+        DeviceProxy *dbserver = new DeviceProxy("sys/database/2");
+        string h_name = "";
 
-//
-// Compute cache size
-//
+        DeviceData din, dout;
+        const DevVarLongStringArray *res;
+        string query = "select host from event where name like 'notifd/%' order by `started` desc limit 1";
+        din << query;
+        try
+        {
+            dout = dbserver->command_inout("DbMySqlSelect", din);
+        }
+        catch(DevFailed &e)
+        {
+            Except::print_exception(e);
+        }
 
-		// Get a random hostname on which there is notifd deamon running
-		DeviceProxy *dbserver = new DeviceProxy("sys/database/2");
-		string h_name = "";
+        dout >> res;
 
-		DeviceData din, dout;
-		const DevVarLongStringArray *res;
-		string query = "select host from event where name like 'notifd/%' order by `started` desc limit 1";
-		din << query;
-		try
-		{
-			dout = dbserver->command_inout("DbMySqlSelect", din);
-		}
-		catch(DevFailed &e)
-		{
-			Except::print_exception(e);
-		}
+        /*        if(res->svalue.length() > 0)
+                    h_name = res->svalue[0].in();*/
 
-		dout >> res;
+        int notifd_size = 6;
+        if(h_name == "")
+        {
+            notifd_size = 2;
+        }
 
-/*		if(res->svalue.length() > 0)
-			h_name = res->svalue[0].in();*/
+        Database *db = new Database();
+        string obj("CtrlSystem");
+        string wild("*");
 
-		int notifd_size = 6;
-		if(h_name == "")
-			notifd_size = 2;
+        DbDatum d = db->get_object_property_list(obj, wild);
+        vector<string> vs_obj;
+        d >> vs_obj;
+        int nb_prop = vs_obj.size();
+        int acc_ctrl_size = 0;
 
+        DbData dd;
+        int loop;
 
-		Database *db = new Database();
-		string obj("CtrlSystem");
-		string wild("*");
+        for(loop = 0; loop < nb_prop; loop++)
+        {
+            dd.push_back(DbDatum(vs_obj[loop]));
+        }
+        db->get_property(obj, dd);
 
-		DbDatum d = db->get_object_property_list(obj,wild);
-		vector<string> vs_obj;
-		d >> vs_obj;
-		int nb_prop = vs_obj.size();
-		int acc_ctrl_size = 0;
+        int prop_elt = 0;
+        for(loop = 0; loop < nb_prop; loop++)
+        {
+            prop_elt = prop_elt + dd[loop].size();
+            if(dd[loop].name == "Services")
+            {
+                vector<string> values;
+                string acc_ctrl = "AccessControl/tango";
+                dd[loop] >> values;
 
-		DbData dd;
-		int loop;
+                for(size_t i = 0; i < values.size(); i++)
+                {
+                    if(values[i].substr(0, acc_ctrl.size()) == acc_ctrl)
+                    {
+                        acc_ctrl_size = 8;
+                    }
+                }
+            }
+        }
+        int cache_size =
+            kBase            // unchanged number of information related to the admin device, DS events,
+                             // DServer class properties, default properties, admin device properties,
+                             // class properties, class attribute properties and control system object properties
+            + notifd_size    // if there is at least one host on which there is notifd deamon running : 6 properties, if
+                             // not : 2 properties
+            + 2              // CtrlSystem object + number describing the amount of its properties
+            + (2 * nb_prop)  // (property name + number describing the amount of its values) x number of properties
+            + prop_elt       // number of all properties values
+            + acc_ctrl_size; // if AccessControl defined : 8 properties, if not : 0 properties
 
-		for (loop = 0;loop < nb_prop;loop++)
-		{
-			dd.push_back(DbDatum(vs_obj[loop]));
-		}
-		db->get_property(obj,dd);
+        //
+        // Try to create a DS cache
+        //
 
-		int prop_elt = 0;
-		for (loop = 0;loop < nb_prop;loop++)
-		{
-			prop_elt = prop_elt + dd[loop].size();
-			if(dd[loop].name == "Services")
-			{
-				vector<string> values;
-				string acc_ctrl = "AccessControl/tango";
-				dd[loop] >> values;
+        string ds_name("DsCache/test");
+        DbServerCache *dsc = new DbServerCache(db, ds_name, h_name);
 
-				for(size_t i = 0; i < values.size(); i++)
-				{
-					if(values[i].substr(0,acc_ctrl.size()) == acc_ctrl)
-						acc_ctrl_size = 8;
-				}
-			}
-		}
-		int cache_size = kBase		// unchanged number of information related to the admin device, DS events,
-									// DServer class properties, default properties, admin device properties,
-									// class properties, class attribute properties and control system object properties
-				+ notifd_size		// if there is at least one host on which there is notifd deamon running : 6 properties, if not : 2 properties
-				+ 2 				// CtrlSystem object + number describing the amount of its properties
-				+ (2 * nb_prop)		// (property name + number describing the amount of its values) x number of properties
-				+ prop_elt			// number of all properties values
-				+ acc_ctrl_size;	// if AccessControl defined : 8 properties, if not : 0 properties
+        TEST_LOG << "   Filling db cache --> OK" << endl;
 
-//
-// Try to create a DS cache
-//
+        //
+        // Check cache size
+        //
 
-		string ds_name("DsCache/test");
-		DbServerCache *dsc = new DbServerCache(db,ds_name,h_name);
+        int ca_size = dsc->get_data_nb();
+        TEST_LOG << "Cache size computed = " << cache_size << endl;
+        TEST_LOG << "Cache size = " << ca_size << endl;
+        assert(ca_size == cache_size);
 
-		TEST_LOG << "   Filling db cache --> OK" << endl;
+        TEST_LOG << "   Db cache size --> OK" << endl;
 
-//
-// Check cache size
-//
+        //
+        // Check indexes in cache
+        //
 
-		int ca_size = dsc->get_data_nb();
-		TEST_LOG << "Cache size computed = " << cache_size << endl;
-		TEST_LOG << "Cache size = " << ca_size << endl;
-		assert(ca_size == cache_size);
+        int first = 1, last = 0;
+        const DbServerCache::EltIdx &imp_data = dsc->get_imp_dat();
+        TEST_LOG << "Adm dev import data between " << imp_data.first_idx << " and " << imp_data.last_idx << endl;
+        last = first + 7;
+        assert(imp_data.first_idx == first);
+        assert(imp_data.last_idx == last);
 
-		TEST_LOG << "   Db cache size --> OK" << endl;
+        const DbServerCache::EltIdx &notifd_eve = dsc->get_imp_notifd_event();
+        TEST_LOG << "Notifd import event data between " << notifd_eve.first_idx << " and " << notifd_eve.last_idx
+                 << endl;
+        first = last + 1;
+        last = first + notifd_size - 1;
+        assert(notifd_eve.first_idx == first);
+        assert(notifd_eve.last_idx == last);
 
-//
-// Check indexes in cache
-//
+        const DbServerCache::EltIdx &ds_eve = dsc->get_imp_adm_event();
+        TEST_LOG << "DS import event data between " << ds_eve.first_idx << " and " << ds_eve.last_idx << endl;
+        first = last + 1;
+        last = first + 1;
+        assert(ds_eve.first_idx == first);
+        assert(ds_eve.last_idx == last);
 
-		int first = 1, last = 0;
-		const DbServerCache::EltIdx &imp_data = dsc->get_imp_dat();
-		TEST_LOG << "Adm dev import data between " << imp_data.first_idx << " and " << imp_data.last_idx << endl;
-		last = first + 7;
-		assert(imp_data.first_idx == first);
-		assert(imp_data.last_idx == last);
+        const DbServerCache::PropEltIdx &DServer_prop = dsc->get_DServer_class_prop();
+        TEST_LOG << "DServer class prop data between " << DServer_prop.first_idx << " and " << DServer_prop.last_idx
+                 << endl;
+        first = last + 1;
+        last = first + 14;
+        assert(DServer_prop.first_idx == first);
+        assert(DServer_prop.last_idx == last);
 
-		const DbServerCache::EltIdx &notifd_eve = dsc->get_imp_notifd_event();
-		TEST_LOG << "Notifd import event data between " << notifd_eve.first_idx << " and " << notifd_eve.last_idx << endl;
-		first = last + 1;
-		last = first + notifd_size - 1;
-		assert(notifd_eve.first_idx == first);
-		assert(notifd_eve.last_idx == last);
+        const DbServerCache::PropEltIdx &Default_prop = dsc->get_Default_prop();
+        TEST_LOG << "Default prop data between " << Default_prop.first_idx << " and " << Default_prop.last_idx << endl;
+        first = last + 1;
+        last = first + 1;
+        assert(Default_prop.first_idx == first);
+        assert(Default_prop.last_idx == last);
 
-		const DbServerCache::EltIdx &ds_eve = dsc->get_imp_adm_event();
-		TEST_LOG << "DS import event data between " << ds_eve.first_idx << " and " << ds_eve.last_idx << endl;
-		first = last + 1;
-		last = first + 1;
-		assert(ds_eve.first_idx == first);
-		assert(ds_eve.last_idx == last);
+        const DbServerCache::PropEltIdx &adm_prop = dsc->get_adm_dev_prop();
+        TEST_LOG << "Admin dev prop data between " << adm_prop.first_idx << " and " << adm_prop.last_idx << endl;
+        first = last + 1;
+        last = first + 1;
+        assert(adm_prop.first_idx == first);
+        assert(adm_prop.last_idx == last);
 
-		const DbServerCache::PropEltIdx &DServer_prop = dsc->get_DServer_class_prop();
-		TEST_LOG << "DServer class prop data between " << DServer_prop.first_idx << " and " << DServer_prop.last_idx << endl;
-		first = last + 1;
-		last = first + 14;
-		assert(DServer_prop.first_idx == first);
-		assert(DServer_prop.last_idx == last);
+        int class_nb = dsc->get_class_nb();
+        TEST_LOG << "class nb = " << class_nb << endl;
+        assert(class_nb == 2);
 
-		const DbServerCache::PropEltIdx &Default_prop = dsc->get_Default_prop();
-		TEST_LOG << "Default prop data between " << Default_prop.first_idx << " and " << Default_prop.last_idx << endl;
-		first = last + 1;
-		last = first + 1;
-		assert(Default_prop.first_idx == first);
-		assert(Default_prop.last_idx == last);
+        const DbServerCache::ClassEltIdx *class_elt = dsc->get_classes_elt();
+        TEST_LOG << "Class prop data between " << class_elt->class_prop.first_idx << " and "
+                 << class_elt->class_prop.last_idx << endl;
+        first = last + 3;
+        last = first + 1;
+        assert(class_elt->class_prop.first_idx == first);
+        assert(class_elt->class_prop.last_idx == last);
 
-		const DbServerCache::PropEltIdx &adm_prop = dsc->get_adm_dev_prop();
-		TEST_LOG << "Admin dev prop data between " << adm_prop.first_idx << " and " << adm_prop.last_idx << endl;
-		first = last + 1;
-		last = first + 1;
-		assert(adm_prop.first_idx == first);
-		assert(adm_prop.last_idx == last);
+        TEST_LOG << "Class attribute prop data between " << class_elt->class_att_prop.first_idx << " and "
+                 << class_elt->class_att_prop.last_idx << endl;
+        first = last + 1;
+        last = first + 1;
+        assert(class_elt->class_att_prop.first_idx == first);
+        assert(class_elt->class_att_prop.last_idx == last);
 
-		int class_nb = dsc->get_class_nb();
-		TEST_LOG << "class nb = " << class_nb << endl;
-		assert(class_nb == 2);
+        assert(class_elt->dev_nb == 2);
 
-		const DbServerCache::ClassEltIdx *class_elt = dsc->get_classes_elt();
-		TEST_LOG << "Class prop data between " << class_elt->class_prop.first_idx << " and " << class_elt->class_prop.last_idx << endl;
-		first = last + 3;
-		last = first + 1;
-		assert(class_elt->class_prop.first_idx == first);
-		assert(class_elt->class_prop.last_idx == last);
+        const DbServerCache::PropEltIdx &ctrl_prop = dsc->get_ctrl_serv_prop();
+        TEST_LOG << "Control system object prop data between " << ctrl_prop.first_idx << " and " << ctrl_prop.last_idx
+                 << endl;
+        assert(ctrl_prop.first_idx == kBase + notifd_size);
+        assert(ctrl_prop.last_idx == (kBase + notifd_size + 2 + (2 * nb_prop) + prop_elt) - 1);
 
-		TEST_LOG << "Class attribute prop data between " << class_elt->class_att_prop.first_idx << " and " << class_elt->class_att_prop.last_idx << endl;
-		first = last + 1;
-		last = first + 1;
-		assert(class_elt->class_att_prop.first_idx == first);
-		assert(class_elt->class_att_prop.last_idx == last);
+        TEST_LOG << "   Indexes in db cache --> OK" << endl;
 
-		assert(class_elt->dev_nb == 2);
+        //
+        // Get some data from cache
+        //
 
-		const DbServerCache::PropEltIdx &ctrl_prop = dsc->get_ctrl_serv_prop();
-		TEST_LOG << "Control system object prop data between " << ctrl_prop.first_idx << " and " << ctrl_prop.last_idx << endl;
-		assert(ctrl_prop.first_idx == kBase + notifd_size);
-		assert(ctrl_prop.last_idx == (kBase + notifd_size + 2 + (2 * nb_prop) + prop_elt) - 1);
+        string cl_name("CacheTest1");
 
-		TEST_LOG << "   Indexes in db cache --> OK" << endl;
+        Tango::DbDatum db_data = db->get_device_name(ds_name, cl_name, dsc);
 
-//
-// Get some data from cache
-//
+        vector<string> vs;
+        db_data >> vs;
+        assert(vs.size() == 2);
 
-		string cl_name("CacheTest1");
+        TEST_LOG << "   Getting device name list from cache --> OK" << endl;
 
-		Tango::DbDatum db_data = db->get_device_name(ds_name,cl_name,dsc);
+        //
+        // Get some device property from cache
+        //
 
-		vector<string> vs;
-		db_data >> vs;
-		assert(vs.size() == 2);
+        string dev_name("test/cache1/2");
+        Tango::DbData db_prop;
+        db_prop.push_back(DbDatum("tst_property"));
 
-		TEST_LOG << "   Getting device name list from cache --> OK" << endl;
+        db->get_device_property(dev_name, db_prop, dsc);
 
-//
-// Get some device property from cache
-//
+        db_prop[0] >> vs;
 
-		string dev_name("test/cache1/2");
-		Tango::DbData db_prop;
-		db_prop.push_back(DbDatum("tst_property"));
+        assert(vs.size() == 1);
+        assert(vs[0] == "25");
 
-		db->get_device_property(dev_name,db_prop,dsc);
+        TEST_LOG << "   Getting device property from cache --> OK" << endl;
 
-		db_prop[0] >> vs;
+        //
+        // Get class prop
+        //
 
-		assert(vs.size() == 1);
-		assert(vs[0] == "25");
+        cl_name = "DServer";
+        db_prop.clear();
+        db_prop.push_back(DbDatum("AllowedAccessCmd"));
 
-		TEST_LOG << "   Getting device property from cache --> OK" << endl;
+        db->get_class_property(cl_name, db_prop, dsc);
 
-//
-// Get class prop
-//
+        db_prop[0] >> vs;
 
-		cl_name = "DServer";
-		db_prop.clear();
-		db_prop.push_back(DbDatum("AllowedAccessCmd"));
+        TEST_LOG << "Prop nb = " << vs.size() << ", first value = " << vs[0] << endl;
+        assert(vs.size() == 11);
+        assert(vs[0] == "QueryClass");
 
-		db->get_class_property(cl_name,db_prop,dsc);
+        TEST_LOG << "   Getting class property --> OK" << endl;
 
-		db_prop[0] >> vs;
+        delete db;
+        delete dsc;
+    }
 
-		TEST_LOG << "Prop nb = " << vs.size() << ", first value = " << vs[0] << endl;
-		assert(vs.size() == 11);
-		assert(vs[0] == "QueryClass");
+    catch(Tango::DevFailed &e)
+    {
+        Except::print_exception(e);
+        exit(-1);
+    }
 
-		TEST_LOG << "   Getting class property --> OK" << endl;
-
-
-		delete db;
-		delete dsc;
-	}
-
-	catch (Tango::DevFailed &e)
-	{
-		Except::print_exception(e);
-		exit(-1);
-	}
-
-	return 0;
+    return 0;
 }

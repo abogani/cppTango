@@ -1,4 +1,5 @@
 /*----- PROTECTED REGION ID(FwdTestStateMachine.cpp) ENABLED START -----*/
+/* clang-format on */
 //=============================================================================
 //
 // file :        FwdTestStateMachine.cpp
@@ -32,6 +33,7 @@
 
 #include "FwdTest.h"
 
+/* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::FwdTestStateMachine.cpp
 
 //================================================================
@@ -45,8 +47,16 @@ namespace FwdTest_ns
 //		Attributes Allowed Methods
 //=================================================
 
+
 //=================================================
 //		Commands Allowed Methods
 //=================================================
+
+
+/*----- PROTECTED REGION ID(FwdTest::FwdTestStateAllowed.AdditionalMethods) ENABLED START -----*/
+/* clang-format on */
+//	Additional Methods
+/* clang-format off */
+/*----- PROTECTED REGION END -----*/	//	FwdTest::FwdTestStateAllowed.AdditionalMethods
 
 }	//	End of namespace

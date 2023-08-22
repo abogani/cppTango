@@ -1,8 +1,8 @@
 //
 // Copyright (C) :  2004,2005,2006,2007,2008,2009,2010
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -21,7 +21,7 @@
 
 #include <cstdlib>
 #ifdef WIN32
-#include <windows.h>
+  #include <windows.h>
 /* FILETIME of Jan 1 1970 00:00:00. */
 static const unsigned __int64 epoch = ((unsigned __int64) 116444736000000000ULL);
 
@@ -31,11 +31,10 @@ static const unsigned __int64 epoch = ((unsigned __int64) 116444736000000000ULL)
  * Note: this function is not for Win32 high precision timing purpose. See
  * elapsed_time().
  */
-int
-gettimeofday(struct timeval * tp, struct timezone * tzp)
+int gettimeofday(struct timeval *tp, struct timezone *tzp)
 {
-    FILETIME    file_time;
-    SYSTEMTIME  system_time;
+    FILETIME file_time;
+    SYSTEMTIME system_time;
     ULARGE_INTEGER ularge;
 
     GetSystemTime(&system_time);
@@ -49,13 +48,12 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
     return 0;
 }
 #else
-#include <sys/time.h>			// for struct timeval
+  #include <sys/time.h> // for struct timeval
 #endif
 #ifdef __osf__
-#    include <machine/builtins.h>       // for __RPCC()
+  #include <machine/builtins.h> // for __RPCC()
 #elif __linux__ && __i386__
-#    define rdtscl(low) \
-     __asm__ __volatile__("rdtsc" : "=a" (low) : : "edx")
+  #define rdtscl(low) __asm__ __volatile__("rdtsc" : "=a"(low) : : "edx")
 #endif
 #include <iostream>
 
@@ -63,51 +61,55 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 
 namespace
 {
-    const usec_t UsecPerSec = INT64_CONSTANT(1000000);
+const usec_t UsecPerSec = INT64_CONSTANT(1000000);
 }
 
-bool Clock::UsingCPU  = std::getenv("CLOCK_USE_CPU") ? true : false;
+bool Clock::UsingCPU = std::getenv("CLOCK_USE_CPU") ? true : false;
 
 // -----------------------------------------------------------------------------
 usec_t Clock::time(void)
 {
-    if (UsingCPU) {
-	static bool warn = true;
+    if(UsingCPU)
+    {
+        static bool warn = true;
 
-	if (warn) {
-	    std::cout << "Using CPU clock." << std::endl;
-	    warn = false;
-	}
+        if(warn)
+        {
+            std::cout << "Using CPU clock." << std::endl;
+            warn = false;
+        }
 
 #ifdef __osf__
-	return (usec_t) __RPCC();
+        return (usec_t) __RPCC();
 #elif __linux__ && __i386__
-	{
-	    unsigned long tsc;
+        {
+            unsigned long tsc;
 
-	    rdtscl(tsc);
-	    return (usec_t) tsc;
-	}
+            rdtscl(tsc);
+            return (usec_t) tsc;
+        }
 #else
-	{
-	    std::cerr << "CPU clock not implemented for this architecture" << std::endl;
-	    UsingCPU = false;
-	    return Clock::time();
-	}
+        {
+            std::cerr << "CPU clock not implemented for this architecture" << std::endl;
+            UsingCPU = false;
+            return Clock::time();
+        }
 #endif
-    } else {
-	struct timeval tv;
+    }
+    else
+    {
+        struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-	return (usec_t) (tv.tv_sec * UsecPerSec + tv.tv_usec);
+        gettimeofday(&tv, NULL);
+        return (usec_t) (tv.tv_sec * UsecPerSec + tv.tv_usec);
     }
 }
 
 // -----------------------------------------------------------------------------
-Clock::Clock(void)
-    : _start(0),
-      _elapsed(0),
-      _active(false)
+Clock::Clock(void) :
+    _start(0),
+    _elapsed(0),
+    _active(false)
 {
     start();
 }
@@ -121,12 +123,13 @@ Clock::~Clock(void)
 // -----------------------------------------------------------------------------
 usec_t Clock::elapsed(void) const
 {
-    if (!active())
-	return _elapsed;
+    if(!active())
+    {
+        return _elapsed;
+    }
 
     return time() - _start;
 }
-
 
 // -----------------------------------------------------------------------------
 usec_t Clock::start(void)
@@ -140,7 +143,7 @@ usec_t Clock::start(void)
 usec_t Clock::stop(void)
 {
     _elapsed = elapsed();
-    _active  = false;
+    _active = false;
 
     return _elapsed;
 }

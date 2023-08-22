@@ -2,13 +2,13 @@
 // LoggerStream.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -33,7 +33,8 @@
 #include <sstream>
 #include <tango/common/log4tango/LogSeparator.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // FORWARD DECLARATION
@@ -44,157 +45,172 @@ class LoggerStream;
 //-----------------------------------------------------------------------------
 // DEFINE WHAT IS A LS_TERMINATOR
 //-----------------------------------------------------------------------------
-typedef LoggerStream& (*ls_terminator) (LoggerStream&);
+typedef LoggerStream &(*ls_terminator)(LoggerStream &);
 
-
-typedef class std::ios_base&(*StdIosFlag)(class std::ios_base&);
-
+typedef class std::ios_base &(*StdIosFlag)(class std::ios_base &);
 
 //-----------------------------------------------------------------------------
 // class : LoggerStream
 //-----------------------------------------------------------------------------
 class LoggerStream
 {
-public:
-    struct SourceLocation {
-        const char* file;
+  public:
+    struct SourceLocation
+    {
+        const char *file;
         int line;
     };
 
-  /**
-   * Construct a LoggerStream for given Logger with given level.
-   * @param logger The logger this stream will send log messages to.
-   * @param level The level the log messages will get or
-   * Level::NOTSET to silently discard any streamed in messages.
-   * @param filter The filter flag
-   **/
-  LoggerStream(Logger& logger, Level::Value level, bool filter = true);
+    /**
+     * Construct a LoggerStream for given Logger with given level.
+     * @param logger The logger this stream will send log messages to.
+     * @param level The level the log messages will get or
+     * Level::NOTSET to silently discard any streamed in messages.
+     * @param filter The filter flag
+     **/
+    LoggerStream(Logger &logger, Level::Value level, bool filter = true);
 
-  LoggerStream(const LoggerStream &) = delete;
-  LoggerStream(LoggerStream &&);
+    LoggerStream(const LoggerStream &) = delete;
+    LoggerStream(LoggerStream &&);
 
-  LoggerStream & operator=(const LoggerStream &) = delete;
-  LoggerStream & operator=(LoggerStream &&) = delete;
+    LoggerStream &operator=(const LoggerStream &) = delete;
+    LoggerStream &operator=(LoggerStream &&) = delete;
 
-  /**
-   * Destructor for LoggerStream&)
-   **/
-  ~LoggerStream();
+    /**
+     * Destructor for LoggerStream&)
+     **/
+    ~LoggerStream();
 
-  /**
-   * Returns the destination Logger for this stream.
-   * @returns The Logger.
-   **/
-  inline Logger& get_logger (void) const {
-    return _logger;
-  }
-
-  /**
-   * Returns the level for this stream.
-   * @returns The level.
-   **/
-  inline Level::Value get_level (void) const {
-      return _level;
-  }
-
-  /**
-   * Streams in a Initiator. Just a trick to return a ref to self.
-   *
-   * @returns A reference to itself.
-   **/
-  inline LoggerStream& operator<< (LOG4TANGO_UNUSED(const LogInitiator& i)) {
-    return *this;
-  }
-
-  /**
-   * Streams in a Separator.Sends the contents of the stream buffer
-   * to the Logger with set level and empties the buffer.
-   *
-   * @returns A reference to itself.
-   **/
-  inline LoggerStream& operator<< (LOG4TANGO_UNUSED(const LogSeparator& s)) {
-    flush();
-    return *this;
-  }
-
-  /**
-   * Streams in a ls_manipulator. Sends the contents of the stream buffer
-   * to the Logger with set level and empties the buffer.
-   *
-   * @returns A reference to itself.
-   **/
-  inline LoggerStream& operator<< (LOG4TANGO_UNUSED(ls_terminator endoflog)) {
-    flush();
-    return *this;
-  }
-
-  /**
-   * Streams in a source code location.
-   *
-   * Source code location is stored internally and attached to the log event
-   * when one is generated.
-   *
-   * @returns A reference to itself.
-   **/
-  inline LoggerStream& operator<< (SourceLocation source_location) {
-    _source_location = source_location;
-    return *this;
-  }
-
-  /**
-   * Flush the contents of the stream buffer to the Logger and
-   * empties the buffer.
-   **/
-  void flush (void);
-
-  /**
-   * Streams in a std stream manipulator.
-   * @param _F the manipulator function
-   * @returns a reference to self.
-   **/
-#ifdef WIN32
-  inline LoggerStream& operator<< (std::ios_base&(_cdecl *_F)(std::ios_base&)) {
-#else
-  inline LoggerStream& operator<< (std::ios_base&(*_F)(std::ios_base&)) {
-#endif
-    if (_buffer)
-      (*_F)(*(std::ios_base *)(_buffer));
-    return *this;
-  }
-
-  /**
-   * Stream in arbitrary types and objects.
-   * @param t The value or object to stream in.
-   * @returns A reference to itself.
-   **/
-  template<typename T> LoggerStream& operator<< (const T& t) {
-    if (_level != Level::OFF) {
-      if (_buffer)
-        (*_buffer) << t;
+    /**
+     * Returns the destination Logger for this stream.
+     * @returns The Logger.
+     **/
+    inline Logger &get_logger(void) const
+    {
+        return _logger;
     }
-    return *this;
-  }
 
-private:
+    /**
+     * Returns the level for this stream.
+     * @returns The level.
+     **/
+    inline Level::Value get_level(void) const
+    {
+        return _level;
+    }
 
-  Logger& _logger;
+    /**
+     * Streams in a Initiator. Just a trick to return a ref to self.
+     *
+     * @returns A reference to itself.
+     **/
+    inline LoggerStream &operator<<(LOG4TANGO_UNUSED(const LogInitiator &i))
+    {
+        return *this;
+    }
 
-  Level::Value _level;
+    /**
+     * Streams in a Separator.Sends the contents of the stream buffer
+     * to the Logger with set level and empties the buffer.
+     *
+     * @returns A reference to itself.
+     **/
+    inline LoggerStream &operator<<(LOG4TANGO_UNUSED(const LogSeparator &s))
+    {
+        flush();
+        return *this;
+    }
 
-  bool _filter;
+    /**
+     * Streams in a ls_manipulator. Sends the contents of the stream buffer
+     * to the Logger with set level and empties the buffer.
+     *
+     * @returns A reference to itself.
+     **/
+    inline LoggerStream &operator<<(LOG4TANGO_UNUSED(ls_terminator endoflog))
+    {
+        flush();
+        return *this;
+    }
 
-  std::ostringstream* _buffer;
+    /**
+     * Streams in a source code location.
+     *
+     * Source code location is stored internally and attached to the log event
+     * when one is generated.
+     *
+     * @returns A reference to itself.
+     **/
+    inline LoggerStream &operator<<(SourceLocation source_location)
+    {
+        _source_location = source_location;
+        return *this;
+    }
 
-  SourceLocation _source_location;
+    /**
+     * Flush the contents of the stream buffer to the Logger and
+     * empties the buffer.
+     **/
+    void flush(void);
+
+    /**
+     * Streams in a std stream manipulator.
+     * @param _F the manipulator function
+     * @returns a reference to self.
+     **/
+#ifdef WIN32
+    inline LoggerStream &operator<<(std::ios_base &(_cdecl *_F)(std::ios_base &) )
+    {
+#else
+    inline LoggerStream &operator<<(std::ios_base &(*_F)(std::ios_base &) )
+    {
+#endif
+        if(_buffer)
+        {
+            (*_F)(*(std::ios_base *) (_buffer));
+        }
+        return *this;
+    }
+
+    /**
+     * Stream in arbitrary types and objects.
+     * @param t The value or object to stream in.
+     * @returns A reference to itself.
+     **/
+    template <typename T>
+    LoggerStream &operator<<(const T &t)
+    {
+        if(_level != Level::OFF)
+        {
+            if(_buffer)
+            {
+                (*_buffer) << t;
+            }
+        }
+        return *this;
+    }
+
+  private:
+    Logger &_logger;
+
+    Level::Value _level;
+
+    bool _filter;
+
+    std::ostringstream *_buffer;
+
+    SourceLocation _source_location;
 };
 
 } // namespace log4tango
 
-namespace std {
-  //-- A dummy <ls_terminator>
-  inline log4tango::LoggerStream& endl (log4tango::LoggerStream& ls) {
+namespace std
+{
+//-- A dummy <ls_terminator>
+inline log4tango::LoggerStream &endl(log4tango::LoggerStream &ls)
+{
     return ls;
-  }
+}
 } // namespace std
 
 #endif // _LOG4TANGO_LOGGER_STREAM_H

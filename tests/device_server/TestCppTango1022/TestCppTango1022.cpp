@@ -38,9 +38,9 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #include "TestCppTango1022.h"
 #include "TestCppTango1022Class.h"
+
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022.cpp
 
@@ -83,9 +83,9 @@ TestCppTango1022::TestCppTango1022(Tango::DeviceClass *cl, std::string &s)
  : TANGO_BASE_CLASS(cl, s.c_str())
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022::constructor_1) ENABLED START -----*/
-	/* clang-format on */
-	init_device();
-	/* clang-format off */
+    /* clang-format on */
+    init_device();
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::constructor_1
 }
 //--------------------------------------------------------
@@ -93,9 +93,9 @@ TestCppTango1022::TestCppTango1022(Tango::DeviceClass *cl, const char *s)
  : TANGO_BASE_CLASS(cl, s)
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022::constructor_2) ENABLED START -----*/
-	/* clang-format on */
-	init_device();
-	/* clang-format off */
+    /* clang-format on */
+    init_device();
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::constructor_2
 }
 //--------------------------------------------------------
@@ -103,9 +103,9 @@ TestCppTango1022::TestCppTango1022(Tango::DeviceClass *cl, const char *s, const 
  : TANGO_BASE_CLASS(cl, s, d)
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022::constructor_3) ENABLED START -----*/
-	/* clang-format on */
-	init_device();
-	/* clang-format off */
+    /* clang-format on */
+    init_device();
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::constructor_3
 }
 //--------------------------------------------------------
@@ -124,9 +124,9 @@ void TestCppTango1022::delete_device()
 {
 	DEBUG_STREAM << "TestCppTango1022::delete_device() " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(TestCppTango1022::delete_device) ENABLED START -----*/
-	/* clang-format on */
-	//	Delete device allocated objects
-	/* clang-format off */
+    /* clang-format on */
+    //	Delete device allocated objects
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::delete_device
 }
 
@@ -140,18 +140,18 @@ void TestCppTango1022::init_device()
 {
 	DEBUG_STREAM << "TestCppTango1022::init_device() create device " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(TestCppTango1022::init_device_before) ENABLED START -----*/
-	/* clang-format on */
-	//	Initialization before get_device_property() call
-	/* clang-format off */
+    /* clang-format on */
+    //	Initialization before get_device_property() call
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::init_device_before
 
 	//	No device property to be read from database
 
 	/*----- PROTECTED REGION ID(TestCppTango1022::init_device) ENABLED START -----*/
-	/* clang-format on */
-	//	Initialize device
-	set_state(Tango::ON);
-	/* clang-format off */
+    /* clang-format on */
+    //	Initialize device
+    set_state(Tango::ON);
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::init_device
 }
 
@@ -166,9 +166,9 @@ void TestCppTango1022::always_executed_hook()
 {
 	DEBUG_STREAM << "TestCppTango1022::always_executed_hook()  " << device_name << std::endl;
 	/*----- PROTECTED REGION ID(TestCppTango1022::always_executed_hook) ENABLED START -----*/
-	/* clang-format on */
-	//	code always executed before all requests
-	/* clang-format off */
+    /* clang-format on */
+    //	code always executed before all requests
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::always_executed_hook
 }
 
@@ -182,9 +182,9 @@ void TestCppTango1022::read_attr_hardware(TANGO_UNUSED(std::vector<long> &attr_l
 {
 	DEBUG_STREAM << "TestCppTango1022::read_attr_hardware(std::vector<long> &attr_list) entering... " << std::endl;
 	/*----- PROTECTED REGION ID(TestCppTango1022::read_attr_hardware) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::read_attr_hardware
 }
 
@@ -203,10 +203,10 @@ void TestCppTango1022::read_DoubleAttr(Tango::Attribute &attr)
 	DEBUG_STREAM << "TestCppTango1022::read_DoubleAttr(Tango::Attribute &attr) entering... " << std::endl;
 	Tango::DevDouble	*att_value = get_DoubleAttr_data_ptr(attr.get_name());
 	/*----- PROTECTED REGION ID(TestCppTango1022::read_DoubleAttr) ENABLED START -----*/
-	/* clang-format on */
-	//	Set the attribute value
-	attr.set_value(att_value);
-	/* clang-format off */
+    /* clang-format on */
+    //	Set the attribute value
+    attr.set_value(att_value);
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::read_DoubleAttr
 }
 //--------------------------------------------------------
@@ -225,9 +225,9 @@ void TestCppTango1022::write_DoubleAttr(Tango::WAttribute &attr)
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(TestCppTango1022::write_DoubleAttr) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::write_DoubleAttr
 }
 //--------------------------------------------------------
@@ -244,19 +244,19 @@ void TestCppTango1022::add_dynamic_attributes()
 	//	add_DoubleAttr_dynamic_attribute("MyDoubleAttrAttribute");
 
 	/*----- PROTECTED REGION ID(TestCppTango1022::add_dynamic_attributes) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code to create and add dynamic attributes if any
-	try
-	{
-		std::cout << device_name << ": Adding Attr1" << std::endl;
-		add_DoubleAttr_dynamic_attribute("Attr1");
-	}
-	catch(const Tango::DevFailed &e)
-	{
-		ERROR_STREAM << device_name << ": Exception while adding Attr1 attribute:" << std::endl;
-		Tango::Except::print_exception(e);
-	}
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code to create and add dynamic attributes if any
+    try
+    {
+        std::cout << device_name << ": Adding Attr1" << std::endl;
+        add_DoubleAttr_dynamic_attribute("Attr1");
+    }
+    catch(const Tango::DevFailed &e)
+    {
+        ERROR_STREAM << device_name << ": Exception while adding Attr1 attribute:" << std::endl;
+        Tango::Except::print_exception(e);
+    }
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::add_dynamic_attributes
 }
 
@@ -270,9 +270,9 @@ void TestCppTango1022::add_dynamic_attributes()
 void TestCppTango1022::add_dynamic_commands()
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022::add_dynamic_commands) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code to create and add dynamic commands if any
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code to create and add dynamic commands if any
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022::add_dynamic_commands
 }
 

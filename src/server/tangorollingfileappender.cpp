@@ -9,7 +9,7 @@
 // author(s) :    N.Leclercq - SOLEIL
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -37,22 +37,22 @@
 
 namespace Tango
 {
-  TangoRollingFileAppender::TangoRollingFileAppender(const std::string& name,
-                                                     const std::string& fileName,
-                                                     size_t maxFileSize)
-    : log4tango::RollingFileAppender(name, fileName, maxFileSize * 1024)
-  {
+TangoRollingFileAppender::TangoRollingFileAppender(const std::string &name,
+                                                   const std::string &fileName,
+                                                   size_t maxFileSize) :
+    log4tango::RollingFileAppender(name, fileName, maxFileSize * 1024)
+{
     // no-op
-  }
+}
 
-  TangoRollingFileAppender::~TangoRollingFileAppender()
-  {
+TangoRollingFileAppender::~TangoRollingFileAppender()
+{
     // no-op
-  }
+}
 
-  bool TangoRollingFileAppender::isValid (void) const
-  {
+bool TangoRollingFileAppender::isValid(void) const
+{
     return (_fd < 0) ? false : true;
-  }
+}
 
-} // namespace tango
+} // namespace Tango

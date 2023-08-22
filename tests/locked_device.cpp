@@ -1,4 +1,5 @@
 #include "common.h"
+
 /*
  * Small utility program to help testing locking features.
  *
@@ -12,151 +13,169 @@
 
 int main(int argc, char **argv)
 {
-	DeviceProxy *device;
+    DeviceProxy *device;
 
-	if ((argc == 1) || (argc > 3))
-	{
-		TEST_LOG << "usage: %s device" << endl;
-		exit(-1);
-	}
+    if((argc == 1) || (argc > 3))
+    {
+        TEST_LOG << "usage: %s device" << endl;
+        exit(-1);
+    }
 
-	string device_name = argv[1];
+    string device_name = argv[1];
 
-	try
-	{
-		device = new DeviceProxy(device_name);
-	}
-	catch (CORBA::Exception &)
-	{
-//		Except::print_exception(e);
-		exit(-1);
-	}
+    try
+    {
+        device = new DeviceProxy(device_name);
+    }
+    catch(CORBA::Exception &)
+    {
+        //        Except::print_exception(e);
+        exit(-1);
+    }
 
-// Try state or status on a locked device
+    // Try state or status on a locked device
 
-	try
-	{
-		device->command_inout("State");
-		device->command_inout("Status");
-	}
-	catch (Tango::DevFailed &)
-	{
-		return 3;
-	}
+    try
+    {
+        device->command_inout("State");
+        device->command_inout("Status");
+    }
+    catch(Tango::DevFailed &)
+    {
+        return 3;
+    }
 
-// Try a command on the device
+    // Try a command on the device
 
-	DeviceData din,dout;
-	din << (short)2;
+    DeviceData din, dout;
+    din << (short) 2;
 
-	try
-	{
-		dout = device->command_inout("IOShort",din);
-	}
-	catch (Tango::DevFailed &e)
-	{
-//		Except::print_exception(e);
-		if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) != 0)
-			return 2;
-	}
+    try
+    {
+        dout = device->command_inout("IOShort", din);
+    }
+    catch(Tango::DevFailed &e)
+    {
+        //        Except::print_exception(e);
+        if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) != 0)
+        {
+            return 2;
+        }
+    }
 
-//  Try a command asynchronously
+    //  Try a command asynchronously
 
-	long id;
-	id = device->command_inout_asynch("IOShort",din);
+    long id;
+    id = device->command_inout_asynch("IOShort", din);
 
-	bool finish = false;
-	while (finish == false)
-	{
-		try
-		{
-			dout = device->command_inout_reply(id);
-			finish = true;
-		}
-		catch (AsynReplyNotArrived&)
-		{
-			finish = false;
-			TEST_LOG << "Command not yet arrived" << endl;
-		}
-		catch (DevFailed &e)
-		{
-//			Except::print_exception(e);
-			if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) != 0)
-				return 2;
-			else
-				finish = true;
-		}
+    bool finish = false;
+    while(finish == false)
+    {
+        try
+        {
+            dout = device->command_inout_reply(id);
+            finish = true;
+        }
+        catch(AsynReplyNotArrived &)
+        {
+            finish = false;
+            TEST_LOG << "Command not yet arrived" << endl;
+        }
+        catch(DevFailed &e)
+        {
+            //            Except::print_exception(e);
+            if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) != 0)
+            {
+                return 2;
+            }
+            else
+            {
+                finish = true;
+            }
+        }
 
-		if (finish == false)
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+        if(finish == false)
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }
 
-//	Try a write attribute
+    //    Try a write attribute
 
-	try
-	{
-		DeviceAttribute da("Long64_attr_rw",(DevLong64)10);
-		device->write_attribute(da);
-	}
-	catch (Tango::DevFailed &e)
-	{
-//		Except::print_exception(e);
-		if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) != 0)
-			return 2;
-	}
+    try
+    {
+        DeviceAttribute da("Long64_attr_rw", (DevLong64) 10);
+        device->write_attribute(da);
+    }
+    catch(Tango::DevFailed &e)
+    {
+        //        Except::print_exception(e);
+        if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) != 0)
+        {
+            return 2;
+        }
+    }
 
-//	Try a write attribute asynchronously
+    //    Try a write attribute asynchronously
 
-	DeviceAttribute da("Long64_attr_rw",(DevLong64)10);
-	id = device->write_attribute_asynch(da);
+    DeviceAttribute da("Long64_attr_rw", (DevLong64) 10);
+    id = device->write_attribute_asynch(da);
 
-	finish = false;
-	while (finish == false)
-	{
-		try
-		{
-			device->write_attribute_reply(id);
-			finish = true;
-		}
-		catch (AsynReplyNotArrived&)
-		{
-			finish = false;
-			TEST_LOG << "Attribute not yet written" << endl;
-		}
-		catch (DevFailed &e)
-		{
-//			Except::print_exception(e);
-			if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) != 0)
-				return 2;
-			else
-				finish = true;
-		}
+    finish = false;
+    while(finish == false)
+    {
+        try
+        {
+            device->write_attribute_reply(id);
+            finish = true;
+        }
+        catch(AsynReplyNotArrived &)
+        {
+            finish = false;
+            TEST_LOG << "Attribute not yet written" << endl;
+        }
+        catch(DevFailed &e)
+        {
+            //            Except::print_exception(e);
+            if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) != 0)
+            {
+                return 2;
+            }
+            else
+            {
+                finish = true;
+            }
+        }
 
-		if (finish == false)
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+        if(finish == false)
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }
 
+    // Try a attribute set_config
 
-// Try a attribute set_config
+    try
+    {
+        string att_name("Long64_attr_rw");
+        AttributeInfoEx ai = device->get_attribute_config(att_name);
+        AttributeInfoListEx ail;
+        ail.push_back(ai);
+        device->set_attribute_config(ail);
+    }
+    catch(Tango::DevFailed &e)
+    {
+        //        Except::print_exception(e);
+        if(::strcmp(e.errors[0].reason.in(), API_DeviceLocked) != 0)
+        {
+            return 2;
+        }
+        else
+        {
+            return 1;
+        }
+    }
 
-	try
-	{
-		string att_name("Long64_attr_rw");
-		AttributeInfoEx ai = device->get_attribute_config(att_name);
-		AttributeInfoListEx ail;
-		ail.push_back(ai);
-		device->set_attribute_config(ail);
-	}
-	catch (Tango::DevFailed &e)
-	{
-//		Except::print_exception(e);
-		if (::strcmp(e.errors[0].reason.in(),API_DeviceLocked) != 0)
-			return 2;
-		else
-			return 1;
-	}
-
-	delete device;
-	return 0;
-
+    delete device;
+    return 0;
 }

@@ -2,13 +2,13 @@
 // OstreamAppender.cpp
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -27,38 +27,45 @@
 
 #include <tango/common/log4tango/Portability.h>
 #ifdef LOG4TANGO_HAVE_UNISTD_H
-#    include <unistd.h>
+  #include <unistd.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <tango/common/log4tango/OstreamAppender.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
-    OstreamAppender::OstreamAppender(const std::string& name, std::ostream* stream) :
-        LayoutAppender(name),
-        _stream(stream) {
-    }
-
-    OstreamAppender::~OstreamAppender() {
-        close();
-    }
-
-    void OstreamAppender::close() {
-        // empty
-    }
-
-    int OstreamAppender::_append (const LoggingEvent& event) {
-        (*_stream) << get_layout().format(event);
-        (*_stream) << std::endl;
-        if (!_stream->good()) {
-            return -1;
-        }
-        return 0;
-    }
-
-    bool OstreamAppender::reopen() {
-        return true;
-    }
+OstreamAppender::OstreamAppender(const std::string &name, std::ostream *stream) :
+    LayoutAppender(name),
+    _stream(stream)
+{
 }
+
+OstreamAppender::~OstreamAppender()
+{
+    close();
+}
+
+void OstreamAppender::close()
+{
+    // empty
+}
+
+int OstreamAppender::_append(const LoggingEvent &event)
+{
+    (*_stream) << get_layout().format(event);
+    (*_stream) << std::endl;
+    if(!_stream->good())
+    {
+        return -1;
+    }
+    return 0;
+}
+
+bool OstreamAppender::reopen()
+{
+    return true;
+}
+} // namespace log4tango

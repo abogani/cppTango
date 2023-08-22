@@ -2,13 +2,13 @@
 // OstreamAppender.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -33,22 +33,24 @@
 #include <iostream>
 #include <tango/common/log4tango/LayoutAppender.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // class : OstreamAppender (appends LoggingEvents to ostreams)
 //-----------------------------------------------------------------------------
-class OstreamAppender : public LayoutAppender {
-public:
-  OstreamAppender(const std::string& name, std::ostream* stream);
-  virtual ~OstreamAppender();
+class OstreamAppender : public LayoutAppender
+{
+  public:
+    OstreamAppender(const std::string &name, std::ostream *stream);
+    virtual ~OstreamAppender();
 
-  virtual bool reopen();
-  virtual void close();
+    virtual bool reopen();
+    virtual void close();
 
-protected:
-  virtual int _append (const LoggingEvent& event);
-  std::ostream* _stream;
+  protected:
+    virtual int _append(const LoggingEvent &event);
+    std::ostream *_stream;
 };
 
 } // namespace log4tango

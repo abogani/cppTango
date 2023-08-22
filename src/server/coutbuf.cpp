@@ -11,7 +11,7 @@
 // author(s) :    A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -50,7 +50,7 @@ static HWND hWndDebugList = NULL;
 // method :       CoutBuf::CoutBuf()
 //
 // description :  Constructor of the CoutBuf class. It mainly creates
-//          	  the debug output window
+//                the debug output window
 //
 // in :     - hInstance : The application instance
 //          - nCmdShow :
@@ -58,78 +58,75 @@ static HWND hWndDebugList = NULL;
 //
 //-----------------------------------------------------------------------------
 
-
-CoutBuf::CoutBuf(HINSTANCE hInstance,int nCmdShow,HWND parent,LPCSTR svc_name)
+CoutBuf::CoutBuf(HINSTANCE hInstance, int nCmdShow, HWND parent, LPCSTR svc_name)
 {
+    hAppInst = hInstance;
 
-  	hAppInst = hInstance;
+    //
+    // Init common controls library
+    //
 
-//
-// Init common controls library
-//
+    InitCommonControls();
 
-  	InitCommonControls();
+    //
+    // Register out window class
+    //
 
-//
-// Register out window class
-//
+    WNDCLASS wc;
 
-  	WNDCLASS wc;
+    wc.lpszClassName = "Debug";
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+    wc.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
+    wc.lpszMenuName = NULL;
+    wc.hbrBackground = ::CreateSolidBrush(RGB(255, 255, 255));
+    wc.hInstance = hInstance;
+    wc.lpfnWndProc = DebugWndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
 
-  	wc.lpszClassName  = "Debug";
-  	wc.style          = CS_HREDRAW | CS_VREDRAW;
-  	wc.hCursor        = ::LoadCursor(NULL, IDC_ARROW);
-  	wc.hIcon          = ::LoadIcon(NULL,IDI_APPLICATION);
-  	wc.lpszMenuName   = NULL;
-  	wc.hbrBackground  = ::CreateSolidBrush(RGB(255,255,255));
-  	wc.hInstance      = hInstance;
-  	wc.lpfnWndProc    = DebugWndProc;
-  	wc.cbClsExtra     = 0;
-  	wc.cbWndExtra     = 0;
+    RegisterClass(&wc);
 
-  	RegisterClass(&wc);
+    //
+    // create the debug console
+    //
 
-//
-// create the debug console
-//
+    parent_window = parent;
+    CreateWin(svc_name);
 
-  	parent_window = parent;
-  	CreateWin(svc_name);
+    //
+    // Show the main window
+    //
 
-
-//
-// Show the main window
-//
-
-  	DbgWin = hWndDebug;
-//	ShowWindow(hWndDebug,nCmdShow);
-//	UpdateWindow(hWndDebug);
-
+    DbgWin = hWndDebug;
+    //    ShowWindow(hWndDebug,nCmdShow);
+    //    UpdateWindow(hWndDebug);
 }
 
-CoutBuf::~CoutBuf()
-{
-}
+CoutBuf::~CoutBuf() { }
 
 void CoutBuf::CreateWin(LPCSTR svc_name)
 {
-  	char buf[256];
+    char buf[256];
 
-  	std::snprintf(buf, sizeof(buf),"%s - Console",svc_name);
- 	hWndDebug = CreateWindow("Debug",buf,
-                          WS_OVERLAPPED | WS_CAPTION | WS_BORDER | WS_THICKFRAME,
-                          GetSystemMetrics(SM_CXSCREEN) / 2-100,
-                          GetSystemMetrics(SM_CYSCREEN) * 3 / 4-75,
-                          GetSystemMetrics(SM_CXSCREEN) / 2,
-                          GetSystemMetrics(SM_CYSCREEN) / 4,
-                          parent_window,
-                          0,hAppInst,NULL);
+    std::snprintf(buf, sizeof(buf), "%s - Console", svc_name);
+    hWndDebug = CreateWindow("Debug",
+                             buf,
+                             WS_OVERLAPPED | WS_CAPTION | WS_BORDER | WS_THICKFRAME,
+                             GetSystemMetrics(SM_CXSCREEN) / 2 - 100,
+                             GetSystemMetrics(SM_CYSCREEN) * 3 / 4 - 75,
+                             GetSystemMetrics(SM_CXSCREEN) / 2,
+                             GetSystemMetrics(SM_CYSCREEN) / 4,
+                             parent_window,
+                             0,
+                             hAppInst,
+                             NULL);
 
-  	if (!hWndDebug)
-  	{
-    		TANGO_THROW_EXCEPTION((LPCSTR)API_NtDebugWindowError, (LPCSTR)"Can't create debug window");
-  	}
-  	DbgWin = hWndDebug;
+    if(!hWndDebug)
+    {
+        TANGO_THROW_EXCEPTION((LPCSTR) API_NtDebugWindowError, (LPCSTR) "Can't create debug window");
+    }
+    DbgWin = hWndDebug;
 }
 
 //+----------------------------------------------------------------------------
@@ -144,48 +141,47 @@ void CoutBuf::CreateWin(LPCSTR svc_name)
 
 int CoutBuf::dbg_out(LPCSTR buf)
 {
+    //
+    // Stop the listbox repaints while we mess with it
+    //
 
-//
-// Stop the listbox repaints while we mess with it
-//
+    SendMessage(hWndDebugList, WM_SETREDRAW, (WPARAM) FALSE, (LPARAM) 0);
 
-  	SendMessage(hWndDebugList,WM_SETREDRAW,(WPARAM)FALSE,(LPARAM)0);
+    //
+    // Get the item count
+    //
 
-//
-// Get the item count
-//
+    int i = (int) SendMessage(hWndDebugList, LB_GETCOUNT, (WPARAM) 0, (LPARAM) 0);
+    if(i == LB_ERR)
+    {
+        i = 0;
+    }
 
-  	int i = (int)SendMessage(hWndDebugList,LB_GETCOUNT,(WPARAM)0,(LPARAM)0);
-  	if (i == LB_ERR)
-    		i = 0;
+    //
+    // Scrub a few if we have too many
+    //
 
-//
-// Scrub a few if we have too many
-//
+    while(i >= MAXLISTLINES)
+    {
+        SendMessage(hWndDebugList, LB_DELETESTRING, (WPARAM) 0, (LPARAM) 0);
+        i--;
+    }
 
-  	while (i >= MAXLISTLINES)
-  	{
-    		SendMessage(hWndDebugList,LB_DELETESTRING,(WPARAM)0,(LPARAM)0);
-    		i--;
-  	}
+    //
+    // Add the new one on at the end and scroll it into view
+    //
 
-//
-// Add the new one on at the end and scroll it into view
-//
+    i = (int) SendMessage(hWndDebugList, LB_ADDSTRING, (WPARAM) 0, (LPARAM) buf); // MODIF-NL
+    SendMessage(hWndDebugList, LB_SETCURSEL, (WPARAM) i, (LPARAM) 0);
 
-  	i = (int) SendMessage(hWndDebugList,LB_ADDSTRING,(WPARAM)0,(LPARAM)buf); //MODIF-NL
-  	SendMessage(hWndDebugList,LB_SETCURSEL,(WPARAM)i,(LPARAM)0);
+    //
+    // Enable the repaint now
+    //
 
-//
-// Enable the repaint now
-//
+    SendMessage(hWndDebugList, WM_SETREDRAW, (WPARAM) TRUE, (LPARAM) 0);
 
-  	SendMessage(hWndDebugList,WM_SETREDRAW,(WPARAM)TRUE,(LPARAM)0);
-
-  	return 0;
+    return 0;
 }
-
-
 
 //
 // Window procedure for debug window
@@ -193,73 +189,75 @@ int CoutBuf::dbg_out(LPCSTR buf)
 
 LRESULT CALLBACK DebugWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-  	PAINTSTRUCT ps;
-  	HWND hWndList = NULL;
-  	HWND hMainWnd;
-  	HMENU hMenu;
-  	BOOL bo;
+    PAINTSTRUCT ps;
+    HWND hWndList = NULL;
+    HWND hMainWnd;
+    HMENU hMenu;
+    BOOL bo;
 
-  	switch(msg)
-  	{
-  	case WM_CREATE:
+    switch(msg)
+    {
+    case WM_CREATE:
 
-//
-// Create the listbox
-//
+        //
+        // Create the listbox
+        //
 
-    		hWndDebugList = CreateWindow("Listbox","",
-                                    WS_CHILD
-                                  | WS_VISIBLE
-                                  | WS_VSCROLL
-                                  | LBS_DISABLENOSCROLL
-                                  | LBS_HASSTRINGS | LBS_OWNERDRAWFIXED
-                                  | LBS_NOINTEGRALHEIGHT,
-                                  0,0,0,0,hWnd,
-                                  (HMENU)IDC_LIST,hAppInst,
-                                  (LPSTR)NULL);
-    		break;
+        hWndDebugList = CreateWindow("Listbox",
+                                     "",
+                                     WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_DISABLENOSCROLL | LBS_HASSTRINGS |
+                                         LBS_OWNERDRAWFIXED | LBS_NOINTEGRALHEIGHT,
+                                     0,
+                                     0,
+                                     0,
+                                     0,
+                                     hWnd,
+                                     (HMENU) IDC_LIST,
+                                     hAppInst,
+                                     (LPSTR) NULL);
+        break;
 
-  	case WM_SIZE:
-    		SetWindowPos(hWndDebugList,NULL,0,0,LOWORD(lParam),HIWORD(lParam),SWP_NOZORDER);
-    		break;
+    case WM_SIZE:
+        SetWindowPos(hWndDebugList, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOZORDER);
+        break;
 
-  	case WM_SETFOCUS:
-    		SetFocus(hWndDebugList);
-    		break;
+    case WM_SETFOCUS:
+        SetFocus(hWndDebugList);
+        break;
 
-  	case WM_MEASUREITEM:
-    		MeasureDebugItem(hWnd,(LPMEASUREITEMSTRUCT)lParam);
-    		return (LRESULT) TRUE;
+    case WM_MEASUREITEM:
+        MeasureDebugItem(hWnd, (LPMEASUREITEMSTRUCT) lParam);
+        return (LRESULT) TRUE;
 
-  	case WM_DRAWITEM:
-    		DrawDebugItem(hWnd,(LPDRAWITEMSTRUCT)lParam);
-    		break;
+    case WM_DRAWITEM:
+        DrawDebugItem(hWnd, (LPDRAWITEMSTRUCT) lParam);
+        break;
 
-  	case WM_PAINT:
-    		BeginPaint(hWnd, &ps);
-    		EndPaint(hWnd, &ps);
-    		break;
+    case WM_PAINT:
+        BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+        break;
 
-  	case WM_DESTROY:
-    		hWndDebug = NULL;
-    		Tango::Util::instance()->get_debug_object()->clear_debug_window();
+    case WM_DESTROY:
+        hWndDebug = NULL;
+        Tango::Util::instance()->get_debug_object()->clear_debug_window();
 
-    		hMainWnd = Tango::Util::instance()->get_ds_main_window();
-    		hMenu = GetMenu(hMainWnd);
-    		MENUITEMINFO mii;
+        hMainWnd = Tango::Util::instance()->get_ds_main_window();
+        hMenu = GetMenu(hMainWnd);
+        MENUITEMINFO mii;
 
-    		mii.fMask = MIIM_STATE;
-    		mii.cbSize = sizeof(mii);
-    		bo = GetMenuItemInfo(hMenu,ID_VIEW_CONSOLE,FALSE,&mii);
-    		mii.fState ^= MFS_CHECKED;
-    		bo = SetMenuItemInfo(hMenu,ID_VIEW_CONSOLE,FALSE,&mii);
-    		break;
+        mii.fMask = MIIM_STATE;
+        mii.cbSize = sizeof(mii);
+        bo = GetMenuItemInfo(hMenu, ID_VIEW_CONSOLE, FALSE, &mii);
+        mii.fState ^= MFS_CHECKED;
+        bo = SetMenuItemInfo(hMenu, ID_VIEW_CONSOLE, FALSE, &mii);
+        break;
 
-  	default:
-    		return DefWindowProc(hWnd, msg, wParam, lParam);
-    		break;
- 	}
-  	return 0;
+    default:
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+        break;
+    }
+    return 0;
 }
 
 //
@@ -268,11 +266,11 @@ LRESULT CALLBACK DebugWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void MeasureDebugItem(HWND hWnd, LPMEASUREITEMSTRUCT lpMIS)
 {
-  	TEXTMETRIC tm;
-  	HDC hDC = GetDC(hWnd);
-  	GetTextMetrics(hDC, &tm);
-  	ReleaseDC(hWnd, hDC);
-  	lpMIS->itemHeight = tm.tmHeight;
+    TEXTMETRIC tm;
+    HDC hDC = GetDC(hWnd);
+    GetTextMetrics(hDC, &tm);
+    ReleaseDC(hWnd, hDC);
+    lpMIS->itemHeight = tm.tmHeight;
 }
 
 //
@@ -281,39 +279,38 @@ void MeasureDebugItem(HWND hWnd, LPMEASUREITEMSTRUCT lpMIS)
 
 void DrawDebugItem(HWND hWnd, LPDRAWITEMSTRUCT lpDI)
 {
-  	HBRUSH hbrBkGnd;
-  	RECT rc;
-  	HDC hDC;
-  	char buf[256];
+    HBRUSH hbrBkGnd;
+    RECT rc;
+    HDC hDC;
+    char buf[256];
 
-  	hDC = lpDI->hDC;
-  	rc = lpDI->rcItem;
+    hDC = lpDI->hDC;
+    rc = lpDI->rcItem;
 
-  	switch (lpDI->itemAction)
-  	{
-  	case ODA_SELECT:
-  	case ODA_DRAWENTIRE:
+    switch(lpDI->itemAction)
+    {
+    case ODA_SELECT:
+    case ODA_DRAWENTIRE:
 
-//
-// Erase the rectangle
-//
-    		hbrBkGnd = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
-    		FillRect(hDC, &rc, hbrBkGnd);
-    		DeleteObject(hbrBkGnd);
+        //
+        // Erase the rectangle
+        //
+        hbrBkGnd = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
+        FillRect(hDC, &rc, hbrBkGnd);
+        DeleteObject(hbrBkGnd);
 
-//
-// Show the text in our standard font
-//
+        //
+        // Show the text in our standard font
+        //
 
-    		SetBkMode(hDC,(int)1);
-//        SetBkMode(hDC,TRANSPARENT);
-    		SendMessage(lpDI->hwndItem,LB_GETTEXT,lpDI->itemID,(LPARAM)(LPSTR)buf);
+        SetBkMode(hDC, (int) 1);
+        //        SetBkMode(hDC,TRANSPARENT);
+        SendMessage(lpDI->hwndItem, LB_GETTEXT, lpDI->itemID, (LPARAM) (LPSTR) buf);
 
-    		ExtTextOut(hDC,rc.left+2, rc.top,ETO_CLIPPED,&rc,buf,lstrlen(buf),NULL);
+        ExtTextOut(hDC, rc.left + 2, rc.top, ETO_CLIPPED, &rc, buf, lstrlen(buf), NULL);
 
-    		break;
-
-  	}
+        break;
+    }
 }
 
-} // End of Tango namespace
+} // namespace Tango

@@ -1,16 +1,16 @@
 //===================================================================================================================
 //
-//  file :      	event.h
+//  file :          event.h
 //
-// 	description :   C++ include file for implementing the TANGO event server and client singleton classes -
-//					EventSupplier and EventConsumer.
-//             		These classes are used to send events from the server to the notification service and to receive
-//					events from the notification service.
+//     description :   C++ include file for implementing the TANGO event server and client singleton classes -
+//                    EventSupplier and EventConsumer.
+//                     These classes are used to send events from the server to the notification service and to receive
+//                    events from the notification service.
 //
-//  author(s) : 	A.Gotz (goetz@esrf.fr)
+//  author(s) :     A.Gotz (goetz@esrf.fr)
 //
 // Copyright (C) :      2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -46,15 +46,15 @@ namespace Tango
 extern "C"
 {
 #endif
-void leavefunc();
+    void leavefunc();
 #ifndef _USRDLL
 }
 #endif
 
 /********************************************************************************
- * 																				*
- * 						EventData class											*
- * 																				*
+ *                                                                                 *
+ *                         EventData class                                            *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -69,90 +69,121 @@ void leavefunc();
 
 class EventData
 {
-public :
-///@privatesection
-	EventData() {}
-	EventData(DeviceProxy *dev,const std::string &nam,const std::string &evt,Tango::DeviceAttribute *attr_value_in,const DevErrorList &errors_in);
+  public:
+    ///@privatesection
+    EventData() { }
 
-	~EventData();
-	EventData(const EventData &);
-	EventData & operator=(const EventData &);
-	/**
-	 * The date when the event arrived
-	 */
-	Tango::TimeVal reception_date;
-	Tango::TimeVal &get_date() {return reception_date;}
+    EventData(DeviceProxy *dev,
+              const std::string &nam,
+              const std::string &evt,
+              Tango::DeviceAttribute *attr_value_in,
+              const DevErrorList &errors_in);
 
-///@publicsection
-	std::unique_ptr<DeviceAttribute> get_attr_err_info(); ///< Construct and return a DeviceAttribute containing the error stack
+    ~EventData();
+    EventData(const EventData &);
+    EventData &operator=(const EventData &);
+    /**
+     * The date when the event arrived
+     */
+    Tango::TimeVal reception_date;
 
-	DeviceProxy     *device;        ///< The DeviceProxy object on which the call was executed
-	std::string     attr_name;      ///< The attribute name
-	std::string     event;          ///< The event name
-	DeviceAttribute *attr_value;    ///< The attribute data
-	bool            err;            ///< A boolean flag set to true if the request failed. False otherwise
-	DevErrorList    errors;         ///< The error stack
+    Tango::TimeVal &get_date()
+    {
+        return reception_date;
+    }
 
-private:
-	void set_time();
+    ///@publicsection
+    std::unique_ptr<DeviceAttribute>
+        get_attr_err_info(); ///< Construct and return a DeviceAttribute containing the error stack
+
+    DeviceProxy *device;         ///< The DeviceProxy object on which the call was executed
+    std::string attr_name;       ///< The attribute name
+    std::string event;           ///< The event name
+    DeviceAttribute *attr_value; ///< The attribute data
+    bool err;                    ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors;         ///< The error stack
+
+  private:
+    void set_time();
 };
 
-class FwdEventData: public EventData
+class FwdEventData : public EventData
 {
-public:
-	FwdEventData();
-	FwdEventData(DeviceProxy *,const std::string &,const std::string &,Tango::DeviceAttribute *,const DevErrorList &);
-	FwdEventData(DeviceProxy *,const std::string &,const std::string &,Tango::DeviceAttribute *,const DevErrorList &,zmq::message_t *);
+  public:
+    FwdEventData();
+    FwdEventData(
+        DeviceProxy *, const std::string &, const std::string &, Tango::DeviceAttribute *, const DevErrorList &);
+    FwdEventData(DeviceProxy *,
+                 const std::string &,
+                 const std::string &,
+                 Tango::DeviceAttribute *,
+                 const DevErrorList &,
+                 zmq::message_t *);
 
-	void set_av_5(const AttributeValue_5 *_p) {av_5 = _p;}
-	const AttributeValue_5 *get_av_5() {return av_5;}
-	zmq::message_t *get_zmq_mess_ptr() {return event_data;}
+    void set_av_5(const AttributeValue_5 *_p)
+    {
+        av_5 = _p;
+    }
 
-private:
-	const AttributeValue_5	*av_5;
-	zmq::message_t			*event_data;
+    const AttributeValue_5 *get_av_5()
+    {
+        return av_5;
+    }
+
+    zmq::message_t *get_zmq_mess_ptr()
+    {
+        return event_data;
+    }
+
+  private:
+    const AttributeValue_5 *av_5;
+    zmq::message_t *event_data;
 };
 
 /********************************************************************************
- * 																				*
- * 						EventDataList class										*
- * 																				*
+ *                                                                                 *
+ *                         EventDataList class                                        *
+ *                                                                                 *
  *******************************************************************************/
-class EventDataList:public std::vector<EventData *>
+class EventDataList : public std::vector<EventData *>
 {
-public:
-	EventDataList(): std::vector<EventData *>(0) {}
-	~EventDataList()
-		{
-		if (size() > 0)
-			{
-			EventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-				{
-				delete (*vpos);
-				}
-			}
-		}
-	void clear()
-		{
-		if (size() > 0)
-			{
-			EventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-				{
-				delete (*vpos);
-				}
+  public:
+    EventDataList() :
+        std::vector<EventData *>(0)
+    {
+    }
 
-			this->vector<EventData *>::clear();
-			}
-		}
+    ~EventDataList()
+    {
+        if(size() > 0)
+        {
+            EventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+        }
+    }
+
+    void clear()
+    {
+        if(size() > 0)
+        {
+            EventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+
+            this->vector<EventData *>::clear();
+        }
+    }
 };
 
-
 /********************************************************************************
- * 																				*
- * 						AttrConfEventData class									*
- * 																				*
+ *                                                                                 *
+ *                         AttrConfEventData class                                    *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -168,86 +199,105 @@ public:
 
 class AttrConfEventData
 {
-public :
-///@privatesection
-	AttrConfEventData() {}
-	AttrConfEventData(DeviceProxy *dev,const std::string &nam,const std::string &evt,
-	                  Tango::AttributeInfoEx *attr_conf_in,
-	                  const DevErrorList &errors_in);
-	~AttrConfEventData();
-	AttrConfEventData(const AttrConfEventData &);
-	AttrConfEventData & operator=(const AttrConfEventData &);
-	/**
-	 * The date when the event arrived
-	 */
-	Tango::TimeVal reception_date;
-	Tango::TimeVal &get_date() {return reception_date;}
+  public:
+    ///@privatesection
+    AttrConfEventData() { }
 
-///@publicsection
-	DeviceProxy     *device;        ///< The DeviceProxy object on which the call was executed
-	std::string          attr_name;      ///< The attribute name
-	std::string          event;          ///< The event name
-	AttributeInfoEx *attr_conf;     ///< The attribute configuration
-	bool            err;            ///< A boolean flag set to true if the request failed. False otherwise
-	DevErrorList    errors;         ///< The error stack
+    AttrConfEventData(DeviceProxy *dev,
+                      const std::string &nam,
+                      const std::string &evt,
+                      Tango::AttributeInfoEx *attr_conf_in,
+                      const DevErrorList &errors_in);
+    ~AttrConfEventData();
+    AttrConfEventData(const AttrConfEventData &);
+    AttrConfEventData &operator=(const AttrConfEventData &);
+    /**
+     * The date when the event arrived
+     */
+    Tango::TimeVal reception_date;
 
-private:
-	void set_time();
+    Tango::TimeVal &get_date()
+    {
+        return reception_date;
+    }
+
+    ///@publicsection
+    DeviceProxy *device;        ///< The DeviceProxy object on which the call was executed
+    std::string attr_name;      ///< The attribute name
+    std::string event;          ///< The event name
+    AttributeInfoEx *attr_conf; ///< The attribute configuration
+    bool err;                   ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors;        ///< The error stack
+
+  private:
+    void set_time();
 };
 
-
-class FwdAttrConfEventData: public AttrConfEventData
+class FwdAttrConfEventData : public AttrConfEventData
 {
-public:
-	FwdAttrConfEventData();
-	FwdAttrConfEventData(DeviceProxy *,const std::string &,const std::string &,Tango::AttributeInfoEx *,const DevErrorList &);
+  public:
+    FwdAttrConfEventData();
+    FwdAttrConfEventData(
+        DeviceProxy *, const std::string &, const std::string &, Tango::AttributeInfoEx *, const DevErrorList &);
 
-	void set_fwd_attr_conf(const AttributeConfig_5 *_p) {fwd_attr_conf = _p;}
-	const AttributeConfig_5 *get_fwd_attr_conf() {return fwd_attr_conf;}
+    void set_fwd_attr_conf(const AttributeConfig_5 *_p)
+    {
+        fwd_attr_conf = _p;
+    }
 
-private:
-	const AttributeConfig_5	*fwd_attr_conf;
+    const AttributeConfig_5 *get_fwd_attr_conf()
+    {
+        return fwd_attr_conf;
+    }
+
+  private:
+    const AttributeConfig_5 *fwd_attr_conf;
 };
 
 /********************************************************************************
- * 																				*
- * 						AttrConfEventDataList class								*
- * 																				*
+ *                                                                                 *
+ *                         AttrConfEventDataList class                                *
+ *                                                                                 *
  *******************************************************************************/
-class AttrConfEventDataList:public std::vector<AttrConfEventData *>
+class AttrConfEventDataList : public std::vector<AttrConfEventData *>
 {
-public:
-	AttrConfEventDataList(): std::vector<AttrConfEventData *>(0) {}
-	~AttrConfEventDataList()
-		{
-		if (size() > 0)
-			{
-			AttrConfEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-				{
-				delete (*vpos);
-				}
-			}
-		}
-	void clear()
-		{
-		if (size() > 0)
-			{
-			AttrConfEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-				{
-				delete (*vpos);
-				}
+  public:
+    AttrConfEventDataList() :
+        std::vector<AttrConfEventData *>(0)
+    {
+    }
 
-			this->vector<AttrConfEventData *>::clear();
-			}
-		}
+    ~AttrConfEventDataList()
+    {
+        if(size() > 0)
+        {
+            AttrConfEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+        }
+    }
+
+    void clear()
+    {
+        if(size() > 0)
+        {
+            AttrConfEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+
+            this->vector<AttrConfEventData *>::clear();
+        }
+    }
 };
 
 /********************************************************************************
- * 																				*
- * 						DataReadyEventData class								*
- * 																				*
+ *                                                                                 *
+ *                         DataReadyEventData class                                *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -262,75 +312,85 @@ public:
 
 class DataReadyEventData
 {
-public :
-///@privatesection
-	DataReadyEventData() {}
-	DataReadyEventData(DeviceProxy *,AttDataReady *,const std::string &evt,const DevErrorList &);
-	~DataReadyEventData() {}
-	DataReadyEventData(const DataReadyEventData &);
-	DataReadyEventData & operator=(const DataReadyEventData &);
-	/**
-	 * The date when the event arrived
-	 */
-	Tango::TimeVal 	reception_date;
-	Tango::TimeVal &get_date() {return reception_date;}
+  public:
+    ///@privatesection
+    DataReadyEventData() { }
 
-///@publicsection
-	DeviceProxy 	*device;            ///< The DeviceProxy object on which the call was executed
-	std::string 			attr_name;          ///< The attribute name
-	std::string			event;              ///< The event name
-	int 			attr_data_type;     ///< The attribute data type
-	int 			ctr;                ///< The user counter. Set to 0 if not defined when sent by the server
+    DataReadyEventData(DeviceProxy *, AttDataReady *, const std::string &evt, const DevErrorList &);
 
-	bool 			err;                ///< A boolean flag set to true if the request failed. False otherwise
-	DevErrorList 	errors;             ///< The error stack
+    ~DataReadyEventData() { }
 
-private:
-	void set_time();
+    DataReadyEventData(const DataReadyEventData &);
+    DataReadyEventData &operator=(const DataReadyEventData &);
+    /**
+     * The date when the event arrived
+     */
+    Tango::TimeVal reception_date;
+
+    Tango::TimeVal &get_date()
+    {
+        return reception_date;
+    }
+
+    ///@publicsection
+    DeviceProxy *device;   ///< The DeviceProxy object on which the call was executed
+    std::string attr_name; ///< The attribute name
+    std::string event;     ///< The event name
+    int attr_data_type;    ///< The attribute data type
+    int ctr;               ///< The user counter. Set to 0 if not defined when sent by the server
+
+    bool err;            ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors; ///< The error stack
+
+  private:
+    void set_time();
 };
 
 /********************************************************************************
- * 																				*
- * 						DataReadyEventDataList class							*
- * 																				*
+ *                                                                                 *
+ *                         DataReadyEventDataList class                            *
+ *                                                                                 *
  *******************************************************************************/
 
-class DataReadyEventDataList:public std::vector<DataReadyEventData *>
+class DataReadyEventDataList : public std::vector<DataReadyEventData *>
 {
-public:
-	DataReadyEventDataList(): std::vector<DataReadyEventData *>(0) {}
-	~DataReadyEventDataList()
-	{
-		if (size() > 0)
-		{
-			DataReadyEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-			{
-				delete (*vpos);
-			}
-		}
-	}
-	void clear()
-	{
-		if (size() > 0)
-		{
-			DataReadyEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-			{
-				delete (*vpos);
-			}
+  public:
+    DataReadyEventDataList() :
+        std::vector<DataReadyEventData *>(0)
+    {
+    }
 
-			this->vector<DataReadyEventData *>::clear();
-		}
-	}
-}
-;
+    ~DataReadyEventDataList()
+    {
+        if(size() > 0)
+        {
+            DataReadyEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+        }
+    }
 
+    void clear()
+    {
+        if(size() > 0)
+        {
+            DataReadyEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+
+            this->vector<DataReadyEventData *>::clear();
+        }
+    }
+};
 
 /********************************************************************************
- * 																				*
- * 						DevIntrChangeEventData class							*
- * 																				*
+ *                                                                                 *
+ *                         DevIntrChangeEventData class                            *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -345,76 +405,100 @@ public:
 
 class DevIntrChangeEventData
 {
-public :
-///@privatesection
-	DevIntrChangeEventData() {}
-	DevIntrChangeEventData(DeviceProxy *,const std::string &,const std::string &,DevCmdInfoList_2 *,AttributeConfigList_5 *,bool,const DevErrorList &);
-	DevIntrChangeEventData(DeviceProxy *,const std::string &,const std::string &,CommandInfoList *,AttributeInfoListEx *,bool,const DevErrorList &);
-	~DevIntrChangeEventData() {}
-	DevIntrChangeEventData(const DevIntrChangeEventData &);
-	DevIntrChangeEventData & operator=(const DevIntrChangeEventData &);
-	/**
-	 * The date when the event arrived
-	 */
-	Tango::TimeVal 	reception_date;
-	Tango::TimeVal &get_date() {return reception_date;}
+  public:
+    ///@privatesection
+    DevIntrChangeEventData() { }
 
-///@publicsection
-	DeviceProxy 		*device;            ///< The DeviceProxy object on which the call was executed
-	std::string				event;              ///< The event name
-	std::string				device_name;		///< The device name
-	CommandInfoList 	cmd_list;			///< Device command list info
-	AttributeInfoListEx	att_list;			///< Device attribute list info
-	bool				dev_started;		///< Device started flag (true when event sent due to device being (re)started
-											///< and with only a possible but not sure interface change)
+    DevIntrChangeEventData(DeviceProxy *,
+                           const std::string &,
+                           const std::string &,
+                           DevCmdInfoList_2 *,
+                           AttributeConfigList_5 *,
+                           bool,
+                           const DevErrorList &);
+    DevIntrChangeEventData(DeviceProxy *,
+                           const std::string &,
+                           const std::string &,
+                           CommandInfoList *,
+                           AttributeInfoListEx *,
+                           bool,
+                           const DevErrorList &);
 
-	bool 				err;                ///< A boolean flag set to true if the request failed. False otherwise
-	DevErrorList 		errors;            	///< The error stack
+    ~DevIntrChangeEventData() { }
 
-private:
-	void set_time();
+    DevIntrChangeEventData(const DevIntrChangeEventData &);
+    DevIntrChangeEventData &operator=(const DevIntrChangeEventData &);
+    /**
+     * The date when the event arrived
+     */
+    Tango::TimeVal reception_date;
+
+    Tango::TimeVal &get_date()
+    {
+        return reception_date;
+    }
+
+    ///@publicsection
+    DeviceProxy *device;          ///< The DeviceProxy object on which the call was executed
+    std::string event;            ///< The event name
+    std::string device_name;      ///< The device name
+    CommandInfoList cmd_list;     ///< Device command list info
+    AttributeInfoListEx att_list; ///< Device attribute list info
+    bool dev_started;             ///< Device started flag (true when event sent due to device being (re)started
+                                  ///< and with only a possible but not sure interface change)
+
+    bool err;            ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors; ///< The error stack
+
+  private:
+    void set_time();
 };
 
 /********************************************************************************
- * 																				*
- * 						DevIntrChangeEventDataList class						*
- * 																				*
+ *                                                                                 *
+ *                         DevIntrChangeEventDataList class                        *
+ *                                                                                 *
  *******************************************************************************/
 
-class DevIntrChangeEventDataList:public std::vector<DevIntrChangeEventData *>
+class DevIntrChangeEventDataList : public std::vector<DevIntrChangeEventData *>
 {
-public:
-	DevIntrChangeEventDataList(): std::vector<DevIntrChangeEventData *>(0) {}
-	~DevIntrChangeEventDataList()
-	{
-		if (size() > 0)
-		{
-			DevIntrChangeEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-			{
-				delete (*vpos);
-			}
-		}
-	}
-	void clear()
-	{
-		if (size() > 0)
-		{
-			DevIntrChangeEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-			{
-				delete (*vpos);
-			}
+  public:
+    DevIntrChangeEventDataList() :
+        std::vector<DevIntrChangeEventData *>(0)
+    {
+    }
 
-			this->vector<DevIntrChangeEventData *>::clear();
-		}
-	}
+    ~DevIntrChangeEventDataList()
+    {
+        if(size() > 0)
+        {
+            DevIntrChangeEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+        }
+    }
+
+    void clear()
+    {
+        if(size() > 0)
+        {
+            DevIntrChangeEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+
+            this->vector<DevIntrChangeEventData *>::clear();
+        }
+    }
 };
 
 /********************************************************************************
- * 																				*
- * 						PipeEventData class										*
- * 																				*
+ *                                                                                 *
+ *                         PipeEventData class                                        *
+ *                                                                                 *
  *******************************************************************************/
 
 /**
@@ -429,116 +513,138 @@ public:
 
 class PipeEventData
 {
-public :
-///@privatesection
-	PipeEventData() {}
-	PipeEventData(DeviceProxy *dev,const std::string &nam,const std::string &evt,Tango::DevicePipe *pipe_value_in,const DevErrorList &errors_in);
+  public:
+    ///@privatesection
+    PipeEventData() { }
 
-	~PipeEventData();
-	PipeEventData(const PipeEventData &);
-	PipeEventData & operator=(const PipeEventData &);
-	/**
-	 * The date when the event arrived
-	 */
-	Tango::TimeVal reception_date;
-	Tango::TimeVal &get_date() {return reception_date;}
+    PipeEventData(DeviceProxy *dev,
+                  const std::string &nam,
+                  const std::string &evt,
+                  Tango::DevicePipe *pipe_value_in,
+                  const DevErrorList &errors_in);
 
-///@publicsection
-	DeviceProxy     *device;        ///< The DeviceProxy object on which the call was executed
-	std::string          pipe_name;      ///< The pipe name
-	std::string          event;          ///< The event name
-	DevicePipe 		*pipe_value;   	///< The pipe data
-	bool            err;            ///< A boolean flag set to true if the request failed. False otherwise
-	DevErrorList    errors;         ///< The error stack
+    ~PipeEventData();
+    PipeEventData(const PipeEventData &);
+    PipeEventData &operator=(const PipeEventData &);
+    /**
+     * The date when the event arrived
+     */
+    Tango::TimeVal reception_date;
 
-private:
-	void set_time();
+    Tango::TimeVal &get_date()
+    {
+        return reception_date;
+    }
+
+    ///@publicsection
+    DeviceProxy *device;    ///< The DeviceProxy object on which the call was executed
+    std::string pipe_name;  ///< The pipe name
+    std::string event;      ///< The event name
+    DevicePipe *pipe_value; ///< The pipe data
+    bool err;               ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors;    ///< The error stack
+
+  private:
+    void set_time();
 };
 
 /********************************************************************************
- * 																				*
- * 						PipeEventDataList class									*
- * 																				*
+ *                                                                                 *
+ *                         PipeEventDataList class                                    *
+ *                                                                                 *
  *******************************************************************************/
 
-class PipeEventDataList:public std::vector<PipeEventData *>
+class PipeEventDataList : public std::vector<PipeEventData *>
 {
-public:
-	PipeEventDataList(): std::vector<PipeEventData *>(0) {}
-	~PipeEventDataList()
-	{
-		if (size() > 0)
-		{
-			PipeEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-			{
-				delete (*vpos);
-			}
-		}
-	}
-	void clear()
-	{
-		if (size() > 0)
-		{
-			PipeEventDataList::iterator vpos;
-			for (vpos=begin(); vpos!=end(); ++vpos)
-			{
-				delete (*vpos);
-			}
+  public:
+    PipeEventDataList() :
+        std::vector<PipeEventData *>(0)
+    {
+    }
 
-			this->vector<PipeEventData *>::clear();
-		}
-	}
+    ~PipeEventDataList()
+    {
+        if(size() > 0)
+        {
+            PipeEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+        }
+    }
+
+    void clear()
+    {
+        if(size() > 0)
+        {
+            PipeEventDataList::iterator vpos;
+            for(vpos = begin(); vpos != end(); ++vpos)
+            {
+                delete(*vpos);
+            }
+
+            this->vector<PipeEventData *>::clear();
+        }
+    }
 };
 
-
 /********************************************************************************
- * 																				*
- * 						EventQueue class										*
- * 																				*
+ *                                                                                 *
+ *                         EventQueue class                                        *
+ *                                                                                 *
  *******************************************************************************/
 class EventQueue
 {
-public:
-	EventQueue();
-	EventQueue(long max_size);
-	~EventQueue();
+  public:
+    EventQueue();
+    EventQueue(long max_size);
+    ~EventQueue();
 
-	void insert_event(EventData         		*new_event);
-	void insert_event(AttrConfEventData 		*new_event);
-	void insert_event(DataReadyEventData 		*new_event);
-	void insert_event(DevIntrChangeEventData 	*new_event);
-	void insert_event(PipeEventData 			*new_event);
+    void insert_event(EventData *new_event);
+    void insert_event(AttrConfEventData *new_event);
+    void insert_event(DataReadyEventData *new_event);
+    void insert_event(DevIntrChangeEventData *new_event);
+    void insert_event(PipeEventData *new_event);
 
-	int      size();
-	TimeVal get_last_event_date();
-	bool     is_empty() {if (event_buffer.empty() == true) return true;else return false;}
+    int size();
+    TimeVal get_last_event_date();
 
-	void get_events(EventDataList         		&event_list);
-	void get_events(AttrConfEventDataList 		&event_list);
-	void get_events(DataReadyEventDataList		&event_list);
-	void get_events(DevIntrChangeEventDataList  &event_list);
-	void get_events(PipeEventDataList  			&event_list);
-	void get_events(CallBack *cb);
+    bool is_empty()
+    {
+        if(event_buffer.empty() == true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-private:
-	void inc_indexes();
+    void get_events(EventDataList &event_list);
+    void get_events(AttrConfEventDataList &event_list);
+    void get_events(DataReadyEventDataList &event_list);
+    void get_events(DevIntrChangeEventDataList &event_list);
+    void get_events(PipeEventDataList &event_list);
+    void get_events(CallBack *cb);
 
-	std::vector<EventData *>         		event_buffer;
-	std::vector<AttrConfEventData *> 		conf_event_buffer;
-	std::vector<DataReadyEventData *>		ready_event_buffer;
-	std::vector<DevIntrChangeEventData *>	dev_inter_event_buffer;
-	std::vector<PipeEventData *>				pipe_event_buffer;
+  private:
+    void inc_indexes();
 
-	long	max_elt;
-	long	insert_elt;
-	long	nb_elt;
+    std::vector<EventData *> event_buffer;
+    std::vector<AttrConfEventData *> conf_event_buffer;
+    std::vector<DataReadyEventData *> ready_event_buffer;
+    std::vector<DevIntrChangeEventData *> dev_inter_event_buffer;
+    std::vector<PipeEventData *> pipe_event_buffer;
 
-	omni_mutex	modification_mutex;
+    long max_elt;
+    long insert_elt;
+    long nb_elt;
+
+    omni_mutex modification_mutex;
 };
 
-
-} // End of namespace
-
+} // namespace Tango
 
 #endif // _EVENTAPI_H

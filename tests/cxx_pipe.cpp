@@ -6,688 +6,701 @@
 #undef SUITE_NAME
 #define SUITE_NAME PipeTestSuite
 
-class PipeTestSuite: public CxxTest::TestSuite
+class PipeTestSuite : public CxxTest::TestSuite
 {
-protected:
-	DeviceProxy 			*device1;
-	string 					device1_name;
-	DeviceProxy 			*root_admin;
-
-public:
-	SUITE_NAME()
-	{
-//
-// Arguments check -------------------------------------------------
-//
-
-		string full_ds_name;
-
-		// user arguments, obtained from the command line sequentially
-		device1_name = CxxTest::TangoPrinter::get_param("device1");
-		full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
-
-		// always add this line, otherwise arguments will not be parsed correctly
-		CxxTest::TangoPrinter::validate_args();
-
-
-//
-// Initialization --------------------------------------------------
-//
-
-		try
-		{
-			device1 = new DeviceProxy(device1_name);
-			device1->ping();
-
-			string root_adm_name("dserver/");
-			root_adm_name = root_adm_name + full_ds_name;
-			root_admin = new DeviceProxy(root_adm_name);
-
-			DeviceData d_in;
-			d_in << (short)0;
-			device1->command_inout("SetPipeOutput",d_in);
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
-	}
-
-	virtual ~SUITE_NAME()
-	{
-		DeviceData d_in;
-		d_in << Tango::ON;
-		device1->command_inout("IOState",d_in);
+  protected:
+    DeviceProxy *device1;
+    string device1_name;
+    DeviceProxy *root_admin;
+
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
+
+        string full_ds_name;
+
+        // user arguments, obtained from the command line sequentially
+        device1_name = CxxTest::TangoPrinter::get_param("device1");
+        full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
+
+        // always add this line, otherwise arguments will not be parsed correctly
+        CxxTest::TangoPrinter::validate_args();
+
+        //
+        // Initialization --------------------------------------------------
+        //
+
+        try
+        {
+            device1 = new DeviceProxy(device1_name);
+            device1->ping();
+
+            string root_adm_name("dserver/");
+            root_adm_name = root_adm_name + full_ds_name;
+            root_admin = new DeviceProxy(root_adm_name);
+
+            DeviceData d_in;
+            d_in << (short) 0;
+            device1->command_inout("SetPipeOutput", d_in);
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
+
+    virtual ~SUITE_NAME()
+    {
+        DeviceData d_in;
+        d_in << Tango::ON;
+        device1->command_inout("IOState", d_in);
+
+        delete device1;
+        delete root_admin;
+    }
+
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
+
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
+
+    //
+    // Tests -------------------------------------------------------
+    //
+
+    // Test pipe reading
+
+    void test_reading_pipe_with_extraction_using_DataElement(void)
+    {
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
+
+        DataElement<DevLong> de_dl;
+        DataElement<vector<double>> de_v_db;
+        DataElement<DevVarUShortArray *> de_dvush(new DevVarUShortArray());
+        DataElement<vector<DevState>> de_v_sta;
 
-		delete device1;
-		delete root_admin;
-	}
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        TS_ASSERT_EQUALS(de_nb, 4u);
+
+        pipe_data >> de_dl >> de_v_db >> de_dvush >> de_v_sta;
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase0");
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+        TS_ASSERT_EQUALS(de_dl.name, "FirstDE");
+        TS_ASSERT_EQUALS(de_dl.value, 666);
 
-//
-// Tests -------------------------------------------------------
-//
-
+        TS_ASSERT_EQUALS(de_v_db.name, "SecondDE");
+        TS_ASSERT_EQUALS(de_v_db.value.size(), 2u);
+        TS_ASSERT_EQUALS(de_v_db.value[0], 1.11);
+        TS_ASSERT_EQUALS(de_v_db.value[1], 2.22);
 
-// Test pipe reading
+        TS_ASSERT_EQUALS(de_dvush.name, "ThirdDE");
+        TS_ASSERT_EQUALS(de_dvush.value->length(), 100u);
+        TS_ASSERT_EQUALS((*de_dvush.value)[0], 0);
+        TS_ASSERT_EQUALS((*de_dvush.value)[1], 1);
+        TS_ASSERT_EQUALS((*de_dvush.value)[99], 99);
 
-	void test_reading_pipe_with_extraction_using_DataElement(void)
-	{
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        TS_ASSERT_EQUALS(de_v_sta.name, "ForthDE");
+        TS_ASSERT_EQUALS(de_v_sta.value.size(), 2u);
+        TS_ASSERT_EQUALS(de_v_sta.value[0], ON);
+        TS_ASSERT_EQUALS(de_v_sta.value[1], OFF);
 
-		DataElement<DevLong> de_dl;
-		DataElement<vector<double> > de_v_db;
-		DataElement<DevVarUShortArray *> de_dvush(new DevVarUShortArray());
-		DataElement<vector<DevState> > de_v_sta;
+        delete de_dvush.value;
+    }
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		TS_ASSERT_EQUALS(de_nb, 4u);
+    void test_reading_pipe_with_simple_extraction(void)
+    {
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-    	pipe_data >> de_dl >> de_v_db >> de_dvush >> de_v_sta;
+        DevLong dl;
+        vector<double> v_db;
+        DevVarUShortArray *dvush = new DevVarUShortArray();
+        vector<DevState> v_sta;
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase0");
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		TS_ASSERT_EQUALS(de_dl.name, "FirstDE");
-		TS_ASSERT_EQUALS(de_dl.value, 666);
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase0");
+        TS_ASSERT_EQUALS(de_nb, 4u);
 
-		TS_ASSERT_EQUALS(de_v_db.name, "SecondDE");
-		TS_ASSERT_EQUALS(de_v_db.value.size(), 2u);
-		TS_ASSERT_EQUALS(de_v_db.value[0], 1.11);
-		TS_ASSERT_EQUALS(de_v_db.value[1], 2.22);
+        TS_ASSERT_EQUALS(de_names.size(), 4u);
+        TS_ASSERT_EQUALS(de_names[0], "FirstDE");
+        TS_ASSERT_EQUALS(de_names[1], "SecondDE");
+        TS_ASSERT_EQUALS(de_names[2], "ThirdDE");
+        TS_ASSERT_EQUALS(de_names[3], "ForthDE");
 
-		TS_ASSERT_EQUALS(de_dvush.name, "ThirdDE");
-		TS_ASSERT_EQUALS(de_dvush.value->length(), 100u);
-		TS_ASSERT_EQUALS((*de_dvush.value)[0], 0);
-		TS_ASSERT_EQUALS((*de_dvush.value)[1], 1);
-		TS_ASSERT_EQUALS((*de_dvush.value)[99], 99);
+        int type = pipe_data.get_data_elt_type(0);
+        TS_ASSERT_EQUALS(type, DEV_LONG);
 
-		TS_ASSERT_EQUALS(de_v_sta.name, "ForthDE");
-		TS_ASSERT_EQUALS(de_v_sta.value.size(), 2u);
-		TS_ASSERT_EQUALS(de_v_sta.value[0], ON);
-		TS_ASSERT_EQUALS(de_v_sta.value[1], OFF);
+        type = pipe_data.get_data_elt_type(1);
+        TS_ASSERT_EQUALS(type, DEVVAR_DOUBLEARRAY);
 
-		delete de_dvush.value;
-	}
+        type = pipe_data.get_data_elt_type(2);
+        TS_ASSERT_EQUALS(type, DEVVAR_USHORTARRAY);
 
-	void test_reading_pipe_with_simple_extraction(void)
-	{
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        type = pipe_data.get_data_elt_type(3);
+        TS_ASSERT_EQUALS(type, DEVVAR_STATEARRAY);
 
-		DevLong dl;
-		vector<double> v_db;
-		DevVarUShortArray *dvush = new DevVarUShortArray();
-		vector<DevState> v_sta;
+        pipe_data >> dl >> v_db >> dvush >> v_sta;
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+        TS_ASSERT_EQUALS(dl, 666);
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase0");
-		TS_ASSERT_EQUALS(de_nb, 4u);
+        TS_ASSERT_EQUALS(v_db.size(), 2u);
+        TS_ASSERT_EQUALS(v_db[0], 1.11);
+        TS_ASSERT_EQUALS(v_db[1], 2.22);
 
-		TS_ASSERT_EQUALS(de_names.size(), 4u);
-		TS_ASSERT_EQUALS(de_names[0], "FirstDE");
-		TS_ASSERT_EQUALS(de_names[1], "SecondDE");
-		TS_ASSERT_EQUALS(de_names[2], "ThirdDE");
-		TS_ASSERT_EQUALS(de_names[3], "ForthDE");
+        TS_ASSERT_EQUALS(dvush->length(), 100u);
+        TS_ASSERT_EQUALS((*dvush)[0], 0);
+        TS_ASSERT_EQUALS((*dvush)[1], 1);
+        TS_ASSERT_EQUALS((*dvush)[99], 99);
 
-		int type = pipe_data.get_data_elt_type(0);
-		TS_ASSERT_EQUALS(type, DEV_LONG);
+        TS_ASSERT_EQUALS(v_sta.size(), 2u);
+        TS_ASSERT_EQUALS(v_sta[0], ON);
+        TS_ASSERT_EQUALS(v_sta[1], OFF);
 
-		type = pipe_data.get_data_elt_type(1);
-		TS_ASSERT_EQUALS(type, DEVVAR_DOUBLEARRAY);
+        delete dvush;
+    }
 
-		type = pipe_data.get_data_elt_type(2);
-		TS_ASSERT_EQUALS(type, DEVVAR_USHORTARRAY);
+    void test_reading_pipe_with_ulong64_and_boolean_array(void)
+    {
+        DeviceData d_in;
+        d_in << (short) 11;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		type = pipe_data.get_data_elt_type(3);
-		TS_ASSERT_EQUALS(type, DEVVAR_STATEARRAY);
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-    	pipe_data >> dl >> v_db >> dvush >> v_sta;
+        DevULong64 udl64;
+        vector<Tango::DevBoolean> v_bool;
 
-		TS_ASSERT_EQUALS(dl, 666);
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		TS_ASSERT_EQUALS(v_db.size(), 2u);
-		TS_ASSERT_EQUALS(v_db[0], 1.11);
-		TS_ASSERT_EQUALS(v_db[1], 2.22);
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase11");
+        TS_ASSERT_EQUALS(de_nb, 2u);
 
-		TS_ASSERT_EQUALS(dvush->length(), 100u);
-		TS_ASSERT_EQUALS((*dvush)[0], 0);
-		TS_ASSERT_EQUALS((*dvush)[1], 1);
-		TS_ASSERT_EQUALS((*dvush)[99], 99);
+        TS_ASSERT_EQUALS(de_names.size(), 2u);
+        TS_ASSERT_EQUALS(de_names[0], "1DE");
+        TS_ASSERT_EQUALS(de_names[1], "2DE");
 
-		TS_ASSERT_EQUALS(v_sta.size(), 2u);
-		TS_ASSERT_EQUALS(v_sta[0], ON);
-		TS_ASSERT_EQUALS(v_sta[1], OFF);
+        int type = pipe_data.get_data_elt_type(0);
+        TS_ASSERT_EQUALS(type, DEV_ULONG64);
 
-		delete dvush;
-	}
+        type = pipe_data.get_data_elt_type(1);
+        TS_ASSERT_EQUALS(type, DEVVAR_BOOLEANARRAY);
 
-	void test_reading_pipe_with_ulong64_and_boolean_array(void)
-	{
-		DeviceData d_in;
-		d_in << (short)11;
-		device1->command_inout("SetPipeOutput",d_in);
+        pipe_data >> udl64 >> v_bool;
 
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        TS_ASSERT_EQUALS(udl64, 123456u);
 
-		DevULong64 udl64;
-		vector<Tango::DevBoolean> v_bool;
+        TS_ASSERT_EQUALS(v_bool.size(), 3u);
+        TS_ASSERT(v_bool[0]);
+        TS_ASSERT(v_bool[1]);
+        TS_ASSERT(!v_bool[2]);
+    }
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+    void test_reading_pipe_with_arrays_length_1(void)
+    {
+        DeviceData d_in;
+        d_in << (short) 12;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase11");
-		TS_ASSERT_EQUALS(de_nb, 2u);
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_EQUALS(de_names.size(), 2u);
-		TS_ASSERT_EQUALS(de_names[0], "1DE");
-		TS_ASSERT_EQUALS(de_names[1], "2DE");
+        vector<Tango::DevBoolean> v_bool;
+        vector<Tango::DevLong> v_dl;
 
-		int type = pipe_data.get_data_elt_type(0);
-		TS_ASSERT_EQUALS(type, DEV_ULONG64);
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		type = pipe_data.get_data_elt_type(1);
-		TS_ASSERT_EQUALS(type, DEVVAR_BOOLEANARRAY);
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase12");
+        TS_ASSERT_EQUALS(de_nb, 2u);
 
-    	pipe_data >> udl64 >> v_bool;
+        TS_ASSERT_EQUALS(de_names.size(), 2u);
+        TS_ASSERT_EQUALS(de_names[0], "1DE_Array");
+        TS_ASSERT_EQUALS(de_names[1], "2DE_Array");
 
-		TS_ASSERT_EQUALS(udl64, 123456u);
+        int type = pipe_data.get_data_elt_type(0);
+        TS_ASSERT_EQUALS(type, DEVVAR_LONGARRAY);
 
-		TS_ASSERT_EQUALS(v_bool.size(), 3u);
-		TS_ASSERT(v_bool[0]);
-		TS_ASSERT(v_bool[1]);
-		TS_ASSERT(!v_bool[2]);
-	}
+        type = pipe_data.get_data_elt_type(1);
+        TS_ASSERT_EQUALS(type, DEVVAR_BOOLEANARRAY);
 
-	void test_reading_pipe_with_arrays_length_1(void)
-	{
-		DeviceData d_in;
-		d_in << (short)12;
-		device1->command_inout("SetPipeOutput",d_in);
+        pipe_data >> v_dl >> v_bool;
 
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        TS_ASSERT_EQUALS(v_dl.size(), 1u);
+        TS_ASSERT_EQUALS(v_dl[0], 9);
 
-		vector<Tango::DevBoolean> v_bool;
-		vector<Tango::DevLong> v_dl;
+        TS_ASSERT_EQUALS(v_bool.size(), 1u);
+        TS_ASSERT(!v_bool[0]);
+    }
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+    void test_reading_pipe_with_string_types(void)
+    {
+        DeviceData d_in;
+        d_in << (short) 1;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase12");
-		TS_ASSERT_EQUALS(de_nb, 2u);
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_EQUALS(de_names.size(), 2u);
-		TS_ASSERT_EQUALS(de_names[0], "1DE_Array");
-		TS_ASSERT_EQUALS(de_names[1], "2DE_Array");
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		int type = pipe_data.get_data_elt_type(0);
-		TS_ASSERT_EQUALS(type, DEVVAR_LONGARRAY);
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase1");
+        TS_ASSERT_EQUALS(de_nb, 5u);
 
-		type = pipe_data.get_data_elt_type(1);
-		TS_ASSERT_EQUALS(type, DEVVAR_BOOLEANARRAY);
+        TS_ASSERT_EQUALS(de_names.size(), 5u);
+        TS_ASSERT_EQUALS(de_names[0], "stringDE");
+        TS_ASSERT_EQUALS(de_names[1], "DevStringDE");
+        TS_ASSERT_EQUALS(de_names[2], "DevEncodedDE");
+        TS_ASSERT_EQUALS(de_names[3], "VectorStringDE");
+        TS_ASSERT_EQUALS(de_names[4], "DevVarStringArrayDE");
 
-    	pipe_data >> v_dl >> v_bool;
+        string str;
+        DevString ds = nullptr;
+        DevEncoded enc;
+        vector<string> v_str;
+        DevVarStringArray *dvsa = new DevVarStringArray();
 
-		TS_ASSERT_EQUALS(v_dl.size(), 1u);
-		TS_ASSERT_EQUALS(v_dl[0], 9);
+        pipe_data >> str >> ds >> enc >> v_str >> dvsa;
 
-		TS_ASSERT_EQUALS(v_bool.size(), 1u);
-		TS_ASSERT(!v_bool[0]);
-	}
+        TS_ASSERT_EQUALS(str, "Hello");
 
-	void test_reading_pipe_with_string_types(void)
-	{
-		DeviceData d_in;
-		d_in << (short)1;
-		device1->command_inout("SetPipeOutput",d_in);
+        TS_ASSERT_EQUALS(std::string(ds), "Hola");
 
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        string tmp_enc("Format");
+        TS_ASSERT_EQUALS(std::string(enc.encoded_format), tmp_enc);
+        TS_ASSERT_EQUALS(enc.encoded_data.length(), 2u);
+        TS_ASSERT_EQUALS(enc.encoded_data[0], 0);
+        TS_ASSERT_EQUALS(enc.encoded_data[1], 1);
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+        TS_ASSERT_EQUALS(v_str.size(), 3u);
+        TS_ASSERT_EQUALS(v_str[0], "Bonjour");
+        TS_ASSERT_EQUALS(v_str[1], "le");
+        TS_ASSERT_EQUALS(v_str[2], "monde");
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase1");
-		TS_ASSERT_EQUALS(de_nb, 5u);
+        TS_ASSERT_EQUALS(dvsa->length(), 1u);
+        string tmp_dvsa("Why not?");
+        TS_ASSERT_EQUALS(std::string((*dvsa)[0]), tmp_dvsa);
 
-		TS_ASSERT_EQUALS(de_names.size(), 5u);
-		TS_ASSERT_EQUALS(de_names[0], "stringDE");
-		TS_ASSERT_EQUALS(de_names[1], "DevStringDE");
-		TS_ASSERT_EQUALS(de_names[2], "DevEncodedDE");
-		TS_ASSERT_EQUALS(de_names[3], "VectorStringDE");
-		TS_ASSERT_EQUALS(de_names[4], "DevVarStringArrayDE");
+        delete dvsa;
+        delete[] ds;
+    }
 
-		string str;
-		DevString ds = nullptr;
-		DevEncoded enc;
-		vector<string> v_str;
-		DevVarStringArray *dvsa = new DevVarStringArray();
+    void test_reading_pipe_with_operator_bracket(void)
+    {
+        DeviceData d_in;
+        d_in << (short) 2;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		pipe_data >> str >> ds >> enc >> v_str >> dvsa;
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_EQUALS(str, "Hello");
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		TS_ASSERT_EQUALS(std::string(ds), "Hola");
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase2");
+        TS_ASSERT_EQUALS(de_nb, 2u);
 
-		string tmp_enc("Format");
-		TS_ASSERT_EQUALS(std::string(enc.encoded_format), tmp_enc);
-		TS_ASSERT_EQUALS(enc.encoded_data.length(), 2u);
-		TS_ASSERT_EQUALS(enc.encoded_data[0], 0);
-		TS_ASSERT_EQUALS(enc.encoded_data[1], 1);
+        TS_ASSERT_EQUALS(de_names.size(), 2u);
+        TS_ASSERT_EQUALS(de_names[0], "FirstDE");
+        TS_ASSERT_EQUALS(de_names[1], "SecondDE");
 
-		TS_ASSERT_EQUALS(v_str.size(), 3u);
-		TS_ASSERT_EQUALS(v_str[0], "Bonjour");
-		TS_ASSERT_EQUALS(v_str[1], "le");
-		TS_ASSERT_EQUALS(v_str[2], "monde");
+        vector<double> v_db;
+        DevLong dl;
 
-		TS_ASSERT_EQUALS(dvsa->length(), 1u);
-		string tmp_dvsa("Why not?");
-		TS_ASSERT_EQUALS(std::string((*dvsa)[0]), tmp_dvsa);
+        pipe_data["SecondDE"] >> v_db;
+        pipe_data["FirstDE"] >> dl;
 
-		delete dvsa;
-		delete [] ds;
-	}
+        TS_ASSERT_EQUALS(v_db.size(), 3u);
+        TS_ASSERT_EQUALS(v_db[0], 3.33);
+        TS_ASSERT_EQUALS(v_db[1], 4.44);
+        TS_ASSERT_EQUALS(v_db[2], 5.55);
 
-	void test_reading_pipe_with_operator_bracket(void)
-	{
-		DeviceData d_in;
-		d_in << (short)2;
-		device1->command_inout("SetPipeOutput",d_in);
+        TS_ASSERT_EQUALS(dl, 999);
+    }
 
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+    void test_reading_pipe_initialized_with_data_elt(void)
+    {
+        DevicePipe pipe_data = device1->read_pipe("rPipeDE");
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase2");
-		TS_ASSERT_EQUALS(de_nb, 2u);
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobDE");
+        TS_ASSERT_EQUALS(de_nb, 4u);
 
-		TS_ASSERT_EQUALS(de_names.size(), 2u);
-		TS_ASSERT_EQUALS(de_names[0], "FirstDE");
-		TS_ASSERT_EQUALS(de_names[1], "SecondDE");
+        TS_ASSERT_EQUALS(de_names.size(), 4u);
+        TS_ASSERT_EQUALS(de_names[0], "FirstDE");
+        TS_ASSERT_EQUALS(de_names[1], "SecondDE");
 
-		vector<double> v_db;
-		DevLong dl;
+        vector<double> v_db;
+        DevLong dl;
 
-		pipe_data["SecondDE"] >> v_db;
-		pipe_data["FirstDE"] >> dl;
+        pipe_data["SecondDE"] >> v_db;
+        pipe_data["FirstDE"] >> dl;
 
-		TS_ASSERT_EQUALS(v_db.size(), 3u);
-		TS_ASSERT_EQUALS(v_db[0], 3.33);
-		TS_ASSERT_EQUALS(v_db[1], 4.44);
-		TS_ASSERT_EQUALS(v_db[2], 5.55);
+        TS_ASSERT_EQUALS(v_db.size(), 2u);
+        TS_ASSERT_EQUALS(v_db[0], 1.11);
+        TS_ASSERT_EQUALS(v_db[1], 2.22);
 
-		TS_ASSERT_EQUALS(dl, 999);
-	}
+        TS_ASSERT_EQUALS(dl, 666);
+    }
 
-	void test_reading_pipe_initialized_with_data_elt(void)
-	{
-		DevicePipe pipe_data = device1->read_pipe("rPipeDE");
+    void test_reading_pipe_with_blob_inside_blob(void)
+    {
+        DeviceData d_in;
+        d_in << (short) 3;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobDE");
-		TS_ASSERT_EQUALS(de_nb, 4u);
+        size_t de_nb = pipe_data.get_data_elt_nb();
+        vector<string> de_names = pipe_data.get_data_elt_names();
 
-		TS_ASSERT_EQUALS(de_names.size(), 4u);
-		TS_ASSERT_EQUALS(de_names[0], "FirstDE");
-		TS_ASSERT_EQUALS(de_names[1], "SecondDE");
+        TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase3");
+        TS_ASSERT_EQUALS(de_nb, 2u);
 
-		vector<double> v_db;
-		DevLong dl;
+        TS_ASSERT_EQUALS(de_names.size(), 2u);
+        TS_ASSERT_EQUALS(de_names[0], "1DE");
+        TS_ASSERT_EQUALS(de_names[1], "2DE");
 
-		pipe_data["SecondDE"] >> v_db;
-		pipe_data["FirstDE"] >> dl;
+        TS_ASSERT_EQUALS(pipe_data.get_data_elt_type(0), DEV_PIPE_BLOB);
+        TS_ASSERT_EQUALS(pipe_data.get_data_elt_type(1), DEVVAR_LONGARRAY);
 
-		TS_ASSERT_EQUALS(v_db.size(), 2u);
-		TS_ASSERT_EQUALS(v_db[0], 1.11);
-		TS_ASSERT_EQUALS(v_db[1], 2.22);
+        vector<DevLong> v_dl;
+        pipe_data["2DE"] >> v_dl;
 
-		TS_ASSERT_EQUALS(dl, 666);
-	}
+        TS_ASSERT_EQUALS(v_dl.size(), 4u);
+        TS_ASSERT_EQUALS(v_dl[0], 3);
+        TS_ASSERT_EQUALS(v_dl[1], 4);
+        TS_ASSERT_EQUALS(v_dl[2], 5);
+        TS_ASSERT_EQUALS(v_dl[3], 6);
 
-	void test_reading_pipe_with_blob_inside_blob(void)
-	{
-		DeviceData d_in;
-		d_in << (short)3;
-		device1->command_inout("SetPipeOutput",d_in);
+        DevicePipeBlob inner_dpb;
+        pipe_data["1DE"] >> inner_dpb;
 
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        TS_ASSERT_EQUALS(inner_dpb.get_name(), "Inner");
+        TS_ASSERT_EQUALS(inner_dpb.get_data_elt_nb(), 3u);
+        TS_ASSERT_EQUALS(inner_dpb.get_data_elt_name(0), "InnerFirstDE");
+        TS_ASSERT_EQUALS(inner_dpb.get_data_elt_name(1), "InnerSecondDE");
+        TS_ASSERT_EQUALS(inner_dpb.get_data_elt_name(2), "InnerThirdDE");
 
-		size_t de_nb = pipe_data.get_data_elt_nb();
-		vector<string> de_names = pipe_data.get_data_elt_names();
+        DevicePipeBlob inner_inner_dpb;
+        string inner_str;
+        bool inner_bool;
 
-		TS_ASSERT_EQUALS(pipe_data.get_root_blob_name(), "BlobCase3");
-		TS_ASSERT_EQUALS(de_nb, 2u);
+        inner_dpb >> inner_str >> inner_inner_dpb >> inner_bool;
 
-		TS_ASSERT_EQUALS(de_names.size(), 2u);
-		TS_ASSERT_EQUALS(de_names[0], "1DE");
-		TS_ASSERT_EQUALS(de_names[1], "2DE");
+        TS_ASSERT_EQUALS(inner_str, "Grenoble");
+        TS_ASSERT(inner_bool);
 
-		TS_ASSERT_EQUALS(pipe_data.get_data_elt_type(0), DEV_PIPE_BLOB);
-		TS_ASSERT_EQUALS(pipe_data.get_data_elt_type(1), DEVVAR_LONGARRAY);
+        TS_ASSERT_EQUALS(inner_inner_dpb.get_name(), "InnerInner");
+        TS_ASSERT_EQUALS(inner_inner_dpb.get_data_elt_nb(), 2u);
+        TS_ASSERT_EQUALS(inner_inner_dpb.get_data_elt_name(0), "InnerInnerFirstDE");
+        TS_ASSERT_EQUALS(inner_inner_dpb.get_data_elt_name(1), "InnerInnerSecondDE");
 
-		vector<DevLong> v_dl;
-		pipe_data["2DE"] >> v_dl;
+        DataElement<DevLong> de_dl;
+        DataElement<vector<double>> de_v_db;
 
-		TS_ASSERT_EQUALS(v_dl.size(), 4u);
-		TS_ASSERT_EQUALS(v_dl[0], 3);
-		TS_ASSERT_EQUALS(v_dl[1], 4);
-		TS_ASSERT_EQUALS(v_dl[2], 5);
-		TS_ASSERT_EQUALS(v_dl[3], 6);
+        inner_inner_dpb >> de_dl >> de_v_db;
 
-		DevicePipeBlob inner_dpb;
-		pipe_data["1DE"] >> inner_dpb;
+        TS_ASSERT_EQUALS(de_dl.name, "InnerInnerFirstDE");
+        TS_ASSERT_EQUALS(de_dl.value, 111);
 
-		TS_ASSERT_EQUALS(inner_dpb.get_name(), "Inner");
-		TS_ASSERT_EQUALS(inner_dpb.get_data_elt_nb(), 3u);
-		TS_ASSERT_EQUALS(inner_dpb.get_data_elt_name(0), "InnerFirstDE");
-		TS_ASSERT_EQUALS(inner_dpb.get_data_elt_name(1), "InnerSecondDE");
-		TS_ASSERT_EQUALS(inner_dpb.get_data_elt_name(2), "InnerThirdDE");
+        TS_ASSERT_EQUALS(de_v_db.value.size(), 1u);
+        TS_ASSERT_EQUALS(de_v_db.value[0], 3.33);
+    }
 
-		DevicePipeBlob inner_inner_dpb;
-		string inner_str;
-		bool inner_bool;
+    void test_reading_pipe_with_error_cases(void)
+    {
+        // Error in extract data
 
-		inner_dpb >> inner_str >> inner_inner_dpb >> inner_bool;
+        DeviceData d_in;
+        d_in << (short) 0;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		TS_ASSERT_EQUALS(inner_str, "Grenoble");
-		TS_ASSERT(inner_bool);
+        DevicePipe pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_EQUALS(inner_inner_dpb.get_name(), "InnerInner");
-		TS_ASSERT_EQUALS(inner_inner_dpb.get_data_elt_nb(), 2u);
-		TS_ASSERT_EQUALS(inner_inner_dpb.get_data_elt_name(0), "InnerInnerFirstDE");
-		TS_ASSERT_EQUALS(inner_inner_dpb.get_data_elt_name(1), "InnerInnerSecondDE");
+        DevLong dl, dl_extra;
+        vector<double> v_db;
+        vector<unsigned short> v_us;
+        vector<DevState> v_sta;
 
-		DataElement<DevLong> de_dl;
-		DataElement<vector<double> > de_v_db;
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data >> dl >> v_db >> v_us >> v_sta >> dl_extra;
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeWrongArg);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		inner_inner_dpb >> de_dl >> de_v_db;
+        pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_EQUALS(de_dl.name, "InnerInnerFirstDE");
-		TS_ASSERT_EQUALS(de_dl.value, 111);
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data >> dl >> dl_extra;
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_IncompatibleArgumentType);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		TS_ASSERT_EQUALS(de_v_db.value.size(), 1u);
-		TS_ASSERT_EQUALS(de_v_db.value[0], 3.33);
-	}
+        d_in << (short) 4;
+        device1->command_inout("SetPipeOutput", d_in);
 
-	void test_reading_pipe_with_error_cases(void)
-	{
+        pipe_data = device1->read_pipe("rPipe");
 
-// Error in extract data
+        TS_ASSERT_EQUALS(pipe_data.get_data_elt_nb(), 2u);
 
-		DeviceData d_in;
-		d_in << (short)0;
-		device1->command_inout("SetPipeOutput",d_in);
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data >> dl >> dl;
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDataElement);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		DevicePipe pipe_data = device1->read_pipe("rPipe");
+        // Same error with bit test instead of exceptions
 
-		DevLong dl, dl_extra;
-		vector<double> v_db;
-		vector<unsigned short> v_us;
-		vector<DevState> v_sta;
+        pipe_data = device1->read_pipe("rPipe");
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data >> dl >> v_db >> v_us >> v_sta >> dl_extra;, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeWrongArg);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        bitset<DevicePipeBlob::numFlags> bs;
+        bs.reset();
 
-		pipe_data = device1->read_pipe("rPipe");
+        pipe_data.exceptions(bs);
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data >> dl >> dl_extra;, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_IncompatibleArgumentType);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        pipe_data >> dl;
+        TS_ASSERT(!pipe_data.has_failed());
 
-		d_in << (short)4;
-		device1->command_inout("SetPipeOutput",d_in);
+        pipe_data >> dl;
+        TS_ASSERT(pipe_data.has_failed());
 
-		pipe_data = device1->read_pipe("rPipe");
+        bitset<DevicePipeBlob::numFlags> bs_err = pipe_data.state();
+        TS_ASSERT(bs_err.test(DevicePipeBlob::isempty_flag));
+        TS_ASSERT(!bs_err.test(DevicePipeBlob::wrongtype_flag));
+        TS_ASSERT(!bs_err.test(DevicePipeBlob::notenoughde_flag));
+        TS_ASSERT(!bs_err.test(DevicePipeBlob::blobdenamenotset_flag));
 
-		TS_ASSERT_EQUALS(pipe_data.get_data_elt_nb(), 2u);
+        bs.set();
+        pipe_data.exceptions(bs);
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data >> dl >> dl;, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDataElement);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        // Error when device write pipe
 
-// Same error with bit test instead of exceptions
+        d_in << (short) 5;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		pipe_data = device1->read_pipe("rPipe");
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("rpipe");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeValueNotSet);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		bitset<DevicePipeBlob::numFlags> bs;
-		bs.reset();
+        // Error pipe not found
 
-		pipe_data.exceptions(bs);
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("pi");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotFound);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		pipe_data >> dl;
-		TS_ASSERT(!pipe_data.has_failed());
+        // Not allowed error
 
-		pipe_data >> dl;
-		TS_ASSERT(pipe_data.has_failed());
+        d_in << Tango::OFF;
+        device1->command_inout("IOState", d_in);
 
-		bitset<DevicePipeBlob::numFlags> bs_err = pipe_data.state();
-		TS_ASSERT(bs_err.test(DevicePipeBlob::isempty_flag));
-		TS_ASSERT(!bs_err.test(DevicePipeBlob::wrongtype_flag));
-		TS_ASSERT(!bs_err.test(DevicePipeBlob::notenoughde_flag));
-		TS_ASSERT(!bs_err.test(DevicePipeBlob::blobdenamenotset_flag));
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("rpipe");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotAllowed);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		bs.set();
-		pipe_data.exceptions(bs);
+        d_in << Tango::ON;
+        device1->command_inout("IOState", d_in);
 
-// Error when device write pipe
+        // Duplicate DE name
 
-		d_in << (short)5;
-		device1->command_inout("SetPipeOutput",d_in);
+        d_in << (short) 6;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("rpipe");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeValueNotSet);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("rpipe");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeDuplicateDEName);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-// Error pipe not found
+        // Duplicate DE name
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("pi");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotFound);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        d_in << (short) 7;
+        device1->command_inout("SetPipeOutput", d_in);
 
-// Not allowed error
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("rpipe");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNoDataElement);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		d_in << Tango::OFF;
-		device1->command_inout("IOState",d_in);
+        // Mixing insertion method type
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("rpipe");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotAllowed);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        d_in << (short) 8;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		d_in << Tango::ON;
-		device1->command_inout("IOState",d_in);
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("rpipe");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_NotSupportedFeature);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-// Duplicate DE name
+        // Not enough data element
 
-		d_in << (short)6;
-		device1->command_inout("SetPipeOutput",d_in);
+        d_in << (short) 10;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("rpipe");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeDuplicateDEName);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data = device1->read_pipe("rpipe");
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeWrongArg);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-// Duplicate DE name
+        // Mixing extraction method type
 
-		d_in << (short)7;
-		device1->command_inout("SetPipeOutput",d_in);
+        d_in << (short) 0;
+        device1->command_inout("SetPipeOutput", d_in);
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("rpipe");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNoDataElement);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        pipe_data = device1->read_pipe("rpipe");
 
-// Mixing insertion method type
+        DevLong de_dl;
+        vector<double> de_v_db;
 
-		d_in << (short)8;
-		device1->command_inout("SetPipeOutput",d_in);
+        pipe_data >> de_dl;
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("rpipe");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_NotSupportedFeature);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        TS_ASSERT_THROWS_ASSERT(
+            pipe_data["SecondDE"] >> de_v_db;
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_NotSupportedFeature);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+    }
 
-// Not enough data element
+    void test_writing_pipe(void)
+    {
+        DevicePipe dp("RwPiPe", "WritenBlob");
 
-		d_in << (short)10;
-		device1->command_inout("SetPipeOutput",d_in);
+        vector<string> de_names;
+        de_names.push_back(string("aaa"));
+        de_names.push_back(string("bbb"));
+        string str("Writing pipe");
+        vector<float> v_fl;
+        v_fl.push_back(1.11f);
+        v_fl.push_back(8.88f);
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data = device1->read_pipe("rpipe");, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeWrongArg);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        dp.set_data_elt_names(de_names);
+        dp << str << v_fl;
 
-// Mixing extraction method type
+        TS_ASSERT_THROWS_NOTHING(device1->write_pipe(dp));
+    }
 
-		d_in << (short)0;
-		device1->command_inout("SetPipeOutput",d_in);
+    void test_writing_pipe_with_error(void)
+    {
+        // Empty device pipe
 
-		pipe_data = device1->read_pipe("rpipe");
+        DevicePipe dp("RwPiPe", "WritenBlob");
 
-		DevLong de_dl;
-		vector<double> de_v_db;
+        vector<string> de_names;
+        de_names.push_back(string("aaa"));
+        de_names.push_back(string("bbb"));
+        string str("Writing pipe");
+        vector<float> v_fl;
+        v_fl.push_back(1.11f);
+        v_fl.push_back(8.88f);
 
-    	pipe_data >> de_dl;
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_pipe(dp);
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNoDataElement);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		TS_ASSERT_THROWS_ASSERT(pipe_data["SecondDE"] >> de_v_db;, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_NotSupportedFeature);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
-	}
+        // Empty data element
 
-	void test_writing_pipe(void)
-	{
-		DevicePipe dp("RwPiPe","WritenBlob");
+        dp.set_data_elt_names(de_names);
 
-		vector<string> de_names;
-		de_names.push_back(string("aaa"));
-		de_names.push_back(string("bbb"));
-		string str("Writing pipe");
-		vector<float> v_fl;
-		v_fl.push_back(1.11f);
-		v_fl.push_back(8.88f);
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_pipe(dp);
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDataElement);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		dp.set_data_elt_names(de_names);
-		dp << str << v_fl;
+        // Pipe not found
 
-		TS_ASSERT_THROWS_NOTHING(device1->write_pipe(dp));
-	}
+        dp.set_name("XXX");
+        dp.set_data_elt_names(de_names);
+        dp << str << v_fl;
 
-	void test_writing_pipe_with_error(void)
-	{
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_pipe(dp);
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotFound);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-// Empty device pipe
+        // Pipe not writable
 
-		DevicePipe dp("RwPiPe","WritenBlob");
+        dp.set_name("Rpipe");
+        dp.set_data_elt_names(de_names);
+        dp << str << v_fl;
 
-		vector<string> de_names;
-		de_names.push_back(string("aaa"));
-		de_names.push_back(string("bbb"));
-		string str("Writing pipe");
-		vector<float> v_fl;
-		v_fl.push_back(1.11f);
-		v_fl.push_back(8.88f);
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_pipe(dp);
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotWritable);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		TS_ASSERT_THROWS_ASSERT(device1->write_pipe(dp);, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNoDataElement);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        // Wrong data sent to pipe
 
-// Empty data element
+        dp.set_name("RWpipe");
+        de_names.clear();
+        de_names.push_back("111");
+        dp.set_data_elt_names(de_names);
+        dp << v_fl;
 
-		dp.set_data_elt_names(de_names);
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_pipe(dp);
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_IncompatibleArgumentType);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
 
-		TS_ASSERT_THROWS_ASSERT(device1->write_pipe(dp);, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDataElement);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        de_names.clear();
+        de_names.push_back("111");
+        de_names.push_back("222");
+        de_names.push_back("333");
+        dp.set_data_elt_names(de_names);
 
-// Pipe not found
+        dp << str << str;
 
-		dp.set_name("XXX");
-		dp.set_data_elt_names(de_names);
-		dp << str << v_fl;
+        TS_ASSERT_THROWS_ASSERT(
+            device1->write_pipe(dp);
+            , Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_IncompatibleArgumentType);
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+    }
 
-		TS_ASSERT_THROWS_ASSERT(device1->write_pipe(dp);, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotFound);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+    void test_write_read_pipe(void)
+    {
+        DevicePipe dp("RwPiPe", "WritenBlob");
 
-// Pipe not writable
+        vector<string> de_names;
+        de_names.push_back("aaaWR");
+        de_names.push_back("bbbWR");
+        string str("Writing Reading pipe");
+        vector<float> v_fl;
+        v_fl.push_back(1.11f);
+        v_fl.push_back(8.88f);
 
-		dp.set_name("Rpipe");
-		dp.set_data_elt_names(de_names);
-		dp << str << v_fl;
+        dp.set_data_elt_names(de_names);
+        dp << str << v_fl;
 
-		TS_ASSERT_THROWS_ASSERT(device1->write_pipe(dp);, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_PipeNotWritable);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        DevicePipe r_dp;
+        TS_ASSERT_THROWS_NOTHING(r_dp = device1->write_read_pipe(dp));
 
-// Wrong data sent to pipe
+        DataElement<DevLong> de_dl;
+        DataElement<vector<double>> de_v_db;
 
-		dp.set_name("RWpipe");
-		de_names.clear();
-		de_names.push_back("111");
-		dp.set_data_elt_names(de_names);
-		dp << v_fl;
+        size_t de_nb = r_dp.get_data_elt_nb();
+        TS_ASSERT_EQUALS(de_nb, 2u);
 
-		TS_ASSERT_THROWS_ASSERT(device1->write_pipe(dp);, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_IncompatibleArgumentType);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
+        r_dp >> de_dl >> de_v_db;
 
-		de_names.clear();
-		de_names.push_back("111");
-		de_names.push_back("222");
-		de_names.push_back("333");
-		dp.set_data_elt_names(de_names);
+        TS_ASSERT_EQUALS(r_dp.get_root_blob_name(), "RWPipeBlob");
 
-		dp << str << str;
+        TS_ASSERT_EQUALS(de_dl.name, "RW_1DE");
+        TS_ASSERT_EQUALS(de_dl.value, 666);
 
-		TS_ASSERT_THROWS_ASSERT(device1->write_pipe(dp);, Tango::DevFailed &e,
-						TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_IncompatibleArgumentType);
-						TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
-	}
-
-	void test_write_read_pipe(void)
-	{
-		DevicePipe dp("RwPiPe","WritenBlob");
-
-		vector<string> de_names;
-		de_names.push_back("aaaWR");
-		de_names.push_back("bbbWR");
-		string str("Writing Reading pipe");
-		vector<float> v_fl;
-		v_fl.push_back(1.11f);
-		v_fl.push_back(8.88f);
-
-		dp.set_data_elt_names(de_names);
-		dp << str << v_fl;
-
-		DevicePipe r_dp;
-		TS_ASSERT_THROWS_NOTHING(r_dp = device1->write_read_pipe(dp));
-
-		DataElement<DevLong> de_dl;
-		DataElement<vector<double> > de_v_db;
-
-		size_t de_nb = r_dp.get_data_elt_nb();
-		TS_ASSERT_EQUALS(de_nb, 2u);
-
-    	r_dp >> de_dl >> de_v_db;
-
-		TS_ASSERT_EQUALS(r_dp.get_root_blob_name(), "RWPipeBlob");
-
-		TS_ASSERT_EQUALS(de_dl.name, "RW_1DE");
-		TS_ASSERT_EQUALS(de_dl.value, 666);
-
-		TS_ASSERT_EQUALS(de_v_db.name, "RW_2DE");
-		TS_ASSERT_EQUALS(de_v_db.value.size(), 2u);
-		TS_ASSERT_EQUALS(de_v_db.value[0], 1.11);
-		TS_ASSERT_EQUALS(de_v_db.value[1], 2.22);
-	}
+        TS_ASSERT_EQUALS(de_v_db.name, "RW_2DE");
+        TS_ASSERT_EQUALS(de_v_db.value.size(), 2u);
+        TS_ASSERT_EQUALS(de_v_db.value[0], 1.11);
+        TS_ASSERT_EQUALS(de_v_db.value[1], 2.22);
+    }
 };
 
 #endif // PipeTestSuite_h

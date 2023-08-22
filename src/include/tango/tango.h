@@ -9,7 +9,7 @@
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -43,19 +43,19 @@
 //
 
 #ifdef _TG_WINDOWS_
-#define USE_stub_in_nt_dll
+  #define USE_stub_in_nt_dll
 #endif
 
 // FIXME remove once https://gitlab.com/tango-controls/cppTango/-/issues/786 is fixed
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wdeprecated"
 #endif
 
 #include <tango/idl/tango.h>
 
 #if defined(__clang__)
-#pragma clang diagnostic pop
+  #pragma clang diagnostic pop
 #endif
 
 #include <tango/server/tango_current_function.h>
@@ -63,28 +63,39 @@
 //
 // A short inline function to hide the CORBA::string_dup function
 //
-namespace Tango {
-	inline char *string_dup(const std::string &s) { return CORBA::string_dup(s.c_str()); }
-
-	inline char *string_dup(const char *s) { return CORBA::string_dup(s); }
-
-	// A short inline function to hide the CORBA::string_free function
-	inline void string_free(char *s) {return CORBA::string_free(s);}
-
+namespace Tango
+{
+inline char *string_dup(const std::string &s)
+{
+    return CORBA::string_dup(s.c_str());
 }
+
+inline char *string_dup(const char *s)
+{
+    return CORBA::string_dup(s);
+}
+
+// A short inline function to hide the CORBA::string_free function
+inline void string_free(char *s)
+{
+    return CORBA::string_free(s);
+}
+
+} // namespace Tango
+
 //
 // Some Windows specific include (necessary when used with MFC)
 //
 
 #ifdef _TG_WINDOWS_
-	#if (_WIN32_WINNT >= 0x0400)
-		#include <winsock2.h>
-		#include <mswsock.h>
-		#include <algorithm>
-		#include <limits>
-	#else
-		#include <winsock.h>
-	#endif
+  #if(_WIN32_WINNT >= 0x0400)
+    #include <winsock2.h>
+    #include <mswsock.h>
+    #include <algorithm>
+    #include <limits>
+  #else
+    #include <winsock.h>
+  #endif
 #endif
 
 //
@@ -128,9 +139,8 @@ namespace Tango {
 #include <tango/server/seqvec.h>
 
 #if !defined(TANGO_CLIENT)
-	#include <tango/server/log4tango.h>
+  #include <tango/server/log4tango.h>
 #endif
-
 
 //
 // Include Tango files in order to simplfy device server developer include
@@ -138,27 +148,27 @@ namespace Tango {
 //
 
 #ifndef TANGO_CLIENT
-	#include <tango/server/attrprop.h>
-	#include <tango/server/tango_monitor.h>
-	#include <tango/server/device.h>
-	#include <tango/server/utils.h>
-	#include <tango/server/auto_tango_monitor.h>
-	#include <tango/server/device_2.h>
-	#include <tango/server/device_3.h>
-	#include <tango/server/device_4.h>
-	#include <tango/server/device_5.h>
-	#include <tango/server/command.h>
-	#include <tango/server/pipedesc.h>
-	#include <tango/server/pipe.h>
-	#include <tango/server/w_pipe.h>
-	#include <tango/server/pipe_templ.h>
-	#include <tango/server/dserver.h>
-	#include <tango/server/attribute_spec_templ.h>
-	#include <tango/server/utils_spec_templ.h>
-	#include <tango/server/w_attribute_spec_templ.h>
-	#include <tango/server/attrprop_templ.h>
-	#include <tango/server/attrsetval_templ.h>
-	#include <tango/server/w_attrsetval_templ.h>
+  #include <tango/server/attrprop.h>
+  #include <tango/server/tango_monitor.h>
+  #include <tango/server/device.h>
+  #include <tango/server/utils.h>
+  #include <tango/server/auto_tango_monitor.h>
+  #include <tango/server/device_2.h>
+  #include <tango/server/device_3.h>
+  #include <tango/server/device_4.h>
+  #include <tango/server/device_5.h>
+  #include <tango/server/command.h>
+  #include <tango/server/pipedesc.h>
+  #include <tango/server/pipe.h>
+  #include <tango/server/w_pipe.h>
+  #include <tango/server/pipe_templ.h>
+  #include <tango/server/dserver.h>
+  #include <tango/server/attribute_spec_templ.h>
+  #include <tango/server/utils_spec_templ.h>
+  #include <tango/server/w_attribute_spec_templ.h>
+  #include <tango/server/attrprop_templ.h>
+  #include <tango/server/attrsetval_templ.h>
+  #include <tango/server/w_attrsetval_templ.h>
 #endif
 
 #include <tango/client/event.h>
@@ -169,7 +179,7 @@ namespace Tango {
 //
 
 #ifdef minor
-# undef minor
+  #undef minor
 #endif
 
 #endif /* TANGO_SERVER_H */

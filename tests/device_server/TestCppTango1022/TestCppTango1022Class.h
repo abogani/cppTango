@@ -38,7 +38,6 @@
 //        (Program Obviously used to Generate tango Object)
 //=============================================================================
 
-
 #ifndef TestCppTango1022Class_H
 #define TestCppTango1022Class_H
 
@@ -83,9 +82,9 @@ public:
 class TestCppTango1022Class : public Tango::DeviceClass
 {
 	/*----- PROTECTED REGION ID(TestCppTango1022Class::Additional DServer data members) ENABLED START -----*/
-	/* clang-format on */
-	//	Add your own code
-	/* clang-format off */
+    /* clang-format on */
+    //	Add your own code
+    /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::Additional DServer data members
 
 	public:

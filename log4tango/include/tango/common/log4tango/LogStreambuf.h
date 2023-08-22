@@ -2,13 +2,13 @@
 // LogStreambuf.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -36,40 +36,34 @@
 //-----------------------------------------------------------------------------
 #define kDEFAULT_BUFFER_SIZE 512
 
-namespace log4tango {
+namespace log4tango
+{
 
 //-----------------------------------------------------------------------------
 // Class : LogStreamBuf
 //-----------------------------------------------------------------------------
 class LogStreamBuf : public std::streambuf
 {
-public:
+  public:
+    LogStreamBuf(Logger *logger, Level::Value level, bool filter = true, size_t bsize = kDEFAULT_BUFFER_SIZE);
 
-  LogStreamBuf (Logger* logger,
-                Level::Value level,
-                bool filter = true,
-                size_t bsize = kDEFAULT_BUFFER_SIZE);
+    virtual ~LogStreamBuf();
 
-  virtual ~LogStreamBuf();
+  protected:
+    virtual std::streamsize xsputn(const char *, std::streamsize);
 
-protected:
+    virtual int sync(void);
 
-   virtual std::streamsize xsputn (const char*, std::streamsize);
+  private:
+    int flush_buffer(void);
 
+    char *_buffer;
 
-   virtual int sync (void);
+    Logger *_logger;
 
-private:
+    Level::Value _level;
 
-  int flush_buffer (void);
-
-  char *_buffer;
-
-  Logger* _logger;
-
-  Level::Value _level;
-
-  bool _filter;
+    bool _filter;
 };
 
 } // namespace log4tango

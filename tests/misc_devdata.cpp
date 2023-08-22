@@ -2,112 +2,109 @@
 
 int main()
 {
+    // Test empty
 
-// Test empty
+    DeviceData da;
+    long lo;
 
-	DeviceData da;
-	long lo;
+    bitset<DeviceData::numFlags> flags;
+    flags.reset(DeviceData::isempty_flag);
+    da.exceptions(flags);
 
-	bitset<DeviceData::numFlags> flags;
-	flags.reset(DeviceData::isempty_flag);
-	da.exceptions(flags);
+    bool ret = da >> lo;
+    assert(ret == false);
 
+    TEST_LOG << "   Extraction from empty object --> OK" << endl;
 
-	bool ret = da >> lo;
-	assert ( ret == false );
+    flags.set(DeviceData::isempty_flag);
+    da.exceptions(flags);
 
-	TEST_LOG << "   Extraction from empty object --> OK" << endl;
+    try
+    {
+        da >> lo;
+        assert(false);
+    }
+    catch(Tango::DevFailed &)
+    {
+    }
 
+    TEST_LOG << "   Extraction from empty object (exception) --> OK" << endl;
+    flags.reset();
 
-	flags.set(DeviceData::isempty_flag);
-	da.exceptions(flags);
+    // Test wrong type
 
-	try
-	{
-		da >> lo;
-		assert(false);
-	}
-	catch (Tango::DevFailed &)
-	{
-	}
+    DeviceData db;
+    long l = 2;
+    db << l;
 
-	TEST_LOG << "   Extraction from empty object (exception) --> OK" << endl;
-	flags.reset();
+    float fl;
 
-// Test wrong type
+    ret = db >> fl;
+    assert(ret == false);
 
-	DeviceData db;
-	long l = 2;
-	db << l;
+    TEST_LOG << "   Extraction with wrong type --> OK" << endl;
 
-	float fl;
+    flags.set(DeviceData::wrongtype_flag);
+    db.exceptions(flags);
 
-	ret = db >> fl;
-	assert ( ret == false );
+    try
+    {
+        db >> fl;
+        assert(false);
+    }
+    catch(Tango::DevFailed &)
+    {
+    }
 
-	TEST_LOG << "   Extraction with wrong type --> OK" << endl;
+    TEST_LOG << "   Extraction with wrong type (exception) --> OK" << endl;
 
-	flags.set(DeviceData::wrongtype_flag);
-	db.exceptions(flags);
+    // Test assignement operator
 
-	try
-	{
-		db >> fl;
-		assert(false);
-	}
-	catch (Tango::DevFailed &)
-	{
-	}
+    DeviceData dd, dd_c;
+    vector<string> v_str;
+    v_str.push_back("abc");
+    v_str.push_back("def");
 
-	TEST_LOG << "   Extraction with wrong type (exception) --> OK" << endl;
+    dd << v_str;
+    dd_c = dd;
 
-// Test assignement operator
+    vector<string> out;
+    dd_c >> out;
 
-	DeviceData dd,dd_c;
-	vector<string> v_str;
-	v_str.push_back("abc");
-	v_str.push_back("def");
+    assert(out[0] == "abc");
+    assert(out[1] == "def");
 
-	dd << v_str;
-	dd_c = dd;
+    TEST_LOG << "   assignement operator --> OK" << endl;
 
-	vector<string> out;
-	dd_c >> out;
+    // Test copy constructor
 
-	assert( out[0] == "abc");
-	assert( out[1] == "def");
+    DeviceData d;
+    double db2 = 3.45;
+    d << db2;
 
-	TEST_LOG << "   assignement operator --> OK" << endl;
+    DeviceData dc(d);
 
-// Test copy constructor
+    double db_out;
+    dc >> db_out;
 
-	DeviceData d;
-	double db2 = 3.45;
-	d << db2;
+    assert(db_out == db2);
 
-	DeviceData dc(d);
+    TEST_LOG << "   Copy constructor --> OK" << endl;
 
-	double db_out;
-	dc >> db_out;
+    // Test move assignement (if available)
 
-	assert( db_out == db2 );
+    DeviceData ma;
+    float fl_move = 3.0;
+    ma << fl_move;
 
-	TEST_LOG << "   Copy constructor --> OK" << endl;
+    DeviceData mb;
+    mb = std::move(ma);
+    float fl_move_out;
+    mb >> fl_move_out;
 
-// Test move assignement (if available)
+    assert(fl_move_out == fl_move);
 
-	DeviceData ma;
-	float fl_move = 3.0;
-	ma << fl_move;
+    TEST_LOG << "   Move assignement --> OK" << endl;
 
-	DeviceData mb;
-	mb = std::move(ma);
-	float fl_move_out;
-	mb >> fl_move_out;
-
-	assert(fl_move_out == fl_move);
-
-	TEST_LOG << "   Move assignement --> OK" << endl;
-
-	return 0;
+    return 0;
 }

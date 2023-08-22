@@ -4,15 +4,15 @@
 //
 // description :        Include for the DServer class. This class implements
 //                      all the commands which are available for device
-//			of the DServer class. There is one device of the
-//			DServer class for each device server process
+//            of the DServer class. There is one device of the
+//            DServer class for each device server process
 //
 // project :            TANGO
 //
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -45,116 +45,132 @@ namespace Tango
 
 //=============================================================================
 //
-//			The DServerSignal class
+//            The DServerSignal class
 //
-// description :	Class to implement all data members and commands for
-//			signal management in a TANGO device server.
+// description :    Class to implement all data members and commands for
+//            signal management in a TANGO device server.
 //
 //=============================================================================
 
-#if (defined (_TG_WINDOWS_) || (defined __APPLE__) || (defined __freebsd__))
-#define		_NSIG		NSIG
+#if(defined(_TG_WINDOWS_) || (defined __APPLE__) || (defined __freebsd__))
+  #define _NSIG NSIG
 #endif
-
 
 typedef struct
 {
-	std::vector <DeviceClass *>	registered_classes;
-	std::vector <DeviceImpl *>	registered_devices;
-	bool			own_handler;
-}
-DevSigAction;
+    std::vector<DeviceClass *> registered_classes;
+    std::vector<DeviceImpl *> registered_devices;
+    bool own_handler;
+} DevSigAction;
 
-class DServerSignal:public TangoMonitor
+class DServerSignal : public TangoMonitor
 {
-public :
-	static DServerSignal *instance();
-	~DServerSignal() {}
+  public:
+    static DServerSignal *instance();
+
+    ~DServerSignal() { }
 
 #ifndef _TG_WINDOWS_
-	void register_class_signal(long, bool, DeviceClass *);
-	void register_dev_signal(long, bool, DeviceImpl *);
+    void register_class_signal(long, bool, DeviceClass *);
+    void register_dev_signal(long, bool, DeviceImpl *);
 
-	void register_handler(long,bool);
-	pid_t get_sig_thread_pid();
+    void register_handler(long, bool);
+    pid_t get_sig_thread_pid();
 #else
-	void register_class_signal(long, DeviceClass *);
-	void register_dev_signal(long, DeviceImpl *);
+    void register_class_signal(long, DeviceClass *);
+    void register_dev_signal(long, DeviceImpl *);
 
-	void register_handler(long);
+    void register_handler(long);
 #endif
 
-	void unregister_class_signal(long, DeviceClass *);
-	void unregister_class_signal(DeviceClass *);
-	void unregister_dev_signal(long, DeviceImpl *);
-	void unregister_dev_signal(DeviceImpl *);
+    void unregister_class_signal(long, DeviceClass *);
+    void unregister_class_signal(DeviceClass *);
+    void unregister_dev_signal(long, DeviceImpl *);
+    void unregister_dev_signal(DeviceImpl *);
 
-	void unregister_handler(long);
+    void unregister_handler(long);
 
-	static void main_sig_handler(int);
+    static void main_sig_handler(int);
 
-	class ThSig: public omni_thread
-	{
-		DServerSignal *ds;
-	public:
-		ThSig(DServerSignal *d):ds(d),my_pid(0),th_data_created(false) {}
-		virtual ~ThSig() {}
+    class ThSig : public omni_thread
+    {
+        DServerSignal *ds;
 
-		TangoSys_Pid my_pid;
-		bool th_data_created;
+      public:
+        ThSig(DServerSignal *d) :
+            ds(d),
+            my_pid(0),
+            th_data_created(false)
+        {
+        }
+
+        virtual ~ThSig() { }
+
+        TangoSys_Pid my_pid;
+        bool th_data_created;
 #ifndef _TG_WINDOWS_
-		pthread_t my_thread;
+        pthread_t my_thread;
 #endif
-		void *run_undetached(void *);
-		void start() {start_undetached();}
-	};
-	friend class ThSig;
-	ThSig *sig_th;
+        void *run_undetached(void *);
 
-protected :
-	DServerSignal();
-	static DevSigAction		reg_sig[_NSIG];
+        void start()
+        {
+            start_undetached();
+        }
+    };
+    friend class ThSig;
+    ThSig *sig_th;
 
-	bool				sig_to_install;
-	bool				sig_to_remove;
-	int				inst_sig;
-	int 				rem_sig;
+  protected:
+    DServerSignal();
+    static DevSigAction reg_sig[_NSIG];
+
+    bool sig_to_install;
+    bool sig_to_remove;
+    int inst_sig;
+    int rem_sig;
 #ifdef _TG_WINDOWS_
-	static HANDLE			win_ev;
-	static int			win_signo;
+    static HANDLE win_ev;
+    static int win_signo;
 #endif
 
-private:
-	static DServerSignal *_instance;
-	std::vector<DeviceImpl *>::iterator find_device(long, DeviceImpl *);
-	std::vector<DeviceImpl *>::iterator find_delayed_device(long, DeviceImpl *);
+  private:
+    static DServerSignal *_instance;
+    std::vector<DeviceImpl *>::iterator find_device(long, DeviceImpl *);
+    std::vector<DeviceImpl *>::iterator find_delayed_device(long, DeviceImpl *);
 
-	std::vector<DeviceClass *>::iterator find_class(long, DeviceClass *);
-	std::vector<DeviceClass *>::iterator find_delayed_class(long, DeviceClass *);
+    std::vector<DeviceClass *>::iterator find_class(long, DeviceClass *);
+    std::vector<DeviceClass *>::iterator find_delayed_class(long, DeviceClass *);
 
 #ifdef _TG_WINDOWS_
-	static inline bool auto_signal(long s)
-	{
-		if ((s==SIGINT) || (s==SIGTERM) || (s==SIGABRT) || (s==SIGBREAK))
-			return true;
-		else
-			return false;
-	}
+    static inline bool auto_signal(long s)
+    {
+        if((s == SIGINT) || (s == SIGTERM) || (s == SIGABRT) || (s == SIGBREAK))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 #else
-	static inline bool auto_signal(long s)
-	{
-		if ((s==SIGQUIT) || (s==SIGINT) || (s==SIGHUP) || (s==SIGTERM))
-			return true;
-		else
-			return false;
-	}
+    static inline bool auto_signal(long s)
+    {
+        if((s == SIGQUIT) || (s == SIGINT) || (s == SIGHUP) || (s == SIGTERM))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 #endif
 
-	static std::string 			sig_name[_NSIG];
-
+    static std::string sig_name[_NSIG];
 };
 
 } // End of namespace Tango
-
 
 #endif

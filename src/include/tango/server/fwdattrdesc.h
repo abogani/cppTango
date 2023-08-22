@@ -1,16 +1,16 @@
 //===================================================================================================================
 //
-// file :		fwdattrdesc.h
+// file :        fwdattrdesc.h
 //
-// description :	Include file for the FwdAttr classes hierarchy. Three classes are declared in this file :
-//				The FwdAttr class
+// description :    Include file for the FwdAttr classes hierarchy. Three classes are declared in this file :
+//                The FwdAttr class
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		A.Gotz + E.Taurel
+// author(s) :        A.Gotz + E.Taurel
 //
 // Copyright (C) :      2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -54,41 +54,45 @@ namespace Tango
 
 class UserDefaultFwdAttrProp
 {
-public:
+  public:
+    /**@name Constructor
+     * Only one constructor is defined for this class */
+    //@{
+    /**
+     * Constructs a newly allocated UserDefaultAttrProp object.
+     */
+    UserDefaultFwdAttrProp() :
+        ext(nullptr)
+    {
+    }
 
-/**@name Constructor
- * Only one constructor is defined for this class */
-//@{
-/**
- * Constructs a newly allocated UserDefaultAttrProp object.
- */
-	UserDefaultFwdAttrProp():ext(nullptr) {}
-//@}
+    //@}
 
-/**@name Set default property methods */
-//@{
-/**
- * Set default label property
- *
- * @param	def_label	The user default label property
- */
-	void set_label(const std::string &def_label)
-	{
-		label = def_label;
-	}
-//@}
+    /**@name Set default property methods */
+    //@{
+    /**
+     * Set default label property
+     *
+     * @param    def_label    The user default label property
+     */
+    void set_label(const std::string &def_label)
+    {
+        label = def_label;
+    }
 
-/// @privatesection
-	~UserDefaultFwdAttrProp() {}
+    //@}
 
-	std::string 			label;
+    /// @privatesection
+    ~UserDefaultFwdAttrProp() { }
 
-private:
+    std::string label;
+
+  private:
     class UserDefaultFwdAttrPropExt
     {
     };
 
-    std::unique_ptr<UserDefaultFwdAttrPropExt>  	ext;           // Class extension
+    std::unique_ptr<UserDefaultFwdAttrPropExt> ext; // Class extension
 };
 
 class MultiAttribute;
@@ -105,71 +109,101 @@ class MultiAttribute;
  * @ingroup Server
  */
 
-class FwdAttr: public ImageAttr
+class FwdAttr : public ImageAttr
 {
-public:
-/**@name Constructors
- * Only one constructor is defined for this class */
-//@{
-/**
- * Constructs a newly allocated FwdAttr object.
- *
- * @param 	name	The attribute name
- * @param	root_attribute	The root attribute name (FQAN)
- *
- */
-	FwdAttr(const std::string &name,const std::string &root_attribute=RootAttNotDef);
-//@}
+  public:
+    /**@name Constructors
+     * Only one constructor is defined for this class */
+    //@{
+    /**
+     * Constructs a newly allocated FwdAttr object.
+     *
+     * @param     name    The attribute name
+     * @param    root_attribute    The root attribute name (FQAN)
+     *
+     */
+    FwdAttr(const std::string &name, const std::string &root_attribute = RootAttNotDef);
+    //@}
 
-/**@name Miscellaneous methods*/
-//@{
-/**
- * Set default attribute properties
- *
- * @param	prop	The user default property class
- */
- 	void set_default_properties(UserDefaultFwdAttrProp &prop);
-//@}
+    /**@name Miscellaneous methods*/
+    //@{
+    /**
+     * Set default attribute properties
+     *
+     * @param    prop    The user default property class
+     */
+    void set_default_properties(UserDefaultFwdAttrProp &prop);
+    //@}
 
-/// @privatesection
+    /// @privatesection
     FwdAttr(const FwdAttr &);
-	virtual bool is_fwd() {return true;}
 
-	std::string &get_fwd_root_att() {return fwd_root_att;}
-	std::string &get_fwd_dev_name() {return fwd_dev_name;}
-	std::string &get_full_root_att() {return full_root_att;}
-	bool is_correctly_configured() {return fwd_wrongly_conf;}
-	FwdAttError get_err_kind() {return err_kind;}
-	void set_err_kind(FwdAttError _e) {err_kind = _e;}
+    virtual bool is_fwd()
+    {
+        return true;
+    }
 
-	virtual void read(DeviceImpl *,Attribute &);
-	virtual void write(DeviceImpl *,WAttribute &);
-	virtual bool is_allowed(DeviceImpl *,AttReqType) {return true;}
+    std::string &get_fwd_root_att()
+    {
+        return fwd_root_att;
+    }
 
-	virtual void init_conf(AttrConfEventData *);
-	bool validate_fwd_att(std::vector<AttrProperty> &,const std::string &);
-	void get_root_conf(const std::string &,DeviceImpl *);
+    std::string &get_fwd_dev_name()
+    {
+        return fwd_dev_name;
+    }
 
-    void remove_useless_prop(std::vector<AttrProperty> &,const std::string &,MultiAttribute *);
- 	std::string &get_label_from_default_properties();
+    std::string &get_full_root_att()
+    {
+        return full_root_att;
+    }
 
-protected:
-/// @privatesection
-	std::string				full_root_att;			// Root att (dev_name/att_name)
-	std::string				fwd_dev_name;			// Root att device name (lower case)
-	std::string				fwd_root_att;			// Root att (lower case)
-	bool				fwd_wrongly_conf;
-	FwdAttError			err_kind;
+    bool is_correctly_configured()
+    {
+        return fwd_wrongly_conf;
+    }
 
-private:
+    FwdAttError get_err_kind()
+    {
+        return err_kind;
+    }
+
+    void set_err_kind(FwdAttError _e)
+    {
+        err_kind = _e;
+    }
+
+    virtual void read(DeviceImpl *, Attribute &);
+    virtual void write(DeviceImpl *, WAttribute &);
+
+    virtual bool is_allowed(DeviceImpl *, AttReqType)
+    {
+        return true;
+    }
+
+    virtual void init_conf(AttrConfEventData *);
+    bool validate_fwd_att(std::vector<AttrProperty> &, const std::string &);
+    void get_root_conf(const std::string &, DeviceImpl *);
+
+    void remove_useless_prop(std::vector<AttrProperty> &, const std::string &, MultiAttribute *);
+    std::string &get_label_from_default_properties();
+
+  protected:
+    /// @privatesection
+    std::string full_root_att; // Root att (dev_name/att_name)
+    std::string fwd_dev_name;  // Root att device name (lower case)
+    std::string fwd_root_att;  // Root att (lower case)
+    bool fwd_wrongly_conf;
+    FwdAttError err_kind;
+
+  private:
     class FwdAttrExt
     {
     };
 
-    std::unique_ptr<FwdAttrExt>    	ext;           // Class extension
+    std::unique_ptr<FwdAttrExt> ext; // Class extension
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _FWDATTRDESC_H */

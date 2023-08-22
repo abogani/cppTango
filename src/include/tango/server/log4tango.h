@@ -1,7 +1,7 @@
 /*
  *
  * Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
- *						European Synchrotron Radiation Facility
+ *                        European Synchrotron Radiation Facility
  *                      BP 220, Grenoble 38043
  *                      FRANCE
  *
@@ -29,7 +29,6 @@
 #ifndef _LOG4TANGO_H_
 #define _LOG4TANGO_H_
 
-
 //-------------------------------------------------------------
 // REQUIRED LOG4TANGO STUFFS
 //-------------------------------------------------------------
@@ -54,67 +53,56 @@
 // LOGGING MACROS (FOR DEVICE DEVELOPERS)
 //-------------------------------------------------------------
 #define LOG_FATAL(X) \
-    get_logger()->fatal( \
-        ::Tango::logging_detail::basename(__FILE__), __LINE__, \
-        TANGO_STRIP_PARENS( TANGO_EXPAND_ARGS X ))
+    get_logger()->fatal(::Tango::logging_detail::basename(__FILE__), __LINE__, TANGO_STRIP_PARENS(TANGO_EXPAND_ARGS X))
 
 #define LOG_ERROR(X) \
-    API_LOGGER->error( \
-        ::Tango::logging_detail::basename(__FILE__), __LINE__, \
-        TANGO_STRIP_PARENS( TANGO_EXPAND_ARGS X ))
+    API_LOGGER->error(::Tango::logging_detail::basename(__FILE__), __LINE__, TANGO_STRIP_PARENS(TANGO_EXPAND_ARGS X))
 
 #define LOG_WARN(X) \
-    get_logger()->warn( \
-        ::Tango::logging_detail::basename(__FILE__), __LINE__, \
-        TANGO_STRIP_PARENS( TANGO_EXPAND_ARGS X ))
+    get_logger()->warn(::Tango::logging_detail::basename(__FILE__), __LINE__, TANGO_STRIP_PARENS(TANGO_EXPAND_ARGS X))
 
 #define LOG_INFO(X) \
-    get_logger()->info( \
-        ::Tango::logging_detail::basename(__FILE__), __LINE__, \
-        TANGO_STRIP_PARENS( TANGO_EXPAND_ARGS X ))
+    get_logger()->info(::Tango::logging_detail::basename(__FILE__), __LINE__, TANGO_STRIP_PARENS(TANGO_EXPAND_ARGS X))
 
 #define LOG_DEBUG(X) \
-    get_logger()->debug( \
-        ::Tango::logging_detail::basename(__FILE__), __LINE__, \
-        TANGO_STRIP_PARENS( TANGO_EXPAND_ARGS X ))
+    get_logger()->debug(::Tango::logging_detail::basename(__FILE__), __LINE__, TANGO_STRIP_PARENS(TANGO_EXPAND_ARGS X))
 
-#define DEV_FATAL_STREAM(device) \
-  if (device->get_logger()->is_fatal_enabled()) \
-    device->get_logger()->fatal_stream() \
-      << log4tango::_begin_log \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define DEV_FATAL_STREAM(device)                                                                                 \
+    if(device->get_logger()->is_fatal_enabled())                                                                 \
+        device->get_logger()->fatal_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                                        \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                                \
+        }
 
-#define DEV_ERROR_STREAM(device) \
-  if (device->get_logger()->is_error_enabled()) \
-    device->get_logger()->error_stream() \
-      << log4tango::_begin_log \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define DEV_ERROR_STREAM(device)                                                                                 \
+    if(device->get_logger()->is_error_enabled())                                                                 \
+        device->get_logger()->error_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                                        \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                                \
+        }
 
-#define DEV_WARN_STREAM(device) \
-  if (device->get_logger()->is_warn_enabled()) \
-    device->get_logger()->warn_stream() \
-      << log4tango::_begin_log \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define DEV_WARN_STREAM(device)                                                                                 \
+    if(device->get_logger()->is_warn_enabled())                                                                 \
+        device->get_logger()->warn_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                                       \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                               \
+        }
 
-#define DEV_INFO_STREAM(device) \
-  if (device->get_logger()->is_info_enabled()) \
-    device->get_logger()->info_stream() \
-      << log4tango::_begin_log \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define DEV_INFO_STREAM(device)                                                                                 \
+    if(device->get_logger()->is_info_enabled())                                                                 \
+        device->get_logger()->info_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                                       \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                               \
+        }
 
-#define DEV_DEBUG_STREAM(device) \
-  if (device->get_logger()->is_debug_enabled()) \
-    device->get_logger()->debug_stream() \
-      << log4tango::_begin_log \
-      << log4tango::LoggerStream::SourceLocation{ \
-          ::Tango::logging_detail::basename(__FILE__), __LINE__}
+#define DEV_DEBUG_STREAM(device)                                                                                 \
+    if(device->get_logger()->is_debug_enabled())                                                                 \
+        device->get_logger()->debug_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                                        \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                                \
+        }
 
-#define ENDLOG \
-  log4tango::_end_log
+#define ENDLOG log4tango::_end_log
 
 #define FATAL_STREAM DEV_FATAL_STREAM(this)
 #define ERROR_STREAM DEV_ERROR_STREAM(this)
@@ -125,26 +113,25 @@
 //-------------------------------------------------------------
 // A CLASS TO LOG IN THE NAME OF DEVICE (USING DEV'S LOGGER)
 //-------------------------------------------------------------
-namespace Tango {
+namespace Tango
+{
 
 class LogAdapter
 {
+  public:
+    LogAdapter(Tango::DeviceImpl *dev);
 
-public:
+    virtual ~LogAdapter();
 
-  LogAdapter(Tango::DeviceImpl *dev);
+    inline log4tango::Logger *get_logger(void)
+    {
+        return logger_;
+    }
 
-  virtual ~LogAdapter();
-
-  inline log4tango::Logger* get_logger (void) {
-    return logger_;
-  }
-
-private:
-  log4tango::Logger* logger_;
+  private:
+    log4tango::Logger *logger_;
 };
 
 } // namespace Tango
-
 
 #endif // _LOG4TANGO_H_

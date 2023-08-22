@@ -10,7 +10,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -47,76 +47,79 @@ using LockClock = std::chrono::steady_clock;
 
 //=============================================================================
 //
-//			The LockThCmd structure
+//            The LockThCmd structure
 //
-// description :	This structure is used to shared data between the locking
-//			thread and the main thread.
+// description :    This structure is used to shared data between the locking
+//            thread and the main thread.
 //
 //=============================================================================
 
 struct LockThCmd
 {
-	bool cmd_pending;                   // The new command flag
-	LockCmdCode cmd_code;               // The command code
-	std::string dev_name;               // The device name
-	LockClock::duration lock_validity;  // The lock validity
-	bool suicide;                       // The suicide flag
+    bool cmd_pending;                  // The new command flag
+    LockCmdCode cmd_code;              // The command code
+    std::string dev_name;              // The device name
+    LockClock::duration lock_validity; // The lock validity
+    bool suicide;                      // The suicide flag
 };
 
 struct LockedDevice
 {
-	std::string dev_name;           // The locked device name
-	LockClock::duration validity;   // The locked device validity
+    std::string dev_name;         // The locked device name
+    LockClock::duration validity; // The locked device validity
 
-	bool operator<(const LockedDevice &arg) const {return validity < arg.validity;}
+    bool operator<(const LockedDevice &arg) const
+    {
+        return validity < arg.validity;
+    }
 };
 
 enum LockCmdType
 {
-	LOCK_TIME_OUT = 0,
-	LOCK_COMMAND
+    LOCK_TIME_OUT = 0,
+    LOCK_COMMAND
 };
 
 //=============================================================================
 //
-//			The LockThread class
+//            The LockThread class
 //
-// description :	Class to store all the necessary information for the
-//			locking thread. It's run() method is the thread code
+// description :    Class to store all the necessary information for the
+//            locking thread. It's run() method is the thread code
 //
 //=============================================================================
 
 class TangoMonitor;
 
-class LockThread: public omni_thread
+class LockThread : public omni_thread
 {
-public:
-	LockThread(LockThCmd &,TangoMonitor &,DeviceProxy *,const std::string &, LockClock::duration);
+  public:
+    LockThread(LockThCmd &, TangoMonitor &, DeviceProxy *, const std::string &, LockClock::duration);
 
-	void run(void *);
+    void run(void *);
 
-	void execute_cmd();
-	void one_more_lock();
-	void unlock_all_devs();
-	void update_th_period();
-	void compute_sleep_time(bool);
-	LockCmdType get_command();
+    void execute_cmd();
+    void one_more_lock();
+    void unlock_all_devs();
+    void update_th_period();
+    void compute_sleep_time(bool);
+    LockCmdType get_command();
 
-protected:
-	LockThCmd				&shared_cmd;
-	TangoMonitor			&p_mon;
+  protected:
+    LockThCmd &shared_cmd;
+    TangoMonitor &p_mon;
 
-	LockThCmd				local_cmd;
-	tango_optional<LockClock::duration> sleep;
+    LockThCmd local_cmd;
+    tango_optional<LockClock::duration> sleep;
 
-	std::vector<LockedDevice>	locked_devices;
-	std::vector<std::string>			re_lock_cmd_args;
-	LockClock::duration period;
-	DeviceProxy				*admin_proxy;
+    std::vector<LockedDevice> locked_devices;
+    std::vector<std::string> re_lock_cmd_args;
+    LockClock::duration period;
+    DeviceProxy *admin_proxy;
 
-	LockClock::time_point next_work;
+    LockClock::time_point next_work;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _LOCKTHREAD_ */

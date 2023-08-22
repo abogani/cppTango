@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://www.esrf.fr/tango/pogo/PogoDsl">
-  <classes name="FwdTest" pogoRevision="8.3">
-    <description description="" title="" sourcePath="/home/taurel/tango/cpp_test_ds/fwd_ds" language="Cpp" filestogenerate="XMI   file,Code files,Makefile" license="GPL" hasMandatoryProperty="false" hasConcreteProperty="false" hasAbstractCommand="false" hasAbstractAttribute="false">
+  <classes name="FwdTest" pogoRevision="9.8">
+    <description description="" title="" sourcePath="/root/ds" language="Cpp" filestogenerate="XMI   file,Code files" license="GPL" hasMandatoryProperty="false" hasConcreteProperty="false" hasAbstractCommand="false" hasAbstractAttribute="false">
       <inheritances classname="Device_Impl" sourcePath=""/>
       <identification contact="at esrf.fr - taurel" author="taurel" emailDomain="esrf.fr" classFamily="System" siteSpecific="" platform="All Platforms" bus="Not Applicable" manufacturer="none" reference=""/>
     </description>
@@ -23,6 +23,6 @@
       </argout>
       <status abstract="true" inherited="true" concrete="true"/>
     </commands>
-    <preferences docHome="./doc_html" makefileHome="/segfs/tango/cppserver/env"/>
+    <preferences docHome="./doc_html" makefileHome="$(TANGO_HOME)"/>
   </classes>
 </pogoDsl:PogoSystem>

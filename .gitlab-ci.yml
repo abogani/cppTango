@@ -31,6 +31,27 @@ pre-commit:
     paths:
       - ${PRE_COMMIT_HOME}
 
+code-format:
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/llvm-latest:v3
+  services: []
+  tags:
+    - docker, linux, amd64
+  variables:
+    PATCH_FILE: clang-format.patch
+    TANGO_CLANG_FORMAT: "ON"
+    TANGO_MAKE_TARGET: "clang-format"
+  script:
+    - git config --global --add safe.directory '*'
+    - ci/config.sh
+    - ci/build.sh
+    - git diff > ${PATCH_FILE}
+      # fail job if the patch file is not empty
+    - '! test -s ${PATCH_FILE}'
+  artifacts:
+    when: always
+    paths:
+      - ${PATCH_FILE}
+
 .job-template-no-test-run: &job-template-no-test-run
   image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
   services: []
@@ -38,6 +59,7 @@ pre-commit:
     - docker, linux, amd64
   needs:
     - pre-commit
+    - code-format
   script:
     - ci/config.sh
     - ci/build.sh
@@ -50,6 +72,7 @@ pre-commit:
     - dind, skao, docker, linux, amd64
   needs:
     - pre-commit
+    - code-format
   script:
     - ci/config.sh
     - ci/build.sh
@@ -90,7 +113,7 @@ llvm-latest:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v2
+    OS_TYPE: llvm-latest:v3
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
@@ -407,7 +430,7 @@ libcpp:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v2
+    OS_TYPE: llvm-latest:v3
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_USE_LIBCPP: "ON"

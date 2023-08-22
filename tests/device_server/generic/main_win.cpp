@@ -21,55 +21,51 @@
 
 #include <tango/tango.h>
 
-
-int APIENTRY WinMain(HINSTANCE hInstance,
-		     HINSTANCE hPrevInstance,
-		     LPSTR  lpCmdLine,
-		     int    nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-  MSG msg;
-  Tango::Util *tg;
-  try
+    MSG msg;
+    Tango::Util *tg;
+    try
     {
-//
-// Initialise the device server
-//
-      tg = Tango::Util::init(hInstance,nCmdShow);
+        //
+        // Initialise the device server
+        //
+        tg = Tango::Util::init(hInstance, nCmdShow);
 
-//
-// Create the device server singleton which will create everything
-//
-      tg->server_init(true);
-//
-// Run the endless loop
-//
+        //
+        // Create the device server singleton which will create everything
+        //
+        tg->server_init(true);
+        //
+        // Run the endless loop
+        //
 
-      cout << "Ready to accept request" << std::endl;
-      tg->server_run();
+        cout << "Ready to accept request" << std::endl;
+        tg->server_run();
     }
-  catch (std::bad_alloc)
+    catch(std::bad_alloc)
     {
-	MessageBox((HWND)NULL,"Memory error","Command line",MB_ICONSTOP);
-	return (FALSE);
+        MessageBox((HWND) NULL, "Memory error", "Command line", MB_ICONSTOP);
+        return (FALSE);
     }
-  catch (Tango::DevFailed &e)
+    catch(Tango::DevFailed &e)
     {
-	MessageBox((HWND)NULL,e.errors[0].desc.in(),"Command line",MB_ICONSTOP);
-	return (FALSE);
+        MessageBox((HWND) NULL, e.errors[0].desc.in(), "Command line", MB_ICONSTOP);
+        return (FALSE);
     }
-  catch (CORBA::Exception &)
+    catch(CORBA::Exception &)
     {
-	MessageBox((HWND)NULL,"CORBA Exception","Command line",MB_ICONSTOP);
-	return (FALSE);
+        MessageBox((HWND) NULL, "CORBA Exception", "Command line", MB_ICONSTOP);
+        return (FALSE);
     }
 
-   while(GetMessage(&msg,NULL,0,0))
-   {
-	TranslateMessage(&msg);
-	DispatchMessage(&msg);
-   }
+    while(GetMessage(&msg, NULL, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 
-   delete  tg;
+    delete tg;
 
-   return msg.wParam;
+    return msg.wParam;
 }

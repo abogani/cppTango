@@ -6,23 +6,24 @@
 
 class IOStr1 : public Tango::Command
 {
-public:
-	IOStr1(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *);
-	~IOStr1() {}
+  public:
+    IOStr1(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *, const char *);
 
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+    ~IOStr1() { }
+
+    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
+    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
 };
-
 
 class IOPollStr1 : public Tango::Command
 {
-public:
-	IOPollStr1(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *);
-	~IOPollStr1() {}
+  public:
+    IOPollStr1(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *, const char *);
 
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+    ~IOPollStr1() { }
 
-	long num;
+    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
+    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
+
+    long num;
 };

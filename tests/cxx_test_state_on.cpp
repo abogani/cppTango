@@ -6,68 +6,65 @@
 #undef SUITE_NAME
 #define SUITE_NAME TestStateOnTestSuite
 
-class TestStateOnTestSuite: public CxxTest::TestSuite
+class TestStateOnTestSuite : public CxxTest::TestSuite
 {
-protected:
-	DeviceProxy *device1;
+  protected:
+    DeviceProxy *device1;
 
-public:
-	SUITE_NAME()
-	{
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
-//
-// Arguments check -------------------------------------------------
-//
+        string device1_name;
 
-		string device1_name;
+        device1_name = CxxTest::TangoPrinter::get_param("device1");
 
-		device1_name = CxxTest::TangoPrinter::get_param("device1");
+        CxxTest::TangoPrinter::validate_args();
 
-		CxxTest::TangoPrinter::validate_args();
+        //
+        // Initialization --------------------------------------------------
+        //
 
+        try
+        {
+            device1 = new DeviceProxy(device1_name);
+            device1->ping();
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
 
-//
-// Initialization --------------------------------------------------
-//
+    virtual ~SUITE_NAME()
+    {
+        delete device1;
+    }
 
-		try
-		{
-			device1 = new DeviceProxy(device1_name);
-			device1->ping();
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-	}
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
-	virtual ~SUITE_NAME()
-	{
-		delete device1;
-	}
+    //
+    // Tests -------------------------------------------------------
+    //
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+    // Test Test State ON
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
-
-//
-// Tests -------------------------------------------------------
-//
-
-// Test Test State ON
-
-	void test_test_state_on(void)
-	{
-		TS_ASSERT_EQUALS(device1->state(), Tango::ON);
-	}
+    void test_test_state_on(void)
+    {
+        TS_ASSERT_EQUALS(device1->state(), Tango::ON);
+    }
 };
 
 #endif // TestStateOnTestSuite_h

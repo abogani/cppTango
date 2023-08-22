@@ -4,15 +4,15 @@
 //
 // description :        Include for the PollObj object. This class implements
 //                      the polling ring buffer. Command result or attribute
-//			values are stored in this buffer manages as a ring
-//			buffer.
+//            values are stored in this buffer manages as a ring
+//            buffer.
 //
 // project :            TANGO
 //
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -46,109 +46,206 @@ namespace Tango
 
 //=============================================================================
 //
-//			The PollObj class
+//            The PollObj class
 //
-// description :	Class to store all the necessary information which will
-//			be stored and returned to client on request
+// description :    Class to store all the necessary information which will
+//            be stored and returned to client on request
 //
-//			This class is protected against concurrent access by a
-//			omni_mutex. We use the Thread-Safe interface pattern
-//			to avoid "self-deadlock". This is why several methods
-//			are splitted in two: One method called "meth" and
-//			another one called "meth_i" (which is also sometimes
-//			public !!)
+//            This class is protected against concurrent access by a
+//            omni_mutex. We use the Thread-Safe interface pattern
+//            to avoid "self-deadlock". This is why several methods
+//            are splitted in two: One method called "meth" and
+//            another one called "meth_i" (which is also sometimes
+//            public !!)
 //
 //=============================================================================
 
-
-class PollObj: public omni_mutex
+class PollObj : public omni_mutex
 {
-public:
-	PollObj(DeviceImpl *,PollObjType,const std::string &, PollClock::duration);
-	PollObj(DeviceImpl *,PollObjType,const std::string &, PollClock::duration, long);
+  public:
+    PollObj(DeviceImpl *, PollObjType, const std::string &, PollClock::duration);
+    PollObj(DeviceImpl *, PollObjType, const std::string &, PollClock::duration, long);
 
-	void insert_data(CORBA::Any *,                  PollClock::time_point, PollClock::duration);
-	void insert_data(Tango::AttributeValueList *,   PollClock::time_point, PollClock::duration);
-	void insert_data(Tango::AttributeValueList_3 *, PollClock::time_point, PollClock::duration);
-	void insert_data(Tango::AttributeValueList_4 *, PollClock::time_point, PollClock::duration);
-	void insert_data(Tango::AttributeValueList_5 *, PollClock::time_point, PollClock::duration);
-	void insert_except(Tango::DevFailed *,          PollClock::time_point, PollClock::duration);
+    void insert_data(CORBA::Any *, PollClock::time_point, PollClock::duration);
+    void insert_data(Tango::AttributeValueList *, PollClock::time_point, PollClock::duration);
+    void insert_data(Tango::AttributeValueList_3 *, PollClock::time_point, PollClock::duration);
+    void insert_data(Tango::AttributeValueList_4 *, PollClock::time_point, PollClock::duration);
+    void insert_data(Tango::AttributeValueList_5 *, PollClock::time_point, PollClock::duration);
+    void insert_except(Tango::DevFailed *, PollClock::time_point, PollClock::duration);
 
-	PollClock::duration get_authorized_delta() {return max_delta_t;}
-	void update_upd(PollClock::duration);
+    PollClock::duration get_authorized_delta()
+    {
+        return max_delta_t;
+    }
 
-	CORBA::Any *get_last_cmd_result();
-	Tango::AttributeValue &get_last_attr_value(bool);
-	Tango::AttributeValue_3 &get_last_attr_value_3(bool);
-	Tango::AttributeValue_4 &get_last_attr_value_4(bool);
-	Tango::AttributeValue_5 &get_last_attr_value_5(bool);
+    void update_upd(PollClock::duration);
 
-	bool is_ring_empty() {omni_mutex_lock sync(*this);return is_ring_empty_i();}
-	bool is_ring_empty_i() {return ring.is_empty();}
+    CORBA::Any *get_last_cmd_result();
+    Tango::AttributeValue &get_last_attr_value(bool);
+    Tango::AttributeValue_3 &get_last_attr_value_3(bool);
+    Tango::AttributeValue_4 &get_last_attr_value_4(bool);
+    Tango::AttributeValue_5 &get_last_attr_value_5(bool);
 
-	PollClock::duration get_upd() {omni_mutex_lock sync(*this);return get_upd_i();}
-	PollClock::duration get_upd_i() { return upd; }
+    bool is_ring_empty()
+    {
+        omni_mutex_lock sync(*this);
+        return is_ring_empty_i();
+    }
 
-	std::string &get_name() {omni_mutex_lock sync(*this);return get_name_i();}
-	std::string &get_name_i() {return name;}
+    bool is_ring_empty_i()
+    {
+        return ring.is_empty();
+    }
 
-	PollClock::duration get_needed_time() {omni_mutex_lock sync(*this);return get_needed_time_i();}
-	PollClock::duration get_needed_time_i() { return needed_time; }
+    PollClock::duration get_upd()
+    {
+        omni_mutex_lock sync(*this);
+        return get_upd_i();
+    }
 
-	inline PollObjType get_type() {omni_mutex_lock sync(*this);return get_type_i();}
-	inline PollObjType get_type_i() {return type;}
+    PollClock::duration get_upd_i()
+    {
+        return upd;
+    }
 
-	PollClock::time_point get_last_insert_date() {omni_mutex_lock sync(*this);return get_last_insert_date_i();}
-	PollClock::time_point get_last_insert_date_i();
+    std::string &get_name()
+    {
+        omni_mutex_lock sync(*this);
+        return get_name_i();
+    }
 
-	bool is_last_an_error() {omni_mutex_lock sync(*this);return is_last_an_error_i();}
-	bool is_last_an_error_i() {return ring.is_last_an_error();}
-	bool is_last_an_error_i_3()
-	{if (type==POLL_CMD)return ring.is_last_cmd_an_error();else return ring.is_last_attr_an_error();}
+    std::string &get_name_i()
+    {
+        return name;
+    }
 
-	Tango::DevFailed *get_last_except() {omni_mutex_lock sync(*this);return get_last_except_i();}
-	Tango::DevFailed *get_last_except_i() {return ring.get_last_except();}
-	Tango::DevErrorList &get_last_attr_error_i() {return ring.get_last_attr_error();}
+    PollClock::duration get_needed_time()
+    {
+        omni_mutex_lock sync(*this);
+        return get_needed_time_i();
+    }
 
-	std::vector<PollClock::duration> get_delta_t(long nb) {omni_mutex_lock sync(*this); return get_delta_t_i(nb);}
-	std::vector<PollClock::duration> get_delta_t_i(long nb) {return ring.get_delta_t(nb);}
+    PollClock::duration get_needed_time_i()
+    {
+        return needed_time;
+    }
 
-	long get_elt_nb_in_buffer() {omni_mutex_lock sync(*this);return get_elt_nb_in_buffer_i();}
-	long get_elt_nb_in_buffer_i() {return ring.get_nb_elt();}
+    inline PollObjType get_type()
+    {
+        omni_mutex_lock sync(*this);
+        return get_type_i();
+    }
 
-	void get_cmd_history(long,Tango::DevCmdHistoryList *);
-	void get_cmd_history(long,Tango::DevCmdHistory_4 *,Tango::CmdArgType &);
+    inline PollObjType get_type_i()
+    {
+        return type;
+    }
 
-	void get_attr_history(long,Tango::DevAttrHistoryList *,long);
-	void get_attr_history(long,Tango::DevAttrHistoryList_3 *,long);
-	void get_attr_history(long,Tango::DevAttrHistory_4 *,long,AttrDataFormat);
-	void get_attr_history(long,Tango::DevAttrHistory_5 *,long,AttrDataFormat);
+    PollClock::time_point get_last_insert_date()
+    {
+        omni_mutex_lock sync(*this);
+        return get_last_insert_date_i();
+    }
 
-	void get_attr_history_43(long n,Tango::DevAttrHistoryList_3 *ptr,long type);
+    PollClock::time_point get_last_insert_date_i();
 
-	bool is_fwd_att() {return fwd;}
+    bool is_last_an_error()
+    {
+        omni_mutex_lock sync(*this);
+        return is_last_an_error_i();
+    }
 
-protected:
-	DeviceImpl			*dev;
-	PollObjType			type;
-	std::string 				name;
-	PollClock::duration upd;
-	PollClock::duration needed_time;
-	PollClock::duration max_delta_t;
-	PollRing			ring;
-	bool				fwd;
+    bool is_last_an_error_i()
+    {
+        return ring.is_last_an_error();
+    }
+
+    bool is_last_an_error_i_3()
+    {
+        if(type == POLL_CMD)
+        {
+            return ring.is_last_cmd_an_error();
+        }
+        else
+        {
+            return ring.is_last_attr_an_error();
+        }
+    }
+
+    Tango::DevFailed *get_last_except()
+    {
+        omni_mutex_lock sync(*this);
+        return get_last_except_i();
+    }
+
+    Tango::DevFailed *get_last_except_i()
+    {
+        return ring.get_last_except();
+    }
+
+    Tango::DevErrorList &get_last_attr_error_i()
+    {
+        return ring.get_last_attr_error();
+    }
+
+    std::vector<PollClock::duration> get_delta_t(long nb)
+    {
+        omni_mutex_lock sync(*this);
+        return get_delta_t_i(nb);
+    }
+
+    std::vector<PollClock::duration> get_delta_t_i(long nb)
+    {
+        return ring.get_delta_t(nb);
+    }
+
+    long get_elt_nb_in_buffer()
+    {
+        omni_mutex_lock sync(*this);
+        return get_elt_nb_in_buffer_i();
+    }
+
+    long get_elt_nb_in_buffer_i()
+    {
+        return ring.get_nb_elt();
+    }
+
+    void get_cmd_history(long, Tango::DevCmdHistoryList *);
+    void get_cmd_history(long, Tango::DevCmdHistory_4 *, Tango::CmdArgType &);
+
+    void get_attr_history(long, Tango::DevAttrHistoryList *, long);
+    void get_attr_history(long, Tango::DevAttrHistoryList_3 *, long);
+    void get_attr_history(long, Tango::DevAttrHistory_4 *, long, AttrDataFormat);
+    void get_attr_history(long, Tango::DevAttrHistory_5 *, long, AttrDataFormat);
+
+    void get_attr_history_43(long n, Tango::DevAttrHistoryList_3 *ptr, long type);
+
+    bool is_fwd_att()
+    {
+        return fwd;
+    }
+
+  protected:
+    DeviceImpl *dev;
+    PollObjType type;
+    std::string name;
+    PollClock::duration upd;
+    PollClock::duration needed_time;
+    PollClock::duration max_delta_t;
+    PollRing ring;
+    bool fwd;
 };
 
-inline bool operator<(const PollObj &,const PollObj &)
+inline bool operator<(const PollObj &, const PollObj &)
 {
-	return true;
+    return true;
 }
 
-inline bool operator==(const PollObj &,const PollObj &)
+inline bool operator==(const PollObj &, const PollObj &)
 {
-	return true;
+    return true;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _POLLOBJ_ */

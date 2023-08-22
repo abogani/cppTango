@@ -16,7 +16,8 @@
 //    Step 1)  create a DeviceProxyHelper object (in your client init_device for instance)
 //
 //    tangoCA = new DeviceProxyHelper("lucia/sls/tangoca",this);
-//      ==>  A DeviceProxy is internally created by DeviceProxyHelper ( note : the this pointer is used for logging purpose)
+//      ==>  A DeviceProxy is internally created by DeviceProxyHelper ( note : the this pointer is used for logging
+//      purpose)
 //
 //    Step 2)  USE your remote Device !!
 //
@@ -40,7 +41,8 @@
 //                      c) execute Command ReadPosition on the deviceProxy : argout will be put in read_value
 //                      tangoCA->command_out("ReadPosition", read_value);
 //
-//                      d) execute Command ReadDoublePv on the deviceProxy : verticalGapPV.c_str() is the argin and *attr_VerticalGap_read is the argout.
+//                      d) execute Command ReadDoublePv on the deviceProxy : verticalGapPV.c_str() is the argin and
+//                      *attr_VerticalGap_read is the argout.
 //                      tangoCA->command_inout("ReadDoublePV",verticalGapPV.c_str(),
 //                                            *attr_VerticalGap_read)
 //                          ==> Automatically  the CommandInOutHelper has done all the DeviceData encapsulation
@@ -48,8 +50,8 @@
 //
 //
 //        Handling of composite type like DEVVAR<X>STRINGARRAY in argin and/or argout (with <X> = LONG or DOUBLE):
-//           The <X> part and the STRING part must be seperated by user in two vectors, std::vector<X> and std::vector<std::string>.
-//           The following must be called:
+//           The <X> part and the STRING part must be seperated by user in two vectors, std::vector<X> and
+//           std::vector<std::string>. The following must be called:
 //
 //        - command with argin only:
 //               void command_in (
@@ -77,19 +79,19 @@
 //
 //  ATTRIBUTES EXAMPLES :
 //                      a) execute  read_attribute  on the deviceProxy and store value in omega_on_axis variable
-//                             _omegaProxy_helper		->read_attribute("AxisCurrentPosition" , omega_on_axis);
+//                             _omegaProxy_helper        ->read_attribute("AxisCurrentPosition" , omega_on_axis);
 //
 //                      b) execute  write_attribute  on the deviceProxy and with argin = 12.3
-//				                    _omegaProxy_helper		->	write_attribute("AxisCurrentPosition", 12.3);
+//                                    _omegaProxy_helper        ->    write_attribute("AxisCurrentPosition", 12.3);
 
 //
 
 //
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						Synchrotron SOLEIL
-//                		L'Orme des Merisiers
-//                		Saint-Aubin - BP 48 - France
+//                        Synchrotron SOLEIL
+//                        L'Orme des Merisiers
+//                        Saint-Aubin - BP 48 - France
 //
 // This file is part of Tango.
 //
@@ -124,7 +126,9 @@
 // * Update DeviceProxyHelper with Florent modification ( read the write part of an attribute)
 //
 // Revision 1.3  2005/04/27 10:22:28  buteau
-// - Under linux , for all methods of DeviceProxyHelper (i.e read_attribute, command_in, command_out , etc .. ) , the filename and the line number of client Device appears in Exceptions (instead of line number and filenmae in DeviceProxyHelper.h)
+// - Under linux , for all methods of DeviceProxyHelper (i.e read_attribute, command_in, command_out , etc .. ) , the
+// filename and the line number of client Device appears in Exceptions (instead of line number and filenmae in
+// DeviceProxyHelper.h)
 // - under WIN32, VC++6 : same feature but only on read_attribute, write_attribute, command methods of DeviceProxyHelper
 // - minor fixes following  E. Taurel remarks
 //
@@ -160,687 +164,692 @@
 #define FULL_CMD_NAME(C) device_proxy_->dev_name() + "::" + C
 #define FULL_ATTR_NAME(A) device_proxy_->dev_name() + "/" + A
 //
-//	Definition of macros to benefit from expansion of __FILE__ and __LINE__ keywords in Device caller source file
+//    Definition of macros to benefit from expansion of __FILE__ and __LINE__ keywords in Device caller source file
 //
-#define read_attribute(ATTR_NAME, VALUE)	 internal_read_attribute	(ATTR_NAME, VALUE, __FILE__, __LINE__)
-#define read_attribute_w(ATTR_NAME, VALUE)	 internal_read_attribute_w  (ATTR_NAME, VALUE, __FILE__, __LINE__)
-#define write_attribute(ATTR_NAME, VALUE)	 internal_write_attribute	(ATTR_NAME, VALUE, __FILE__, __LINE__)
-#define command(CMD_NAME)					 internal_command			(CMD_NAME,  __FILE__, __LINE__)
+#define read_attribute(ATTR_NAME, VALUE) internal_read_attribute(ATTR_NAME, VALUE, __FILE__, __LINE__)
+#define read_attribute_w(ATTR_NAME, VALUE) internal_read_attribute_w(ATTR_NAME, VALUE, __FILE__, __LINE__)
+#define write_attribute(ATTR_NAME, VALUE) internal_write_attribute(ATTR_NAME, VALUE, __FILE__, __LINE__)
+#define command(CMD_NAME) internal_command(CMD_NAME, __FILE__, __LINE__)
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #endif
 
-#define command_out(CMD_NAME, OUT, ...) internal_command_out (CMD_NAME, OUT, ## __VA_ARGS__, __FILE__, __LINE__ )
-#define command_in(CMD_NAME, IN, ...) internal_command_in (CMD_NAME, IN, ## __VA_ARGS__, __FILE__, __LINE__ )
-#define command_inout(CMD_NAME,  ...) internal_command_inout (CMD_NAME,  ## __VA_ARGS__, __FILE__, __LINE__ )
+#define command_out(CMD_NAME, OUT, ...) internal_command_out(CMD_NAME, OUT, ##__VA_ARGS__, __FILE__, __LINE__)
+#define command_in(CMD_NAME, IN, ...) internal_command_in(CMD_NAME, IN, ##__VA_ARGS__, __FILE__, __LINE__)
+#define command_inout(CMD_NAME, ...) internal_command_inout(CMD_NAME, ##__VA_ARGS__, __FILE__, __LINE__)
 
 #if defined(__clang__)
-#pragma clang diagnostic pop
+  #pragma clang diagnostic pop
 #endif
 
 namespace Tango
 {
 
-	//=============================================================================
-	// CLASS: HelperBase
-	//=============================================================================
-	class HelperBase : public Tango::LogAdapter
-	{
-	public:
-		//---------------------------------------------------------------------------
-		//  HelperBase::get_device_proxy
-		//  returns the underlying device
-		//---------------------------------------------------------------------------
-		inline Tango::DeviceProxy* get_device_proxy (void)
-		{
-			return device_proxy_;
-		}
-		//---------------------------------------------------------------------------
-		//  HelperBase::operator->
-		//  returns the underlying device
-		//---------------------------------------------------------------------------
-		inline Tango::DeviceProxy* operator-> (void)
-		{
-			return device_proxy_;
-		}
+//=============================================================================
+// CLASS: HelperBase
+//=============================================================================
+class HelperBase : public Tango::LogAdapter
+{
+  public:
+    //---------------------------------------------------------------------------
+    //  HelperBase::get_device_proxy
+    //  returns the underlying device
+    //---------------------------------------------------------------------------
+    inline Tango::DeviceProxy *get_device_proxy(void)
+    {
+        return device_proxy_;
+    }
 
-	protected:
-		//---------------------------------------------------------------------------
-		//  HelperBase::HelperBase  (ctor)
-		//  device_name : The name of the target device.
-		//  client_device : Reference to the client device (for logging purpose).
-		//---------------------------------------------------------------------------
-		HelperBase (const std::string& device_name, Tango::DeviceImpl *client_device = 0)
-			: Tango::LogAdapter(client_device), device_proxy_(0)
-		{
-			_DEV_TRY_REACTION
-				(
-				//- try
-				device_proxy_ = new Tango::DeviceProxy(const_cast<std::string&>(device_name)),
-				//- what do we tried
-				std::string("new Tango::DeviceProxy on ") + device_name,
-				//- origin
-				"HelperBase::HelperBase",
-				//- reaction
-				if (device_proxy_) {delete device_proxy_; device_proxy_ = 0;}
-				);
-		}
-		//---------------------------------------------------------------------------
-		// HelperBase::~HelperBase (dtor)
-		//---------------------------------------------------------------------------
-		virtual ~HelperBase ()
-		{
-			if (device_proxy_)
-			{
-				delete device_proxy_;
-				device_proxy_ = 0;
-			}
-		}
-		//---------------------------------------------------------------------------
-		//- the underlying device
-		//---------------------------------------------------------------------------
-		Tango::DeviceProxy* device_proxy_;
-	};
+    //---------------------------------------------------------------------------
+    //  HelperBase::operator->
+    //  returns the underlying device
+    //---------------------------------------------------------------------------
+    inline Tango::DeviceProxy *operator->(void)
+    {
+        return device_proxy_;
+    }
 
-	//=============================================================================
-	// CLASS: CommandInOutHelper
-	//=============================================================================
-	class CommandInOutHelper : public virtual HelperBase
-	{
-	public:
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::CommandInOutHelper  (ctor)
-		//  device_name : The name of the target device.
-		//  client_device : Reference to the client device (for logging purpose).
-		//---------------------------------------------------------------------------
-		CommandInOutHelper (const std::string& device_name, Tango::DeviceImpl *client_device = 0)
-			: HelperBase(device_name, client_device)
-		{
-			dd_out_.exceptions(Tango::DeviceData::isempty_flag |
-				Tango::DeviceData::wrongtype_flag);
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::~CommandInOutHelper  (dtor)
-		//---------------------------------------------------------------------------
-		virtual ~CommandInOutHelper ()
-		{
-			//- noop dtor
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command
-		//  exec a DEV_VOID/DEV_VOID TANGO command on the underlying device
-		//  cmd_name : The name of the TANGO command
-		//---------------------------------------------------------------------------
-		void internal_command (const std::string& cmd_name,
-			std::string file,
-			int line)
-		{
-			if (device_proxy_)
-			{
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
+  protected:
+    //---------------------------------------------------------------------------
+    //  HelperBase::HelperBase  (ctor)
+    //  device_name : The name of the target device.
+    //  client_device : Reference to the client device (for logging purpose).
+    //---------------------------------------------------------------------------
+    HelperBase(const std::string &device_name, Tango::DeviceImpl *client_device = 0) :
+        Tango::LogAdapter(client_device),
+        device_proxy_(0)
+    {
+        _DEV_TRY_REACTION(
+            //- try
+            device_proxy_ = new Tango::DeviceProxy(const_cast<std::string &>(device_name)),
+            //- what do we tried
+            std::string("new Tango::DeviceProxy on ") + device_name,
+            //- origin
+            "HelperBase::HelperBase",
+            //- reaction
+            if(device_proxy_) {
+                delete device_proxy_;
+                device_proxy_ = 0;
+            });
+    }
 
-					(device_proxy_->command_inout)(const_cast<std::string&>(cmd_name)),
+    //---------------------------------------------------------------------------
+    // HelperBase::~HelperBase (dtor)
+    //---------------------------------------------------------------------------
+    virtual ~HelperBase()
+    {
+        if(device_proxy_)
+        {
+            delete device_proxy_;
+            device_proxy_ = 0;
+        }
+    }
 
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command",
-					file,
-					line
-					);
-			}
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_inout
-		//  exec a ARG_OUT/ARG_IN TANGO command on the underlying device
-		//  cmd_name : the name of the TANGO command
-		//  argin : input argument
-		//  argout : output argument
-
-
-		//---------------------------------------------------------------------------
-		//  template arg _IN must be supported by DeviceData::operator<<
-		//  template arg _OUT must be supported by DeviceData::operator>>
-		//---------------------------------------------------------------------------
-
-		template <class _IN, class _OUT>
-			void internal_command_inout (const std::string& cmd_name, const _IN& argin, _OUT& argout, std::string file= __FILE__, int line= __LINE__)
-		{
-			if (device_proxy_)
-			{
-				Tango::DeviceData dd_in;
-				dd_in << const_cast<_IN&>(argin);
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_ = (device_proxy_->command_inout)(const_cast<std::string&>(cmd_name), dd_in),
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_inout",
-					file,
-					line
-					);
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_ >> argout,
-					//- what do we tried
-					std::string("DeviceData::operator>> on data returned by ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_inout",
-					file,
-					line
-					);
-			}
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_inout
-		//  exec a DEVVAR<X>STRINGARRAY/DEVVAR<X>STRINGARRAY command on the underlying device
-		//  cmd_name : the name of the TANGO command
-		//  _nv_in : numerical part of the input DEVVAR<X>STRINGARRAY
-		//  _sv_in : string part of the input DEVVAR<X>STRINGARRAY
-		//  _nv_out : numerical part of the ouput DEVVAR<X>STRINGARRAY
-		//  _sv_out : string part of the ouput DEVVAR<X>STRINGARRAY
-		//---------------------------------------------------------------------------
-		//  template arg _IN must be supported by DeviceData::.insert
-		//  template arg _OUT must be supported by DeviceData::.insert
-		//---------------------------------------------------------------------------
-		template <class _IN, class _OUT>
-			void internal_command_inout (const std::string& cmd_name,
-			const std::vector<_IN>& _nv_in,
-			const std::vector<std::string>& _sv_in,
-			std::vector<_OUT>& _nv_out,
-			std::vector<std::string>& _sv_out,
-			std::string file= __FILE__,
-			int line= __LINE__)
-		{
-
-			if (device_proxy_)
-			{
-				Tango::DeviceData dd_in;
-				dd_in.insert(const_cast<std::vector<_IN>&>(_nv_in),
-					const_cast<std::vector<std::string>&>(_sv_in));
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_ = (device_proxy_->command_inout)(const_cast<std::string&>(cmd_name), dd_in),
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_inout",
-					file,
-					line
-					);
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_.extract(_nv_out, _sv_out),
-					//- what do we tried
-					std::string("DeviceData::extract on data returned by ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_inout",
-					file,
-					line
-					);
-			}
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_inout
-		//  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
-		//---------------------------------------------------------------------------
-		template <class _IN>
-			void internal_command_inout (const std::string& TANGO_UNUSED(cmd_name), const _IN& TANGO_UNUSED(argin), DevVarDoubleStringArray* TANGO_UNUSED(argout), std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_inout
-		//  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
-		//---------------------------------------------------------------------------
-		template <class _IN>
-			void internal_command_inout (const std::string& TANGO_UNUSED(cmd_name), const _IN& TANGO_UNUSED(argin), DevVarLongStringArray* TANGO_UNUSED(argout), std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_inout
-		//  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
-		//---------------------------------------------------------------------------
-		template <class _IN>
-			void internal_command_inout (const std::string& TANGO_UNUSED(cmd_name), const _IN& TANGO_UNUSED(argin), DevVarDoubleStringArray& TANGO_UNUSED(argout), std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-		}
-
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_inout
-		//  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
-		//---------------------------------------------------------------------------
-		template <class _IN>
-			void internal_command_inout (const std::string& TANGO_UNUSED(cmd_name), const _IN& TANGO_UNUSED(argin), DevVarLongStringArray& TANGO_UNUSED(argout), std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-		}
-
-
-
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_in
-		//  exec a DEV_VOID/ARG_IN TANGO command on the underlying device
-		//  cmd_name : the name of the TANGO command
-		//  argin : input argument
-		// dummy : used to have same number of parameter for the 2 command_in methods
-		//---------------------------------------------------------------------------
-		//  template arg _IN must be supported by DeviceData::operator<<
-		//---------------------------------------------------------------------------
-		template <class _IN>
-			void internal_command_in (const std::string& cmd_name, const _IN& argin,  std::string file= __FILE__, int line= __LINE__)
-		{
-			if (device_proxy_)
-			{
-				Tango::DeviceData dd_in;
-				dd_in << const_cast<_IN&>(argin);
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					(device_proxy_->command_inout)(const_cast<std::string&>(cmd_name), dd_in),
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_in",
-					file,
-					line
-					);
-			}
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_in
-		//  exec a DEV_VOID/DEVVAR<X>STRINGARRAY command on the underlying device
-		//  cmd_name : the name of the TANGO command
-		//  _nv_in   : numerical part of the input DEVVAR<X>STRINGARRAY
-		//  _sv_in   : string part of the input DEVVAR<X>STRINGARRAY
-		//---------------------------------------------------------------------------
-		//  template arg _IN must be supported by DeviceData::.insert
-		//---------------------------------------------------------------------------
-		template <class _IN>
-			void internal_command_in (const std::string& cmd_name,
-			const std::vector<_IN>& _nv_in,
-			const std::vector<std::string>& _sv_in, std::string file= __FILE__, int line= __LINE__)
-		{
-			if (device_proxy_)
-			{
-				Tango::DeviceData dd_in;
-				dd_in.insert(const_cast<std::vector<_IN>&>(_nv_in),
-					const_cast<std::vector<std::string>&>(_sv_in));
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					(device_proxy_->command_inout)(const_cast<std::string&>(cmd_name), dd_in),
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_in",
-					file,
-					line
-					);
-			}
-		}
-
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_out
-		//  exec a ARG_OUT/DEV_VOID TANGO command on the underlying device
-		//  cmd_name : the name of the TANGO command
-		//  argout : output argument
-		//---------------------------------------------------------------------------
-		//  template arg _OUT must be supported by DeviceData::operator>>
-		//---------------------------------------------------------------------------
-		template <class _OUT>
-			void internal_command_out (const std::string& cmd_name, _OUT& argout,  std::string file= __FILE__, int line= __LINE__)
-		{
-
-			if (device_proxy_)
-			{
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_ = (device_proxy_->command_inout)(const_cast<std::string&>(cmd_name)),
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_out",
-					file,
-					line
-					);
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_ >> argout,
-					//- what do we tried
-					std::string("DeviceData::operator>> on data returned by ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_out",
-					file,
-					line
-					);
-			}
-		}
-
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_out
-		//  Overloaded commands to  avoid usage of DevVarDoubleStringArray ARRAY
-		//---------------------------------------------------------------------------
-		template <class _OUT>
-			void internal_command_out(_OUT TANGO_UNUSED(dummy), DevVarDoubleStringArray* TANGO_UNUSED(argout),  std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_out
-		//  Overloaded commands to  avoid usage of DevVarLongStringArray ARRAY
-		//---------------------------------------------------------------------------
-		template <class _OUT>
-			void internal_command_out (_OUT TANGO_UNUSED(dummy), DevVarLongStringArray* TANGO_UNUSED(argout),  std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_out
-		//  Overloaded commands to  avoid usage of DevVarDoubleStringArray ARRAY
-		//---------------------------------------------------------------------------
-		template <class _OUT>
-			void internal_command_out(_OUT TANGO_UNUSED(dummy), DevVarDoubleStringArray& TANGO_UNUSED(argout),  std::string file= __FILE__, int line= __LINE__)
-		{
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_out
-		//  Overloaded commands to  avoid usage of DevVarLongStringArray ARRAY
-		//---------------------------------------------------------------------------
-		template <class _OUT>
-			void internal_command_out (_OUT TANGO_UNUSED(dummy), DevVarLongStringArray& TANGO_UNUSED(argout),  std::string file= __FILE__, int line= __LINE__)
-		{
-
-			TangoSys_OMemStream o;
-			o << " [" << file << "::" << line << "]" << std::ends;
-			Tango::Except::throw_exception(static_cast<const char*>("TANGO_WRONG_DATA_ERROR"),
-				static_cast<const char*>("Use only STL vector instead of DevVarXXStringArray"),
-				static_cast<const char*>(o.str().c_str()));
-		}
-		//---------------------------------------------------------------------------
-		//  CommandInOutHelper::command_in
-		//  exec a DEV_VOID/DEVVAR<X>STRINGARRAY command on the underlying device
-		//  cmd_name : the name of the TANGO command
-		//  _nv_out : numerical part of the output DEVVAR<X>STRINGARRAY
-		//  _sv_out : string part of the output DEVVAR<X>STRINGARRAY
-		//---------------------------------------------------------------------------
-		//  template arg _OUT must be supported by DeviceData::.extract
-		//---------------------------------------------------------------------------
-		template <class _OUT>
-			void internal_command_out (const std::string& cmd_name,
-			std::vector<_OUT>& _nv_out,
-			std::vector<std::string>& _sv_out,
-			std::string file= __FILE__,
-			int line= __LINE__)
-		{
-			if (device_proxy_)
-			{
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_ = (device_proxy_->command_inout)(const_cast<std::string&>(cmd_name)),
-					//- what do we tried
-					std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_out",
-					file,
-					line
-					);
-				_DEV_TRY_FILE_LINE
-					(
-					//- try
-					dd_out_.extract(_nv_out, _sv_out),
-					//- what do we tried
-					std::string("DeviceData::extract on data returned by ") + FULL_CMD_NAME(cmd_name),
-					//- origin
-					"CommandInOutHelper::command_out" ,
-					file,
-					line
-					);
-			}
-		}
-
-private:
-	//- placed here as a workaround due to CORBA::any_var limitations
-	Tango::DeviceData dd_out_;
+    //---------------------------------------------------------------------------
+    //- the underlying device
+    //---------------------------------------------------------------------------
+    Tango::DeviceProxy *device_proxy_;
 };
 
+//=============================================================================
+// CLASS: CommandInOutHelper
+//=============================================================================
+class CommandInOutHelper : public virtual HelperBase
+{
+  public:
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::CommandInOutHelper  (ctor)
+    //  device_name : The name of the target device.
+    //  client_device : Reference to the client device (for logging purpose).
+    //---------------------------------------------------------------------------
+    CommandInOutHelper(const std::string &device_name, Tango::DeviceImpl *client_device = 0) :
+        HelperBase(device_name, client_device)
+    {
+        dd_out_.exceptions(Tango::DeviceData::isempty_flag | Tango::DeviceData::wrongtype_flag);
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::~CommandInOutHelper  (dtor)
+    //---------------------------------------------------------------------------
+    virtual ~CommandInOutHelper()
+    {
+        //- noop dtor
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command
+    //  exec a DEV_VOID/DEV_VOID TANGO command on the underlying device
+    //  cmd_name : The name of the TANGO command
+    //---------------------------------------------------------------------------
+    void internal_command(const std::string &cmd_name, std::string file, int line)
+    {
+        if(device_proxy_)
+        {
+            _DEV_TRY_FILE_LINE(
+                //- try
+
+                (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name)),
+
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command",
+                file,
+                line);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_inout
+    //  exec a ARG_OUT/ARG_IN TANGO command on the underlying device
+    //  cmd_name : the name of the TANGO command
+    //  argin : input argument
+    //  argout : output argument
+
+    //---------------------------------------------------------------------------
+    //  template arg _IN must be supported by DeviceData::operator<<
+    //  template arg _OUT must be supported by DeviceData::operator>>
+    //---------------------------------------------------------------------------
+
+    template <class _IN, class _OUT>
+    void internal_command_inout(
+        const std::string &cmd_name, const _IN &argin, _OUT &argout, std::string file = __FILE__, int line = __LINE__)
+    {
+        if(device_proxy_)
+        {
+            Tango::DeviceData dd_in;
+            dd_in << const_cast<_IN &>(argin);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_ = (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name), dd_in),
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_inout",
+                file,
+                line);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_ >> argout,
+                //- what do we tried
+                std::string("DeviceData::operator>> on data returned by ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_inout",
+                file,
+                line);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_inout
+    //  exec a DEVVAR<X>STRINGARRAY/DEVVAR<X>STRINGARRAY command on the underlying device
+    //  cmd_name : the name of the TANGO command
+    //  _nv_in : numerical part of the input DEVVAR<X>STRINGARRAY
+    //  _sv_in : string part of the input DEVVAR<X>STRINGARRAY
+    //  _nv_out : numerical part of the ouput DEVVAR<X>STRINGARRAY
+    //  _sv_out : string part of the ouput DEVVAR<X>STRINGARRAY
+    //---------------------------------------------------------------------------
+    //  template arg _IN must be supported by DeviceData::.insert
+    //  template arg _OUT must be supported by DeviceData::.insert
+    //---------------------------------------------------------------------------
+    template <class _IN, class _OUT>
+    void internal_command_inout(const std::string &cmd_name,
+                                const std::vector<_IN> &_nv_in,
+                                const std::vector<std::string> &_sv_in,
+                                std::vector<_OUT> &_nv_out,
+                                std::vector<std::string> &_sv_out,
+                                std::string file = __FILE__,
+                                int line = __LINE__)
+    {
+        if(device_proxy_)
+        {
+            Tango::DeviceData dd_in;
+            dd_in.insert(const_cast<std::vector<_IN> &>(_nv_in), const_cast<std::vector<std::string> &>(_sv_in));
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_ = (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name), dd_in),
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_inout",
+                file,
+                line);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_.extract(_nv_out, _sv_out),
+                //- what do we tried
+                std::string("DeviceData::extract on data returned by ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_inout",
+                file,
+                line);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_inout
+    //  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
+    //---------------------------------------------------------------------------
+    template <class _IN>
+    void internal_command_inout(const std::string &TANGO_UNUSED(cmd_name),
+                                const _IN &TANGO_UNUSED(argin),
+                                DevVarDoubleStringArray *TANGO_UNUSED(argout),
+                                std::string file = __FILE__,
+                                int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_inout
+    //  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
+    //---------------------------------------------------------------------------
+    template <class _IN>
+    void internal_command_inout(const std::string &TANGO_UNUSED(cmd_name),
+                                const _IN &TANGO_UNUSED(argin),
+                                DevVarLongStringArray *TANGO_UNUSED(argout),
+                                std::string file = __FILE__,
+                                int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_inout
+    //  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
+    //---------------------------------------------------------------------------
+    template <class _IN>
+    void internal_command_inout(const std::string &TANGO_UNUSED(cmd_name),
+                                const _IN &TANGO_UNUSED(argin),
+                                DevVarDoubleStringArray &TANGO_UNUSED(argout),
+                                std::string file = __FILE__,
+                                int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_inout
+    //  Overloaded commands to  avoid usage of DevVarXX ARRAY for argout
+    //---------------------------------------------------------------------------
+    template <class _IN>
+    void internal_command_inout(const std::string &TANGO_UNUSED(cmd_name),
+                                const _IN &TANGO_UNUSED(argin),
+                                DevVarLongStringArray &TANGO_UNUSED(argout),
+                                std::string file = __FILE__,
+                                int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_in
+    //  exec a DEV_VOID/ARG_IN TANGO command on the underlying device
+    //  cmd_name : the name of the TANGO command
+    //  argin : input argument
+    // dummy : used to have same number of parameter for the 2 command_in methods
+    //---------------------------------------------------------------------------
+    //  template arg _IN must be supported by DeviceData::operator<<
+    //---------------------------------------------------------------------------
+    template <class _IN>
+    void internal_command_in(const std::string &cmd_name,
+                             const _IN &argin,
+                             std::string file = __FILE__,
+                             int line = __LINE__)
+    {
+        if(device_proxy_)
+        {
+            Tango::DeviceData dd_in;
+            dd_in << const_cast<_IN &>(argin);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name), dd_in),
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_in",
+                file,
+                line);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_in
+    //  exec a DEV_VOID/DEVVAR<X>STRINGARRAY command on the underlying device
+    //  cmd_name : the name of the TANGO command
+    //  _nv_in   : numerical part of the input DEVVAR<X>STRINGARRAY
+    //  _sv_in   : string part of the input DEVVAR<X>STRINGARRAY
+    //---------------------------------------------------------------------------
+    //  template arg _IN must be supported by DeviceData::.insert
+    //---------------------------------------------------------------------------
+    template <class _IN>
+    void internal_command_in(const std::string &cmd_name,
+                             const std::vector<_IN> &_nv_in,
+                             const std::vector<std::string> &_sv_in,
+                             std::string file = __FILE__,
+                             int line = __LINE__)
+    {
+        if(device_proxy_)
+        {
+            Tango::DeviceData dd_in;
+            dd_in.insert(const_cast<std::vector<_IN> &>(_nv_in), const_cast<std::vector<std::string> &>(_sv_in));
+            _DEV_TRY_FILE_LINE(
+                //- try
+                (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name), dd_in),
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_in",
+                file,
+                line);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_out
+    //  exec a ARG_OUT/DEV_VOID TANGO command on the underlying device
+    //  cmd_name : the name of the TANGO command
+    //  argout : output argument
+    //---------------------------------------------------------------------------
+    //  template arg _OUT must be supported by DeviceData::operator>>
+    //---------------------------------------------------------------------------
+    template <class _OUT>
+    void internal_command_out(const std::string &cmd_name,
+                              _OUT &argout,
+                              std::string file = __FILE__,
+                              int line = __LINE__)
+    {
+        if(device_proxy_)
+        {
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_ = (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name)),
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_out",
+                file,
+                line);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_ >> argout,
+                //- what do we tried
+                std::string("DeviceData::operator>> on data returned by ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_out",
+                file,
+                line);
+        }
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_out
+    //  Overloaded commands to  avoid usage of DevVarDoubleStringArray ARRAY
+    //---------------------------------------------------------------------------
+    template <class _OUT>
+    void internal_command_out(_OUT TANGO_UNUSED(dummy),
+                              DevVarDoubleStringArray *TANGO_UNUSED(argout),
+                              std::string file = __FILE__,
+                              int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_out
+    //  Overloaded commands to  avoid usage of DevVarLongStringArray ARRAY
+    //---------------------------------------------------------------------------
+    template <class _OUT>
+    void internal_command_out(_OUT TANGO_UNUSED(dummy),
+                              DevVarLongStringArray *TANGO_UNUSED(argout),
+                              std::string file = __FILE__,
+                              int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_out
+    //  Overloaded commands to  avoid usage of DevVarDoubleStringArray ARRAY
+    //---------------------------------------------------------------------------
+    template <class _OUT>
+    void internal_command_out(_OUT TANGO_UNUSED(dummy),
+                              DevVarDoubleStringArray &TANGO_UNUSED(argout),
+                              std::string file = __FILE__,
+                              int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_out
+    //  Overloaded commands to  avoid usage of DevVarLongStringArray ARRAY
+    //---------------------------------------------------------------------------
+    template <class _OUT>
+    void internal_command_out(_OUT TANGO_UNUSED(dummy),
+                              DevVarLongStringArray &TANGO_UNUSED(argout),
+                              std::string file = __FILE__,
+                              int line = __LINE__)
+    {
+        TangoSys_OMemStream o;
+        o << " [" << file << "::" << line << "]" << std::ends;
+        Tango::Except::throw_exception(static_cast<const char *>("TANGO_WRONG_DATA_ERROR"),
+                                       static_cast<const char *>("Use only STL vector instead of DevVarXXStringArray"),
+                                       static_cast<const char *>(o.str().c_str()));
+    }
+
+    //---------------------------------------------------------------------------
+    //  CommandInOutHelper::command_in
+    //  exec a DEV_VOID/DEVVAR<X>STRINGARRAY command on the underlying device
+    //  cmd_name : the name of the TANGO command
+    //  _nv_out : numerical part of the output DEVVAR<X>STRINGARRAY
+    //  _sv_out : string part of the output DEVVAR<X>STRINGARRAY
+    //---------------------------------------------------------------------------
+    //  template arg _OUT must be supported by DeviceData::.extract
+    //---------------------------------------------------------------------------
+    template <class _OUT>
+    void internal_command_out(const std::string &cmd_name,
+                              std::vector<_OUT> &_nv_out,
+                              std::vector<std::string> &_sv_out,
+                              std::string file = __FILE__,
+                              int line = __LINE__)
+    {
+        if(device_proxy_)
+        {
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_ = (device_proxy_->command_inout)(const_cast<std::string &>(cmd_name)),
+                //- what do we tried
+                std::string("command_inout on ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_out",
+                file,
+                line);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                dd_out_.extract(_nv_out, _sv_out),
+                //- what do we tried
+                std::string("DeviceData::extract on data returned by ") + FULL_CMD_NAME(cmd_name),
+                //- origin
+                "CommandInOutHelper::command_out",
+                file,
+                line);
+        }
+    }
+
+  private:
+    //- placed here as a workaround due to CORBA::any_var limitations
+    Tango::DeviceData dd_out_;
+};
 
 //=============================================================================
 // CLASS: AttributeHelper
 //=============================================================================
 class AttributeHelper : public virtual HelperBase
 {
-public:
-	//---------------------------------------------------------------------------
-	//  AttributeHelper::AttributeHelper  (ctor)
-	//  device_name : name of the target device
-	//  client_device : reference to the client device (for logging purpose)
-	//---------------------------------------------------------------------------
-	AttributeHelper (const std::string& device_name, Tango::DeviceImpl *client_device = 0)
-		: HelperBase(device_name, client_device)
-	{
-		da_out_.exceptions(Tango::DeviceAttribute::isempty_flag | Tango::DeviceAttribute::wrongtype_flag);
-	}
-	//---------------------------------------------------------------------------
-	//  AttributeHelper::~AttributeHelper (dtor)
-	//---------------------------------------------------------------------------
-	virtual ~AttributeHelper ()
-	{
-		//- noop dtor
-	}
+  public:
+    //---------------------------------------------------------------------------
+    //  AttributeHelper::AttributeHelper  (ctor)
+    //  device_name : name of the target device
+    //  client_device : reference to the client device (for logging purpose)
+    //---------------------------------------------------------------------------
+    AttributeHelper(const std::string &device_name, Tango::DeviceImpl *client_device = 0) :
+        HelperBase(device_name, client_device)
+    {
+        da_out_.exceptions(Tango::DeviceAttribute::isempty_flag | Tango::DeviceAttribute::wrongtype_flag);
+    }
 
-	//---------------------------------------------------------------------------
-	//  AttributeHelper::get_device_attribute
-	//---------------------------------------------------------------------------
-	Tango::DeviceAttribute get_device_attribute ()
-	{
-		return da_out_;
-	}
+    //---------------------------------------------------------------------------
+    //  AttributeHelper::~AttributeHelper (dtor)
+    //---------------------------------------------------------------------------
+    virtual ~AttributeHelper()
+    {
+        //- noop dtor
+    }
 
-	//---------------------------------------------------------------------------
-	//  AttributeHelper::write_attribute
-	//  writes the specified attribute
-	//  attr_name : name of the TANGO attribute to be written
-	//  attr_value : the attribute value
-	//---------------------------------------------------------------------------
-	//  template arg _VAL must be supported by DeviceAttribute::operator<<
-	//---------------------------------------------------------------------------
-	template <class _VAL>
-		void internal_write_attribute (const std::string& attr_name, const _VAL& attr_value, std::string file, int line)
-	{
-		if (device_proxy_)
-		{
-			DeviceAttribute da;
-			da.set_name(const_cast<std::string&>(attr_name));
-			da << const_cast<_VAL&>(attr_value);
-			_DEV_TRY_FILE_LINE
-				(
-				//- try
-				(device_proxy_->write_attribute)(da),
-				//- what do we tried
-				std::string("write_attribute on ") + FULL_ATTR_NAME(attr_name),
-				//- origin
-				"AttributeHelper::write_attribute",
-				file,
-				line
-				);
-		}
-	}
-	//---------------------------------------------------------------------------
-	//  AttributeHelper::read_attribute
-	//  reads the specified attribute
-	//  attr_name : the name of the TANGO attribute to be read
-	//  attr_value : the attribute value
-	//---------------------------------------------------------------------------
-	//  template arg _VAL must be supported by DeviceAttribute::operator>>
-	//---------------------------------------------------------------------------
-	template <class _VAL>
-		void internal_read_attribute (const std::string& attr_name, _VAL& attr_value, std::string file, int line )
-	{
+    //---------------------------------------------------------------------------
+    //  AttributeHelper::get_device_attribute
+    //---------------------------------------------------------------------------
+    Tango::DeviceAttribute get_device_attribute()
+    {
+        return da_out_;
+    }
 
-		if (device_proxy_)
-		{
-			_DEV_TRY_FILE_LINE
-				(
-				//- try
-				da_out_ = (device_proxy_->read_attribute)(const_cast<std::string&>(attr_name)),
-				//- what do we tried
-				std::string("read_attribute on ") + FULL_ATTR_NAME(attr_name),
-				//- origin
-				"AttributeHelper::read_attribute",
-				file,
-				line
-				);
-			_DEV_TRY_FILE_LINE
-				(
-				//- try
-				da_out_ >> attr_value,
-				//- what do we tried
-				std::string("DeviceAttribute::operator>> on data returned by ") + FULL_ATTR_NAME(attr_name),
-				//- origin
-				"AttributeHelper::read_attribute",
-				file,
-				line
-				);
+    //---------------------------------------------------------------------------
+    //  AttributeHelper::write_attribute
+    //  writes the specified attribute
+    //  attr_name : name of the TANGO attribute to be written
+    //  attr_value : the attribute value
+    //---------------------------------------------------------------------------
+    //  template arg _VAL must be supported by DeviceAttribute::operator<<
+    //---------------------------------------------------------------------------
+    template <class _VAL>
+    void internal_write_attribute(const std::string &attr_name, const _VAL &attr_value, std::string file, int line)
+    {
+        if(device_proxy_)
+        {
+            DeviceAttribute da;
+            da.set_name(const_cast<std::string &>(attr_name));
+            da << const_cast<_VAL &>(attr_value);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                (device_proxy_->write_attribute)(da),
+                //- what do we tried
+                std::string("write_attribute on ") + FULL_ATTR_NAME(attr_name),
+                //- origin
+                "AttributeHelper::write_attribute",
+                file,
+                line);
+        }
+    }
 
-		}
-	}
+    //---------------------------------------------------------------------------
+    //  AttributeHelper::read_attribute
+    //  reads the specified attribute
+    //  attr_name : the name of the TANGO attribute to be read
+    //  attr_value : the attribute value
+    //---------------------------------------------------------------------------
+    //  template arg _VAL must be supported by DeviceAttribute::operator>>
+    //---------------------------------------------------------------------------
+    template <class _VAL>
+    void internal_read_attribute(const std::string &attr_name, _VAL &attr_value, std::string file, int line)
+    {
+        if(device_proxy_)
+        {
+            _DEV_TRY_FILE_LINE(
+                //- try
+                da_out_ = (device_proxy_->read_attribute)(const_cast<std::string &>(attr_name)),
+                //- what do we tried
+                std::string("read_attribute on ") + FULL_ATTR_NAME(attr_name),
+                //- origin
+                "AttributeHelper::read_attribute",
+                file,
+                line);
+            _DEV_TRY_FILE_LINE(
+                //- try
+                da_out_ >> attr_value,
+                //- what do we tried
+                std::string("DeviceAttribute::operator>> on data returned by ") + FULL_ATTR_NAME(attr_name),
+                //- origin
+                "AttributeHelper::read_attribute",
+                file,
+                line);
+        }
+    }
 
+    //---------------------------------------------------------------------------
+    //  AttributeHelper::read_attribute_w
+    //  reads the specified attribute and get its write value
+    //  attr_name : the name of the TANGO attribute to be read
+    //  w_attr_value : the write attribute value
+    //---------------------------------------------------------------------------
+    //  template arg _VAL must be supported by DeviceAttribute::operator>>
+    //---------------------------------------------------------------------------
+    template <class _VAL>
+    void internal_read_attribute_w(const std::string &attr_name, _VAL &w_attr_value, std::string file, int line)
+    {
+        if(device_proxy_)
+        {
+            _DEV_TRY_FILE_LINE(
+                //- try
+                da_out_ = (device_proxy_->read_attribute)(const_cast<std::string &>(attr_name)),
+                //- what do we tried
+                std::string("read_attribute on ") + FULL_ATTR_NAME(attr_name),
+                //- origin
+                "AttributeHelper::read_attribute_w",
+                file,
+                line);
 
+            //===========================================================================
+            //==
+            //==    TEST BY FL
+            //==
+            //===========================================================================
 
-	//---------------------------------------------------------------------------
-	//  AttributeHelper::read_attribute_w
-	//  reads the specified attribute and get its write value
-	//  attr_name : the name of the TANGO attribute to be read
-	//  w_attr_value : the write attribute value
-	//---------------------------------------------------------------------------
-	//  template arg _VAL must be supported by DeviceAttribute::operator>>
-	//---------------------------------------------------------------------------
-	template <class _VAL>
-		void internal_read_attribute_w (const std::string& attr_name, _VAL& w_attr_value, std::string file, int line )
-	{
+            //- Switch on attribute type
+            try
+            {
+                switch(da_out_.get_type())
+                {
+                case Tango::DEV_BOOLEAN:
+                {
+                    w_attr_value = da_out_.BooleanSeq[1];
+                    break;
+                }
+                case Tango::DEV_SHORT:
+                case Tango::DEV_ENUM:
+                {
+                    w_attr_value = da_out_.ShortSeq[1];
+                    break;
+                }
+                case Tango::DEV_LONG:
+                {
+                    w_attr_value = da_out_.LongSeq[1];
+                    break;
+                }
+                case Tango::DEV_FLOAT:
+                {
+                    w_attr_value = da_out_.FloatSeq[1];
+                    break;
+                }
+                case Tango::DEV_DOUBLE:
+                {
+                    w_attr_value = da_out_.DoubleSeq[1];
+                    break;
+                }
+                default:
+                {
+                    TANGO_THROW_EXCEPTION("TANGO_NON_SUPPORTED_FEATURE_ERROR", "This type is not supported");
+                    break;
+                }
+                }
+                // INFO_STREAM << "w_attr_value = " << w_attr_value << ENDLOG;
+            }
 
-		if (device_proxy_)
-		{
-			_DEV_TRY_FILE_LINE
-				(
-				//- try
-				da_out_ = (device_proxy_->read_attribute)(const_cast<std::string&>(attr_name)),
-				//- what do we tried
-				std::string("read_attribute on ") + FULL_ATTR_NAME(attr_name),
-				//- origin
-				"AttributeHelper::read_attribute_w",
-				file,
-				line
-				);
+            _HANDLE_DEV_EXCEPTION("get_type()", "AttributeHelper::read_attribute_w");
 
-			//===========================================================================
-			//==
-			//==	TEST BY FL
-			//==
-			//===========================================================================
+            //===========================================================================
+            //==
+            //==    END TEST BY FL
+            //==
+            //===========================================================================
+        }
+    }
 
-			//- Switch on attribute type
-			try
-			{
-				switch(da_out_.get_type())
-				{
-				case Tango::DEV_BOOLEAN:
-					{
-						w_attr_value = da_out_.BooleanSeq[1];
-						break;
-					}
-				case Tango::DEV_SHORT:
-				case Tango::DEV_ENUM:
-					{
-						w_attr_value = da_out_.ShortSeq[1];
-						break;
-					}
-				case Tango::DEV_LONG:
-					{
-						w_attr_value = da_out_.LongSeq[1];
-						break;
-					}
-				case Tango::DEV_FLOAT:
-					{
-						w_attr_value = da_out_.FloatSeq[1];
-						break;
-					}
-				case Tango::DEV_DOUBLE:
-					{
-						w_attr_value = da_out_.DoubleSeq[1];
-						break;
-					}
-				default:
-					{
-						TANGO_THROW_EXCEPTION("TANGO_NON_SUPPORTED_FEATURE_ERROR", "This type is not supported");
-						break;
-					}
-				}
-				//INFO_STREAM << "w_attr_value = " << w_attr_value << ENDLOG;
-			}
-
-			_HANDLE_DEV_EXCEPTION("get_type()","AttributeHelper::read_attribute_w");
-
-
-			//===========================================================================
-			//==
-			//==	END TEST BY FL
-			//==
-			//===========================================================================
-
-		}
-	}
-
-private:
-	//- placed here as a workaround due to CORBA::any_var limitations
-	Tango::DeviceAttribute da_out_;
+  private:
+    //- placed here as a workaround due to CORBA::any_var limitations
+    Tango::DeviceAttribute da_out_;
 };
 
 //=============================================================================
@@ -848,28 +857,29 @@ private:
 //=============================================================================
 class DeviceProxyHelper : public CommandInOutHelper, public AttributeHelper
 {
-public:
-	//---------------------------------------------------------------------------
-	//  DeviceProxyHelper::DeviceProxyHelper  (ctor)
-	//  device_name : name of the target device
-	//  client_device : reference to the client device (for logging purpose)
-	//---------------------------------------------------------------------------
-	DeviceProxyHelper (const std::string& device_name, DeviceImpl *client_device = 0)
-		: HelperBase(device_name, client_device),
-		CommandInOutHelper(device_name, client_device),
-		AttributeHelper(device_name, client_device)
-	{
-		//- noop ctor
-	}
-	//---------------------------------------------------------------------------
-	//  DeviceProxyHelper::~DeviceProxyHelper (dtor)
-	//---------------------------------------------------------------------------
-	virtual ~DeviceProxyHelper ()
-	{
-		//- noop dtor
-	}
+  public:
+    //---------------------------------------------------------------------------
+    //  DeviceProxyHelper::DeviceProxyHelper  (ctor)
+    //  device_name : name of the target device
+    //  client_device : reference to the client device (for logging purpose)
+    //---------------------------------------------------------------------------
+    DeviceProxyHelper(const std::string &device_name, DeviceImpl *client_device = 0) :
+        HelperBase(device_name, client_device),
+        CommandInOutHelper(device_name, client_device),
+        AttributeHelper(device_name, client_device)
+    {
+        //- noop ctor
+    }
+
+    //---------------------------------------------------------------------------
+    //  DeviceProxyHelper::~DeviceProxyHelper (dtor)
+    //---------------------------------------------------------------------------
+    virtual ~DeviceProxyHelper()
+    {
+        //- noop dtor
+    }
 };
 
-} //- namespace tango
+} // namespace Tango
 
 #endif // _DEVICE_PROXY_HELPER_H_

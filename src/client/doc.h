@@ -39,7 +39,6 @@
 \brief Just a file to write some Doxygen specific documentation
 */
 
-
 /**@typedef DbData
  * A vector of DbDatum class
  */
@@ -75,7 +74,6 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  *               The main page                         *
  *                                                     *
  *******************************************************/
-
 
 /*! \mainpage
  *
@@ -239,7 +237,8 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
 
 
  * <TR>
- *    <TD style="text-align:center" ROWSPAN=7>DeviceProxy or AttributeProxy method call (except command_inout, read_attribute)</TD>
+ *    <TD style="text-align:center" ROWSPAN=7>DeviceProxy or AttributeProxy method call (except command_inout,
+ read_attribute)</TD>
  *    <TD style="text-align:center" ROWSPAN=2>without database</TD>
  *    <TD style="text-align:center" ROWSPAN=2>Server not running</TD>
  *    <TD style="text-align:center">0</TD>
@@ -276,7 +275,8 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
 
 
  * <TR>
- *    <TD style="text-align:center" ROWSPAN=11>DeviceProxy command_inout and read_attribute or AttributeProxy read and write</TD>
+ *    <TD style="text-align:center" ROWSPAN=11>DeviceProxy command_inout and read_attribute or AttributeProxy read and
+ write</TD>
  *    <TD style="text-align:center" ROWSPAN=3>without database</TD>
  *    <TD style="text-align:center" ROWSPAN=3>Server not running</TD>
  *    <TD style="text-align:center">0</TD>
@@ -498,7 +498,6 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  *                                                     *
  *******************************************************/
 
-
 /** @page recon Reconnection and exception
  * @section Tango API reconnection
  * The Tango API automatically manages re-connection between client and server in case of communication
@@ -506,7 +505,8 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * a user to be (or not be) informed that automatic reconnection took place. If the transparency reconnection
  * mode is not set, when a communication error occurs, an exception is returned to the caller and the connection
  * is internally marked as bad. On the next try to contact the device, the API will try to re-build the
- * network connection. If the transparency reconnection mode is set (the default case), the API will try to re-build the network
+ * network connection. If the transparency reconnection mode is set (the default case), the API will try to re-build the
+ network
  * connection has soon as the communication error occurs and the caller is not informed. Several cases are
  * possible. They are summarized in the following table:
  * <TABLE>
@@ -601,6 +601,5 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * Please note that the timeout case is managed differently because it will not enter the re-connection
  * system. The transparency reconnection mode is set by default to true starting with Tango version 5.5.
  */
-
 
 #endif /* DOC_DOXYGEN */

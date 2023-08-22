@@ -2,13 +2,13 @@
 // Filter.h
 //
 // Copyright (C) :  2000 - 2002
-//					LifeLine Networks BV (www.lifeline.nl). All rights reserved.
-//					Bastiaan Bakker. All rights reserved.
+//                    LifeLine Networks BV (www.lifeline.nl). All rights reserved.
+//                    Bastiaan Bakker. All rights reserved.
 //
-//					2004,2005,2006,2007,2008,2009,2010,2011,2012
-//					Synchrotron SOLEIL
-//                	L'Orme des Merisiers
-//                	Saint-Aubin - BP 48 - France
+//                    2004,2005,2006,2007,2008,2009,2010,2011,2012
+//                    Synchrotron SOLEIL
+//                    L'Orme des Merisiers
+//                    Saint-Aubin - BP 48 - France
 //
 // This file is part of log4tango.
 //
@@ -30,10 +30,11 @@
 
 #ifdef APPENDERS_HAVE_FILTERS
 
-#include <tango/common/log4tango/Portability.h>
-#include <tango/common/log4tango/LoggingEvent.h>
+  #include <tango/common/log4tango/Portability.h>
+  #include <tango/common/log4tango/LoggingEvent.h>
 
-namespace log4tango {
+namespace log4tango
+{
 
 /**
  Users should extend this class to implement customized logging
@@ -71,74 +72,74 @@ namespace log4tango {
 //-----------------------------------------------------------------------------
 class Filter
 {
+  public:
+    typedef enum
+    {
+        DENY = -1,
+        NEUTRAL = 0,
+        ACCEPT = 1
+    } Decision;
 
-public:
+    /**
+     * Default Constructor for Filter
+     **/
+    Filter();
 
-  typedef enum {
-    DENY = -1,
-    NEUTRAL = 0,
-    ACCEPT = 1
-  } Decision;
+    /**
+     * Destructor for Filter
+     **/
+    virtual ~Filter();
 
-  /**
-   * Default Constructor for Filter
-   **/
-  Filter ();
+    /**
+     * Set the next Filter in the Filter chain
+     * @param filter The filter to chain
+     **/
+    void set_chained_filter(Filter *filter);
 
-  /**
-   * Destructor for Filter
-   **/
-  virtual ~Filter ();
+    /**
+     * Get the next Filter in the Filter chain
+     * @return The next Filter or NULL if the current filter
+     * is the last in the chain
+     **/
+    inline Filter *Filter::get_chained_filter(void)
+    {
+        return _chain;
+    }
 
-  /**
-   * Set the next Filter in the Filter chain
-   * @param filter The filter to chain
-   **/
-  void set_chained_filter (Filter* filter);
+    /**
+     * Get the last Filter in the Filter chain
+     * @return The last Filter in the Filter chain
+     **/
+    virtual Filter *get_end_of_chain(void);
 
-  /**
-   * Get the next Filter in the Filter chain
-   * @return The next Filter or NULL if the current filter
-   * is the last in the chain
-   **/
-  inline Filter* Filter::get_chained_filter (void) {
-    return _chain;
-  }
+    /**
+     * Add a Filter to the end of the Filter chain. Convience method for
+     * getEndOfChain()->set_chained_filter(filter).
+     * @param filter The filter to add to the end of the chain.
+     **/
+    virtual void append_chained_filter(Filter *filter);
 
-  /**
-   * Get the last Filter in the Filter chain
-   * @return The last Filter in the Filter chain
-   **/
-  virtual Filter* get_end_of_chain (void);
+    /**
+     * Decide whether to accept or deny a LoggingEvent. This method will
+     * walk the entire chain until a non neutral decision has been made
+     * or the end of the chain has been reached.
+     * @param event The LoggingEvent to decide on.
+     * @return The Decision
+     **/
+    virtual Decision decide(const LoggingEvent &event);
 
-  /**
-   * Add a Filter to the end of the Filter chain. Convience method for
-   * getEndOfChain()->set_chained_filter(filter).
-   * @param filter The filter to add to the end of the chain.
-   **/
-  virtual void append_chained_filter (Filter* filter);
+  protected:
+    /**
+     * Decide whether <b>this</b> Filter accepts or denies the given
+     * LoggingEvent. Actual implementation of Filter should override this
+     * method and not <code>decide(LoggingEvent&)</code>.
+     * @param event The LoggingEvent to decide on.
+     * @return The Decision
+     **/
+    virtual Decision _decide(const LoggingEvent &event) = 0;
 
-  /**
-   * Decide whether to accept or deny a LoggingEvent. This method will
-   * walk the entire chain until a non neutral decision has been made
-   * or the end of the chain has been reached.
-   * @param event The LoggingEvent to decide on.
-   * @return The Decision
-   **/
-  virtual Decision decide (const LoggingEvent& event);
-
-protected:
-  /**
-   * Decide whether <b>this</b> Filter accepts or denies the given
-   * LoggingEvent. Actual implementation of Filter should override this
-   * method and not <code>decide(LoggingEvent&)</code>.
-   * @param event The LoggingEvent to decide on.
-   * @return The Decision
-   **/
-  virtual Decision _decide (const LoggingEvent& event) = 0;
-
-private:
-  Filter* _chain;
+  private:
+    Filter *_chain;
 };
 
 } // namespace log4tango

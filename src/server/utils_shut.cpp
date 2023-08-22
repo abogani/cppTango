@@ -3,14 +3,14 @@
 // file :               utils_shut.cpp
 //
 // description :        C++ source for some methods of the Util class related
-//						to server shutdown
+//                        to server shutdown
 //
 // project :            TANGO
 //
-// author(s) :         	E.Taurel
+// author(s) :             E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -40,126 +40,135 @@ namespace Tango
 {
 //+----------------------------------------------------------------------------
 //
-// method : 		Util::shutdown_ds()
+// method :         Util::shutdown_ds()
 //
-// description : 	This method sends command to the polling thread for
-//			all cmd/attr with polling configuration stored in db.
-//			This is done in separate thread in order to equally
-//			spread all the polled objects polling time on the
-//			smallest polling period.
+// description :     This method sends command to the polling thread for
+//            all cmd/attr with polling configuration stored in db.
+//            This is done in separate thread in order to equally
+//            spread all the polled objects polling time on the
+//            smallest polling period.
 //
 //-----------------------------------------------------------------------------
 
 void Util::shutdown_ds()
 {
+    //
+    // Stopping a device server means :
+    //        - Mark the server as shutting down
+    //        - Send kill command to the polling thread
+    //        - Join with this polling thread
+    //        - Unregister server in database
+    //        - Delete devices (except the admin one)
+    //        - Stop the KeepAliveThread and the EventConsumer Thread when
+    //          they have been started to receive events
+    //        - Force writing file database in case of
+    //        - Shutdown the ORB
+    //        - Cleanup Logging
+    //
 
-//
-// Stopping a device server means :
-//		- Mark the server as shutting down
-//		- Send kill command to the polling thread
-//		- Join with this polling thread
-//		- Unregister server in database
-//		- Delete devices (except the admin one)
-//		- Stop the KeepAliveThread and the EventConsumer Thread when
-//		  they have been started to receive events
-//		- Force writing file database in case of
-//		- Shutdown the ORB
-//		- Cleanup Logging
-//
+    set_svr_shutting_down(true);
 
-	set_svr_shutting_down(true);
+    //
+    // send the exit command to all the polling threads in the pool
+    //
 
-//
-// send the exit command to all the polling threads in the pool
-//
+    stop_all_polling_threads();
+    stop_heartbeat_thread();
+    clr_heartbeat_th_ptr();
 
-	stop_all_polling_threads();
-	stop_heartbeat_thread();
-	clr_heartbeat_th_ptr();
+    //
+    // Unregister the server in the database
+    //
 
-//
-// Unregister the server in the database
-//
+    try
+    {
+        unregister_server();
+    }
+    catch(...)
+    {
+    }
 
-	try
-	{
-		unregister_server();
-	}
-	catch(...) {}
+    //
+    // Delete the devices (except the admin one)
+    //
 
-//
-// Delete the devices (except the admin one)
-//
+    get_dserver_device()->delete_devices();
 
-	get_dserver_device()->delete_devices();
+    //
+    //     Stop the KeepAliveThread and the EventConsumer thread when
+    //  they have been started to receive events.
+    //
 
-//
-// 	Stop the KeepAliveThread and the EventConsumer thread when
-//  they have been started to receive events.
-//
+    ApiUtil *au = ApiUtil::instance();
+    if(au->is_notifd_event_consumer_created() == true)
+    {
+        NotifdEventConsumer *ec = ApiUtil::instance()->get_notifd_event_consumer();
+        if(ec != NULL)
+        {
+            ec->shutdown();
+        }
+    }
+    if(au->is_zmq_event_consumer_created() == true)
+    {
+        ZmqEventConsumer *ec = ApiUtil::instance()->get_zmq_event_consumer();
+        if(ec != NULL)
+        {
+            ec->shutdown();
+        }
+    }
 
-	ApiUtil *au = ApiUtil::instance();
-	if (au->is_notifd_event_consumer_created() == true)
-	{
-		NotifdEventConsumer *ec = ApiUtil::instance()->get_notifd_event_consumer();
-		if (ec != NULL)
-			ec->shutdown();
-	}
-	if (au->is_zmq_event_consumer_created() == true)
-	{
-		ZmqEventConsumer *ec = ApiUtil::instance()->get_zmq_event_consumer();
-		if (ec != NULL)
-			ec->shutdown();
-	}
+    //
+    // Disconnect the server from the notifd, when it was connected
+    //
 
-//
-// Disconnect the server from the notifd, when it was connected
-//
+    NotifdEventSupplier *ev = get_notifd_event_supplier();
+    if(ev != NULL)
+    {
+        ev->disconnect_from_notifd();
+    }
 
-	NotifdEventSupplier *ev = get_notifd_event_supplier();
-	if (ev != NULL)
-		ev->disconnect_from_notifd();
+    //
+    // Delete ZmqEventSupplier
+    //
 
-//
-// Delete ZmqEventSupplier
-//
+    ZmqEventSupplier *zev = get_zmq_event_supplier();
+    delete zev;
 
-	ZmqEventSupplier *zev = get_zmq_event_supplier();
-	delete zev;
+    //
+    // Close access to file database when used
+    //
 
-//
-// Close access to file database when used
-//
+    if(_FileDb == true)
+    {
+        Database *db_ptr = get_database();
+        db_ptr->write_filedatabase();
+        delete db_ptr;
+        TANGO_LOG_DEBUG << "Database object deleted" << std::endl;
+    }
 
-	if (_FileDb == true)
-	{
-		Database *db_ptr = get_database();
-		db_ptr->write_filedatabase();
-		delete db_ptr;
-		TANGO_LOG_DEBUG << "Database object deleted" << std::endl;
-	}
+    //
+    // If the server uses its own event loop, do not call it any more
+    //
 
-//
-// If the server uses its own event loop, do not call it any more
-//
+    if(is_server_event_loop_set())
+    {
+        set_shutdown_server(true);
+    }
 
-	if (is_server_event_loop_set())
-		set_shutdown_server(true);
+    //
+    // Shutdown the ORB
+    //
 
-//
-// Shutdown the ORB
-//
+    TANGO_LOG_DEBUG << "Going to shutdown ORB" << std::endl;
+    CORBA::ORB_var loc_orb = get_orb();
+    loc_orb->shutdown(true);
 
-	TANGO_LOG_DEBUG << "Going to shutdown ORB" << std::endl;
-	CORBA::ORB_var loc_orb = get_orb();
-	loc_orb->shutdown(true);
+    TANGO_LOG_DEBUG << "ORB shutdown" << std::endl;
 
-	TANGO_LOG_DEBUG << "ORB shutdown" << std::endl;
+    // clean-up the logging system
 
-// clean-up the logging system
-
-	Logging::cleanup();
-	TANGO_LOG_DEBUG << "Logging cleaned-up" << std::endl;
+    Logging::cleanup();
+    TANGO_LOG_DEBUG << "Logging cleaned-up" << std::endl;
 }
 
-} // End of Tango namespace
+} // namespace Tango

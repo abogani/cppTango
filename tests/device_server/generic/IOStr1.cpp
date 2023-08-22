@@ -15,10 +15,9 @@
 //
 //-----------------------------------------------------------------------------
 
-IOStr1::IOStr1(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Command(name,in,out,in_desc,out_desc)
+IOStr1::IOStr1(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Command(name, in, out, in_desc, out_desc)
 {
 }
 
@@ -39,15 +38,18 @@ IOStr1::IOStr1(const char *name,Tango::CmdArgType in,
 
 bool IOStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -64,24 +66,23 @@ bool IOStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IOStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
 {
-  try {
-    Tango::DevString argout;
-
-    argout = new char[40];
-    strcpy(argout,"Hello from IOStr1");
-
-    return insert(argout);
-  }
-  catch (CORBA::Exception &e)
+    try
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::DevString argout;
+
+        argout = new char[40];
+        strcpy(argout, "Hello from IOStr1");
+
+        return insert(argout);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+        throw;
     }
 }
-
 
 //+----------------------------------------------------------------------------
 //
@@ -98,12 +99,11 @@ CORBA::Any *IOStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED
 //
 //-----------------------------------------------------------------------------
 
-IOPollStr1::IOPollStr1(const char *name,Tango::CmdArgType in,
-		   Tango::CmdArgType out,const char *in_desc,
-		   const char *out_desc)
-:Command(name,in,out,in_desc,out_desc)
+IOPollStr1::IOPollStr1(
+    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
+    Command(name, in, out, in_desc, out_desc)
 {
-	num = 0;
+    num = 0;
 }
 
 //+----------------------------------------------------------------------------
@@ -123,15 +123,18 @@ IOPollStr1::IOPollStr1(const char *name,Tango::CmdArgType in,
 
 bool IOPollStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
+    //
+    // command allowed only if the device is on
+    //
 
-//
-// command allowed only if the device is on
-//
-
-	if (device->get_state() == Tango::ON)
-		return(true);
-	else
-		return(false);
+    if(device->get_state() == Tango::ON)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
 
 //+----------------------------------------------------------------------------
@@ -148,29 +151,33 @@ bool IOPollStr1::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA:
 //
 //-----------------------------------------------------------------------------
 
-
-CORBA::Any *IOPollStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device),TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *IOPollStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
 {
-  try {
-    Tango::DevString argout;
-
-    argout = new char[40];
-    num++;
-    if ((num % 3) == 0)
-    	strcpy(argout,"Even value from IOPollStr1");
-    else if ((num % 3)  == 1)
-    	strcpy(argout,"Odd value from IOPollStr1");
-    else
+    try
     {
-    	delete [] argout;
-    	TANGO_THROW_EXCEPTION("qqq", "www");
+        Tango::DevString argout;
+
+        argout = new char[40];
+        num++;
+        if((num % 3) == 0)
+        {
+            strcpy(argout, "Even value from IOPollStr1");
+        }
+        else if((num % 3) == 1)
+        {
+            strcpy(argout, "Odd value from IOPollStr1");
+        }
+        else
+        {
+            delete[] argout;
+            TANGO_THROW_EXCEPTION("qqq", "www");
+        }
+
+        return insert(argout);
     }
-
-    return insert(argout);
-  }
-  catch (CORBA::Exception &e)
+    catch(CORBA::Exception &e)
     {
-      Tango::Except::print_exception(e);
-      throw ;
+        Tango::Except::print_exception(e);
+        throw;
     }
 }

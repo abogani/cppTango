@@ -1,187 +1,185 @@
 #include "common.h"
 
-class MyCallBack: public CallBack
+class MyCallBack : public CallBack
 {
-public:
-	MyCallBack():cb_executed(0) {}
+  public:
+    MyCallBack() :
+        cb_executed(0)
+    {
+    }
 
-	virtual void cmd_ended(CmdDoneEvent *);
+    virtual void cmd_ended(CmdDoneEvent *);
 
-	long cb_executed;
+    long cb_executed;
 };
 
 void MyCallBack::cmd_ended(CmdDoneEvent *cmd)
 {
-	TEST_LOG << "In cmd_ended method for device " << cmd->device->dev_name() << std::endl;
-	TEST_LOG << "Command = " << cmd->cmd_name << std::endl;
-	short l;
-	cmd->argout >> l;
-	TEST_LOG << "Command result = " << l << std::endl;
+    TEST_LOG << "In cmd_ended method for device " << cmd->device->dev_name() << std::endl;
+    TEST_LOG << "Command = " << cmd->cmd_name << std::endl;
+    short l;
+    cmd->argout >> l;
+    TEST_LOG << "Command result = " << l << std::endl;
 
-	cb_executed++;
+    cb_executed++;
 }
 
 int main(int argc, char **argv)
 {
-	DeviceProxy *device,*device2;
+    DeviceProxy *device, *device2;
 
-	if ((argc < 3) || (argc > 4))
-	{
-		TEST_LOG << "usage: asyn_cb <device1> <device2>" << std::endl;
-		exit(-1);
-	}
+    if((argc < 3) || (argc > 4))
+    {
+        TEST_LOG << "usage: asyn_cb <device1> <device2>" << std::endl;
+        exit(-1);
+    }
 
-	std::string device1_name = argv[1];
-	std::string device2_name = argv[2];
+    std::string device1_name = argv[1];
+    std::string device2_name = argv[2];
 
-	try
-	{
-		device = new DeviceProxy(device1_name);
-		device2 = new DeviceProxy(device2_name);
-	}
-	catch (CORBA::Exception &e)
-	{
-		Except::print_exception(e);
-		exit(1);
-	}
+    try
+    {
+        device = new DeviceProxy(device1_name);
+        device2 = new DeviceProxy(device2_name);
+    }
+    catch(CORBA::Exception &e)
+    {
+        Except::print_exception(e);
+        exit(1);
+    }
 
+    MyCallBack cb_dev1, cb_dev2;
+    try
+    {
+        // Send commands to check asynchronous callbacks
 
-	MyCallBack cb_dev1,cb_dev2;
-	try
-	{
+        DeviceData din, dout;
+        std::vector<short> send;
+        send.push_back(4);
+        send.push_back(1);
+        din << send;
 
-// Send commands to check asynchronous callbacks
+        device2->command_inout_asynch("IOShortSleep", din, cb_dev2);
+        device->command_inout_asynch("IOShortSleep", din, cb_dev1);
+        device->command_inout_asynch("IOShortSleep", din, cb_dev1);
 
-		DeviceData din,dout;
-		std::vector<short> send;
-		send.push_back(4);
-		send.push_back(1);
-		din << send;
+        //
+        // Wait for replies
+        //
 
-		device2->command_inout_asynch("IOShortSleep",din,cb_dev2);
-		device->command_inout_asynch("IOShortSleep",din,cb_dev1);
-		device->command_inout_asynch("IOShortSleep",din,cb_dev1);
+        TEST_LOG << "Waiting for replies" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
 
-//
-// Wait for replies
-//
+        long nb_replies;
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request arrived" << std::endl;
+        assert(nb_replies == 3);
 
-		TEST_LOG << "Waiting for replies" << std::endl;
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+        //
+        // Fire callbacks only for one device
+        //
 
+        device->get_asynch_replies();
 
-		long nb_replies;
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request arrived" << std::endl;
-		assert ( nb_replies == 3 );
+        assert(cb_dev1.cb_executed == 2);
+        assert(cb_dev2.cb_executed == 0);
 
-//
-// Fire callbacks only for one device
-//
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request arrived" << std::endl;
 
-		device->get_asynch_replies();
+        //
+        // Fire callback for the second device
+        //
 
-		assert (cb_dev1.cb_executed == 2);
-		assert (cb_dev2.cb_executed == 0);
+        device2->get_asynch_replies();
 
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request arrived" << std::endl;
+        assert(cb_dev1.cb_executed == 2);
+        assert(cb_dev2.cb_executed == 1);
 
-//
-// Fire callback for the second device
-//
+        TEST_LOG << "   Callback fired by device --> OK" << std::endl;
 
-		device2->get_asynch_replies();
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request there" << std::endl;
 
-		assert (cb_dev1.cb_executed == 2);
-		assert (cb_dev2.cb_executed == 1);
+        //
+        // Check get_asynch_replies without any replies
+        //
 
-		TEST_LOG << "   Callback fired by device --> OK" << std::endl;
+        device2->get_asynch_replies();
+        device->get_asynch_replies();
+        assert(cb_dev1.cb_executed == 2);
+        assert(cb_dev2.cb_executed == 1);
 
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request there" << std::endl;
+        TEST_LOG << "   Fire callabck without replies --> OK" << std::endl;
 
-//
-// Check get_asynch_replies without any replies
-//
+        //
+        // Send commands
+        //
 
-		device2->get_asynch_replies();
-		device->get_asynch_replies();
-		assert (cb_dev1.cb_executed == 2);
-		assert (cb_dev2.cb_executed == 1);
+        device2->command_inout_asynch("IOShortSleep", din, cb_dev2);
+        device->command_inout_asynch("IOShortSleep", din, cb_dev1);
+        device->command_inout_asynch("IOShortSleep", din, cb_dev1);
 
-		TEST_LOG << "   Fire callabck without replies --> OK" << std::endl;
+        TEST_LOG << "Waiting for replies" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
 
-//
-// Send commands
-//
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request there" << std::endl;
+        assert(nb_replies == 3);
 
-		device2->command_inout_asynch("IOShortSleep",din,cb_dev2);
-		device->command_inout_asynch("IOShortSleep",din,cb_dev1);
-		device->command_inout_asynch("IOShortSleep",din,cb_dev1);
+        //
+        // Fire callbacks for all devices
+        //
 
-		TEST_LOG << "Waiting for replies" << std::endl;
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+        ApiUtil::instance()->get_asynch_replies();
 
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request there" << std::endl;
-		assert (nb_replies == 3);
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request there" << std::endl;
+        assert(nb_replies == 0);
+        assert(cb_dev1.cb_executed == 4);
+        assert(cb_dev2.cb_executed == 2);
 
-//
-// Fire callbacks for all devices
-//
+        TEST_LOG << "   Fire all callbacks at once --> OK" << std::endl;
 
-		ApiUtil::instance()->get_asynch_replies();
+        //
+        // Send a request in polling mode
+        //
 
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request there" << std::endl;
-		assert (nb_replies == 0);
-		assert (cb_dev1.cb_executed == 4);
-		assert (cb_dev2.cb_executed == 2);
+        device->command_inout_asynch("IOShortSleep", din);
 
-		TEST_LOG << "   Fire all callbacks at once --> OK" << std::endl;
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request there" << std::endl;
+        assert(nb_replies == 0);
+        nb_replies = ApiUtil::instance()->pending_asynch_call(POLLING);
+        TEST_LOG << nb_replies << " request there (polling)" << std::endl;
+        assert(nb_replies == 1);
 
-//
-// Send a request in polling mode
-//
+        TEST_LOG << "Waiting for replies" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
-		device->command_inout_asynch("IOShortSleep",din);
+        ApiUtil::instance()->get_asynch_replies();
 
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request there" << std::endl;
-		assert (nb_replies == 0);
-		nb_replies = ApiUtil::instance()->pending_asynch_call(POLLING);
-		TEST_LOG << nb_replies << " request there (polling)" << std::endl;
-		assert (nb_replies == 1);
+        nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
+        TEST_LOG << nb_replies << " request there" << std::endl;
+        assert(nb_replies == 0);
+        nb_replies = ApiUtil::instance()->pending_asynch_call(POLLING);
+        TEST_LOG << nb_replies << " request there (polling)" << std::endl;
+        assert(nb_replies == 1);
+        TEST_LOG << "   No pb when mixing polling and callback mode --> OK" << std::endl;
+    }
+    catch(Tango::DevFailed &e)
+    {
+        Except::print_exception(e);
+        exit(-1);
+    }
+    catch(CORBA::Exception &ex)
+    {
+        Except::print_exception(ex);
+        exit(-1);
+    }
 
-		TEST_LOG << "Waiting for replies" << std::endl;
-		std::this_thread::sleep_for(std::chrono::seconds(3));
+    delete device;
+    delete device2;
 
-		ApiUtil::instance()->get_asynch_replies();
-
-		nb_replies = ApiUtil::instance()->pending_asynch_call(CALL_BACK);
-		TEST_LOG << nb_replies << " request there" << std::endl;
-		assert (nb_replies == 0);
-		nb_replies = ApiUtil::instance()->pending_asynch_call(POLLING);
-		TEST_LOG << nb_replies << " request there (polling)" << std::endl;
-		assert (nb_replies == 1);
-		TEST_LOG << "   No pb when mixing polling and callback mode --> OK" << std::endl;
-
-	}
-	catch (Tango::DevFailed &e)
-	{
-		Except::print_exception(e);
-		exit(-1);
-	}
-	catch (CORBA::Exception &ex)
-	{
-		Except::print_exception(ex);
-		exit(-1);
-	}
-
-
-	delete device;
-	delete device2;
-
-	return 0;
+    return 0;
 }

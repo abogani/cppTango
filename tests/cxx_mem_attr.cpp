@@ -9,175 +9,173 @@
 #undef SUITE_NAME
 #define SUITE_NAME MemAttrTestSuite
 
-class MemAttrTestSuite: public CxxTest::TestSuite
+class MemAttrTestSuite : public CxxTest::TestSuite
 {
-protected:
-	DeviceProxy *device1;
-	string device1_name;
+  protected:
+    DeviceProxy *device1;
+    string device1_name;
 
-public:
-	SUITE_NAME()
-	{
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
-//
-// Arguments check -------------------------------------------------
-//
+        device1_name = CxxTest::TangoPrinter::get_param("device1");
 
-		device1_name = CxxTest::TangoPrinter::get_param("device1");
+        CxxTest::TangoPrinter::validate_args();
 
-		CxxTest::TangoPrinter::validate_args();
+        //
+        // Initialization --------------------------------------------------
+        //
 
-//
-// Initialization --------------------------------------------------
-//
+        try
+        {
+            device1 = new DeviceProxy(device1_name);
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
 
-		try
-		{
-			device1 = new DeviceProxy(device1_name);
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
+    virtual ~SUITE_NAME()
+    {
+        DeviceData din;
+        vector<short> v_s;
+        v_s.push_back(4);
+        v_s.push_back(0);
 
-	}
+        din << v_s;
+        try
+        {
+            device1->command_inout("IOAttrThrowEx", din);
+        }
+        catch(CORBA::Exception &e)
+        {
+            TEST_LOG << endl << "Exception in suite tearDown():" << endl;
+            Except::print_exception(e);
+            exit(-1);
+        }
+        delete device1;
+    }
 
-	virtual ~SUITE_NAME()
-	{
-		DeviceData din;
-		vector<short> v_s;
-		v_s.push_back(4);
-		v_s.push_back(0);
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-		din << v_s;
-		try
-		{
-			device1->command_inout("IOAttrThrowEx", din);
-		}
-		catch(CORBA::Exception &e)
-		{
-			TEST_LOG << endl << "Exception in suite tearDown():" << endl;
-			Except::print_exception(e);
-			exit(-1);
-		}
-		delete device1;
-	}
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+    //
+    // Tests -------------------------------------------------------
+    //
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+    // Test one memorized attribute which fails during init command
 
-//
-// Tests -------------------------------------------------------
-//
+    void test_One_memorized_attribute_failing_during_init_cmd(void)
+    {
+        DeviceAttribute short_attr_w("Short_attr_w", static_cast<DevShort>(10));
+        TS_ASSERT_THROWS_NOTHING(device1->write_attribute(short_attr_w));
+        //
+        // Ask the attribute to throw exception during any write call
+        //
 
-// Test one memorized attribute which fails during init command
+        DeviceData din;
+        vector<short> v_s;
+        v_s.push_back(4);
+        v_s.push_back(1);
 
-	void test_One_memorized_attribute_failing_during_init_cmd(void)
-	{
-		DeviceAttribute short_attr_w("Short_attr_w", static_cast<DevShort>(10));
-		TS_ASSERT_THROWS_NOTHING(device1->write_attribute(short_attr_w));
-//
-// Ask the attribute to throw exception during any write call
-//
+        din << v_s;
 
-		DeviceData din;
-		vector<short> v_s;
-		v_s.push_back(4);
-		v_s.push_back(1);
+        device1->command_inout("IOAttrThrowEx", din);
 
-		din << v_s;
+        //
+        // Execute init command
+        //
+        device1->command_inout("Init");
 
-		device1->command_inout("IOAttrThrowEx",din);
+        //
+        // Get device state and status
+        //
 
-//
-// Execute init command
-//
-		device1->command_inout("Init");
+        Tango::DevState ds = device1->state();
+        TS_ASSERT_EQUALS(ds, Tango::ALARM);
 
-//
-// Get device state and status
-//
+        string d_status = device1->status();
+        string::size_type pos = d_status.find('.');
+        pos = pos + 2;
+        string sub_status = d_status.substr(pos);
+        TS_ASSERT_EQUALS(sub_status, STATUS_MEM_FAILED);
 
-		Tango::DevState ds = device1->state();
-		TS_ASSERT_EQUALS(ds, Tango::ALARM);
+        //
+        // Try to read the attribute
+        //
 
-		string d_status = device1->status();
-		string::size_type pos = d_status.find('.');
-		pos = pos + 2;
-		string sub_status = d_status.substr(pos);
-		TS_ASSERT_EQUALS(sub_status, STATUS_MEM_FAILED);
+        DeviceAttribute read_da = device1->read_attribute("Short_attr_w");
+        short s_val;
+        TS_ASSERT_THROWS_ASSERT(
+            read_da >> s_val, Tango::DevFailed & e, TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Aaaa");
+            TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR);
+            TS_ASSERT_EQUALS(string(e.errors[1].reason.in()), API_MemAttFailedDuringInit);
+            TS_ASSERT_EQUALS(e.errors[1].severity, Tango::ERR));
 
-//
-// Try to read the attribute
-//
+        //
+        // Ask attribute not to throw exception any more
+        //
 
-		DeviceAttribute read_da = device1->read_attribute("Short_attr_w");
-		short s_val;
-		TS_ASSERT_THROWS_ASSERT(read_da >> s_val, Tango::DevFailed &e,
-				TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), "Aaaa");
-                                TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR);
-				TS_ASSERT_EQUALS(string(e.errors[1].reason.in()), API_MemAttFailedDuringInit);
-                                TS_ASSERT_EQUALS(e.errors[1].severity, Tango::ERR));
+        v_s.clear();
+        v_s.push_back(4);
+        v_s.push_back(0);
 
-//
-// Ask attribute not to throw exception any more
-//
+        din << v_s;
 
-		v_s.clear();
-		v_s.push_back(4);
-		v_s.push_back(0);
+        device1->command_inout("IOAttrThrowEx", din);
 
-		din << v_s;
+        //
+        // Write the attribute
+        //
 
-		device1->command_inout("IOAttrThrowEx",din);
+        short val = 10;
+        Tango::DeviceAttribute da("Short_attr_w", val);
 
-//
-// Write the attribute
-//
+        device1->write_attribute(da);
 
-		short val = 10;
-		Tango::DeviceAttribute da("Short_attr_w",val);
+        //
+        // Get device state and status
+        //
 
-		device1->write_attribute(da);
+        ds = device1->state();
+        TS_ASSERT_EQUALS(ds, Tango::ON);
 
-//
-// Get device state and status
-//
+        d_status = device1->status();
+        TS_ASSERT_EQUALS(d_status, STATUS_ON);
 
-		ds = device1->state();
-		TS_ASSERT_EQUALS(ds, Tango::ON);
+        //
+        // Read the attribute
+        //
 
-		d_status = device1->status();
-		TS_ASSERT_EQUALS(d_status, STATUS_ON);
+        DeviceAttribute read_da_2 = device1->read_attribute("Short_attr_w");
+        short s_val_2;
+        read_da_2 >> s_val_2;
+        TS_ASSERT_EQUALS(s_val_2, 10);
+    }
 
-//
-// Read the attribute
-//
-
-		DeviceAttribute read_da_2 = device1->read_attribute("Short_attr_w");
-		short s_val_2;
-		read_da_2 >> s_val_2;
-		TS_ASSERT_EQUALS(s_val_2, 10);
-	}
-
-/*
- * Test for changing min and max alarm threshold of a  memorized attribute
- * with neither min_ nor max_value specified. Such scenario used to fail
- * (#401), with misleading error message claiming that memorized value
- * is above new limit.
- */
+    /*
+     * Test for changing min and max alarm threshold of a  memorized attribute
+     * with neither min_ nor max_value specified. Such scenario used to fail
+     * (#401), with misleading error message claiming that memorized value
+     * is above new limit.
+     */
 
     void test_change_max_alarm_threshold_of_memorized_attribute()
     {
-        const char* attr_name = "Short_attr_w";
+        const char *attr_name = "Short_attr_w";
         const DevShort attr_value = 20;
 
         unset_attribute_min_max_value(attr_name);
@@ -187,13 +185,13 @@ public:
 
         auto config = device1->get_attribute_config(attr_name);
         config.alarms.max_alarm = std::to_string(attr_value + 1);
-        AttributeInfoListEx config_in = { config };
+        AttributeInfoListEx config_in = {config};
         TS_ASSERT_THROWS_NOTHING(device1->set_attribute_config(config_in));
     }
 
     void test_change_min_alarm_threshold_of_memorized_attribute()
     {
-        const char* attr_name = "Short_attr_w";
+        const char *attr_name = "Short_attr_w";
         const DevShort attr_value = -20;
 
         unset_attribute_min_max_value(attr_name);
@@ -203,16 +201,16 @@ public:
 
         auto config = device1->get_attribute_config(attr_name);
         config.alarms.min_alarm = std::to_string(attr_value - 1);
-        AttributeInfoListEx config_in = { config };
+        AttributeInfoListEx config_in = {config};
         TS_ASSERT_THROWS_NOTHING(device1->set_attribute_config(config_in));
     }
 
-    void unset_attribute_min_max_value(const char* attr_name)
+    void unset_attribute_min_max_value(const char *attr_name)
     {
         auto config = device1->get_attribute_config(attr_name);
         config.min_value = AlrmValueNotSpec;
         config.max_value = AlrmValueNotSpec;
-        AttributeInfoListEx config_in = { config };
+        AttributeInfoListEx config_in = {config};
         TS_ASSERT_THROWS_NOTHING(device1->set_attribute_config(config_in));
     }
 };

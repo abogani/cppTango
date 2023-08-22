@@ -1,15 +1,15 @@
 //=============================================================================
 //
-// file :	  LogCmds.h
+// file :      LogCmds.h
 //
 // description :  Logging oriented commands of the DServerClass.
 //
-// project :	  TANGO
+// project :      TANGO
 //
-// author(s) :	  N.Leclercq
+// author(s) :      N.Leclercq
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -31,7 +31,6 @@
 //
 //=============================================================================
 
-
 #ifndef _LOG_CMDS_H
 #define _LOG_CMDS_H
 
@@ -42,154 +41,140 @@ namespace Tango
 
 //=============================================================================
 //
-//			The AddLoggingTarget class
+//            The AddLoggingTarget class
 //
-// description :	Class implementing the AddLoggingTarget command.
-//			This command adds one (or more) logging target to one (or more)
-//	device(s) running within the same Device server.
+// description :    Class implementing the AddLoggingTarget command.
+//            This command adds one (or more) logging target to one (or more)
+//    device(s) running within the same Device server.
 //
 //=============================================================================
 class AddLoggingTarget : public Command
 {
-public:
-	AddLoggingTarget (const char *cmd_name,
-				Tango::CmdArgType in,
-				Tango::CmdArgType out,
-				const std::string &in_desc);
+  public:
+    AddLoggingTarget(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-	~AddLoggingTarget() {}
+    ~AddLoggingTarget() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The RemoveLoggingTarget class
+//            The RemoveLoggingTarget class
 //
-// description :	Class implementing the RemoveLoggingTarget command.
-//			This command removes one (or more) logging target to one (or more)
-//	device(s) running within the same Device server.
+// description :    Class implementing the RemoveLoggingTarget command.
+//            This command removes one (or more) logging target to one (or more)
+//    device(s) running within the same Device server.
 //
 //=============================================================================
 class RemoveLoggingTarget : public Command
 {
-public:
-	RemoveLoggingTarget (const char *cmd_name,
-				   Tango::CmdArgType in,
-				   Tango::CmdArgType out,
-				   const std::string &in_desc);
+  public:
+    RemoveLoggingTarget(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-	~RemoveLoggingTarget() {}
+    ~RemoveLoggingTarget() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The GetLoggingTarget class
+//            The GetLoggingTarget class
 //
-// description :	Class implementing the GetLoggingTarget command.
-//			This command returns the logging target list of a device.
+// description :    Class implementing the GetLoggingTarget command.
+//            This command returns the logging target list of a device.
 //
 //=============================================================================
 class GetLoggingTarget : public Command
 {
-public:
-	GetLoggingTarget (const char *cmd_name,
-										Tango::CmdArgType in,
-		    Tango::CmdArgType out,
-		    const std::string &in_desc,
-		    const std::string &out_desc);
+  public:
+    GetLoggingTarget(const char *cmd_name,
+                     Tango::CmdArgType in,
+                     Tango::CmdArgType out,
+                     const std::string &in_desc,
+                     const std::string &out_desc);
 
-	~GetLoggingTarget() {}
+    ~GetLoggingTarget() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The SetLoggingLevel class
+//            The SetLoggingLevel class
 //
-// description :	Class implementing the SetLoggingLevel command.
-//			This command set the logging level of one or more device(s).
+// description :    Class implementing the SetLoggingLevel command.
+//            This command set the logging level of one or more device(s).
 //
 //=============================================================================
 class SetLoggingLevel : public Command
 {
-public:
-	SetLoggingLevel (const char *cmd_name,
-		   Tango::CmdArgType in,
-		   Tango::CmdArgType out,
-		   const std::string &in_desc);
+  public:
+    SetLoggingLevel(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-	~SetLoggingLevel() {}
+    ~SetLoggingLevel() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The GetLoggingLevel class
+//            The GetLoggingLevel class
 //
-// description :	Class implementing the GetLoggingLevel command.
-//			This command returns the logging level of one or more device(s).
+// description :    Class implementing the GetLoggingLevel command.
+//            This command returns the logging level of one or more device(s).
 //
 //=============================================================================
 class GetLoggingLevel : public Command
 {
-public:
-	GetLoggingLevel (const char *cmd_name,
-									  Tango::CmdArgType in,
-		    Tango::CmdArgType out,
-		    const std::string &in_desc,
-		    const std::string &out_desc);
+  public:
+    GetLoggingLevel(const char *cmd_name,
+                    Tango::CmdArgType in,
+                    Tango::CmdArgType out,
+                    const std::string &in_desc,
+                    const std::string &out_desc);
 
-	~GetLoggingLevel() {}
+    ~GetLoggingLevel() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The StopLogging class
+//            The StopLogging class
 //
-// description :	Class implementing the StopLogging command.
-//			This command disable the logging for all the devices.
+// description :    Class implementing the StopLogging command.
+//            This command disable the logging for all the devices.
 //
 //=============================================================================
 class StopLogging : public Command
 {
-public:
-	StopLogging (const char *cmd_name,
-						 Tango::CmdArgType in,
-	       Tango::CmdArgType out);
+  public:
+    StopLogging(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	~StopLogging() {}
+    ~StopLogging() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The StartLogging class
+//            The StartLogging class
 //
-// description :	Class implementing the StartLogging command.
-//			This command enable the logging for all the devices.
+// description :    Class implementing the StartLogging command.
+//            This command enable the logging for all the devices.
 //
 //=============================================================================
 class StartLogging : public Command
 {
-public:
-	StartLogging (const char *cmd_name,
-						 Tango::CmdArgType in,
-	       Tango::CmdArgType out);
+  public:
+    StartLogging(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	~StartLogging() {}
+    ~StartLogging() { }
 
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _LOG_CMDS_H

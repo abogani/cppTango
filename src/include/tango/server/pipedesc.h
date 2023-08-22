@@ -1,15 +1,15 @@
 //===================================================================================================================
 //
-// file :		pipedesc.h
+// file :        pipedesc.h
 //
-// description :	Include file for the Pipe user configuration
+// description :    Include file for the Pipe user configuration
 //
-// project :		TANGO
+// project :        TANGO
 //
-// author(s) :		E.Taurel
+// author(s) :        E.Taurel
 //
 // Copyright (C) :      2014
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -37,7 +37,6 @@
 namespace Tango
 {
 
-
 /**
  * User class to set pipe default properties.
  *
@@ -54,55 +53,58 @@ namespace Tango
 
 class UserDefaultPipeProp
 {
-public:
+  public:
+    /**@name Constructor
+     * Only one constructor is defined for this class */
+    //@{
+    /**
+     * Constructs a newly allocated UserDefaultPipeProp object.
+     */
+    UserDefaultPipeProp() :
+        ext(nullptr)
+    {
+    }
 
-/**@name Constructor
- * Only one constructor is defined for this class */
-//@{
-/**
- * Constructs a newly allocated UserDefaultPipeProp object.
- */
-	UserDefaultPipeProp():ext(nullptr) {}
-//@}
+    //@}
 
-/**@name Set default property methods */
-//@{
-/**
- * Set default label property
- *
- * @param	def_label	The user default label property
- */
-	void set_label(const std::string &def_label)
-	{
-		label = def_label;
-	}
+    /**@name Set default property methods */
+    //@{
+    /**
+     * Set default label property
+     *
+     * @param    def_label    The user default label property
+     */
+    void set_label(const std::string &def_label)
+    {
+        label = def_label;
+    }
 
-/**
- * Set default description property
- *
- * @param	def_desc	The user default description property
- */
-	void set_description(const std::string &def_desc)
-	{
-		description = def_desc;
-	}
-//@}
+    /**
+     * Set default description property
+     *
+     * @param    def_desc    The user default description property
+     */
+    void set_description(const std::string &def_desc)
+    {
+        description = def_desc;
+    }
 
-/// @privatesection
-	~UserDefaultPipeProp() {}
+    //@}
 
-	std::string 			label;
-	std::string 			description;
+    /// @privatesection
+    ~UserDefaultPipeProp() { }
 
-private:
+    std::string label;
+    std::string description;
+
+  private:
     class UserDefaultPipePropExt
     {
     };
 
-    std::unique_ptr<UserDefaultPipePropExt>  ext;           // Class extension
+    std::unique_ptr<UserDefaultPipePropExt> ext; // Class extension
 };
 
-
-} // End of Tango namespace
+} // namespace Tango
 
 #endif /* _PIPEDESC_H */

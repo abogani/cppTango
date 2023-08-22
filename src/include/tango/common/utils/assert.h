@@ -20,9 +20,9 @@ namespace detail
 // @param [in] line Line number where assertion failed
 // @param [in] func Name of the function where assertion failed
 // @param [in] expr Asserted expression
-[[noreturn]] void assertion_failure(const char* file, int line, const char* func, const char* expr);
-}
-}
+[[noreturn]] void assertion_failure(const char *file, int line, const char *func, const char *expr);
+} // namespace detail
+} // namespace Tango
 
 /**
  * Assert condition \a X holds
@@ -37,10 +37,10 @@ namespace detail
  */
 
 #ifndef NDEBUG
-#define TANGO_ASSERT(X) (X) ? static_cast<void>(0) : \
-    Tango::detail::assertion_failure(__FILE__, __LINE__, TANGO_CURRENT_FUNCTION, #X)
+  #define TANGO_ASSERT(X) \
+      (X) ? static_cast<void>(0) : Tango::detail::assertion_failure(__FILE__, __LINE__, TANGO_CURRENT_FUNCTION, #X)
 #else
-#define TANGO_ASSERT(X) static_cast<void>(X)
+  #define TANGO_ASSERT(X) static_cast<void>(X)
 #endif
 
 #endif

@@ -4,19 +4,19 @@
 //
 // description :        Include for the DServerClass class. This class is a
 //                      singleton class i.e only one object of this class
-//			can be created.
-//			It contains all properties and methods
-//			which the DServer requires only once e.g. the
-//			commands.
-//			This file also includes class declaration for all the
-//			commands available on device of the DServer class
+//            can be created.
+//            It contains all properties and methods
+//            which the DServer requires only once e.g. the
+//            commands.
+//            This file also includes class declaration for all the
+//            commands available on device of the DServer class
 //
 // project :            TANGO
 //
 // author(s) :          A.Gotz + E.Taurel
 //
 // Copyright (C) :      2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -48,465 +48,373 @@ namespace Tango
 
 //=============================================================================
 //
-//			The DevRestart class
+//            The DevRestart class
 //
-// description :	Class to implement the DevRestart command. This command
-//			needs one input argument and no outout argument.
-//			The input argument is the name of the device to be
-//			re-started.
-//			This class delete and re-create a device
+// description :    Class to implement the DevRestart command. This command
+//            needs one input argument and no outout argument.
+//            The input argument is the name of the device to be
+//            re-started.
+//            This class delete and re-create a device
 //
 //=============================================================================
-
 
 class DevRestartCmd : public Command
 {
-public:
+  public:
+    DevRestartCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
+    ~DevRestartCmd() { }
 
-	DevRestartCmd(const char *cmd_name,
-		      Tango::CmdArgType in,
-		      Tango::CmdArgType out,
-		      const char *desc);
-	~DevRestartCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevRestartServerCmd class
+//            The DevRestartServerCmd class
 //
-// description :	Class to implement the DevKill command. This
-//			command does not take any input argument. It simply
-//			kills the device server.
+// description :    Class to implement the DevKill command. This
+//            command does not take any input argument. It simply
+//            kills the device server.
 //
 //=============================================================================
-
 
 class DevRestartServerCmd : public Command
 {
-public:
+  public:
+    DevRestartServerCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	DevRestartServerCmd(const char *cmd_name,
-		   	    Tango::CmdArgType in,Tango::CmdArgType out);
+    ~DevRestartServerCmd() { }
 
-	~DevRestartServerCmd() {}
-
-	virtual CORBA::Any *execute (DeviceImpl *, const CORBA::Any &);
+    virtual CORBA::Any *execute(DeviceImpl *, const CORBA::Any &);
 };
 
 //=============================================================================
 //
-//			The DevQueryClassCmd class
+//            The DevQueryClassCmd class
 //
-// description :	Class to implement the DevQueryClass command. This
-//			command does not take any input argument and return a
-//			list of all the classes created inside the device
-//			server process
+// description :    Class to implement the DevQueryClass command. This
+//            command does not take any input argument and return a
+//            list of all the classes created inside the device
+//            server process
 //
 //=============================================================================
-
 
 class DevQueryClassCmd : public Command
 {
-public:
+  public:
+    DevQueryClassCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevQueryClassCmd(const char *cmd_name,
-			 Tango::CmdArgType in,
-			 Tango::CmdArgType out,
-			 const char *desc);
+    ~DevQueryClassCmd() { }
 
-	~DevQueryClassCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevQueryDeviceCmd class
+//            The DevQueryDeviceCmd class
 //
-// description :	Class to implement the DevQueryDevice command. This
-//			command does not take any input argument and return a
-//			list of all the devices created inside the device
-//			server process
+// description :    Class to implement the DevQueryDevice command. This
+//            command does not take any input argument and return a
+//            list of all the devices created inside the device
+//            server process
 //
 //=============================================================================
-
 
 class DevQueryDeviceCmd : public Command
 {
-public:
+  public:
+    DevQueryDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevQueryDeviceCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *desc);
+    ~DevQueryDeviceCmd() { }
 
-	~DevQueryDeviceCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
 //=============================================================================
 //
-//			The DevQuerySubDeviceCmd class
+//            The DevQuerySubDeviceCmd class
 //
-// description :	Class to implement the DevQuerySubDevice command. This
-//			command does not take any input argument and returns a
-//			list of all the sub devices connections opened inside the device
-//			server process
+// description :    Class to implement the DevQuerySubDevice command. This
+//            command does not take any input argument and returns a
+//            list of all the sub devices connections opened inside the device
+//            server process
 //
 //=============================================================================
-
 
 class DevQuerySubDeviceCmd : public Command
 {
-public:
+  public:
+    DevQuerySubDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevQuerySubDeviceCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *desc);
+    ~DevQuerySubDeviceCmd() { }
 
-	~DevQuerySubDeviceCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
 //=============================================================================
 //
-//			The DevKillCmd class
+//            The DevKillCmd class
 //
-// description :	Class to implement the DevKill command. This
-//			command does not take any input argument. It simply
-//			kills the device server.
+// description :    Class to implement the DevKill command. This
+//            command does not take any input argument. It simply
+//            kills the device server.
 //
 //=============================================================================
-
 
 class DevKillCmd : public Command
 {
-public:
+  public:
+    DevKillCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-	DevKillCmd(const char *cmd_name,
-		   Tango::CmdArgType in,Tango::CmdArgType out);
+    ~DevKillCmd() { }
 
-	~DevKillCmd() {}
-
-	virtual CORBA::Any *execute (DeviceImpl *, const CORBA::Any &);
+    virtual CORBA::Any *execute(DeviceImpl *, const CORBA::Any &);
 };
 
 //=============================================================================
 //
-//			The DevSetTraceLevelCmd class
+//            The DevSetTraceLevelCmd class
 //
-// description :	Class to implement the DevSetTracelevel command.
-//			It updates device server trace level with the input
-//			argument
+// description :    Class to implement the DevSetTracelevel command.
+//            It updates device server trace level with the input
+//            argument
 //
 //=============================================================================
-
 
 class DevSetTraceLevelCmd : public Command
 {
-public:
+  public:
+    DevSetTraceLevelCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevSetTraceLevelCmd(const char *cmd_name,
-			    Tango::CmdArgType in,
-			    Tango::CmdArgType out,
-			    const char *desc);
+    ~DevSetTraceLevelCmd() { }
 
-	~DevSetTraceLevelCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevGetTraceLevel class
+//            The DevGetTraceLevel class
 //
-// description :	Class to implement the DevGetTracelevel command.
-//			It simply returns the device server trace level
+// description :    Class to implement the DevGetTracelevel command.
+//            It simply returns the device server trace level
 //
 //=============================================================================
-
 
 class DevGetTraceLevelCmd : public Command
 {
-public:
+  public:
+    DevGetTraceLevelCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevGetTraceLevelCmd(const char *cmd_name,
-			    Tango::CmdArgType in,
-			    Tango::CmdArgType out,
-			    const char *desc);
+    ~DevGetTraceLevelCmd() { }
 
-	~DevGetTraceLevelCmd() {}
-
-	virtual CORBA::Any *execute (DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevSetTraceOutputCmd class
+//            The DevSetTraceOutputCmd class
 //
-// description :	Class to implement the DevSetTraceOutput command.
-//			It set the server output to the input parameter
+// description :    Class to implement the DevSetTraceOutput command.
+//            It set the server output to the input parameter
 //
 //=============================================================================
-
 
 class DevSetTraceOutputCmd : public Command
 {
-public:
+  public:
+    DevSetTraceOutputCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevSetTraceOutputCmd(const char *cmd_name,
-			     Tango::CmdArgType in,
-			     Tango::CmdArgType out,
-			     const char *desc);
+    ~DevSetTraceOutputCmd() { }
 
-	~DevSetTraceOutputCmd() {}
-
-	virtual CORBA::Any *execute (DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevGetTraceOutputCmd class
+//            The DevGetTraceOutputCmd class
 //
-// description :	Class to implement the DevGetTracelevel command.
-//			It simply returns the device server trace level
+// description :    Class to implement the DevGetTracelevel command.
+//            It simply returns the device server trace level
 //
 //=============================================================================
-
 
 class DevGetTraceOutputCmd : public Command
 {
-public:
+  public:
+    DevGetTraceOutputCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	DevGetTraceOutputCmd(const char *cmd_name,
-			     Tango::CmdArgType in,
-			     Tango::CmdArgType out,
-			     const char *desc);
+    ~DevGetTraceOutputCmd() { }
 
-	~DevGetTraceOutputCmd() {}
-
-	virtual CORBA::Any *execute (DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
-
 //=============================================================================
 //
-//			The QueryWizardClassPropertyCmd class
+//            The QueryWizardClassPropertyCmd class
 //
-// description :	Class to implement the QueryWizardClassProperty command.
-//			This command takes one input argument which is
-//			the class name and return a
-//			list of all the class properties definition registered
-//			in the wizard for the specified class.
+// description :    Class to implement the QueryWizardClassProperty command.
+//            This command takes one input argument which is
+//            the class name and return a
+//            list of all the class properties definition registered
+//            in the wizard for the specified class.
 //
 //=============================================================================
-
 
 class QueryWizardClassPropertyCmd : public Command
 {
-public:
+  public:
+    QueryWizardClassPropertyCmd(
+        const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-	QueryWizardClassPropertyCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *in_desc,const char *out_desc);
+    ~QueryWizardClassPropertyCmd() { }
 
-	~QueryWizardClassPropertyCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The QueryWizardDevPropertyCmd class
+//            The QueryWizardDevPropertyCmd class
 //
-// description :	Class to implement the QueryWizardDevProperty command.
-//			This command takes one input argument which is
-//			the class name and return a
-//			list of all the device properties definition registered
-//			in the wizard for the specified class.
+// description :    Class to implement the QueryWizardDevProperty command.
+//            This command takes one input argument which is
+//            the class name and return a
+//            list of all the device properties definition registered
+//            in the wizard for the specified class.
 //
 //=============================================================================
-
 
 class QueryWizardDevPropertyCmd : public Command
 {
-public:
+  public:
+    QueryWizardDevPropertyCmd(
+        const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-	QueryWizardDevPropertyCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *in_desc,const char *out_desc);
+    ~QueryWizardDevPropertyCmd() { }
 
-	~QueryWizardDevPropertyCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The QueryEventChannelIOR class
+//            The QueryEventChannelIOR class
 //
-// description :	Class to implement the QueryEventChannelIOR command.
-//			This command does not take any input argument and return
-//			the event channel IOR. This command only exits foe DS
-//			started with the -file option
+// description :    Class to implement the QueryEventChannelIOR command.
+//            This command does not take any input argument and return
+//            the event channel IOR. This command only exits foe DS
+//            started with the -file option
 //
 //=============================================================================
-
 
 class QueryEventChannelIORCmd : public Command
 {
-public:
+  public:
+    QueryEventChannelIORCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-	QueryEventChannelIORCmd(const char *cmd_name,
-			 Tango::CmdArgType in,
-			 Tango::CmdArgType out,
-			 const char *desc);
+    ~QueryEventChannelIORCmd() { }
 
-	~QueryEventChannelIORCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The LockDeviceCmd class
+//            The LockDeviceCmd class
 //
-// description :	Class to implement the LockDevice command.
-//			This command takes one input argument which is
-//			the device names and return an
-//			integer which is the client locking thread period
+// description :    Class to implement the LockDevice command.
+//            This command takes one input argument which is
+//            the device names and return an
+//            integer which is the client locking thread period
 //
 //=============================================================================
 
 class LockDeviceCmd : public Command
 {
-public:
+  public:
+    LockDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc);
 
-	LockDeviceCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *in_desc);
+    ~LockDeviceCmd() { }
 
-	~LockDeviceCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The ReLockDevicesCmd class
+//            The ReLockDevicesCmd class
 //
-// description :	Class to implement the ReLockDevices command.
-//			This command takes one input argument which is
-//			the vector with device names to be re-locked
+// description :    Class to implement the ReLockDevices command.
+//            This command takes one input argument which is
+//            the vector with device names to be re-locked
 //
 //=============================================================================
 
 class ReLockDevicesCmd : public Command
 {
-public:
+  public:
+    ReLockDevicesCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc);
 
-	ReLockDevicesCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *in_desc);
+    ~ReLockDevicesCmd() { }
 
-	~ReLockDevicesCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The UnLockDeviceCmd class
+//            The UnLockDeviceCmd class
 //
-// description :	Class to implement the UnLockDevice command.
-//			This command takes one input argument which is
-//			the device name to be unlocked
+// description :    Class to implement the UnLockDevice command.
+//            This command takes one input argument which is
+//            the device name to be unlocked
 //
 //=============================================================================
-
 
 class UnLockDeviceCmd : public Command
 {
-public:
+  public:
+    UnLockDeviceCmd(
+        const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-	UnLockDeviceCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *in_desc,const char *out_desc);
+    ~UnLockDeviceCmd() { }
 
-	~UnLockDeviceCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The DevLockStatusCmd class
+//            The DevLockStatusCmd class
 //
-// description :	Class to implement the DevLockStatus command.
-//			This command takes one input argument which is
-//			the device name for which you want to retrieve locking status
+// description :    Class to implement the DevLockStatus command.
+//            This command takes one input argument which is
+//            the device name for which you want to retrieve locking status
 //
 //=============================================================================
-
 
 class DevLockStatusCmd : public Command
 {
-public:
+  public:
+    DevLockStatusCmd(
+        const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-	DevLockStatusCmd(const char *cmd_name,
-			  Tango::CmdArgType in,Tango::CmdArgType out,
-			  const char *in_desc,const char *out_desc);
+    ~DevLockStatusCmd() { }
 
-	~DevLockStatusCmd() {}
-
-	virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
 };
 
 //=============================================================================
 //
-//			The EventSubscriptionChangeCmd class
+//            The EventSubscriptionChangeCmd class
 //
-// description :	Class to implement the EventSubscriptionChange command.
-//			This command takes one arguments which are
-//			the event for which the user subscribe to
+// description :    Class to implement the EventSubscriptionChange command.
+//            This command takes one arguments which are
+//            the event for which the user subscribe to
 //
 //=============================================================================
 
 class EventSubscriptionChangeCmd : public Tango::Command
 {
-public:
-	EventSubscriptionChangeCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *,const char *);
-	EventSubscriptionChangeCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
-	~EventSubscriptionChangeCmd() {}
+  public:
+    EventSubscriptionChangeCmd(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *, const char *);
+    EventSubscriptionChangeCmd(const char *, Tango::CmdArgType, Tango::CmdArgType);
 
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
-};
-
-
-//=============================================================================
-//
-//			The ZmqEventSubscriptionChangeCmd class
-//
-// description :	Class to implement the ZmqEventSubscriptionChange command.
-//			This command takes one arguments which are
-//			the event for which the user subscribe to
-//
-//=============================================================================
-
-class ZmqEventSubscriptionChangeCmd : public Tango::Command
-{
-public:
-    static const std::string in_desc;
-    static const std::string out_desc;
-    ZmqEventSubscriptionChangeCmd();
-    ~ZmqEventSubscriptionChangeCmd(){}
+    ~EventSubscriptionChangeCmd() { }
 
     virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
     virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
@@ -514,55 +422,77 @@ public:
 
 //=============================================================================
 //
-//			The EventConfirmSubscriptionCmd class
+//            The ZmqEventSubscriptionChangeCmd class
 //
-// description :	Class to implement the EventConfirmSubscription command.
-//			This command takes a list of event for which the client confirm
-//			the subscription. This command returns nothing
+// description :    Class to implement the ZmqEventSubscriptionChange command.
+//            This command takes one arguments which are
+//            the event for which the user subscribe to
+//
+//=============================================================================
+
+class ZmqEventSubscriptionChangeCmd : public Tango::Command
+{
+  public:
+    static const std::string in_desc;
+    static const std::string out_desc;
+    ZmqEventSubscriptionChangeCmd();
+
+    ~ZmqEventSubscriptionChangeCmd() { }
+
+    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
+    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
+};
+
+//=============================================================================
+//
+//            The EventConfirmSubscriptionCmd class
+//
+// description :    Class to implement the EventConfirmSubscription command.
+//            This command takes a list of event for which the client confirm
+//            the subscription. This command returns nothing
 //
 //=============================================================================
 
 class EventConfirmSubscriptionCmd : public Tango::Command
 {
-public:
-	EventConfirmSubscriptionCmd(const char *,Tango::CmdArgType, Tango::CmdArgType,const char *);
-	EventConfirmSubscriptionCmd(const char *,Tango::CmdArgType, Tango::CmdArgType);
-	~EventConfirmSubscriptionCmd() {}
+  public:
+    EventConfirmSubscriptionCmd(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *);
+    EventConfirmSubscriptionCmd(const char *, Tango::CmdArgType, Tango::CmdArgType);
 
-	virtual bool is_allowed (Tango::DeviceImpl *, const CORBA::Any &);
-	virtual CORBA::Any *execute (Tango::DeviceImpl *, const CORBA::Any &);
+    ~EventConfirmSubscriptionCmd() { }
+
+    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
+    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
 };
 
 //=============================================================================
 //
-//			The DServerClass class
+//            The DServerClass class
 //
-// description :	This class is a singleton ( The constructor is
-//			protected and the _instance data member is static)
-//			It contains all properties and methods
-//			which the DServer objects requires only once e.g. the
-//			commands.
+// description :    This class is a singleton ( The constructor is
+//            protected and the _instance data member is static)
+//            It contains all properties and methods
+//            which the DServer objects requires only once e.g. the
+//            commands.
 //
 //=============================================================================
-
 
 class DServerClass : public DeviceClass
 {
-public:
+  public:
+    static DServerClass *instance();
+    static DServerClass *init();
 
-	static DServerClass *instance();
-	static DServerClass *init();
+    ~DServerClass() { }
 
-	~DServerClass() {}
+    void command_factory();
+    void device_factory(const Tango::DevVarStringArray *devlist);
 
-	void command_factory();
-	void device_factory(const Tango::DevVarStringArray *devlist);
-
-protected:
-	DServerClass(const std::string &);
-	TANGO_IMP static DServerClass *_instance;
+  protected:
+    DServerClass(const std::string &);
+    TANGO_IMP static DServerClass *_instance;
 };
 
-} // End of Tango namespace
+} // namespace Tango
 
 #endif // _DSERVERCLASS_H

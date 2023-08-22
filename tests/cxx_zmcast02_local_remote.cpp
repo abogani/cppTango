@@ -11,245 +11,249 @@
 // The other event comes from a device running in a different host (therefore using PGM to communicate)
 // These two events use the same callback object
 
-class McastLocalRemoteTestSuite: public CxxTest::TestSuite
+class McastLocalRemoteTestSuite : public CxxTest::TestSuite
 {
-public:
-	class EventCallBack : public Tango::CallBack
-	{
-	public:
-		EventCallBack(McastLocalRemoteTestSuite *ptr):parent(ptr) {}
-		void push_event(Tango::EventData*);
+  public:
+    class EventCallBack : public Tango::CallBack
+    {
+      public:
+        EventCallBack(McastLocalRemoteTestSuite *ptr) :
+            parent(ptr)
+        {
+        }
 
-		int 	cb_executed;
-		int 	cb_err;
-		long 	val;
-		long 	val_size;
+        void push_event(Tango::EventData *);
 
-	private:
-		McastLocalRemoteTestSuite	*parent;
-	};
+        int cb_executed;
+        int cb_err;
+        long val;
+        long val_size;
 
-protected:
-	DeviceProxy 	*device_local;
-	DeviceProxy		*device_remote;
-	string 			att_name;
-	int 			eve_id_local;
-	int 			eve_id_remote;
-	EventCallBack 	*cb;
+      private:
+        McastLocalRemoteTestSuite *parent;
+    };
 
-public:
-	SUITE_NAME()
-	{
+  protected:
+    DeviceProxy *device_local;
+    DeviceProxy *device_remote;
+    string att_name;
+    int eve_id_local;
+    int eve_id_remote;
+    EventCallBack *cb;
 
-//
-// Arguments check -------------------------------------------------
-//
+  public:
+    SUITE_NAME()
+    {
+        //
+        // Arguments check -------------------------------------------------
+        //
 
-		string local_device_name;
-		string remote_device_name;
+        string local_device_name;
+        string remote_device_name;
 
-		// user arguments, obtained from the command line sequentially
+        // user arguments, obtained from the command line sequentially
 
-		local_device_name = CxxTest::TangoPrinter::get_param_loc("local_device","local device name");
-		remote_device_name = CxxTest::TangoPrinter::get_param_loc("remote_device","remote device name");
+        local_device_name = CxxTest::TangoPrinter::get_param_loc("local_device", "local device name");
+        remote_device_name = CxxTest::TangoPrinter::get_param_loc("remote_device", "remote device name");
 
-		// always add this line, otherwise arguments will not be parsed correctly
-		CxxTest::TangoPrinter::validate_args();
+        // always add this line, otherwise arguments will not be parsed correctly
+        CxxTest::TangoPrinter::validate_args();
 
+        //
+        // Initialization --------------------------------------------------
+        //
 
-//
-// Initialization --------------------------------------------------
-//
+        cb = new EventCallBack(this);
 
-		cb = new EventCallBack(this);
+        try
+        {
+            device_local = new DeviceProxy(local_device_name);
+            device_remote = new DeviceProxy(remote_device_name);
 
-		try
-		{
-			device_local = new DeviceProxy(local_device_name);
-			device_remote = new DeviceProxy(remote_device_name);
+            att_name = "Event_change_tst";
 
-			att_name = "Event_change_tst";
+            //
+            // Test set up (stop polling and clear abs_change and rel_change attribute
+            // properties but restart device to take this into account)
+            // Set the abs_change to 1
+            //
 
-//
-// Test set up (stop polling and clear abs_change and rel_change attribute
-// properties but restart device to take this into account)
-// Set the abs_change to 1
-//
+            if(device_local->is_attribute_polled(att_name))
+            {
+                device_local->stop_poll_attribute(att_name);
+            }
 
-			if (device_local->is_attribute_polled(att_name))
-				device_local->stop_poll_attribute(att_name);
+            if(device_remote->is_attribute_polled(att_name))
+            {
+                device_remote->stop_poll_attribute(att_name);
+            }
 
-			if (device_remote->is_attribute_polled(att_name))
-				device_remote->stop_poll_attribute(att_name);
+            DbAttribute db_local(att_name, local_device_name);
+            DbAttribute db_remote(att_name, remote_device_name);
 
+            DbData dbd;
+            DbDatum a(att_name);
+            a << (short) 2;
+            dbd.push_back(a);
+            dbd.push_back(DbDatum("abs_change"));
+            dbd.push_back(DbDatum("rel_change"));
+            db_local.delete_property(dbd);
+            db_remote.delete_property(dbd);
 
-			DbAttribute db_local(att_name,local_device_name);
-			DbAttribute db_remote(att_name,remote_device_name);
+            dbd.clear();
+            a << (short) 1;
+            dbd.push_back(a);
+            DbDatum ch("abs_change");
+            ch << (short) 1;
+            dbd.push_back(ch);
+            db_local.put_property(dbd);
+            db_remote.put_property(dbd);
 
-			DbData dbd;
-			DbDatum a(att_name);
-			a << (short)2;
-			dbd.push_back(a);
-			dbd.push_back(DbDatum("abs_change"));
-			dbd.push_back(DbDatum("rel_change"));
-			db_local.delete_property(dbd);
-			db_remote.delete_property(dbd);
+            DeviceProxy adm_dev_local(device_local->adm_name().c_str());
+            DeviceData di;
+            di << local_device_name;
+            adm_dev_local.command_inout("DevRestart", di);
 
-			dbd.clear();
-			a << (short)1;
-			dbd.push_back(a);
-			DbDatum ch("abs_change");
-			ch << (short)1;
-			dbd.push_back(ch);
-			db_local.put_property(dbd);
-			db_remote.put_property(dbd);
+            delete device_local;
 
-			DeviceProxy adm_dev_local(device_local->adm_name().c_str());
-			DeviceData di;
-			di << local_device_name;
-			adm_dev_local.command_inout("DevRestart",di);
+            device_local = new DeviceProxy(local_device_name);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 
-			delete device_local;
+            DeviceProxy adm_dev_remote(device_remote->adm_name().c_str());
+            di << remote_device_name;
+            adm_dev_remote.command_inout("DevRestart", di);
 
-			device_local = new DeviceProxy(local_device_name);
-			std::this_thread::sleep_for(std::chrono::seconds(1));
+            delete device_remote;
 
-			DeviceProxy adm_dev_remote(device_remote->adm_name().c_str());
-			di << remote_device_name;
-			adm_dev_remote.command_inout("DevRestart",di);
+            device_remote = new DeviceProxy(remote_device_name);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 
-			delete device_remote;
+            cb->cb_executed = 0;
+            cb->cb_err = 0;
+        }
+        catch(CORBA::Exception &e)
+        {
+            Except::print_exception(e);
+            exit(-1);
+        }
+    }
 
-			device_remote = new DeviceProxy(remote_device_name);
-			std::this_thread::sleep_for(std::chrono::seconds(1));
+    virtual ~SUITE_NAME()
+    {
+        device_local->stop_poll_attribute(att_name);
+        device_remote->stop_poll_attribute(att_name);
 
-			cb->cb_executed = 0;
-			cb->cb_err = 0;
-		}
-		catch (CORBA::Exception &e)
-		{
-			Except::print_exception(e);
-			exit(-1);
-		}
+        delete device_local;
+        delete device_remote;
 
-	}
+        delete cb;
+    }
 
-	virtual ~SUITE_NAME()
-	{
-		device_local->stop_poll_attribute(att_name);
-		device_remote->stop_poll_attribute(att_name);
+    static SUITE_NAME *createSuite()
+    {
+        return new SUITE_NAME();
+    }
 
-		delete device_local;
-		delete device_remote;
+    static void destroySuite(SUITE_NAME *suite)
+    {
+        delete suite;
+    }
 
-		delete cb;
-	}
+    //
+    // Tests -------------------------------------------------------
+    //
 
-	static SUITE_NAME *createSuite()
-	{
-		return new SUITE_NAME();
-	}
+    // Test subscribe_event call
 
-	static void destroySuite(SUITE_NAME *suite)
-	{
-		delete suite;
-	}
+    void test_Subscribe_multicast_events(void)
+    {
+        // switch on the polling first!
 
-//
-// Tests -------------------------------------------------------
-//
+        device_local->poll_attribute(att_name, 1000);
+        eve_id_local = device_local->subscribe_event(att_name, Tango::CHANGE_EVENT, cb);
 
-// Test subscribe_event call
+        device_remote->poll_attribute(att_name, 1000);
+        eve_id_remote = device_remote->subscribe_event(att_name, Tango::CHANGE_EVENT, cb);
 
-	void test_Subscribe_multicast_events(void)
-	{
+        // Check that the attribute is now polled at 1000 mS
 
-// switch on the polling first!
+        bool po = device_local->is_attribute_polled(att_name);
+        TEST_LOG << "Local device: attribute polled : " << po << endl;
+        TS_ASSERT(po);
 
-		device_local->poll_attribute(att_name,1000);
-		eve_id_local = device_local->subscribe_event(att_name,Tango::CHANGE_EVENT,cb);
+        int poll_period = device_local->get_attribute_poll_period(att_name);
+        TEST_LOG << "Local device: att polling period : " << poll_period << endl;
+        TS_ASSERT_EQUALS(poll_period, 1000);
 
-		device_remote->poll_attribute(att_name,1000);
-		eve_id_remote = device_remote->subscribe_event(att_name,Tango::CHANGE_EVENT,cb);
+        po = device_remote->is_attribute_polled(att_name);
+        TEST_LOG << "Remote device: attribute polled : " << po << endl;
+        TS_ASSERT(po);
 
-// Check that the attribute is now polled at 1000 mS
+        poll_period = device_remote->get_attribute_poll_period(att_name);
+        TEST_LOG << "Remote device: att polling period : " << poll_period << endl;
+        TS_ASSERT_EQUALS(poll_period, 1000);
+    }
 
-		bool po = device_local->is_attribute_polled(att_name);
-		TEST_LOG << "Local device: attribute polled : " << po << endl;
-		TS_ASSERT(po);
+    // Check that first point has been received
 
-		int poll_period = device_local->get_attribute_poll_period(att_name);
-		TEST_LOG << "Local device: att polling period : " << poll_period << endl;
-		TS_ASSERT_EQUALS(poll_period, 1000);
+    void test_first_point_received(void)
+    {
+        TS_ASSERT_EQUALS(cb->cb_executed, 2);
+        TS_ASSERT_EQUALS(cb->val_size, 4);
+    }
 
-		po = device_remote->is_attribute_polled(att_name);
-		TEST_LOG << "Remote device: attribute polled : " << po << endl;
-		TS_ASSERT(po);
+    void test_Callback_executed_after_a_change_for_both_events(void)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		poll_period = device_remote->get_attribute_poll_period(att_name);
-		TEST_LOG << "Remote device: att polling period : " << poll_period << endl;
-		TS_ASSERT_EQUALS(poll_period, 1000);
-	}
+        device_local->command_inout("IOIncValue");
+        device_remote->command_inout("IOIncValue");
 
-// Check that first point has been received
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
-	void test_first_point_received(void)
-	{
-		TS_ASSERT_EQUALS(cb->cb_executed, 2);
-		TS_ASSERT_EQUALS(cb->val_size, 4);
-	}
+        TEST_LOG << "cb excuted = " << cb->cb_executed << endl;
 
-	void test_Callback_executed_after_a_change_for_both_events(void)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+        TS_ASSERT_EQUALS(cb->cb_executed, 4);
+        TS_ASSERT_EQUALS(cb->val_size, 4);
+    }
 
-		device_local->command_inout("IOIncValue");
-		device_remote->command_inout("IOIncValue");
+    // unsubscribe to the event
 
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-
-		TEST_LOG << "cb excuted = " << cb->cb_executed << endl;
-
-		TS_ASSERT_EQUALS(cb->cb_executed, 4);
-		TS_ASSERT_EQUALS(cb->val_size, 4);
-	}
-
-// unsubscribe to the event
-
-	void test_unsubscribe_event(void)
-	{
-		device_local->unsubscribe_event(eve_id_local);
-		device_remote->unsubscribe_event(eve_id_remote);
-	}
-
+    void test_unsubscribe_event(void)
+    {
+        device_local->unsubscribe_event(eve_id_local);
+        device_remote->unsubscribe_event(eve_id_remote);
+    }
 };
 
-void McastLocalRemoteTestSuite::EventCallBack::push_event(Tango::EventData* event_data)
+void McastLocalRemoteTestSuite::EventCallBack::push_event(Tango::EventData *event_data)
 {
-	vector<DevLong> value;
+    vector<DevLong> value;
 
-	cb_executed++;
+    cb_executed++;
 
-	try
-	{
-		TEST_LOG << "EventCallBack::push_event(): called attribute " << event_data->attr_name << " event " << event_data->event << "\n";
-		if (!event_data->err)
-		{
-			*(event_data->attr_value) >> value;
-			val = value[2];
-			val_size = value.size();
-		}
-		else
-		{
-			if (strcmp(event_data->errors[0].reason.in(),"bbb") == 0)
-				cb_err++;
-		}
-	}
-	catch (...)
-	{
-		TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
-	}
-
+    try
+    {
+        TEST_LOG << "EventCallBack::push_event(): called attribute " << event_data->attr_name << " event "
+                 << event_data->event << "\n";
+        if(!event_data->err)
+        {
+            *(event_data->attr_value) >> value;
+            val = value[2];
+            val_size = value.size();
+        }
+        else
+        {
+            if(strcmp(event_data->errors[0].reason.in(), "bbb") == 0)
+            {
+                cb_err++;
+            }
+        }
+    }
+    catch(...)
+    {
+        TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
+    }
 }
 
 #endif // McastLocalRemoteTestSuite_h

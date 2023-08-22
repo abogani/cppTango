@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-auto unset_env(const std::string& var) -> int
+auto unset_env(const std::string &var) -> int
 {
 #ifdef _TG_WINDOWS_
     return _putenv_s(var.c_str(), "");
@@ -12,7 +12,7 @@ auto unset_env(const std::string& var) -> int
 #endif
 }
 
-auto set_env(const std::string& var, const std::string& value, bool force_update) -> int
+auto set_env(const std::string &var, const std::string &value, bool force_update) -> int
 {
 #ifdef _TG_WINDOWS_
     return _putenv_s(var.c_str(), value.c_str());

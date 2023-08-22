@@ -10,7 +10,7 @@
 // author(s) :          E.Taurel
 //
 // Copyright (C) :      2014,2015
-//						European Synchrotron Radiation Facility
+//                        European Synchrotron Radiation Facility
 //                      BP 220, Grenoble 38043
 //                      FRANCE
 //
@@ -34,44 +34,43 @@
 #ifndef _PIPE_TPP
 #define _PIPE_TPP
 
-
 namespace Tango
 {
 
 //+------------------------------------------------------------------------------------------------------------------
 //
 // Function
-// 		operator overloading : 	<<
+//         operator overloading :     <<
 //
 // description :
-//		Helper function to ease data insertion into Pipe root blob
+//        Helper function to ease data insertion into Pipe root blob
 //
 //-------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-Pipe &operator<<(Pipe &_dp,T &datum)
+Pipe &operator<<(Pipe &_dp, T &datum)
 {
-	_dp.get_blob().operator<<(datum);
-	_dp.set_value_flag(true);
-	return _dp;
+    _dp.get_blob().operator<<(datum);
+    _dp.set_value_flag(true);
+    return _dp;
 }
 
 template <typename T>
-Pipe &operator<<(Pipe &_dp,T *datum)
+Pipe &operator<<(Pipe &_dp, T *datum)
 {
-	_dp.get_blob().operator<<(datum);
-	_dp.set_value_flag(true);
-	return _dp;
+    _dp.get_blob().operator<<(datum);
+    _dp.set_value_flag(true);
+    return _dp;
 }
 
 template <typename T>
-Pipe &operator<<(Pipe &_dp,DataElement<T> &datum)
+Pipe &operator<<(Pipe &_dp, DataElement<T> &datum)
 {
-	_dp.get_blob().set_current_delt_name(datum.name);
-	_dp.get_blob().operator<<(datum.value);
-	_dp.set_value_flag(true);
-	return _dp;
+    _dp.get_blob().set_current_delt_name(datum.name);
+    _dp.get_blob().operator<<(datum.value);
+    _dp.set_value_flag(true);
+    return _dp;
 }
 
-} // End of Tango namespace
+} // namespace Tango
 #endif // _PIPE_TPP
