@@ -8,8 +8,10 @@ windows-build:
     - windows
     - windows-1809
   needs:
-    - pre-commit
-    - code-format
+    - job: pre-commit
+      artifacts: false
+    - job: code-format
+      artifacts: false
   variables:
     JPEG_VERSION: 2.0.3
     NASM_VERSION: 2.15.05
