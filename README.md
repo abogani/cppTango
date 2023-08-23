@@ -1,6 +1,5 @@
 [![Gitlab (main)](https://img.shields.io/gitlab/pipeline-status/tango-controls/cppTango?branch=main&label=main)](https://gitlab.com/tango-controls/cppTango/-/pipelines?page=1&scope=branches&ref=main)
 [![Gitlab (9.3-backports)](https://img.shields.io/gitlab/pipeline-status/tango-controls/cppTango?branch=9.3-backports&label=9.3-backports)](https://gitlab.com/tango-controls/cppTango/-/pipelines?page=1&scope=branches&ref=9.3-backports)
-[![AppVeyor (main)](https://img.shields.io/appveyor/build/bourtemb/cpptango-nh0mp/main?label=main%20%28Windows%29)](https://ci.appveyor.com/project/bourtemb/cpptango-nh0mp/branch/main)
 [![AppVeyor (9.3-backports)](https://img.shields.io/appveyor/build/bourtemb/cpptango-nh0mp/9.3-backports?label=9.3-backports%20%28Windows%29)](https://ci.appveyor.com/project/bourtemb/cpptango-nh0mp/branch/9.3-backports)
 [![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/tango-controls/cppTango?sort=date)](https://gitlab.com/tango-controls/cppTango/-/releases)
 [![Conda](https://img.shields.io/conda/v/conda-forge/cppTango)](https://anaconda.org/conda-forge/cpptango)

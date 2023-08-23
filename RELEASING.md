@@ -38,8 +38,8 @@ To document the progress it is easiest to copy everything below into an issue.
 
 - [ ] Tag the repo (`$major.$minor.$patch-rc$X`)
 - [ ] Create a release
-- [ ] Wait until appveyor has finished
-- [ ] Download appveyor artifacts
+- [ ] Wait until gitlab CI has finished
+- [ ] Download gitlab CI `windows-build` artifacts
 - [ ] Add a user token to gitlab and upload the artifacts with that [1]
 - [ ] Create a (gitlab release)[https://gitlab.com/tango-controls/cppTango/-/releases]
 - [ ] Add `asset links` in the gitlab release to the just uploaded release
@@ -57,7 +57,7 @@ Creating a new release candidate should be redone every week when more MRs have 
 All steps from the release candidate phase above:
 
 - [ ] Tag the release (`$major.$minor.$patch`)
-- [ ] Appveyor artifacts
+- [ ] Gitlab CI `windows-build` artifacts
 - [ ] Gitlab release and asset links
 - [ ] Update for TSD
 - [ ] Advertise new release
