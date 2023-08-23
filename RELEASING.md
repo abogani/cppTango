@@ -36,14 +36,8 @@ To document the progress it is easiest to copy everything below into an issue.
 
 #### RC phase:
 
-- [ ] Tag the repo (`$major.$minor.$patch-rc$X`)
-- [ ] Create a release
-- [ ] Wait until gitlab CI has finished
-- [ ] Download gitlab CI `windows-build` artifacts
-- [ ] Add a user token to gitlab and upload the artifacts with that [1]
-- [ ] Create a (gitlab release)[https://gitlab.com/tango-controls/cppTango/-/releases]
-- [ ] Add `asset links` in the gitlab release to the just uploaded release
-      artifacts (required by the windows installer CI job of TSD)
+- [ ] Tag the repo (`$major.$minor.$patch-rc$X`), this automatically creates a
+      release and uploads the windows packages
 - [ ] \(TSD maintainer\) Update TSD to use the new tag, merge it and tag as well
 - [ ] Advertise the new release candidate on the `tango-info` mailing list and slack (channel: `general`)
 
@@ -57,8 +51,6 @@ Creating a new release candidate should be redone every week when more MRs have 
 All steps from the release candidate phase above:
 
 - [ ] Tag the release (`$major.$minor.$patch`)
-- [ ] Gitlab CI `windows-build` artifacts
-- [ ] Gitlab release and asset links
 - [ ] Update for TSD
 - [ ] Advertise new release
 
@@ -66,19 +58,5 @@ and finally
 
 - [ ] Delete release branch
 - [ ] Revert the API/ABI non-fatal CI change if required
-
-[1]: Code snippet for uploading artifacts
-```
-for file in `ls *`
-do
-  curl --header "PRIVATE-TOKEN: glpat-XXX" --upload-file $file                \
-       https://gitlab.com/api/v4/projects/YYYY/packages/generic/ZZZ/HHH/$file
-done
-
-XXX: part of personal access token
-YYY: projectID (24006041 for cppTango)
-ZZZ: package name (`windows`)
-HHH: package version (name of the tag)
-```
 
 <!-- end of issue -->

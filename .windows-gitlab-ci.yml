@@ -1,4 +1,5 @@
 variables:
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}"
   # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/3194
   ErrorActionPreference: stop
 
@@ -165,3 +166,79 @@ windows-build:
     paths:
       - build/*.zip
       - build/*.msi
+
+release-builds:
+  variables:
+    MSVC_VERSION: "v142"
+    RELEASE_URL_PREFIX: "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}"
+    FILENAME_PREFIX: "libtango_${CI_COMMIT_TAG}_${MSVC_VERSION}"
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - windows-build
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: on_success
+  before_script:
+    - apk update
+    - apk add curl
+    - apk --no-cache add findutils
+  script:
+    - cd build
+    - >
+      find . -type f -printf "%f\n" -exec curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file {} "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/{}" \;
+  release:
+    name: "Release $CI_COMMIT_TAG"
+    tag_name: "$CI_COMMIT_TAG"
+    description: "Release $CI_COMMIT_TAG"
+    ref: "$CI_COMMIT_SHA"
+    assets:
+      links:
+        # iteration order is from back to front:
+        # msi/zip -> debug/release -> static/shared -> x86/x64
+        - name: "${FILENAME_PREFIX}_x86_static_debug.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_debug.msi"
+
+        - name: "${FILENAME_PREFIX}_x86_static_debug.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_debug.zip"
+
+        - name: "${FILENAME_PREFIX}_x86_static_release.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_release.msi"
+
+        - name: "${FILENAME_PREFIX}_x86_static_release.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_release.zip"
+
+        - name: "${FILENAME_PREFIX}_x86_shared_debug.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_shared_debug.msi"
+
+        - name: "${FILENAME_PREFIX}_x86_shared_debug.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_shared_debug.zip"
+
+        - name: "${FILENAME_PREFIX}_x86_shared_release.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_shared_release.msi"
+
+        - name: "${FILENAME_PREFIX}_x86_shared_release.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_shared_release.zip"
+
+        - name: "${FILENAME_PREFIX}_x64_static_debug.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_debug.msi"
+
+        - name: "${FILENAME_PREFIX}_x64_static_debug.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_debug.zip"
+
+        - name: "${FILENAME_PREFIX}_x64_static_release.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_release.msi"
+
+        - name: "${FILENAME_PREFIX}_x64_static_release.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_release.zip"
+
+        - name: "${FILENAME_PREFIX}_x64_shared_debug.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_shared_debug.msi"
+
+        - name: "${FILENAME_PREFIX}_x64_shared_debug.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_shared_debug.zip"
+
+        - name: "${FILENAME_PREFIX}_x64_shared_release.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_shared_release.msi"
+
+        - name: "${FILENAME_PREFIX}_x64_shared_release.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_shared_release.zip"
