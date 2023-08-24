@@ -220,7 +220,7 @@ set(TESTS asyn_attr_cb
           misc_devattr
           misc_devdata
           misc_devproxy
-          multi_thread_sighandler
+          multi_thread_sighandler # FIXME: Windows
           new_devproxy
           obj_prop
           poll_except

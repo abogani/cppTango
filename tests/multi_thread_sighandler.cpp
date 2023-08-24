@@ -1,7 +1,17 @@
 #include <condition_variable>
 #include <csignal>
 #include <thread>
-#include <sys/wait.h>
+
+#ifdef _TG_WINDOWS_
+  #include <windows.h>
+
+static inline void sleep(DWORD seconds)
+{
+    Sleep(seconds * 1000);
+}
+#else
+  #include <sys/wait.h>
+#endif
 
 #include <tango/tango.h>
 
@@ -138,6 +148,7 @@ void Tango::DServer::class_factory()
 // Install the specified signal handler in the device server
 void install_signal_handler(int handlers)
 {
+#ifndef _TG_WINDOWS_
     struct sigaction sig;
     sig.sa_flags = SA_RESTART;
     sig.sa_handler = [](int signal) { std::cout << "Signal received: " << signal << '\n'; };
@@ -168,6 +179,7 @@ void install_signal_handler(int handlers)
         std::cout << "NOT installing any signal handlers" << std::endl;
         break;
     }
+#endif
 }
 
 struct condition
@@ -247,6 +259,7 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
 // Fork the device server and send it SIGTERM.
 void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
 {
+#ifndef _TG_WINDOWS_
     int pid = fork();
     if(pid < 0)
     {
@@ -290,6 +303,7 @@ void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
             assert(dev_server_stopped);
         }
     }
+#endif
 }
 
 int main()
