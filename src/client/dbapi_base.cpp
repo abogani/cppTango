@@ -2438,11 +2438,10 @@ DbDatum get_device_list_impl(const std::string &filter, Func db_function)
     }
     else
     {
-        int n_devices;
-        n_devices = device_names->length();
+        const ULong n_devices = device_names->length();
         db_datum.name = filter;
         db_datum.value_string.resize(n_devices);
-        for(int i = 0; i < n_devices; i++)
+        for(ULong i = 0; i < n_devices; i++)
         {
             db_datum.value_string[i] = (*device_names)[i];
         }
