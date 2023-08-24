@@ -2426,11 +2426,11 @@ DbDatum get_device_list_impl(const std::string &filter, Func db_function)
     send <<= filter.c_str();
     db_function(send, received);
 
-    const DevVarStringArray *device_names = NULL;
+    const DevVarStringArray *device_names = nullptr;
     received.inout() >>= device_names;
 
     DbDatum db_datum;
-    if(device_names == NULL)
+    if(device_names == nullptr)
     {
         TANGO_THROW_EXCEPTION(
             API_IncoherentDbData,
