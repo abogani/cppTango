@@ -1616,6 +1616,18 @@ class Database : public Tango::Connection
      */
     DbDatum get_device_exported(const std::string &filter);
     /**
+     * Get list of all matching devices
+     *
+     * Query the database for a list of all devices whose names satisfy the supplied filter
+     * (* is wildcard for any character(s)).
+     *
+     * @param [in] filter The filter
+     * @return The list of devices
+     *
+     * @exception ConnectionFailed,CommunicationFailed,DevFailed from device
+     */
+    DbDatum get_device_defined(const std::string &filter);
+    /**
      * Get list of device domain names
      *
      * Query the database for a list of device domain names which match the wildcard provided.

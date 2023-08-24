@@ -2479,6 +2479,33 @@ DbDatum Database::get_device_exported(const std::string &filter)
 
 //-----------------------------------------------------------------------------
 //
+// Database::get_device_defined() - public method to get all matching device names
+//                               from the Database
+//
+//-----------------------------------------------------------------------------
+
+DbDatum Database::get_device_defined(const std::string &filter)
+{
+    AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
+
+    check_access_and_get();
+
+    return get_device_list_impl(filter,
+                                [this](Any &send, Any_var &received)
+                                {
+                                    if(filedb != nullptr)
+                                    {
+                                        received = filedb->DbGetDeviceWideList(send);
+                                    }
+                                    else
+                                    {
+                                        CALL_DB_SERVER("DbGetDeviceWideList", send, received);
+                                    }
+                                });
+}
+
+//-----------------------------------------------------------------------------
+//
 // Database::get_device_member() - public method to get device members from
 //                               the Database
 //

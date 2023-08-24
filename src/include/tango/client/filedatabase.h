@@ -150,6 +150,7 @@ class FileDatabase
     CORBA::Any *DbPutClassAttributeProperty(CORBA::Any &);
     CORBA::Any *DbDeleteClassAttributeProperty(CORBA::Any &);
     CORBA::Any *DbGetDeviceList(CORBA::Any &);
+    CORBA::Any *DbGetDeviceWideList(CORBA::Any &);
 
     CORBA::Any *DbGetDeviceDomainList(CORBA::Any &);
     CORBA::Any *DbGetDeviceMemberList(CORBA::Any &);
