@@ -2432,7 +2432,9 @@ DbDatum get_device_list_impl(const std::string &filter, Func db_function)
     DbDatum db_datum;
     if(device_names == NULL)
     {
-        TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
+        TANGO_THROW_EXCEPTION(
+            API_IncoherentDbData,
+            "Database response could not be parsed into DevVarStringArray. Check database consistency and transport.");
     }
     else
     {
