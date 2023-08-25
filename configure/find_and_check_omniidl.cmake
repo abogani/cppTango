@@ -1,10 +1,7 @@
-if (NOT WIN32 AND NOT DEFINED OMNIORB_PKG_LIBRARIES)
-    return()
-endif()
-
 # Use a function to introduce a scope so that we can set CMAKE_CXX_FLAGS
 function(test_omniidl)
     message(STATUS "Testing omniidl for bug in generated c++ for IDL union")
+
     execute_process(
         COMMAND ${OMNIIDL} -bcxx -Wbh=.h -Wbs=SK.cpp -Wbd=DynSK.cpp -Wba
             ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_omniidl.idl
@@ -15,9 +12,7 @@ function(test_omniidl)
         )
 
     if (NOT OMNIIDL_RESULT EQUAL 0)
-        message(WARNING "Failed to generate c++ code with omniidl:\n${OMNIIDL_OUTPUT}\n${OMNIIDL_ERROR}")
-        set(OMNIIDL FALSE)
-        return()
+        message(FATAL_ERROR "Failed to generate c++ code with omniidl:\n${OMNIIDL_OUTPUT}\n${OMNIIDL_ERROR}")
     endif()
 
     if (WIN32)
@@ -59,14 +54,11 @@ function(test_omniidl)
         )
 
     if (NOT TANGO_OMNIIDL_CHECK_COMPILE)
-        message(WARNING "Failed to compile omniidl test program:\n${OMNIIDL_TEST_COMPILE_OUTPUT}")
-        set(OMNIIDL FALSE)
-        return()
+        message(FATAL_ERROR "Failed to compile omniidl test program:\n${OMNIIDL_TEST_COMPILE_OUTPUT}")
     endif()
 
     if (NOT TANGO_OMNIIDL_HAS_NO_UNION_BUG EQUAL 0)
-        message(WARNING "${OMNIIDL} has bug in c++ code generation, will not use.")
-        set(OMNIIDL FALSE)
+        message(FATAL_ERROR "${OMNIIDL} has bug in c++ code generation, will not use.")
     endif()
 endfunction()
 
