@@ -178,19 +178,13 @@ DServerSignal::DServerSignal() :
     sa.sa_handler = SIG_DFL;
     sigemptyset(&sa.sa_mask);
 
-    if(sigaction(SIGINT, &sa, NULL) == -1)
+    for(int signum : {SIGINT, SIGQUIT, SIGTERM})
     {
-        std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGINT to SIG_DFL" << std::endl;
-    }
-
-    if(sigaction(SIGQUIT, &sa, NULL) == -1)
-    {
-        std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGQUIT to SIG_DFL" << std::endl;
-    }
-
-    if(sigaction(SIGTERM, &sa, NULL) == -1)
-    {
-        std::cerr << "DServerSignal::DServerSignal --> Can't reset default action for SIGTERM to SIG_DFL" << std::endl;
+        if(sigaction(signum, &sa, nullptr) == -1)
+        {
+            std::cerr << "DServerSignal::DServerSignal --> Can't reset to default action for " << sig_name[signum]
+                      << ". Process might fail to terminate when " << sig_name[signum] << " is recieved." << std::endl;
+        }
     }
 
     //
