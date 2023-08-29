@@ -1037,6 +1037,36 @@ string FileDatabase ::get_display()
     return ost.str();
 }
 
+static std::string escape_double_quote(const std::string &value)
+{
+    std::string escaped_value;
+    escaped_value.reserve(value.size());
+    for(const auto c : value)
+    {
+        if(c == '"')
+        {
+            escaped_value.push_back('\\');
+        }
+        escaped_value.push_back(c);
+    }
+    return escaped_value;
+}
+
+static void write_string_value(const std::string &value, std::ostream &out)
+{
+    bool has_space = value.find(' ') != string::npos;
+    bool has_double_quotes = value.find('"') != string::npos;
+    if(has_space || has_double_quotes)
+    {
+        out << "\"";
+    }
+    out << (has_double_quotes ? escape_double_quote(value) : value);
+    if(has_space || has_double_quotes)
+    {
+        out << "\"";
+    }
+}
+
 void FileDatabase ::write_file()
 {
     ofstream f;
@@ -1092,34 +1122,14 @@ void FileDatabase ::write_file()
                 }
                 else
                 {
-                    if(iterator_s->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
-                    string str = (*iterator_s);
-                    escape_double_quote(str);
-                    f << str;
-                    if(iterator_s->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
+                    write_string_value(*iterator_s, f);
                 }
                 ++iterator_s;
                 for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
                 {
                     f << ",\\" << endl;
                     f << margin_s;
-                    if(its->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
-                    string str = (*its);
-                    escape_double_quote(str);
-                    f << str;
-                    if(its->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
+                    write_string_value(*its, f);
                 }
             }
             f << endl;
@@ -1140,34 +1150,14 @@ void FileDatabase ::write_file()
                 vector<string>::iterator iterator_s = (*itp)->value.begin();
                 if(iterator_s != (*itp)->value.end())
                 {
-                    if(iterator_s->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
-                    string str = (*iterator_s);
-                    escape_double_quote(str);
-                    f << str;
-                    if(iterator_s->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
+                    write_string_value(*iterator_s, f);
                     ++iterator_s;
                     for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
                     {
                         f << ",\\" << endl;
                         string margin_s(margin, ' ');
                         f << margin_s;
-                        if(its->find(' ', 0) != string::npos)
-                        {
-                            f << "\"";
-                        }
-                        string str = (*its);
-                        escape_double_quote(str);
-                        f << str;
-                        if(its->find(' ', 0) != string::npos)
-                        {
-                            f << "\"";
-                        }
+                        write_string_value(*its, f);
                     }
                 }
                 f << endl;
@@ -1187,34 +1177,14 @@ void FileDatabase ::write_file()
             if(iterator_s != (*itp)->value.end())
             {
                 int margin = (*ite)->name.size() + 1 + (*itp)->name.size() + 2;
-                if(iterator_s->find(' ', 0) != string::npos)
-                {
-                    f << "\"";
-                }
-                string str = (*iterator_s);
-                escape_double_quote(str);
-                f << str;
-                if(iterator_s->find(' ', 0) != string::npos)
-                {
-                    f << "\"";
-                }
+                write_string_value(*iterator_s, f);
                 ++iterator_s;
                 for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
                 {
                     f << ",\\" << endl;
                     string margin_s(margin, ' ');
                     f << margin_s;
-                    if(its->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
-                    string str = (*its);
-                    escape_double_quote(str);
-                    f << str;
-                    if(its->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
+                    write_string_value(*its, f);
                 }
             }
             f << endl;
@@ -1234,34 +1204,14 @@ void FileDatabase ::write_file()
                 vector<string>::iterator iterator_s = (*itp)->value.begin();
                 if(iterator_s != (*itp)->value.end())
                 {
-                    if(iterator_s->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
-                    string str = (*iterator_s);
-                    escape_double_quote(str);
-                    f << str;
-                    if(iterator_s->find(' ', 0) != string::npos)
-                    {
-                        f << "\"";
-                    }
+                    write_string_value(*iterator_s, f);
                     ++iterator_s;
                     for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
                     {
                         f << ",\\" << endl;
                         string margin_s(margin, ' ');
                         f << margin_s;
-                        if(its->find(' ', 0) != string::npos)
-                        {
-                            f << "\"";
-                        }
-                        string str = (*its);
-                        escape_double_quote(str);
-                        f << str;
-                        if(its->find(' ', 0) != string::npos)
-                        {
-                            f << "\"";
-                        }
+                        write_string_value(*its, f);
                     }
                 }
                 f << endl;
@@ -1270,21 +1220,6 @@ void FileDatabase ::write_file()
     }
 
     f.close();
-}
-
-void FileDatabase::escape_double_quote(string &_str)
-{
-    int co = count(_str.begin(), _str.end(), '"');
-    if(co != 0)
-    {
-        string::size_type start = 0;
-        for(int i = 0; i < co; i++)
-        {
-            string::size_type pos = _str.find('"', start);
-            _str.insert(pos, 1, '\\');
-            start = pos + 2;
-        }
-    }
 }
 
 CORBA::Any *FileDatabase ::DbGetDeviceProperty(CORBA::Any &send)
