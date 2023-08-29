@@ -142,7 +142,7 @@ else()
     message(WARNING "omniORB version not found")
 endif()
 
-include(configure/find_and_check_omniidl.cmake)
+include(configure/check_omniidl.cmake)
 include(configure/clang-format.cmake)
 
 if(TANGO_ZMQ_BASE)
