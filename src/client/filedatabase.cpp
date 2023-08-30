@@ -2362,6 +2362,14 @@ CORBA::Any *FileDatabase ::DbGetDeviceMemberList(CORBA::Any &)
     return any_ptr;
 }
 
+CORBA::Any *FileDatabase ::DbGetDeviceWideList(CORBA::Any &)
+{
+    CORBA::Any *ret = nullptr;
+    TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
+
+    return ret;
+}
+
 CORBA::Any *FileDatabase ::DbGetDeviceExportedList(CORBA::Any &)
 {
     CORBA::Any *ret = NULL;

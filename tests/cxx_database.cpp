@@ -2,6 +2,7 @@
 #define DatabaseTestSuite_h
 
 #include <ctime>
+#include <algorithm>
 
 #include "cxx_common.h"
 
@@ -16,6 +17,22 @@ class DatabaseTestSuite : public CxxTest::TestSuite
     string dev_alias;
     string att_alias;
     Database *db;
+
+  private:
+    struct DeviceListTestRecord
+    {
+        string domain;
+        string family;
+        string member;
+        bool exported;
+    };
+
+    // This table has to be kept in sync with with test database and the filters
+    // we use with the test_device_lists
+    DeviceListTestRecord expected_devices[4] = {{"test", "debian8", "10", true},
+                                                {"test", "debian8", "11", true},
+                                                {"test", "debian8", "12", true},
+                                                {"test2", "debian8", "20", false}};
 
   public:
     SUITE_NAME()
@@ -227,6 +244,122 @@ class DatabaseTestSuite : public CxxTest::TestSuite
         DbData del_all;
         del_all.push_back(DbDatum("_tst_pipe"));
         TS_ASSERT_THROWS_NOTHING(db->delete_all_device_pipe_property("a/b/c", del_all));
+    }
+
+    // Device lists
+
+    void matching_device_filter_test(const std::string &filter)
+    {
+        auto contains = [](const auto &v, auto element)
+        { return std::find(std::cbegin(v), std::cend(v), element) != std::cend(v); };
+
+        DbDatum db_datum;
+        std::vector<std::string> results;
+
+        {
+            db_datum = db->get_device_domain(filter);
+            db_datum >> results;
+
+            for(const auto &expected : expected_devices)
+            {
+                TS_ASSERT(contains(results, expected.domain));
+            }
+        }
+
+        {
+            db_datum = db->get_device_family(filter);
+            db_datum >> results;
+
+            for(const auto &expected : expected_devices)
+            {
+                TS_ASSERT(contains(results, expected.family));
+            }
+        }
+
+        {
+            db_datum = db->get_device_member(filter);
+            db_datum >> results;
+
+            for(const auto &expected : expected_devices)
+            {
+                TS_ASSERT(contains(results, expected.member));
+            }
+        }
+
+        {
+            db_datum = db->get_device_defined(filter);
+            db_datum >> results;
+
+            for(const auto &expected : expected_devices)
+            {
+                std::stringstream ss;
+                ss << expected.domain << "/" << expected.family << "/" << expected.member;
+                TS_ASSERT(contains(results, ss.str()));
+            }
+        }
+
+        {
+            db_datum = db->get_device_exported(filter);
+            db_datum >> results;
+
+            for(const auto &expected : expected_devices)
+            {
+                std::stringstream ss;
+                ss << expected.domain << "/" << expected.family << "/" << expected.member;
+                if(expected.exported)
+                {
+                    TS_ASSERT(contains(results, ss.str()));
+                }
+                else
+                {
+                    TS_ASSERT(!contains(results, ss.str()));
+                }
+            }
+        }
+    }
+
+    void non_matching_device_filter_test(const std::string &filter)
+    {
+        DbDatum db_datum;
+        std::vector<std::string> results;
+
+        {
+            db_datum = db->get_device_domain(filter);
+            db_datum >> results;
+            TS_ASSERT(results.empty());
+        }
+
+        {
+            db_datum = db->get_device_family(filter);
+            db_datum >> results;
+            TS_ASSERT(results.empty());
+        }
+
+        {
+            db_datum = db->get_device_member(filter);
+            db_datum >> results;
+            TS_ASSERT(results.empty());
+        }
+
+        {
+            db_datum = db->get_device_defined(filter);
+            db_datum >> results;
+            TS_ASSERT(results.empty());
+        }
+
+        {
+            db_datum = db->get_device_exported(filter);
+            db_datum >> results;
+            TS_ASSERT(results.empty());
+        }
+    }
+
+    void test_device_lists()
+    {
+        matching_device_filter_test("*/debian8/*");
+        matching_device_filter_test("*/DEBIAN8/*");
+        non_matching_device_filter_test("*/debian88/*");
+        non_matching_device_filter_test("");
     }
 };
 #endif // DatabaseTestSuite_h

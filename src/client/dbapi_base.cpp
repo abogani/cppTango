@@ -2406,6 +2406,51 @@ DbDatum Database::get_device_name(const std::string &device_server,
     return db_datum;
 }
 
+namespace
+{
+// Implementation of get_device_* functions which all return a
+// std::vector<std::string> in their DbDatum.
+//
+// db_function should have the following signature:
+//
+//      void db_function(Any &, Any_var &)
+//
+//  and should invoke the required command on either filedb or the real db
+//  server.
+template <typename Func>
+DbDatum get_device_list_impl(const std::string &filter, Func db_function)
+{
+    Any send;
+    Any_var received;
+
+    send <<= filter.c_str();
+    db_function(send, received);
+
+    const DevVarStringArray *device_names = nullptr;
+    received.inout() >>= device_names;
+
+    DbDatum db_datum;
+    if(device_names == nullptr)
+    {
+        TANGO_THROW_EXCEPTION(
+            API_IncoherentDbData,
+            "Database response could not be parsed into DevVarStringArray. Check database consistency and transport.");
+    }
+    else
+    {
+        const ULong n_devices = device_names->length();
+        db_datum.name = filter;
+        db_datum.value_string.resize(n_devices);
+        for(ULong i = 0; i < n_devices; i++)
+        {
+            db_datum.value_string[i] = (*device_names)[i];
+        }
+    }
+
+    return db_datum;
+}
+} // namespace
+
 //-----------------------------------------------------------------------------
 //
 // Database::get_device_exported() - public method to get exported device names from
@@ -2415,43 +2460,49 @@ DbDatum Database::get_device_name(const std::string &device_server,
 
 DbDatum Database::get_device_exported(const std::string &filter)
 {
-    Any send;
-    Any_var received;
     AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
 
     check_access_and_get();
 
-    send <<= filter.c_str();
+    return get_device_list_impl(filter,
+                                [this](Any &send, Any_var &received)
+                                {
+                                    if(filedb != nullptr)
+                                    {
+                                        received = filedb->DbGetDeviceExportedList(send);
+                                    }
+                                    else
+                                    {
+                                        CALL_DB_SERVER("DbGetDeviceExportedList", send, received);
+                                    }
+                                });
+}
 
-    if(filedb != 0)
-    {
-        received = filedb->DbGetDeviceExportedList(send);
-    }
-    else
-    {
-        CALL_DB_SERVER("DbGetDeviceExportedList", send, received);
-    }
-    const DevVarStringArray *device_names = NULL;
-    received.inout() >>= device_names;
+//-----------------------------------------------------------------------------
+//
+// Database::get_device_defined() - public method to get all matching device names
+//                               from the Database
+//
+//-----------------------------------------------------------------------------
 
-    DbDatum db_datum;
-    if(device_names == NULL)
-    {
-        TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
-    }
-    else
-    {
-        int n_devices;
-        n_devices = device_names->length();
-        db_datum.name = filter;
-        db_datum.value_string.resize(n_devices);
-        for(int i = 0; i < n_devices; i++)
-        {
-            db_datum.value_string[i] = (*device_names)[i];
-        }
-    }
+DbDatum Database::get_device_defined(const std::string &filter)
+{
+    AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
 
-    return db_datum;
+    check_access_and_get();
+
+    return get_device_list_impl(filter,
+                                [this](Any &send, Any_var &received)
+                                {
+                                    if(filedb != nullptr)
+                                    {
+                                        received = filedb->DbGetDeviceWideList(send);
+                                    }
+                                    else
+                                    {
+                                        CALL_DB_SERVER("DbGetDeviceWideList", send, received);
+                                    }
+                                });
 }
 
 //-----------------------------------------------------------------------------
@@ -2463,43 +2514,22 @@ DbDatum Database::get_device_exported(const std::string &filter)
 
 DbDatum Database::get_device_member(const std::string &wildcard)
 {
-    Any send;
-    Any_var received;
     AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
 
     check_access_and_get();
 
-    send <<= wildcard.c_str();
-
-    if(filedb != 0)
-    {
-        received = filedb->DbGetDeviceMemberList(send);
-    }
-    else
-    {
-        CALL_DB_SERVER("DbGetDeviceMemberList", send, received);
-    }
-    const DevVarStringArray *device_member = NULL;
-    received.inout() >>= device_member;
-
-    DbDatum db_datum;
-    if(device_member == NULL)
-    {
-        TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
-    }
-    else
-    {
-        int n_members;
-        n_members = device_member->length();
-        db_datum.name = wildcard;
-        db_datum.value_string.resize(n_members);
-        for(int i = 0; i < n_members; i++)
-        {
-            db_datum.value_string[i] = (*device_member)[i];
-        }
-    }
-
-    return db_datum;
+    return get_device_list_impl(wildcard,
+                                [this](Any &send, Any_var &received)
+                                {
+                                    if(filedb != nullptr)
+                                    {
+                                        received = filedb->DbGetDeviceMemberList(send);
+                                    }
+                                    else
+                                    {
+                                        CALL_DB_SERVER("DbGetDeviceMemberList", send, received);
+                                    }
+                                });
 }
 
 //-----------------------------------------------------------------------------
@@ -2511,44 +2541,22 @@ DbDatum Database::get_device_member(const std::string &wildcard)
 
 DbDatum Database::get_device_family(const std::string &wildcard)
 {
-    Any send;
-    Any_var received;
     AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
 
     check_access_and_get();
 
-    send <<= wildcard.c_str();
-
-    if(filedb != 0)
-    {
-        received = filedb->DbGetDeviceFamilyList(send);
-    }
-    else
-    {
-        CALL_DB_SERVER("DbGetDeviceFamilyList", send, received);
-    }
-    const DevVarStringArray *device_family = NULL;
-    received.inout() >>= device_family;
-
-    DbDatum db_datum;
-
-    if(device_family == NULL)
-    {
-        TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
-    }
-    else
-    {
-        int n_familys;
-        n_familys = device_family->length();
-        db_datum.name = wildcard;
-        db_datum.value_string.resize(n_familys);
-        for(int i = 0; i < n_familys; i++)
-        {
-            db_datum.value_string[i] = (*device_family)[i];
-        }
-    }
-
-    return db_datum;
+    return get_device_list_impl(wildcard,
+                                [this](Any &send, Any_var &received)
+                                {
+                                    if(filedb != nullptr)
+                                    {
+                                        received = filedb->DbGetDeviceFamilyList(send);
+                                    }
+                                    else
+                                    {
+                                        CALL_DB_SERVER("DbGetDeviceFamilyList", send, received);
+                                    }
+                                });
 }
 
 //-----------------------------------------------------------------------------
@@ -2560,44 +2568,22 @@ DbDatum Database::get_device_family(const std::string &wildcard)
 
 DbDatum Database::get_device_domain(const std::string &wildcard)
 {
-    Any send;
-    Any_var received;
     AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
 
     check_access_and_get();
 
-    send <<= wildcard.c_str();
-
-    if(filedb != 0)
-    {
-        received = filedb->DbGetDeviceDomainList(send);
-    }
-    else
-    {
-        CALL_DB_SERVER("DbGetDeviceDomainList", send, received);
-    }
-    const DevVarStringArray *device_domain = NULL;
-    received.inout() >>= device_domain;
-
-    DbDatum db_datum;
-
-    if(device_domain == NULL)
-    {
-        TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
-    }
-    else
-    {
-        int n_domains;
-        n_domains = device_domain->length();
-        db_datum.name = wildcard;
-        db_datum.value_string.resize(n_domains);
-        for(int i = 0; i < n_domains; i++)
-        {
-            db_datum.value_string[i] = (*device_domain)[i];
-        }
-    }
-
-    return db_datum;
+    return get_device_list_impl(wildcard,
+                                [this](Any &send, Any_var &received)
+                                {
+                                    if(filedb != nullptr)
+                                    {
+                                        received = filedb->DbGetDeviceDomainList(send);
+                                    }
+                                    else
+                                    {
+                                        CALL_DB_SERVER("DbGetDeviceDomainList", send, received);
+                                    }
+                                });
 }
 
 //-----------------------------------------------------------------------------
