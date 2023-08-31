@@ -513,20 +513,16 @@ string FileDatabase::read_full_word(ifstream &f)
     if(CurrentChar == '"')
     {
         read_char(f);
-        while(CurrentChar != '"' && CurrentChar != 0 && CurrentChar != '\n')
+        while(CurrentChar != '"' && CurrentChar != 0)
         {
             if(CurrentChar == '\\')
             {
                 read_char(f);
-                ret_word += CurrentChar;
             }
-            else
-            {
-                ret_word += CurrentChar;
-            }
+            ret_word += CurrentChar;
             read_char(f);
         }
-        if(CurrentChar == 0 || CurrentChar == '\n')
+        if(CurrentChar == 0)
         {
             TANGO_LOG_DEBUG << "Warning: String too long at line " << StartLine << endl;
             TangoSys_MemStream desc;
@@ -1055,13 +1051,14 @@ static std::string escape_double_quote(const std::string &value)
 static void write_string_value(const std::string &value, std::ostream &out)
 {
     bool has_space = value.find(' ') != string::npos;
+    bool has_newline = value.find('\n') != string::npos;
     bool has_double_quotes = value.find('"') != string::npos;
-    if(has_space || has_double_quotes)
+    if(has_space || has_newline || has_double_quotes)
     {
         out << "\"";
     }
     out << (has_double_quotes ? escape_double_quote(value) : value);
-    if(has_space || has_double_quotes)
+    if(has_space || has_newline || has_double_quotes)
     {
         out << "\"";
     }
