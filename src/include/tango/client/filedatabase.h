@@ -187,7 +187,6 @@ class FileDatabase
     std::vector<std::string> parse_resource_value(std::ifstream &f);
 
     std::string read_full_word(std::ifstream &f);
-    void escape_double_quote(std::string &);
 
     static const char *lexical_word_null;
     static const char *lexical_word_number;
