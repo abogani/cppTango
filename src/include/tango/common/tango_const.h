@@ -33,21 +33,14 @@
 
 #include <tango/server/exception_reason_consts.h>
 
+#include <tango/common/tango_version.h>
+
 namespace Tango
 {
 
 //
 // Some general interest define
 //
-
-// clang-format off
-// The next lines are invalid C++ before the replacement
-#define TANGO_VERSION_MAJOR @MAJOR_VERSION@
-#define TANGO_VERSION_MINOR @MINOR_VERSION@
-#define TANGO_VERSION_PATCH @PATCH_VERSION@
-// clang-format on
-
-#define TANGO_GIT_REVISION "@TANGO_GIT_REVISION@"
 
 #define TANGO_BASE_CLASS Tango::Device_5Impl
 
@@ -1085,8 +1078,6 @@ typedef struct _AttributeIdlData
         data_5 = nullptr;
     }
 } AttributeIdlData;
-
-#cmakedefine TANGO_USE_JPEG
 
 template <class T>
 struct tango_type_traits;
