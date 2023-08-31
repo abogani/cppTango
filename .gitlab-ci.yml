@@ -61,8 +61,10 @@ code-format:
   tags:
     - docker, linux, amd64
   needs:
-    - pre-commit
-    - code-format
+    - job: pre-commit
+      artifacts: false
+    - job: code-format
+      artifacts: false
   script:
     - ci/config.sh
     - ci/build.sh
@@ -74,8 +76,10 @@ code-format:
   tags:
     - dind, skao, docker, linux, amd64
   needs:
-    - pre-commit
-    - code-format
+    - job: pre-commit
+      artifacts: false
+    - job: code-format
+      artifacts: false
   script:
     - ci/config.sh
     - ci/build.sh
