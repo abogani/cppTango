@@ -47,14 +47,14 @@ namespace Tango
 //-----------------------------------------------------------------------------
 
 AttributeProxy::AttributeProxy(std::string &name) :
-    dev_proxy(NULL),
+    dev_proxy(nullptr),
     ext(new AttributeProxyExt(name))
 {
     real_constructor(name);
 }
 
 AttributeProxy::AttributeProxy(const char *na) :
-    dev_proxy(NULL),
+    dev_proxy(nullptr),
     ext(new AttributeProxyExt(na))
 {
     std::string name(na);
@@ -107,7 +107,7 @@ void AttributeProxy::real_constructor(std::string &name)
     }
     else
     {
-        db_attr = NULL;
+        db_attr = nullptr;
 
         std::string::size_type stop;
         stop = name.rfind(DEVICE_SEP);
@@ -291,7 +291,7 @@ AttributeProxy::AttributeProxy(const AttributeProxy &prev) :
         }
     }
 
-    if(prev.ext.get() != NULL)
+    if(prev.ext.get() != nullptr)
     {
         ext.reset(new AttributeProxyExt(prev.get_user_defined_name()));
     }
@@ -357,7 +357,7 @@ AttributeProxy &AttributeProxy::operator=(const AttributeProxy &rval)
             }
         }
 
-        if(rval.ext.get() != NULL)
+        if(rval.ext.get() != nullptr)
         {
             ext.reset(new AttributeProxyExt(rval.get_user_defined_name()));
         }
@@ -1289,7 +1289,7 @@ int AttributeProxy::subscribe_event(EventType event,
                                     bool stateless)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -1309,7 +1309,7 @@ int AttributeProxy::subscribe_event(EventType event,
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(ApiUtil::instance()->get_notifd_event_consumer() == NULL)
+            if(ApiUtil::instance()->get_notifd_event_consumer() == nullptr)
             {
                 ApiUtil::instance()->create_notifd_event_consumer();
             }
@@ -1346,7 +1346,7 @@ int AttributeProxy::subscribe_event(EventType event,
                                     bool stateless)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -1362,7 +1362,7 @@ int AttributeProxy::subscribe_event(EventType event,
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == NULL)
+            if(api_ptr->get_notifd_event_consumer() == nullptr)
             {
                 api_ptr->create_notifd_event_consumer();
             }

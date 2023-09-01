@@ -623,9 +623,9 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, pu
 
     static void cleanup()
     {
-        if(_instance != NULL)
+        if(_instance != nullptr)
         {
-            _instance = NULL;
+            _instance = nullptr;
         }
     }
 
@@ -692,9 +692,9 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
 
     static void cleanup()
     {
-        if(_instance != NULL)
+        if(_instance != nullptr)
         {
-            _instance = NULL;
+            _instance = nullptr;
         }
     }
 

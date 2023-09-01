@@ -1239,7 +1239,7 @@ int Util::get_polling_thread_id_by_name(const char *dev_name)
 
 PollingThreadInfo *Util::get_polling_thread_info_by_id(int th_id)
 {
-    PollingThreadInfo *ret_ptr = NULL;
+    PollingThreadInfo *ret_ptr = nullptr;
     std::vector<PollingThreadInfo *>::iterator iter;
 
     for(iter = poll_ths.begin(); iter != poll_ths.end(); ++iter)

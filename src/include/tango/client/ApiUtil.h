@@ -257,14 +257,14 @@ class ApiUtil
 
     bool is_notifd_event_consumer_created()
     {
-        return notifd_event_consumer != NULL;
+        return notifd_event_consumer != nullptr;
     }
 
     NotifdEventConsumer *get_notifd_event_consumer();
 
     bool is_zmq_event_consumer_created()
     {
-        return zmq_event_consumer != NULL;
+        return zmq_event_consumer != nullptr;
     }
 
     ZmqEventConsumer *get_zmq_event_consumer();

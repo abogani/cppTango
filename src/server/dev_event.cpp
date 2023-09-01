@@ -383,8 +383,8 @@ void DeviceImpl::push_data_ready_event(const std::string &attr_name, Tango::DevL
     // Get event suppliers
     //
 
-    EventSupplier *event_supplier_nd = NULL;
-    EventSupplier *event_supplier_zmq = NULL;
+    EventSupplier *event_supplier_nd = nullptr;
+    EventSupplier *event_supplier_zmq = nullptr;
 
     if(attr.use_notifd_event() == true)
     {
@@ -395,7 +395,7 @@ void DeviceImpl::push_data_ready_event(const std::string &attr_name, Tango::DevL
         event_supplier_zmq = tg->get_zmq_event_supplier();
     }
 
-    if((event_supplier_nd == NULL) && (event_supplier_zmq == NULL))
+    if((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr))
     {
         return;
     }
@@ -404,12 +404,12 @@ void DeviceImpl::push_data_ready_event(const std::string &attr_name, Tango::DevL
     // Push the event
     //
 
-    if(event_supplier_nd != NULL)
+    if(event_supplier_nd != nullptr)
     {
         event_supplier_nd->push_att_data_ready_event(this, attr_name, attr.get_data_type(), ctr);
     }
 
-    if(event_supplier_zmq != NULL)
+    if(event_supplier_zmq != nullptr)
     {
         event_supplier_zmq->push_att_data_ready_event(this, attr_name, attr.get_data_type(), ctr);
     }

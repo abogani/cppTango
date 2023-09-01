@@ -381,9 +381,9 @@ class TgRequest
     TgRequest(CORBA::Request_ptr re, ReqType ty) :
         request(re),
         req_type(ty),
-        cb_ptr(NULL),
+        cb_ptr(nullptr),
         arrived(false),
-        dev(NULL)
+        dev(nullptr)
     {
     }
 
@@ -392,12 +392,12 @@ class TgRequest
         req_type(ty),
         cb_ptr(cb),
         arrived(false),
-        dev(NULL)
+        dev(nullptr)
     {
     }
 
     TgRequest(Tango::Connection *con, ReqType ty, CallBack *cb) :
-        request(NULL),
+        request(nullptr),
         req_type(ty),
         cb_ptr(cb),
         arrived(false),

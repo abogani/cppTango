@@ -57,7 +57,7 @@ LoggerStream::~LoggerStream()
     if(_buffer)
     {
         delete _buffer;
-        _buffer = 0;
+        _buffer = nullptr;
     }
 }
 

@@ -2028,7 +2028,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
 
         try
         {
-            if(dev == NULL)
+            if(dev == nullptr)
             {
                 // TODO: check how to make cerr quiet
                 std::cerr.setstate(std::ios::failbit);

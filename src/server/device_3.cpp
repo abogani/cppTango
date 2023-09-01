@@ -964,7 +964,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                         const char *reas = API_AttrValueNotSet;
                         AttrSerialModel atsm = att.get_attr_serial_model();
 
-                        if(aid.data_5 != NULL)
+                        if(aid.data_5 != nullptr)
                         {
                             if((i != state_idx) && (i != status_idx) && (atsm != ATTR_NO_SYNC) &&
                                (att.get_writable() != Tango::WRITE))
@@ -977,7 +977,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                             }
                             one_error((*aid.data_5)[index], reas, TANGO_EXCEPTION_ORIGIN, s, att);
                         }
-                        else if(aid.data_4 != NULL)
+                        else if(aid.data_4 != nullptr)
                         {
                             if((i != state_idx) && (i != status_idx) && (atsm != ATTR_NO_SYNC) &&
                                (att.get_writable() != Tango::WRITE))
@@ -1259,11 +1259,11 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
 
                 const char *reas = API_AttrNotPolled;
 
-                if(aid.data_5 != NULL)
+                if(aid.data_5 != nullptr)
                 {
                     one_error((*aid.data_5)[non_polled[i]], reas, TANGO_EXCEPTION_ORIGIN, s, att);
                 }
-                else if(aid.data_4 != NULL)
+                else if(aid.data_4 != nullptr)
                 {
                     one_error((*aid.data_4)[non_polled[i]], reas, TANGO_EXCEPTION_ORIGIN, s, att);
                 }
@@ -1315,7 +1315,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
             }
         }
 
-        PollObj *polled_attr = NULL;
+        PollObj *polled_attr = nullptr;
         unsigned long j;
         for(j = 0; j < poll_list.size(); j++)
         {
@@ -1333,7 +1333,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
         // case
         //
 
-        if(polled_attr == NULL)
+        if(polled_attr == nullptr)
         {
             TangoSys_OMemStream o;
             o << "No data available in cache for attribute " << names[i] << std::ends;
@@ -1577,7 +1577,7 @@ void Device_3Impl::write_attributes_3(const Tango::AttributeValueList &values)
     // Call the method really doing the job
     //
 
-    write_attributes_34(&values, NULL);
+    write_attributes_34(&values, nullptr);
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -1633,7 +1633,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
 
         std::vector<AttIdx> updated_attr;
         unsigned long nb_updated_attr;
-        if(values_3 != NULL)
+        if(values_3 != nullptr)
         {
             nb_updated_attr = values_3->length();
         }
@@ -1648,7 +1648,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
             const char *single_att_name;
             long single_att_dimx, single_att_dimy;
 
-            if(values_3 != NULL)
+            if(values_3 != nullptr)
             {
                 single_att_name = (*values_3)[i].name;
                 single_att_dimx = (*values_3)[i].dim_x;
@@ -1757,7 +1757,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
             const char *single_att_name;
             long single_att_dimx, single_att_dimy;
 
-            if(values_3 != NULL)
+            if(values_3 != nullptr)
             {
                 single_att_name = (*values_3)[ctr->idx_in_names].name;
                 single_att_dimx = (*values_3)[ctr->idx_in_names].dim_x;
@@ -1772,7 +1772,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
 
             try
             {
-                if(values_3 == NULL)
+                if(values_3 == nullptr)
                 {
                     dev_attr->get_w_attr_by_ind(ctr->idx_in_multi_attr)
                         .check_written_value((*values_4)[ctr->idx_in_names].value,
@@ -1866,7 +1866,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                         att.rollback();
                     }
                     errs.length(nb_failed);
-                    if(values_3 != NULL)
+                    if(values_3 != nullptr)
                     {
                         errs[nb_failed - 1].name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
                     }
@@ -1887,7 +1887,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                         att.rollback();
                     }
                     errs.length(nb_failed);
-                    if(values_3 != NULL)
+                    if(values_3 != nullptr)
                     {
                         errs[nb_failed - 1].name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
                     }
@@ -1992,7 +1992,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
         {
             WAttribute &att = dev_attr->get_w_attr_by_ind(updated_attr[i].idx_in_multi_attr);
 
-            if(values_3 != NULL)
+            if(values_3 != nullptr)
             {
                 if(att.get_user_set_write_value() == false)
                 {
@@ -2034,7 +2034,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                 {
                     const char *single_att_name;
 
-                    if(values_3 != NULL)
+                    if(values_3 != nullptr)
                     {
                         single_att_name = (*values_3)[updated_attr[att_in_db[i]].idx_in_names].name;
                     }
@@ -2111,7 +2111,7 @@ Tango::DevAttrHistoryList_3 *Device_3Impl::read_attribute_history_3(const char *
 
     blackbox_ptr->insert_op(Op_Read_Attr_history_3);
 
-    Tango::DevAttrHistoryList_3 *back = NULL;
+    Tango::DevAttrHistoryList_3 *back = nullptr;
     std::vector<PollObj *> &poll_list = get_poll_obj_list();
     long nb_poll = poll_list.size();
 
@@ -2129,7 +2129,7 @@ Tango::DevAttrHistoryList_3 *Device_3Impl::read_attribute_history_3(const char *
     //
 
     long j;
-    PollObj *polled_attr = NULL;
+    PollObj *polled_attr = nullptr;
     for(j = 0; j < nb_poll; j++)
     {
         if((poll_list[j]->get_type() == Tango::POLL_ATTR) && (poll_list[j]->get_name() == attr_str))
@@ -2138,7 +2138,7 @@ Tango::DevAttrHistoryList_3 *Device_3Impl::read_attribute_history_3(const char *
             break;
         }
     }
-    if(polled_attr == NULL)
+    if(polled_attr == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Attribute " << attr_str << " not polled" << std::ends;
@@ -2213,7 +2213,7 @@ Tango::DevInfo_3 *Device_3Impl::info_3()
 {
     TANGO_LOG_DEBUG << "Device_3Impl::info_3 arrived" << std::endl;
 
-    Tango::DevInfo_3 *back = NULL;
+    Tango::DevInfo_3 *back = nullptr;
 
     //
     // Allocate memory for the stucture sent back to caller. The ORB will free it
@@ -2314,7 +2314,7 @@ Tango::AttributeConfigList_3 *Device_3Impl::get_attribute_config_3(const Tango::
     TANGO_LOG_DEBUG << "Device_3Impl::get_attribute_config_3 arrived" << std::endl;
 
     long nb_attr = names.length();
-    Tango::AttributeConfigList_3 *back = NULL;
+    Tango::AttributeConfigList_3 *back = nullptr;
     bool all_attr = false;
 
     //

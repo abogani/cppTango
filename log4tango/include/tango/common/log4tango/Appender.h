@@ -104,7 +104,7 @@ class Appender
     /**
      * Change the layout.
      **/
-    virtual void set_layout(Layout *layout = 0) = 0;
+    virtual void set_layout(Layout *layout = nullptr) = 0;
 
     /**
      * Returns this appender name.

@@ -280,13 +280,13 @@ DeviceData Connection::command_inout_reply(long id)
         return omni420_except(id, cb_excep_mess, req);
     }
 
-    if(!CORBA::is_nil(env) && (env->exception() == NULL))
+    if(!CORBA::is_nil(env) && (env->exception() == nullptr))
     {
         //
         // Get received value
         //
 
-        const CORBA::Any *received = NULL;
+        const CORBA::Any *received = nullptr;
         CORBA::Any &dii_any = req.request->return_value();
         dii_any >>= received;
         CORBA::Any *server_any = new CORBA::Any(*received);
@@ -306,7 +306,7 @@ DeviceData Connection::command_inout_reply(long id)
         //
 
         CORBA::TRANSIENT *tra;
-        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
         {
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
@@ -337,7 +337,7 @@ DeviceData Connection::command_inout_reply(long id)
                 if(need_reconnect == false)
                 {
                     CORBA::NVList_ptr req_arg = req.request->arguments();
-                    const char *cmd = NULL;
+                    const char *cmd = nullptr;
                     CORBA::NamedValue_ptr nv = req_arg->item(0);
                     *(nv->value()) >>= cmd;
                     char *tmp = Tango::string_dup(cmd);
@@ -365,7 +365,7 @@ DeviceData Connection::command_inout_reply(long id)
         }
 
         CORBA::UnknownUserException *unk_ex;
-        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
         {
             //
             // It is a UserUnknownException exception. This means that the
@@ -377,7 +377,7 @@ DeviceData Connection::command_inout_reply(long id)
             Tango::DevFailed ex(*serv_ex);
 
             CORBA::NVList_ptr req_arg = req.request->arguments();
-            const char *cmd = NULL;
+            const char *cmd = nullptr;
             CORBA::NamedValue_ptr nv = req_arg->item(0);
             *(nv->value()) >>= cmd;
             char *tmp = Tango::string_dup(cmd);
@@ -393,7 +393,7 @@ DeviceData Connection::command_inout_reply(long id)
         }
 
         CORBA::SystemException *sys_ex;
-        if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL)
+        if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr)
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -402,7 +402,7 @@ DeviceData Connection::command_inout_reply(long id)
             //
 
             CORBA::NVList_ptr req_arg = req.request->arguments();
-            const char *cmd = NULL;
+            const char *cmd = nullptr;
             CORBA::NamedValue_ptr nv = req_arg->item(0);
             *(nv->value()) >>= cmd;
             char *tmp = Tango::string_dup(cmd);
@@ -579,7 +579,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
         return omni420_except(id, cb_excep_mess, req);
     }
 
-    if(!CORBA::is_nil(env) && (env->exception() == NULL))
+    if(!CORBA::is_nil(env) && (env->exception() == nullptr))
     {
         //
         // It's not an exception, therefore get received value
@@ -605,7 +605,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
         //
 
         CORBA::TRANSIENT *tra;
-        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
         {
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
@@ -636,7 +636,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
                 if(need_reconnect == false)
                 {
                     CORBA::NVList_ptr req_arg = req.request->arguments();
-                    const char *cmd = NULL;
+                    const char *cmd = nullptr;
                     CORBA::NamedValue_ptr nv = req_arg->item(0);
                     *(nv->value()) >>= cmd;
                     char *tmp = Tango::string_dup(cmd);
@@ -664,7 +664,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
         }
 
         CORBA::UnknownUserException *unk_ex;
-        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
         {
             //
             // It is a UserUnknownException exception. This means that the
@@ -676,7 +676,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
             Tango::DevFailed ex(*serv_ex);
 
             CORBA::NVList_ptr req_arg = req.request->arguments();
-            const char *cmd = NULL;
+            const char *cmd = nullptr;
             CORBA::NamedValue_ptr nv = req_arg->item(0);
             *(nv->value()) >>= cmd;
             char *tmp = Tango::string_dup(cmd);
@@ -693,7 +693,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
         }
 
         CORBA::SystemException *sys_ex;
-        if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL)
+        if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr)
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -702,7 +702,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
             //
 
             CORBA::NVList_ptr req_arg = req.request->arguments();
-            const char *cmd = NULL;
+            const char *cmd = nullptr;
             CORBA::NamedValue_ptr nv = req_arg->item(0);
             *(nv->value()) >>= cmd;
             char *tmp = Tango::string_dup(cmd);
@@ -959,7 +959,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
             return a_ptr;
         }
 
-        if(!CORBA::is_nil(env) && (env->exception() != NULL))
+        if(!CORBA::is_nil(env) && (env->exception() != nullptr))
         {
             read_attr_except(req.request, id, MULTIPLE);
 
@@ -1034,7 +1034,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
                 }
                 else
                 {
-                    ApiUtil::attr_to_device(NULL, &((*received_3)[i]), version, &((*dev_attr)[i]));
+                    ApiUtil::attr_to_device(nullptr, &((*received_3)[i]), version, &((*dev_attr)[i]));
                 }
 
                 //
@@ -1060,7 +1060,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
             }
             else
             {
-                ApiUtil::attr_to_device(&((*received)[i]), NULL, version, &((*dev_attr)[i]));
+                ApiUtil::attr_to_device(&((*received)[i]), nullptr, version, &((*dev_attr)[i]));
             }
         }
 
@@ -1073,7 +1073,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
         return dev_attr;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1163,7 +1163,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
             return a_ptr;
         }
 
-        if(!CORBA::is_nil(env) && (env->exception() != NULL))
+        if(!CORBA::is_nil(env) && (env->exception() != nullptr))
         {
             read_attr_except(req.request, id, SIMPLE);
 
@@ -1229,7 +1229,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
             }
             else
             {
-                ApiUtil::attr_to_device(NULL, &((*received_3)[0]), version, dev_attr);
+                ApiUtil::attr_to_device(nullptr, &((*received_3)[0]), version, dev_attr);
             }
 
             //
@@ -1256,7 +1256,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
         }
         else
         {
-            ApiUtil::attr_to_device(&((*received)[0]), NULL, version, dev_attr);
+            ApiUtil::attr_to_device(&((*received)[0]), nullptr, version, dev_attr);
         }
 
         //
@@ -1267,7 +1267,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
 
         return dev_attr;
     }
-    return NULL;
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1394,7 +1394,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
         return a_ptr;
     }
 
-    if(!CORBA::is_nil(env) && (env->exception() != NULL))
+    if(!CORBA::is_nil(env) && (env->exception() != nullptr))
     {
         read_attr_except(req.request, id, MULTIPLE);
 
@@ -1469,7 +1469,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
             }
             else
             {
-                ApiUtil::attr_to_device(NULL, &((*received_3)[i]), version, &((*dev_attr)[i]));
+                ApiUtil::attr_to_device(nullptr, &((*received_3)[i]), version, &((*dev_attr)[i]));
             }
 
             //
@@ -1495,7 +1495,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
         }
         else
         {
-            ApiUtil::attr_to_device(&((*received)[i]), NULL, version, &((*dev_attr)[i]));
+            ApiUtil::attr_to_device(&((*received)[i]), nullptr, version, &((*dev_attr)[i]));
         }
     }
 
@@ -1633,7 +1633,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
         return a_ptr;
     }
 
-    if(!CORBA::is_nil(env) && (env->exception() != NULL))
+    if(!CORBA::is_nil(env) && (env->exception() != nullptr))
     {
         read_attr_except(req.request, id, SIMPLE);
 
@@ -1699,7 +1699,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
         }
         else
         {
-            ApiUtil::attr_to_device(NULL, &((*received_3)[0]), version, dev_attr);
+            ApiUtil::attr_to_device(nullptr, &((*received_3)[0]), version, dev_attr);
         }
 
         //
@@ -1725,7 +1725,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
     }
     else
     {
-        ApiUtil::attr_to_device(&((*received)[0]), NULL, version, dev_attr);
+        ApiUtil::attr_to_device(&((*received)[0]), nullptr, version, dev_attr);
     }
 
     //
@@ -1760,7 +1760,7 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req, long id, read_attr_ty
     //
 
     CORBA::TRANSIENT *tra;
-    if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+    if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
     {
         if(tra->minor() == omni::TRANSIENT_CallTimedout)
         {
@@ -1834,7 +1834,7 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req, long id, read_attr_ty
     }
 
     CORBA::UnknownUserException *unk_ex;
-    if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+    if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
     {
         //
         // It is a UserUnknownException exception. This means that the
@@ -1876,7 +1876,7 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req, long id, read_attr_ty
     }
 
     CORBA::SystemException *sys_ex;
-    if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL)
+    if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr)
     {
         set_connection_state(CONNECTION_NOTOK);
 
@@ -2248,7 +2248,7 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
         redo_synch_write_call(req);
     }
 
-    if(!CORBA::is_nil(env) && (env->exception() != NULL))
+    if(!CORBA::is_nil(env) && (env->exception() != nullptr))
     {
         write_attr_except(req.request, id, req.req_type);
 
@@ -2347,7 +2347,7 @@ void DeviceProxy::write_attributes_reply(long id)
             redo_synch_write_call(req);
         }
 
-        if(!CORBA::is_nil(env) && (env->exception() != NULL))
+        if(!CORBA::is_nil(env) && (env->exception() != nullptr))
         {
             write_attr_except(req.request, id, req.req_type);
 
@@ -2390,7 +2390,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
     //
 
     CORBA::TRANSIENT *tra;
-    if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+    if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
     {
         if(tra->minor() == omni::TRANSIENT_CallTimedout)
         {
@@ -2474,16 +2474,16 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
     }
 
     CORBA::UnknownUserException *unk_ex;
-    if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+    if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
     {
         //
         // It is a UserUnknownException exception. This means that the
         // server has sent a DevFailed exception
         //
 
-        const Tango::DevFailed *serv_ex = NULL;
+        const Tango::DevFailed *serv_ex = nullptr;
         Tango::DevFailed ex;
-        const Tango::MultiDevFailed *multi_serv_ex = NULL;
+        const Tango::MultiDevFailed *multi_serv_ex = nullptr;
         Tango::MultiDevFailed m_ex;
 
         if(version < 3)
@@ -2557,7 +2557,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
         }
         else
         {
-            if(serv_ex != NULL)
+            if(serv_ex != nullptr)
             {
                 TANGO_RETHROW_EXCEPTION(ex, API_AttributeFailed, desc.str());
             }
@@ -2580,7 +2580,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
     }
 
     CORBA::SystemException *sys_ex;
-    if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL)
+    if((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr)
     {
         set_connection_state(CONNECTION_NOTOK);
 
@@ -2684,7 +2684,7 @@ void DeviceProxy::retrieve_read_args(const TgRequest &req, std::vector<std::stri
     // Retrieve which attribute was read
     //
 
-    const Tango::DevVarStringArray *att_names = NULL;
+    const Tango::DevVarStringArray *att_names = nullptr;
     try
     {
         CORBA::NVList_ptr args_ptr = req.request->arguments();
@@ -2704,7 +2704,7 @@ void DeviceProxy::retrieve_read_args(const TgRequest &req, std::vector<std::stri
 
         TangoSys_OMemStream desc;
         desc << "Failed to redo the call synchronously on device " << device_name;
-        if(att_names != NULL)
+        if(att_names != nullptr)
         {
             desc << "\nAttribute(s): ";
             for(unsigned int i = 0; i < att_names->length(); i++)
@@ -2850,7 +2850,7 @@ void DeviceProxy::redo_synch_write_call(TgRequest &req)
 
 DeviceData Connection::redo_synch_cmd(const TgRequest &req)
 {
-    const char *cmd_name = NULL;
+    const char *cmd_name = nullptr;
     const CORBA::Any *a_ptr;
 
     try

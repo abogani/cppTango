@@ -1170,7 +1170,7 @@ void MultiAttribute::remove_attribute(const std::string &attr_name, bool update_
 
 Attribute &MultiAttribute::get_attr_by_name(const char *attr_name)
 {
-    Attribute *attr = 0;
+    Attribute *attr = nullptr;
     std::string st(attr_name);
     std::transform(st.begin(), st.end(), st.begin(), ::tolower);
     try
@@ -1207,7 +1207,7 @@ Attribute &MultiAttribute::get_attr_by_name(const char *attr_name)
 
 WAttribute &MultiAttribute::get_w_attr_by_name(const char *attr_name)
 {
-    Attribute *attr = 0;
+    Attribute *attr = nullptr;
     std::string st(attr_name);
     std::transform(st.begin(), st.end(), st.begin(), ::tolower);
     try

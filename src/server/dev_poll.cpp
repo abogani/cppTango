@@ -534,7 +534,7 @@ void DeviceImpl::poll_object(const std::string &obj_name, int period, PollObjTyp
 
         the_any <<= send;
 
-        CORBA::Any *received_any = NULL;
+        CORBA::Any *received_any = nullptr;
 
         if(type == POLL_CMD)
         {

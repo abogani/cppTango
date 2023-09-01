@@ -126,7 +126,7 @@ t_device *search_device(t_server &s, string &name)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 t_tango_class *search_class(t_server &s, string &name)
@@ -138,7 +138,7 @@ t_tango_class *search_class(t_server &s, string &name)
             return s.classes[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 t_attribute_property *search_dev_attr_prop(t_device *d, const string &name)
@@ -150,7 +150,7 @@ t_attribute_property *search_dev_attr_prop(t_device *d, const string &name)
             return d->attribute_properties[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 t_attribute_property *search_class_attr_prop(t_tango_class *d, const string &name)
@@ -162,7 +162,7 @@ t_attribute_property *search_class_attr_prop(t_tango_class *d, const string &nam
             return d->attribute_properties[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string &trim(string &str)
@@ -746,7 +746,7 @@ std::string FileDatabase::parse_res_file(const std::string &file_name)
                         t_device *d = search_device(m_server, device_name);
 
                         t_attribute_property *un_dev_attr_prop = search_dev_attr_prop(d, name);
-                        if(un_dev_attr_prop == NULL)
+                        if(un_dev_attr_prop == nullptr)
                         {
                             un_dev_attr_prop = new t_attribute_property;
                             un_dev_attr_prop->attribute_name = name;
@@ -798,10 +798,10 @@ std::string FileDatabase::parse_res_file(const std::string &file_name)
                         // <<prop_name<<","<< endl;
                         t_tango_class *c = search_class(m_server, family);
 
-                        if(c != NULL)
+                        if(c != nullptr)
                         {
                             t_attribute_property *un_class_attr_prop = search_class_attr_prop(c, member);
-                            if(un_class_attr_prop == NULL)
+                            if(un_class_attr_prop == nullptr)
                             {
                                 un_class_attr_prop = new t_attribute_property;
                                 un_class_attr_prop->attribute_name = member;
@@ -827,7 +827,7 @@ std::string FileDatabase::parse_res_file(const std::string &file_name)
                         string device_name = domain + "/" + family + "/" + member;
                         t_device *d = search_device(m_server, device_name);
 
-                        if(d != NULL)
+                        if(d != nullptr)
                         {
                             t_property *un_dev_prop = new t_property;
                             un_dev_prop->name = prop_name;
@@ -872,7 +872,7 @@ std::string FileDatabase::parse_res_file(const std::string &file_name)
                     // TANGO_LOG << "Tango resource class " << endl;
                     {
                         un_class = search_class(m_server, family);
-                        if(un_class != NULL)
+                        if(un_class != nullptr)
                         {
                             t_property *un_prop = new t_property;
                             un_prop->name = member;
@@ -1222,7 +1222,7 @@ void FileDatabase ::write_file()
 CORBA::Any *FileDatabase ::DbGetDeviceProperty(CORBA::Any &send)
 {
     Tango::DevVarStringArray *data_out = new DevVarStringArray;
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetDeviceProperty" << endl;
 
@@ -1325,7 +1325,7 @@ CORBA::Any *FileDatabase ::DbPutDeviceProperty(CORBA::Any &send)
 
     CORBA::Any *any_ptr = new CORBA::Any;
 
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int n_properties = 0;
     int n_values = 0;
 
@@ -1391,7 +1391,7 @@ CORBA::Any *FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
 {
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbDeleteDeviceProperty" << endl;
 
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     send >>= data_in;
 
@@ -1428,7 +1428,7 @@ CORBA::Any *FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
 CORBA::Any *FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
 {
     Tango::DevVarStringArray *data_out = new DevVarStringArray;
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     CORBA::Any *any_ptr;
     any_ptr = new CORBA::Any();
@@ -1517,7 +1517,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
 
 CORBA::Any *FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
 {
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int num_prop = 0;
     unsigned int num_attr = 0;
     unsigned int num_vals = 0;
@@ -1624,7 +1624,7 @@ CORBA::Any *FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
 {
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbDeleteDeviceAttributeProperty" << endl;
 
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     send >>= data_in;
 
@@ -1691,7 +1691,7 @@ CORBA::Any *FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
 CORBA::Any *FileDatabase ::DbGetClassProperty(CORBA::Any &send)
 {
     Tango::DevVarStringArray *data_out = new DevVarStringArray;
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetClassProperty" << endl;
 
@@ -1783,7 +1783,7 @@ CORBA::Any *FileDatabase ::DbGetClassProperty(CORBA::Any &send)
 CORBA::Any *FileDatabase ::DbPutClassProperty(CORBA::Any &send)
 {
     CORBA::Any *ret = new CORBA::Any;
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int n_properties = 0;
     int n_values = 0;
 
@@ -1861,7 +1861,7 @@ CORBA::Any *FileDatabase ::DbDeleteClassProperty(CORBA::Any &send)
 {
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbDeleteClassProperty" << endl;
 
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     send >>= data_in;
 
@@ -1898,7 +1898,7 @@ CORBA::Any *FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
     Tango::DevVarStringArray *data_out = new DevVarStringArray;
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetClassAttributeProperty" << endl;
 
@@ -1988,7 +1988,7 @@ CORBA::Any *FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
 CORBA::Any *FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
 {
     CORBA::Any *ret = new CORBA::Any();
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int num_attr = 0;
     unsigned int num_prop = 0;
     unsigned int num_vals = 0;
@@ -2105,7 +2105,7 @@ CORBA::Any *FileDatabase ::DbDeleteClassAttributeProperty(CORBA::Any &)
 CORBA::Any *FileDatabase ::DbGetDeviceList(CORBA::Any &send)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
     Tango::DevVarStringArray *data_out = new DevVarStringArray;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetDeviceList" << endl;
@@ -2203,7 +2203,7 @@ CORBA::Any *FileDatabase ::DbInfo(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbImportDevice(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
@@ -2212,7 +2212,7 @@ CORBA::Any *FileDatabase ::DbImportDevice(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbExportDevice(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2220,7 +2220,7 @@ CORBA::Any *FileDatabase ::DbExportDevice(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbUnExportDevice(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2228,7 +2228,7 @@ CORBA::Any *FileDatabase ::DbUnExportDevice(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbAddDevice(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2236,7 +2236,7 @@ CORBA::Any *FileDatabase ::DbAddDevice(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbDeleteDevice(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2244,7 +2244,7 @@ CORBA::Any *FileDatabase ::DbDeleteDevice(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbAddServer(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2252,7 +2252,7 @@ CORBA::Any *FileDatabase ::DbAddServer(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbDeleteServer(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2260,7 +2260,7 @@ CORBA::Any *FileDatabase ::DbDeleteServer(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbExportServer(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2268,7 +2268,7 @@ CORBA::Any *FileDatabase ::DbExportServer(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbUnExportServer(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2276,7 +2276,7 @@ CORBA::Any *FileDatabase ::DbUnExportServer(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetServerInfo(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2304,7 +2304,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceWideList(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetDeviceExportedList(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
 
     return ret;
@@ -2341,7 +2341,7 @@ CORBA::Any *FileDatabase ::DbGetProperty(CORBA::Any &send)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
 
-    const Tango::DevVarStringArray *data_in = NULL;
+    const Tango::DevVarStringArray *data_in = nullptr;
     Tango::DevVarStringArray *data_out = new DevVarStringArray;
     const char *zero_str = "0";
 
@@ -2360,14 +2360,14 @@ CORBA::Any *FileDatabase ::DbGetProperty(CORBA::Any &send)
 
 CORBA::Any *FileDatabase ::DbPutProperty(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;
 }
 
 CORBA::Any *FileDatabase ::DbDeleteProperty(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;
@@ -2375,7 +2375,7 @@ CORBA::Any *FileDatabase ::DbDeleteProperty(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetAliasDevice(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;
@@ -2383,7 +2383,7 @@ CORBA::Any *FileDatabase ::DbGetAliasDevice(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetDeviceAlias(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;
@@ -2391,7 +2391,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceAlias(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetAttributeAlias(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;
@@ -2399,7 +2399,7 @@ CORBA::Any *FileDatabase ::DbGetAttributeAlias(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetDeviceAliasList(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;
@@ -2407,7 +2407,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceAliasList(CORBA::Any &)
 
 CORBA::Any *FileDatabase ::DbGetAttributeAliasList(CORBA::Any &)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
 
     TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
     return ret;

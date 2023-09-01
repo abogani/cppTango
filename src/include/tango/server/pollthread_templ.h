@@ -240,10 +240,10 @@ void PollThread::copy_remaining(T &old_attr_value, T &new_attr_value)
     new_attr_value.name = tmp_ptr;
 
     omni_mutex *tmp_mut = old_attr_value.get_attr_mutex();
-    if(tmp_mut != NULL)
+    if(tmp_mut != nullptr)
     {
         new_attr_value.set_attr_mutex(tmp_mut);
-        old_attr_value.set_attr_mutex(NULL);
+        old_attr_value.set_attr_mutex(nullptr);
     }
 }
 

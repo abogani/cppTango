@@ -751,7 +751,7 @@ class Attribute
      *
      * @param except A pointer to a DevFailed exception to be thrown as archive event.
      */
-    void fire_change_event(DevFailed *except = NULL);
+    void fire_change_event(DevFailed *except = nullptr);
 
     /**
      * Set a flag to indicate that the server fires change events manually, without
@@ -820,7 +820,7 @@ class Attribute
      *
      * @param except A pointer to a DevFailed exception to be thrown as archive event.
      */
-    void fire_archive_event(DevFailed *except = NULL);
+    void fire_archive_event(DevFailed *except = nullptr);
 
     /**
      * Set a flag to indicate that the server fires archive events manually, without
@@ -911,7 +911,7 @@ class Attribute
      */
     void fire_event(const std::vector<std::string> &filt_names,
                     const std::vector<double> &filt_vals,
-                    DevFailed *except = NULL);
+                    DevFailed *except = nullptr);
 
     /**
      * Remove the attribute configuration from the database.
@@ -1593,7 +1593,7 @@ class Attribute
 
     void set_quality_event_sub()
     {
-        event_quality_subscription = time(NULL);
+        event_quality_subscription = time(nullptr);
     }
 
     time_t get_quality_event_sub()
@@ -1612,7 +1612,7 @@ class Attribute
 
     void set_data_ready_event_sub()
     {
-        event_data_ready_subscription = time(NULL);
+        event_data_ready_subscription = time(nullptr);
     }
 
     time_t get_data_ready_event_sub()
@@ -1814,7 +1814,7 @@ class Attribute
     {
       public:
         AttributeExt() :
-            user_attr_mutex(NULL)
+            user_attr_mutex(nullptr)
         {
         }
 
@@ -2189,15 +2189,15 @@ inline void Attribute::set_change_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_change5_subscription = time(NULL);
+        event_change5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_change4_subscription = time(NULL);
+        event_change4_subscription = time(nullptr);
         break;
 
     default:
-        event_change3_subscription = time(NULL);
+        event_change3_subscription = time(nullptr);
         break;
     }
 }
@@ -2207,15 +2207,15 @@ inline void Attribute::set_periodic_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_periodic5_subscription = time(NULL);
+        event_periodic5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_periodic4_subscription = time(NULL);
+        event_periodic4_subscription = time(nullptr);
         break;
 
     default:
-        event_periodic3_subscription = time(NULL);
+        event_periodic3_subscription = time(nullptr);
         break;
     }
 }
@@ -2225,15 +2225,15 @@ inline void Attribute::set_archive_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_archive5_subscription = time(NULL);
+        event_archive5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_archive4_subscription = time(NULL);
+        event_archive4_subscription = time(nullptr);
         break;
 
     default:
-        event_archive3_subscription = time(NULL);
+        event_archive3_subscription = time(nullptr);
         break;
     }
 }
@@ -2243,15 +2243,15 @@ inline void Attribute::set_user_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_user5_subscription = time(NULL);
+        event_user5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_user4_subscription = time(NULL);
+        event_user4_subscription = time(nullptr);
         break;
 
     default:
-        event_user3_subscription = time(NULL);
+        event_user3_subscription = time(nullptr);
         break;
     }
 }
@@ -2261,11 +2261,11 @@ inline void Attribute::set_att_conf_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_attr_conf5_subscription = time(NULL);
+        event_attr_conf5_subscription = time(nullptr);
         break;
 
     default:
-        event_attr_conf_subscription = time(NULL);
+        event_attr_conf_subscription = time(nullptr);
         break;
     }
 }

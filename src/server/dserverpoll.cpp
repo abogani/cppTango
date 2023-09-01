@@ -619,7 +619,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
     try
     {
         dev = tg->get_device_by_name((argin->svalue)[0]);
@@ -1108,7 +1108,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
     try
     {
         dev = tg->get_device_by_name((argin->svalue)[0]);
@@ -1363,7 +1363,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
     try
     {
         dev = tg->get_device_by_name((*argin)[0]);
@@ -1460,7 +1460,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         // Test whether the polling thread is still running!
         //
 
-        if(th_info->poll_th != NULL)
+        if(th_info->poll_th != nullptr)
         {
             //
             // Send command to the polling thread

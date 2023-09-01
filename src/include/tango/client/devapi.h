@@ -867,7 +867,7 @@ inline void Connection::dec_asynch_counter(asyn_req_type ty)
 inline void DeviceProxy::check_connect_adm_device()
 {
     omni_mutex_lock guard(adm_dev_mutex);
-    if(adm_device == NULL)
+    if(adm_device == nullptr)
     {
         connect_to_adm_device();
     }

@@ -179,7 +179,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         if(auto_signal(signo) == true)
         {
             Tango::Util *tg = Tango::Util::instance();
-            if(tg != NULL)
+            if(tg != nullptr)
             {
                 try
                 {
@@ -195,7 +195,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 } // namespace Tango

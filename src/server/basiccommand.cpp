@@ -72,7 +72,7 @@ CORBA::Any *DevStatusCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::
     // return status string as Any
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -136,7 +136,7 @@ CORBA::Any *DevStateCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::A
     // return state as Any
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -245,7 +245,7 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
         // not called during the DS startup sequence
         //
 
-        DeviceImpl *admin_dev = NULL;
+        DeviceImpl *admin_dev = nullptr;
         try
         {
             admin_dev = tg->get_dserver_device();

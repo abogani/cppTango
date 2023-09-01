@@ -68,7 +68,7 @@ void Logger::set_level(Level::Value level)
 
 void Logger::call_appenders(const LoggingEvent &event)
 {
-    std::vector<std::string> *bad_appenders = 0;
+    std::vector<std::string> *bad_appenders = nullptr;
     { //-- Begin critical section -----------------------------
         std::lock_guard<std::mutex> guard(_appendersMutex);
         if(!_appenders.empty())

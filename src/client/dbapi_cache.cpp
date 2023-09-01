@@ -210,7 +210,7 @@ DbServerCache::DbServerCache(Database *db, const std::string &ds_name, const std
         }
         else
         {
-            classes_idx[cl_loop].class_pipe_prop.atts_idx = NULL;
+            classes_idx[cl_loop].class_pipe_prop.atts_idx = nullptr;
         }
 
         //
@@ -250,7 +250,7 @@ DbServerCache::DbServerCache(Database *db, const std::string &ds_name, const std
             }
             else
             {
-                classes_idx[cl_loop].devs_idx[loop].dev_pipe_prop.atts_idx = NULL;
+                classes_idx[cl_loop].devs_idx[loop].dev_pipe_prop.atts_idx = nullptr;
             }
         }
     }
@@ -939,30 +939,30 @@ DbServerCache::~DbServerCache()
 
     for(int cl_loop = 0; cl_loop < class_nb; cl_loop++)
     {
-        if(classes_idx[cl_loop].class_prop.props_idx != NULL)
+        if(classes_idx[cl_loop].class_prop.props_idx != nullptr)
         {
             delete[] classes_idx[cl_loop].class_prop.props_idx;
         }
-        if(classes_idx[cl_loop].class_att_prop.atts_idx != NULL)
+        if(classes_idx[cl_loop].class_att_prop.atts_idx != nullptr)
         {
             delete[] classes_idx[cl_loop].class_att_prop.atts_idx;
         }
-        if(classes_idx[cl_loop].class_pipe_prop.atts_idx != NULL)
+        if(classes_idx[cl_loop].class_pipe_prop.atts_idx != nullptr)
         {
             delete[] classes_idx[cl_loop].class_pipe_prop.atts_idx;
         }
 
         for(int dev_loop = 0; dev_loop < classes_idx[cl_loop].dev_nb; dev_loop++)
         {
-            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx != NULL)
+            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx != nullptr)
             {
                 delete[] classes_idx[cl_loop].devs_idx[dev_loop].dev_prop.props_idx;
             }
-            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx != NULL)
+            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx != nullptr)
             {
                 delete[] classes_idx[cl_loop].devs_idx[dev_loop].dev_att_prop.atts_idx;
             }
-            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx != NULL)
+            if(classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx != nullptr)
             {
                 delete[] classes_idx[cl_loop].devs_idx[dev_loop].dev_pipe_prop.atts_idx;
             }
@@ -998,7 +998,7 @@ void DbServerCache::prop_indexes(int &start, int &stop, PropEltIdx &obj, const D
         obj.last_idx = stop;
         obj.first_idx = start;
         obj.prop_nb = 0;
-        obj.props_idx = NULL;
+        obj.props_idx = nullptr;
         return;
     }
     stop = stop + 2;
@@ -1048,7 +1048,7 @@ void DbServerCache::prop_att_indexes(int &start, int &stop, AttPropEltIdx &obj, 
         obj.last_idx = stop;
         obj.first_idx = start;
         obj.att_nb = 0;
-        obj.atts_idx = NULL;
+        obj.atts_idx = nullptr;
         return;
     }
 
@@ -1107,7 +1107,7 @@ void DbServerCache::prop_pipe_indexes(int &start, int &stop, AttPropEltIdx &obj,
         obj.last_idx = stop;
         obj.first_idx = start;
         obj.att_nb = 0;
-        obj.atts_idx = NULL;
+        obj.atts_idx = nullptr;
         return;
     }
 

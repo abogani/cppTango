@@ -43,7 +43,7 @@ LayoutAppender::~LayoutAppender()
     if(_layout)
     {
         delete _layout;
-        _layout = 0;
+        _layout = nullptr;
     }
 }
 
@@ -59,9 +59,9 @@ void LayoutAppender::set_layout(Layout *layout)
         if(_layout)
         {
             delete _layout;
-            _layout = 0;
+            _layout = nullptr;
         }
-        _layout = (layout == 0) ? new DefaultLayoutType() : layout;
+        _layout = (layout == nullptr) ? new DefaultLayoutType() : layout;
     }
 }
 

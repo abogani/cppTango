@@ -49,7 +49,7 @@ using namespace CORBA;
 namespace Tango
 {
 
-NotifdEventConsumer *NotifdEventConsumer::_instance = NULL;
+NotifdEventConsumer *NotifdEventConsumer::_instance = nullptr;
 omni_mutex EventConsumer::ev_consumer_inst_mutex;
 
 void NotifdEventConsumer::disconnect_structured_push_consumer()
@@ -90,7 +90,7 @@ NotifdEventConsumer *NotifdEventConsumer::create()
     // check if the NotifdEventConsumer singleton exists, if so return it
     //
 
-    if(_instance != NULL)
+    if(_instance != nullptr)
     {
         return _instance;
     }
@@ -133,7 +133,7 @@ void *NotifdEventConsumer::run_undetached(void *arg)
         orb_->destroy();
     }
 
-    return (void *) NULL;
+    return (void *) nullptr;
 }
 
 //+----------------------------------------------------------------------------
@@ -174,7 +174,7 @@ void NotifdEventConsumer::cleanup_EventChannel_map()
     for(evt_it = channel_map.begin(); evt_it != channel_map.end(); ++evt_it)
     {
         EventChannelStruct &evt_ch = evt_it->second;
-        if(evt_ch.adm_device_proxy != NULL)
+        if(evt_ch.adm_device_proxy != nullptr)
         {
             AutoTangoMonitor _mon(evt_ch.channel_monitor);
 
@@ -205,7 +205,7 @@ void NotifdEventConsumer::cleanup_EventChannel_map()
                 // Release the connection to the device server administration device
 
                 delete evt_ch.adm_device_proxy;
-                evt_ch.adm_device_proxy = NULL;
+                evt_ch.adm_device_proxy = nullptr;
             }
         }
     }
@@ -398,7 +398,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     std::string channel_ior;
     std::string hostname;
 
-    if(db != NULL)
+    if(db != nullptr)
     {
         //
         // Remove extra info from channel name (protocol,  dbase=xxx)
@@ -602,7 +602,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         EventChannelStruct &evt_ch = evt_it->second;
         evt_ch.eventChannel = eventChannel;
         evt_ch.structuredProxyPushSupplier = structuredProxyPushSupplier;
-        evt_ch.last_heartbeat = time(NULL);
+        evt_ch.last_heartbeat = time(nullptr);
         evt_ch.heartbeat_skipped = false;
         evt_ch.notifyd_host = hostname;
         evt_ch.event_system_failed = false;
@@ -613,9 +613,9 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         EventChannelStruct new_event_channel_struct;
         new_event_channel_struct.eventChannel = eventChannel;
         new_event_channel_struct.structuredProxyPushSupplier = structuredProxyPushSupplier;
-        new_event_channel_struct.last_heartbeat = time(NULL);
+        new_event_channel_struct.last_heartbeat = time(nullptr);
         new_event_channel_struct.heartbeat_skipped = false;
-        new_event_channel_struct.adm_device_proxy = NULL;
+        new_event_channel_struct.adm_device_proxy = nullptr;
         // create a channel monitor
         new_event_channel_struct.channel_monitor = new TangoMonitor(channel_name.c_str());
         // set the timeout for the channel monitor to 1000ms not to block the event consumer for to long.
@@ -805,7 +805,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
             try
             {
                 AutoTangoMonitor _mon(evt_ch.channel_monitor);
-                evt_ch.last_heartbeat = time(NULL);
+                evt_ch.last_heartbeat = time(nullptr);
             }
             catch(...)
             {
@@ -893,23 +893,23 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
             {
                 AutoTangoMonitor _mon(evt_cb.callback_monitor);
 
-                AttributeValue *attr_value = NULL;
-                AttributeValue_3 *attr_value_3 = NULL;
-                AttributeValue_4 *attr_value_4 = NULL;
-                AttributeConfig_2 *attr_conf_2 = NULL;
-                AttributeConfig_3 *attr_conf_3 = NULL;
-                AttributeInfoEx *attr_info_ex = NULL;
-                AttDataReady *att_ready = NULL;
+                AttributeValue *attr_value = nullptr;
+                AttributeValue_3 *attr_value_3 = nullptr;
+                AttributeValue_4 *attr_value_4 = nullptr;
+                AttributeConfig_2 *attr_conf_2 = nullptr;
+                AttributeConfig_3 *attr_conf_3 = nullptr;
+                AttributeInfoEx *attr_info_ex = nullptr;
+                AttDataReady *att_ready = nullptr;
                 DevErrorList errors;
                 bool ev_attr_conf = false;
                 bool ev_attr_ready = false;
-                const DevErrorList *err_ptr = NULL;
+                const DevErrorList *err_ptr = nullptr;
 
                 //
                 // Check if the event transmit error
                 //
 
-                DeviceAttribute *dev_attr = NULL;
+                DeviceAttribute *dev_attr = nullptr;
                 CORBA::TypeCode_var ty = event.remainder_of_body.type();
                 if(ty->kind() == tk_struct)
                 {
@@ -969,7 +969,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                         errors[0].reason = Tango::string_dup(API_IncompatibleAttrDataType);
                         errors[0].desc =
                             Tango::string_dup("Unknown structure used to pass attribute value (Need compilation ?)");
-                        dev_attr = NULL;
+                        dev_attr = nullptr;
                     }
                 }
                 else
@@ -1023,8 +1023,8 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                             EventData *event_data;
                             if(cb_ctr != cb_nb)
                             {
-                                DeviceAttribute *dev_attr_copy = NULL;
-                                if(dev_attr != NULL)
+                                DeviceAttribute *dev_attr_copy = nullptr;
+                                if(dev_attr != nullptr)
                                 {
                                     dev_attr_copy = new DeviceAttribute();
                                     dev_attr_copy->deep_copy(*dev_attr);
@@ -1039,7 +1039,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                             }
 
                             // if a callback method was specified, call it!
-                            if(callback != NULL)
+                            if(callback != nullptr)
                             {
                                 try
                                 {
@@ -1080,7 +1080,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                             }
 
                             // if callback methods were specified, call them!
-                            if(callback != NULL)
+                            if(callback != nullptr)
                             {
                                 try
                                 {
@@ -1108,7 +1108,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                             DataReadyEventData *event_data =
                                 new DataReadyEventData(esspos->device, att_ready, event_name, errors);
                             // if a callback method was specified, call it!
-                            if(callback != NULL)
+                            if(callback != nullptr)
                             {
                                 try
                                 {

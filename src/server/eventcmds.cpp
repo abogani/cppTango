@@ -75,7 +75,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     // If we receive this command while the DS is in its shuting down sequence, do nothing
     //
 
-    if(tg->get_heartbeat_thread_object() == NULL)
+    if(tg->get_heartbeat_thread_object() == nullptr)
     {
         TangoSys_OMemStream o;
         o << "The device server is shutting down! You can no longer subscribe for events" << std::ends;
@@ -88,7 +88,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     //
 
     NotifdEventSupplier *ev;
-    if((ev = tg->get_notifd_event_supplier()) == NULL)
+    if((ev = tg->get_notifd_event_supplier()) == nullptr)
     {
         tg->create_notifd_event_supplier();
         ev = tg->get_notifd_event_supplier();
@@ -98,7 +98,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     // If we are using a file as database, gives port number to event supplier
     //
 
-    if(Util::instance()->use_file_db() && ev != NULL)
+    if(Util::instance()->use_file_db() && ev != nullptr)
     {
         ev->file_db_svr();
     }
@@ -113,7 +113,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     int client_release = 0;
     client_addr *cl = get_client_ident();
 
-    if(cl == NULL)
+    if(cl == nullptr)
     {
         client_release = 4;
     }
@@ -151,7 +151,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     // Init one subscription command flag in Eventsupplier
     //
 
-    if(ev != NULL && ev->get_one_subscription_cmd() == false)
+    if(ev != nullptr && ev->get_one_subscription_cmd() == false)
     {
         ev->set_one_subscription_cmd(true);
     }
@@ -491,13 +491,13 @@ void DServer::store_subscribed_client_info(DeviceImpl &device,
 
         TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update pipe subscription\n";
         omni_mutex_lock oml(EventSupplier::get_event_mutex());
-        pipe.set_event_subscription(time(NULL));
+        pipe.set_event_subscription(time(nullptr));
     }
     else if(event_name == EventName[INTERFACE_CHANGE_EVENT])
     {
         TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update device interface_change subscription\n";
         omni_mutex_lock oml(EventSupplier::get_event_mutex());
-        device.set_event_intr_change_subscription(time(NULL));
+        device.set_event_intr_change_subscription(time(nullptr));
 
         if(client_lib_version != 0)
         {
@@ -641,7 +641,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         ret_data->lvalue[0] = (Tango::DevLong) tg->get_tango_lib_release();
 
         ZmqEventSupplier *ev;
-        if((ev = tg->get_zmq_event_supplier()) != NULL)
+        if((ev = tg->get_zmq_event_supplier()) != nullptr)
         {
             std::string tmp_str("Heartbeat: ");
             tmp_str = tmp_str + ev->get_heartbeat_endpoint();
@@ -789,7 +789,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 
                         client_addr *cl = get_client_ident();
 
-                        if(cl == NULL)
+                        if(cl == nullptr)
                         {
                             client_release = 4;
                         }
@@ -817,7 +817,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // If we receive this command while the DS is in its shuting down sequence, do nothing
         //
 
-        if(tg->get_heartbeat_thread_object() == NULL)
+        if(tg->get_heartbeat_thread_object() == nullptr)
         {
             TangoSys_OMemStream o;
             o << "The device server is shutting down! You can no longer subscribe for events" << std::ends;
@@ -830,7 +830,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         //
 
         ZmqEventSupplier *ev;
-        if((ev = tg->get_zmq_event_supplier()) == NULL)
+        if((ev = tg->get_zmq_event_supplier()) == nullptr)
         {
             tg->create_zmq_event_supplier();
             ev = tg->get_zmq_event_supplier();
@@ -842,7 +842,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // device and client supports IDL5 and lib 9 (For attribute conf. change event)
         //
 
-        DeviceImpl *dev = NULL;
+        DeviceImpl *dev = nullptr;
 
         try
         {
@@ -913,7 +913,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         {
             ev_name = ev_name + '/' + obj_name_lower;
         }
-        if(Util::instance()->use_file_db() && ev != NULL)
+        if(Util::instance()->use_file_db() && ev != nullptr)
         {
             ev_name = ev_name + MODIFIER_DBASE_NO;
         }
@@ -1115,7 +1115,7 @@ void DServer::event_confirm_subscription(const Tango::DevVarStringArray *argin)
     unsigned int nb_event = argin->length() / 3;
 
     std::string old_dev;
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
 
     for(unsigned int loop = 0; loop < nb_event; loop++)
     {

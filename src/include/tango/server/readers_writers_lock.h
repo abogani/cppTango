@@ -43,7 +43,7 @@ class ReadersWritersLock
         cond(&mut),
         n(0),
         writerId(0),
-        auto_self(NULL)
+        auto_self(nullptr)
     {
     }
 
@@ -55,7 +55,7 @@ class ReadersWritersLock
         // return a NULL pointer!
         int threadId = 0;
         omni_thread *th = omni_thread::self();
-        if(th != NULL)
+        if(th != nullptr)
         {
             threadId = th->id();
         }
@@ -101,7 +101,7 @@ class ReadersWritersLock
         // return a NULL pointer!
         int threadId = 0;
         omni_thread *th = omni_thread::self();
-        if(th != NULL)
+        if(th != nullptr)
         {
             threadId = th->id();
         }
@@ -124,7 +124,7 @@ class ReadersWritersLock
         // Make sure we get a correct thread ID
         // With the class ensure_self it should return always a thread ID.
         // Create the ensure_self object only for the thread which takes the writer lock!
-        if(th == NULL)
+        if(th == nullptr)
         {
             auto_self = new omni_thread::ensure_self();
         }
@@ -140,10 +140,10 @@ class ReadersWritersLock
         if(n == 0)
         {
             // delete the dummy thread when it was created.
-            if(auto_self != NULL)
+            if(auto_self != nullptr)
             {
                 delete auto_self;
-                auto_self = NULL;
+                auto_self = nullptr;
             }
 
             cond.broadcast(); // might as well wake up all readers

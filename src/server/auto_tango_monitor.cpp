@@ -58,7 +58,7 @@ AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceImpl *dev, bool force)
         }
         else
         {
-            mon = NULL;
+            mon = nullptr;
         }
         break;
 
@@ -88,7 +88,7 @@ AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceClass *dev_cl)
     {
     case NO_SYNC:
     case BY_DEVICE:
-        mon = NULL;
+        mon = nullptr;
         break;
 
     case BY_CLASS:
@@ -140,7 +140,7 @@ NoSyncModelTangoMonitor::NoSyncModelTangoMonitor(Tango::DeviceImpl *dev)
     }
     else
     {
-        mon = NULL;
+        mon = nullptr;
     }
 }
 

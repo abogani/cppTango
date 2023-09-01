@@ -74,7 +74,7 @@ Appender *AppenderAttachable::get_appender(const std::string &name)
     {
         return it->second;
     }
-    return 0;
+    return nullptr;
 }
 
 bool AppenderAttachable::is_attached(Appender *appender)

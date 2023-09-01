@@ -929,12 +929,12 @@ class Util
 
     void clr_poll_th_ptr()
     {
-        heartbeat_th = NULL;
+        heartbeat_th = nullptr;
     }
 
     void clr_heartbeat_th_ptr()
     {
-        heartbeat_th = NULL;
+        heartbeat_th = nullptr;
     }
 
     int get_polling_thread_id()
@@ -964,10 +964,10 @@ class Util
 
     void unvalidate_db_cache()
     {
-        if(db_cache != NULL)
+        if(db_cache != nullptr)
         {
             delete db_cache;
-            db_cache = NULL;
+            db_cache = nullptr;
         }
     }
 
@@ -1050,7 +1050,7 @@ class Util
 
     bool is_server_event_loop_set()
     {
-        if(ev_loop_func != NULL)
+        if(ev_loop_func != nullptr)
         {
             return true;
         }
@@ -1481,7 +1481,7 @@ inline void Util::event_name_2_event_type(const std::string &event_name, EventTy
  */
 inline CORBA::Any *return_empty_any(const char *cmd)
 {
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -1534,7 +1534,7 @@ struct PollingThreadInfo
 
     PollingThreadInfo() :
         thread_id(0),
-        poll_th(NULL),
+        poll_th(nullptr),
         poll_mon("Polling_thread_mon"),
         nb_polled_objects(0),
         smallest_upd(0)

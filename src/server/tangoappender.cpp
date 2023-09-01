@@ -51,7 +51,7 @@ TangoAppender::TangoAppender(const std::string &src_name,
     log4tango::Appender(name),
     _dev_name(dev_name),
     _src_name(src_name),
-    _dev_proxy(0)
+    _dev_proxy(nullptr)
 {
     _req_ctr = 0;
     if(open_connection == true)
@@ -203,7 +203,7 @@ void TangoAppender::close(void)
             // Ignore error: some old logviewer may not support UnRegister
         }
         delete _dev_proxy;
-        _dev_proxy = 0;
+        _dev_proxy = nullptr;
     }
 }
 

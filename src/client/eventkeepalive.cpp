@@ -90,7 +90,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos, E
             std::vector<EventSubscribeStruct>::iterator esspos;
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
-                if(esspos->callback != NULL || esspos->ev_queue != NULL)
+                if(esspos->callback != nullptr || esspos->ev_queue != nullptr)
                 {
                     need_reconnect = true;
                     break;
@@ -106,7 +106,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos, E
                     event_consumer->connect_event_channel(
                         adm_name, epos->second.get_device_proxy().get_device_db(), true, dummy);
 
-                    if(ipos->second.adm_device_proxy != NULL)
+                    if(ipos->second.adm_device_proxy != nullptr)
                     {
                         delete ipos->second.adm_device_proxy;
                     }
@@ -160,7 +160,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
             std::vector<EventSubscribeStruct>::iterator esspos;
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
-                if(esspos->callback != NULL || esspos->ev_queue != NULL)
+                if(esspos->callback != nullptr || esspos->ev_queue != nullptr)
                 {
                     need_reconnect = true;
                     break;
@@ -285,7 +285,7 @@ void EventConsumerKeepAliveThread::reconnect_to_event(const EvChanIte &ipos, Eve
             std::vector<EventSubscribeStruct>::iterator esspos;
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
-                if(esspos->callback != NULL || esspos->ev_queue != NULL)
+                if(esspos->callback != nullptr || esspos->ev_queue != nullptr)
                 {
                     need_reconnect = true;
                     break;
@@ -462,7 +462,7 @@ void EventConsumerKeepAliveThread::reconnect_to_zmq_event(const EvChanIte &ipos,
             std::vector<EventSubscribeStruct>::iterator esspos;
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
-                if(esspos->callback != NULL || esspos->ev_queue != NULL)
+                if(esspos->callback != nullptr || esspos->ev_queue != nullptr)
                 {
                     need_reconnect = true;
                     break;
@@ -586,7 +586,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
             if(shared_cmd.cmd_pending == true)
             {
                 exit_th = true;
-                return (void *) NULL;
+                return (void *) nullptr;
             }
         }
 
@@ -605,12 +605,12 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
         {
             event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
         }
-        if(notifd_event_consumer == NULL)
+        if(notifd_event_consumer == nullptr)
         {
             notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
         }
 
-        now = time(NULL);
+        now = time(nullptr);
         if(event_consumer->event_not_connected.empty() == false)
         {
             DelayEvent de(event_consumer);
@@ -730,7 +730,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
     // If we arrive here, this means that we have received the exit thread command.
     //
 
-    return (void *) NULL;
+    return (void *) nullptr;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -795,7 +795,7 @@ void EventConsumerKeepAliveThread::not_conected_event(ZmqEventConsumer *event_co
                     {
                         try
                         {
-                            if(notifd_event_consumer == NULL)
+                            if(notifd_event_consumer == nullptr)
                             {
                                 ApiUtil::instance()->create_notifd_event_consumer();
                                 notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
@@ -872,7 +872,7 @@ void EventConsumerKeepAliveThread::fwd_not_conected_event(ZmqEventConsumer *even
 
     if(!event_consumer->event_not_connected.empty())
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_consumer->event_not_connected.begin(); vpos != event_consumer->event_not_connected.end();
             /*vpos++*/)
@@ -984,7 +984,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
 
                     ipos->second.adm_device_proxy->command_inout("EventSubscriptionChange", subscriber_in);
 
-                    time_t ti = time(NULL);
+                    time_t ti = time(nullptr);
                     ipos->second.last_subscribed = ti;
                     epos->second.last_subscribed = ti;
                 }
@@ -1006,7 +1006,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
 
             ipos->second.adm_device_proxy->command_inout("EventConfirmSubscription", sub_cmd_in);
 
-            time_t ti = time(NULL);
+            time_t ti = time(nullptr);
             ipos->second.last_subscribed = ti;
             for(unsigned int loop = 0; loop < vd.size(); ++loop)
             {
@@ -1028,7 +1028,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
                 // Send confirmation the old way
                 //
 
-                time_t ti = time(NULL);
+                time_t ti = time(nullptr);
                 ipos->second.last_subscribed = ti;
 
                 for(unsigned int loop = 0; loop < vd.size(); ++loop)
@@ -1196,9 +1196,9 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
     errors[0].reason = Tango::string_dup(API_EventTimeout);
     errors[0].desc =
         Tango::string_dup("Event channel is not responding anymore, maybe the server or event system is down");
-    DeviceAttribute *dev_attr = NULL;
-    AttributeInfoEx *dev_attr_conf = NULL;
-    DevicePipe *dev_pipe = NULL;
+    DeviceAttribute *dev_attr = nullptr;
+    AttributeInfoEx *dev_attr_conf = nullptr;
+    DevicePipe *dev_pipe = nullptr;
 
     for(epos = event_consumer->event_callback_map.begin(); epos != event_consumer->event_callback_map.end(); ++epos)
     {
@@ -1211,7 +1211,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
             std::vector<EventSubscribeStruct>::iterator esspos;
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
-                if(esspos->callback != NULL || esspos->ev_queue != NULL)
+                if(esspos->callback != nullptr || esspos->ev_queue != nullptr)
                 {
                     need_reconnect = true;
                     break;
@@ -1272,7 +1272,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                         FwdAttrConfEventData *event_data =
                             new FwdAttrConfEventData(esspos->device, domain_name, event_name, dev_attr_conf, errors);
                         // if a callback method was specified, call it!
-                        if(callback != NULL)
+                        if(callback != nullptr)
                         {
                             try
                             {
@@ -1301,9 +1301,9 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                     else if(event_name == DATA_READY_TYPE_EVENT)
                     {
                         DataReadyEventData *event_data =
-                            new DataReadyEventData(esspos->device, NULL, event_name, errors);
+                            new DataReadyEventData(esspos->device, nullptr, event_name, errors);
                         // if a callback method was specified, call it!
-                        if(callback != NULL)
+                        if(callback != nullptr)
                         {
                             try
                             {
@@ -1334,12 +1334,12 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                         DevIntrChangeEventData *event_data = new DevIntrChangeEventData(esspos->device,
                                                                                         event_name,
                                                                                         domain_name,
-                                                                                        (CommandInfoList *) NULL,
-                                                                                        (AttributeInfoListEx *) NULL,
+                                                                                        (CommandInfoList *) nullptr,
+                                                                                        (AttributeInfoListEx *) nullptr,
                                                                                         false,
                                                                                         errors);
                         // if a callback method was specified, call it!
-                        if(callback != NULL)
+                        if(callback != nullptr)
                         {
                             try
                             {
@@ -1371,7 +1371,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                             new PipeEventData(esspos->device, domain_name, event_name, dev_pipe, errors);
 
                         // if a callback method was specified, call it!
-                        if(callback != NULL)
+                        if(callback != nullptr)
                         {
                             try
                             {
@@ -1403,7 +1403,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                             new FwdEventData(esspos->device, domain_name, event_name, dev_attr, errors);
 
                         // if a callback method was specified, call it!
-                        if(callback != NULL)
+                        if(callback != nullptr)
                         {
                             try
                             {
@@ -1502,7 +1502,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
         }
 
         ipos->second.heartbeat_skipped = false;
-        ipos->second.last_subscribed = time(NULL);
+        ipos->second.last_subscribed = time(nullptr);
     }
     catch(...)
     {
@@ -1531,7 +1531,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             // For attribute data event
             //
 
-            DeviceAttribute *da = NULL;
+            DeviceAttribute *da = nullptr;
             DevErrorList err;
             err.length(0);
 
@@ -1566,7 +1566,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             // if callback methods were specified, call them!
             unsigned int cb_nb = epos->second.callback_list.size();
             unsigned int cb_ctr = 0;
-            DeviceAttribute *da_copy = NULL;
+            DeviceAttribute *da_copy = nullptr;
 
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
@@ -1588,7 +1588,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 CallBack *callback = esspos->callback;
                 EventQueue *ev_queue = esspos->ev_queue;
 
-                if(callback != NULL)
+                if(callback != nullptr)
                 {
                     try
                     {
@@ -1623,7 +1623,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             // For attribute configuration event
             //
 
-            AttributeInfoEx *aie = NULL;
+            AttributeInfoEx *aie = nullptr;
             DevErrorList err;
             err.length(0);
             std::string prefix;
@@ -1684,7 +1684,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
 
             unsigned int cb_nb = epos->second.callback_list.size();
             unsigned int cb_ctr = 0;
-            AttributeInfoEx *aie_copy = NULL;
+            AttributeInfoEx *aie_copy = nullptr;
 
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
@@ -1712,7 +1712,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 EventQueue *ev_queue = esspos->ev_queue;
 
                 // if a callback method was specified, call it!
-                if(callback != NULL)
+                if(callback != nullptr)
                 {
                     try
                     {
@@ -1800,7 +1800,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 EventQueue *ev_queue = esspos->ev_queue;
 
                 // if a callback method was specified, call it!
-                if(callback != NULL)
+                if(callback != nullptr)
                 {
                     try
                     {
@@ -1864,7 +1864,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             unsigned int cb_nb = epos->second.callback_list.size();
             unsigned int cb_ctr = 0;
 
-            DevicePipe *dp_copy = NULL;
+            DevicePipe *dp_copy = nullptr;
 
             for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
             {
@@ -1886,7 +1886,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 CallBack *callback = esspos->callback;
                 EventQueue *ev_queue = esspos->ev_queue;
 
-                if(callback != NULL)
+                if(callback != nullptr)
                 {
                     try
                     {
@@ -1962,12 +1962,12 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     if((vpos->event_name == "change") || (vpos->event_name == "quality") || (vpos->event_name == "archive") ||
        (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
     {
-        DeviceAttribute *da = NULL;
+        DeviceAttribute *da = nullptr;
         FwdEventData *event_data = new FwdEventData(vpos->device, domain_name, vpos->event_name, da, err);
 
         // if a callback method was specified, call it!
 
-        if(vpos->callback != NULL)
+        if(vpos->callback != nullptr)
         {
             try
             {
@@ -2001,14 +2001,14 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
 
     else if(vpos->event_name == CONF_TYPE_EVENT)
     {
-        AttributeInfoEx *aie = NULL;
+        AttributeInfoEx *aie = nullptr;
         AttrConfEventData *event_data = new AttrConfEventData(vpos->device, domain_name, vpos->event_name, aie, err);
 
         //
         // If a callback method was specified, call it!
         //
 
-        if(vpos->callback != NULL)
+        if(vpos->callback != nullptr)
         {
             try
             {
@@ -2039,13 +2039,13 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     }
     else if(vpos->event_name == DATA_READY_TYPE_EVENT)
     {
-        DataReadyEventData *event_data = new DataReadyEventData(vpos->device, NULL, vpos->event_name, err);
+        DataReadyEventData *event_data = new DataReadyEventData(vpos->device, nullptr, vpos->event_name, err);
 
         //
         // If a callback method was specified, call it!
         //
 
-        if(vpos->callback != NULL)
+        if(vpos->callback != nullptr)
         {
             try
             {
@@ -2076,8 +2076,8 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
         DevIntrChangeEventData *event_data = new DevIntrChangeEventData(vpos->device,
                                                                         vpos->event_name,
                                                                         domain_name,
-                                                                        (CommandInfoList *) NULL,
-                                                                        (AttributeInfoListEx *) NULL,
+                                                                        (CommandInfoList *) nullptr,
+                                                                        (AttributeInfoListEx *) nullptr,
                                                                         false,
                                                                         err);
 
@@ -2085,7 +2085,7 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
         // If a callback method was specified, call it!
         //
 
-        if(vpos->callback != NULL)
+        if(vpos->callback != nullptr)
         {
             try
             {
@@ -2114,13 +2114,13 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     else if(vpos->event_name == EventName[PIPE_EVENT])
     {
         PipeEventData *event_data =
-            new PipeEventData(vpos->device, domain_name, vpos->event_name, (DevicePipe *) NULL, err);
+            new PipeEventData(vpos->device, domain_name, vpos->event_name, (DevicePipe *) nullptr, err);
 
         //
         // If a callback method was specified, call it!
         //
 
-        if(vpos->callback != NULL)
+        if(vpos->callback != nullptr)
         {
             try
             {

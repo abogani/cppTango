@@ -1035,13 +1035,13 @@ void BlackBox::inc_indexes()
 void BlackBox::get_client_host()
 {
     omni_thread *th_id = omni_thread::self();
-    if(th_id == NULL)
+    if(th_id == nullptr)
     {
         th_id = omni_thread::create_dummy();
     }
 
     omni_thread::value_t *ip = th_id->get_value(Util::get_tssk_client_info());
-    if(ip == NULL)
+    if(ip == nullptr)
     {
         Tango::Util *tg = Tango::Util::instance();
         std::vector<PollingThreadInfo *> &poll_ths = tg->get_polling_threads_info();
@@ -1574,7 +1574,7 @@ void BlackBox::build_info_as_str(long index)
 
         char host[512];
 
-        int res = getnameinfo((const sockaddr *) &si, sizeof(si), host, 512, 0, 0, 0);
+        int res = getnameinfo((const sockaddr *) &si, sizeof(si), host, 512, nullptr, 0, 0);
 #ifdef _TG_WINDOWS_
         for(int i = 0; i < ::strlen(host); i++)
         {
@@ -1751,7 +1751,7 @@ Tango::DevVarStringArray *BlackBox::read(long wanted_elt)
     // Read black box elements
     //
 
-    Tango::DevVarStringArray *ret = NULL;
+    Tango::DevVarStringArray *ret = nullptr;
     try
     {
         ret = new Tango::DevVarStringArray(wanted_elt);
@@ -2074,7 +2074,7 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
 
                             char host[512];
 
-                            int res = getnameinfo((const sockaddr *) &si, sizeof(si), host, 512, 0, 0, 0);
+                            int res = getnameinfo((const sockaddr *) &si, sizeof(si), host, 512, nullptr, 0, 0);
 
                             if(res == 0)
                             {

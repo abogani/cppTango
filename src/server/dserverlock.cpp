@@ -67,7 +67,7 @@ void DServer::lock_device(const Tango::DevVarLongStringArray *in_data)
     //
 
     Tango::client_addr *cl = get_client_ident();
-    if(cl == NULL)
+    if(cl == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_CantGetClientIdent, "Cannot retrieve client identification");
     }
@@ -147,7 +147,7 @@ Tango::DevLong DServer::un_lock_device(const Tango::DevVarLongStringArray *in_da
     //
 
     Tango::client_addr *cl = get_client_ident();
-    if(cl == NULL)
+    if(cl == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_CantGetClientIdent, "Cannot retrieve client identification");
     }
@@ -219,7 +219,7 @@ void DServer::re_lock_devices(const Tango::DevVarStringArray *dev_name_list)
     //
 
     Tango::client_addr *cl = get_client_ident();
-    if(cl == NULL)
+    if(cl == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_CantGetClientIdent, "Cannot retrieve client identification");
     }
@@ -252,7 +252,7 @@ void DServer::re_lock_devices(const Tango::DevVarStringArray *dev_name_list)
         // Get device ptr
         //
 
-        DeviceImpl *the_dev = NULL;
+        DeviceImpl *the_dev = nullptr;
         try
         {
             the_dev = tg->get_device_by_name(d_name);

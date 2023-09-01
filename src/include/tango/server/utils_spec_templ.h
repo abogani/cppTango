@@ -118,7 +118,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
 
     for(i = 0; i < nb_elt; i++)
     {
-        save_except = NULL;
+        save_except = nullptr;
         cmd_failed = false;
 
         if((data.get_data())[i].err.length() != 0)
@@ -259,7 +259,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
 
     for(i = 0; i < nb_elt; i++)
     {
-        save_except = NULL;
+        save_except = nullptr;
         cmd_failed = false;
 
         if((data.get_data())[i].err.length() != 0)

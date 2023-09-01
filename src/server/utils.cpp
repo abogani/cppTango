@@ -212,7 +212,7 @@ Tango::tango_optional<std::string> get_omniorb_variable(int argc, char *argv[], 
 namespace Tango
 {
 
-Util *Util::_instance = NULL;
+Util *Util::_instance = nullptr;
 int Util::_tracelevel = 0;
 bool Util::_UseDb = true;
 bool Util::_FileDb = false;
@@ -265,7 +265,7 @@ omni_thread::key_t Util::tssk_client_info = omni_thread::allocate_key();
 
 Util *Util::init(int argc, char *argv[])
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         _instance = new Util(argc, argv);
     }
@@ -295,7 +295,7 @@ Util *Util::init(HINSTANCE hi, int nCmd)
 
 Util *Util::instance(bool exit)
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         if(exit == true)
         {
@@ -347,25 +347,25 @@ Util::Util(int argc, char *argv[]) :
     polling_bef_9_def(false)
 #else
 Util::Util(int argc, char *argv[]) :
-    cl_list_ptr(NULL),
+    cl_list_ptr(nullptr),
     ext(new UtilExt),
-    heartbeat_th(NULL),
+    heartbeat_th(nullptr),
     heartbeat_th_id(0),
     poll_mon("utils_poll"),
     poll_on(false),
     ser_model(BY_DEVICE),
     only_one("process"),
-    nd_event_supplier(NULL),
-    db_cache(NULL),
-    inter(NULL),
+    nd_event_supplier(nullptr),
+    db_cache(nullptr),
+    inter(nullptr),
     svr_starting(true),
     svr_stopping(false),
     poll_pool_size(ULONG_MAX),
     conf_needs_db_upd(false),
-    ev_loop_func(NULL),
+    ev_loop_func(nullptr),
     shutdown_server(false),
     _dummy_thread(false),
-    zmq_event_supplier(NULL),
+    zmq_event_supplier(nullptr),
     endpoint_specified(false),
     user_pub_hwm(-1),
     wattr_nan_allowed(false),
@@ -490,7 +490,7 @@ void Util::effective_job(int argc, char *argv[])
 #endif
                                         {"throwTransientOnTimeOut", "1"},
                                         {"exceptionIdInAny", "0"},
-                                        {0, 0}};
+                                        {nullptr, nullptr}};
 
             orb = CORBA::ORB_init(argc, argv, "omniORB4", options);
         }
@@ -512,7 +512,7 @@ void Util::effective_job(int argc, char *argv[])
 #endif
                                         {"throwTransientOnTimeOut", "1"},
                                         {"exceptionIdInAny", "0"},
-                                        {0, 0}};
+                                        {nullptr, nullptr}};
 
             orb = CORBA::ORB_init(argc, argv, "omniORB4", options);
         }
@@ -544,7 +544,7 @@ void Util::effective_job(int argc, char *argv[])
         }
         else
         {
-            db = NULL;
+            db = nullptr;
             ApiUtil *au = ApiUtil::instance();
             au->in_server(true);
         }
@@ -566,7 +566,7 @@ void Util::effective_job(int argc, char *argv[])
                            << std::endl;
         }
         TANGO_LOG_DEBUG << "Connected to database" << std::endl;
-        if(get_db_cache() == NULL)
+        if(get_db_cache() == nullptr)
         {
             TANGO_LOG_DEBUG << "DbServerCache unavailable, will call db..." << std::endl;
         }
@@ -868,7 +868,7 @@ void Util::check_args(int argc, char *argv[])
     // the full path for a given filename.
     ds_unmodified_exec_name = argv[0];
 
-    if((tmp = strrchr(argv[0], '/')) == 0)
+    if((tmp = strrchr(argv[0], '/')) == nullptr)
     {
         ds_exec_name = argv[0];
     }
@@ -1645,12 +1645,13 @@ void Util::init_host_name()
 
             for(size_t i = 0; i < ip_list.size() && !host_found; i++)
             {
-                if(getaddrinfo(ip_list[i].c_str(), NULL, &hints, &info) == 0)
+                if(getaddrinfo(ip_list[i].c_str(), nullptr, &hints, &info) == 0)
                 {
                     ptr = info;
-                    while(ptr != NULL)
+                    while(ptr != nullptr)
                     {
-                        if(getnameinfo(ptr->ai_addr, ptr->ai_addrlen, tmp_host, NI_MAXHOST, NULL, 0, NI_NAMEREQD) == 0)
+                        if(getnameinfo(ptr->ai_addr, ptr->ai_addrlen, tmp_host, NI_MAXHOST, nullptr, 0, NI_NAMEREQD) ==
+                           0)
                         {
                             std::string myhost(tmp_host);
 #ifdef _TG_WINDOWS_
@@ -1802,7 +1803,7 @@ void Util::create_notifd_event_supplier()
         }
         catch(...)
         {
-            nd_event_supplier = NULL;
+            nd_event_supplier = nullptr;
             if(_FileDb == true)
             {
                 std::cerr << "Can't create notifd event supplier. Notifd event not available" << std::endl;
@@ -1811,7 +1812,7 @@ void Util::create_notifd_event_supplier()
     }
     else
     {
-        nd_event_supplier = NULL;
+        nd_event_supplier = nullptr;
     }
 }
 
@@ -1833,7 +1834,7 @@ void Util::create_zmq_event_supplier()
     }
     catch(...)
     {
-        zmq_event_supplier = NULL;
+        zmq_event_supplier = nullptr;
         if(_FileDb == true)
         {
             std::cerr << "Can't create zmq event supplier. Zmq event not available" << std::endl;
@@ -1909,7 +1910,7 @@ void Util::server_already_running()
     {
         const Tango::DevVarLongStringArray *db_dev;
         CORBA::Any_var received;
-        if(db_cache != NULL)
+        if(db_cache != nullptr)
         {
             db_dev = db_cache->import_adm_dev();
         }
@@ -2059,7 +2060,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
     }
 #else
     omni_thread *th = omni_thread::self();
-    if(th == NULL)
+    if(th == nullptr)
     {
         th = omni_thread::create_dummy();
         _dummy_thread = true;
@@ -2113,13 +2114,13 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
         // Delete the db cache if it has been used
         //
 
-        if(db_cache != NULL)
+        if(db_cache != nullptr)
         {
             // extract sub device information before deleting cache!
             get_sub_dev_diag().get_sub_devices_from_cache();
 
             delete db_cache;
-            db_cache = NULL;
+            db_cache = nullptr;
         }
 
         //
@@ -2129,7 +2130,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
         RootAttRegistry &rar = get_root_att_reg();
         if(rar.empty() == false && rar.is_root_dev_not_started_err() == true)
         {
-            if(EventConsumer::keep_alive_thread != NULL)
+            if(EventConsumer::keep_alive_thread != nullptr)
             {
                 ZmqEventConsumer *event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
                 EventConsumer::keep_alive_thread->fwd_not_conected_event(event_consumer);
@@ -2153,7 +2154,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
 //------------------------------------------------------------------------------------------------------------------
 void Util::server_perform_work()
 {
-    if(ev_loop_func != NULL)
+    if(ev_loop_func != nullptr)
     {
         //
         // If the user has installed its own event management function, call it in a loop
@@ -2350,7 +2351,7 @@ void Util::server_cleanup()
 
 std::vector<DeviceImpl *> &Util::get_device_list_by_class(const std::string &class_name)
 {
-    if(cl_list_ptr == NULL)
+    if(cl_list_ptr == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_DeviceNotFound, "It's too early to call this method. Devices are not created yet!");
     }
@@ -2437,7 +2438,7 @@ DeviceImpl *Util::get_device_by_name(const std::string &dev_name)
     // If the device is not found, may be the name we have received is an alias ?
     //
 
-    if(ret_ptr == NULL)
+    if(ret_ptr == nullptr)
     {
         std::string d_name;
 
@@ -2463,7 +2464,7 @@ DeviceImpl *Util::get_device_by_name(const std::string &dev_name)
             // possible future call to this method (save some db calls)
             //
 
-            if(ret_ptr != NULL)
+            if(ret_ptr != nullptr)
             {
                 ret_ptr->set_alias_name_lower(dev_name_lower);
             }
@@ -2474,7 +2475,7 @@ DeviceImpl *Util::get_device_by_name(const std::string &dev_name)
     // Throw exception if the device is not found
     //
 
-    if(ret_ptr == NULL)
+    if(ret_ptr == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Device " << dev_name << " not found" << std::ends;
@@ -2493,7 +2494,7 @@ DeviceImpl *Util::find_device_name_core(const std::string &dev_name)
     //
 
     const std::vector<DeviceClass *> &tmp_cl_list = *cl_list_ptr;
-    DeviceImpl *ret_ptr = NULL;
+    DeviceImpl *ret_ptr = nullptr;
 
     //
     // Check if the wanted device exists in each class
@@ -2614,7 +2615,7 @@ std::vector<DeviceImpl *> Util::get_device_list(const std::string &pattern)
 
     if(pattern.find('*') == std::string::npos)
     {
-        DeviceImpl *dev = 0;
+        DeviceImpl *dev = nullptr;
         try
         {
             dev = get_device_by_name(pattern);

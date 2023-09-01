@@ -670,7 +670,7 @@ bool RootAttRegistry::RootAttConfCallBack::is_root_dev_not_started_err()
     std::map<std::string, struct NameFwdAttr>::iterator ite;
     for(ite = map_attrdesc.begin(); ite != map_attrdesc.end(); ++ite)
     {
-        if(ite->second.fwd_attr != NULL)
+        if(ite->second.fwd_attr != nullptr)
         {
             if(ite->second.fwd_attr->get_err_kind() == FWD_ROOT_DEV_NOT_STARTED)
             {
@@ -1300,7 +1300,7 @@ void RootAttRegistry::auto_unsub()
     // A loop on each events
     //
 
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
 
     {
         WriterLock wl(id_user_lock);

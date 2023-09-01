@@ -49,8 +49,8 @@ DeviceDataHistory::DeviceDataHistory() :
 {
     fail = false;
     err = new DevErrorList();
-    seq_ptr = NULL;
-    ref_ctr_ptr = NULL;
+    seq_ptr = nullptr;
+    ref_ctr_ptr = nullptr;
 }
 
 DeviceDataHistory::DeviceDataHistory(int n, int *ref, DevCmdHistoryList *ptr) :
@@ -77,12 +77,12 @@ DeviceDataHistory::DeviceDataHistory(const DeviceDataHistory &source) :
 
     seq_ptr = source.seq_ptr;
     ref_ctr_ptr = source.ref_ctr_ptr;
-    if(ref_ctr_ptr != NULL)
+    if(ref_ctr_ptr != nullptr)
     {
         (*ref_ctr_ptr)++;
     }
 
-    if(source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != nullptr)
     {
         ext_hist.reset(new DeviceDataHistoryExt);
         *(ext_hist.get()) = *(source.ext_hist.get());
@@ -100,7 +100,7 @@ DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source) :
     seq_ptr = source.seq_ptr;
     ref_ctr_ptr = source.ref_ctr_ptr;
 
-    if(source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != nullptr)
     {
         ext_hist = std::move(source.ext_hist);
     }
@@ -118,7 +118,7 @@ DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source) :
 
 DeviceDataHistory::~DeviceDataHistory()
 {
-    if(seq_ptr != NULL)
+    if(seq_ptr != nullptr)
     {
         any._retn();
         err._retn();
@@ -156,7 +156,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
         time = rval.time;
         err = rval.err;
 
-        if(ref_ctr_ptr != NULL)
+        if(ref_ctr_ptr != nullptr)
         {
             (*ref_ctr_ptr)--;
             if(*ref_ctr_ptr == 0)
@@ -170,7 +170,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
         ref_ctr_ptr = rval.ref_ctr_ptr;
         (*ref_ctr_ptr)++;
 
-        if(rval.ext_hist.get() != NULL)
+        if(rval.ext_hist.get() != nullptr)
         {
             ext_hist.reset(new DeviceDataHistoryExt);
             *(ext_hist.get()) = *(rval.ext_hist.get());
@@ -209,7 +209,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(DeviceDataHistory &&rval)
     //
     // Decrement old ctr
     //
-    if(ref_ctr_ptr != NULL)
+    if(ref_ctr_ptr != nullptr)
     {
         (*ref_ctr_ptr)--;
         if(*ref_ctr_ptr == 0)
@@ -230,7 +230,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(DeviceDataHistory &&rval)
     // Extension class
     //
 
-    if(rval.ext_hist.get() != NULL)
+    if(rval.ext_hist.get() != nullptr)
     {
         ext_hist = std::move(rval.ext_hist);
     }
@@ -626,7 +626,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(const DeviceAttributeHistory &sou
 {
     fail = source.fail;
 
-    if(source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != nullptr)
     {
         ext_hist.reset(new DeviceAttributeHistoryExt);
         *(ext_hist.get()) = *(source.ext_hist.get());
@@ -639,7 +639,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(DeviceAttributeHistory &&source) 
 {
     fail = source.fail;
 
-    if(source.ext_hist.get() != NULL)
+    if(source.ext_hist.get() != nullptr)
     {
         ext_hist = std::move(source.ext_hist);
     }
@@ -675,7 +675,7 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(const DeviceAttributeH
 
         fail = rval.fail;
 
-        if(rval.ext_hist.get() != NULL)
+        if(rval.ext_hist.get() != nullptr)
         {
             ext_hist.reset(new DeviceAttributeHistoryExt);
             *(ext_hist.get()) = *(rval.ext_hist.get());
@@ -703,7 +703,7 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(DeviceAttributeHistory
 
     fail = rval.fail;
 
-    if(rval.ext_hist.get() != NULL)
+    if(rval.ext_hist.get() != nullptr)
     {
         ext_hist = std::move(rval.ext_hist);
     }
@@ -832,51 +832,51 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
             }
             else
             {
-                if(dah.LongSeq.operator->() != NULL)
+                if(dah.LongSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.LongSeq.operator->());
                 }
-                else if(dah.ShortSeq.operator->() != NULL)
+                else if(dah.ShortSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.ShortSeq.operator->());
                 }
-                else if(dah.DoubleSeq.operator->() != NULL)
+                else if(dah.DoubleSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.DoubleSeq.operator->());
                 }
-                else if(dah.FloatSeq.operator->() != NULL)
+                else if(dah.FloatSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.FloatSeq.operator->());
                 }
-                else if(dah.BooleanSeq.operator->() != NULL)
+                else if(dah.BooleanSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.BooleanSeq.operator->());
                 }
-                else if(dah.UShortSeq.operator->() != NULL)
+                else if(dah.UShortSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.UShortSeq.operator->());
                 }
-                else if(dah.UCharSeq.operator->() != NULL)
+                else if(dah.UCharSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.UCharSeq.operator->());
                 }
-                else if(dah.Long64Seq.operator->() != NULL)
+                else if(dah.Long64Seq.operator->() != nullptr)
                 {
                     o_str << *(dah.Long64Seq.operator->());
                 }
-                else if(dah.ULongSeq.operator->() != NULL)
+                else if(dah.ULongSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.ULongSeq.operator->());
                 }
-                else if(dah.ULong64Seq.operator->() != NULL)
+                else if(dah.ULong64Seq.operator->() != nullptr)
                 {
                     o_str << *(dah.ULong64Seq.operator->());
                 }
-                else if(dah.StateSeq.operator->() != NULL)
+                else if(dah.StateSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.StateSeq.operator->());
                 }
-                else if(dah.EncodedSeq.operator->() != NULL)
+                else if(dah.EncodedSeq.operator->() != nullptr)
                 {
                     o_str << *(dah.EncodedSeq.operator->());
                 }

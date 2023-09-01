@@ -117,7 +117,7 @@ DeviceAttribute::DeviceAttribute(const DeviceAttribute &source) :
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if(source.ext.get() != NULL)
+    if(source.ext.get() != nullptr)
     {
         ext.reset(new DeviceAttributeExt);
         *(ext.get()) = *(source.ext.get());
@@ -145,55 +145,55 @@ DeviceAttribute::DeviceAttribute(DeviceAttribute &&source) :
     time = source.time;
     err_list = source.err_list;
 
-    if(source.LongSeq.operator->() != NULL)
+    if(source.LongSeq.operator->() != nullptr)
     {
         LongSeq = source.LongSeq._retn();
     }
-    if(source.ShortSeq.operator->() != NULL)
+    if(source.ShortSeq.operator->() != nullptr)
     {
         ShortSeq = source.ShortSeq._retn();
     }
-    if(source.DoubleSeq.operator->() != NULL)
+    if(source.DoubleSeq.operator->() != nullptr)
     {
         DoubleSeq = source.DoubleSeq._retn();
     }
-    if(source.StringSeq.operator->() != NULL)
+    if(source.StringSeq.operator->() != nullptr)
     {
         StringSeq = source.StringSeq._retn();
     }
-    if(source.FloatSeq.operator->() != NULL)
+    if(source.FloatSeq.operator->() != nullptr)
     {
         FloatSeq = source.FloatSeq._retn();
     }
-    if(source.BooleanSeq.operator->() != NULL)
+    if(source.BooleanSeq.operator->() != nullptr)
     {
         BooleanSeq = source.BooleanSeq._retn();
     }
-    if(source.UShortSeq.operator->() != NULL)
+    if(source.UShortSeq.operator->() != nullptr)
     {
         UShortSeq = source.UShortSeq._retn();
     }
-    if(source.UCharSeq.operator->() != NULL)
+    if(source.UCharSeq.operator->() != nullptr)
     {
         UCharSeq = source.UCharSeq._retn();
     }
-    if(source.Long64Seq.operator->() != NULL)
+    if(source.Long64Seq.operator->() != nullptr)
     {
         Long64Seq = source.Long64Seq._retn();
     }
-    if(source.ULongSeq.operator->() != NULL)
+    if(source.ULongSeq.operator->() != nullptr)
     {
         ULongSeq = source.ULongSeq._retn();
     }
-    if(source.ULong64Seq.operator->() != NULL)
+    if(source.ULong64Seq.operator->() != nullptr)
     {
         ULong64Seq = source.ULong64Seq._retn();
     }
-    if(source.StateSeq.operator->() != NULL)
+    if(source.StateSeq.operator->() != nullptr)
     {
         StateSeq = source.StateSeq._retn();
     }
-    if(source.EncodedSeq.operator->() != NULL)
+    if(source.EncodedSeq.operator->() != nullptr)
     {
         EncodedSeq = source.EncodedSeq._retn();
     }
@@ -201,7 +201,7 @@ DeviceAttribute::DeviceAttribute(DeviceAttribute &&source) :
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if(source.ext.get() != NULL)
+    if(source.ext.get() != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -238,7 +238,7 @@ void DeviceAttribute::deep_copy(const DeviceAttribute &source)
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if(source.ext.get() != NULL)
+    if(source.ext.get() != nullptr)
     {
         ext.reset(new DeviceAttributeExt);
         ext.get()->deep_copy(*(source.ext.get()));
@@ -336,7 +336,7 @@ DeviceAttribute &DeviceAttribute::operator=(const DeviceAttribute &rval)
         d_state = rval.d_state;
         d_state_filled = rval.d_state_filled;
 
-        if(rval.ext.get() != NULL)
+        if(rval.ext.get() != nullptr)
         {
             ext.reset(new DeviceAttributeExt);
             *(ext.get()) = *(rval.ext.get());
@@ -370,7 +370,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
     time = rval.time;
     err_list = rval.err_list;
 
-    if(rval.LongSeq.operator->() != NULL)
+    if(rval.LongSeq.operator->() != nullptr)
     {
         LongSeq = rval.LongSeq._retn();
     }
@@ -379,7 +379,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         LongSeq = nullptr;
     }
 
-    if(rval.ShortSeq.operator->() != NULL)
+    if(rval.ShortSeq.operator->() != nullptr)
     {
         ShortSeq = rval.ShortSeq._retn();
     }
@@ -388,7 +388,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         ShortSeq = nullptr;
     }
 
-    if(rval.DoubleSeq.operator->() != NULL)
+    if(rval.DoubleSeq.operator->() != nullptr)
     {
         DoubleSeq = rval.DoubleSeq._retn();
     }
@@ -397,7 +397,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         DoubleSeq = nullptr;
     }
 
-    if(rval.StringSeq.operator->() != NULL)
+    if(rval.StringSeq.operator->() != nullptr)
     {
         StringSeq = rval.StringSeq._retn();
     }
@@ -406,7 +406,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         StringSeq = nullptr;
     }
 
-    if(rval.FloatSeq.operator->() != NULL)
+    if(rval.FloatSeq.operator->() != nullptr)
     {
         FloatSeq = rval.FloatSeq._retn();
     }
@@ -415,7 +415,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         FloatSeq = nullptr;
     }
 
-    if(rval.BooleanSeq.operator->() != NULL)
+    if(rval.BooleanSeq.operator->() != nullptr)
     {
         BooleanSeq = rval.BooleanSeq._retn();
     }
@@ -424,7 +424,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         BooleanSeq = nullptr;
     }
 
-    if(rval.UShortSeq.operator->() != NULL)
+    if(rval.UShortSeq.operator->() != nullptr)
     {
         UShortSeq = rval.UShortSeq._retn();
     }
@@ -433,7 +433,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         UShortSeq = nullptr;
     }
 
-    if(rval.UCharSeq.operator->() != NULL)
+    if(rval.UCharSeq.operator->() != nullptr)
     {
         UCharSeq = rval.UCharSeq._retn();
     }
@@ -442,7 +442,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         UCharSeq = nullptr;
     }
 
-    if(rval.Long64Seq.operator->() != NULL)
+    if(rval.Long64Seq.operator->() != nullptr)
     {
         Long64Seq = rval.Long64Seq._retn();
     }
@@ -451,7 +451,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         Long64Seq = nullptr;
     }
 
-    if(rval.ULongSeq.operator->() != NULL)
+    if(rval.ULongSeq.operator->() != nullptr)
     {
         ULongSeq = rval.ULongSeq._retn();
     }
@@ -460,7 +460,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         ULongSeq = nullptr;
     }
 
-    if(rval.ULong64Seq.operator->() != NULL)
+    if(rval.ULong64Seq.operator->() != nullptr)
     {
         ULong64Seq = rval.ULong64Seq._retn();
     }
@@ -469,7 +469,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         ULong64Seq = nullptr;
     }
 
-    if(rval.StateSeq.operator->() != NULL)
+    if(rval.StateSeq.operator->() != nullptr)
     {
         StateSeq = rval.StateSeq._retn();
     }
@@ -478,7 +478,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
         StateSeq = nullptr;
     }
 
-    if(rval.EncodedSeq.operator->() != NULL)
+    if(rval.EncodedSeq.operator->() != nullptr)
     {
         EncodedSeq = rval.EncodedSeq._retn();
     }
@@ -490,7 +490,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
     d_state = rval.d_state;
     d_state_filled = rval.d_state_filled;
 
-    if(rval.ext.get() != NULL)
+    if(rval.ext.get() != nullptr)
     {
         ext = std::move(rval.ext);
     }
@@ -1397,7 +1397,7 @@ bool DeviceAttribute::is_empty() const
 {
     ext->ext_state.reset(isempty_flag);
 
-    if(LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != nullptr)
     {
         if(LongSeq->length() != 0)
         {
@@ -1405,7 +1405,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -1413,7 +1413,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != nullptr)
     {
         if(DoubleSeq->length() != 0)
         {
@@ -1421,7 +1421,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != nullptr)
     {
         if(StringSeq->length() != 0)
         {
@@ -1429,7 +1429,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != nullptr)
     {
         if(FloatSeq->length() != 0)
         {
@@ -1437,7 +1437,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != nullptr)
     {
         if(BooleanSeq->length() != 0)
         {
@@ -1445,7 +1445,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != nullptr)
     {
         if(UShortSeq->length() != 0)
         {
@@ -1453,7 +1453,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != nullptr)
     {
         if(UCharSeq->length() != 0)
         {
@@ -1461,7 +1461,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != nullptr)
     {
         if(Long64Seq->length() != 0)
         {
@@ -1469,7 +1469,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != nullptr)
     {
         if(ULongSeq->length() != 0)
         {
@@ -1477,7 +1477,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != nullptr)
     {
         if(ULong64Seq->length() != 0)
         {
@@ -1485,7 +1485,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != nullptr)
     {
         if(StateSeq->length() != 0)
         {
@@ -1493,7 +1493,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != nullptr)
     {
         if(EncodedSeq->length() != 0)
         {
@@ -1561,7 +1561,7 @@ bool DeviceAttribute::operator>>(short &datum)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -1624,7 +1624,7 @@ bool DeviceAttribute::operator>>(DevLong &datum)
         return false;
     }
 
-    if(LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != nullptr)
     {
         if(LongSeq->length() != 0)
         {
@@ -1684,7 +1684,7 @@ bool DeviceAttribute::operator>>(DevLong64 &datum)
         return false;
     }
 
-    if(Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != nullptr)
     {
         if(Long64Seq->length() != 0)
         {
@@ -1744,7 +1744,7 @@ bool DeviceAttribute::operator>>(double &datum)
         return false;
     }
 
-    if(DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != nullptr)
     {
         if(DoubleSeq->length() != 0)
         {
@@ -1803,7 +1803,7 @@ bool DeviceAttribute::operator>>(std::string &datum)
         return false;
     }
 
-    if(StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != nullptr)
     {
         if(StringSeq->length() != 0)
         {
@@ -1898,7 +1898,7 @@ bool DeviceAttribute::operator>>(float &datum)
         return false;
     }
 
-    if(FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != nullptr)
     {
         if(FloatSeq->length() != 0)
         {
@@ -1957,7 +1957,7 @@ bool DeviceAttribute::operator>>(bool &datum)
         return false;
     }
 
-    if(BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != nullptr)
     {
         if(BooleanSeq->length() != 0)
         {
@@ -2016,7 +2016,7 @@ bool DeviceAttribute::operator>>(unsigned short &datum)
         return false;
     }
 
-    if(UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != nullptr)
     {
         if(UShortSeq->length() != 0)
         {
@@ -2075,7 +2075,7 @@ bool DeviceAttribute::operator>>(unsigned char &datum)
         return false;
     }
 
-    if(UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != nullptr)
     {
         if(UCharSeq->length() != 0)
         {
@@ -2134,7 +2134,7 @@ bool DeviceAttribute::operator>>(DevULong &datum)
         return false;
     }
 
-    if(ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != nullptr)
     {
         if(ULongSeq->length() != 0)
         {
@@ -2194,7 +2194,7 @@ bool DeviceAttribute::operator>>(DevULong64 &datum)
         return false;
     }
 
-    if(ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != nullptr)
     {
         if(ULong64Seq->length() != 0)
         {
@@ -2262,7 +2262,7 @@ bool DeviceAttribute::operator>>(DevState &datum)
         return ret;
     }
 
-    if(StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != nullptr)
     {
         if(StateSeq->length() != 0)
         {
@@ -2322,7 +2322,7 @@ bool DeviceAttribute::operator>>(DevEncoded &datum)
         return false;
     }
 
-    if(EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != nullptr)
     {
         if(EncodedSeq->length() != 0)
         {
@@ -2464,7 +2464,7 @@ void DeviceAttribute::operator<<(const std::vector<std::string> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_STRING;
 
-    if(StringSeq.operator->() == NULL)
+    if(StringSeq.operator->() == nullptr)
     {
         DevVarStringArray *str_vararr = new(DevVarStringArray);
         StringSeq = str_vararr;
@@ -2497,7 +2497,7 @@ bool DeviceAttribute::operator>>(std::vector<std::string> &datum)
         return false;
     }
 
-    if(StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != nullptr)
     {
         if(StringSeq->length() != 0)
         {
@@ -2542,7 +2542,7 @@ void DeviceAttribute::operator<<(const std::vector<short> &datum)
         data_type = DEV_SHORT;
     }
 
-    if(ShortSeq.operator->() == NULL)
+    if(ShortSeq.operator->() == nullptr)
     {
         DevVarShortArray *short_vararr = new(DevVarShortArray);
         ShortSeq = short_vararr;
@@ -2575,7 +2575,7 @@ bool DeviceAttribute::operator>>(std::vector<short> &datum)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -2616,7 +2616,7 @@ void DeviceAttribute::operator<<(const std::vector<DevLong> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_LONG;
 
-    if(LongSeq.operator->() == NULL)
+    if(LongSeq.operator->() == nullptr)
     {
         DevVarLongArray *long_vararr = new(DevVarLongArray);
         LongSeq = long_vararr;
@@ -2649,7 +2649,7 @@ bool DeviceAttribute::operator>>(std::vector<DevLong> &datum)
         return false;
     }
 
-    if(LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != nullptr)
     {
         if(LongSeq->length() != 0)
         {
@@ -2690,7 +2690,7 @@ void DeviceAttribute::operator<<(const std::vector<DevLong64> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_LONG64;
 
-    if(Long64Seq.operator->() == NULL)
+    if(Long64Seq.operator->() == nullptr)
     {
         DevVarLong64Array *long_vararr = new(DevVarLong64Array);
         Long64Seq = long_vararr;
@@ -2723,7 +2723,7 @@ bool DeviceAttribute::operator>>(std::vector<DevLong64> &datum)
         return false;
     }
 
-    if(Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != nullptr)
     {
         if(Long64Seq->length() != 0)
         {
@@ -2764,7 +2764,7 @@ void DeviceAttribute::operator<<(const std::vector<double> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_DOUBLE;
 
-    if(DoubleSeq.operator->() == NULL)
+    if(DoubleSeq.operator->() == nullptr)
     {
         DevVarDoubleArray *double_vararr = new(DevVarDoubleArray);
         DoubleSeq = double_vararr;
@@ -2797,7 +2797,7 @@ bool DeviceAttribute::operator>>(std::vector<double> &datum)
         return false;
     }
 
-    if(DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != nullptr)
     {
         if(DoubleSeq->length() != 0)
         {
@@ -2838,7 +2838,7 @@ void DeviceAttribute::operator<<(const std::vector<float> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_FLOAT;
 
-    if(FloatSeq.operator->() == NULL)
+    if(FloatSeq.operator->() == nullptr)
     {
         DevVarFloatArray *float_vararr = new(DevVarFloatArray);
         FloatSeq = float_vararr;
@@ -2871,7 +2871,7 @@ bool DeviceAttribute::operator>>(std::vector<float> &datum)
         return false;
     }
 
-    if(FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != nullptr)
     {
         if(FloatSeq->length() != 0)
         {
@@ -2912,7 +2912,7 @@ void DeviceAttribute::operator<<(const std::vector<bool> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_BOOLEAN;
 
-    if(BooleanSeq.operator->() == NULL)
+    if(BooleanSeq.operator->() == nullptr)
     {
         DevVarBooleanArray *bool_vararr = new(DevVarBooleanArray);
         BooleanSeq = bool_vararr;
@@ -2945,7 +2945,7 @@ bool DeviceAttribute::operator>>(std::vector<bool> &datum)
         return false;
     }
 
-    if(BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != nullptr)
     {
         if(BooleanSeq->length() != 0)
         {
@@ -2986,7 +2986,7 @@ void DeviceAttribute::operator<<(const std::vector<unsigned short> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_USHORT;
 
-    if(UShortSeq.operator->() == NULL)
+    if(UShortSeq.operator->() == nullptr)
     {
         DevVarUShortArray *ushort_vararr = new(DevVarUShortArray);
         UShortSeq = ushort_vararr;
@@ -3019,7 +3019,7 @@ bool DeviceAttribute::operator>>(std::vector<unsigned short> &datum)
         return false;
     }
 
-    if(UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != nullptr)
     {
         if(UShortSeq->length() != 0)
         {
@@ -3060,7 +3060,7 @@ void DeviceAttribute::operator<<(const std::vector<unsigned char> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_UCHAR;
 
-    if(UCharSeq.operator->() == NULL)
+    if(UCharSeq.operator->() == nullptr)
     {
         DevVarUCharArray *uchar_vararr = new(DevVarUCharArray);
         UCharSeq = uchar_vararr;
@@ -3093,7 +3093,7 @@ bool DeviceAttribute::operator>>(std::vector<unsigned char> &datum)
         return false;
     }
 
-    if(UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != nullptr)
     {
         if(UCharSeq->length() != 0)
         {
@@ -3134,7 +3134,7 @@ void DeviceAttribute::operator<<(const std::vector<DevULong> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_ULONG;
 
-    if(ULongSeq.operator->() == NULL)
+    if(ULongSeq.operator->() == nullptr)
     {
         DevVarULongArray *long_vararr = new(DevVarULongArray);
         ULongSeq = long_vararr;
@@ -3167,7 +3167,7 @@ bool DeviceAttribute::operator>>(std::vector<DevULong> &datum)
         return false;
     }
 
-    if(ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != nullptr)
     {
         if(ULongSeq->length() != 0)
         {
@@ -3208,7 +3208,7 @@ void DeviceAttribute::operator<<(const std::vector<DevULong64> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_ULONG64;
 
-    if(ULong64Seq.operator->() == NULL)
+    if(ULong64Seq.operator->() == nullptr)
     {
         DevVarULong64Array *long_vararr = new(DevVarULong64Array);
         ULong64Seq = long_vararr;
@@ -3241,7 +3241,7 @@ bool DeviceAttribute::operator>>(std::vector<DevULong64> &datum)
         return false;
     }
 
-    if(ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != nullptr)
     {
         if(ULong64Seq->length() != 0)
         {
@@ -3282,7 +3282,7 @@ void DeviceAttribute::operator<<(const std::vector<DevState> &datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = Tango::DEV_STATE;
 
-    if(StateSeq.operator->() == NULL)
+    if(StateSeq.operator->() == nullptr)
     {
         DevVarStateArray *long_vararr = new(DevVarStateArray);
         StateSeq = long_vararr;
@@ -3322,7 +3322,7 @@ bool DeviceAttribute::operator>>(std::vector<DevState> &datum)
         return true;
     }
 
-    if(StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != nullptr)
     {
         if(StateSeq->length() != 0)
         {
@@ -3363,7 +3363,7 @@ bool DeviceAttribute::operator>>(DevVarShortArray *&datum)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -3399,7 +3399,7 @@ bool DeviceAttribute::operator>>(DevVarLongArray *&datum)
         return false;
     }
 
-    if(LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != nullptr)
     {
         if(LongSeq->length() != 0)
         {
@@ -3435,7 +3435,7 @@ bool DeviceAttribute::operator>>(DevVarDoubleArray *&datum)
         return false;
     }
 
-    if(DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != nullptr)
     {
         if(DoubleSeq->length() != 0)
         {
@@ -3471,7 +3471,7 @@ bool DeviceAttribute::operator>>(DevVarStringArray *&datum)
         return false;
     }
 
-    if(StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != nullptr)
     {
         if(StringSeq->length() != 0)
         {
@@ -3507,7 +3507,7 @@ bool DeviceAttribute::operator>>(DevVarFloatArray *&datum)
         return false;
     }
 
-    if(FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != nullptr)
     {
         if(FloatSeq->length() != 0)
         {
@@ -3543,7 +3543,7 @@ bool DeviceAttribute::operator>>(DevVarBooleanArray *&datum)
         return false;
     }
 
-    if(BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != nullptr)
     {
         if(BooleanSeq->length() != 0)
         {
@@ -3579,7 +3579,7 @@ bool DeviceAttribute::operator>>(DevVarUShortArray *&datum)
         return false;
     }
 
-    if(UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != nullptr)
     {
         if(UShortSeq->length() != 0)
         {
@@ -3615,7 +3615,7 @@ bool DeviceAttribute::operator>>(DevVarCharArray *&datum)
         return false;
     }
 
-    if(UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != nullptr)
     {
         if(UCharSeq->length() != 0)
         {
@@ -3651,7 +3651,7 @@ bool DeviceAttribute::operator>>(DevVarLong64Array *&datum)
         return false;
     }
 
-    if(Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != nullptr)
     {
         if(Long64Seq->length() != 0)
         {
@@ -3687,7 +3687,7 @@ bool DeviceAttribute::operator>>(DevVarULongArray *&datum)
         return false;
     }
 
-    if(ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != nullptr)
     {
         if(ULongSeq->length() != 0)
         {
@@ -3723,7 +3723,7 @@ bool DeviceAttribute::operator>>(DevVarULong64Array *&datum)
         return false;
     }
 
-    if(ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != nullptr)
     {
         if(ULong64Seq->length() != 0)
         {
@@ -3767,7 +3767,7 @@ bool DeviceAttribute::operator>>(DevVarStateArray *&datum)
         return true;
     }
 
-    if(StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != nullptr)
     {
         if(StateSeq->length() != 0)
         {
@@ -3797,7 +3797,7 @@ bool DeviceAttribute::operator>>(DevVarEncodedArray *&datum)
 {
     bool ret = true;
 
-    if(err_list.operator->() != NULL)
+    if(err_list.operator->() != nullptr)
     {
         if(err_list.in().length() != 0)
         {
@@ -3817,7 +3817,7 @@ bool DeviceAttribute::operator>>(DevVarEncodedArray *&datum)
         return false;
     }
 
-    if(EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != nullptr)
     {
         if(EncodedSeq->length() != 0)
         {
@@ -4631,7 +4631,7 @@ bool DeviceAttribute::extract(char *&str, unsigned char *&data_ptr, unsigned int
 
     // copy the read value to the vector
 
-    if(EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != nullptr)
     {
         if(EncodedSeq->length() != 0)
         {
@@ -4692,7 +4692,7 @@ bool DeviceAttribute::extract_read(std::string &datum_str, std::vector<unsigned 
 
     // copy the read value to the vector
 
-    if(EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != nullptr)
     {
         if(EncodedSeq->length() != 0)
         {
@@ -4738,7 +4738,7 @@ bool DeviceAttribute::extract_set(std::string &datum_str, std::vector<unsigned c
         return false;
     }
 
-    if(EncodedSeq.operator->() != NULL)
+    if(EncodedSeq.operator->() != nullptr)
     {
         if(EncodedSeq->length() == 2)
         {
@@ -4785,7 +4785,7 @@ bool DeviceAttribute::extract_read(std::vector<std::string> &datum)
 
     // copy the read value to the vector
 
-    if(StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != nullptr)
     {
         if(StringSeq->length() != 0)
         {
@@ -4828,7 +4828,7 @@ bool DeviceAttribute::extract_set(std::vector<std::string> &datum)
         return false;
     }
 
-    if(StringSeq.operator->() != NULL)
+    if(StringSeq.operator->() != nullptr)
     {
         if(StringSeq->length() != 0)
         {
@@ -4876,7 +4876,7 @@ bool DeviceAttribute::extract_read(std::vector<short> &datum)
 
     // copy the read value to the vector
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -4919,7 +4919,7 @@ bool DeviceAttribute::extract_set(std::vector<short> &datum)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -4967,7 +4967,7 @@ bool DeviceAttribute::extract_read(std::vector<DevLong> &datum)
 
     // copy the read value to the vector
 
-    if(LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != nullptr)
     {
         if(LongSeq->length() != 0)
         {
@@ -5010,7 +5010,7 @@ bool DeviceAttribute::extract_set(std::vector<DevLong> &datum)
         return false;
     }
 
-    if(LongSeq.operator->() != NULL)
+    if(LongSeq.operator->() != nullptr)
     {
         if(LongSeq->length() != 0)
         {
@@ -5058,7 +5058,7 @@ bool DeviceAttribute::extract_read(std::vector<double> &datum)
 
     // copy the read value to the vector
 
-    if(DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != nullptr)
     {
         if(DoubleSeq->length() != 0)
         {
@@ -5101,7 +5101,7 @@ bool DeviceAttribute::extract_set(std::vector<double> &datum)
         return false;
     }
 
-    if(DoubleSeq.operator->() != NULL)
+    if(DoubleSeq.operator->() != nullptr)
     {
         if(DoubleSeq->length() != 0)
         {
@@ -5149,7 +5149,7 @@ bool DeviceAttribute::extract_read(std::vector<float> &datum)
 
     // copy the read value to the vector
 
-    if(FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != nullptr)
     {
         if(FloatSeq->length() != 0)
         {
@@ -5192,7 +5192,7 @@ bool DeviceAttribute::extract_set(std::vector<float> &datum)
         return false;
     }
 
-    if(FloatSeq.operator->() != NULL)
+    if(FloatSeq.operator->() != nullptr)
     {
         if(FloatSeq->length() != 0)
         {
@@ -5240,7 +5240,7 @@ bool DeviceAttribute::extract_read(std::vector<bool> &datum)
 
     // copy the read value to the vector
 
-    if(BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != nullptr)
     {
         if(BooleanSeq->length() != 0)
         {
@@ -5283,7 +5283,7 @@ bool DeviceAttribute::extract_set(std::vector<bool> &datum)
         return false;
     }
 
-    if(BooleanSeq.operator->() != NULL)
+    if(BooleanSeq.operator->() != nullptr)
     {
         if(BooleanSeq->length() != 0)
         {
@@ -5331,7 +5331,7 @@ bool DeviceAttribute::extract_read(std::vector<unsigned short> &datum)
 
     // copy the read value to the vector
 
-    if(UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != nullptr)
     {
         if(UShortSeq->length() != 0)
         {
@@ -5374,7 +5374,7 @@ bool DeviceAttribute::extract_set(std::vector<unsigned short> &datum)
         return false;
     }
 
-    if(UShortSeq.operator->() != NULL)
+    if(UShortSeq.operator->() != nullptr)
     {
         if(UShortSeq->length() != 0)
         {
@@ -5422,7 +5422,7 @@ bool DeviceAttribute::extract_read(std::vector<unsigned char> &datum)
 
     // copy the read value to the vector
 
-    if(UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != nullptr)
     {
         if(UCharSeq->length() != 0)
         {
@@ -5465,7 +5465,7 @@ bool DeviceAttribute::extract_set(std::vector<unsigned char> &datum)
         return false;
     }
 
-    if(UCharSeq.operator->() != NULL)
+    if(UCharSeq.operator->() != nullptr)
     {
         if(UCharSeq->length() != 0)
         {
@@ -5513,7 +5513,7 @@ bool DeviceAttribute::extract_read(std::vector<DevLong64> &datum)
 
     // copy the read value to the vector
 
-    if(Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != nullptr)
     {
         if(Long64Seq->length() != 0)
         {
@@ -5556,7 +5556,7 @@ bool DeviceAttribute::extract_set(std::vector<DevLong64> &datum)
         return false;
     }
 
-    if(Long64Seq.operator->() != NULL)
+    if(Long64Seq.operator->() != nullptr)
     {
         if(Long64Seq->length() != 0)
         {
@@ -5604,7 +5604,7 @@ bool DeviceAttribute::extract_read(std::vector<DevULong64> &datum)
 
     // copy the read value to the vector
 
-    if(ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != nullptr)
     {
         if(ULong64Seq->length() != 0)
         {
@@ -5647,7 +5647,7 @@ bool DeviceAttribute::extract_set(std::vector<DevULong64> &datum)
         return false;
     }
 
-    if(ULong64Seq.operator->() != NULL)
+    if(ULong64Seq.operator->() != nullptr)
     {
         if(ULong64Seq->length() != 0)
         {
@@ -5695,7 +5695,7 @@ bool DeviceAttribute::extract_read(std::vector<DevULong> &datum)
 
     // copy the read value to the vector
 
-    if(ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != nullptr)
     {
         if(ULongSeq->length() != 0)
         {
@@ -5738,7 +5738,7 @@ bool DeviceAttribute::extract_set(std::vector<DevULong> &datum)
         return false;
     }
 
-    if(ULongSeq.operator->() != NULL)
+    if(ULongSeq.operator->() != nullptr)
     {
         if(ULongSeq->length() != 0)
         {
@@ -5786,7 +5786,7 @@ bool DeviceAttribute::extract_read(std::vector<DevState> &datum)
 
     // copy the read value to the vector
 
-    if(StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != nullptr)
     {
         if(StateSeq->length() != 0)
         {
@@ -5829,7 +5829,7 @@ bool DeviceAttribute::extract_set(std::vector<DevState> &datum)
         return false;
     }
 
-    if(StateSeq.operator->() != NULL)
+    if(StateSeq.operator->() != nullptr)
     {
         if(StateSeq->length() != 0)
         {
@@ -5873,7 +5873,7 @@ bool DeviceAttribute::check_for_data()
 {
     ext->ext_state.reset();
 
-    if(err_list.operator->() != NULL)
+    if(err_list.operator->() != nullptr)
     {
         if(err_list.in().length() != 0)
         {
@@ -5988,55 +5988,55 @@ int DeviceAttribute::check_set_value_size(int seq_length)
 
 void DeviceAttribute::del_mem(int _data_type)
 {
-    if((_data_type != Tango::DEV_STRING) && (StringSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_STRING) && (StringSeq.operator->() != nullptr))
     {
         delete StringSeq._retn();
     }
-    if((_data_type != Tango::DEV_LONG) && (LongSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_LONG) && (LongSeq.operator->() != nullptr))
     {
         delete LongSeq._retn();
     }
-    if((_data_type != Tango::DEV_SHORT) && (ShortSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_SHORT) && (ShortSeq.operator->() != nullptr))
     {
         delete ShortSeq._retn();
     }
-    if((_data_type != Tango::DEV_DOUBLE) && (DoubleSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_DOUBLE) && (DoubleSeq.operator->() != nullptr))
     {
         delete DoubleSeq._retn();
     }
-    if((_data_type != Tango::DEV_FLOAT) && (FloatSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_FLOAT) && (FloatSeq.operator->() != nullptr))
     {
         delete FloatSeq._retn();
     }
-    if((_data_type != Tango::DEV_BOOLEAN) && (BooleanSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_BOOLEAN) && (BooleanSeq.operator->() != nullptr))
     {
         delete BooleanSeq._retn();
     }
-    if((_data_type != Tango::DEV_USHORT) && (UShortSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_USHORT) && (UShortSeq.operator->() != nullptr))
     {
         delete UShortSeq._retn();
     }
-    if((_data_type != Tango::DEV_UCHAR) && (UCharSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_UCHAR) && (UCharSeq.operator->() != nullptr))
     {
         delete UCharSeq._retn();
     }
-    if((_data_type != Tango::DEV_LONG64) && (Long64Seq.operator->() != NULL))
+    if((_data_type != Tango::DEV_LONG64) && (Long64Seq.operator->() != nullptr))
     {
         delete Long64Seq._retn();
     }
-    if((_data_type != Tango::DEV_ULONG) && (ULongSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_ULONG) && (ULongSeq.operator->() != nullptr))
     {
         delete ULongSeq._retn();
     }
-    if((_data_type != Tango::DEV_ULONG64) && (ULong64Seq.operator->() != NULL))
+    if((_data_type != Tango::DEV_ULONG64) && (ULong64Seq.operator->() != nullptr))
     {
         delete ULong64Seq._retn();
     }
-    if((_data_type != Tango::DEV_STATE) && (StateSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_STATE) && (StateSeq.operator->() != nullptr))
     {
         delete StateSeq._retn();
     }
-    if((_data_type != Tango::DEV_ENCODED) && (EncodedSeq.operator->() != NULL))
+    if((_data_type != Tango::DEV_ENCODED) && (EncodedSeq.operator->() != nullptr))
     {
         delete EncodedSeq._retn();
     }
@@ -6136,55 +6136,55 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
 
         if(da.quality != Tango::ATTR_INVALID)
         {
-            if(da.LongSeq.operator->() != NULL)
+            if(da.LongSeq.operator->() != nullptr)
             {
                 o_str << *(da.LongSeq.operator->());
             }
-            else if(da.Long64Seq.operator->() != NULL)
+            else if(da.Long64Seq.operator->() != nullptr)
             {
                 o_str << *(da.Long64Seq.operator->());
             }
-            else if(da.ShortSeq.operator->() != NULL)
+            else if(da.ShortSeq.operator->() != nullptr)
             {
                 o_str << *(da.ShortSeq.operator->());
             }
-            else if(da.DoubleSeq.operator->() != NULL)
+            else if(da.DoubleSeq.operator->() != nullptr)
             {
                 o_str << *(da.DoubleSeq.operator->());
             }
-            else if(da.FloatSeq.operator->() != NULL)
+            else if(da.FloatSeq.operator->() != nullptr)
             {
                 o_str << *(da.FloatSeq.operator->());
             }
-            else if(da.BooleanSeq.operator->() != NULL)
+            else if(da.BooleanSeq.operator->() != nullptr)
             {
                 o_str << *(da.BooleanSeq.operator->());
             }
-            else if(da.UShortSeq.operator->() != NULL)
+            else if(da.UShortSeq.operator->() != nullptr)
             {
                 o_str << *(da.UShortSeq.operator->());
             }
-            else if(da.UCharSeq.operator->() != NULL)
+            else if(da.UCharSeq.operator->() != nullptr)
             {
                 o_str << *(da.UCharSeq.operator->());
             }
-            else if(da.StringSeq.operator->() != NULL)
+            else if(da.StringSeq.operator->() != nullptr)
             {
                 o_str << *(da.StringSeq.operator->());
             }
-            else if(da.ULongSeq.operator->() != NULL)
+            else if(da.ULongSeq.operator->() != nullptr)
             {
                 o_str << *(da.ULongSeq.operator->());
             }
-            else if(da.ULong64Seq.operator->() != NULL)
+            else if(da.ULong64Seq.operator->() != nullptr)
             {
                 o_str << *(da.ULong64Seq.operator->());
             }
-            else if(da.StateSeq.operator->() != NULL)
+            else if(da.StateSeq.operator->() != nullptr)
             {
                 o_str << *(da.StateSeq.operator->());
             }
-            else if(da.EncodedSeq.operator->() != NULL)
+            else if(da.EncodedSeq.operator->() != nullptr)
             {
                 o_str << *(da.EncodedSeq.operator->());
             }

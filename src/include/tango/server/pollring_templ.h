@@ -69,7 +69,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarBooleanArray &union_seq = (*attr_value)[loop].value.bool_att_value();
             DevVarBooleanArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -79,7 +79,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarShortArray &union_seq = (*attr_value)[loop].value.short_att_value();
             DevVarShortArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -89,7 +89,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarLongArray &union_seq = (*attr_value)[loop].value.long_att_value();
             DevVarLongArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -99,7 +99,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarLong64Array &union_seq = (*attr_value)[loop].value.long64_att_value();
             DevVarLong64Array tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -109,7 +109,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarFloatArray &union_seq = (*attr_value)[loop].value.float_att_value();
             DevVarFloatArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -119,7 +119,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarDoubleArray &union_seq = (*attr_value)[loop].value.double_att_value();
             DevVarDoubleArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -129,7 +129,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarCharArray &union_seq = (*attr_value)[loop].value.uchar_att_value();
             DevVarCharArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -139,7 +139,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarUShortArray &union_seq = (*attr_value)[loop].value.ushort_att_value();
             DevVarUShortArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -149,7 +149,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarULongArray &union_seq = (*attr_value)[loop].value.ulong_att_value();
             DevVarULongArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -159,7 +159,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarULong64Array &union_seq = (*attr_value)[loop].value.ulong64_att_value();
             DevVarULong64Array tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -169,7 +169,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             const DevVarStringArray &union_seq = (*attr_value)[loop].value.string_att_value();
             DevVarStringArray tmp_seq = union_seq;
-            (const_cast<DevVarStringArray &>(union_seq)).replace(0, 0, NULL, true);
+            (const_cast<DevVarStringArray &>(union_seq)).replace(0, 0, nullptr, true);
             (*attr_value)[loop].value.string_att_value(tmp_seq);
         }
         break;
@@ -178,7 +178,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarStateArray &union_seq = (*attr_value)[loop].value.state_att_value();
             DevVarStateArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
             unsigned long len = tmp_seq.length();
             union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
         }
@@ -192,7 +192,7 @@ void PollRing::force_copy_data(T *attr_value)
         {
             DevVarEncodedArray &union_seq = (*attr_value)[loop].value.encoded_att_value();
             DevVarEncodedArray tmp_seq(union_seq);
-            union_seq.replace(0, 0, NULL, true);
+            union_seq.replace(0, 0, nullptr, true);
 
             union_seq.length(tmp_seq.length());
 
@@ -250,7 +250,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
     for(i = 0; i < n; i++)
     {
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             if(vers == 4)
             {
@@ -312,19 +312,19 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
     unsigned int ind_in_seq = 0;
 
-    Tango::DevVarDoubleArray *new_tmp_db = NULL;
-    Tango::DevVarShortArray *new_tmp_sh = NULL;
-    Tango::DevVarLongArray *new_tmp_lg = NULL;
-    Tango::DevVarLong64Array *new_tmp_lg64 = NULL;
-    Tango::DevVarStringArray *new_tmp_str = NULL;
-    Tango::DevVarFloatArray *new_tmp_fl = NULL;
-    Tango::DevVarBooleanArray *new_tmp_boo = NULL;
-    Tango::DevVarUShortArray *new_tmp_ush = NULL;
-    Tango::DevVarCharArray *new_tmp_uch = NULL;
-    Tango::DevVarULongArray *new_tmp_ulg = NULL;
-    Tango::DevVarULong64Array *new_tmp_ulg64 = NULL;
-    Tango::DevVarStateArray *new_tmp_state = NULL;
-    Tango::DevVarEncodedArray *new_tmp_enc = NULL;
+    Tango::DevVarDoubleArray *new_tmp_db = nullptr;
+    Tango::DevVarShortArray *new_tmp_sh = nullptr;
+    Tango::DevVarLongArray *new_tmp_lg = nullptr;
+    Tango::DevVarLong64Array *new_tmp_lg64 = nullptr;
+    Tango::DevVarStringArray *new_tmp_str = nullptr;
+    Tango::DevVarFloatArray *new_tmp_fl = nullptr;
+    Tango::DevVarBooleanArray *new_tmp_boo = nullptr;
+    Tango::DevVarUShortArray *new_tmp_ush = nullptr;
+    Tango::DevVarCharArray *new_tmp_uch = nullptr;
+    Tango::DevVarULongArray *new_tmp_ulg = nullptr;
+    Tango::DevVarULong64Array *new_tmp_ulg64 = nullptr;
+    Tango::DevVarStateArray *new_tmp_state = nullptr;
+    Tango::DevVarEncodedArray *new_tmp_enc = nullptr;
 
     //
     // Read buffer
@@ -351,7 +351,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
         // In no error case, we take date from the attr_valie_X stucture and here the date is not biased
         //
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             if(vers == 4)
             {
@@ -375,7 +375,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
         // First, for quality factor
         //
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             AttrQuality qu;
             if(vers == 4)
@@ -519,7 +519,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
         // Error treatement
         //
 
-        if(ring[index].except != NULL)
+        if(ring[index].except != nullptr)
         {
             bool new_err = false;
 
@@ -667,7 +667,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_ENUM:
             {
                 DevVarShortArray &tmp_seq = union_ptr->short_att_value();
-                if(new_tmp_sh == NULL)
+                if(new_tmp_sh == nullptr)
                 {
                     new_tmp_sh = new DevVarShortArray();
                     new_tmp_sh->length(seq_size);
@@ -679,7 +679,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_DOUBLE:
             {
                 DevVarDoubleArray &tmp_seq = union_ptr->double_att_value();
-                if(new_tmp_db == NULL)
+                if(new_tmp_db == nullptr)
                 {
                     new_tmp_db = new DevVarDoubleArray();
                     new_tmp_db->length(seq_size);
@@ -691,7 +691,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_LONG:
             {
                 DevVarLongArray &tmp_seq = union_ptr->long_att_value();
-                if(new_tmp_lg == NULL)
+                if(new_tmp_lg == nullptr)
                 {
                     new_tmp_lg = new DevVarLongArray();
                     new_tmp_lg->length(seq_size);
@@ -703,7 +703,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_LONG64:
             {
                 DevVarLong64Array &tmp_seq = union_ptr->long64_att_value();
-                if(new_tmp_lg64 == NULL)
+                if(new_tmp_lg64 == nullptr)
                 {
                     new_tmp_lg64 = new DevVarLong64Array();
                     new_tmp_lg64->length(seq_size);
@@ -715,7 +715,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_STRING:
             {
                 DevVarStringArray &tmp_seq = union_ptr->string_att_value();
-                if(new_tmp_str == NULL)
+                if(new_tmp_str == nullptr)
                 {
                     new_tmp_str = new DevVarStringArray();
                     new_tmp_str->length(seq_size);
@@ -727,7 +727,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_FLOAT:
             {
                 DevVarFloatArray &tmp_seq = union_ptr->float_att_value();
-                if(new_tmp_fl == NULL)
+                if(new_tmp_fl == nullptr)
                 {
                     new_tmp_fl = new DevVarFloatArray();
                     new_tmp_fl->length(seq_size);
@@ -739,7 +739,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_BOOLEAN:
             {
                 DevVarBooleanArray &tmp_seq = union_ptr->bool_att_value();
-                if(new_tmp_boo == NULL)
+                if(new_tmp_boo == nullptr)
                 {
                     new_tmp_boo = new DevVarBooleanArray();
                     new_tmp_boo->length(seq_size);
@@ -751,7 +751,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_USHORT:
             {
                 DevVarUShortArray &tmp_seq = union_ptr->ushort_att_value();
-                if(new_tmp_ush == NULL)
+                if(new_tmp_ush == nullptr)
                 {
                     new_tmp_ush = new DevVarUShortArray();
                     new_tmp_ush->length(seq_size);
@@ -763,7 +763,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_UCHAR:
             {
                 DevVarCharArray &tmp_seq = union_ptr->uchar_att_value();
-                if(new_tmp_uch == NULL)
+                if(new_tmp_uch == nullptr)
                 {
                     new_tmp_uch = new DevVarUCharArray();
                     new_tmp_uch->length(seq_size);
@@ -775,7 +775,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_ULONG:
             {
                 DevVarULongArray &tmp_seq = union_ptr->ulong_att_value();
-                if(new_tmp_ulg == NULL)
+                if(new_tmp_ulg == nullptr)
                 {
                     new_tmp_ulg = new DevVarULongArray();
                     new_tmp_ulg->length(seq_size);
@@ -787,7 +787,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_ULONG64:
             {
                 DevVarULong64Array &tmp_seq = union_ptr->ulong64_att_value();
-                if(new_tmp_ulg64 == NULL)
+                if(new_tmp_ulg64 == nullptr)
                 {
                     new_tmp_ulg64 = new DevVarULong64Array();
                     new_tmp_ulg64->length(seq_size);
@@ -799,7 +799,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_STATE:
             {
                 DevVarStateArray &tmp_seq = union_ptr->state_att_value();
-                if(new_tmp_state == NULL)
+                if(new_tmp_state == nullptr)
                 {
                     new_tmp_state = new DevVarStateArray();
                     new_tmp_state->length(seq_size);
@@ -811,7 +811,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_VOID:
             {
                 DevState tmp_state = union_ptr->dev_state_att();
-                if(new_tmp_state == NULL)
+                if(new_tmp_state == nullptr)
                 {
                     new_tmp_state = new DevVarStateArray();
                     new_tmp_state->length(seq_size);
@@ -823,7 +823,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             case Tango::DEV_ENCODED:
             {
                 DevVarEncodedArray &tmp_seq = union_ptr->encoded_att_value();
-                if(new_tmp_enc == NULL)
+                if(new_tmp_enc == nullptr)
                 {
                     new_tmp_enc = new DevVarEncodedArray();
                     new_tmp_enc->length(seq_size);
@@ -850,84 +850,84 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             {
             case Tango::DEV_SHORT:
             case Tango::DEV_ENUM:
-                if(new_tmp_sh != NULL)
+                if(new_tmp_sh != nullptr)
                 {
                     ptr->value <<= new_tmp_sh;
                 }
                 break;
 
             case Tango::DEV_DOUBLE:
-                if(new_tmp_db != NULL)
+                if(new_tmp_db != nullptr)
                 {
                     ptr->value <<= new_tmp_db;
                 }
                 break;
 
             case Tango::DEV_LONG:
-                if(new_tmp_lg != NULL)
+                if(new_tmp_lg != nullptr)
                 {
                     ptr->value <<= new_tmp_lg;
                 }
                 break;
 
             case Tango::DEV_LONG64:
-                if(new_tmp_lg64 != NULL)
+                if(new_tmp_lg64 != nullptr)
                 {
                     ptr->value <<= new_tmp_lg64;
                 }
                 break;
 
             case Tango::DEV_STRING:
-                if(new_tmp_str != NULL)
+                if(new_tmp_str != nullptr)
                 {
                     ptr->value <<= new_tmp_str;
                 }
                 break;
 
             case Tango::DEV_FLOAT:
-                if(new_tmp_fl != NULL)
+                if(new_tmp_fl != nullptr)
                 {
                     ptr->value <<= new_tmp_fl;
                 }
                 break;
 
             case Tango::DEV_BOOLEAN:
-                if(new_tmp_boo != NULL)
+                if(new_tmp_boo != nullptr)
                 {
                     ptr->value <<= new_tmp_boo;
                 }
                 break;
 
             case Tango::DEV_USHORT:
-                if(new_tmp_ush != NULL)
+                if(new_tmp_ush != nullptr)
                 {
                     ptr->value <<= new_tmp_ush;
                 }
                 break;
 
             case Tango::DEV_UCHAR:
-                if(new_tmp_uch != NULL)
+                if(new_tmp_uch != nullptr)
                 {
                     ptr->value <<= new_tmp_uch;
                 }
                 break;
 
             case Tango::DEV_ULONG:
-                if(new_tmp_ulg != NULL)
+                if(new_tmp_ulg != nullptr)
                 {
                     ptr->value <<= new_tmp_ulg;
                 }
                 break;
 
             case Tango::DEV_ULONG64:
-                if(new_tmp_ulg64 != NULL)
+                if(new_tmp_ulg64 != nullptr)
                 {
                     ptr->value <<= new_tmp_ulg64;
                 }
                 break;
 
             case Tango::DEV_ENCODED:
-                if(new_tmp_enc != NULL)
+                if(new_tmp_enc != nullptr)
                 {
                     ptr->value <<= new_tmp_enc;
                 }
@@ -935,7 +935,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
             case Tango::DEV_STATE:
             case Tango::DEV_VOID:
-                if(new_tmp_state != NULL)
+                if(new_tmp_state != nullptr)
                 {
                     ptr->value <<= new_tmp_state;
                 }

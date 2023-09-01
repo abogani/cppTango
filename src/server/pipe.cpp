@@ -701,12 +701,12 @@ void Pipe::fire_event(DeviceImpl *dev, DevFailed *except)
     // Get the event supplier, and simply return if not created
     //
 
-    ZmqEventSupplier *event_supplier_zmq = NULL;
+    ZmqEventSupplier *event_supplier_zmq = nullptr;
 
     Tango::Util *tg = Util::instance();
     event_supplier_zmq = tg->get_zmq_event_supplier();
 
-    if(event_supplier_zmq == NULL)
+    if(event_supplier_zmq == nullptr)
     {
         return;
     }
@@ -767,12 +767,12 @@ void Pipe::fire_event(DeviceImpl *dev, DevicePipeBlob *p_data, const TangoTimest
     // Get the event supplier, and simply return if not created
     //
 
-    ZmqEventSupplier *event_supplier_zmq = NULL;
+    ZmqEventSupplier *event_supplier_zmq = nullptr;
 
     Tango::Util *tg = Util::instance();
     event_supplier_zmq = tg->get_zmq_event_supplier();
 
-    if(event_supplier_zmq == NULL)
+    if(event_supplier_zmq == nullptr)
     {
         p_data->reset_insert_ctr();
         DevVarPipeDataEltArray *tmp_ptr = p_data->get_insert_data();
@@ -824,7 +824,7 @@ void Pipe::fire_event(DeviceImpl *dev, DevicePipeBlob *p_data, const TangoTimest
     std::vector<long> f_data_lg;
 
     std::string event_type("pipe");
-    event_supplier_zmq->push_event(dev, event_type, f_names, f_data, f_names_lg, f_data_lg, ad, name, NULL, true);
+    event_supplier_zmq->push_event(dev, event_type, f_names, f_data, f_names_lg, f_data_lg, ad, name, nullptr, true);
 
     if(reuse_it == false)
     {
@@ -837,7 +837,7 @@ void Pipe::fire_event(DeviceImpl *dev, DevicePipeBlob *p_data, const TangoTimest
 
 bool Pipe::is_pipe_event_subscribed() const
 {
-    const auto now = time(NULL);
+    const auto now = time(nullptr);
     const auto delta_subscription = now - event_subscription;
 
     return delta_subscription < EVENT_RESUBSCRIBE_PERIOD;

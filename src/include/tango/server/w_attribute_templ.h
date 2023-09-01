@@ -249,7 +249,7 @@ void WAttribute::set_min_value(const T &new_min_value)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -466,7 +466,7 @@ void WAttribute::set_max_value(const T &new_max_value)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());

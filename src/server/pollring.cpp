@@ -59,12 +59,12 @@ namespace Tango
 RingElt::RingElt()
 {
     when = {};
-    cmd_result = NULL;
-    attr_value = NULL;
-    attr_value_3 = NULL;
-    attr_value_4 = NULL;
-    attr_value_5 = NULL;
-    except = NULL;
+    cmd_result = nullptr;
+    attr_value = nullptr;
+    attr_value_3 = nullptr;
+    attr_value_4 = nullptr;
+    attr_value_5 = nullptr;
+    except = nullptr;
 }
 
 //+-------------------------------------------------------------------------
@@ -143,7 +143,7 @@ void PollRing::insert_data(CORBA::Any *any_ptr, PollClock::time_point t)
 
     delete(ring[insert_elt].cmd_result);
     delete(ring[insert_elt].except);
-    ring[insert_elt].except = NULL;
+    ring[insert_elt].except = nullptr;
 
     ring[insert_elt].cmd_result = any_ptr;
     ring[insert_elt].when = t;
@@ -163,7 +163,7 @@ void PollRing::insert_data(Tango::AttributeValueList *attr_val, PollClock::time_
 
     delete(ring[insert_elt].attr_value);
     delete(ring[insert_elt].except);
-    ring[insert_elt].except = NULL;
+    ring[insert_elt].except = nullptr;
 
     ring[insert_elt].attr_value = attr_val;
     ring[insert_elt].when = t;
@@ -183,7 +183,7 @@ void PollRing::insert_data(Tango::AttributeValueList_3 *attr_val, PollClock::tim
 
     delete(ring[insert_elt].attr_value_3);
     delete(ring[insert_elt].except);
-    ring[insert_elt].except = NULL;
+    ring[insert_elt].except = nullptr;
 
     ring[insert_elt].attr_value_3 = attr_val;
     ring[insert_elt].when = t;
@@ -203,7 +203,7 @@ void PollRing::insert_data(Tango::AttributeValueList_4 *attr_val, PollClock::tim
 
     delete(ring[insert_elt].attr_value_4);
     delete(ring[insert_elt].except);
-    ring[insert_elt].except = NULL;
+    ring[insert_elt].except = nullptr;
 
     ring[insert_elt].attr_value_4 = attr_val;
     ring[insert_elt].when = t;
@@ -238,7 +238,7 @@ void PollRing::insert_data(Tango::AttributeValueList_5 *attr_val, PollClock::tim
 
     delete(ring[insert_elt].attr_value_5);
     delete(ring[insert_elt].except);
-    ring[insert_elt].except = NULL;
+    ring[insert_elt].except = nullptr;
 
     ring[insert_elt].attr_value_5 = attr_val;
     ring[insert_elt].when = t;
@@ -284,15 +284,15 @@ void PollRing::insert_except(Tango::DevFailed *ex, PollClock::time_point t)
     //
 
     delete(ring[insert_elt].except);
-    if(ring[insert_elt].attr_value != NULL)
+    if(ring[insert_elt].attr_value != nullptr)
     {
         delete(ring[insert_elt].attr_value);
-        ring[insert_elt].attr_value = NULL;
+        ring[insert_elt].attr_value = nullptr;
     }
-    if(ring[insert_elt].cmd_result != NULL)
+    if(ring[insert_elt].cmd_result != nullptr)
     {
         delete(ring[insert_elt].cmd_result);
-        ring[insert_elt].cmd_result = NULL;
+        ring[insert_elt].cmd_result = nullptr;
     }
 
     ring[insert_elt].except = ex;
@@ -447,7 +447,7 @@ bool PollRing::is_last_an_error()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == NULL)
+        if(ring[max_elt - 1].except == nullptr)
         {
             return false;
         }
@@ -458,7 +458,7 @@ bool PollRing::is_last_an_error()
     }
     else
     {
-        if(ring[insert_elt - 1].except == NULL)
+        if(ring[insert_elt - 1].except == nullptr)
         {
             return false;
         }
@@ -473,7 +473,7 @@ bool PollRing::is_last_cmd_an_error()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except != NULL)
+        if(ring[max_elt - 1].except != nullptr)
         {
             return true;
         }
@@ -484,7 +484,7 @@ bool PollRing::is_last_cmd_an_error()
     }
     else
     {
-        if(ring[insert_elt - 1].except != NULL)
+        if(ring[insert_elt - 1].except != nullptr)
         {
             return true;
         }
@@ -499,13 +499,13 @@ bool PollRing::is_last_attr_an_error()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except != NULL)
+        if(ring[max_elt - 1].except != nullptr)
         {
             return true;
         }
         else
         {
-            if(ring[max_elt - 1].attr_value_3 != NULL)
+            if(ring[max_elt - 1].attr_value_3 != nullptr)
             {
                 if((*(ring[max_elt - 1].attr_value_3))[0].err_list.length() != 0)
                 {
@@ -516,7 +516,7 @@ bool PollRing::is_last_attr_an_error()
                     return false;
                 }
             }
-            else if(ring[max_elt - 1].attr_value_4 != NULL)
+            else if(ring[max_elt - 1].attr_value_4 != nullptr)
             {
                 if((*(ring[max_elt - 1].attr_value_4))[0].err_list.length() != 0)
                 {
@@ -542,13 +542,13 @@ bool PollRing::is_last_attr_an_error()
     }
     else
     {
-        if(ring[insert_elt - 1].except != NULL)
+        if(ring[insert_elt - 1].except != nullptr)
         {
             return true;
         }
         else
         {
-            if(ring[insert_elt - 1].attr_value_3 != NULL)
+            if(ring[insert_elt - 1].attr_value_3 != nullptr)
             {
                 if((*(ring[insert_elt - 1].attr_value_3))[0].err_list.length() != 0)
                 {
@@ -559,7 +559,7 @@ bool PollRing::is_last_attr_an_error()
                     return false;
                 }
             }
-            else if(ring[insert_elt - 1].attr_value_4 != NULL)
+            else if(ring[insert_elt - 1].attr_value_4 != nullptr)
             {
                 if((*(ring[insert_elt - 1].attr_value_4))[0].err_list.length() != 0)
                 {
@@ -620,11 +620,11 @@ Tango::DevErrorList &PollRing::get_last_attr_error()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].attr_value_3 != NULL)
+        if(ring[max_elt - 1].attr_value_3 != nullptr)
         {
             return (*(ring[max_elt - 1].attr_value_3))[0].err_list;
         }
-        else if(ring[max_elt - 1].attr_value_4 != NULL)
+        else if(ring[max_elt - 1].attr_value_4 != nullptr)
         {
             return (*(ring[max_elt - 1].attr_value_4))[0].err_list;
         }
@@ -635,11 +635,11 @@ Tango::DevErrorList &PollRing::get_last_attr_error()
     }
     else
     {
-        if(ring[insert_elt - 1].attr_value_3 != NULL)
+        if(ring[insert_elt - 1].attr_value_3 != nullptr)
         {
             return (*(ring[insert_elt - 1].attr_value_3))[0].err_list;
         }
-        else if(ring[insert_elt - 1].attr_value_4 != NULL)
+        else if(ring[insert_elt - 1].attr_value_4 != nullptr)
         {
             return (*(ring[insert_elt - 1].attr_value_4))[0].err_list;
         }
@@ -665,7 +665,7 @@ CORBA::Any *PollRing::get_last_cmd_result()
 
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == NULL)
+        if(ring[max_elt - 1].except == nullptr)
         {
             tmp_any = ring[max_elt - 1].cmd_result;
             return new CORBA::Any(tmp_any->type(), const_cast<void *>(tmp_any->value()), false);
@@ -677,7 +677,7 @@ CORBA::Any *PollRing::get_last_cmd_result()
     }
     else
     {
-        if(ring[insert_elt - 1].except == NULL)
+        if(ring[insert_elt - 1].except == nullptr)
         {
             tmp_any = ring[insert_elt - 1].cmd_result;
             return new CORBA::Any(tmp_any->type(), const_cast<void *>(tmp_any->value()), false);
@@ -702,7 +702,7 @@ Tango::AttributeValue &PollRing::get_last_attr_value()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == NULL)
+        if(ring[max_elt - 1].except == nullptr)
         {
             return (*(ring[max_elt - 1].attr_value))[0];
         }
@@ -713,7 +713,7 @@ Tango::AttributeValue &PollRing::get_last_attr_value()
     }
     else
     {
-        if(ring[insert_elt - 1].except == NULL)
+        if(ring[insert_elt - 1].except == nullptr)
         {
             return (*(ring[insert_elt - 1].attr_value))[0];
         }
@@ -728,7 +728,7 @@ Tango::AttributeValue_3 &PollRing::get_last_attr_value_3()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == NULL)
+        if(ring[max_elt - 1].except == nullptr)
         {
             return (*(ring[max_elt - 1].attr_value_3))[0];
         }
@@ -739,7 +739,7 @@ Tango::AttributeValue_3 &PollRing::get_last_attr_value_3()
     }
     else
     {
-        if(ring[insert_elt - 1].except == NULL)
+        if(ring[insert_elt - 1].except == nullptr)
         {
             return (*(ring[insert_elt - 1].attr_value_3))[0];
         }
@@ -754,7 +754,7 @@ Tango::AttributeValue_4 &PollRing::get_last_attr_value_4()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == NULL)
+        if(ring[max_elt - 1].except == nullptr)
         {
             return (*(ring[max_elt - 1].attr_value_4))[0];
         }
@@ -765,7 +765,7 @@ Tango::AttributeValue_4 &PollRing::get_last_attr_value_4()
     }
     else
     {
-        if(ring[insert_elt - 1].except == NULL)
+        if(ring[insert_elt - 1].except == nullptr)
         {
             return (*(ring[insert_elt - 1].attr_value_4))[0];
         }
@@ -780,7 +780,7 @@ Tango::AttributeValue_5 &PollRing::get_last_attr_value_5()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == NULL)
+        if(ring[max_elt - 1].except == nullptr)
         {
             return (*(ring[max_elt - 1].attr_value_5))[0];
         }
@@ -791,7 +791,7 @@ Tango::AttributeValue_5 &PollRing::get_last_attr_value_5()
     }
     else
     {
-        if(ring[insert_elt - 1].except == NULL)
+        if(ring[insert_elt - 1].except == nullptr)
         {
             return (*(ring[insert_elt - 1].attr_value_5))[0];
         }
@@ -840,7 +840,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistoryList *ptr)
     {
         (*ptr)[seq_index].time = make_TimeVal(ring[index].when);
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             (*ptr)[seq_index].cmd_failed = false;
             (*ptr)[seq_index].value = *(ring[index].cmd_result);
@@ -910,7 +910,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
     {
         for(i = 0; i < n; i++)
         {
-            if(ring[index].except != NULL)
+            if(ring[index].except != nullptr)
             {
                 error_nb++;
             }
@@ -927,7 +927,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
     {
         for(i = 0; i < n; i++)
         {
-            if(ring[index].except == NULL)
+            if(ring[index].except == nullptr)
             {
                 int data_length = 0;
 
@@ -1028,20 +1028,20 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
     // Read buffer
     //
 
-    Tango::DevVarCharArray *new_tmp_uch = NULL;
-    Tango::DevVarShortArray *new_tmp_sh = NULL;
-    Tango::DevVarLongArray *new_tmp_lg = NULL;
-    Tango::DevVarFloatArray *new_tmp_fl = NULL;
-    Tango::DevVarDoubleArray *new_tmp_db = NULL;
-    Tango::DevVarUShortArray *new_tmp_ush = NULL;
-    Tango::DevVarULongArray *new_tmp_ulg = NULL;
-    Tango::DevVarStringArray *new_tmp_str = NULL;
-    Tango::DevVarBooleanArray *new_tmp_boo = NULL;
-    Tango::DevVarLong64Array *new_tmp_lg64 = NULL;
-    Tango::DevVarULong64Array *new_tmp_ulg64 = NULL;
-    Tango::DevVarLongStringArray *new_tmp_lg_str = NULL;
-    Tango::DevVarDoubleStringArray *new_tmp_db_str = NULL;
-    Tango::DevVarEncodedArray *new_tmp_enc = NULL;
+    Tango::DevVarCharArray *new_tmp_uch = nullptr;
+    Tango::DevVarShortArray *new_tmp_sh = nullptr;
+    Tango::DevVarLongArray *new_tmp_lg = nullptr;
+    Tango::DevVarFloatArray *new_tmp_fl = nullptr;
+    Tango::DevVarDoubleArray *new_tmp_db = nullptr;
+    Tango::DevVarUShortArray *new_tmp_ush = nullptr;
+    Tango::DevVarULongArray *new_tmp_ulg = nullptr;
+    Tango::DevVarStringArray *new_tmp_str = nullptr;
+    Tango::DevVarBooleanArray *new_tmp_boo = nullptr;
+    Tango::DevVarLong64Array *new_tmp_lg64 = nullptr;
+    Tango::DevVarULong64Array *new_tmp_ulg64 = nullptr;
+    Tango::DevVarLongStringArray *new_tmp_lg_str = nullptr;
+    Tango::DevVarDoubleStringArray *new_tmp_db_str = nullptr;
+    Tango::DevVarEncodedArray *new_tmp_enc = nullptr;
 
     Tango::DevShort sh;
     Tango::DevBoolean boo;
@@ -1090,7 +1090,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
         // Error treatement
         //
 
-        if(ring[index].except != NULL)
+        if(ring[index].except != nullptr)
         {
             bool new_err = false;
 
@@ -1177,12 +1177,12 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
         // The data
         //
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             switch(cmd_type)
             {
             case DEVVAR_CHARARRAY:
-                if(new_tmp_uch == NULL)
+                if(new_tmp_uch == nullptr)
                 {
                     new_tmp_uch = new DevVarCharArray();
                     new_tmp_uch->length(seq_size);
@@ -1193,7 +1193,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_SHORT:
-                if(new_tmp_sh == NULL)
+                if(new_tmp_sh == nullptr)
                 {
                     new_tmp_sh = new DevVarShortArray();
                     new_tmp_sh->length(seq_size);
@@ -1204,7 +1204,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_SHORTARRAY:
-                if(new_tmp_sh == NULL)
+                if(new_tmp_sh == nullptr)
                 {
                     new_tmp_sh = new DevVarShortArray();
                     new_tmp_sh->length(seq_size);
@@ -1215,7 +1215,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_LONG:
-                if(new_tmp_lg == NULL)
+                if(new_tmp_lg == nullptr)
                 {
                     new_tmp_lg = new DevVarLongArray();
                     new_tmp_lg->length(seq_size);
@@ -1226,7 +1226,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_LONGARRAY:
-                if(new_tmp_lg == NULL)
+                if(new_tmp_lg == nullptr)
                 {
                     new_tmp_lg = new DevVarLongArray();
                     new_tmp_lg->length(seq_size);
@@ -1237,7 +1237,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_FLOAT:
-                if(new_tmp_fl == NULL)
+                if(new_tmp_fl == nullptr)
                 {
                     new_tmp_fl = new DevVarFloatArray();
                     new_tmp_fl->length(seq_size);
@@ -1248,7 +1248,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_FLOATARRAY:
-                if(new_tmp_fl == NULL)
+                if(new_tmp_fl == nullptr)
                 {
                     new_tmp_fl = new DevVarFloatArray();
                     new_tmp_fl->length(seq_size);
@@ -1259,7 +1259,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_DOUBLE:
-                if(new_tmp_db == NULL)
+                if(new_tmp_db == nullptr)
                 {
                     new_tmp_db = new DevVarDoubleArray();
                     new_tmp_db->length(seq_size);
@@ -1270,7 +1270,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_DOUBLEARRAY:
-                if(new_tmp_db == NULL)
+                if(new_tmp_db == nullptr)
                 {
                     new_tmp_db = new DevVarDoubleArray();
                     new_tmp_db->length(seq_size);
@@ -1281,7 +1281,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_USHORT:
-                if(new_tmp_ush == NULL)
+                if(new_tmp_ush == nullptr)
                 {
                     new_tmp_ush = new DevVarUShortArray();
                     new_tmp_ush->length(seq_size);
@@ -1292,7 +1292,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_USHORTARRAY:
-                if(new_tmp_ush == NULL)
+                if(new_tmp_ush == nullptr)
                 {
                     new_tmp_ush = new DevVarUShortArray();
                     new_tmp_ush->length(seq_size);
@@ -1303,7 +1303,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_ULONG:
-                if(new_tmp_ulg == NULL)
+                if(new_tmp_ulg == nullptr)
                 {
                     new_tmp_ulg = new DevVarULongArray();
                     new_tmp_ulg->length(seq_size);
@@ -1314,7 +1314,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_ULONGARRAY:
-                if(new_tmp_ulg == NULL)
+                if(new_tmp_ulg == nullptr)
                 {
                     new_tmp_ulg = new DevVarULongArray();
                     new_tmp_ulg->length(seq_size);
@@ -1325,7 +1325,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_STRING:
-                if(new_tmp_str == NULL)
+                if(new_tmp_str == nullptr)
                 {
                     new_tmp_str = new DevVarStringArray();
                     new_tmp_str->length(seq_size);
@@ -1336,7 +1336,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_STRINGARRAY:
-                if(new_tmp_str == NULL)
+                if(new_tmp_str == nullptr)
                 {
                     new_tmp_str = new DevVarStringArray();
                     new_tmp_str->length(seq_size);
@@ -1347,7 +1347,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_BOOLEAN:
-                if(new_tmp_boo == NULL)
+                if(new_tmp_boo == nullptr)
                 {
                     new_tmp_boo = new DevVarBooleanArray();
                     new_tmp_boo->length(seq_size);
@@ -1358,7 +1358,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_BOOLEANARRAY:
-                if(new_tmp_boo == NULL)
+                if(new_tmp_boo == nullptr)
                 {
                     new_tmp_boo = new DevVarBooleanArray();
                     new_tmp_boo->length(seq_size);
@@ -1369,7 +1369,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_LONG64:
-                if(new_tmp_lg64 == NULL)
+                if(new_tmp_lg64 == nullptr)
                 {
                     new_tmp_lg64 = new DevVarLong64Array();
                     new_tmp_lg64->length(seq_size);
@@ -1380,7 +1380,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_LONG64ARRAY:
-                if(new_tmp_lg64 == NULL)
+                if(new_tmp_lg64 == nullptr)
                 {
                     new_tmp_lg64 = new DevVarLong64Array();
                     new_tmp_lg64->length(seq_size);
@@ -1391,7 +1391,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_ULONG64:
-                if(new_tmp_ulg64 == NULL)
+                if(new_tmp_ulg64 == nullptr)
                 {
                     new_tmp_ulg64 = new DevVarULong64Array();
                     new_tmp_ulg64->length(seq_size);
@@ -1402,7 +1402,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_ULONG64ARRAY:
-                if(new_tmp_ulg64 == NULL)
+                if(new_tmp_ulg64 == nullptr)
                 {
                     new_tmp_ulg64 = new DevVarULong64Array();
                     new_tmp_ulg64->length(seq_size);
@@ -1413,7 +1413,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_LONGSTRINGARRAY:
-                if(new_tmp_lg_str == NULL)
+                if(new_tmp_lg_str == nullptr)
                 {
                     new_tmp_lg_str = new DevVarLongStringArray();
                     new_tmp_lg_str->svalue.length(seq_str_size);
@@ -1426,7 +1426,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEVVAR_DOUBLESTRINGARRAY:
-                if(new_tmp_db_str == NULL)
+                if(new_tmp_db_str == nullptr)
                 {
                     new_tmp_db_str = new DevVarDoubleStringArray();
                     new_tmp_db_str->svalue.length(seq_str_size);
@@ -1439,7 +1439,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             case DEV_ENCODED:
-                if(new_tmp_enc == NULL)
+                if(new_tmp_enc == nullptr)
                 {
                     new_tmp_enc = new DevVarEncodedArray();
                     new_tmp_enc->length(seq_size);
@@ -1480,7 +1480,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
             switch(cmd_type)
             {
             case Tango::DEVVAR_CHARARRAY:
-                if(new_tmp_uch != NULL)
+                if(new_tmp_uch != nullptr)
                 {
                     ptr->value <<= new_tmp_uch;
                 }
@@ -1488,7 +1488,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_SHORTARRAY:
             case Tango::DEV_SHORT:
-                if(new_tmp_sh != NULL)
+                if(new_tmp_sh != nullptr)
                 {
                     ptr->value <<= new_tmp_sh;
                 }
@@ -1496,7 +1496,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_LONGARRAY:
             case Tango::DEV_LONG:
-                if(new_tmp_lg != NULL)
+                if(new_tmp_lg != nullptr)
                 {
                     ptr->value <<= new_tmp_lg;
                 }
@@ -1504,7 +1504,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_FLOATARRAY:
             case Tango::DEV_FLOAT:
-                if(new_tmp_fl != NULL)
+                if(new_tmp_fl != nullptr)
                 {
                     ptr->value <<= new_tmp_fl;
                 }
@@ -1512,7 +1512,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_DOUBLEARRAY:
             case Tango::DEV_DOUBLE:
-                if(new_tmp_db != NULL)
+                if(new_tmp_db != nullptr)
                 {
                     ptr->value <<= new_tmp_db;
                 }
@@ -1520,7 +1520,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_USHORTARRAY:
             case Tango::DEV_USHORT:
-                if(new_tmp_db != NULL)
+                if(new_tmp_db != nullptr)
                 {
                     ptr->value <<= new_tmp_db;
                 }
@@ -1528,7 +1528,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_ULONGARRAY:
             case Tango::DEV_ULONG:
-                if(new_tmp_db != NULL)
+                if(new_tmp_db != nullptr)
                 {
                     ptr->value <<= new_tmp_db;
                 }
@@ -1536,7 +1536,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_STRINGARRAY:
             case Tango::DEV_STRING:
-                if(new_tmp_str != NULL)
+                if(new_tmp_str != nullptr)
                 {
                     ptr->value <<= new_tmp_str;
                 }
@@ -1544,7 +1544,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_BOOLEANARRAY:
             case Tango::DEV_BOOLEAN:
-                if(new_tmp_boo != NULL)
+                if(new_tmp_boo != nullptr)
                 {
                     ptr->value <<= new_tmp_boo;
                 }
@@ -1552,7 +1552,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_LONG64ARRAY:
             case Tango::DEV_LONG64:
-                if(new_tmp_lg64 != NULL)
+                if(new_tmp_lg64 != nullptr)
                 {
                     ptr->value <<= new_tmp_lg64;
                 }
@@ -1560,28 +1560,28 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
 
             case Tango::DEVVAR_ULONG64ARRAY:
             case Tango::DEV_ULONG64:
-                if(new_tmp_ulg64 != NULL)
+                if(new_tmp_ulg64 != nullptr)
                 {
                     ptr->value <<= new_tmp_ulg64;
                 }
                 break;
 
             case Tango::DEVVAR_LONGSTRINGARRAY:
-                if(new_tmp_lg_str != NULL)
+                if(new_tmp_lg_str != nullptr)
                 {
                     ptr->value <<= new_tmp_lg_str;
                 }
                 break;
 
             case Tango::DEVVAR_DOUBLESTRINGARRAY:
-                if(new_tmp_db_str != NULL)
+                if(new_tmp_db_str != nullptr)
                 {
                     ptr->value <<= new_tmp_db_str;
                 }
                 break;
 
             case Tango::DEV_ENCODED:
-                if(new_tmp_enc != NULL)
+                if(new_tmp_enc != nullptr)
                 {
                     ptr->value <<= new_tmp_enc;
                 }
@@ -1648,7 +1648,7 @@ void PollRing::get_attr_history(long n, Tango::DevAttrHistoryList *ptr, long typ
     {
         (*ptr)[seq_index].value.time = make_TimeVal(ring[index].when);
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             (*ptr)[seq_index].attr_failed = false;
             (*ptr)[seq_index].value.quality = (*ring[index].attr_value)[0].quality;
@@ -1822,7 +1822,7 @@ void PollRing::get_attr_history(long n, Tango::DevAttrHistoryList_3 *ptr, long t
     {
         (*ptr)[seq_index].value.time = make_TimeVal(ring[index].when);
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             (*ptr)[seq_index].value.err_list = (*ring[index].attr_value_3)[0].err_list;
             (*ptr)[seq_index].value.quality = (*ring[index].attr_value_3)[0].quality;
@@ -2009,7 +2009,7 @@ void PollRing::get_attr_history_43(long n, Tango::DevAttrHistoryList_3 *ptr, lon
     {
         (*ptr)[seq_index].value.time = make_TimeVal(ring[index].when);
 
-        if(ring[index].except == NULL)
+        if(ring[index].except == nullptr)
         {
             (*ptr)[seq_index].value.err_list = (*ring[index].attr_value_4)[0].err_list;
             (*ptr)[seq_index].value.quality = (*ring[index].attr_value_4)[0].quality;

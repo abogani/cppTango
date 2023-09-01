@@ -54,7 +54,7 @@ Dur duration_abs(Dur d)
 
 } // namespace
 
-DeviceImpl *PollThread::dev_to_del = NULL;
+DeviceImpl *PollThread::dev_to_del = nullptr;
 std::string PollThread::name_to_del = "";
 PollObjType PollThread::type_to_del = Tango::POLL_CMD;
 
@@ -131,8 +131,8 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
     {
         WorkItem wo;
 
-        wo.dev = NULL;
-        wo.poll_list = NULL;
+        wo.dev = nullptr;
+        wo.poll_list = nullptr;
         wo.type = STORE_SUBDEV;
         wo.update = std::chrono::minutes(30);
         wo.name.push_back(std::string("Sub device property storage"));
@@ -193,7 +193,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
         {
             std::cerr << "OUPS !! A omni thread fatal exception received by a polling thread !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -203,7 +203,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
             std::cerr << "OUPS !! A Tango::DevFailed exception received by a polling thread !!!!!!!!" << std::endl;
             Tango::Except::print_exception(e);
 #ifndef _TG_WINDOWS_
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -213,7 +213,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
             std::cerr << "OUPS !! A CORBA::Exception exception received by a polling thread !!!!!!!!" << std::endl;
             Tango::Except::print_exception(e);
 #ifndef _TG_WINDOWS_
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -224,7 +224,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
                       << std::endl;
             std::cerr << ex.what() << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -239,7 +239,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //+----------------------------------------------------------------------------------------------------------------
@@ -693,8 +693,8 @@ void PollThread::execute_cmd()
 
     case Tango::POLL_ADD_HEARTBEAT:
         TANGO_LOG_DEBUG << "Received a add heartbeat command" << std::endl;
-        wo.dev = NULL;
-        wo.poll_list = NULL;
+        wo.dev = nullptr;
+        wo.poll_list = nullptr;
         wo.type = EVENT_HEARTBEAT;
         wo.update = std::chrono::milliseconds(9000);
         wo.name.push_back(std::string("Event heartbeat"));
@@ -1423,8 +1423,8 @@ void PollThread::compute_sleep_time()
 
 void PollThread::err_out_of_sync(WorkItem &to_do)
 {
-    EventSupplier *event_supplier_nd = NULL;
-    EventSupplier *event_supplier_zmq = NULL;
+    EventSupplier *event_supplier_nd = nullptr;
+    EventSupplier *event_supplier_zmq = nullptr;
 
     //
     // Retrieve the event supplier(s) for this attribute
@@ -1435,16 +1435,16 @@ void PollThread::err_out_of_sync(WorkItem &to_do)
     {
         Attribute &att = to_do.dev->get_device_attr()->get_attr_by_name(to_do.name[ctr].c_str());
 
-        if(att.use_notifd_event() == true && event_supplier_nd == NULL)
+        if(att.use_notifd_event() == true && event_supplier_nd == nullptr)
         {
             event_supplier_nd = Util::instance()->get_notifd_event_supplier();
         }
-        if(att.use_zmq_event() == true && event_supplier_zmq == NULL)
+        if(att.use_zmq_event() == true && event_supplier_zmq == nullptr)
         {
             event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
         }
 
-        if((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
+        if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
         {
             Tango::DevErrorList errs;
             errs.length(1);
@@ -1483,14 +1483,14 @@ void PollThread::err_out_of_sync(WorkItem &to_do)
             //
 
             SendEventType send_event;
-            if(event_supplier_nd != NULL)
+            if(event_supplier_nd != nullptr)
             {
                 send_event = event_supplier_nd->detect_and_push_events(
                     to_do.dev, ad, &except, to_do.name[ctr], PollClock::now());
             }
-            if(event_supplier_zmq != NULL)
+            if(event_supplier_zmq != nullptr)
             {
-                if(event_supplier_nd != NULL)
+                if(event_supplier_nd != nullptr)
                 {
                     std::vector<std::string> f_names;
                     std::vector<double> f_data;
@@ -1542,8 +1542,8 @@ void PollThread::poll_cmd(WorkItem &to_do)
     TANGO_LOG_DEBUG << "----------> Time = " << std::fixed << duration_s(now.time_since_epoch()) << " s"
                     << ", Dev name = " << to_do.dev->get_name() << ", Cmd name = " << to_do.name[0] << std::endl;
 
-    CORBA::Any *argout = NULL;
-    Tango::DevFailed *save_except = NULL;
+    CORBA::Any *argout = nullptr;
+    Tango::DevFailed *save_except = nullptr;
 
     std::vector<PollObj *>::iterator ite;
     bool cmd_failed = false;
@@ -1627,11 +1627,11 @@ void PollThread::poll_attr(WorkItem &to_do)
     TANGO_LOG_DEBUG << "----------> Time = " << std::fixed << duration_s(now.time_since_epoch()) << " s"
                     << ", Dev name = " << to_do.dev->get_name() << ", Attr name = " << att_list << std::endl;
 
-    Tango::AttributeValueList *argout = NULL;
-    Tango::AttributeValueList_3 *argout_3 = NULL;
-    Tango::AttributeValueList_4 *argout_4 = NULL;
-    Tango::AttributeValueList_5 *argout_5 = NULL;
-    Tango::DevFailed *save_except = NULL;
+    Tango::AttributeValueList *argout = nullptr;
+    Tango::AttributeValueList_3 *argout_3 = nullptr;
+    Tango::AttributeValueList_4 *argout_4 = nullptr;
+    Tango::AttributeValueList_5 *argout_5 = nullptr;
+    Tango::DevFailed *save_except = nullptr;
     bool attr_failed = false;
     std::vector<PollObj *>::iterator ite;
     std::map<size_t, Tango::DevFailed *> map_except;
@@ -1746,23 +1746,23 @@ void PollThread::poll_attr(WorkItem &to_do)
     // accordingly
     //
 
-    EventSupplier *event_supplier_nd = NULL;
-    EventSupplier *event_supplier_zmq = NULL;
+    EventSupplier *event_supplier_nd = nullptr;
+    EventSupplier *event_supplier_zmq = nullptr;
 
     for(size_t ctr = 0; ctr < nb_obj; ctr++)
     {
         Attribute &att = to_do.dev->get_device_attr()->get_attr_by_name(to_do.name[ctr].c_str());
 
-        if(att.use_notifd_event() == true && event_supplier_nd == NULL)
+        if(att.use_notifd_event() == true && event_supplier_nd == nullptr)
         {
             event_supplier_nd = Util::instance()->get_notifd_event_supplier();
         }
-        if(att.use_zmq_event() == true && event_supplier_zmq == NULL)
+        if(att.use_zmq_event() == true && event_supplier_zmq == nullptr)
         {
             event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
         }
 
-        if((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
+        if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
         {
             if(attr_failed == true)
             {
@@ -1793,14 +1793,14 @@ void PollThread::poll_attr(WorkItem &to_do)
                 //
 
                 SendEventType send_event;
-                if(event_supplier_nd != NULL)
+                if(event_supplier_nd != nullptr)
                 {
                     send_event = event_supplier_nd->detect_and_push_events(
                         to_do.dev, ad, save_except, to_do.name[ctr], before_cmd);
                 }
-                if(event_supplier_zmq != NULL)
+                if(event_supplier_zmq != nullptr)
                 {
-                    if(event_supplier_nd != NULL)
+                    if(event_supplier_nd != nullptr)
                     {
                         std::vector<std::string> f_names;
                         std::vector<double> f_data;
@@ -1878,14 +1878,14 @@ void PollThread::poll_attr(WorkItem &to_do)
                     tmp_except = ite2->second;
                 }
 
-                if(event_supplier_nd != NULL)
+                if(event_supplier_nd != nullptr)
                 {
                     send_event = event_supplier_nd->detect_and_push_events(
                         to_do.dev, ad, tmp_except, to_do.name[ctr], before_cmd);
                 }
-                if(event_supplier_zmq != NULL)
+                if(event_supplier_zmq != nullptr)
                 {
-                    if(event_supplier_nd != NULL)
+                    if(event_supplier_nd != nullptr)
                     {
                         std::vector<std::string> f_names;
                         std::vector<double> f_data;
@@ -2076,13 +2076,13 @@ void PollThread::eve_heartbeat()
 
     EventSupplier *event_supplier;
     event_supplier = Util::instance()->get_zmq_event_supplier();
-    if((event_supplier != NULL) && (send_heartbeat == true) && (event_supplier->get_one_subscription_cmd() == true))
+    if((event_supplier != nullptr) && (send_heartbeat == true) && (event_supplier->get_one_subscription_cmd() == true))
     {
         event_supplier->push_heartbeat_event();
     }
 
     event_supplier = Util::instance()->get_notifd_event_supplier();
-    if((event_supplier != NULL) && (send_heartbeat == true) && (event_supplier->get_one_subscription_cmd() == true))
+    if((event_supplier != nullptr) && (send_heartbeat == true) && (event_supplier->get_one_subscription_cmd() == true))
     {
         event_supplier->push_heartbeat_event();
     }

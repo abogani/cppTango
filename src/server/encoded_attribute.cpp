@@ -55,11 +55,11 @@ EncodedAttribute::EncodedAttribute() :
     ext(nullptr)
 {
     buffer_array = (unsigned char **) calloc(1, sizeof(unsigned char *));
-    buffer_array[0] = NULL;
+    buffer_array[0] = nullptr;
     buffSize_array = (std::size_t *) calloc(1, sizeof(std::size_t));
     buffSize_array[0] = 0;
-    format = NULL;
-    mutex_array = NULL;
+    format = nullptr;
+    mutex_array = nullptr;
     index = 0;
     buf_elt_nb = 1;
 }
@@ -72,10 +72,10 @@ EncodedAttribute::EncodedAttribute(int si, bool excl) :
     buffSize_array = (std::size_t *) calloc(si, sizeof(std::size_t));
     for(int i = 0; i < si; i++)
     {
-        buffer_array[i] = NULL;
+        buffer_array[i] = nullptr;
         buffSize_array[i] = 0;
     }
-    format = NULL;
+    format = nullptr;
     index = 0;
     buf_elt_nb = si;
 
@@ -96,7 +96,7 @@ EncodedAttribute::~EncodedAttribute()
     SAFE_FREE(buffer_array);
     SAFE_FREE(buffSize_array);
 
-    if(mutex_array != NULL)
+    if(mutex_array != nullptr)
     {
         delete[] mutex_array;
     }
@@ -265,7 +265,7 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
     }
 
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
-    if(encDataSeq.operator->() == NULL)
+    if(encDataSeq.operator->() == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(ApiDataExcept,
                                   API_IncompatibleAttrArgumentType,
@@ -282,7 +282,7 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a color format");
     }
 
-    unsigned char *rawBuff = NULL;
+    unsigned char *rawBuff = nullptr;
 
     DevVarEncodedArray &encData = encDataSeq.inout();
     DevVarCharArray &encBuff = encData[0].encoded_data;
@@ -343,7 +343,7 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
     }
 
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
-    if(encDataSeq.operator->() == NULL)
+    if(encDataSeq.operator->() == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(ApiDataExcept,
                                   API_IncompatibleAttrArgumentType,
@@ -360,7 +360,7 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a grayscale 8bit format");
     }
 
-    unsigned char *rawBuff = NULL;
+    unsigned char *rawBuff = nullptr;
 
     DevVarEncodedArray &encData = encDataSeq.inout();
     DevVarCharArray &encBuff = encData[0].encoded_data;
@@ -408,7 +408,7 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
     }
 
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
-    if(encDataSeq.operator->() == NULL)
+    if(encDataSeq.operator->() == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(ApiDataExcept,
                                   API_IncompatibleAttrArgumentType,
@@ -424,7 +424,7 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a grayscale 16 bits format");
     }
 
-    unsigned char *rawBuff = NULL;
+    unsigned char *rawBuff = nullptr;
 
     DevVarEncodedArray &encData = encDataSeq.inout();
     DevVarCharArray &encBuff = encData[0].encoded_data;

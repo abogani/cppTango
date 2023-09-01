@@ -214,7 +214,7 @@ void Connection::get_asynch_replies()
     //
 
     TgRequest *tg_ptr;
-    while((tg_ptr = ApiUtil::instance()->get_pasyn_table()->get_request(this)) != NULL)
+    while((tg_ptr = ApiUtil::instance()->get_pasyn_table()->get_request(this)) != nullptr)
     {
         switch(tg_ptr->req_type)
         {
@@ -254,7 +254,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
     errors.length(0);
 
     CORBA::NVList_ptr req_arg = req->arguments();
-    const char *cmd = NULL;
+    const char *cmd = nullptr;
     CORBA::NamedValue_ptr nv = req_arg->item(0);
     *(nv->value()) >>= cmd;
 
@@ -263,7 +263,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
     //
 
     CORBA::Environment_ptr env = req->env();
-    if(!CORBA::is_nil(env) && (env->exception() == NULL))
+    if(!CORBA::is_nil(env) && (env->exception() == nullptr))
     {
         //
         // Get received value
@@ -293,7 +293,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
         CORBA::SystemException *sys_ex;
         bool to_except = false;
 
-        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
         {
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
@@ -321,7 +321,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
             }
         }
 
-        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
         {
             //
             // It is a UserUnknownException exception. This means that the
@@ -348,7 +348,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
             errors[nb_err].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
             errors[nb_err].reason = Tango::string_dup(API_CommandFailed);
         }
-        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL) && (to_except == false))
+        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (to_except == false))
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -406,7 +406,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
 
 void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
 {
-    std::vector<DeviceAttribute> *dev_attr = NULL;
+    std::vector<DeviceAttribute> *dev_attr = nullptr;
     Tango::DevErrorList errors(2);
     errors.length(0);
 
@@ -427,7 +427,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
     //
 
     CORBA::Environment_ptr env = req->env();
-    if(!CORBA::is_nil(env) && (env->exception() == NULL))
+    if(!CORBA::is_nil(env) && (env->exception() == nullptr))
     {
         //
         // Get received value
@@ -482,7 +482,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
                 }
                 else
                 {
-                    ApiUtil::attr_to_device(NULL, &((*received_3)[i]), version, &((*dev_attr)[i]));
+                    ApiUtil::attr_to_device(nullptr, &((*received_3)[i]), version, &((*dev_attr)[i]));
                 }
 
                 //
@@ -507,7 +507,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
             }
             else
             {
-                ApiUtil::attr_to_device(&((*received)[i]), NULL, version, &((*dev_attr)[i]));
+                ApiUtil::attr_to_device(&((*received)[i]), nullptr, version, &((*dev_attr)[i]));
             }
         }
     }
@@ -527,7 +527,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
         //
 
         CORBA::TRANSIENT *tra;
-        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
         {
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
@@ -562,7 +562,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
             }
         }
 
-        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
         {
             //
             // It is a UserUnknownException exception. This means that the
@@ -595,7 +595,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
             errors[nb_err].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
             errors[nb_err].reason = Tango::string_dup(API_AttributeFailed);
         }
-        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL) && (to_except == false))
+        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (to_except == false))
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -685,7 +685,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
     //
 
     CORBA::Environment_ptr env = req->env();
-    if(!CORBA::is_nil(env) && (env->exception() != NULL))
+    if(!CORBA::is_nil(env) && (env->exception() != nullptr))
     {
         //
         // The reply is an exception
@@ -701,7 +701,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
         //
 
         CORBA::TRANSIENT *tra;
-        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != NULL)
+        if((tra = CORBA::TRANSIENT::_downcast(ex_ptr)) != nullptr)
         {
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
@@ -740,16 +740,16 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
             }
         }
 
-        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != NULL)
+        if((unk_ex = CORBA::UnknownUserException::_downcast(ex_ptr)) != nullptr)
         {
             //
             // It is a UserUnknownException exception. This means that the
             // server has sent a DevFailed exception
             //
 
-            const Tango::DevFailed *serv_ex = NULL;
+            const Tango::DevFailed *serv_ex = nullptr;
             Tango::DevFailed ex;
-            const Tango::MultiDevFailed *multi_serv_ex = NULL;
+            const Tango::MultiDevFailed *multi_serv_ex = nullptr;
             Tango::MultiDevFailed m_ex;
             TangoSys_OMemStream desc;
 
@@ -831,7 +831,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
                 }
             }
         }
-        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != NULL) && (to_except == false))
+        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (to_except == false))
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -922,7 +922,7 @@ void Connection::get_asynch_replies(long call_timeout)
     //
 
     TgRequest *tg_ptr;
-    while((tg_ptr = ApiUtil::instance()->get_pasyn_table()->get_request(this)) != NULL)
+    while((tg_ptr = ApiUtil::instance()->get_pasyn_table()->get_request(this)) != nullptr)
     {
         switch(tg_ptr->req_type)
         {

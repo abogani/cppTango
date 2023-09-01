@@ -143,7 +143,7 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
 
     Attribute &attr = device_impl->dev_attr->get_attr_by_name(attr_name.c_str());
 
-    now = time(NULL);
+    now = time(nullptr);
 
     {
         omni_mutex_lock oml(event_mutex);
@@ -335,15 +335,15 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
 
     Tango::AttrQuality the_quality;
 
-    if(attr_value.attr_val_5 != NULL)
+    if(attr_value.attr_val_5 != nullptr)
     {
         the_quality = attr_value.attr_val_5->quality;
     }
-    else if(attr_value.attr_val_4 != NULL)
+    else if(attr_value.attr_val_4 != nullptr)
     {
         the_quality = attr_value.attr_val_4->quality;
     }
-    else if(attr_value.attr_val_3 != NULL)
+    else if(attr_value.attr_val_3 != nullptr)
     {
         the_quality = attr_value.attr_val_3->quality;
     }
@@ -384,7 +384,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
     // Check whether the data quality has changed. Fire event on a quality change.
     //
 
-    if((except == NULL) && (attr.prev_change_event.quality != the_quality))
+    if((except == nullptr) && (attr.prev_change_event.quality != the_quality))
     {
         is_change = true;
         quality_change = true;
@@ -480,15 +480,15 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
             inc_ctr = false;
             if(need_free == true)
             {
-                if(sent_value.attr_val_5 != NULL)
+                if(sent_value.attr_val_5 != nullptr)
                 {
                     delete sent_value.attr_val_5;
                 }
-                else if(sent_value.attr_val_4 != NULL)
+                else if(sent_value.attr_val_4 != nullptr)
                 {
                     delete sent_value.attr_val_4;
                 }
-                else if(sent_value.attr_val_3 != NULL)
+                else if(sent_value.attr_val_3 != nullptr)
                 {
                     delete sent_value.attr_val_3;
                 }
@@ -552,15 +552,15 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
 
     Tango::AttrQuality the_quality;
 
-    if(attr_value.attr_val_5 != NULL)
+    if(attr_value.attr_val_5 != nullptr)
     {
         the_quality = attr_value.attr_val_5->quality;
     }
-    else if(attr_value.attr_val_4 != NULL)
+    else if(attr_value.attr_val_4 != nullptr)
     {
         the_quality = attr_value.attr_val_4->quality;
     }
-    else if(attr_value.attr_val_3 != NULL)
+    else if(attr_value.attr_val_3 != nullptr)
     {
         the_quality = attr_value.attr_val_3->quality;
     }
@@ -639,7 +639,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
     // check whether the data quality has changed. Fire event on a quality change.
     //
 
-    if(except == NULL && attr.prev_archive_event.quality != the_quality)
+    if(except == nullptr && attr.prev_archive_event.quality != the_quality)
     {
         is_change = true;
         quality_change = true;
@@ -753,15 +753,15 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
             inc_ctr = false;
             if(need_free == true)
             {
-                if(sent_value.attr_val_5 != NULL)
+                if(sent_value.attr_val_5 != nullptr)
                 {
                     delete sent_value.attr_val_5;
                 }
-                else if(sent_value.attr_val_4 != NULL)
+                else if(sent_value.attr_val_4 != nullptr)
                 {
                     delete sent_value.attr_val_4;
                 }
-                else if(sent_value.attr_val_3 != NULL)
+                else if(sent_value.attr_val_3 != nullptr)
                 {
                     delete sent_value.attr_val_3;
                 }
@@ -915,15 +915,15 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
             inc_ctr = false;
             if(need_free == true)
             {
-                if(sent_value.attr_val_5 != NULL)
+                if(sent_value.attr_val_5 != nullptr)
                 {
                     delete sent_value.attr_val_5;
                 }
-                else if(sent_value.attr_val_4 != NULL)
+                else if(sent_value.attr_val_4 != nullptr)
                 {
                     delete sent_value.attr_val_4;
                 }
-                else if(sent_value.attr_val_3 != NULL)
+                else if(sent_value.attr_val_3 != nullptr)
                 {
                     delete sent_value.attr_val_3;
                 }
@@ -980,17 +980,17 @@ bool EventSupplier::detect_change(Attribute &attr,
     TANGO_LOG_DEBUG << "EventSupplier::detect_change(): called for attribute " << attr.get_name() << std::endl;
 
     Tango::AttrQuality the_new_quality;
-    const CORBA::Any *the_new_any = NULL;
+    const CORBA::Any *the_new_any = nullptr;
 
-    if(attr_value.attr_val_5 != NULL)
+    if(attr_value.attr_val_5 != nullptr)
     {
         the_new_quality = attr_value.attr_val_5->quality;
     }
-    else if(attr_value.attr_val_4 != NULL)
+    else if(attr_value.attr_val_4 != nullptr)
     {
         the_new_quality = attr_value.attr_val_4->quality;
     }
-    else if(attr_value.attr_val_3 != NULL)
+    else if(attr_value.attr_val_3 != nullptr)
     {
         the_new_quality = attr_value.attr_val_3->quality;
         the_new_any = &(attr_value.attr_val_3->value);
@@ -1012,7 +1012,7 @@ bool EventSupplier::detect_change(Attribute &attr,
         // force an event only when the last reading was not returning an exception or not returning the same exception
         //
 
-        if(except != NULL)
+        if(except != nullptr)
         {
             if(attr.prev_archive_event.err == true)
             {
@@ -1031,7 +1031,7 @@ bool EventSupplier::detect_change(Attribute &attr,
         // force an archive event when the last reading was still returning an exception
         //
 
-        if((except == NULL) && (attr.prev_archive_event.err == true))
+        if((except == nullptr) && (attr.prev_archive_event.err == true))
         {
             force_change = true;
             return true;
@@ -1069,7 +1069,7 @@ bool EventSupplier::detect_change(Attribute &attr,
         // force an event only when the last reading was not returning an exception or not returning the same exception
         //
 
-        if(except != NULL)
+        if(except != nullptr)
         {
             if(attr.prev_change_event.err == true)
             {
@@ -1088,7 +1088,7 @@ bool EventSupplier::detect_change(Attribute &attr,
         // force an change event when the last reding was still returning an exception
         //
 
-        if((except == NULL) && (attr.prev_change_event.err == true))
+        if((except == nullptr) && (attr.prev_change_event.err == true))
         {
             force_change = true;
             return true;
@@ -1176,7 +1176,7 @@ bool EventSupplier::detect_change(Attribute &attr,
             unsigned int curr_seq_nb, prev_seq_nb;
             unsigned int i;
 
-            if(the_new_any != NULL)
+            if(the_new_any != nullptr)
             {
                 ty = the_new_any->type();
             }
@@ -1185,15 +1185,15 @@ bool EventSupplier::detect_change(Attribute &attr,
             // First, analyse the DevEncoded data type
             //
 
-            if(((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_ENCODED)) ||
-               ((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_ENCODED)))
+            if(((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_ENCODED)) ||
+               ((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_ENCODED)))
             {
                 unsigned int curr_seq_str_nb, prev_seq_str_nb;
                 const char *curr_encoded_format, *prev_encoded_format;
                 const Tango::DevVarUCharArray *curr_data_ptr, *prev_data_ptr;
 
                 const Tango::DevVarEncodedArray *un_seq;
-                if(attr_value.attr_val_5 != NULL)
+                if(attr_value.attr_val_5 != nullptr)
                 {
                     un_seq = &(attr_value.attr_val_5->value.encoded_att_value());
                 }
@@ -1283,7 +1283,7 @@ bool EventSupplier::detect_change(Attribute &attr,
             {
                 DevState curr_sta, prev_sta;
                 bool dev_state_type = false;
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == DEVICE_STATE))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == DEVICE_STATE))
                 {
                     dev_state_type = true;
                     curr_sta = attr_value.attr_val_5->value.dev_state_att();
@@ -1296,7 +1296,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                         prev_sta = attr.prev_change_event.value_4.dev_state_att();
                     }
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == DEVICE_STATE))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == DEVICE_STATE))
                 {
                     dev_state_type = true;
                     curr_sta = attr_value.attr_val_4->value.dev_state_att();
@@ -1309,7 +1309,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                         prev_sta = attr.prev_change_event.value_4.dev_state_att();
                     }
                 }
-                else if((the_new_any != NULL) && (ty->kind() == CORBA::tk_enum))
+                else if((the_new_any != nullptr) && (ty->kind() == CORBA::tk_enum))
                 {
                     dev_state_type = true;
                     *the_new_any >>= curr_sta;
@@ -1336,7 +1336,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 CORBA::TypeCode_var ty_alias;
                 CORBA::TypeCode_var ty_seq;
 
-                if(the_new_any != NULL)
+                if(the_new_any != nullptr)
                 {
                     ty_alias = ty->content_type();
                     ty_seq = ty_alias->content_type();
@@ -1348,15 +1348,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool long_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_LONG))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_LONG))
                 {
                     GET_SEQ(long_type, curr_seq_lo, long_att_value, prev_seq_lo, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_LONG))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_LONG))
                 {
                     GET_SEQ(long_type, curr_seq_lo, long_att_value, prev_seq_lo, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_long))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_long))
                 {
                     long_type = true;
                     *the_new_any >>= curr_seq_lo;
@@ -1421,15 +1421,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool long_long_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_LONG64))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_LONG64))
                 {
                     GET_SEQ(long_long_type, curr_seq_64, long64_att_value, prev_seq_64, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_LONG64))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_LONG64))
                 {
                     GET_SEQ(long_long_type, curr_seq_64, long64_att_value, prev_seq_64, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_longlong))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_longlong))
                 {
                     long_long_type = true;
                     *the_new_any >>= curr_seq_64;
@@ -1494,15 +1494,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool short_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_SHORT))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_SHORT))
                 {
                     GET_SEQ(short_type, curr_seq_sh, short_att_value, prev_seq_sh, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_SHORT))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_SHORT))
                 {
                     GET_SEQ(short_type, curr_seq_sh, short_att_value, prev_seq_sh, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_short))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_short))
                 {
                     short_type = true;
                     *the_new_any >>= curr_seq_sh;
@@ -1583,15 +1583,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool double_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_DOUBLE))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_DOUBLE))
                 {
                     GET_SEQ(double_type, curr_seq_db, double_att_value, prev_seq_db, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_DOUBLE))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_DOUBLE))
                 {
                     GET_SEQ(double_type, curr_seq_db, double_att_value, prev_seq_db, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_double))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_double))
                 {
                     double_type = true;
                     *the_new_any >>= curr_seq_db;
@@ -1675,15 +1675,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool string_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_STRING))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_STRING))
                 {
                     GET_SEQ(string_type, curr_seq_str, string_att_value, prev_seq_str, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_STRING))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_STRING))
                 {
                     GET_SEQ(string_type, curr_seq_str, string_att_value, prev_seq_str, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_string))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_string))
                 {
                     string_type = true;
                     *the_new_any >>= curr_seq_str;
@@ -1724,15 +1724,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool float_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_FLOAT))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_FLOAT))
                 {
                     GET_SEQ(float_type, curr_seq_fl, float_att_value, prev_seq_fl, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_FLOAT))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_FLOAT))
                 {
                     GET_SEQ(float_type, curr_seq_fl, float_att_value, prev_seq_fl, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_float))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_float))
                 {
                     float_type = true;
                     *the_new_any >>= curr_seq_fl;
@@ -1815,15 +1815,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool unsigned_short_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_USHORT))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_USHORT))
                 {
                     GET_SEQ(unsigned_short_type, curr_seq_ush, ushort_att_value, prev_seq_ush, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_USHORT))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_USHORT))
                 {
                     GET_SEQ(unsigned_short_type, curr_seq_ush, ushort_att_value, prev_seq_ush, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_ushort))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_ushort))
                 {
                     unsigned_short_type = true;
                     *the_new_any >>= curr_seq_ush;
@@ -1887,15 +1887,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool boolean_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_BOOL))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_BOOL))
                 {
                     GET_SEQ(boolean_type, curr_seq_bo, bool_att_value, prev_seq_bo, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_BOOL))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_BOOL))
                 {
                     GET_SEQ(boolean_type, curr_seq_bo, bool_att_value, prev_seq_bo, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_boolean))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_boolean))
                 {
                     boolean_type = true;
                     *the_new_any >>= curr_seq_bo;
@@ -1936,15 +1936,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool char_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_UCHAR))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_UCHAR))
                 {
                     GET_SEQ(char_type, curr_seq_uch, uchar_att_value, prev_seq_uch, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_UCHAR))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_UCHAR))
                 {
                     GET_SEQ(char_type, curr_seq_uch, uchar_att_value, prev_seq_uch, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_octet))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_octet))
                 {
                     char_type = true;
                     *the_new_any >>= curr_seq_uch;
@@ -2008,15 +2008,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool unsigned_long_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_ULONG))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_ULONG))
                 {
                     GET_SEQ(unsigned_long_type, curr_seq_ulo, ulong_att_value, prev_seq_ulo, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_ULONG))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_ULONG))
                 {
                     GET_SEQ(unsigned_long_type, curr_seq_ulo, ulong_att_value, prev_seq_ulo, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_ulong))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_ulong))
                 {
                     unsigned_long_type = true;
                     *the_new_any >>= curr_seq_ulo;
@@ -2080,15 +2080,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool unsigned_64_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_ULONG64))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_ULONG64))
                 {
                     GET_SEQ(unsigned_64_type, curr_seq_u64, ulong64_att_value, prev_seq_u64, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_ULONG64))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_ULONG64))
                 {
                     GET_SEQ(unsigned_64_type, curr_seq_u64, ulong64_att_value, prev_seq_u64, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_ulonglong))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_ulonglong))
                 {
                     unsigned_64_type = true;
                     *the_new_any >>= curr_seq_u64;
@@ -2153,15 +2153,15 @@ bool EventSupplier::detect_change(Attribute &attr,
 
                 bool state_type = false;
 
-                if((attr_value.attr_val_5 != NULL) && (attr_value.attr_val_5->value._d() == ATT_STATE))
+                if((attr_value.attr_val_5 != nullptr) && (attr_value.attr_val_5->value._d() == ATT_STATE))
                 {
                     GET_SEQ(state_type, curr_seq_state, state_att_value, prev_seq_state, attr_value.attr_val_5);
                 }
-                else if((attr_value.attr_val_4 != NULL) && (attr_value.attr_val_4->value._d() == ATT_STATE))
+                else if((attr_value.attr_val_4 != nullptr) && (attr_value.attr_val_4->value._d() == ATT_STATE))
                 {
                     GET_SEQ(state_type, curr_seq_state, state_att_value, prev_seq_state, attr_value.attr_val_4);
                 }
-                else if((the_new_any != NULL) && (ty_seq->kind() == CORBA::tk_enum))
+                else if((the_new_any != nullptr) && (ty_seq->kind() == CORBA::tk_enum))
                 {
                     state_type = true;
                     *the_new_any >>= curr_seq_state;
@@ -2250,7 +2250,7 @@ void EventSupplier::push_att_data_ready_event(DeviceImpl *device_impl,
                filterable_data_lg,
                ad,
                const_cast<std::string &>(attr_name),
-               NULL,
+               nullptr,
                true);
 }
 
@@ -2290,7 +2290,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
     bool conf5 = false;
     int vers = 4;
 
-    if(attr_conf.attr_conf_5 != NULL)
+    if(attr_conf.attr_conf_5 != nullptr)
     {
         conf5 = true;
         vers = 5;
@@ -2318,7 +2318,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
         return;
     }
 
-    now = time(NULL);
+    now = time(nullptr);
     att_conf_subscription = now - attr_sub;
 
     TANGO_LOG_DEBUG << "EventSupplier::push_att_conf_events(): delta since last subscription " << att_conf_subscription
@@ -2394,7 +2394,7 @@ void EventSupplier::push_dev_intr_change_event(DeviceImpl *device_impl,
     // If no client, do not send event
     //
 
-    now = time(NULL);
+    now = time(nullptr);
     dev_intr_subscription = now - device_impl->get_event_intr_change_subscription();
 
     TANGO_LOG_DEBUG << "EventSupplier::push_dev_intr_event(): delta since last subscription " << dev_intr_subscription
@@ -2427,7 +2427,7 @@ void EventSupplier::push_dev_intr_change_event(DeviceImpl *device_impl,
                filterable_data_lg,
                ad,
                att_name,
-               NULL,
+               nullptr,
                true);
 
     //
@@ -2459,7 +2459,7 @@ bool EventSupplier::any_dev_intr_client(const DeviceImpl *device_impl) const
 {
     bool ret = false;
 
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
     time_t dev_intr_subscription = now - device_impl->get_event_intr_change_subscription();
 
     if(dev_intr_subscription < EVENT_RESUBSCRIBE_PERIOD)

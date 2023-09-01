@@ -50,7 +50,7 @@
 namespace Tango
 {
 
-ApiUtil *ApiUtil::_instance = NULL;
+ApiUtil *ApiUtil::_instance = nullptr;
 
 omni_mutex ApiUtil::inst_mutex;
 
@@ -100,10 +100,10 @@ ApiUtil::ApiUtil() :
     exit_lock_installed(false),
     reset_already_executed_flag(false),
     ext(new ApiUtilExt),
-    notifd_event_consumer(NULL),
+    notifd_event_consumer(nullptr),
     cl_pid(0),
     user_connect_timeout(-1),
-    zmq_event_consumer(NULL),
+    zmq_event_consumer(nullptr),
     user_sub_hwm(-1)
 {
     _orb = CORBA::ORB::_nil();
@@ -138,7 +138,7 @@ ApiUtil::ApiUtil() :
     //
 
     auto_cb = PULL_CALLBACK;
-    cb_thread_ptr = NULL;
+    cb_thread_ptr = nullptr;
 
     //
     // Get the process PID
@@ -201,10 +201,10 @@ ApiUtil::~ApiUtil()
 
     delete asyn_p_table;
 
-    if(cb_thread_ptr != NULL)
+    if(cb_thread_ptr != nullptr)
     {
         cb_thread_cmd.stop_thread();
-        cb_thread_ptr->join(0);
+        cb_thread_ptr->join(nullptr);
     }
 
     //
@@ -219,9 +219,9 @@ ApiUtil::~ApiUtil()
 
     bool event_was_used = false;
 
-    if(ext.get() != NULL)
+    if(ext.get() != nullptr)
     {
-        if((notifd_event_consumer != NULL) || (zmq_event_consumer != NULL))
+        if((notifd_event_consumer != nullptr) || (zmq_event_consumer != nullptr))
         {
             event_was_used = true;
             leavefunc();
@@ -279,19 +279,19 @@ void ApiUtil::set_sig_handler()
         sigemptyset(&sa.sa_mask);
         sa.sa_flags = SA_RESTART;
 
-        if(sigaction(SIGTERM, NULL, &old_action) != -1)
+        if(sigaction(SIGTERM, nullptr, &old_action) != -1)
         {
-            if(old_action.sa_handler == NULL)
+            if(old_action.sa_handler == nullptr)
             {
-                sigaction(SIGTERM, &sa, NULL);
+                sigaction(SIGTERM, &sa, nullptr);
             }
         }
 
-        if(sigaction(SIGINT, NULL, &old_action) != -1)
+        if(sigaction(SIGINT, nullptr, &old_action) != -1)
         {
-            if(old_action.sa_handler == NULL)
+            if(old_action.sa_handler == nullptr)
             {
-                sigaction(SIGINT, &sa, NULL);
+                sigaction(SIGINT, &sa, nullptr);
             }
         }
     }
@@ -328,11 +328,11 @@ void ApiUtil::create_orb()
 
 #ifndef _TG_WINDOWS_
     struct sigaction sa;
-    sa.sa_handler = NULL;
+    sa.sa_handler = nullptr;
 
-    if(sigaction(SIGPIPE, NULL, &sa) == -1)
+    if(sigaction(SIGPIPE, nullptr, &sa) == -1)
     {
-        sa.sa_handler = NULL;
+        sa.sa_handler = nullptr;
     }
 #endif
 
@@ -344,7 +344,7 @@ void ApiUtil::create_orb()
                                 {"giopMaxMsgSize", MAX_TRANSFER_SIZE},
                                 {"throwTransientOnTimeOut", "1"},
                                 {"exceptionIdInAny", "0"},
-                                {0, 0}};
+                                {nullptr, nullptr}};
 
     _orb = CORBA::ORB_init(_argc, _argv, "omniORB4", options);
 
@@ -355,13 +355,13 @@ void ApiUtil::create_orb()
     //
 
 #ifndef _TG_WINDOWS_
-    if(sa.sa_handler != NULL)
+    if(sa.sa_handler != nullptr)
     {
         struct sigaction sb;
 
         sb = sa;
 
-        if(sigaction(SIGPIPE, &sb, NULL) == -1)
+        if(sigaction(SIGPIPE, &sb, nullptr) == -1)
         {
             std::cerr << "Can re-install user signal handler for SIGPIPE!" << std::endl;
         }
@@ -719,7 +719,7 @@ void ApiUtil::set_asynch_cb_sub_model(cb_sub_model mode)
             //
 
             delete cb_thread_ptr;
-            cb_thread_ptr = NULL;
+            cb_thread_ptr = nullptr;
 
             cb_thread_cmd.start_thread();
 
@@ -1255,55 +1255,55 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue_4 &
     att.w_dim.dim_y = dev_attr.dim_y;
     att.data_format = Tango::FMT_UNKNOWN;
 
-    if(dev_attr.LongSeq.operator->() != NULL)
+    if(dev_attr.LongSeq.operator->() != nullptr)
     {
         att.value.long_att_value(dev_attr.LongSeq.in());
     }
-    else if(dev_attr.ShortSeq.operator->() != NULL)
+    else if(dev_attr.ShortSeq.operator->() != nullptr)
     {
         att.value.short_att_value(dev_attr.ShortSeq.in());
     }
-    else if(dev_attr.DoubleSeq.operator->() != NULL)
+    else if(dev_attr.DoubleSeq.operator->() != nullptr)
     {
         att.value.double_att_value(dev_attr.DoubleSeq.in());
     }
-    else if(dev_attr.StringSeq.operator->() != NULL)
+    else if(dev_attr.StringSeq.operator->() != nullptr)
     {
         att.value.string_att_value(dev_attr.StringSeq.in());
     }
-    else if(dev_attr.FloatSeq.operator->() != NULL)
+    else if(dev_attr.FloatSeq.operator->() != nullptr)
     {
         att.value.float_att_value(dev_attr.FloatSeq.in());
     }
-    else if(dev_attr.BooleanSeq.operator->() != NULL)
+    else if(dev_attr.BooleanSeq.operator->() != nullptr)
     {
         att.value.bool_att_value(dev_attr.BooleanSeq.in());
     }
-    else if(dev_attr.UShortSeq.operator->() != NULL)
+    else if(dev_attr.UShortSeq.operator->() != nullptr)
     {
         att.value.ushort_att_value(dev_attr.UShortSeq.in());
     }
-    else if(dev_attr.UCharSeq.operator->() != NULL)
+    else if(dev_attr.UCharSeq.operator->() != nullptr)
     {
         att.value.uchar_att_value(dev_attr.UCharSeq.in());
     }
-    else if(dev_attr.Long64Seq.operator->() != NULL)
+    else if(dev_attr.Long64Seq.operator->() != nullptr)
     {
         att.value.long64_att_value(dev_attr.Long64Seq.in());
     }
-    else if(dev_attr.ULongSeq.operator->() != NULL)
+    else if(dev_attr.ULongSeq.operator->() != nullptr)
     {
         att.value.ulong_att_value(dev_attr.ULongSeq.in());
     }
-    else if(dev_attr.ULong64Seq.operator->() != NULL)
+    else if(dev_attr.ULong64Seq.operator->() != nullptr)
     {
         att.value.ulong64_att_value(dev_attr.ULong64Seq.in());
     }
-    else if(dev_attr.StateSeq.operator->() != NULL)
+    else if(dev_attr.StateSeq.operator->() != nullptr)
     {
         att.value.state_att_value(dev_attr.StateSeq.in());
     }
-    else if(dev_attr.EncodedSeq.operator->() != NULL)
+    else if(dev_attr.EncodedSeq.operator->() != nullptr)
     {
         att.value.encoded_att_value(dev_attr.EncodedSeq.in());
     }
@@ -1317,55 +1317,55 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &at
     att.dim_x = dev_attr.dim_x;
     att.dim_y = dev_attr.dim_y;
 
-    if(dev_attr.LongSeq.operator->() != NULL)
+    if(dev_attr.LongSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.LongSeq.in();
     }
-    else if(dev_attr.ShortSeq.operator->() != NULL)
+    else if(dev_attr.ShortSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.ShortSeq.in();
     }
-    else if(dev_attr.DoubleSeq.operator->() != NULL)
+    else if(dev_attr.DoubleSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.DoubleSeq.in();
     }
-    else if(dev_attr.StringSeq.operator->() != NULL)
+    else if(dev_attr.StringSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.StringSeq.in();
     }
-    else if(dev_attr.FloatSeq.operator->() != NULL)
+    else if(dev_attr.FloatSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.FloatSeq.in();
     }
-    else if(dev_attr.BooleanSeq.operator->() != NULL)
+    else if(dev_attr.BooleanSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.BooleanSeq.in();
     }
-    else if(dev_attr.UShortSeq.operator->() != NULL)
+    else if(dev_attr.UShortSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.UShortSeq.in();
     }
-    else if(dev_attr.UCharSeq.operator->() != NULL)
+    else if(dev_attr.UCharSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.UCharSeq.in();
     }
-    else if(dev_attr.Long64Seq.operator->() != NULL)
+    else if(dev_attr.Long64Seq.operator->() != nullptr)
     {
         att.value <<= dev_attr.Long64Seq.in();
     }
-    else if(dev_attr.ULongSeq.operator->() != NULL)
+    else if(dev_attr.ULongSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.ULongSeq.in();
     }
-    else if(dev_attr.ULong64Seq.operator->() != NULL)
+    else if(dev_attr.ULong64Seq.operator->() != nullptr)
     {
         att.value <<= dev_attr.ULong64Seq.in();
     }
-    else if(dev_attr.StateSeq.operator->() != NULL)
+    else if(dev_attr.StateSeq.operator->() != nullptr)
     {
         att.value <<= dev_attr.StateSeq.in();
     }
-    else if(dev_attr.EncodedSeq.operator->() != NULL)
+    else if(dev_attr.EncodedSeq.operator->() != nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Device " << d_name;
@@ -1541,9 +1541,9 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
         // format of the address structure.)
         //
 
-        for(ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
+        for(ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next)
         {
-            if(ifa->ifa_addr != NULL)
+            if(ifa->ifa_addr != nullptr)
             {
                 family = ifa->ifa_addr->sa_family;
 
@@ -1559,7 +1559,7 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
                 if(family == AF_INET)
                 {
                     s = getnameinfo(
-                        ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+                        ifa->ifa_addr, sizeof(struct sockaddr_in), host, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST);
 
                     if(s != 0)
                     {
@@ -1666,7 +1666,7 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 
 void ApiUtil::print_error_message(const char *mess)
 {
-    std::tm tm = Tango_localtime(time(NULL));
+    std::tm tm = Tango_localtime(time(nullptr));
     std::cerr << std::put_time(&tm, "%c") << ": " << mess << std::endl;
 }
 

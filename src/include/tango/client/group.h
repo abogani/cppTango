@@ -752,7 +752,7 @@ class GroupElement
 
   protected:
     //- ctor: creates an GroupElement named <name>
-    GroupElement(const std::string &name, GroupElement *parent = 0);
+    GroupElement(const std::string &name, GroupElement *parent = nullptr);
     //- dtor
     virtual ~GroupElement();
 

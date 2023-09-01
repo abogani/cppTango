@@ -53,10 +53,10 @@ namespace Tango
 Database::Database(CORBA::ORB_var orb_in) :
     Connection(orb_in),
     ext(new DatabaseExt),
-    access_proxy(NULL),
+    access_proxy(nullptr),
     access_checked(false),
     access_service_defined(false),
-    db_tg(NULL)
+    db_tg(nullptr)
 {
     //
     // get host and port from environment variable TANGO_HOST
@@ -300,10 +300,10 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
 Database::Database(const std::string &in_host, int in_port, CORBA::ORB_var orb_in) :
     Connection(orb_in),
     ext(new DatabaseExt),
-    access_proxy(NULL),
+    access_proxy(nullptr),
     access_checked(false),
     access_service_defined(false),
-    db_tg(NULL)
+    db_tg(nullptr)
 {
     filedb = nullptr;
     serv_version = 0;
@@ -335,10 +335,10 @@ Database::Database(const std::string &in_host, int in_port, CORBA::ORB_var orb_i
 Database::Database(const std::string &name) :
     Connection(true),
     ext(new DatabaseExt),
-    access_proxy(NULL),
+    access_proxy(nullptr),
     access_checked(false),
     access_service_defined(false),
-    db_tg(NULL)
+    db_tg(nullptr)
 {
     file_name = name;
     filedb = new FileDatabase(file_name);
@@ -396,7 +396,7 @@ Database::Database(const Database &sou) :
     // Copy extension class
     //
 
-    if(sou.ext.get() != NULL)
+    if(sou.ext.get() != nullptr)
     {
         ext.reset(new DatabaseExt);
     }
@@ -452,7 +452,7 @@ Database &Database::operator=(const Database &rval)
         access_service_defined = rval.access_service_defined;
         db_tg = rval.db_tg;
 
-        if(rval.ext.get() != NULL)
+        if(rval.ext.get() != nullptr)
         {
             ext.reset(new DatabaseExt);
         }
@@ -534,7 +534,7 @@ void Database::set_server_release()
 
 const std::string &Database::get_file_name()
 {
-    if(filedb == 0)
+    if(filedb == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature, "The database is not a file-based database");
     }
@@ -550,7 +550,7 @@ const std::string &Database::get_file_name()
 
 Database::~Database()
 {
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         write_filedatabase();
         delete filedb;
@@ -625,7 +625,7 @@ long Database::get_tango_host_from_reg(char **buffer, std::string &ds_exec_name,
 
 void Database::write_filedatabase()
 {
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->write_file();
     }
@@ -723,7 +723,7 @@ std::string Database::get_info()
 
     check_access_and_get();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbInfo(send);
     }
@@ -731,7 +731,7 @@ std::string Database::get_info()
     {
         CALL_DB_SERVER("DbInfo", send, received);
     }
-    const DevVarStringArray *db_info_list = NULL;
+    const DevVarStringArray *db_info_list = nullptr;
     received.inout() >>= db_info_list;
 
     std::ostringstream ostream;
@@ -758,7 +758,7 @@ DbDevImportInfo Database::import_device(const std::string &dev)
     DeviceData received_cmd;
     Any_var received;
     AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
-    const DevVarLongStringArray *dev_import_list = NULL;
+    const DevVarLongStringArray *dev_import_list = nullptr;
 
     //
     // Import device is allways possible whatever access rights are
@@ -776,7 +776,7 @@ DbDevImportInfo Database::import_device(const std::string &dev)
 
         try
         {
-            if(filedb != 0)
+            if(filedb != nullptr)
             {
                 received = filedb->DbImportDevice(send);
                 received.inout() >>= dev_import_list;
@@ -797,12 +797,12 @@ DbDevImportInfo Database::import_device(const std::string &dev)
                 ApiUtil *au = ApiUtil::instance();
                 if(au->in_server() == true)
                 {
-                    if(db_tg != NULL)
+                    if(db_tg != nullptr)
                     {
                         try
                         {
                             DbServerCache *dsc = db_tg->get_db_cache();
-                            if(dsc != NULL)
+                            if(dsc != nullptr)
                             {
                                 dev_import_list = dsc->import_tac_dev(dev);
                                 imported_from_cache = true;
@@ -894,7 +894,7 @@ void Database::export_device(const DbDevExportInfo &dev_export)
 
     send <<= dev_export_list;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbExportDevice(send);
     }
@@ -920,7 +920,7 @@ void Database::unexport_device(std::string dev)
     check_access_and_get();
 
     send <<= string_dup(dev.c_str());
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbUnExportDevice(send);
     }
@@ -951,7 +951,7 @@ void Database::add_device(const DbDevInfo &dev_info)
     (*dev_info_list)[1] = string_dup(dev_info.name.c_str());
     (*dev_info_list)[2] = string_dup(dev_info._class.c_str());
     send <<= dev_info_list;
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbAddDevice(send);
     }
@@ -977,7 +977,7 @@ void Database::delete_device(std::string dev)
     check_access_and_get();
 
     send <<= dev.c_str();
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteDevice(send);
     }
@@ -1011,7 +1011,7 @@ void Database::add_server(const std::string &server, const DbDevInfos &dev_infos
         (*dev_info_list)[i * 2 + 2] = string_dup(dev_infos[i]._class.c_str());
     }
     send <<= dev_info_list;
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbAddServer(send);
     }
@@ -1037,7 +1037,7 @@ void Database::delete_server(const std::string &server)
     check_access_and_get();
 
     send <<= string_dup(server.c_str());
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteServer(send);
     }
@@ -1080,7 +1080,7 @@ void Database::export_server(const DbDevExportInfos &dev_export)
     }
     send <<= dev_export_list;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbExportServer(send);
     }
@@ -1106,7 +1106,7 @@ void Database::unexport_server(const std::string &server)
     check_access_and_get();
 
     send <<= server.c_str();
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbUnExportServer(send);
     }
@@ -1133,7 +1133,7 @@ DbServerInfo Database::get_server_info(const std::string &server)
     check_access_and_get();
 
     send <<= server.c_str();
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetServerInfo(send);
     }
@@ -1142,11 +1142,11 @@ DbServerInfo Database::get_server_info(const std::string &server)
         CALL_DB_SERVER("DbGetServerInfo", send, received);
     }
 
-    const DevVarStringArray *server_info_list = NULL;
+    const DevVarStringArray *server_info_list = nullptr;
     received.inout() >>= server_info_list;
 
     DbServerInfo server_info;
-    if(server_info_list != NULL)
+    if(server_info_list != nullptr)
     {
         server_info.name = std::string((*server_info_list)[0]);
         server_info.host = std::string((*server_info_list)[1]);
@@ -1172,7 +1172,7 @@ void Database::get_device_property(std::string dev, DbData &db_data, DbServerCac
 {
     unsigned int i;
     Any_var received;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
 
     check_access_and_get();
 
@@ -1184,7 +1184,7 @@ void Database::get_device_property(std::string dev, DbData &db_data, DbServerCac
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         //
         // Get property(ies) from DB server
@@ -1195,7 +1195,7 @@ void Database::get_device_property(std::string dev, DbData &db_data, DbServerCac
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetDeviceProperty(send);
         }
@@ -1230,7 +1230,7 @@ void Database::get_device_property(std::string dev, DbData &db_data, DbServerCac
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetDeviceProperty(send);
                 }
@@ -1332,7 +1332,7 @@ void Database::put_device_property(std::string dev, const DbData &db_data)
     }
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         CORBA::Any_var the_any;
         the_any = filedb->DbPutDeviceProperty(send);
@@ -1368,7 +1368,7 @@ void Database::delete_device_property(std::string dev, const DbData &db_data)
     }
     send <<= property_names;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteDeviceProperty(send);
     }
@@ -1391,7 +1391,7 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, D
 {
     unsigned int i, j;
     Any_var received;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
 
     check_access_and_get();
 
@@ -1403,7 +1403,7 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, D
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         //
         // Get propery(ies) from DB server
@@ -1414,7 +1414,7 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, D
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetDeviceAttributeProperty(send);
         }
@@ -1462,7 +1462,7 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, D
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetDeviceAttributeProperty(send);
                 }
@@ -1689,7 +1689,7 @@ void Database::put_device_attribute_property(std::string dev, const DbData &db_d
         }
         send <<= property_values;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             filedb->DbPutDeviceAttributeProperty(send);
             retry = false;
@@ -1744,7 +1744,7 @@ void Database::delete_device_attribute_property(std::string dev, const DbData &d
 
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteDeviceAttributeProperty(send);
     }
@@ -1766,7 +1766,7 @@ void Database::delete_device_attribute_property(std::string dev, const DbData &d
 void Database::get_class_property(std::string device_class, DbData &db_data, DbServerCache *db_cache)
 {
     unsigned int i;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
     Any_var received;
 
     //
@@ -1786,7 +1786,7 @@ void Database::get_class_property(std::string device_class, DbData &db_data, DbS
     // Call db server or get data from cache
     //
 
-    if(db_cache != NULL)
+    if(db_cache != nullptr)
     {
         //
         // Try to get property(ies) from cache
@@ -1810,7 +1810,7 @@ void Database::get_class_property(std::string device_class, DbData &db_data, DbS
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetClassProperty(send);
                 }
@@ -1839,7 +1839,7 @@ void Database::get_class_property(std::string device_class, DbData &db_data, DbS
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetClassProperty(send);
         }
@@ -1932,7 +1932,7 @@ void Database::put_class_property(std::string device_class, const DbData &db_dat
     }
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         CORBA::Any_var the_any;
         the_any = filedb->DbPutClassProperty(send);
@@ -1965,7 +1965,7 @@ void Database::delete_class_property(std::string device_class, const DbData &db_
     }
     send <<= property_names;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteClassProperty(send);
     }
@@ -1988,7 +1988,7 @@ void Database::get_class_attribute_property(std::string device_class, DbData &db
 {
     unsigned int i;
     Any_var received;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
 
     check_access_and_get();
 
@@ -2000,7 +2000,7 @@ void Database::get_class_attribute_property(std::string device_class, DbData &db
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         //
         // Get property(ies) from DB server
@@ -2011,7 +2011,7 @@ void Database::get_class_attribute_property(std::string device_class, DbData &db
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetClassAttributeProperty(send);
         }
@@ -2059,7 +2059,7 @@ void Database::get_class_attribute_property(std::string device_class, DbData &db
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetClassAttributeProperty(send);
                 }
@@ -2284,7 +2284,7 @@ void Database::put_class_attribute_property(std::string device_class, const DbDa
         }
         send <<= property_values;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             filedb->DbPutClassAttributeProperty(send);
             retry = false;
@@ -2332,7 +2332,7 @@ void Database::delete_class_attribute_property(std::string device_class, const D
 
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteClassAttributeProperty(send);
     }
@@ -2353,7 +2353,7 @@ void Database::delete_class_attribute_property(std::string device_class, const D
 
 DbDatum Database::get_device_name(const std::string &d_server, const std::string &d_class)
 {
-    return get_device_name(d_server, d_class, NULL);
+    return get_device_name(d_server, d_class, nullptr);
 }
 
 DbDatum Database::get_device_name(const std::string &device_server,
@@ -2361,7 +2361,7 @@ DbDatum Database::get_device_name(const std::string &device_server,
                                   DbServerCache *db_cache)
 {
     Any_var received;
-    const DevVarStringArray *device_names = NULL;
+    const DevVarStringArray *device_names = nullptr;
 
     check_access_and_get();
 
@@ -2370,14 +2370,14 @@ DbDatum Database::get_device_name(const std::string &device_server,
     (*device_server_class)[0] = string_dup(device_server.c_str());
     (*device_server_class)[1] = string_dup(device_class.c_str());
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         Any send;
         AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
 
         send <<= device_server_class;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetDeviceList(send);
         }
@@ -2613,7 +2613,7 @@ void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_
 {
     unsigned int i;
     Any_var received;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
 
     {
         WriterLock guard(con_to_mon);
@@ -2632,14 +2632,14 @@ void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
         Any send;
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetProperty(send);
         }
@@ -2674,7 +2674,7 @@ void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetDeviceProperty(send);
                 }
@@ -2776,7 +2776,7 @@ void Database::put_property(std::string obj, const DbData &db_data)
     }
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbPutProperty(send);
     }
@@ -2811,7 +2811,7 @@ void Database::delete_property(std::string obj, const DbData &db_data)
     }
     send <<= property_names;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteProperty(send);
     }
@@ -2840,7 +2840,7 @@ void Database::get_device_alias(std::string alias, std::string &dev_name)
 
     send <<= alias.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetAliasDevice(send);
     }
@@ -2848,7 +2848,7 @@ void Database::get_device_alias(std::string alias, std::string &dev_name)
     {
         CALL_DB_SERVER("DbGetAliasDevice", send, received);
     }
-    const char *dev_name_tmp = NULL;
+    const char *dev_name_tmp = nullptr;
     received.inout() >>= dev_name_tmp;
     dev_name = dev_name_tmp;
 }
@@ -2870,7 +2870,7 @@ void Database::get_alias(std::string dev_name, std::string &alias_name)
 
     send <<= dev_name.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetDeviceAlias(send);
     }
@@ -2878,7 +2878,7 @@ void Database::get_alias(std::string dev_name, std::string &alias_name)
     {
         CALL_DB_SERVER("DbGetDeviceAlias", send, received);
     }
-    const char *dev_name_tmp = NULL;
+    const char *dev_name_tmp = nullptr;
     received.inout() >>= dev_name_tmp;
     alias_name = dev_name_tmp;
 }
@@ -2900,7 +2900,7 @@ void Database::get_attribute_alias(std::string attr_alias, std::string &attr_nam
 
     send <<= attr_alias.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetAttributeAlias(send);
     }
@@ -2908,10 +2908,10 @@ void Database::get_attribute_alias(std::string attr_alias, std::string &attr_nam
     {
         CALL_DB_SERVER("DbGetAttributeAlias", send, received);
     }
-    const char *attr_name_tmp = NULL;
+    const char *attr_name_tmp = nullptr;
     received.inout() >>= attr_name_tmp;
 
-    if(attr_name_tmp == NULL)
+    if(attr_name_tmp == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -2936,7 +2936,7 @@ DbDatum Database::get_device_alias_list(const std::string &alias)
 
     send <<= alias.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetDeviceAliasList(send);
     }
@@ -2944,12 +2944,12 @@ DbDatum Database::get_device_alias_list(const std::string &alias)
     {
         CALL_DB_SERVER("DbGetDeviceAliasList", send, received);
     }
-    const DevVarStringArray *alias_array = NULL;
+    const DevVarStringArray *alias_array = nullptr;
     received.inout() >>= alias_array;
 
     DbDatum db_datum;
 
-    if(alias_array == NULL)
+    if(alias_array == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -2983,7 +2983,7 @@ DbDatum Database::get_attribute_alias_list(const std::string &alias)
 
     send <<= alias.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetAttributeAliasList(send);
     }
@@ -2991,12 +2991,12 @@ DbDatum Database::get_attribute_alias_list(const std::string &alias)
     {
         CALL_DB_SERVER("DbGetAttributeAliasList", send, received);
     }
-    const DevVarStringArray *alias_array = NULL;
+    const DevVarStringArray *alias_array = nullptr;
     received.inout() >>= alias_array;
 
     DbDatum db_datum;
 
-    if(alias_array == NULL)
+    if(alias_array == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -3023,11 +3023,11 @@ DbDatum Database::get_attribute_alias_list(const std::string &alias)
 
 DbDatum Database::make_string_array(std::string name, Any_var &received)
 {
-    const DevVarStringArray *prop_list = NULL;
+    const DevVarStringArray *prop_list = nullptr;
     DbDatum db_datum;
 
     received.inout() >>= prop_list;
-    if(prop_list == NULL)
+    if(prop_list == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -3079,7 +3079,7 @@ void Database::get_device_property_list(std::string &dev,
                                         std::vector<std::string> &prop_list,
                                         DbServerCache *db_cache)
 {
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         DbDatum db = get_device_property_list(dev, const_cast<std::string &>(wildcard));
         prop_list = db.value_string;
@@ -3115,7 +3115,7 @@ void Database::get_device_property_list(std::string &dev,
 
                 send <<= send_seq;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetDeviceProperty(send);
                 }
@@ -3196,11 +3196,11 @@ DbDatum Database::get_server_class_list(const std::string &servname)
 
     CALL_DB_SERVER("DbGetDeviceServerClassList", send, received);
 
-    const DevVarStringArray *prop_list = NULL;
+    const DevVarStringArray *prop_list = nullptr;
     received.inout() >>= prop_list;
 
     DbDatum db_datum;
-    if(prop_list == NULL)
+    if(prop_list == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -3553,7 +3553,7 @@ std::string Database::get_class_for_device(const std::string &devname)
 
             CALL_DB_SERVER("DbGetClassforDevice", send, received);
 
-            const char *classname = NULL;
+            const char *classname = nullptr;
             received.inout() >>= classname;
             ret_str = classname;
 
@@ -3789,11 +3789,11 @@ void Database::delete_attribute_alias(const std::string &aliasname)
 
 std::vector<DbHistory> Database::make_history_array(bool is_attribute, Any_var &received)
 {
-    const DevVarStringArray *ret = NULL;
+    const DevVarStringArray *ret = nullptr;
     received.inout() >>= ret;
 
     std::vector<DbHistory> v;
-    if(ret == NULL)
+    if(ret == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -4021,7 +4021,7 @@ DbDatum Database::get_services(const std::string &servname, const std::string &i
     {
         if(from_env_var == false)
         {
-            dsc = NULL;
+            dsc = nullptr;
         }
         else
         {
@@ -4033,20 +4033,20 @@ DbDatum Database::get_services(const std::string &servname, const std::string &i
             catch(Tango::DevFailed &e)
             {
                 std::string reason = e.errors[0].reason.in();
-                if(reason == API_UtilSingletonNotCreated && db_tg != NULL)
+                if(reason == API_UtilSingletonNotCreated && db_tg != nullptr)
                 {
                     dsc = db_tg->get_db_cache();
                 }
                 else
                 {
-                    dsc = NULL;
+                    dsc = nullptr;
                 }
             }
         }
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     DbDatum db_d(SERVICE_PROP_NAME);
@@ -4114,7 +4114,7 @@ DbDatum Database::get_device_service_list(const std::string &servname)
     {
         if(from_env_var == false)
         {
-            dsc = NULL;
+            dsc = nullptr;
         }
         else
         {
@@ -4126,20 +4126,20 @@ DbDatum Database::get_device_service_list(const std::string &servname)
             catch(Tango::DevFailed &e)
             {
                 std::string reason = e.errors[0].reason.in();
-                if(reason == API_UtilSingletonNotCreated && db_tg != NULL)
+                if(reason == API_UtilSingletonNotCreated && db_tg != nullptr)
                 {
                     dsc = db_tg->get_db_cache();
                 }
                 else
                 {
-                    dsc = NULL;
+                    dsc = nullptr;
                 }
             }
         }
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     DbDatum db_d(SERVICE_PROP_NAME);
@@ -4406,9 +4406,9 @@ CORBA::Any *Database::fill_server_cache(const std::string &ds_name, const std::s
     std::string ds_host(loc_host);
     int db_proc_release = 0;
 
-    AttributeValueList_3 *attr_value_list_3 = NULL;
-    AttributeValueList_4 *attr_value_list_4 = NULL;
-    AttributeValueList_5 *attr_value_list_5 = NULL;
+    AttributeValueList_3 *attr_value_list_3 = nullptr;
+    AttributeValueList_4 *attr_value_list_4 = nullptr;
+    AttributeValueList_5 *attr_value_list_5 = nullptr;
 
     DevVarStringArray attr_list;
     attr_list.length(1);
@@ -4442,7 +4442,7 @@ CORBA::Any *Database::fill_server_cache(const std::string &ds_name, const std::s
             Device_3_var dev = Device_3::_duplicate(device_3);
             attr_value_list_3 = dev->read_attributes_3(attr_list, DEV);
 
-            ApiUtil::attr_to_device(NULL, &((*attr_value_list_3)[0]), version, &da);
+            ApiUtil::attr_to_device(nullptr, &((*attr_value_list_3)[0]), version, &da);
             delete attr_value_list_3;
         }
 
@@ -4531,7 +4531,7 @@ void Database::delete_all_device_attribute_property(std::string dev_name, const 
     }
     send <<= att_names;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature,
                               "The underlying database command is not implemented when the database is a file");
@@ -4578,7 +4578,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
 
     try
     {
-        if((access_checked == false) && (access_proxy == NULL))
+        if((access_checked == false) && (access_proxy == nullptr))
         {
             //
             // Try to get Access Service device name from an environment
@@ -4641,7 +4641,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
         // Get access rights
         //
 
-        if(access_proxy != NULL)
+        if(access_proxy != nullptr)
         {
             local_access = access_proxy->check_access_control(devname);
         }
@@ -4689,11 +4689,11 @@ bool Database::is_command_allowed(const std::string &devname, const std::string 
 
     bool ret;
 
-    if(access_proxy == NULL)
+    if(access_proxy == nullptr)
     {
         AccessControlType acc = check_access_control(devname);
 
-        if(access_proxy == NULL)
+        if(access_proxy == nullptr)
         {
             //            ret = !check_acc;
             if(acc == ACCESS_READ)
@@ -4758,7 +4758,7 @@ bool Database::is_command_allowed(const std::string &devname, const std::string 
 
 void Database::write_event_channel_ior_filedatabase(const std::string &ec_ior)
 {
-    if(filedb == NULL)
+    if(filedb == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature, "This call is supported only when the database is a file");
     }
@@ -4784,11 +4784,11 @@ DbDevFullInfo Database::get_device_info(const std::string &dev)
 
     CALL_DB_SERVER("DbGetDeviceInfo", send, received);
 
-    const DevVarLongStringArray *dev_info_db = NULL;
+    const DevVarLongStringArray *dev_info_db = nullptr;
     received.inout() >>= dev_info_db;
 
     DbDevFullInfo dev_info;
-    if(dev_info_db != NULL)
+    if(dev_info_db != nullptr)
     {
         dev_info.name = std::string(dev_info_db->svalue[0]);
         dev_info.ior = std::string(dev_info_db->svalue[1]);
@@ -4845,7 +4845,7 @@ void Database::get_device_from_alias(std::string alias_name, std::string &dev_na
 
     send <<= alias_name.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetAliasDevice(send);
     }
@@ -4853,7 +4853,7 @@ void Database::get_device_from_alias(std::string alias_name, std::string &dev_na
     {
         CALL_DB_SERVER("DbGetAliasDevice", send, received);
     }
-    const char *dev_name_tmp = NULL;
+    const char *dev_name_tmp = nullptr;
     received.inout() >>= dev_name_tmp;
     dev_name = dev_name_tmp;
 }
@@ -4873,7 +4873,7 @@ void Database::get_alias_from_device(std::string dev_name, std::string &alias_na
 
     send <<= dev_name.c_str();
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         received = filedb->DbGetDeviceAlias(send);
     }
@@ -4881,7 +4881,7 @@ void Database::get_alias_from_device(std::string dev_name, std::string &alias_na
     {
         CALL_DB_SERVER("DbGetDeviceAlias", send, received);
     }
-    const char *dev_name_tmp = NULL;
+    const char *dev_name_tmp = nullptr;
     received.inout() >>= dev_name_tmp;
     alias_name = dev_name_tmp;
 }
@@ -4905,10 +4905,10 @@ void Database::get_attribute_from_alias(std::string attr_alias, std::string &att
             received = filedb->DbGetAliasAttribute(send);
         else*/
     CALL_DB_SERVER("DbGetAliasAttribute", send, received);
-    const char *attr_name_tmp = NULL;
+    const char *attr_name_tmp = nullptr;
     received.inout() >>= attr_name_tmp;
 
-    if(attr_name_tmp == NULL)
+    if(attr_name_tmp == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -4937,10 +4937,10 @@ void Database::get_alias_from_attribute(std::string attr_name, std::string &attr
             received = filedb->DbGetAttributeAlias2(send);
         else*/
     CALL_DB_SERVER("DbGetAttributeAlias2", send, received);
-    const char *attr_alias_tmp = NULL;
+    const char *attr_alias_tmp = nullptr;
     received.inout() >>= attr_alias_tmp;
 
-    if(attr_alias_tmp == NULL)
+    if(attr_alias_tmp == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
@@ -4973,7 +4973,7 @@ void Database::get_device_attribute_list(const std::string &dev_name, std::vecto
 
     CALL_DB_SERVER("DbGetDeviceAttributeList", send, received);
 
-    const DevVarStringArray *recv_names = NULL;
+    const DevVarStringArray *recv_names = nullptr;
     received.inout() >>= recv_names;
 
     att_list << *recv_names;
@@ -5011,7 +5011,7 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
 {
     unsigned int i;
     Any_var received;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
 
     check_access_and_get();
 
@@ -5023,7 +5023,7 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         //
         // Get property(ies) from DB server
@@ -5034,7 +5034,7 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetClassPipeProperty(send);
         }
@@ -5085,7 +5085,7 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetClassPipeProperty(send);
                 }
@@ -5172,7 +5172,7 @@ void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServ
 {
     unsigned int i, j;
     Any_var received;
-    const DevVarStringArray *property_values = NULL;
+    const DevVarStringArray *property_values = nullptr;
 
     check_access_and_get();
 
@@ -5184,7 +5184,7 @@ void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServ
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == NULL)
+    if(db_cache == nullptr)
     {
         //
         // Get propery(ies) from DB server
@@ -5195,7 +5195,7 @@ void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServ
 
         send <<= property_names;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             received = filedb->DbGetDevicePipeProperty(send);
         }
@@ -5246,7 +5246,7 @@ void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServ
 
                 send <<= property_names;
 
-                if(filedb != 0)
+                if(filedb != nullptr)
                 {
                     received = filedb->DbGetDeviceAttributeProperty(send);
                 }
@@ -5350,7 +5350,7 @@ void Database::delete_class_pipe_property(std::string device_class, const DbData
 
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteClassPipeProperty(send);
     }
@@ -5387,7 +5387,7 @@ void Database::delete_device_pipe_property(std::string dev, const DbData &db_dat
 
     send <<= property_values;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         filedb->DbDeleteDevicePipeProperty(send);
     }
@@ -5448,7 +5448,7 @@ void Database::get_device_pipe_list(const std::string &dev_name, std::vector<std
 
     CALL_DB_SERVER("DbGetDevicePipeList", send, received);
 
-    const DevVarStringArray *recv_names = NULL;
+    const DevVarStringArray *recv_names = nullptr;
     received.inout() >>= recv_names;
 
     pipe_list << *recv_names;
@@ -5475,7 +5475,7 @@ void Database::delete_all_device_pipe_property(std::string dev_name, const DbDat
     }
     send <<= att_names;
 
-    if(filedb != 0)
+    if(filedb != nullptr)
     {
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature,
                               "The underlying database command is not implemented when the database is a file");
@@ -5561,7 +5561,7 @@ void Database::put_class_pipe_property(std::string device_class, const DbData &d
 
         send <<= property_values;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             filedb->DbPutClassPipeProperty(send);
             retry = false;
@@ -5651,7 +5651,7 @@ void Database::put_device_pipe_property(std::string dev, const DbData &db_data)
 
         send <<= property_values;
 
-        if(filedb != 0)
+        if(filedb != nullptr)
         {
             filedb->DbPutDevicePipeProperty(send);
             retry = false;

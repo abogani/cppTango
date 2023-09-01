@@ -79,7 +79,7 @@ DeviceClass::DeviceClass(const std::string &s) :
     name(s),
     ext(new DeviceClassExt),
     only_one("class"),
-    default_cmd(NULL),
+    default_cmd(nullptr),
     device_factory_done(false)
 {
     //
@@ -897,9 +897,9 @@ void DeviceClass::delete_dev(long idx, Tango::Util *tg, PortableServer::POA_ptr 
     // Wait for CORBA to call the device dtor
     //
 
-    if(device_list[idx] != NULL && exported_device == true)
+    if(device_list[idx] != nullptr && exported_device == true)
     {
-        while(device_list[idx] != NULL)
+        while(device_list[idx] != nullptr)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
@@ -1153,7 +1153,7 @@ void DeviceClass::export_device(DeviceImpl *dev, const char *corba_obj_name)
 
 CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &command, const CORBA::Any &in_any)
 {
-    CORBA::Any *ret = NULL;
+    CORBA::Any *ret = nullptr;
     std::vector<Command *>::iterator i_cmd;
 
     std::string command_lower(command);
@@ -1223,7 +1223,7 @@ CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &
                         << std::endl;
 
         Command *def_cmd = get_default_command();
-        if(def_cmd != NULL)
+        if(def_cmd != nullptr)
         {
             //
             // Set name in default command object

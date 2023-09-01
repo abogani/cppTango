@@ -968,7 +968,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @param attr_name The name of the attribute
      * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
      */
-    void push_change_event(const std::string &attr_name, DevFailed *except = NULL);
+    void push_change_event(const std::string &attr_name, DevFailed *except = nullptr);
 
     /**
      * Push a change event for an attribute with Tango::DevShort attribute data type.
@@ -1115,7 +1115,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @param attr_name The name of the attribute
      * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
      */
-    void push_archive_event(const std::string &attr_name, DevFailed *except = NULL);
+    void push_archive_event(const std::string &attr_name, DevFailed *except = nullptr);
 
     /**
      * Push an archive event for an attribute with Tango::DevShort attribute data type.
@@ -1254,7 +1254,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     void push_event(const std::string &attr_name,
                     const std::vector<std::string> &filt_names,
                     const std::vector<double> &filt_vals,
-                    DevFailed *except = NULL);
+                    DevFailed *except = nullptr);
 
     /**
      * Push a user event for an attribute with Tango::DevShort attribute data type.
@@ -1764,8 +1764,8 @@ class DeviceImpl : public virtual POA_Tango::Device
 
     void clean_locker_ptrs()
     {
-        locker_client = NULL;
-        old_locker_client = NULL;
+        locker_client = nullptr;
+        old_locker_client = nullptr;
     }
 
     void set_locking_param(client_addr *, client_addr *, time_t, DevLong, DevLong);
@@ -1929,7 +1929,7 @@ class DeviceImpl : public virtual POA_Tango::Device
 
   protected:
     /// @privatesection
-    void check_lock(const char *, const char *cmd = NULL);
+    void check_lock(const char *, const char *cmd = nullptr);
     void throw_locked_exception(const char *meth);
 
     void init_cmd_poll_period();
@@ -2069,7 +2069,7 @@ inline void DeviceImpl::set_state(const Tango::DevState &new_state)
     device_state = new_state;
     if(new_state == Tango::ALARM)
     {
-        ext->alarm_state_user = time(NULL);
+        ext->alarm_state_user = time(nullptr);
     }
     else
     {

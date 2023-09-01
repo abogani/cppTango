@@ -199,7 +199,7 @@ void DbDevice::get_property(DbData &db_data)
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     if(ext_dbase == true)
@@ -474,7 +474,7 @@ void DbDevice::get_property_list(const std::string &wildcard, std::vector<std::s
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     if(ext_dbase == true)

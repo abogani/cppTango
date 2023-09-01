@@ -626,7 +626,7 @@ bool GroupElement::contains(const std::string &n, TANGO_UNUSED(bool fwd))
 //-----------------------------------------------------------------------------
 GroupElement *GroupElement::find_i(const std::string &n, TANGO_UNUSED(bool fwd))
 {
-    return name_equals(n) ? this : 0;
+    return name_equals(n) ? this : nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -863,13 +863,13 @@ void Group::add(Group *g, int tmo_ms)
 #if defined(_LOCAL_DEBUGGING)
     TANGO_LOG << "Group::add::adding sub-group " << (g ? g->get_name() : "NULL") << std::endl;
 #endif
-    if(g == 0 || get_group_i(g->get_name()) == g || g->get_group_i(get_name()) == this)
+    if(g == nullptr || get_group_i(g->get_name()) == g || g->get_group_i(get_name()) == this)
     {
 #if defined(_LOCAL_DEBUGGING)
         TANGO_LOG << "Group::add::failed to add group"
                   << (g ? (g->get_name() + " (self ref. or already in group)") : "NULL") << std::endl;
 #endif
-        if(g != 0)
+        if(g != nullptr)
         {
             g->set_timeout_millis(tmo_ms);
         }
@@ -935,7 +935,7 @@ void Group::add(const std::vector<std::string> &pl, int tmo_ms)
 //-----------------------------------------------------------------------------
 bool Group::add_i(GroupElement *e, bool fwd)
 {
-    if(e == 0 || e == this)
+    if(e == nullptr || e == this)
     {
 #if defined(_LOCAL_DEBUGGING)
         TANGO_LOG << "Group::add_i::failed to add " << (e ? (e->get_name() + " (null or self ref)") : "NULL")
@@ -944,7 +944,7 @@ bool Group::add_i(GroupElement *e, bool fwd)
         return false;
     }
     GroupElement *te = find_i(e->get_name(), fwd);
-    if(te != 0 && te != this)
+    if(te != nullptr && te != this)
     {
 #if defined(_LOCAL_DEBUGGING)
         TANGO_LOG << "Group::add_i::failed to add " << e->get_name() << " (already in group)" << std::endl;
@@ -1068,7 +1068,7 @@ bool Group::contains(const std::string &n, bool fwd)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    return (find_i(n, fwd) != 0) ? true : false;
+    return (find_i(n, fwd) != nullptr) ? true : false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1109,12 +1109,12 @@ GroupElement *Group::find_i(const std::string &n, bool fwd)
             }
         }
     }
-    GroupElement *e = 0;
+    GroupElement *e = nullptr;
     if(fwd)
     {
         it = elements.begin();
         end = elements.end();
-        while(it != end && e == 0)
+        while(it != end && e == nullptr)
         {
             e = (*it)->find_i(n);
             ++it;
@@ -1129,10 +1129,10 @@ DeviceProxy *Group::get_device(const std::string &n)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    DeviceProxy *dp = 0;
+    DeviceProxy *dp = nullptr;
     GroupElementsIterator it = elements.begin();
     GroupElementsIterator end = elements.end();
-    while(it != end && dp == 0)
+    while(it != end && dp == nullptr)
     {
         dp = (*it)->get_device(n);
         ++it;
@@ -1146,10 +1146,10 @@ DeviceProxy *Group::get_device(long idx)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    DeviceProxy *dp = 0;
+    DeviceProxy *dp = nullptr;
     GroupElementsIterator it = elements.begin();
     GroupElementsIterator end = elements.end();
-    while(it != end && dp == 0)
+    while(it != end && dp == nullptr)
     {
         dp = (*it)->get_device(idx--);
         ++it;
@@ -1176,7 +1176,7 @@ Group *Group::get_group(const std::string &n)
 Group *Group::get_group_i(const std::string &n)
 {
     GroupElement *e = find_i(n, true);
-    return (e != 0 && e->is_group_i()) ? reinterpret_cast<Group *>(e) : 0;
+    return (e != nullptr && e->is_group_i()) ? reinterpret_cast<Group *>(e) : nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1840,7 +1840,7 @@ void Group::pop_async_request(long rid)
 //=============================================================================
 GroupDeviceElement::GroupDeviceElement(const std::string &name) :
     GroupElement(name),
-    dp(0)
+    dp(nullptr)
 {
     try
     {
@@ -1855,7 +1855,7 @@ GroupDeviceElement::GroupDeviceElement(const std::string &name) :
 //-----------------------------------------------------------------------------
 GroupDeviceElement::GroupDeviceElement(const std::string &name, int tmo_ms) :
     GroupElement(name),
-    dp(0)
+    dp(nullptr)
 {
     try
     {
@@ -1891,13 +1891,13 @@ DeviceProxy *GroupDeviceElement::get_device(const std::string &_n)
     {
         //- ignore exception then return null
     }
-    return 0;
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
 DeviceProxy *GroupDeviceElement::get_device(long idx)
 {
-    return ((--idx) == 0) ? dev_proxy() : 0;
+    return ((--idx) == 0) ? dev_proxy() : nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -1930,7 +1930,7 @@ void GroupDeviceElement::disconnect()
     if(dp)
     {
         delete dp;
-        dp = 0;
+        dp = nullptr;
     }
 }
 
@@ -2190,7 +2190,7 @@ GroupAttrReplyList GroupDeviceElement::read_attribute_reply_i(long id, long tmo)
     try
     {
         DeviceAttribute *da = dev_proxy()->read_attribute_reply(it->second.rq_id, tmo);
-        if(da == 0)
+        if(da == nullptr)
         {
             Tango::DevErrorList errors(1);
             errors.length(1);
@@ -2323,7 +2323,7 @@ GroupAttrReplyList GroupDeviceElement::read_attributes_reply_i(long id, long tmo
     try
     {
         std::vector<DeviceAttribute> *dal = dev_proxy()->read_attributes_reply(it->second.rq_id, tmo);
-        if(dal == 0)
+        if(dal == nullptr)
         {
             Tango::DevErrorList errors(1);
             errors.length(1);

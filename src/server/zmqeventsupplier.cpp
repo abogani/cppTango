@@ -60,7 +60,7 @@ static const char *TangoHeartbeatPortEnvVar = "TANGO_ZMQ_HEARTBEAT_PORT";
 // check and use environment variables for zmq ports
 static void get_zmq_port_from_envvar(const char *, std::string &);
 
-ZmqEventSupplier *ZmqEventSupplier::_instance = NULL;
+ZmqEventSupplier *ZmqEventSupplier::_instance = nullptr;
 
 /************************************************************************/
 /*                                                                           */
@@ -103,7 +103,7 @@ void get_zmq_port_from_envvar(const char *zmq_port_env_var, std::string &endpoin
 ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
     EventSupplier(tg),
     zmq_context(1),
-    event_pub_sock(NULL),
+    event_pub_sock(nullptr),
     name_specified(false),
     double_send(0),
     double_send_heartbeat(false)
@@ -202,7 +202,7 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
     catch(...)
     {
         delete heartbeat_pub_sock;
-        heartbeat_pub_sock = NULL;
+        heartbeat_pub_sock = nullptr;
         throw;
     }
 
@@ -338,7 +338,7 @@ ZmqEventSupplier *ZmqEventSupplier::create(Util *tg)
     // Does the ZmqEventSupplier singleton exist already ? if so simply return it
     //
 
-    if(_instance != NULL)
+    if(_instance != nullptr)
     {
         return _instance;
     }
@@ -461,7 +461,7 @@ unsigned char ZmqEventSupplier::test_endian()
 
 void ZmqEventSupplier::create_event_socket()
 {
-    if(event_pub_sock == NULL)
+    if(event_pub_sock == nullptr)
     {
         omni_mutex_lock oml(event_mutex);
         //
@@ -523,7 +523,7 @@ void ZmqEventSupplier::create_event_socket()
         catch(...)
         {
             delete event_pub_sock;
-            event_pub_sock = NULL;
+            event_pub_sock = nullptr;
             throw;
         }
 
@@ -600,7 +600,7 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,
         }
         else
         {
-            if(ite->second.local_client == true && ite->second.pub_socket == NULL)
+            if(ite->second.local_client == true && ite->second.pub_socket == nullptr)
             {
                 create_mcast_socket(mcast_data, rate, ite->second);
             }
@@ -620,7 +620,7 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,
         {
             create_event_socket();
 
-            ms.pub_socket = NULL;
+            ms.pub_socket = nullptr;
             ms.local_client = true;
         }
         else
@@ -841,7 +841,7 @@ void ZmqEventSupplier::push_heartbeat_event()
 
     Tango::Util *tg = Tango::Util::instance();
     DServer *adm_dev = tg->get_dserver_device();
-    now_time = time(NULL);
+    now_time = time(nullptr);
     delta_time = now_time - adm_dev->last_heartbeat_zmq;
     TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta time since last heartbeat " << delta_time
                     << std::endl;
@@ -1036,7 +1036,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                                   DevFailed *except,
                                   bool inc_cptr)
 {
-    if(device_impl == NULL)
+    if(device_impl == nullptr)
     {
         return;
     }
@@ -1053,7 +1053,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     //
 
     omni_thread *th_id = omni_thread::self();
-    if(th_id == NULL)
+    if(th_id == nullptr)
     {
         th_id = omni_thread::create_dummy();
     }
@@ -1194,7 +1194,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 
     ZmqCallInfo event_call;
     event_call.version = ZMQ_EVENT_PROT_VERSION;
-    if(except == NULL)
+    if(except == nullptr)
     {
         event_call.call_is_except = false;
     }
@@ -1220,7 +1220,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     //
     std::future<void> large_message_future;
 
-    if(ev_value.zmq_mess != NULL)
+    if(ev_value.zmq_mess != nullptr)
     {
         //
         // It's a forwarded attribute, therefore, use the already marshalled message
@@ -1243,17 +1243,17 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         padding >>= data_call_cdr;
         padding >>= data_call_cdr;
 
-        if(except == NULL)
+        if(except == nullptr)
         {
-            if(ev_value.attr_val != NULL)
+            if(ev_value.attr_val != nullptr)
             {
                 *(ev_value.attr_val) >>= data_call_cdr;
             }
-            else if(ev_value.attr_val_3 != NULL)
+            else if(ev_value.attr_val_3 != nullptr)
             {
                 *(ev_value.attr_val_3) >>= data_call_cdr;
             }
-            else if(ev_value.attr_val_4 != NULL)
+            else if(ev_value.attr_val_4 != nullptr)
             {
                 //
                 // Get number of data exchanged by this event. If this value is greater than a threshold, set a flag
@@ -1290,7 +1290,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                     }
                 }
             }
-            else if(ev_value.attr_val_5 != NULL)
+            else if(ev_value.attr_val_5 != nullptr)
             {
                 //
                 // Get number of data exchanged by this event. If this value is greater than a threshold, set a flag
@@ -1327,23 +1327,23 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                     }
                 }
             }
-            else if(ev_value.attr_conf_2 != NULL)
+            else if(ev_value.attr_conf_2 != nullptr)
             {
                 *(ev_value.attr_conf_2) >>= data_call_cdr;
             }
-            else if(ev_value.attr_conf_3 != NULL)
+            else if(ev_value.attr_conf_3 != nullptr)
             {
                 *(ev_value.attr_conf_3) >>= data_call_cdr;
             }
-            else if(ev_value.attr_conf_5 != NULL)
+            else if(ev_value.attr_conf_5 != nullptr)
             {
                 *(ev_value.attr_conf_5) >>= data_call_cdr;
             }
-            else if(ev_value.attr_dat_ready != NULL)
+            else if(ev_value.attr_dat_ready != nullptr)
             {
                 *(ev_value.attr_dat_ready) >>= data_call_cdr;
             }
-            else if(ev_value.pipe_val != NULL)
+            else if(ev_value.pipe_val != nullptr)
             {
                 size_t nb_data = get_blob_data_nb(ev_value.pipe_val->data_blob.blob_data);
                 if(nb_data >= LARGE_DATA_THRESHOLD)
@@ -1468,7 +1468,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                 }
                 else
                 {
-                    if(mcast_ite->second.pub_socket != NULL)
+                    if(mcast_ite->second.pub_socket != nullptr)
                     {
                         send_nb = 2;
                         pub = mcast_ite->second.pub_socket;
@@ -1683,7 +1683,7 @@ bool ZmqEventSupplier::update_connected_client(client_addr *cl)
     // Immediately return if client identification not possible. (Very old client....)
     //
 
-    if(cl == NULL)
+    if(cl == nullptr)
     {
         return ret;
     }
@@ -1775,7 +1775,7 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
             name_changed = true;
         }
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             switch(*ite)
             {
@@ -1813,15 +1813,15 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
         inc_ctr = false;
         if(need_free == true)
         {
-            if(sent_value.attr_val_5 != NULL)
+            if(sent_value.attr_val_5 != nullptr)
             {
                 delete sent_value.attr_val_5;
             }
-            else if(sent_value.attr_val_4 != NULL)
+            else if(sent_value.attr_val_4 != nullptr)
             {
                 delete sent_value.attr_val_4;
             }
-            else if(sent_value.attr_val_3 != NULL)
+            else if(sent_value.attr_val_3 != nullptr)
             {
                 delete sent_value.attr_val_3;
             }

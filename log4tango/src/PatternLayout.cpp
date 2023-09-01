@@ -323,7 +323,7 @@ int PatternLayout::set_conversion_pattern(const std::string &conversionPattern)
     std::string literal;
 
     char ch;
-    PatternLayout::PatternComponent *component = NULL;
+    PatternLayout::PatternComponent *component = nullptr;
     int minWidth = 0;
     int maxWidth = 0;
     clear_conversion_pattern();
@@ -434,7 +434,7 @@ int PatternLayout::set_conversion_pattern(const std::string &conversionPattern)
                     minWidth = maxWidth = 0;
                 }
                 _components.push_back(component);
-                component = NULL;
+                component = nullptr;
             }
         }
         else

@@ -42,7 +42,7 @@
 namespace Tango
 {
 
-DServerSignal *DServerSignal::_instance = NULL;
+DServerSignal *DServerSignal::_instance = nullptr;
 DevSigAction DServerSignal::reg_sig[_NSIG];
 std::string DServerSignal::sig_name[_NSIG];
 #ifdef _TG_WINDOWS_
@@ -63,7 +63,7 @@ int DServerSignal::win_signo = 0;
 
 DServerSignal *DServerSignal::instance()
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         try
         {
@@ -211,7 +211,7 @@ DServerSignal::DServerSignal() :
     sigdelset(&sigs_to_block, SIGTSTP);
     sigdelset(&sigs_to_block, SIGUSR1);
     sigdelset(&sigs_to_block, SIGUSR2);
-    sigprocmask(SIG_BLOCK, &sigs_to_block, NULL);
+    sigprocmask(SIG_BLOCK, &sigs_to_block, nullptr);
 #else  /* _TG_WINDOWS_ */
     win_ev = CreateEvent(NULL, FALSE, FALSE, NULL);
 
@@ -686,7 +686,7 @@ void DServerSignal::register_handler(long signo, bool handler)
         sigemptyset(&sigs_to_unblock);
         sigaddset(&sigs_to_unblock, signo);
 
-        if(pthread_sigmask(SIG_UNBLOCK, &sigs_to_unblock, NULL) != 0)
+        if(pthread_sigmask(SIG_UNBLOCK, &sigs_to_unblock, nullptr) != 0)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -699,7 +699,7 @@ void DServerSignal::register_handler(long signo, bool handler)
         sa.sa_handler = DServerSignal::main_sig_handler;
         sigemptyset(&sa.sa_mask);
 
-        if(sigaction((int) signo, &sa, 0) == -1)
+        if(sigaction((int) signo, &sa, nullptr) == -1)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -757,7 +757,7 @@ void DServerSignal::unregister_handler(long signo)
         sa.sa_handler = SIG_DFL;
         sigemptyset(&sa.sa_mask);
 
-        if(sigaction((int) signo, &sa, 0) == -1)
+        if(sigaction((int) signo, &sa, nullptr) == -1)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;

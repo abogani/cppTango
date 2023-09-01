@@ -61,7 +61,7 @@ DbServerData::DbServerData(const std::string &exec_name, const std::string &inst
 
     std::string adm_name("dserver/");
     adm_name = adm_name + full_server_name;
-    Database *db_ptr = NULL;
+    Database *db_ptr = nullptr;
 
     try
     {

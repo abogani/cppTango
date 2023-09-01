@@ -50,7 +50,7 @@ class LayoutAppender : public Appender
 
     virtual bool requires_layout() const;
 
-    virtual void set_layout(Layout *layout = 0);
+    virtual void set_layout(Layout *layout = nullptr);
 
   protected:
     Layout &get_layout();

@@ -75,7 +75,7 @@ static const char *kDefaultConsoleName = "cout";
 // STATIC MEMBERS
 //-----------------------------------------------------------------------------
 // the DServer logger (use to output TANGO low level messages)
-log4tango::Logger *_core_logger = 0;
+log4tango::Logger *_core_logger = nullptr;
 // the logging path (use to store file logging targets)
 std::string Logging::_log_path("");
 // the <rollover> threshold for RollingFileAppender
@@ -245,7 +245,7 @@ void Logging::init(const std::string &ds_name, // dserver name
 void Logging::cleanup(void)
 {
     delete Tango::_core_logger;
-    Tango::_core_logger = 0;
+    Tango::_core_logger = nullptr;
 }
 
 //+----------------------------------------------------------------------------
@@ -447,7 +447,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             case LOG_CONSOLE:
             {
                 appender = new CoutAppender(appender_name);
-                if(appender == 0)
+                if(appender == nullptr)
                 {
                     TANGO_LOG_DEBUG << "Internal error (Appender instantiation failed)" << std::endl;
                     if(throw_exception)
@@ -463,7 +463,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             case LOG_FILE:
             {
                 appender = new TangoRollingFileAppender(appender_name, full_file_name, Logging::_rft);
-                if(appender == 0)
+                if(appender == nullptr)
                 {
                     if(throw_exception)
                     {
@@ -476,7 +476,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 if(appender->is_valid() == false)
                 {
                     delete appender;
-                    appender = 0;
+                    appender = nullptr;
                     if(throw_exception)
                     {
                         TangoSys_OMemStream o;
@@ -486,10 +486,10 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                     break;
                 }
                 log4tango::XMLLayout *layout = new log4tango::XMLLayout();
-                if(layout == 0)
+                if(layout == nullptr)
                 {
                     delete appender;
-                    appender = 0;
+                    appender = nullptr;
                     if(throw_exception)
                     {
                         TangoSys_OMemStream o;
@@ -504,7 +504,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             case LOG_DEVICE:
             {
                 appender = new TangoAppender(logger->get_name(), appender_name, ltg_name_str);
-                if(appender == 0)
+                if(appender == nullptr)
                 {
                     if(throw_exception)
                     {
@@ -517,7 +517,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 if(appender->is_valid() == false)
                 {
                     delete appender;
-                    appender = 0;
+                    appender = nullptr;
                     if(throw_exception)
                     {
                         TangoSys_OMemStream o;
@@ -646,7 +646,7 @@ void Logging::remove_logging_target(const Tango::DevVarStringArray *argin)
             {
                 // get device's logger
                 logger = dl[j]->get_logger();
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     TangoSys_OMemStream o;
                     o << "Internal error (got a NULL logger)" << std::ends;
@@ -724,7 +724,7 @@ void Logging::remove_logging_target(const Tango::DevVarStringArray *argin)
 //-----------------------------------------------------------------------------
 Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_name)
 {
-    Tango::DevVarStringArray *ret = 0;
+    Tango::DevVarStringArray *ret = nullptr;
     try
     {
         // fight against the "zombie appender" syndrom
@@ -732,7 +732,7 @@ Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_nam
         // trace
         TANGO_LOG_DEBUG << "Entering Logging::get_logging_target " << std::endl;
         // first check device name (does it exist?)
-        DeviceImpl *dev = 0;
+        DeviceImpl *dev = nullptr;
         try
         {
             dev = Tango::Util::instance()->get_device_by_name(dev_name);
@@ -745,7 +745,7 @@ Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_nam
         }
         // get device's logger
         log4tango::Logger *logger = dev->get_logger();
-        if(logger == 0)
+        if(logger == nullptr)
         {
             TangoSys_OMemStream o;
             o << "Could not instantiate logger (out of memory error)" << std::ends;
@@ -755,7 +755,7 @@ Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_nam
         log4tango::AppenderList al = logger->get_all_appenders();
         // instantiate the returned value
         ret = new Tango::DevVarStringArray(al.size());
-        if(ret == 0)
+        if(ret == nullptr)
         {
             TangoSys_OMemStream o;
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Out of memory error (DevVarStringArray allocation failed)");
@@ -810,7 +810,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
         // a device list
         std::vector<DeviceImpl *> dl(0);
         // a logger
-        log4tango::Logger *logger = 0;
+        log4tango::Logger *logger = nullptr;
         // for each entry in argin->svalue
         for(i = 0; i < argin->svalue.length(); i++)
         {
@@ -837,7 +837,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
             {
                 // get device's logger (created if does not already exist)
                 logger = dl[j]->get_logger();
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     //--TODO::change the following message
                     TANGO_THROW_EXCEPTION(API_MemoryAllocation, "out of memory error");
@@ -865,7 +865,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
 //-----------------------------------------------------------------------------
 DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin)
 {
-    Tango::DevVarLongStringArray *ret = 0;
+    Tango::DevVarLongStringArray *ret = nullptr;
     try
     {
         // trace
@@ -877,7 +877,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
         }
         // instance the returned CORBA::seq
         ret = new Tango::DevVarLongStringArray;
-        if(ret == 0)
+        if(ret == nullptr)
         {
             TangoSys_OMemStream o;
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "out of memory error");
@@ -889,7 +889,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
         // a device list
         std::vector<DeviceImpl *> dl(0);
         // a logger
-        log4tango::Logger *logger = 0;
+        log4tango::Logger *logger = nullptr;
         for(i = 0; i < argin->length(); i++)
         {
             // get ith wilcard
@@ -903,7 +903,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
             {
                 // get device's logger (created if does not already exist)
                 logger = dl[j]->get_logger();
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     TangoSys_OMemStream o;
                     //--TODO: change the following message
@@ -973,7 +973,7 @@ void Logging::kill_zombie_appenders(void)
     dl = Util::instance()->get_device_list("*");
     // for each device in <dl>
     log4tango::AppenderList al;
-    log4tango::Logger *logger = 0;
+    log4tango::Logger *logger = nullptr;
     unsigned int i, j;
     for(i = 0; i < dl.size(); i++)
     {

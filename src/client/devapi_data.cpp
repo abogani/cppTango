@@ -69,7 +69,7 @@ DeviceData::DeviceData(const DeviceData &source)
     exceptions_flags = source.exceptions_flags;
     any = source.any;
 
-    if(source.ext.get() != NULL)
+    if(source.ext.get() != nullptr)
     {
         ext.reset(new DeviceDataExt);
         *(ext.get()) = *(source.ext.get());
@@ -88,7 +88,7 @@ DeviceData::DeviceData(DeviceData &&source) :
     exceptions_flags = source.exceptions_flags;
     any = source.any._retn();
 
-    if(source.ext.get() != NULL)
+    if(source.ext.get() != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -107,7 +107,7 @@ DeviceData &DeviceData::operator=(const DeviceData &rval)
         exceptions_flags = rval.exceptions_flags;
         any = rval.any;
 
-        if(rval.ext.get() != NULL)
+        if(rval.ext.get() != nullptr)
         {
             ext.reset(new DeviceDataExt);
             *(ext.get()) = *(rval.ext.get());
@@ -131,7 +131,7 @@ DeviceData &DeviceData::operator=(DeviceData &&rval)
     exceptions_flags = rval.exceptions_flags;
     any = rval.any._retn();
 
-    if(rval.ext.get() != NULL)
+    if(rval.ext.get() != nullptr)
     {
         ext = std::move(rval.ext);
     }
@@ -626,7 +626,7 @@ bool DeviceData::operator>>(std::string &datum)
 {
     ext->ext_state.reset();
 
-    const char *c_string = NULL;
+    const char *c_string = nullptr;
     bool ret = (any >>= c_string);
     if(ret == false)
     {
@@ -720,10 +720,10 @@ bool DeviceData::operator>>(std::vector<bool> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarBooleanArray *bool_array = NULL;
+    const DevVarBooleanArray *bool_array = nullptr;
     bool ret = (any.inout() >>= bool_array);
 
-    bool success = ret && bool_array != NULL;
+    bool success = ret && bool_array != nullptr;
 
     if(success)
     {
@@ -742,7 +742,7 @@ bool DeviceData::operator>>(std::vector<bool> &datum)
             return false;
         }
 
-        if(bool_array == NULL)
+        if(bool_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -800,7 +800,7 @@ bool DeviceData::operator>>(std::vector<unsigned char> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarCharArray *char_array = NULL;
+    const DevVarCharArray *char_array = nullptr;
     bool ret = (any.inout() >>= char_array);
     if(ret == false)
     {
@@ -819,7 +819,7 @@ bool DeviceData::operator>>(std::vector<unsigned char> &datum)
     }
     else
     {
-        if(char_array == NULL)
+        if(char_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -875,7 +875,7 @@ bool DeviceData::operator>>(std::vector<short> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarShortArray *short_array = NULL;
+    const DevVarShortArray *short_array = nullptr;
     bool ret = (any.inout() >>= short_array);
     if(ret == false)
     {
@@ -894,7 +894,7 @@ bool DeviceData::operator>>(std::vector<short> &datum)
     }
     else
     {
-        if(short_array == NULL)
+        if(short_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -951,7 +951,7 @@ bool DeviceData::operator>>(std::vector<unsigned short> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarUShortArray *ushort_array = NULL;
+    const DevVarUShortArray *ushort_array = nullptr;
     bool ret = (any.inout() >>= ushort_array);
     if(ret == false)
     {
@@ -970,7 +970,7 @@ bool DeviceData::operator>>(std::vector<unsigned short> &datum)
     }
     else
     {
-        if(ushort_array == NULL)
+        if(ushort_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1025,7 +1025,7 @@ bool DeviceData::operator>>(const DevVarUShortArray *&datum)
 bool DeviceData::operator>>(std::vector<DevLong> &datum)
 {
     ext->ext_state.reset();
-    const DevVarLongArray *long_array = NULL;
+    const DevVarLongArray *long_array = nullptr;
 
     bool ret = (any.inout() >>= long_array);
     if(ret == false)
@@ -1046,7 +1046,7 @@ bool DeviceData::operator>>(std::vector<DevLong> &datum)
     }
     else
     {
-        if(long_array == NULL)
+        if(long_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1102,7 +1102,7 @@ bool DeviceData::operator>>(std::vector<DevULong> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarULongArray *ulong_array = NULL;
+    const DevVarULongArray *ulong_array = nullptr;
 
     bool ret = (any.inout() >>= ulong_array);
     if(ret == false)
@@ -1123,7 +1123,7 @@ bool DeviceData::operator>>(std::vector<DevULong> &datum)
     }
     else
     {
-        if(ulong_array == NULL)
+        if(ulong_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1239,7 +1239,7 @@ bool DeviceData::operator>>(std::vector<DevLong64> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarLong64Array *ll_array = NULL;
+    const DevVarLong64Array *ll_array = nullptr;
     bool ret = (any.inout() >>= ll_array);
     if(ret == false)
     {
@@ -1259,7 +1259,7 @@ bool DeviceData::operator>>(std::vector<DevLong64> &datum)
     }
     else
     {
-        if(ll_array == NULL)
+        if(ll_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1286,7 +1286,7 @@ bool DeviceData::operator>>(std::vector<DevULong64> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarULong64Array *ull_array = NULL;
+    const DevVarULong64Array *ull_array = nullptr;
     bool ret = (any.inout() >>= ull_array);
     if(ret == false)
     {
@@ -1306,7 +1306,7 @@ bool DeviceData::operator>>(std::vector<DevULong64> &datum)
     }
     else
     {
-        if(ull_array == NULL)
+        if(ull_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1333,7 +1333,7 @@ bool DeviceData::operator>>(std::vector<float> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarFloatArray *float_array = NULL;
+    const DevVarFloatArray *float_array = nullptr;
     bool ret = (any.inout() >>= float_array);
     if(ret == false)
     {
@@ -1352,7 +1352,7 @@ bool DeviceData::operator>>(std::vector<float> &datum)
     }
     else
     {
-        if(float_array == NULL)
+        if(float_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1408,7 +1408,7 @@ bool DeviceData::operator>>(std::vector<double> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarDoubleArray *double_array = NULL;
+    const DevVarDoubleArray *double_array = nullptr;
 
     bool ret = (any.inout() >>= double_array);
     if(ret == false)
@@ -1428,7 +1428,7 @@ bool DeviceData::operator>>(std::vector<double> &datum)
     }
     else
     {
-        if(double_array == NULL)
+        if(double_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1484,7 +1484,7 @@ bool DeviceData::operator>>(std::vector<std::string> &datum)
 {
     ext->ext_state.reset();
 
-    const DevVarStringArray *string_array = NULL;
+    const DevVarStringArray *string_array = nullptr;
 
     bool ret = (any.inout() >>= string_array);
     if(ret == false)
@@ -1504,7 +1504,7 @@ bool DeviceData::operator>>(std::vector<std::string> &datum)
     }
     else
     {
-        if(string_array == NULL)
+        if(string_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1591,7 +1591,7 @@ bool DeviceData::operator>>(DevEncoded &datum)
 {
     ext->ext_state.reset();
 
-    const DevEncoded *tmp_enc = NULL;
+    const DevEncoded *tmp_enc = nullptr;
     bool ret = (any.inout() >>= tmp_enc);
     if(ret == false)
     {
@@ -1610,7 +1610,7 @@ bool DeviceData::operator>>(DevEncoded &datum)
     }
     else
     {
-        if(tmp_enc == NULL)
+        if(tmp_enc == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1852,7 +1852,7 @@ bool DeviceData::extract(std::vector<DevLong> &long_datum, std::vector<std::stri
     bool ret;
     ext->ext_state.reset();
 
-    const DevVarLongStringArray *long_string_array = NULL;
+    const DevVarLongStringArray *long_string_array = nullptr;
     ret = (any.inout() >>= long_string_array);
     if(ret == false)
     {
@@ -1872,7 +1872,7 @@ bool DeviceData::extract(std::vector<DevLong> &long_datum, std::vector<std::stri
     }
     else
     {
-        if(long_string_array == NULL)
+        if(long_string_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -1963,7 +1963,7 @@ bool DeviceData::extract(std::vector<double> &double_datum, std::vector<std::str
     bool ret;
     ext->ext_state.reset();
 
-    const DevVarDoubleStringArray *double_string_array = NULL;
+    const DevVarDoubleStringArray *double_string_array = nullptr;
     ret = (any.inout() >>= double_string_array);
     if(ret == false)
     {
@@ -1982,7 +1982,7 @@ bool DeviceData::extract(std::vector<double> &double_datum, std::vector<std::str
     }
     else
     {
-        if(double_string_array == NULL)
+        if(double_string_array == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -2096,7 +2096,7 @@ bool DeviceData::extract(const char *&str, const unsigned char *&data_ptr, unsig
 {
     ext->ext_state.reset();
 
-    const DevEncoded *tmp_enc = NULL;
+    const DevEncoded *tmp_enc = nullptr;
     bool ret = (any.inout() >>= tmp_enc);
     if(ret == false)
     {
@@ -2115,7 +2115,7 @@ bool DeviceData::extract(const char *&str, const unsigned char *&data_ptr, unsig
     }
     else
     {
-        if(tmp_enc == NULL)
+        if(tmp_enc == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");
@@ -2142,7 +2142,7 @@ bool DeviceData::extract(std::string &str, std::vector<unsigned char> &datum)
 {
     ext->ext_state.reset();
 
-    const DevEncoded *tmp_enc = NULL;
+    const DevEncoded *tmp_enc = nullptr;
     bool ret = (any.inout() >>= tmp_enc);
     if(ret == false)
     {
@@ -2161,7 +2161,7 @@ bool DeviceData::extract(std::string &str, std::vector<unsigned char> &datum)
     }
     else
     {
-        if(tmp_enc == NULL)
+        if(tmp_enc == nullptr)
         {
             ext->ext_state.set(wrongtype_flag);
             TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncoherentDevData, "Incoherent data received from server");

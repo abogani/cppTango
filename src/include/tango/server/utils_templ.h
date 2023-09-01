@@ -82,7 +82,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
     //
 
     Tango::Attribute &att = dev->get_device_attr()->get_attr_by_name(att_name.c_str());
-    Tango::WAttribute *w_att_ptr = NULL;
+    Tango::WAttribute *w_att_ptr = nullptr;
     Tango::AttrWriteType w_type = att.get_writable();
     if(w_type == Tango::READ_WRITE)
     {
@@ -111,7 +111,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
     {
         for(size_t i = 0; i < nb_elt; i++)
         {
-            if((data.get_data())[i].wr_ptr != NULL)
+            if((data.get_data())[i].wr_ptr != nullptr)
             {
                 TangoSys_OMemStream o;
                 o << "The attribute " << att_name;
@@ -150,7 +150,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
     {
         for(size_t i = 0; i < nb_elt; i++)
         {
-            if((data.get_data())[i].wr_ptr != NULL)
+            if((data.get_data())[i].wr_ptr != nullptr)
             {
                 TangoSys_OMemStream o;
                 o << "The attribute " << att_name;
@@ -215,7 +215,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
 
     for(i = 0; i < nb_elt; i++)
     {
-        save_except = NULL;
+        save_except = nullptr;
         attr_failed = false;
 
         if((data.get_data())[i].err.length() != 0)
@@ -333,7 +333,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
                 }
                 else if(w_type == Tango::READ_WRITE)
                 {
-                    if((data.get_data())[i].wr_ptr != NULL)
+                    if((data.get_data())[i].wr_ptr != nullptr)
                     {
                         w_att_ptr->set_write_value(
                             (T *) (data.get_data())[i].wr_ptr, (data.get_data())[i].wr_x, (data.get_data())[i].wr_y);
@@ -546,7 +546,7 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name, CmdHi
 
     for(i = 0; i < nb_elt; i++)
     {
-        save_except = NULL;
+        save_except = nullptr;
         cmd_failed = false;
 
         if((data.get_data())[i].err.length() != 0)

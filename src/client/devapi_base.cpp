@@ -202,7 +202,7 @@ Connection::Connection(const Connection &sou) :
 
     device_5 = sou.device_5;
 
-    if(sou.ext.get() != NULL)
+    if(sou.ext.get() != nullptr)
     {
         ext.reset(new ConnectionExt);
         *(ext.get()) = *(sou.ext.get());
@@ -257,7 +257,7 @@ Connection &Connection::operator=(const Connection &rval)
 
     device_5 = rval.device_5;
 
-    if(rval.ext.get() != NULL)
+    if(rval.ext.get() != nullptr)
     {
         ext.reset(new ConnectionExt);
         *(ext.get()) = *(rval.ext.get());
@@ -577,11 +577,11 @@ void Connection::connect(const std::string &corba_name)
                         else
                         {
                             desc << "device " << dev_name() << std::ends;
-                            if(CORBA::OBJECT_NOT_EXIST::_downcast(&ce) != 0)
+                            if(CORBA::OBJECT_NOT_EXIST::_downcast(&ce) != nullptr)
                             {
                                 reason << API_DeviceNotDefined << std::ends;
                             }
-                            else if(CORBA::TRANSIENT::_downcast(&ce) != 0)
+                            else if(CORBA::TRANSIENT::_downcast(&ce) != nullptr)
                             {
                                 reason << API_ServerNotRunning << std::ends;
                             }
@@ -841,7 +841,7 @@ int Connection::get_env_var(const char *env_var_name, std::string &env_var)
 
     env_c_str = getenv(env_var_name);
 
-    if(env_c_str == NULL)
+    if(env_c_str == nullptr)
     {
 #ifndef _TG_WINDOWS_
         uid_t user_id = geteuid();
@@ -855,7 +855,7 @@ int Connection::get_env_var(const char *env_var_name, std::string &env_var)
             return ret;
         }
 
-        if(pw_ptr == NULL)
+        if(pw_ptr == nullptr)
         {
             return ret;
         }
@@ -1050,7 +1050,7 @@ void Connection::get_fqdn(std::string &the_host)
     size_t i;
     for(i = 0; i < ip_list.size() && !host_found; i++)
     {
-        int result = getaddrinfo(ip_list[i].c_str(), NULL, &hints, &info);
+        int result = getaddrinfo(ip_list[i].c_str(), nullptr, &hints, &info);
 
         if(result == 0)
         {
@@ -1059,9 +1059,9 @@ void Connection::get_fqdn(std::string &the_host)
             std::string myhost;
             std::string::size_type pos;
 
-            while(ptr != NULL)
+            while(ptr != nullptr)
             {
-                if(getnameinfo(ptr->ai_addr, ptr->ai_addrlen, tmp_host, 512, 0, 0, NI_NAMEREQD) == 0)
+                if(getnameinfo(ptr->ai_addr, ptr->ai_addrlen, tmp_host, 512, nullptr, 0, NI_NAMEREQD) == 0)
                 {
                     nb_loop++;
                     myhost = tmp_host;
@@ -1592,9 +1592,9 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
 
 DeviceProxy::DeviceProxy(const std::string &name, CORBA::ORB_var orb) :
     Connection(orb),
-    db_dev(NULL),
+    db_dev(nullptr),
     is_alias(false),
-    adm_device(NULL),
+    adm_device(nullptr),
     lock_ctr(0),
     ext_proxy(new DeviceProxyExt())
 {
@@ -1603,9 +1603,9 @@ DeviceProxy::DeviceProxy(const std::string &name, CORBA::ORB_var orb) :
 
 DeviceProxy::DeviceProxy(const char *na, CORBA::ORB_var orb) :
     Connection(orb),
-    db_dev(NULL),
+    db_dev(nullptr),
     is_alias(false),
-    adm_device(NULL),
+    adm_device(nullptr),
     lock_ctr(0),
     ext_proxy(new DeviceProxyExt())
 {
@@ -1615,9 +1615,9 @@ DeviceProxy::DeviceProxy(const char *na, CORBA::ORB_var orb) :
 
 DeviceProxy::DeviceProxy(const std::string &name, bool need_check_acc, CORBA::ORB_var orb) :
     Connection(orb),
-    db_dev(NULL),
+    db_dev(nullptr),
     is_alias(false),
-    adm_device(NULL),
+    adm_device(nullptr),
     lock_ctr(0),
     ext_proxy(new DeviceProxyExt())
 {
@@ -1626,9 +1626,9 @@ DeviceProxy::DeviceProxy(const std::string &name, bool need_check_acc, CORBA::OR
 
 DeviceProxy::DeviceProxy(const char *na, bool need_check_acc, CORBA::ORB_var orb) :
     Connection(orb),
-    db_dev(NULL),
+    db_dev(nullptr),
     is_alias(false),
-    adm_device(NULL),
+    adm_device(nullptr),
     lock_ctr(0),
     ext_proxy(new DeviceProxyExt())
 {
@@ -1847,9 +1847,9 @@ DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
     // Copy adm device pointer
     //
 
-    if(sou.adm_device == NULL)
+    if(sou.adm_device == nullptr)
     {
-        adm_device = NULL;
+        adm_device = nullptr;
     }
     else
     {
@@ -1860,7 +1860,7 @@ DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
     // Copy extension class
     //
 
-    if(sou.ext_proxy.get() != NULL)
+    if(sou.ext_proxy.get() != nullptr)
     {
         ext_proxy.reset(new DeviceProxyExt);
         *(ext_proxy.get()) = *(sou.ext_proxy.get());
@@ -1913,16 +1913,16 @@ DeviceProxy &DeviceProxy::operator=(const DeviceProxy &rval)
 
         delete adm_device;
 
-        if(rval.adm_device != NULL)
+        if(rval.adm_device != nullptr)
         {
             adm_device = new DeviceProxy(rval.adm_device->dev_name().c_str());
         }
         else
         {
-            adm_device = NULL;
+            adm_device = nullptr;
         }
 
-        if(rval.ext_proxy.get() != NULL)
+        if(rval.ext_proxy.get() != nullptr)
         {
             ext_proxy.reset(new DeviceProxyExt);
             *(ext_proxy.get()) = *(rval.ext_proxy.get());
@@ -2675,7 +2675,7 @@ std::string DeviceProxy::alias()
     if(alias_name.size() == 0)
     {
         Database *db = this->get_device_db();
-        if(db != NULL)
+        if(db != nullptr)
         {
             db->get_alias(device_name, alias_name);
         }
@@ -3287,7 +3287,7 @@ CommandInfoList *DeviceProxy::get_command_config(std::vector<std::string> &cmd_n
 
 CommandInfoList *DeviceProxy::command_list_query()
 {
-    CommandInfoList *command_info_list = NULL;
+    CommandInfoList *command_info_list = nullptr;
     DevCmdInfoList_var cmd_info_list;
     DevCmdInfoList_2_var cmd_info_list_2;
     int ctr = 0;
@@ -5454,7 +5454,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
             }
             else
             {
-                ApiUtil::attr_to_device(NULL, &(attr_value_list_3[i]), version, &(*dev_attr)[i]);
+                ApiUtil::attr_to_device(nullptr, &(attr_value_list_3[i]), version, &(*dev_attr)[i]);
             }
 
             //
@@ -5480,7 +5480,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
         }
         else
         {
-            ApiUtil::attr_to_device(&(attr_value_list[i]), NULL, version, &(*dev_attr)[i]);
+            ApiUtil::attr_to_device(&(attr_value_list[i]), nullptr, version, &(*dev_attr)[i]);
         }
     }
 
@@ -5561,7 +5561,7 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
         }
         else
         {
-            ApiUtil::attr_to_device(NULL, &(attr_value_list_3[0]), version, &dev_attr);
+            ApiUtil::attr_to_device(nullptr, &(attr_value_list_3[0]), version, &dev_attr);
         }
 
         //
@@ -5588,7 +5588,7 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
     }
     else
     {
-        ApiUtil::attr_to_device(&(attr_value_list[0]), NULL, version, &dev_attr);
+        ApiUtil::attr_to_device(&(attr_value_list[0]), nullptr, version, &dev_attr);
     }
 
     return (dev_attr);
@@ -5596,10 +5596,10 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
 
 void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr)
 {
-    AttributeValueList *attr_value_list = NULL;
-    AttributeValueList_3 *attr_value_list_3 = NULL;
-    AttributeValueList_4 *attr_value_list_4 = NULL;
-    AttributeValueList_5 *attr_value_list_5 = NULL;
+    AttributeValueList *attr_value_list = nullptr;
+    AttributeValueList_3 *attr_value_list_3 = nullptr;
+    AttributeValueList_4 *attr_value_list_4 = nullptr;
+    AttributeValueList_5 *attr_value_list_5 = nullptr;
     DevVarStringArray attr_list;
     int ctr = 0;
     Tango::DevSource local_source;
@@ -5661,7 +5661,7 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
         }
         else
         {
-            ApiUtil::attr_to_device(NULL, &((*attr_value_list_3)[0]), version, &dev_attr);
+            ApiUtil::attr_to_device(nullptr, &((*attr_value_list_3)[0]), version, &dev_attr);
             delete attr_value_list_3;
         }
 
@@ -5689,7 +5689,7 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
     }
     else
     {
-        ApiUtil::attr_to_device(&((*attr_value_list)[0]), NULL, version, &dev_attr);
+        ApiUtil::attr_to_device(&((*attr_value_list)[0]), nullptr, version, &dev_attr);
         delete attr_value_list;
     }
 }
@@ -5857,7 +5857,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             attr_value_list[i].dim_y = attr_list[i].dim_y;
         }
 
-        if(attr_list[i].LongSeq.operator->() != NULL)
+        if(attr_list[i].LongSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5869,7 +5869,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].Long64Seq.operator->() != NULL)
+        if(attr_list[i].Long64Seq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5881,7 +5881,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].ShortSeq.operator->() != NULL)
+        if(attr_list[i].ShortSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5893,7 +5893,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].DoubleSeq.operator->() != NULL)
+        if(attr_list[i].DoubleSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5905,7 +5905,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].StringSeq.operator->() != NULL)
+        if(attr_list[i].StringSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5917,7 +5917,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].FloatSeq.operator->() != NULL)
+        if(attr_list[i].FloatSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5929,7 +5929,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].BooleanSeq.operator->() != NULL)
+        if(attr_list[i].BooleanSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5941,7 +5941,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].UShortSeq.operator->() != NULL)
+        if(attr_list[i].UShortSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5953,7 +5953,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].UCharSeq.operator->() != NULL)
+        if(attr_list[i].UCharSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5965,7 +5965,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].ULongSeq.operator->() != NULL)
+        if(attr_list[i].ULongSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5977,7 +5977,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].ULong64Seq.operator->() != NULL)
+        if(attr_list[i].ULong64Seq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -5989,7 +5989,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             }
             continue;
         }
-        if(attr_list[i].StateSeq.operator->() != NULL)
+        if(attr_list[i].StateSeq.operator->() != nullptr)
         {
             if(version >= 4)
             {
@@ -6162,55 +6162,55 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
         attr_value_list_4[0].w_dim.dim_x = dev_attr.dim_x;
         attr_value_list_4[0].w_dim.dim_y = dev_attr.dim_y;
 
-        if(dev_attr.LongSeq.operator->() != NULL)
+        if(dev_attr.LongSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.long_att_value(dev_attr.LongSeq.in());
         }
-        else if(dev_attr.Long64Seq.operator->() != NULL)
+        else if(dev_attr.Long64Seq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.long64_att_value(dev_attr.Long64Seq.in());
         }
-        else if(dev_attr.ShortSeq.operator->() != NULL)
+        else if(dev_attr.ShortSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.short_att_value(dev_attr.ShortSeq.in());
         }
-        else if(dev_attr.DoubleSeq.operator->() != NULL)
+        else if(dev_attr.DoubleSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.double_att_value(dev_attr.DoubleSeq.in());
         }
-        else if(dev_attr.StringSeq.operator->() != NULL)
+        else if(dev_attr.StringSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.string_att_value(dev_attr.StringSeq.in());
         }
-        else if(dev_attr.FloatSeq.operator->() != NULL)
+        else if(dev_attr.FloatSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.float_att_value(dev_attr.FloatSeq.in());
         }
-        else if(dev_attr.BooleanSeq.operator->() != NULL)
+        else if(dev_attr.BooleanSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.bool_att_value(dev_attr.BooleanSeq.in());
         }
-        else if(dev_attr.UShortSeq.operator->() != NULL)
+        else if(dev_attr.UShortSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.ushort_att_value(dev_attr.UShortSeq.in());
         }
-        else if(dev_attr.UCharSeq.operator->() != NULL)
+        else if(dev_attr.UCharSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.uchar_att_value(dev_attr.UCharSeq.in());
         }
-        else if(dev_attr.ULongSeq.operator->() != NULL)
+        else if(dev_attr.ULongSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.ulong_att_value(dev_attr.ULongSeq.in());
         }
-        else if(dev_attr.ULong64Seq.operator->() != NULL)
+        else if(dev_attr.ULong64Seq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.ulong64_att_value(dev_attr.ULong64Seq.in());
         }
-        else if(dev_attr.StateSeq.operator->() != NULL)
+        else if(dev_attr.StateSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.state_att_value(dev_attr.StateSeq.in());
         }
-        else if(dev_attr.EncodedSeq.operator->() != NULL)
+        else if(dev_attr.EncodedSeq.operator->() != nullptr)
         {
             attr_value_list_4[0].value.encoded_att_value(dev_attr.EncodedSeq.in());
         }
@@ -6225,51 +6225,51 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
         attr_value_list[0].dim_x = dev_attr.dim_x;
         attr_value_list[0].dim_y = dev_attr.dim_y;
 
-        if(dev_attr.LongSeq.operator->() != NULL)
+        if(dev_attr.LongSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.LongSeq.in();
         }
-        else if(dev_attr.Long64Seq.operator->() != NULL)
+        else if(dev_attr.Long64Seq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.Long64Seq.in();
         }
-        else if(dev_attr.ShortSeq.operator->() != NULL)
+        else if(dev_attr.ShortSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.ShortSeq.in();
         }
-        else if(dev_attr.DoubleSeq.operator->() != NULL)
+        else if(dev_attr.DoubleSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.DoubleSeq.in();
         }
-        else if(dev_attr.StringSeq.operator->() != NULL)
+        else if(dev_attr.StringSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.StringSeq.in();
         }
-        else if(dev_attr.FloatSeq.operator->() != NULL)
+        else if(dev_attr.FloatSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.FloatSeq.in();
         }
-        else if(dev_attr.BooleanSeq.operator->() != NULL)
+        else if(dev_attr.BooleanSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.BooleanSeq.in();
         }
-        else if(dev_attr.UShortSeq.operator->() != NULL)
+        else if(dev_attr.UShortSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.UShortSeq.in();
         }
-        else if(dev_attr.UCharSeq.operator->() != NULL)
+        else if(dev_attr.UCharSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.UCharSeq.in();
         }
-        else if(dev_attr.ULongSeq.operator->() != NULL)
+        else if(dev_attr.ULongSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.ULongSeq.in();
         }
-        else if(dev_attr.ULong64Seq.operator->() != NULL)
+        else if(dev_attr.ULong64Seq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.ULong64Seq.in();
         }
-        else if(dev_attr.StateSeq.operator->() != NULL)
+        else if(dev_attr.StateSeq.operator->() != nullptr)
         {
             attr_value_list[0].value <<= dev_attr.StateSeq.in();
         }
@@ -6757,8 +6757,8 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
         TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, desc.str());
     }
 
-    DevCmdHistoryList *hist = NULL;
-    DevCmdHistory_4_var hist_4 = NULL;
+    DevCmdHistoryList *hist = nullptr;
+    DevCmdHistory_4_var hist_4 = nullptr;
 
     int ctr = 0;
 
@@ -7645,7 +7645,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
                                  bool stateless)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -7664,7 +7664,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == NULL)
+            if(api_ptr->get_notifd_event_consumer() == nullptr)
             {
                 api_ptr->create_notifd_event_consumer();
             }
@@ -7699,7 +7699,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
                                  bool stateless)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -7719,7 +7719,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == NULL)
+            if(api_ptr->get_notifd_event_consumer() == nullptr)
             {
                 api_ptr->create_notifd_event_consumer();
             }
@@ -7758,7 +7758,7 @@ int DeviceProxy::subscribe_event(EventType event, CallBack *callback, bool state
     }
 
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -7792,7 +7792,7 @@ int DeviceProxy::subscribe_event(EventType event, int event_queue_size, bool sta
     }
 
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -7816,7 +7816,7 @@ int DeviceProxy::subscribe_event(EventType event, int event_queue_size, bool sta
 void DeviceProxy::unsubscribe_event(int event_id)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -7831,7 +7831,7 @@ void DeviceProxy::unsubscribe_event(int event_id)
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -7859,7 +7859,7 @@ void DeviceProxy::unsubscribe_event(int event_id)
 void DeviceProxy::get_events(int event_id, EventDataList &event_list)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -7874,7 +7874,7 @@ void DeviceProxy::get_events(int event_id, EventDataList &event_list)
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -7903,7 +7903,7 @@ void DeviceProxy::get_events(int event_id, EventDataList &event_list)
 void DeviceProxy::get_events(int event_id, AttrConfEventDataList &event_list)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -7918,7 +7918,7 @@ void DeviceProxy::get_events(int event_id, AttrConfEventDataList &event_list)
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -7933,7 +7933,7 @@ void DeviceProxy::get_events(int event_id, AttrConfEventDataList &event_list)
 void DeviceProxy::get_events(int event_id, DataReadyEventDataList &event_list)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -7948,7 +7948,7 @@ void DeviceProxy::get_events(int event_id, DataReadyEventDataList &event_list)
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -7963,7 +7963,7 @@ void DeviceProxy::get_events(int event_id, DataReadyEventDataList &event_list)
 void DeviceProxy::get_events(int event_id, DevIntrChangeEventDataList &event_list)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         std::stringstream desc;
         desc << "Could not find event consumer object, \n";
@@ -7986,7 +7986,7 @@ void DeviceProxy::get_events(int event_id, DevIntrChangeEventDataList &event_lis
 void DeviceProxy::get_events(int event_id, PipeEventDataList &event_list)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         std::stringstream desc;
         desc << "Could not find event consumer object, \n";
@@ -8023,7 +8023,7 @@ void DeviceProxy::get_events(int event_id, PipeEventDataList &event_list)
 void DeviceProxy::get_events(int event_id, CallBack *cb)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -8038,7 +8038,7 @@ void DeviceProxy::get_events(int event_id, CallBack *cb)
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -8062,7 +8062,7 @@ void DeviceProxy::get_events(int event_id, CallBack *cb)
 int DeviceProxy::event_queue_size(int event_id)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -8071,14 +8071,14 @@ int DeviceProxy::event_queue_size(int event_id)
         TANGO_THROW_EXCEPTION(API_EventConsumer, desc.str());
     }
 
-    EventConsumer *ev = NULL;
+    EventConsumer *ev = nullptr;
     if(api_ptr->get_zmq_event_consumer()->get_event_system_for_event_id(event_id) == ZMQ)
     {
         ev = api_ptr->get_zmq_event_consumer();
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -8107,7 +8107,7 @@ int DeviceProxy::event_queue_size(int event_id)
 bool DeviceProxy::is_event_queue_empty(int event_id)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -8116,14 +8116,14 @@ bool DeviceProxy::is_event_queue_empty(int event_id)
         TANGO_THROW_EXCEPTION(API_EventConsumer, desc.str());
     }
 
-    EventConsumer *ev = NULL;
+    EventConsumer *ev = nullptr;
     if(api_ptr->get_zmq_event_consumer()->get_event_system_for_event_id(event_id) == ZMQ)
     {
         ev = api_ptr->get_zmq_event_consumer();
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -8152,7 +8152,7 @@ bool DeviceProxy::is_event_queue_empty(int event_id)
 TimeVal DeviceProxy::get_last_event_date(int event_id)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         TangoSys_OMemStream desc;
         desc << "Could not find event consumer object, \n";
@@ -8161,14 +8161,14 @@ TimeVal DeviceProxy::get_last_event_date(int event_id)
         TANGO_THROW_EXCEPTION(API_EventConsumer, desc.str());
     }
 
-    EventConsumer *ev = NULL;
+    EventConsumer *ev = nullptr;
     if(api_ptr->get_zmq_event_consumer()->get_event_system_for_event_id(event_id) == ZMQ)
     {
         ev = api_ptr->get_zmq_event_consumer();
     }
     else
     {
-        if(api_ptr->get_notifd_event_consumer() == NULL)
+        if(api_ptr->get_notifd_event_consumer() == nullptr)
         {
             TangoSys_OMemStream desc;
             desc << "Could not find event consumer object, \n";
@@ -8193,13 +8193,13 @@ TimeVal DeviceProxy::get_last_event_date(int event_id)
 
 Database *DeviceProxy::get_device_db()
 {
-    if((db_port_num != 0) && (db_dev != NULL))
+    if((db_port_num != 0) && (db_dev != nullptr))
     {
         return db_dev->get_dbase();
     }
     else
     {
-        return (Database *) NULL;
+        return (Database *) nullptr;
     }
 }
 
@@ -8534,9 +8534,9 @@ void DeviceProxy::unlock(bool force)
 void DeviceProxy::create_locking_thread(ApiUtil *au, std::chrono::seconds dl)
 {
     LockingThread lt;
-    lt.mon = NULL;
-    lt.l_thread = NULL;
-    lt.shared = NULL;
+    lt.mon = nullptr;
+    lt.l_thread = nullptr;
+    lt.shared = nullptr;
 
     std::pair<std::map<std::string, LockingThread>::iterator, bool> status;
     status = au->lock_threads.insert(std::make_pair(adm_dev_name, lt));
@@ -8744,7 +8744,7 @@ bool DeviceProxy::get_locker(LockerInfo &lock_info)
 
             char host_os[512];
 
-            int res = getnameinfo((const sockaddr *) &si, sizeof(si), host_os, 512, 0, 0, 0);
+            int res = getnameinfo((const sockaddr *) &si, sizeof(si), host_os, 512, nullptr, 0, 0);
 
             if(res == 0)
             {
@@ -8910,55 +8910,55 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
     attr_value_list[0].w_dim.dim_x = dev_attr.dim_x;
     attr_value_list[0].w_dim.dim_y = dev_attr.dim_y;
 
-    if(dev_attr.LongSeq.operator->() != NULL)
+    if(dev_attr.LongSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.long_att_value(dev_attr.LongSeq.in());
     }
-    else if(dev_attr.Long64Seq.operator->() != NULL)
+    else if(dev_attr.Long64Seq.operator->() != nullptr)
     {
         attr_value_list[0].value.long64_att_value(dev_attr.Long64Seq.in());
     }
-    else if(dev_attr.ShortSeq.operator->() != NULL)
+    else if(dev_attr.ShortSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.short_att_value(dev_attr.ShortSeq.in());
     }
-    else if(dev_attr.DoubleSeq.operator->() != NULL)
+    else if(dev_attr.DoubleSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.double_att_value(dev_attr.DoubleSeq.in());
     }
-    else if(dev_attr.StringSeq.operator->() != NULL)
+    else if(dev_attr.StringSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.string_att_value(dev_attr.StringSeq.in());
     }
-    else if(dev_attr.FloatSeq.operator->() != NULL)
+    else if(dev_attr.FloatSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.float_att_value(dev_attr.FloatSeq.in());
     }
-    else if(dev_attr.BooleanSeq.operator->() != NULL)
+    else if(dev_attr.BooleanSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.bool_att_value(dev_attr.BooleanSeq.in());
     }
-    else if(dev_attr.UShortSeq.operator->() != NULL)
+    else if(dev_attr.UShortSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.ushort_att_value(dev_attr.UShortSeq.in());
     }
-    else if(dev_attr.UCharSeq.operator->() != NULL)
+    else if(dev_attr.UCharSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.uchar_att_value(dev_attr.UCharSeq.in());
     }
-    else if(dev_attr.ULongSeq.operator->() != NULL)
+    else if(dev_attr.ULongSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.ulong_att_value(dev_attr.ULongSeq.in());
     }
-    else if(dev_attr.ULong64Seq.operator->() != NULL)
+    else if(dev_attr.ULong64Seq.operator->() != nullptr)
     {
         attr_value_list[0].value.ulong64_att_value(dev_attr.ULong64Seq.in());
     }
-    else if(dev_attr.StateSeq.operator->() != NULL)
+    else if(dev_attr.StateSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.state_att_value(dev_attr.StateSeq.in());
     }
-    else if(dev_attr.EncodedSeq.operator->() != NULL)
+    else if(dev_attr.EncodedSeq.operator->() != nullptr)
     {
         attr_value_list[0].value.encoded_att_value(dev_attr.EncodedSeq.in());
     }
@@ -9170,55 +9170,55 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
         attr_value_list[i].w_dim.dim_x = attr_list[i].dim_x;
         attr_value_list[i].w_dim.dim_y = attr_list[i].dim_y;
 
-        if(attr_list[i].LongSeq.operator->() != NULL)
+        if(attr_list[i].LongSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.long_att_value(attr_list[i].LongSeq.in());
         }
-        else if(attr_list[i].Long64Seq.operator->() != NULL)
+        else if(attr_list[i].Long64Seq.operator->() != nullptr)
         {
             attr_value_list[i].value.long64_att_value(attr_list[i].Long64Seq.in());
         }
-        else if(attr_list[i].ShortSeq.operator->() != NULL)
+        else if(attr_list[i].ShortSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.short_att_value(attr_list[i].ShortSeq.in());
         }
-        else if(attr_list[i].DoubleSeq.operator->() != NULL)
+        else if(attr_list[i].DoubleSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.double_att_value(attr_list[i].DoubleSeq.in());
         }
-        else if(attr_list[i].StringSeq.operator->() != NULL)
+        else if(attr_list[i].StringSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.string_att_value(attr_list[i].StringSeq.in());
         }
-        else if(attr_list[i].FloatSeq.operator->() != NULL)
+        else if(attr_list[i].FloatSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.float_att_value(attr_list[i].FloatSeq.in());
         }
-        else if(attr_list[i].BooleanSeq.operator->() != NULL)
+        else if(attr_list[i].BooleanSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.bool_att_value(attr_list[i].BooleanSeq.in());
         }
-        else if(attr_list[i].UShortSeq.operator->() != NULL)
+        else if(attr_list[i].UShortSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.ushort_att_value(attr_list[i].UShortSeq.in());
         }
-        else if(attr_list[i].UCharSeq.operator->() != NULL)
+        else if(attr_list[i].UCharSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.uchar_att_value(attr_list[i].UCharSeq.in());
         }
-        else if(attr_list[i].ULongSeq.operator->() != NULL)
+        else if(attr_list[i].ULongSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.ulong_att_value(attr_list[i].ULongSeq.in());
         }
-        else if(attr_list[i].ULong64Seq.operator->() != NULL)
+        else if(attr_list[i].ULong64Seq.operator->() != nullptr)
         {
             attr_value_list[i].value.ulong64_att_value(attr_list[i].ULong64Seq.in());
         }
-        else if(attr_list[i].StateSeq.operator->() != NULL)
+        else if(attr_list[i].StateSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.state_att_value(attr_list[i].StateSeq.in());
         }
-        else if(attr_list[i].EncodedSeq.operator->() != NULL)
+        else if(attr_list[i].EncodedSeq.operator->() != nullptr)
         {
             attr_value_list[i].value.encoded_att_value(attr_list[i].EncodedSeq.in());
         }
@@ -9455,7 +9455,7 @@ void DeviceProxy::same_att_name(const std::vector<std::string> &attr_list, const
 
 void DeviceProxy::local_import(std::string &local_ior)
 {
-    Tango::Util *tg = NULL;
+    Tango::Util *tg = nullptr;
 
     //
     // In case of controlled access used, this method is called while the

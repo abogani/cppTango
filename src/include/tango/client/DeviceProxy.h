@@ -218,8 +218,8 @@ class DeviceProxy : public Tango::Connection
 
     DeviceProxy() :
         Connection(CORBA::ORB::_nil()),
-        db_dev(NULL),
-        adm_device(NULL),
+        db_dev(nullptr),
+        adm_device(nullptr),
         lock_ctr(0),
         ext_proxy(nullptr)
     {

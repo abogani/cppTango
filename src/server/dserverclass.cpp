@@ -181,7 +181,7 @@ CORBA::Any *DevQueryClassCmd::execute(DeviceImpl *device, TANGO_UNUSED(const COR
     // return data to the caller
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -238,7 +238,7 @@ CORBA::Any *DevQueryDeviceCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CO
     //
     // return data to the caller
     //
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -295,7 +295,7 @@ CORBA::Any *DevQuerySubDeviceCmd::execute(DeviceImpl *device, TANGO_UNUSED(const
     //
     // return data to the caller
     //
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -556,7 +556,7 @@ CORBA::Any *QueryWizardClassPropertyCmd::execute(DeviceImpl *device, const CORBA
     //
     // return data to the caller
     //
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -624,7 +624,7 @@ CORBA::Any *QueryWizardDevPropertyCmd::execute(DeviceImpl *device, const CORBA::
     //
     // return data to the caller
     //
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -676,10 +676,10 @@ CORBA::Any *QueryEventChannelIORCmd::execute(TANGO_UNUSED(DeviceImpl *device), T
     // Get DS event channel IOR which is stored in the EventSupplier object
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     NotifdEventSupplier *nd_event_supplier;
     nd_event_supplier = Util::instance()->get_notifd_event_supplier();
-    if(nd_event_supplier == NULL)
+    if(nd_event_supplier == nullptr)
     {
         TANGO_LOG_DEBUG << "Try to retrieve DS event channel while NotifdEventSupplier object is not yet created"
                         << std::endl;
@@ -850,7 +850,7 @@ CORBA::Any *UnLockDeviceCmd::execute(DeviceImpl *device, const CORBA::Any &in_an
     // return data to the caller
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -911,7 +911,7 @@ CORBA::Any *DevLockStatusCmd::execute(DeviceImpl *device, const CORBA::Any &in_a
     // return to the caller
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -1012,7 +1012,7 @@ CORBA::Any *EventSubscriptionChangeCmd::execute(Tango::DeviceImpl *device, const
     // return to the caller
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -1136,7 +1136,7 @@ CORBA::Any *ZmqEventSubscriptionChangeCmd::execute(Tango::DeviceImpl *device, co
     // return to the caller
     //
 
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -1229,7 +1229,7 @@ CORBA::Any *EventConfirmSubscriptionCmd::execute(Tango::DeviceImpl *device, cons
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    if(tg->get_heartbeat_thread_object() == NULL)
+    if(tg->get_heartbeat_thread_object() == nullptr)
     {
         TangoSys_OMemStream o;
         o << "The device server is shutting down! You can no longer subscribe for events" << std::ends;
@@ -1270,7 +1270,7 @@ CORBA::Any *EventConfirmSubscriptionCmd::execute(Tango::DeviceImpl *device, cons
     return ret;
 }
 
-DServerClass *DServerClass::_instance = NULL;
+DServerClass *DServerClass::_instance = nullptr;
 
 //+----------------------------------------------------------------------------
 //
@@ -1367,7 +1367,7 @@ DServerClass::DServerClass(const std::string &s) :
 
 DServerClass *DServerClass::instance()
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         std::cerr << "Class DServer is not initialised!" << std::endl;
         TANGO_THROW_EXCEPTION(API_DServerClassNotInitialised, "The DServerClass is not yet initialised, please wait!");
@@ -1378,7 +1378,7 @@ DServerClass *DServerClass::instance()
 
 DServerClass *DServerClass::init()
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         try
         {
@@ -1572,7 +1572,7 @@ void DServerClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
         //
 
         Database *db = tg->get_database();
-        if((db != NULL) && !tg->use_file_db())
+        if((db != nullptr) && !tg->use_file_db())
         {
             db->set_timeout_millis(CLNT_TIMEOUT);
         }

@@ -1286,7 +1286,7 @@ class TemplCommand : public Command
      */
     TemplCommand(const std::string &cmd_name,
                  void (DeviceImpl::*exe_method)(),
-                 bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+                 bool (DeviceImpl::*state_method)(const CORBA::Any &) = nullptr,
                  const std::string &in_desc = "",
                  const std::string &out_desc = "",
                  Tango::DispLevel level = Tango::OPERATOR);
@@ -1470,7 +1470,7 @@ class TemplCommandInOut : public TemplCommand
      */
     TemplCommandInOut(const std::string &cmd_name,
                       OUTARG (DeviceImpl::*exe_method)(INARG),
-                      bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+                      bool (DeviceImpl::*state_method)(const CORBA::Any &) = nullptr,
                       const std::string &in_desc = "",
                       const std::string &out_desc = "",
                       Tango::DispLevel level = Tango::OPERATOR);
@@ -1733,7 +1733,7 @@ class TemplCommandIn : public TemplCommand
      */
     TemplCommandIn(const std::string &cmd_name,
                    void (DeviceImpl::*exe_method)(INARG),
-                   bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+                   bool (DeviceImpl::*state_method)(const CORBA::Any &) = nullptr,
                    const std::string &in_desc = "",
                    const std::string &out_desc = "",
                    Tango::DispLevel level = Tango::OPERATOR);
@@ -1990,7 +1990,7 @@ class TemplCommandOut : public TemplCommand
      */
     TemplCommandOut(const std::string &cmd_name,
                     OUTARG (DeviceImpl::*exe_method)(),
-                    bool (DeviceImpl::*state_method)(const CORBA::Any &) = NULL,
+                    bool (DeviceImpl::*state_method)(const CORBA::Any &) = nullptr,
                     const std::string &in_desc = "",
                     const std::string &out_desc = "",
                     Tango::DispLevel level = Tango::OPERATOR);

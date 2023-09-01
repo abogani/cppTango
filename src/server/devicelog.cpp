@@ -115,7 +115,7 @@ log4tango::Logger *DeviceImpl::get_logger_i(void)
         // instantiate the logger (
         // shame on me for a such huggly impl. but polymorphism
         // can't be used here !
-        if(logger == 0)
+        if(logger == nullptr)
         {
             if(TG_strcasecmp(device_class->get_name().c_str(), "DServer") == 0)
             {
@@ -129,7 +129,7 @@ log4tango::Logger *DeviceImpl::get_logger_i(void)
                 std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
                 // instantiate the logger using device name
                 logger = new log4tango::Logger(dev_name);
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     logger = Logging::get_core_logger();
                 }
