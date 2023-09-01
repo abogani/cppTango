@@ -415,7 +415,7 @@ void EventConsumer::connect(
     // reconnect to the notifd. In such a case, the lock is already locked before the method is called
     //
 
-    std::map<std::string, EventChannelStruct>::iterator ipos = channel_map.find(channel_name);
+    auto ipos = channel_map.find(channel_name);
     if(ipos == channel_map.end())
     {
         connect_event_channel(channel_name, device_proxy->get_device_db(), false, dd);
@@ -1287,7 +1287,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
             subscribe_event_id++;
             int ret_event_id = subscribe_event_id;
 
-            DelayedEventSubThread *th =
+            auto *th =
                 new DelayedEventSubThread(this, device, attribute, event, callback, ev_queue, event_name, ret_event_id);
             th->start();
 
@@ -1344,7 +1344,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
 
         event_not_connected.push_back(conn_params);
 
-        std::vector<EventNotConnected>::iterator vpos = event_not_connected.end() - 1;
+        auto vpos = event_not_connected.end() - 1;
         time_t now = time(nullptr);
         keep_alive_thread->stateless_subscription_failed(vpos, e, now);
         return subscribe_event_id;
@@ -1553,8 +1553,8 @@ int EventConsumer::connect_event(DeviceProxy *device,
     DeviceProxy *adm_dev = nullptr;
     bool allocated = false;
 
-    std::map<std::string, std::string>::iterator ipos = device_channel_map.find(device_name);
-    EvChanIte evt_it = channel_map.end();
+    auto ipos = device_channel_map.find(device_name);
+    auto evt_it = channel_map.end();
 
     std::string adm_name;
 
@@ -1690,7 +1690,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // list If it's a ATTR_CONF_EVENT, don't forget to look for the two different event kinds
     //
 
-    EvCbIte iter = event_callback_map.find(received_from_admin.event_name);
+    auto iter = event_callback_map.find(received_from_admin.event_name);
 
     if(iter == event_callback_map.end() && add_compat_info == true)
     {
@@ -1897,7 +1897,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     pos = local_callback_key.find(':', 6);
     std::string tg_host = local_callback_key.substr(8, pos - 8);
-    std::map<std::string, std::string>::iterator ite = alias_map.find(tg_host);
+    auto ite = alias_map.find(tg_host);
     if(ite != alias_map.end())
     {
         new_event_callback.alias_used = true;
@@ -2006,8 +2006,7 @@ void EventConsumer::unsubscribe_event(int event_id)
                             //                           is in its callback !!!!!!!!!!" << endl;
                             esspos->id = -event_id;
 
-                            DelayedEventUnsubThread *th =
-                                new DelayedEventUnsubThread(this, event_id, epos->second.callback_monitor);
+                            auto *th = new DelayedEventUnsubThread(this, event_id, epos->second.callback_monitor);
                             th->start();
 
                             return;
@@ -2055,7 +2054,7 @@ void EventConsumer::unsubscribe_event(int event_id)
 
                 if(evt_cb.callback_list.empty() == true)
                 {
-                    EvChanIte evt_it = channel_map.find(evt_cb.channel_name);
+                    auto evt_it = channel_map.find(evt_cb.channel_name);
                     EventChannelStruct &evt_ch = evt_it->second;
                     if(evt_ch.channel_type == NOTIFD)
                     {
@@ -2304,7 +2303,7 @@ void EventConsumer::add_not_connected_event(DevFailed &e, EventNotConnected &not
 
     event_not_connected.push_back(not_con);
 
-    std::vector<EventNotConnected>::iterator vpos = event_not_connected.end() - 1;
+    auto vpos = event_not_connected.end() - 1;
     time_t now = time(nullptr);
     keep_alive_thread->stateless_subscription_failed(vpos, e, now);
 }
@@ -3353,8 +3352,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             err = e.errors;
         }
 
-        FwdAttrConfEventData *event_data =
-            new FwdAttrConfEventData(device, local_domain_name, local_event_name, aie, err);
+        auto *event_data = new FwdAttrConfEventData(device, local_domain_name, local_event_name, aie, err);
         AutoTangoMonitor _mon(cb.callback_monitor);
 
         //
@@ -3407,8 +3405,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             err = e.errors;
         }
 
-        DevIntrChangeEventData *event_data =
-            new DevIntrChangeEventData(device, ev_name, device_name, c_list, a_list, true, err);
+        auto *event_data = new DevIntrChangeEventData(device, ev_name, device_name, c_list, a_list, true, err);
 
         AutoTangoMonitor _mon(cb.callback_monitor);
 
@@ -3549,7 +3546,7 @@ ChannelType EventConsumer::get_event_system_for_event_id(int event_id)
             if(esspos->id == event_id)
             {
                 found = true;
-                EvChanIte evt_it = channel_map.find(ecs.channel_name);
+                auto evt_it = channel_map.find(ecs.channel_name);
                 if(evt_it == channel_map.end())
                 {
                     TangoSys_OMemStream o;

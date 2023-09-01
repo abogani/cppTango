@@ -935,8 +935,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                             std::string att_name(names[i]);
                             std::transform(att_name.begin(), att_name.end(), att_name.begin(), ::tolower);
 
-                            std::vector<PollObj *>::iterator ite =
-                                get_polled_obj_by_type_name(Tango::POLL_ATTR, att_name);
+                            auto ite = get_polled_obj_by_type_name(Tango::POLL_ATTR, att_name);
                             auto upd = (*ite)->get_upd();
                             if(upd == PollClock::duration::zero())
                             {

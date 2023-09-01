@@ -57,8 +57,8 @@ AppenderList AppenderAttachable::get_all_appenders(void)
 {
     Guard guard(_appendersMutex);
     AppenderList al(0);
-    AppenderMapIterator it = _appenders.begin();
-    AppenderMapIterator end = _appenders.end();
+    auto it = _appenders.begin();
+    auto end = _appenders.end();
     for(; it != end; ++it)
     {
         al.push_back(it->second);
@@ -69,7 +69,7 @@ AppenderList AppenderAttachable::get_all_appenders(void)
 Appender *AppenderAttachable::get_appender(const std::string &name)
 {
     Guard guard(_appendersMutex);
-    AppenderMapIterator it = _appenders.find(name);
+    auto it = _appenders.find(name);
     if(it != _appenders.end())
     {
         return it->second;
@@ -90,8 +90,8 @@ bool AppenderAttachable::is_attached(Appender *appender)
 void AppenderAttachable::remove_all_appenders(void)
 {
     Guard guard(_appendersMutex);
-    AppenderMapIterator it = _appenders.begin();
-    AppenderMapIterator end = _appenders.end();
+    auto it = _appenders.begin();
+    auto end = _appenders.end();
     for(; it != end; ++it)
     {
         delete it->second;
@@ -110,7 +110,7 @@ void AppenderAttachable::remove_appender(Appender *appender)
 void AppenderAttachable::remove_appender(const std::string &name)
 {
     Guard guard(_appendersMutex);
-    AppenderMapIterator it = _appenders.find(name);
+    auto it = _appenders.find(name);
     if(it != _appenders.end())
     {
         delete it->second;

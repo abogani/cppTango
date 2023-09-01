@@ -144,7 +144,7 @@ void Util::polling_configure()
 
             for(k = 0; k < poll_cmd_list.size(); k += 2)
             {
-                DevVarLongStringArray *send = new DevVarLongStringArray();
+                auto *send = new DevVarLongStringArray();
                 send->lvalue.length(1);
                 send->svalue.length(3);
 
@@ -189,7 +189,7 @@ void Util::polling_configure()
 
             for(k = 0; k < poll_attr_list.size(); k += 2)
             {
-                DevVarLongStringArray *send = new DevVarLongStringArray();
+                auto *send = new DevVarLongStringArray();
                 send->lvalue.length(1);
                 send->svalue.length(3);
 
@@ -485,7 +485,7 @@ void Util::trigger_attr_polling(Tango::DeviceImpl *dev, const std::string &name)
     std::string obj_name(name);
     std::transform(obj_name.begin(), obj_name.end(), obj_name.begin(), ::tolower);
 
-    std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
+    auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
 
     //
     // Check that it is an externally triggered polling object. If it is not the case, throw exception
@@ -640,7 +640,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev, const std::string &name)
     std::string obj_name(name);
     std::transform(obj_name.begin(), obj_name.end(), obj_name.begin(), ::tolower);
 
-    std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
+    auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
 
     //
     // Check that it is an externally triggered polling object. If it is not the case, throw exception
@@ -775,8 +775,7 @@ void Util::clean_attr_polled_prop()
 
         for(unsigned int loop = 0; loop < polled_dyn_attr_names.size(); loop++)
         {
-            std::vector<std::string>::iterator ite_attr =
-                find(polled_att_list.begin(), polled_att_list.end(), polled_dyn_attr_names[loop]);
+            auto ite_attr = find(polled_att_list.begin(), polled_att_list.end(), polled_dyn_attr_names[loop]);
             if(ite_attr != polled_att_list.end())
             {
                 ite_attr = polled_att_list.erase(ite_attr);
@@ -830,8 +829,7 @@ void Util::clean_cmd_polled_prop()
 
         for(unsigned int loop = 0; loop < polled_dyn_cmd_names.size(); loop++)
         {
-            std::vector<std::string>::iterator ite_cmd =
-                find(polled_cmd_list.begin(), polled_cmd_list.end(), polled_dyn_cmd_names[loop]);
+            auto ite_cmd = find(polled_cmd_list.begin(), polled_cmd_list.end(), polled_dyn_cmd_names[loop]);
             if(ite_cmd != polled_cmd_list.end())
             {
                 ite_cmd = polled_cmd_list.erase(ite_cmd);
@@ -1453,7 +1451,7 @@ void Util::check_pool_conf(DServer *admin_dev, unsigned long pool_size)
             }
         }
 
-        std::vector<std::string>::iterator it = mod_conf.begin();
+        auto it = mod_conf.begin();
         it = it + pool_size;
         mod_conf.erase(it, mod_conf.end());
     }

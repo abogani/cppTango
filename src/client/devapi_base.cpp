@@ -2507,7 +2507,7 @@ void DeviceProxy::unsubscribe_all_events()
             std::vector<int> event_ids;
             zmq_event_consumer->get_subscribed_event_ids(this, event_ids);
 
-            for(std::vector<int>::iterator event_id = event_ids.begin(); event_id != event_ids.end(); ++event_id)
+            for(auto event_id = event_ids.begin(); event_id != event_ids.end(); ++event_id)
             {
                 try
                 {
@@ -3037,7 +3037,7 @@ std::vector<std::string> *DeviceProxy::black_box(int last_n_commands)
         }
     }
 
-    std::vector<std::string> *last_commands_vector = new(std::vector<std::string>);
+    auto *last_commands_vector = new(std::vector<std::string>);
     last_commands_vector->resize(last_commands->length());
 
     for(unsigned int i = 0; i < last_commands->length(); i++)
@@ -3395,7 +3395,7 @@ std::vector<std::string> *DeviceProxy::get_command_list()
 
     all_cmd_config = command_list_query();
 
-    std::vector<std::string> *cmd_list = new std::vector<std::string>;
+    auto *cmd_list = new std::vector<std::string>;
     cmd_list->resize(all_cmd_config->size());
     for(unsigned int i = 0; i < all_cmd_config->size(); i++)
     {
@@ -4884,7 +4884,7 @@ std::vector<std::string> *DeviceProxy::get_pipe_list()
     all_pipe.push_back(AllPipe);
     all_pipe_config = get_pipe_config(all_pipe);
 
-    std::vector<std::string> *pipe_list = new std::vector<std::string>;
+    auto *pipe_list = new std::vector<std::string>;
     pipe_list->resize(all_pipe_config->size());
     for(unsigned int i = 0; i < all_pipe_config->size(); i++)
     {
@@ -4999,7 +4999,7 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
     max = pipe_value_5->data_blob.blob_data.maximum();
     len = pipe_value_5->data_blob.blob_data.length();
     DevPipeDataElt *buf = pipe_value_5->data_blob.blob_data.get_buffer((CORBA::Boolean) true);
-    DevVarPipeDataEltArray *dvpdea = new DevVarPipeDataEltArray(max, len, buf, true);
+    auto *dvpdea = new DevVarPipeDataEltArray(max, len, buf, true);
 
     dev_pipe.get_root_blob().reset_extract_ctr();
     dev_pipe.get_root_blob().reset_insert_ctr();
@@ -5265,7 +5265,7 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
     max = r_pipe_value_5->data_blob.blob_data.maximum();
     len = r_pipe_value_5->data_blob.blob_data.length();
     DevPipeDataElt *buf = r_pipe_value_5->data_blob.blob_data.get_buffer((CORBA::Boolean) true);
-    DevVarPipeDataEltArray *dvpdea = new DevVarPipeDataEltArray(max, len, buf, true);
+    auto *dvpdea = new DevVarPipeDataEltArray(max, len, buf, true);
 
     r_dev_pipe.get_root_blob().reset_extract_ctr();
     r_dev_pipe.get_root_blob().reset_insert_ctr();
@@ -5437,7 +5437,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
         nb_received = attr_value_list->length();
     }
 
-    std::vector<DeviceAttribute> *dev_attr = new(std::vector<DeviceAttribute>);
+    auto *dev_attr = new(std::vector<DeviceAttribute>);
     dev_attr->resize(nb_received);
 
     for(i = 0; i < nb_received; i++)
@@ -6696,7 +6696,7 @@ std::vector<std::string> *DeviceProxy::get_attribute_list()
     all_attr.push_back(AllAttr_3);
     all_attr_config = get_attribute_config_ex(all_attr);
 
-    std::vector<std::string> *attr_list = new std::vector<std::string>;
+    auto *attr_list = new std::vector<std::string>;
     attr_list->resize(all_attr_config->size());
     for(unsigned int i = 0; i < all_attr_config->size(); i++)
     {
@@ -6822,7 +6822,7 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
         }
     }
 
-    std::vector<DeviceDataHistory> *ddh = new std::vector<DeviceDataHistory>;
+    auto *ddh = new std::vector<DeviceDataHistory>;
 
     if(version <= 3)
     {
@@ -6945,7 +6945,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         }
     }
 
-    std::vector<DeviceAttributeHistory> *ddh = new std::vector<DeviceAttributeHistory>;
+    auto *ddh = new std::vector<DeviceAttributeHistory>;
 
     if(version > 4)
     {
@@ -7035,7 +7035,7 @@ std::vector<std::string> *DeviceProxy::polling_status()
     const DevVarStringArray *out_str;
     dout >> out_str;
 
-    std::vector<std::string> *poll_stat = new std::vector<std::string>;
+    auto *poll_stat = new std::vector<std::string>;
     poll_stat->reserve(out_str->length());
 
     for(unsigned int i = 0; i < out_str->length(); i++)
@@ -8324,7 +8324,7 @@ void DeviceProxy::lock(int lock_validity)
     {
         omni_mutex_lock oml(au->lock_th_map);
 
-        std::map<std::string, LockingThread>::iterator pos = au->lock_threads.find(adm_dev_name);
+        auto pos = au->lock_threads.find(adm_dev_name);
         if(pos == au->lock_threads.end())
         {
             create_locking_thread(au, std::chrono::seconds(lock_validity));
@@ -8470,7 +8470,7 @@ void DeviceProxy::unlock(bool force)
 
         {
             omni_mutex_lock oml(au->lock_th_map);
-            std::map<std::string, LockingThread>::iterator pos = au->lock_threads.find(adm_dev_name);
+            auto pos = au->lock_threads.find(adm_dev_name);
             if(pos == au->lock_threads.end())
             {
                 //                TangoSys_OMemStream o;
@@ -9360,7 +9360,7 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
     unsigned long nb_received;
     nb_received = attr_value_list_5->length();
 
-    std::vector<DeviceAttribute> *dev_attr = new(std::vector<DeviceAttribute>);
+    auto *dev_attr = new(std::vector<DeviceAttribute>);
     dev_attr->resize(nb_received);
 
     for(unsigned int i = 0; i < nb_received; i++)
@@ -9418,7 +9418,7 @@ void DeviceProxy::same_att_name(const std::vector<std::string> &attr_list, const
         sort(same_att.begin(), same_att.end());
         std::vector<std::string> same_att_lower = same_att;
 
-        std::vector<std::string>::iterator pos = unique(same_att.begin(), same_att.end());
+        auto pos = unique(same_att.begin(), same_att.end());
 
         int duplicate_att;
         duplicate_att = distance(attr_list.begin(), attr_list.end()) - distance(same_att.begin(), pos);

@@ -54,7 +54,7 @@ void copy_data(const CORBA::Any &hist, CORBA::Any live)
 {
     const typename tango_type_traits<T>::ArrayType *tmp;
     hist >>= tmp;
-    typename tango_type_traits<T>::ArrayType *new_tmp = new typename tango_type_traits<T>::ArrayType(
+    auto *new_tmp = new typename tango_type_traits<T>::ArrayType(
         tmp->length(), tmp->length(), const_cast<T *>(tmp->get_buffer()), false);
     live <<= new_tmp;
 }
@@ -615,7 +615,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
                     Tango::Util *tg = Tango::Util::instance();
                     DServer *adm_dev = tg->get_dserver_device();
 
-                    DevVarLongStringArray *send = new DevVarLongStringArray();
+                    auto *send = new DevVarLongStringArray();
                     send->lvalue.length(1);
                     send->svalue.length(3);
                     send->svalue[0] = device_name.c_str();

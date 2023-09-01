@@ -300,7 +300,7 @@ void DServer::init_device()
                     //
 
                     std::vector<std::string> &list = class_list[i]->get_nodb_name_list();
-                    Tango::DevVarStringArray *dev_list_nodb = new Tango::DevVarStringArray();
+                    auto *dev_list_nodb = new Tango::DevVarStringArray();
 
                     tg->get_cmd_line_name_list(class_list[i]->get_name(), list);
                     if(i == class_list.size() - 1)
@@ -560,7 +560,7 @@ void DServer::delete_devices()
                 // Wait for POA to destroy the object before going to the next one. Limit this waiting time to 200 mS
                 //
 
-                std::vector<DeviceImpl *>::iterator it = devs.begin();
+                auto it = devs.begin();
                 devs.erase(it);
             }
             devs.clear();
@@ -951,7 +951,7 @@ void DServer::restart(const std::string &d_name)
     // Re-start device polling (if any)
     //
 
-    DevVarLongStringArray *send = new DevVarLongStringArray();
+    auto *send = new DevVarLongStringArray();
     send->lvalue.length(1);
     send->svalue.length(3);
 

@@ -1826,7 +1826,7 @@ void DeviceData::insert(const std::vector<DevLong> &long_datum, const std::vecto
 {
     unsigned int i;
 
-    DevVarLongStringArray *long_string_array = new DevVarLongStringArray();
+    auto *long_string_array = new DevVarLongStringArray();
     long_string_array->lvalue.length(long_datum.size());
     for(i = 0; i < long_datum.size(); i++)
     {
@@ -1937,7 +1937,7 @@ void DeviceData::insert(const std::vector<double> &double_datum, const std::vect
 {
     unsigned int i;
 
-    DevVarDoubleStringArray *double_string_array = new DevVarDoubleStringArray();
+    auto *double_string_array = new DevVarDoubleStringArray();
     double_string_array->dvalue.length(double_datum.size());
     for(i = 0; i < double_datum.size(); i++)
     {

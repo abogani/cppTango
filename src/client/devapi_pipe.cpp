@@ -253,7 +253,7 @@ DevicePipeBlob::DevicePipeBlob(const DevicePipeBlob &source) :
 
     if(source.extract_elt_array != nullptr)
     {
-        DevVarPipeDataEltArray *tmp = new DevVarPipeDataEltArray();
+        auto *tmp = new DevVarPipeDataEltArray();
         *tmp = (*source.extract_elt_array);
         set_extract_data(tmp);
         extract_delete = true;
@@ -301,7 +301,7 @@ DevicePipeBlob &DevicePipeBlob::operator=(const DevicePipeBlob &rhs)
 
         if(rhs.extract_elt_array != nullptr)
         {
-            DevVarPipeDataEltArray *tmp = new DevVarPipeDataEltArray();
+            auto *tmp = new DevVarPipeDataEltArray();
             *tmp = (*rhs.extract_elt_array);
             set_extract_data(tmp);
             extract_delete = true;
@@ -354,7 +354,7 @@ DevicePipeBlob::DevicePipeBlob(DevicePipeBlob &&source) :
 
     if(source.extract_elt_array != nullptr)
     {
-        DevVarPipeDataEltArray *tmp = new DevVarPipeDataEltArray();
+        auto *tmp = new DevVarPipeDataEltArray();
         *tmp = (*source.extract_elt_array);
         set_extract_data(tmp);
         extract_delete = true;
@@ -902,7 +902,7 @@ void DevicePipeBlob::set_data_elt_names(const std::vector<std::string> &elt_name
         sort(same_de.begin(), same_de.end());
         std::vector<std::string> same_de_lower = same_de;
 
-        std::vector<std::string>::iterator pos = unique(same_de.begin(), same_de.end());
+        auto pos = unique(same_de.begin(), same_de.end());
 
         int duplicate_de;
         duplicate_de = distance(elt_names.begin(), elt_names.end()) - distance(same_de.begin(), pos);

@@ -717,7 +717,7 @@ void DeviceImpl::stop_polling(bool with_db_upd)
     }
     else
     {
-        std::vector<std::string>::iterator iter = pool_conf.begin() + ind;
+        auto iter = pool_conf.begin() + ind;
         pool_conf.erase(iter);
         kill_thread = true;
     }
@@ -835,7 +835,7 @@ DeviceImpl::~DeviceImpl()
     //
 
     std::vector<DeviceImpl *> &dev_vect = get_device_class()->get_device_list();
-    std::vector<DeviceImpl *>::iterator ite = find(dev_vect.begin(), dev_vect.end(), this);
+    auto ite = find(dev_vect.begin(), dev_vect.end(), this);
     if(ite != dev_vect.end())
     {
         *ite = NULL;
@@ -1501,7 +1501,7 @@ Tango::DevState DeviceImpl::dev_state()
             {
                 if(state_from_read == true)
                 {
-                    std::vector<long>::iterator ite = attr_list_2.begin();
+                    auto ite = attr_list_2.begin();
                     while(ite != attr_list_2.end())
                     {
                         Attribute &att = dev_attr->get_attr_by_ind(*ite);
@@ -1518,7 +1518,7 @@ Tango::DevState DeviceImpl::dev_state()
                 }
                 else
                 {
-                    std::vector<long>::iterator ite = attr_list.begin();
+                    auto ite = attr_list.begin();
                     while(ite != attr_list.end())
                     {
                         Attribute &att = dev_attr->get_attr_by_ind(*ite);
@@ -3110,7 +3110,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                         std::string att_name(real_names[i]);
                         std::transform(att_name.begin(), att_name.end(), att_name.begin(), ::tolower);
 
-                        std::vector<PollObj *>::iterator ite = get_polled_obj_by_type_name(Tango::POLL_ATTR, att_name);
+                        auto ite = get_polled_obj_by_type_name(Tango::POLL_ATTR, att_name);
                         auto upd = (*ite)->get_upd();
                         if(upd == PollClock::duration::zero())
                         {
@@ -4985,7 +4985,7 @@ bool DeviceImpl::valid_lock()
 
 Tango::DevVarLongStringArray *DeviceImpl::lock_status()
 {
-    Tango::DevVarLongStringArray *dvlsa = new Tango::DevVarLongStringArray();
+    auto *dvlsa = new Tango::DevVarLongStringArray();
     dvlsa->lvalue.length(6);
     dvlsa->svalue.length(3);
 

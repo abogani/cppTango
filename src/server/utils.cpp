@@ -1188,7 +1188,7 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
         pos = dev_list[i].find("::");
         if(pos == std::string::npos)
         {
-            std::map<std::string, std::vector<std::string>>::iterator ite = the_map.find(NoClass);
+            auto ite = the_map.find(NoClass);
             if(ite == the_map.end())
             {
                 std::vector<std::string> v_s;
@@ -1205,7 +1205,7 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
             std::string cl_name = dev_list[i].substr(0, pos);
             std::transform(cl_name.begin(), cl_name.end(), cl_name.begin(), ::tolower);
 
-            std::map<std::string, std::vector<std::string>>::iterator ite = the_map.find(cl_name);
+            auto ite = the_map.find(cl_name);
             if(ite == the_map.end())
             {
                 std::vector<std::string> v_s;
@@ -2899,7 +2899,7 @@ void Util::get_cmd_line_name_list(const std::string &cl_name, std::vector<std::s
     std::string local_cl_name(cl_name);
     std::transform(local_cl_name.begin(), local_cl_name.end(), local_cl_name.begin(), ::tolower);
 
-    std::map<std::string, std::vector<std::string>>::iterator pos = cmd_line_name_list.find(local_cl_name);
+    auto pos = cmd_line_name_list.find(local_cl_name);
     if(pos != cmd_line_name_list.end())
     {
         name_list.insert(name_list.end(), pos->second.begin(), pos->second.end());

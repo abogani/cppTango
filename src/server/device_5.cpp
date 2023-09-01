@@ -175,7 +175,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
 
     try
     {
-        Tango::AttributeValue_5 *l_back = new Tango::AttributeValue_5[nb_names];
+        auto *l_back = new Tango::AttributeValue_5[nb_names];
         aid.data_5 = new Tango::AttributeValueList_5(nb_names, nb_names, l_back, true);
 
         for(unsigned long loop = 0; loop < nb_names; loop++)

@@ -1488,7 +1488,7 @@ void Attribute::delete_startup_exception(std::string prop_name, std::string dev_
 {
     if(check_startup_exceptions == true)
     {
-        std::map<std::string, DevFailed>::iterator it = startup_exceptions.find(prop_name);
+        auto it = startup_exceptions.find(prop_name);
         if(it != startup_exceptions.end())
         {
             startup_exceptions.erase(it);
@@ -6476,7 +6476,7 @@ void Attribute::remove_client_lib(int _l, const std::string &ev_name)
         }
     }
 
-    std::vector<int>::iterator pos = find(client_lib[i].begin(), client_lib[i].end(), _l);
+    auto pos = find(client_lib[i].begin(), client_lib[i].end(), _l);
     if(pos != client_lib[i].end())
     {
         client_lib[i].erase(pos);

@@ -1052,12 +1052,12 @@ void MultiAttribute::remove_attribute(const std::string &attr_name, bool update_
 
     ext->attr_map.erase(att->get_name_lower());
     delete att;
-    std::vector<Tango::Attribute *>::iterator pos = attr_list.begin();
+    auto pos = attr_list.begin();
     advance(pos, att_index);
     pos = attr_list.erase(pos);
 
     // Update all the att_index_in_vector indexes for the attributes following the one which has been deleted
-    for(std::vector<Tango::Attribute *>::iterator tmp_pos = pos; tmp_pos != attr_list.end(); ++tmp_pos)
+    for(auto tmp_pos = pos; tmp_pos != attr_list.end(); ++tmp_pos)
     {
         std::string &attr_name_lower = (*tmp_pos)->get_name_lower();
         ext->attr_map[attr_name_lower].att_index_in_vector--;
@@ -1073,7 +1073,7 @@ void MultiAttribute::remove_attribute(const std::string &attr_name, bool update_
         // 1 - Update indexes in local device
         // 2 - Update indexes in remaining device(s) belonging to the same class
         // Update indexes in local device
-        for(std::vector<Tango::Attribute *>::iterator pos_it = attr_list.begin(); pos_it != attr_list.end(); pos_it++)
+        for(auto pos_it = attr_list.begin(); pos_it != attr_list.end(); pos_it++)
         {
             long idx = (*pos_it)->get_attr_idx();
             if(idx > old_idx)

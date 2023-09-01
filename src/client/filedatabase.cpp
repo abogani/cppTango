@@ -1083,10 +1083,10 @@ void FileDatabase ::write_file()
         f << m_server.name << "/" << m_server.instance_name << "/DEVICE/" << (*it)->name << ": ";
         int margin = m_server.name.size() + 1 + m_server.instance_name.size() + 8 + (*it)->name.size() + 2;
         string margin_s(margin, ' ');
-        vector<t_device *>::iterator iterator_d = (*it)->devices.begin();
+        auto iterator_d = (*it)->devices.begin();
         f << "\"" << (*iterator_d)->name << "\"";
         ++iterator_d;
-        for(vector<t_device *>::iterator itd = iterator_d; itd != (*it)->devices.end(); ++itd)
+        for(auto itd = iterator_d; itd != (*it)->devices.end(); ++itd)
         {
             f << ",\\" << endl;
             f << margin_s << "\"" << (*itd)->name << "\"";
@@ -1100,12 +1100,12 @@ void FileDatabase ::write_file()
         f << "#############################################" << endl;
         f << "# CLASS " << (*it)->name << endl;
         f << endl;
-        for(vector<t_property *>::iterator itp = (*it)->properties.begin(); itp != (*it)->properties.end(); ++itp)
+        for(auto itp = (*it)->properties.begin(); itp != (*it)->properties.end(); ++itp)
         {
             f << "CLASS/" << (*it)->name << "->" << (*itp)->name << ": ";
             int margin = 6 + (*it)->name.size() + 2 + (*itp)->name.size() + 2;
             string margin_s(margin, ' ');
-            vector<string>::iterator iterator_s = (*itp)->value.begin();
+            auto iterator_s = (*itp)->value.begin();
             if((*iterator_s).length() == 0)
             {
                 (*iterator_s)[0] = ' ';
@@ -1122,7 +1122,7 @@ void FileDatabase ::write_file()
                     write_string_value(*iterator_s, f);
                 }
                 ++iterator_s;
-                for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
+                for(auto its = iterator_s; its != (*itp)->value.end(); ++its)
                 {
                     f << ",\\" << endl;
                     f << margin_s;
@@ -1144,12 +1144,12 @@ void FileDatabase ::write_file()
             {
                 f << "CLASS/" << (*it)->name << "/" << (*itap)->attribute_name << "->" << (*itp)->name << ": ";
                 int margin = 6 + (*it)->name.size() + 1 + (*itap)->attribute_name.size() + 2 + (*itp)->name.size() + 2;
-                vector<string>::iterator iterator_s = (*itp)->value.begin();
+                auto iterator_s = (*itp)->value.begin();
                 if(iterator_s != (*itp)->value.end())
                 {
                     write_string_value(*iterator_s, f);
                     ++iterator_s;
-                    for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
+                    for(auto its = iterator_s; its != (*itp)->value.end(); ++its)
                     {
                         f << ",\\" << endl;
                         string margin_s(margin, ' ');
@@ -1170,13 +1170,13 @@ void FileDatabase ::write_file()
             ++itp)
         {
             f << (*ite)->name << "->" << (*itp)->name << ": ";
-            vector<string>::iterator iterator_s = (*itp)->value.begin();
+            auto iterator_s = (*itp)->value.begin();
             if(iterator_s != (*itp)->value.end())
             {
                 int margin = (*ite)->name.size() + 1 + (*itp)->name.size() + 2;
                 write_string_value(*iterator_s, f);
                 ++iterator_s;
-                for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
+                for(auto its = iterator_s; its != (*itp)->value.end(); ++its)
                 {
                     f << ",\\" << endl;
                     string margin_s(margin, ' ');
@@ -1198,12 +1198,12 @@ void FileDatabase ::write_file()
             {
                 f << (*ite)->name << "/" << (*itap)->attribute_name << "->" << (*itp)->name << ": ";
                 int margin = (*ite)->name.size() + 1 + (*itap)->attribute_name.size() + 2 + (*itp)->name.size() + 2;
-                vector<string>::iterator iterator_s = (*itp)->value.begin();
+                auto iterator_s = (*itp)->value.begin();
                 if(iterator_s != (*itp)->value.end())
                 {
                     write_string_value(*iterator_s, f);
                     ++iterator_s;
-                    for(vector<string>::iterator its = iterator_s; its != (*itp)->value.end(); ++its)
+                    for(auto its = iterator_s; its != (*itp)->value.end(); ++its)
                     {
                         f << ",\\" << endl;
                         string margin_s(margin, ' ');
@@ -1221,7 +1221,7 @@ void FileDatabase ::write_file()
 
 CORBA::Any *FileDatabase ::DbGetDeviceProperty(CORBA::Any &send)
 {
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
     const Tango::DevVarStringArray *data_in = nullptr;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetDeviceProperty" << endl;
@@ -1427,7 +1427,7 @@ CORBA::Any *FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
 
 CORBA::Any *FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
 {
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
     const Tango::DevVarStringArray *data_in = nullptr;
 
     CORBA::Any *any_ptr;
@@ -1690,7 +1690,7 @@ CORBA::Any *FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
  */
 CORBA::Any *FileDatabase ::DbGetClassProperty(CORBA::Any &send)
 {
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
     const Tango::DevVarStringArray *data_in = nullptr;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetClassProperty" << endl;
@@ -1897,7 +1897,7 @@ CORBA::Any *FileDatabase ::DbDeleteClassProperty(CORBA::Any &send)
 CORBA::Any *FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
     const Tango::DevVarStringArray *data_in = nullptr;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetClassAttributeProperty" << endl;
@@ -2106,7 +2106,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceList(CORBA::Any &send)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
     const Tango::DevVarStringArray *data_in = nullptr;
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetDeviceList" << endl;
 
@@ -2176,7 +2176,7 @@ CORBA::Any *FileDatabase ::DbInfo(CORBA::Any &)
     auto accumulate = [](auto const &vec, auto func) -> CORBA::ULong
     { return std::accumulate(std::begin(vec), std::end(vec), 0u, func); };
 
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
     data_out->length(13);
 
     auto header = std::string("TANGO FileDatabase  ") + filename;
@@ -2286,7 +2286,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceMemberList(CORBA::Any &)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
 
-    Tango::DevVarStringArray *argout = new Tango::DevVarStringArray();
+    auto *argout = new Tango::DevVarStringArray();
     argout->length(1);
     (*argout)[0] = Tango::string_dup("NoMember");
     (*any_ptr) <<= argout;
@@ -2314,7 +2314,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceFamilyList(CORBA::Any &)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
 
-    Tango::DevVarStringArray *argout = new Tango::DevVarStringArray();
+    auto *argout = new Tango::DevVarStringArray();
     argout->length(1);
     (*argout)[0] = Tango::string_dup("NoDevice");
     (*any_ptr) <<= argout;
@@ -2326,7 +2326,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceDomainList(CORBA::Any &)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
 
-    Tango::DevVarStringArray *argout = new Tango::DevVarStringArray();
+    auto *argout = new Tango::DevVarStringArray();
     argout->length(1);
     (*argout)[0] = Tango::string_dup("NoDevice");
     (*any_ptr) <<= argout;
@@ -2342,7 +2342,7 @@ CORBA::Any *FileDatabase ::DbGetProperty(CORBA::Any &send)
     CORBA::Any *any_ptr = new CORBA::Any();
 
     const Tango::DevVarStringArray *data_in = nullptr;
-    Tango::DevVarStringArray *data_out = new DevVarStringArray;
+    auto *data_out = new DevVarStringArray;
     const char *zero_str = "0";
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetProperty" << endl;

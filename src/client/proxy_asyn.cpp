@@ -981,7 +981,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
             return a_ptr;
         }
 
-        std::vector<DeviceAttribute> *dev_attr = new(std::vector<DeviceAttribute>);
+        auto *dev_attr = new(std::vector<DeviceAttribute>);
 
         //
         // Get received value
@@ -1416,7 +1416,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
         return a_ptr;
     }
 
-    std::vector<DeviceAttribute> *dev_attr = new(std::vector<DeviceAttribute>);
+    auto *dev_attr = new(std::vector<DeviceAttribute>);
 
     //
     // Get received value

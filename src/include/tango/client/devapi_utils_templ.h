@@ -399,7 +399,7 @@ void DeviceProxy::extract_value<Tango::DevVarDoubleStringArray>(CORBA::Any &valu
         //
         // Real copy now
         //
-        Tango::DevVarDoubleStringArray *dvdsa = new Tango::DevVarDoubleStringArray();
+        auto *dvdsa = new Tango::DevVarDoubleStringArray();
         dvdsa->svalue.length(data_length);
         dvdsa->dvalue.length(data_num_length);
 
@@ -458,7 +458,7 @@ void DeviceProxy::extract_value<Tango::DevVarLongStringArray>(CORBA::Any &value,
         //
         // Real copy now
         //
-        Tango::DevVarLongStringArray *dvdsa = new Tango::DevVarLongStringArray();
+        auto *dvdsa = new Tango::DevVarLongStringArray();
         dvdsa->svalue.length(data_length);
         dvdsa->lvalue.length(data_num_length);
 

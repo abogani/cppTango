@@ -1453,7 +1453,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         zmq::message_t *data_mess_ptr = &data_mess;
 
         std::map<std::string, McastSocketPub>::iterator mcast_ite;
-        std::map<std::string, McastSocketPub>::iterator mcast_ite_end = event_mcast.end();
+        auto mcast_ite_end = event_mcast.end();
 
         int local_double_send = double_send;
         bool mcast_event = false;

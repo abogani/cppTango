@@ -1269,7 +1269,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
 
                     if(event_name == CONF_TYPE_EVENT)
                     {
-                        FwdAttrConfEventData *event_data =
+                        auto *event_data =
                             new FwdAttrConfEventData(esspos->device, domain_name, event_name, dev_attr_conf, errors);
                         // if a callback method was specified, call it!
                         if(callback != nullptr)
@@ -1331,13 +1331,13 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                     }
                     else if(event_name == EventName[INTERFACE_CHANGE_EVENT])
                     {
-                        DevIntrChangeEventData *event_data = new DevIntrChangeEventData(esspos->device,
-                                                                                        event_name,
-                                                                                        domain_name,
-                                                                                        (CommandInfoList *) nullptr,
-                                                                                        (AttributeInfoListEx *) nullptr,
-                                                                                        false,
-                                                                                        errors);
+                        auto *event_data = new DevIntrChangeEventData(esspos->device,
+                                                                      event_name,
+                                                                      domain_name,
+                                                                      (CommandInfoList *) nullptr,
+                                                                      (AttributeInfoListEx *) nullptr,
+                                                                      false,
+                                                                      errors);
                         // if a callback method was specified, call it!
                         if(callback != nullptr)
                         {
@@ -2073,13 +2073,13 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     }
     else if(vpos->event_name == EventName[INTERFACE_CHANGE_EVENT])
     {
-        DevIntrChangeEventData *event_data = new DevIntrChangeEventData(vpos->device,
-                                                                        vpos->event_name,
-                                                                        domain_name,
-                                                                        (CommandInfoList *) nullptr,
-                                                                        (AttributeInfoListEx *) nullptr,
-                                                                        false,
-                                                                        err);
+        auto *event_data = new DevIntrChangeEventData(vpos->device,
+                                                      vpos->event_name,
+                                                      domain_name,
+                                                      (CommandInfoList *) nullptr,
+                                                      (AttributeInfoListEx *) nullptr,
+                                                      false,
+                                                      err);
 
         //
         // If a callback method was specified, call it!

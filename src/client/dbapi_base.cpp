@@ -844,7 +844,7 @@ DbDevImportInfo Database::import_device(const std::string &dev)
         {
             omni_mutex_lock guard(map_mutex);
 
-            std::map<std::string, std::string>::iterator pos = dev_class_cache.find(dev);
+            auto pos = dev_class_cache.find(dev);
             if(pos == dev_class_cache.end())
             {
                 std::string dev_class((dev_import_list->svalue)[5]);
@@ -3546,7 +3546,7 @@ std::string Database::get_class_for_device(const std::string &devname)
     {
         omni_mutex_lock guard(map_mutex);
 
-        std::map<std::string, std::string>::iterator pos = dev_class_cache.find(devname);
+        auto pos = dev_class_cache.find(devname);
         if(pos == dev_class_cache.end())
         {
             send <<= devname.c_str();

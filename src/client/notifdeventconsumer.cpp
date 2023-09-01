@@ -595,7 +595,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         std::cerr << "Tango::NotifdEventConsumer::NotifdEventConsumer() caught AlreadyConnected exception" << std::endl;
     }
 
-    EvChanIte evt_it = channel_map.end();
+    auto evt_it = channel_map.end();
     if(reconnect == true)
     {
         evt_it = channel_map.find(channel_name);

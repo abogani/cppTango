@@ -485,7 +485,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                     }
                     break;
                 }
-                log4tango::XMLLayout *layout = new log4tango::XMLLayout();
+                auto *layout = new log4tango::XMLLayout();
                 if(layout == nullptr)
                 {
                     delete appender;

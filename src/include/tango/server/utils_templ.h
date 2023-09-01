@@ -412,7 +412,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
 
         try
         {
-            std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
+            auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
 
             if(attr_failed == false)
             {
@@ -597,7 +597,7 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name, CmdHi
 
         try
         {
-            std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
+            auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
             auto when = make_poll_time((data.get_data())[i].tp);
             auto zero = PollClock::duration::zero();
             if(cmd_failed == false)

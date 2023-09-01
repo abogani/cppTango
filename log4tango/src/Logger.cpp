@@ -55,8 +55,8 @@ void Logger::set_level(Level::Value level)
             std::lock_guard<std::mutex> guard(_appendersMutex);
             if(!_appenders.empty())
             {
-                AppenderMapIterator i = _appenders.begin();
-                AppenderMapIterator e = _appenders.end();
+                auto i = _appenders.begin();
+                auto e = _appenders.end();
                 for(; i != e; ++i)
                 {
                     i->second->level_changed(_level);
@@ -73,8 +73,8 @@ void Logger::call_appenders(const LoggingEvent &event)
         std::lock_guard<std::mutex> guard(_appendersMutex);
         if(!_appenders.empty())
         {
-            AppenderMapIterator i = _appenders.begin();
-            AppenderMapIterator e = _appenders.end();
+            auto i = _appenders.begin();
+            auto e = _appenders.end();
             for(; i != e; ++i)
             {
                 if(i->second->append(event) == -1)

@@ -513,7 +513,7 @@ void DeviceImpl::poll_object(const std::string &obj_name, int period, PollObjTyp
         DServer *ds = tg->get_dserver_device();
         CORBA::Any the_any;
 
-        DevVarLongStringArray *send = new DevVarLongStringArray();
+        auto *send = new DevVarLongStringArray();
         send->lvalue.length(1);
         send->svalue.length(3);
 

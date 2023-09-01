@@ -488,7 +488,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
 
             if(!tg->use_file_db())
             {
-                Tango::DevVarStringArray *eve_export_list = new Tango::DevVarStringArray;
+                auto *eve_export_list = new Tango::DevVarStringArray;
                 eve_export_list->length(5);
                 (*eve_export_list)[0] = Tango::string_dup(d_name.c_str());
                 (*eve_export_list)[1] = Tango::string_dup(ior_string.c_str());

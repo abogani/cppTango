@@ -104,7 +104,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
     }
     try
     {
-        Tango::DevVarStringArray *dvsa = new Tango::DevVarStringArray(6);
+        auto *dvsa = new Tango::DevVarStringArray(6);
         if(dvsa)
         {
             dvsa->length(6);

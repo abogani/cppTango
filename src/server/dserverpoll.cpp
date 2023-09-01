@@ -85,7 +85,7 @@ Tango::DevVarStringArray *DServer::polled_device()
 
     if(dev_name.empty() == true)
     {
-        Tango::DevVarStringArray *ret = new Tango::DevVarStringArray();
+        auto *ret = new Tango::DevVarStringArray();
         ret->length(0);
         return ret;
     }
@@ -96,7 +96,7 @@ Tango::DevVarStringArray *DServer::polled_device()
 
     sort(dev_name.begin(), dev_name.end());
     long nb_dev = dev_name.size();
-    Tango::DevVarStringArray *ret = new Tango::DevVarStringArray(nb_dev);
+    auto *ret = new Tango::DevVarStringArray(nb_dev);
     ret->length(nb_dev);
     for(long k = 0; k < nb_dev; k++)
     {
@@ -1179,7 +1179,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
         TANGO_THROW_EXCEPTION(API_NotSupported, o.str());
     }
 
-    std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(type, obj_name);
+    auto ite = dev->get_polled_obj_by_type_name(type, obj_name);
 
     //
     // Check that the requested polling period is not below the one authorized (if defined)
@@ -1432,7 +1432,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         TANGO_THROW_EXCEPTION(API_NotSupported, o.str());
     }
 
-    std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(type, obj_name);
+    auto ite = dev->get_polled_obj_by_type_name(type, obj_name);
     auto tmp_upd = (*ite)->get_upd();
 
     PollingThreadInfo *th_info = nullptr;
@@ -1709,7 +1709,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         }
         else
         {
-            std::vector<std::string>::iterator iter = pool_conf.begin() + ind;
+            auto iter = pool_conf.begin() + ind;
             pool_conf.erase(iter);
             kill_thread = true;
         }
@@ -2115,7 +2115,7 @@ void DServer::check_upd_authorized(DeviceImpl *dev, int upd, PollObjType obj_typ
         v_ptr = &(dev->get_attr_min_poll_period());
     }
 
-    std::vector<std::string>::iterator ite = find(v_ptr->begin(), v_ptr->end(), obj_name);
+    auto ite = find(v_ptr->begin(), v_ptr->end(), obj_name);
     if(ite != v_ptr->end())
     {
         ++ite;

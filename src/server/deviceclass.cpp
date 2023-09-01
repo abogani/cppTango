@@ -798,7 +798,7 @@ DeviceClass::~DeviceClass()
                 tg->clean_cmd_polled_prop();
             }
 
-            std::vector<DeviceImpl *>::iterator it = device_list.begin();
+            auto it = device_list.begin();
             device_list.erase(it);
         }
         device_list.clear();
@@ -1452,7 +1452,7 @@ void DeviceClass::device_destroyer(const std::string &dev_name)
 
     PortableServer::POA_ptr r_poa = tg->get_poa();
     delete_dev(k, tg, r_poa);
-    std::vector<DeviceImpl *>::iterator it = device_list.begin();
+    auto it = device_list.begin();
     it += k;
     device_list.erase(it);
     CORBA::release(r_poa);
@@ -1486,7 +1486,7 @@ bool DeviceClass::is_command_allowed(const char *cmd)
     std::string tmp_cmd(cmd);
     std::transform(tmp_cmd.begin(), tmp_cmd.end(), tmp_cmd.begin(), ::tolower);
 
-    std::vector<std::string>::iterator pos = find(allowed_cmds.begin(), allowed_cmds.end(), tmp_cmd);
+    auto pos = find(allowed_cmds.begin(), allowed_cmds.end(), tmp_cmd);
     if(pos == allowed_cmds.end())
     {
         ret = false;
@@ -1588,7 +1588,7 @@ Command &DeviceClass::get_cmd_by_name(const std::string &cmd_name)
 
 Pipe &DeviceClass::get_pipe_by_name(const std::string &pipe_name, const std::string &dev_name)
 {
-    std::map<std::string, std::vector<Pipe *>>::iterator ite = ext->dev_pipe_list.find(dev_name);
+    auto ite = ext->dev_pipe_list.find(dev_name);
     if(ite == ext->dev_pipe_list.end())
     {
         TANGO_LOG_DEBUG << "DeviceClass::get_pipe_by_name throwing exception" << std::endl;
@@ -1767,7 +1767,7 @@ std::vector<Pipe *> &DeviceClass::get_pipe_list(const std::string &dev_name)
     std::string local_dev_name(dev_name);
     std::transform(local_dev_name.begin(), local_dev_name.end(), local_dev_name.begin(), ::tolower);
 
-    std::map<std::string, std::vector<Pipe *>>::iterator ite = ext->dev_pipe_list.find(local_dev_name);
+    auto ite = ext->dev_pipe_list.find(local_dev_name);
     if(ite == ext->dev_pipe_list.end())
     {
         TANGO_LOG_DEBUG << "DeviceClass::get_pipe_by_name throwing exception" << std::endl;

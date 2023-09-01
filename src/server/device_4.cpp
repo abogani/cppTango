@@ -559,7 +559,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
 
     try
     {
-        Tango::AttributeValue_4 *l_back = new Tango::AttributeValue_4[nb_names];
+        auto *l_back = new Tango::AttributeValue_4[nb_names];
         aid.data_4 = new Tango::AttributeValueList_4(nb_names, nb_names, l_back, true);
 
         for(unsigned long loop = 0; loop < nb_names; loop++)

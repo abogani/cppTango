@@ -2545,7 +2545,7 @@ void ZmqEventConsumer::push_zmq_event(
                             max = zdpd.data_blob.blob_data.maximum();
                             len = zdpd.data_blob.blob_data.length();
                             DevPipeDataElt *buf = zdpd.data_blob.blob_data.get_buffer((CORBA::Boolean) true);
-                            DevVarPipeDataEltArray *dvpdea = new DevVarPipeDataEltArray(max, len, buf, true);
+                            auto *dvpdea = new DevVarPipeDataEltArray(max, len, buf, true);
 
                             dev_pipe->get_root_blob().set_extract_data(dvpdea);
                             dev_pipe->get_root_blob().set_extract_delete(true);
@@ -2821,7 +2821,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 if(err_missed_event == true)
                                 {
-                                    FwdAttrConfEventData *missed_conf_event_data_copy = new FwdAttrConfEventData;
+                                    auto *missed_conf_event_data_copy = new FwdAttrConfEventData;
                                     *missed_conf_event_data_copy = *missed_conf_event_data;
 
                                     ev_queue->insert_event(missed_conf_event_data_copy);
@@ -2831,14 +2831,13 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         else if(ev_attr_ready == false && pipe_event == false)
                         {
-                            DevIntrChangeEventData *event_data_ =
-                                new DevIntrChangeEventData(esspos->device,
-                                                           event_name,
-                                                           full_att_name,
-                                                           &dev_intr_change->cmds,
-                                                           &dev_intr_change->atts,
-                                                           dev_intr_change->dev_started,
-                                                           errors);
+                            auto *event_data_ = new DevIntrChangeEventData(esspos->device,
+                                                                           event_name,
+                                                                           full_att_name,
+                                                                           &dev_intr_change->cmds,
+                                                                           &dev_intr_change->atts,
+                                                                           dev_intr_change->dev_started,
+                                                                           errors);
                             // if a callback method was specified, call it!
                             if(callback != nullptr)
                             {
@@ -2887,7 +2886,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 if(err_missed_event == true)
                                 {
-                                    DevIntrChangeEventData *missed_dev_intr_data_copy = new DevIntrChangeEventData;
+                                    auto *missed_dev_intr_data_copy = new DevIntrChangeEventData;
                                     *missed_dev_intr_data_copy = *missed_dev_intr_event_data;
 
                                     ev_queue->insert_event(missed_dev_intr_data_copy);

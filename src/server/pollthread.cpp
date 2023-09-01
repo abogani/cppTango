@@ -1867,7 +1867,7 @@ void PollThread::poll_attr(WorkItem &to_do)
 
                 SendEventType send_event;
 
-                std::map<size_t, Tango::DevFailed *>::iterator ite2 = map_except.find(ctr);
+                auto ite2 = map_except.find(ctr);
                 Tango::DevFailed *tmp_except;
                 if(ite2 == map_except.end())
                 {
@@ -1960,10 +1960,10 @@ void PollThread::poll_attr(WorkItem &to_do)
                 {
                     if(idl_vers >= 5)
                     {
-                        std::map<size_t, Tango::DevFailed *>::iterator ite2 = map_except.find(ctr);
+                        auto ite2 = map_except.find(ctr);
                         if(ite2 == map_except.end())
                         {
-                            Tango::AttributeValueList_5 *new_argout_5 = new Tango::AttributeValueList_5(1);
+                            auto *new_argout_5 = new Tango::AttributeValueList_5(1);
                             new_argout_5->length(1);
                             (*new_argout_5)[0].value.union_no_data(true);
                             robb_data((*argout_5)[ctr], (*new_argout_5)[0]);
@@ -1978,10 +1978,10 @@ void PollThread::poll_attr(WorkItem &to_do)
                     }
                     else
                     {
-                        std::map<size_t, Tango::DevFailed *>::iterator ite2 = map_except.find(ctr);
+                        auto ite2 = map_except.find(ctr);
                         if(ite2 == map_except.end())
                         {
-                            Tango::AttributeValueList_4 *new_argout_4 = new Tango::AttributeValueList_4(1);
+                            auto *new_argout_4 = new Tango::AttributeValueList_4(1);
                             new_argout_4->length(1);
                             (*new_argout_4)[0].value.union_no_data(true);
                             robb_data((*argout_4)[ctr], (*new_argout_4)[0]);

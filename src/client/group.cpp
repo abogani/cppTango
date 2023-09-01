@@ -59,7 +59,7 @@ GroupElements GroupElementFactory::create_group_elements(const DeviceNames &name
     GroupElements group_elements;
     group_elements.reserve(names.size());
 
-    for(DeviceNames::const_iterator name = names.begin(); name != names.end(); ++name)
+    for(auto name = names.begin(); name != names.end(); ++name)
     {
         group_elements.push_back(new GroupDeviceElement(*name, timeout_millis));
     }
@@ -136,7 +136,7 @@ DeviceNames
     DeviceNames full_names;
     full_names.reserve(names.size());
 
-    for(DeviceNames::const_iterator name = names.begin(); name != names.end(); ++name)
+    for(auto name = names.begin(); name != names.end(); ++name)
     {
         full_names.push_back(build_full_device_name(host, port, *name));
     }
@@ -782,8 +782,8 @@ std::vector<std::string> Group::get_device_list(bool fwd)
 #endif
     std::vector<std::string> dl(0);
     std::vector<std::string> sub_dl(0);
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i())
@@ -808,8 +808,8 @@ GroupElements Group::get_hiearchy()
 {
     GroupElements te(0);
     GroupElements sub_te(0);
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i())
@@ -842,8 +842,8 @@ long Group::get_size(bool fwd)
 long Group::get_size_i(bool fwd)
 {
     long size = 0;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1053,8 +1053,8 @@ void Group::remove_all()
 #if defined(_LOCAL_DEBUGGING)
     TANGO_LOG << "Group::remove_all::" << get_name() << std::endl;
 #endif
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         delete *it;
@@ -1090,8 +1090,8 @@ GroupElement *Group::find_i(const std::string &n, bool fwd)
             return this;
         }
     }
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if(is_pattern)
@@ -1130,8 +1130,8 @@ DeviceProxy *Group::get_device(const std::string &n)
     omni_mutex_lock guard(elements_mutex);
 #endif
     DeviceProxy *dp = nullptr;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     while(it != end && dp == nullptr)
     {
         dp = (*it)->get_device(n);
@@ -1147,8 +1147,8 @@ DeviceProxy *Group::get_device(long idx)
     omni_mutex_lock guard(elements_mutex);
 #endif
     DeviceProxy *dp = nullptr;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     while(it != end && dp == nullptr)
     {
         dp = (*it)->get_device(idx--);
@@ -1206,8 +1206,8 @@ bool Group::ping(bool fwd)
     omni_mutex_lock guard(elements_mutex);
 #endif
     bool result = true;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end && result != false; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1221,8 +1221,8 @@ bool Group::ping(bool fwd)
 //-----------------------------------------------------------------------------
 void Group::set_timeout_millis(int tmo_ms)
 {
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         try
@@ -1274,8 +1274,8 @@ long Group::command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, lon
         id = next_asynch_request_id();
     }
     GroupElements disconnected;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1317,8 +1317,8 @@ long Group::command_inout_asynch_i(const std::string &c, const DeviceData &d, bo
     {
         id = next_asynch_request_id();
     }
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1396,7 +1396,7 @@ GroupCmdReplyList Group::command_inout_reply_i(long ari, long tmo)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    AsynchRequestDescIt r = arp.find(ari);
+    auto r = arp.find(ari);
     if(r == arp.end())
     {
         Tango::DevErrorList errors(1);
@@ -1409,8 +1409,8 @@ GroupCmdReplyList Group::command_inout_reply_i(long ari, long tmo)
     }
     GroupCmdReplyList reply;
     GroupCmdReplyList sub_reply;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || r->second)
@@ -1462,8 +1462,8 @@ long Group::read_attribute_asynch_i(const std::string &a, bool fwd, long id)
         id = next_asynch_request_id();
     }
     GroupElements disconnected;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1498,7 +1498,7 @@ GroupAttrReplyList Group::read_attribute_reply_i(long ari, long tmo)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    AsynchRequestDescIt r = arp.find(ari);
+    auto r = arp.find(ari);
     if(r == arp.end())
     {
         Tango::DevErrorList errors(1);
@@ -1511,8 +1511,8 @@ GroupAttrReplyList Group::read_attribute_reply_i(long ari, long tmo)
     }
     GroupAttrReplyList reply;
     GroupAttrReplyList sub_reply;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || r->second)
@@ -1549,8 +1549,8 @@ long Group::read_attributes_asynch_i(const std::vector<std::string> &al, bool fw
     {
         id = next_asynch_request_id();
     }
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1574,7 +1574,7 @@ GroupAttrReplyList Group::read_attributes_reply_i(long ari, long tmo)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    AsynchRequestDescIt r = arp.find(ari);
+    auto r = arp.find(ari);
     if(r == arp.end())
     {
         Tango::DevErrorList errors(1);
@@ -1587,8 +1587,8 @@ GroupAttrReplyList Group::read_attributes_reply_i(long ari, long tmo)
     }
     GroupAttrReplyList reply;
     GroupAttrReplyList sub_reply;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || r->second)
@@ -1640,8 +1640,8 @@ long Group::write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long id
         id = next_asynch_request_id();
     }
     GroupElements disconnected;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || fwd)
@@ -1720,7 +1720,7 @@ GroupReplyList Group::write_attribute_reply_i(long ari, long tmo)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    AsynchRequestDescIt r = arp.find(ari);
+    auto r = arp.find(ari);
     if(r == arp.end())
     {
         Tango::DevErrorList errors(1);
@@ -1733,8 +1733,8 @@ GroupReplyList Group::write_attribute_reply_i(long ari, long tmo)
     }
     GroupReplyList reply;
     GroupReplyList sub_reply;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         if((*it)->is_device_i() || r->second)
@@ -1769,8 +1769,8 @@ void Group::dump(int indent_level)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(int i = 0; i < indent_level; i++)
     {
         TANGO_LOG << "\t";
@@ -1795,8 +1795,8 @@ void Group::dump(TangoSys_OMemStream &oms, int indent_level)
     }
     oms << "|- GROUP: " << get_fully_qualified_name() << " [" << get_size_i(false) << ":" << get_size_i(true) << "]"
         << std::endl;
-    GroupElementsIterator it = elements.begin();
-    GroupElementsIterator end = elements.end();
+    auto it = elements.begin();
+    auto end = elements.end();
     for(; it != end; ++it)
     {
         (*it)->dump(oms, indent_level + 1);
@@ -1828,7 +1828,7 @@ void Group::push_async_request(long rid, bool forwarded)
 //-----------------------------------------------------------------------------
 void Group::pop_async_request(long rid)
 {
-    AsynchRequestDescIt r = arp.find(rid);
+    auto r = arp.find(rid);
     if(r != arp.end())
     {
         arp.erase(r);
@@ -2049,7 +2049,7 @@ GroupCmdReplyList GroupDeviceElement::command_inout_reply_i(long id, long tmo)
     GroupCmdReplyList rl;
 
     //- search actual asynch request id in this' repository
-    AsynchRequestRepIterator it = arp.find(id);
+    auto it = arp.find(id);
     if(it == arp.end())
     {
         //- error description
@@ -2152,7 +2152,7 @@ GroupAttrReplyList GroupDeviceElement::read_attribute_reply_i(long id, long tmo)
     GroupAttrReplyList rl;
 
     //- search actual asynch request id in this' repository
-    AsynchRequestRepIterator it = arp.find(id);
+    auto it = arp.find(id);
     if(it == arp.end())
     {
         //- error description
@@ -2279,7 +2279,7 @@ GroupAttrReplyList GroupDeviceElement::read_attributes_reply_i(long id, long tmo
     GroupAttrReplyList rl;
 
     //- search actual asynch request id in this' repository
-    AsynchRequestRepIterator it = arp.find(id);
+    auto it = arp.find(id);
     if(it == arp.end())
     {
         //- error description
@@ -2422,7 +2422,7 @@ GroupReplyList GroupDeviceElement::write_attribute_reply_i(long id, long tmo)
 {
     GroupReplyList rl;
     //- search actual asynch request id in this' repository
-    AsynchRequestRepIterator it = arp.find(id);
+    auto it = arp.find(id);
     if(it == arp.end())
     {
         //- error description

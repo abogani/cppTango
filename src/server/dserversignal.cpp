@@ -296,7 +296,7 @@ void DServerSignal::register_class_signal(long signo, bool handler, DeviceClass 
     // Otherwise, record class pointer
     //
 
-    std::vector<DeviceClass *>::iterator f = find_class(signo, cl_ptr);
+    auto f = find_class(signo, cl_ptr);
 
     if(f == reg_sig[signo].registered_classes.end())
     {
@@ -398,7 +398,7 @@ void DServerSignal::register_dev_signal(long signo, bool handler, DeviceImpl *de
     // Otherwise, record class pointer
     //
 
-    std::vector<DeviceImpl *>::iterator f = find_device(signo, dev_ptr);
+    auto f = find_device(signo, dev_ptr);
 
     if(f == reg_sig[signo].registered_devices.end())
     {
@@ -471,7 +471,7 @@ void DServerSignal::unregister_class_signal(long signo, DeviceClass *cl_ptr)
     // Otherwise, record class pointer
     //
 
-    std::vector<DeviceClass *>::iterator f = find_class(signo, cl_ptr);
+    auto f = find_class(signo, cl_ptr);
 
     if(f == reg_sig[signo].registered_classes.end())
     {
@@ -528,7 +528,7 @@ void DServerSignal::unregister_dev_signal(long signo, DeviceImpl *dev_ptr)
     // Otherwise, leave method
     //
 
-    std::vector<DeviceImpl *>::iterator f = find_device(signo, dev_ptr);
+    auto f = find_device(signo, dev_ptr);
 
     if(f == reg_sig[signo].registered_devices.end())
     {
@@ -576,7 +576,7 @@ void DServerSignal::unregister_dev_signal(DeviceImpl *dev_ptr)
         // Check if device is registered for this signal. If yes, remove it. Otherwise, go to next signal
         //
 
-        std::vector<DeviceImpl *>::iterator f = find_device(i, dev_ptr);
+        auto f = find_device(i, dev_ptr);
 
         if(f == reg_sig[i].registered_devices.end())
         {
@@ -625,7 +625,7 @@ void DServerSignal::unregister_class_signal(DeviceClass *cl_ptr)
         // Check if classes is registered for this signal. If yes, remove it. Otherwise, go to next signal
         //
 
-        std::vector<DeviceClass *>::iterator f = find_class(i, cl_ptr);
+        auto f = find_class(i, cl_ptr);
 
         if(f == reg_sig[i].registered_classes.end())
         {
