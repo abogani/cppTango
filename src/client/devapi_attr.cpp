@@ -29,6 +29,7 @@
 
 #include <tango/tango.h>
 #include <iomanip>
+#include <memory>
 
 using namespace CORBA;
 
@@ -119,7 +120,7 @@ DeviceAttribute::DeviceAttribute(const DeviceAttribute &source) :
 
     if(source.ext.get() != nullptr)
     {
-        ext.reset(new DeviceAttributeExt);
+        ext = std::make_unique<DeviceAttributeExt>();
         *(ext.get()) = *(source.ext.get());
     }
 }
@@ -240,7 +241,7 @@ void DeviceAttribute::deep_copy(const DeviceAttribute &source)
 
     if(source.ext.get() != nullptr)
     {
-        ext.reset(new DeviceAttributeExt);
+        ext = std::make_unique<DeviceAttributeExt>();
         ext.get()->deep_copy(*(source.ext.get()));
     }
     else
@@ -338,7 +339,7 @@ DeviceAttribute &DeviceAttribute::operator=(const DeviceAttribute &rval)
 
         if(rval.ext.get() != nullptr)
         {
-            ext.reset(new DeviceAttributeExt);
+            ext = std::make_unique<DeviceAttributeExt>();
             *(ext.get()) = *(rval.ext.get());
         }
         else

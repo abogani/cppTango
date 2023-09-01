@@ -32,6 +32,8 @@
 #include <tango/client/accessproxy.h>
 #include <tango/internal/net.h>
 
+#include <memory>
+
 using namespace CORBA;
 
 namespace Tango
@@ -398,7 +400,7 @@ Database::Database(const Database &sou) :
 
     if(sou.ext.get() != nullptr)
     {
-        ext.reset(new DatabaseExt);
+        ext = std::make_unique<DatabaseExt>();
     }
 }
 
@@ -454,7 +456,7 @@ Database &Database::operator=(const Database &rval)
 
         if(rval.ext.get() != nullptr)
         {
-            ext.reset(new DatabaseExt);
+            ext = std::make_unique<DatabaseExt>();
         }
         else
         {

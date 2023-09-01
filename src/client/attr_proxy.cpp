@@ -34,6 +34,7 @@
 #include <signal.h>
 
 #include <algorithm>
+#include <memory>
 
 using namespace CORBA;
 
@@ -293,7 +294,7 @@ AttributeProxy::AttributeProxy(const AttributeProxy &prev) :
 
     if(prev.ext.get() != nullptr)
     {
-        ext.reset(new AttributeProxyExt(prev.get_user_defined_name()));
+        ext = std::make_unique<AttributeProxyExt>(prev.get_user_defined_name());
     }
 }
 
@@ -359,7 +360,7 @@ AttributeProxy &AttributeProxy::operator=(const AttributeProxy &rval)
 
         if(rval.ext.get() != nullptr)
         {
-            ext.reset(new AttributeProxyExt(rval.get_user_defined_name()));
+            ext = std::make_unique<AttributeProxyExt>(rval.get_user_defined_name());
         }
         else
         {

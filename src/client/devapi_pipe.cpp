@@ -29,6 +29,7 @@
 
 #include <tango/tango.h>
 #include <iomanip>
+#include <memory>
 
 using namespace CORBA;
 
@@ -78,7 +79,7 @@ DevicePipe::DevicePipe(const DevicePipe &source) :
 
     if(source.ext.get() != nullptr)
     {
-        ext.reset(new DevicePipeExt);
+        ext = std::make_unique<DevicePipeExt>();
         *(ext.get()) = *(source.ext.get());
     }
 }
@@ -99,7 +100,7 @@ DevicePipe &DevicePipe::operator=(const DevicePipe &rhs)
 
         if(rhs.ext.get() != nullptr)
         {
-            ext.reset(new DevicePipeExt);
+            ext = std::make_unique<DevicePipeExt>();
             *(ext.get()) = *(rhs.ext.get());
         }
     }
@@ -266,7 +267,7 @@ DevicePipeBlob::DevicePipeBlob(const DevicePipeBlob &source) :
 
     if(source.ext.get() != nullptr)
     {
-        ext.reset(new DevicePipeBlobExt);
+        ext = std::make_unique<DevicePipeBlobExt>();
         *(ext.get()) = *(source.ext.get());
     }
 }
@@ -314,7 +315,7 @@ DevicePipeBlob &DevicePipeBlob::operator=(const DevicePipeBlob &rhs)
 
         if(rhs.ext.get() != nullptr)
         {
-            ext.reset(new DevicePipeBlobExt);
+            ext = std::make_unique<DevicePipeBlobExt>();
             *(ext.get()) = *(rhs.ext.get());
         }
         else

@@ -48,6 +48,7 @@
 #include <algorithm>
 
 #include <chrono>
+#include <memory>
 
 using namespace CORBA;
 
@@ -141,7 +142,7 @@ Connection::Connection(bool dummy) :
 {
     if(dummy)
     {
-        ext.reset(new ConnectionExt());
+        ext = std::make_unique<ConnectionExt>();
     }
 }
 
@@ -204,7 +205,7 @@ Connection::Connection(const Connection &sou) :
 
     if(sou.ext.get() != nullptr)
     {
-        ext.reset(new ConnectionExt);
+        ext = std::make_unique<ConnectionExt>();
         *(ext.get()) = *(sou.ext.get());
     }
 }
@@ -259,7 +260,7 @@ Connection &Connection::operator=(const Connection &rval)
 
     if(rval.ext.get() != nullptr)
     {
-        ext.reset(new ConnectionExt);
+        ext = std::make_unique<ConnectionExt>();
         *(ext.get()) = *(rval.ext.get());
     }
     else
@@ -1862,7 +1863,7 @@ DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
 
     if(sou.ext_proxy.get() != nullptr)
     {
-        ext_proxy.reset(new DeviceProxyExt);
+        ext_proxy = std::make_unique<DeviceProxyExt>();
         *(ext_proxy.get()) = *(sou.ext_proxy.get());
     }
 }
@@ -1924,7 +1925,7 @@ DeviceProxy &DeviceProxy::operator=(const DeviceProxy &rval)
 
         if(rval.ext_proxy.get() != nullptr)
         {
-            ext_proxy.reset(new DeviceProxyExt);
+            ext_proxy = std::make_unique<DeviceProxyExt>();
             *(ext_proxy.get()) = *(rval.ext_proxy.get());
         }
         else

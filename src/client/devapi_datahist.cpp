@@ -31,6 +31,7 @@
 
 #include <tango/tango.h>
 #include <iomanip>
+#include <memory>
 
 using namespace CORBA;
 
@@ -84,7 +85,7 @@ DeviceDataHistory::DeviceDataHistory(const DeviceDataHistory &source) :
 
     if(source.ext_hist.get() != nullptr)
     {
-        ext_hist.reset(new DeviceDataHistoryExt);
+        ext_hist = std::make_unique<DeviceDataHistoryExt>();
         *(ext_hist.get()) = *(source.ext_hist.get());
     }
 }
@@ -172,7 +173,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
 
         if(rval.ext_hist.get() != nullptr)
         {
-            ext_hist.reset(new DeviceDataHistoryExt);
+            ext_hist = std::make_unique<DeviceDataHistoryExt>();
             *(ext_hist.get()) = *(rval.ext_hist.get());
         }
         else
@@ -628,7 +629,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(const DeviceAttributeHistory &sou
 
     if(source.ext_hist.get() != nullptr)
     {
-        ext_hist.reset(new DeviceAttributeHistoryExt);
+        ext_hist = std::make_unique<DeviceAttributeHistoryExt>();
         *(ext_hist.get()) = *(source.ext_hist.get());
     }
 }
@@ -677,7 +678,7 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(const DeviceAttributeH
 
         if(rval.ext_hist.get() != nullptr)
         {
-            ext_hist.reset(new DeviceAttributeHistoryExt);
+            ext_hist = std::make_unique<DeviceAttributeHistoryExt>();
             *(ext_hist.get()) = *(rval.ext_hist.get());
         }
         else

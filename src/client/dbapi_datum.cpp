@@ -30,6 +30,7 @@
 
 #include <iomanip>
 #include <limits>
+#include <memory>
 
 using namespace CORBA;
 
@@ -106,7 +107,7 @@ DbDatum &DbDatum::operator=(const DbDatum &rval)
     value_type = rval.value_type;
     value_size = rval.value_size;
     exceptions_flags = rval.exceptions_flags;
-    ext.reset(new DbDatumExt);
+    ext = std::make_unique<DbDatumExt>();
 
     return *this;
 }

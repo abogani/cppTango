@@ -29,6 +29,8 @@
 
 #include <tango/tango.h>
 
+#include <memory>
+
 using namespace CORBA;
 
 namespace Tango
@@ -71,7 +73,7 @@ DeviceData::DeviceData(const DeviceData &source)
 
     if(source.ext.get() != nullptr)
     {
-        ext.reset(new DeviceDataExt);
+        ext = std::make_unique<DeviceDataExt>();
         *(ext.get()) = *(source.ext.get());
     }
 }
@@ -109,7 +111,7 @@ DeviceData &DeviceData::operator=(const DeviceData &rval)
 
         if(rval.ext.get() != nullptr)
         {
-            ext.reset(new DeviceDataExt);
+            ext = std::make_unique<DeviceDataExt>();
             *(ext.get()) = *(rval.ext.get());
         }
         else
