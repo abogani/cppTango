@@ -1572,7 +1572,7 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
                     }
                     else
                     {
-                        host_ip_adrs.push_back(std::string(host));
+                        host_ip_adrs.emplace_back(host);
                     }
                 }
             }
@@ -1899,7 +1899,7 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
     enum_labels.clear();
     for(unsigned int j = 0; j < att_5->enum_labels.length(); j++)
     {
-        enum_labels.push_back(att_5->enum_labels[j].in());
+        enum_labels.emplace_back(att_5->enum_labels[j].in());
     }
 
     alarms.min_alarm = att_5->att_alarm.min_alarm;

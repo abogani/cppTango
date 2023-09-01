@@ -3834,16 +3834,16 @@ std::vector<DbHistory> Database::make_history_array(bool is_attribute, Any_var &
             std::vector<std::string> value;
             for(int j = 0; j < count; j++)
             {
-                value.push_back(std::string((*ret)[i + offset + j]));
+                value.emplace_back((*ret)[i + offset + j]);
             }
 
             if(is_attribute)
             {
-                v.push_back(DbHistory(aName, pName, pDate, value));
+                v.emplace_back(aName, pName, pDate, value);
             }
             else
             {
-                v.push_back(DbHistory(pName, pDate, value));
+                v.emplace_back(pName, pDate, value);
             }
 
             i += (count + offset);
@@ -4203,7 +4203,7 @@ void Database::register_service(const std::string &servname, const std::string &
 
     // Get list of services
 
-    data.push_back(DbDatum(SERVICE_PROP_NAME));
+    data.emplace_back(SERVICE_PROP_NAME);
     get_property(CONTROL_SYSTEM, data);
     data[0] >> services;
 
@@ -4264,7 +4264,7 @@ void Database::unregister_service(const std::string &servname, const std::string
 
     // Get list of services
 
-    data.push_back(DbDatum(SERVICE_PROP_NAME));
+    data.emplace_back(SERVICE_PROP_NAME);
     get_property(CONTROL_SYSTEM, data);
     data[0] >> services;
 

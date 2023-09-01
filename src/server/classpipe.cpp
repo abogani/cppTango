@@ -107,7 +107,7 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
             std::string &pi_name = pi_ptr->get_name();
             if(pi_ptr->get_label() == pi_name || pi_ptr->get_desc() == DescNotSpec)
             {
-                db_list.push_back(DbDatum(pi_name));
+                db_list.emplace_back(pi_name);
                 nb_db_requested_pipe++;
             }
         }
@@ -149,11 +149,11 @@ void MultiClassPipe::init_class_pipe(DeviceClass *cl_ptr)
                         tmp = tmp + " ";
                         tmp = tmp + db_list[ind].value_string[k];
                     }
-                    prop_list.push_back(PipeProperty(db_list[ind].name, tmp));
+                    prop_list.emplace_back(db_list[ind].name, tmp);
                 }
                 else
                 {
-                    prop_list.push_back(PipeProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                    prop_list.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
                 }
                 ind++;
             }

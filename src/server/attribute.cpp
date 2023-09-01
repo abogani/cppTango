@@ -4411,7 +4411,7 @@ void Attribute::fire_change_event(DevFailed *except)
             std::vector<std::string> filterable_names_lg;
             std::vector<long> filterable_data_lg;
 
-            filterable_names.push_back("forced_event");
+            filterable_names.emplace_back("forced_event");
             if(force_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4421,7 +4421,7 @@ void Attribute::fire_change_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("quality");
+            filterable_names.emplace_back("quality");
             if(quality_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4892,7 +4892,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             std::vector<std::string> filterable_names_lg;
             std::vector<long> filterable_data_lg;
 
-            filterable_names.push_back("forced_event");
+            filterable_names.emplace_back("forced_event");
             if(force_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4902,7 +4902,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("quality");
+            filterable_names.emplace_back("quality");
             if(quality_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4912,12 +4912,12 @@ void Attribute::fire_archive_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("counter");
+            filterable_names.emplace_back("counter");
             filterable_data_lg.push_back(-1);
 
-            filterable_names.push_back("delta_change_rel");
+            filterable_names.emplace_back("delta_change_rel");
             filterable_data.push_back(delta_change_rel);
-            filterable_names.push_back("delta_change_abs");
+            filterable_names.emplace_back("delta_change_abs");
             filterable_data.push_back(delta_change_abs);
 
             if(event_supplier_nd != nullptr)
@@ -5617,8 +5617,8 @@ void Attribute::remove_configuration()
     DbData db_read_data;
     DbData db_delete_data;
 
-    db_read_data.push_back(DbDatum(name));
-    db_delete_data.push_back(DbDatum(name));
+    db_read_data.emplace_back(name);
+    db_delete_data.emplace_back(name);
 
     //
     // Implement a reconnection schema. The first exception received if the db
@@ -5646,7 +5646,7 @@ void Attribute::remove_configuration()
     for(int k = 1; k < (nb_prop + 1); k++)
     {
         std::string &prop_name = db_read_data[k].name;
-        db_delete_data.push_back(DbDatum(prop_name));
+        db_delete_data.emplace_back(prop_name);
     }
 
     //

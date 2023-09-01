@@ -1036,7 +1036,7 @@ void AttributeProxy::delete_property(const std::string &property_name)
 
         DbDatum att(attr_name);
         db_data.push_back(att);
-        db_data.push_back(DbDatum(property_name));
+        db_data.emplace_back(property_name);
 
         db_attr->delete_property(db_data);
     }
@@ -1069,7 +1069,7 @@ void AttributeProxy::delete_property(const std::vector<std::string> &property_na
         db_data.push_back(att);
         for(unsigned int i = 0; i < property_names.size(); i++)
         {
-            db_data.push_back(DbDatum(property_names[i]));
+            db_data.emplace_back(property_names[i]);
         }
 
         db_attr->delete_property(db_data);

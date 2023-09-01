@@ -189,7 +189,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
         }
         catch(Tango::DevFailed &)
         {
-            env_var_fqdn_prefix.push_back(TangoHostNotSet);
+            env_var_fqdn_prefix.emplace_back(TangoHostNotSet);
         }
     }
 
@@ -1547,7 +1547,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     std::vector<std::string> subscriber_info;
     subscriber_info.push_back(local_device_name);
     subscriber_info.push_back(obj_name_lower);
-    subscriber_info.push_back("subscribe");
+    subscriber_info.emplace_back("subscribe");
     subscriber_info.push_back(event_name);
 
     DeviceProxy *adm_dev = nullptr;

@@ -69,7 +69,7 @@ Tango::DevVarStringArray *DServer::polled_device()
             {
                 if((class_list[i]->get_device_list())[j]->is_polled() == true)
                 {
-                    dev_name.push_back((class_list[i]->get_device_list())[j]->get_name().c_str());
+                    dev_name.emplace_back((class_list[i]->get_device_list())[j]->get_name().c_str());
                 }
             }
         }
@@ -1011,7 +1011,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
         if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
         {
             DbData send_data;
-            send_data.push_back(DbDatum("polling_threads_pool_conf"));
+            send_data.emplace_back("polling_threads_pool_conf");
 
             std::vector<std::string> &ppc = tg->get_poll_pool_conf();
 
@@ -1749,7 +1749,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
         {
             DbData send_data;
-            send_data.push_back(DbDatum("polling_threads_pool_conf"));
+            send_data.emplace_back("polling_threads_pool_conf");
             send_data[0] << tg->get_poll_pool_conf();
 
             tg->get_dserver_device()->get_db_device()->put_property(send_data);

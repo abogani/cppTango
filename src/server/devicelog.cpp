@@ -207,9 +207,9 @@ void DeviceImpl::init_logger(void)
         }
         // get both logging level and targets from database
         DbData db_data;
-        db_data.push_back(DbDatum("logging_level"));
-        db_data.push_back(DbDatum("logging_target"));
-        db_data.push_back(DbDatum("logging_rft"));
+        db_data.emplace_back("logging_level");
+        db_data.emplace_back("logging_target");
+        db_data.emplace_back("logging_rft");
         try
         {
             db_dev->get_property(db_data);

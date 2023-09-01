@@ -446,7 +446,7 @@ std::vector<std::string> DevicePipeBlob::get_data_elt_names()
 
     for(size_t loop = 0; loop < nb_elt; loop++)
     {
-        v_str.push_back(std::string((*extract_elt_array)[loop].name.in()));
+        v_str.emplace_back((*extract_elt_array)[loop].name.in());
     }
 
     return v_str;

@@ -1452,7 +1452,7 @@ bool RootAttRegistry::check_loop(const std::string &device_name,
         //
 
         DbData db_data;
-        db_data.push_back(DbDatum(att_name));
+        db_data.emplace_back(att_name);
 
         if(db_port == tg_port && db_host == tg_host)
         {

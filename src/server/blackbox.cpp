@@ -974,7 +974,7 @@ void BlackBox::insert_attr_wr_nl(const Tango::AttributeValueList_4 &att_list,
         box[insert_elt].attr_names.push_back(tmp_str);
     }
 
-    box[insert_elt].attr_names.push_back(std::string("/"));
+    box[insert_elt].attr_names.emplace_back("/");
 
     for(unsigned long i = 0; i < r_names.length(); i++)
     {

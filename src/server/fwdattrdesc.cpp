@@ -685,7 +685,7 @@ void FwdAttr::set_default_properties(UserDefaultFwdAttrProp &prop_list)
     if((prop_list.label.empty() == false) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.label.c_str(), NotANumber) != 0))
     {
-        user_default_properties.push_back(AttrProperty("label", prop_list.label));
+        user_default_properties.emplace_back("label", prop_list.label);
     }
 }
 

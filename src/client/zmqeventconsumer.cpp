@@ -701,7 +701,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
             heartbeat_sub_sock->connect(endpoint);
             if(force_connect == 0)
             {
-                connected_heartbeat.push_back(endpoint);
+                connected_heartbeat.emplace_back(endpoint);
             }
         }
 
@@ -826,7 +826,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
             event_sub_sock->connect(endpoint);
             if(force_connect == 0)
             {
-                connected_pub.push_back(endpoint);
+                connected_pub.emplace_back(endpoint);
             }
         }
 

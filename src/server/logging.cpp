@@ -156,13 +156,13 @@ void Logging::init(const std::string &ds_name, // dserver name
             {
                 DbData db_data;
                 // the logging path property (overwrites env.var.)
-                db_data.push_back(DbDatum("logging_path"));
+                db_data.emplace_back("logging_path");
                 // the core-logger's rolling file threshold
-                db_data.push_back(DbDatum("logging_rft"));
+                db_data.emplace_back("logging_rft");
                 // the core-logger's logging level
-                db_data.push_back(DbDatum("logging_level"));
+                db_data.emplace_back("logging_level");
                 // the core-logger's logging target list
-                db_data.push_back(DbDatum("logging_target"));
+                db_data.emplace_back("logging_target");
                 // get properties from TANGO-db
                 db.get_device_property(dserver_dev_name, db_data, tg->get_db_cache());
                 // set logging path

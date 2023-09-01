@@ -453,7 +453,7 @@ void SubDevDiag::get_sub_devices_from_cache()
 
                     for(unsigned int i = 4; i < property_values->length(); i++)
                     {
-                        sub_device_startup_map[dev_name].sub_devices.push_back((*property_values)[i].in());
+                        sub_device_startup_map[dev_name].sub_devices.emplace_back((*property_values)[i].in());
                     }
                 }
             }

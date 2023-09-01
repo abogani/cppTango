@@ -3536,7 +3536,7 @@ void DeviceProxy::delete_property(const std::string &property_name)
     {
         DbData db_data;
 
-        db_data.push_back(DbDatum(property_name));
+        db_data.emplace_back(property_name);
 
         db_dev->delete_property(db_data);
     }
@@ -3567,7 +3567,7 @@ void DeviceProxy::delete_property(const std::vector<std::string> &property_names
 
         for(unsigned int i = 0; i < property_names.size(); i++)
         {
-            db_data.push_back(DbDatum(property_names[i]));
+            db_data.emplace_back(property_names[i]);
         }
 
         db_dev->delete_property(db_data);
@@ -3958,7 +3958,8 @@ AttributeInfoListEx *DeviceProxy::get_attribute_config_ex(const std::vector<std:
                     {
                         for(size_t loop = 0; loop < attr_config_list_5[i].enum_labels.length(); loop++)
                         {
-                            (*dev_attr_config)[i].enum_labels.push_back(attr_config_list_5[i].enum_labels[loop].in());
+                            (*dev_attr_config)[i].enum_labels.emplace_back(
+                                attr_config_list_5[i].enum_labels[loop].in());
                         }
                     }
                     COPY_ALARM_CONFIG((*dev_attr_config), attr_config_list_5)
@@ -4088,8 +4089,8 @@ void DeviceProxy::get_remaining_param(AttributeInfoListEx *dev_attr_config)
         int j;
         for(i = 0; i < dev_attr_config->size(); i++)
         {
-            db_data_class.push_back(DbDatum((*dev_attr_config)[i].name));
-            db_data_device.push_back(DbDatum((*dev_attr_config)[i].name));
+            db_data_class.emplace_back((*dev_attr_config)[i].name);
+            db_data_device.emplace_back((*dev_attr_config)[i].name);
         }
         db_dev->get_dbase()->get_class_attribute_property(_info.dev_class, db_data_class);
 
@@ -4881,7 +4882,7 @@ std::vector<std::string> *DeviceProxy::get_pipe_list()
     std::vector<std::string> all_pipe;
     PipeInfoList *all_pipe_config;
 
-    all_pipe.push_back(AllPipe);
+    all_pipe.emplace_back(AllPipe);
     all_pipe_config = get_pipe_config(all_pipe);
 
     auto *pipe_list = new std::vector<std::string>;
@@ -6693,7 +6694,7 @@ std::vector<std::string> *DeviceProxy::get_attribute_list()
     std::vector<std::string> all_attr;
     AttributeInfoListEx *all_attr_config;
 
-    all_attr.push_back(AllAttr_3);
+    all_attr.emplace_back(AllAttr_3);
     all_attr_config = get_attribute_config_ex(all_attr);
 
     auto *attr_list = new std::vector<std::string>;
@@ -6718,7 +6719,7 @@ AttributeInfoList *DeviceProxy::attribute_list_query()
     std::vector<std::string> all_attr;
     AttributeInfoList *all_attr_config;
 
-    all_attr.push_back(AllAttr_3);
+    all_attr.emplace_back(AllAttr_3);
     all_attr_config = get_attribute_config(all_attr);
 
     return all_attr_config;
@@ -6735,7 +6736,7 @@ AttributeInfoListEx *DeviceProxy::attribute_list_query_ex()
     std::vector<std::string> all_attr;
     AttributeInfoListEx *all_attr_config;
 
-    all_attr.push_back(AllAttr_3);
+    all_attr.emplace_back(AllAttr_3);
     all_attr_config = get_attribute_config_ex(all_attr);
 
     return all_attr_config;

@@ -160,12 +160,12 @@ void DeviceClass::get_class_system_resource()
         Database *db = tg->get_database();
         DbData db_data;
 
-        db_data.push_back(DbDatum("doc_url"));
-        db_data.push_back(DbDatum("cvs_tag"));
-        db_data.push_back(DbDatum("cvs_location"));
-        db_data.push_back(DbDatum("AllowedAccessCmd"));
-        db_data.push_back(DbDatum("svn_tag"));
-        db_data.push_back(DbDatum("svn_location"));
+        db_data.emplace_back("doc_url");
+        db_data.emplace_back("cvs_tag");
+        db_data.emplace_back("cvs_location");
+        db_data.emplace_back("AllowedAccessCmd");
+        db_data.emplace_back("svn_tag");
+        db_data.emplace_back("svn_location");
 
         try
         {

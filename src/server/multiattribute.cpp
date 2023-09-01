@@ -120,7 +120,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
         {
             for(i = 0; i < nb_attr; i++)
             {
-                db_list.push_back(DbDatum(tmp_attr_list[i]->get_name()));
+                db_list.emplace_back(tmp_attr_list[i]->get_name());
             }
 
             //
@@ -200,11 +200,11 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
                             tmp = tmp + ",";
                             tmp = tmp + db_list[ind].value_string[k];
                         }
-                        dev_prop.push_back(AttrProperty(db_list[ind].name, tmp));
+                        dev_prop.emplace_back(db_list[ind].name, tmp);
                     }
                     else
                     {
-                        dev_prop.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                        dev_prop.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
                     }
                     ind++;
                 }
@@ -506,7 +506,7 @@ void MultiAttribute::add_default(std::vector<AttrProperty> &prop_list,
 
         if(pos == prop_list.end())
         {
-            prop_list.push_back(AttrProperty(Tango_OptAttrProp[i].name, Tango_OptAttrProp[i].default_value));
+            prop_list.emplace_back(Tango_OptAttrProp[i].name, Tango_OptAttrProp[i].default_value);
         }
     }
 }
@@ -731,7 +731,7 @@ void MultiAttribute::add_attribute(const std::string &dev_name, DeviceClass *dev
 
     if(tg->use_db())
     {
-        db_list.push_back(DbDatum(tmp_attr_list[index]->get_name()));
+        db_list.emplace_back(tmp_attr_list[index]->get_name());
 
         try
         {
@@ -778,11 +778,11 @@ void MultiAttribute::add_attribute(const std::string &dev_name, DeviceClass *dev
                     tmp = tmp + ",";
                     tmp = tmp + db_list[ind].value_string[k];
                 }
-                dev_prop.push_back(AttrProperty(db_list[ind].name, tmp));
+                dev_prop.emplace_back(db_list[ind].name, tmp);
             }
             else
             {
-                dev_prop.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                dev_prop.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
             }
             ind++;
         }
@@ -936,13 +936,13 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,
         if(tg->use_db() && (fwd_attr->get_full_root_att() == RootAttNotDef))
         {
             Tango::DbData db_list;
-            db_list.push_back(DbDatum(fwd_attr->get_name()));
+            db_list.emplace_back(fwd_attr->get_name());
             tg->get_database()->get_device_attribute_property(dev_name, db_list, tg->get_db_cache());
             for(unsigned int ind = 0; ind < db_list.size(); ind++)
             {
                 if(db_list[ind].name == RootAttrPropName)
                 {
-                    dev_prop.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                    dev_prop.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
                     break;
                 }
             }

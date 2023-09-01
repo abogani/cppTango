@@ -135,7 +135,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
         wo.poll_list = nullptr;
         wo.type = STORE_SUBDEV;
         wo.update = std::chrono::minutes(30);
-        wo.name.push_back(std::string("Sub device property storage"));
+        wo.name.emplace_back("Sub device property storage");
         wo.needed_time = PollClock::duration::zero();
 
         now = PollClock::now();
@@ -697,7 +697,7 @@ void PollThread::execute_cmd()
         wo.poll_list = nullptr;
         wo.type = EVENT_HEARTBEAT;
         wo.update = std::chrono::milliseconds(9000);
-        wo.name.push_back(std::string("Event heartbeat"));
+        wo.name.emplace_back("Event heartbeat");
         wo.needed_time = TIME_NEEDED_HEARTBEAT;
 
         wo.wake_up_date = now;

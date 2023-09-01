@@ -756,7 +756,7 @@ void DeviceImpl::stop_polling(bool with_db_upd)
     if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
     {
         DbData send_data;
-        send_data.push_back(DbDatum("polling_threads_pool_conf"));
+        send_data.emplace_back("polling_threads_pool_conf");
         send_data[0] << tg->get_poll_pool_conf();
 
         tg->get_dserver_device()->get_db_device()->put_property(send_data);
@@ -909,19 +909,19 @@ void DeviceImpl::get_dev_system_resource()
     {
         DbData db_data;
 
-        db_data.push_back(DbDatum("blackbox_depth"));
-        db_data.push_back(DbDatum("description"));
-        db_data.push_back(DbDatum("poll_ring_depth"));
-        db_data.push_back(DbDatum("polled_cmd"));
-        db_data.push_back(DbDatum("polled_attr"));
-        db_data.push_back(DbDatum("non_auto_polled_cmd"));
-        db_data.push_back(DbDatum("non_auto_polled_attr"));
-        db_data.push_back(DbDatum("poll_old_factor"));
-        db_data.push_back(DbDatum("cmd_poll_ring_depth"));
-        db_data.push_back(DbDatum("attr_poll_ring_depth"));
-        db_data.push_back(DbDatum("min_poll_period"));
-        db_data.push_back(DbDatum("cmd_min_poll_period"));
-        db_data.push_back(DbDatum("attr_min_poll_period"));
+        db_data.emplace_back("blackbox_depth");
+        db_data.emplace_back("description");
+        db_data.emplace_back("poll_ring_depth");
+        db_data.emplace_back("polled_cmd");
+        db_data.emplace_back("polled_attr");
+        db_data.emplace_back("non_auto_polled_cmd");
+        db_data.emplace_back("non_auto_polled_attr");
+        db_data.emplace_back("poll_old_factor");
+        db_data.emplace_back("cmd_poll_ring_depth");
+        db_data.emplace_back("attr_poll_ring_depth");
+        db_data.emplace_back("min_poll_period");
+        db_data.emplace_back("cmd_min_poll_period");
+        db_data.emplace_back("attr_min_poll_period");
 
         try
         {
@@ -4259,7 +4259,7 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
         Tango::DbData poll_data;
         bool found = false;
 
-        poll_data.push_back(Tango::DbDatum("polled_cmd"));
+        poll_data.emplace_back("polled_cmd");
 
         if(poll_list.empty() == false)
         {
@@ -4283,7 +4283,7 @@ void DeviceImpl::init_cmd_poll_ext_trig(const std::string &cmd_name)
         if(found == false)
         {
             poll_list.push_back(cmd_lowercase);
-            poll_list.push_back("0");
+            poll_list.emplace_back("0");
         }
 
         poll_data[0] << poll_list;
@@ -4315,7 +4315,7 @@ void DeviceImpl::init_cmd_poll_period()
         std::vector<std::string> &poll_list = get_polled_cmd();
         Tango::DbData poll_data;
 
-        poll_data.push_back(Tango::DbDatum("polled_cmd"));
+        poll_data.emplace_back("polled_cmd");
 
         //
         // get the command list
@@ -4441,7 +4441,7 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
         Tango::DbData poll_data;
         bool found = false;
 
-        poll_data.push_back(Tango::DbDatum("polled_attr"));
+        poll_data.emplace_back("polled_attr");
 
         //
         // read the polling configuration from the database
@@ -4484,7 +4484,7 @@ void DeviceImpl::init_attr_poll_ext_trig(const std::string &attr_name)
         if(found == false)
         {
             poll_list.push_back(attr_lowercase);
-            poll_list.push_back("0");
+            poll_list.emplace_back("0");
         }
 
         poll_data[0] << poll_list;
@@ -4516,7 +4516,7 @@ void DeviceImpl::init_attr_poll_period()
         std::vector<std::string> &poll_list = get_polled_attr();
         Tango::DbData poll_data;
 
-        poll_data.push_back(Tango::DbDatum("polled_attr"));
+        poll_data.emplace_back("polled_attr");
 
         //
         // get the multi attribute object
@@ -6229,7 +6229,7 @@ void DeviceImpl::end_pipe_config()
         {
             for(size_t i = 0; i < nb_pipe; i++)
             {
-                db_list.push_back(DbDatum(pipe_list[i]->get_name()));
+                db_list.emplace_back(pipe_list[i]->get_name());
             }
 
             //
@@ -6294,11 +6294,11 @@ void DeviceImpl::end_pipe_config()
                             tmp = tmp + ",";
                             tmp = tmp + db_list[ind].value_string[k];
                         }
-                        dev_prop.push_back(PipeProperty(db_list[ind].name, tmp));
+                        dev_prop.emplace_back(db_list[ind].name, tmp);
                     }
                     else
                     {
-                        dev_prop.push_back(PipeProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                        dev_prop.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
                     }
                     ind++;
                 }

@@ -1517,9 +1517,9 @@ void DServer::get_dev_prop(Tango::Util *tg)
     {
         DbData db_data;
 
-        db_data.push_back(DbDatum("polling_threads_pool_size"));
-        db_data.push_back(DbDatum("polling_threads_pool_conf"));
-        db_data.push_back(DbDatum("polling_before_9"));
+        db_data.emplace_back("polling_threads_pool_size");
+        db_data.emplace_back("polling_threads_pool_conf");
+        db_data.emplace_back("polling_before_9");
 
         try
         {
@@ -1680,13 +1680,13 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
 
         DbData db_data;
 
-        db_data.push_back(DbDatum("MulticastEvent"));
-        db_data.push_back(DbDatum("MulticastHops"));
-        db_data.push_back(DbDatum("MulticastRate"));
-        db_data.push_back(DbDatum("MulticastIvl"));
-        db_data.push_back(DbDatum("DSEventBufferHwm"));
-        db_data.push_back(DbDatum("EventBufferHwm"));
-        db_data.push_back(DbDatum("WAttrNaNAllowed"));
+        db_data.emplace_back("MulticastEvent");
+        db_data.emplace_back("MulticastHops");
+        db_data.emplace_back("MulticastRate");
+        db_data.emplace_back("MulticastIvl");
+        db_data.emplace_back("DSEventBufferHwm");
+        db_data.emplace_back("EventBufferHwm");
+        db_data.emplace_back("WAttrNaNAllowed");
 
         try
         {

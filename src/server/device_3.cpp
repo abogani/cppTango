@@ -2622,7 +2622,7 @@ void Device_3Impl::get_attr_props(const char *attr_name, std::vector<AttrPropert
     if(tg->use_db())
     {
         Tango::DbData db_list;
-        db_list.push_back(DbDatum(attr_name));
+        db_list.emplace_back(attr_name);
 
         //
         // Get attr prop from db cache
@@ -2664,11 +2664,11 @@ void Device_3Impl::get_attr_props(const char *attr_name, std::vector<AttrPropert
                     tmp = tmp + ",";
                     tmp = tmp + db_list[ind].value_string[k];
                 }
-                prop_list.push_back(AttrProperty(db_list[ind].name, tmp));
+                prop_list.emplace_back(db_list[ind].name, tmp);
             }
             else
             {
-                prop_list.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                prop_list.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
             }
             ind++;
         }

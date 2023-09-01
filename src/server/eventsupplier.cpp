@@ -405,12 +405,12 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
         //
 
         domain_name = device_impl->get_name() + "/" + attr_name;
-        filterable_names.push_back("delta_change_rel");
+        filterable_names.emplace_back("delta_change_rel");
         filterable_data.push_back(delta_change_rel);
-        filterable_names.push_back("delta_change_abs");
+        filterable_names.emplace_back("delta_change_abs");
         filterable_data.push_back(delta_change_abs);
 
-        filterable_names.push_back("forced_event");
+        filterable_names.emplace_back("forced_event");
         if(force_change == true)
         {
             filterable_data.push_back((double) 1.0);
@@ -420,7 +420,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
             filterable_data.push_back((double) 0.0);
         }
 
-        filterable_names.push_back("quality");
+        filterable_names.emplace_back("quality");
         if(quality_change == true)
         {
             filterable_data.push_back((double) 1.0);
@@ -661,7 +661,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         // Prepare to push the event
         //
 
-        filterable_names_lg.push_back("counter");
+        filterable_names_lg.emplace_back("counter");
         if(period_change == true)
         {
             attr.archive_periodic_counter++;
@@ -673,11 +673,11 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
             filterable_data_lg.push_back(-1);
         }
 
-        filterable_names.push_back("delta_change_rel");
+        filterable_names.emplace_back("delta_change_rel");
         filterable_data.push_back(delta_change_rel);
-        filterable_names.push_back("delta_change_abs");
+        filterable_names.emplace_back("delta_change_abs");
         filterable_data.push_back(delta_change_abs);
-        filterable_names.push_back("forced_event");
+        filterable_names.emplace_back("forced_event");
         if(force_change == true)
         {
             filterable_data.push_back((double) 1.0);
@@ -687,7 +687,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
             filterable_data.push_back((double) 0.0);
         }
 
-        filterable_names.push_back("quality");
+        filterable_names.emplace_back("quality");
         if(quality_change == true)
         {
             filterable_data.push_back((double) 1.0);
@@ -699,7 +699,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
 
         auto time_delta = time_bef_attr - attr.archive_last_event;
         auto time_delta_ms = duration_ms(time_delta);
-        filterable_names.push_back("delta_event");
+        filterable_names.emplace_back("delta_event");
         filterable_data.push_back(time_delta_ms);
         attr.archive_last_event = time_bef_attr;
 
@@ -859,7 +859,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
 
         attr.periodic_counter++;
         attr.last_periodic = time_bef_attr;
-        filterable_names_lg.push_back("counter");
+        filterable_names_lg.emplace_back("counter");
         filterable_data_lg.push_back(attr.periodic_counter);
 
         std::vector<int> &client_libs = attr.get_client_lib(PERIODIC_EVENT);

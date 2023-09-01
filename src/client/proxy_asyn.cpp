@@ -2694,7 +2694,7 @@ void DeviceProxy::retrieve_read_args(const TgRequest &req, std::vector<std::stri
 
         for(unsigned loop = 0; loop < att_names->length(); loop++)
         {
-            att_list.push_back(std::string((*att_names)[loop]));
+            att_list.emplace_back((*att_names)[loop]);
         }
     }
     catch(CORBA::SystemException &e)

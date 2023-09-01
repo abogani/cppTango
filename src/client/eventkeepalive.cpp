@@ -198,9 +198,9 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                     std::vector<std::string> subscriber_info;
                     subscriber_info.push_back(epos->second.get_device_proxy().dev_name());
                     subscriber_info.push_back(epos->second.obj_name);
-                    subscriber_info.push_back("subscribe");
+                    subscriber_info.emplace_back("subscribe");
                     subscriber_info.push_back(epos->second.event_name);
-                    subscriber_info.push_back("0");
+                    subscriber_info.emplace_back("0");
                     subscriber_in << subscriber_info;
 
                     subscriber_out =
@@ -480,7 +480,7 @@ void EventConsumerKeepAliveThread::reconnect_to_zmq_event(const EvChanIte &ipos,
                         EventCallBackStruct ecbs;
                         std::vector<std::string> vs;
 
-                        vs.push_back(std::string("reconnect"));
+                        vs.emplace_back("reconnect");
 
                         std::string d_name = epos->second.get_device_proxy().dev_name();
                         std::string &fqen = epos->second.fully_qualified_event_name;
@@ -978,7 +978,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
                     std::vector<std::string> subscriber_info;
                     subscriber_info.push_back(epos->second.get_device_proxy().dev_name());
                     subscriber_info.push_back(epos->second.obj_name);
-                    subscriber_info.push_back("subscribe");
+                    subscriber_info.emplace_back("subscribe");
                     subscriber_info.push_back(epos->second.event_name);
                     subscriber_in << subscriber_info;
 
@@ -1037,9 +1037,9 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
                     std::vector<std::string> subscriber_info;
                     subscriber_info.push_back(cmd_params[(loop * 3)]);
                     subscriber_info.push_back(cmd_params[(loop * 3) + 1]);
-                    subscriber_info.push_back("subscribe");
+                    subscriber_info.emplace_back("subscribe");
                     subscriber_info.push_back(cmd_params[(loop * 3) + 2]);
-                    subscriber_info.push_back("0");
+                    subscriber_info.emplace_back("0");
                     subscriber_in << subscriber_info;
 
                     try
@@ -1480,11 +1480,11 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
     auto &device = epos->second.get_device_proxy();
     subscriber_info.push_back(device.dev_name());
     subscriber_info.push_back(epos->second.obj_name);
-    subscriber_info.push_back("subscribe");
+    subscriber_info.emplace_back("subscribe");
     subscriber_info.push_back(epos->second.event_name);
     if(ipos->second.channel_type == ZMQ)
     {
-        subscriber_info.push_back("0");
+        subscriber_info.emplace_back("0");
     }
     subscriber_in << subscriber_info;
 

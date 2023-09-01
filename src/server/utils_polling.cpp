@@ -1657,11 +1657,11 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
         {
             if(poll_cmd_list.empty() == true)
             {
-                del_prop.push_back(DbDatum("polled_cmd"));
+                del_prop.emplace_back("polled_cmd");
             }
             else
             {
-                upd_prop.push_back(DbDatum("polled_cmd"));
+                upd_prop.emplace_back("polled_cmd");
                 upd_prop[0] << poll_cmd_list;
             }
         }
@@ -1670,11 +1670,11 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
         {
             if(poll_attr_list.empty() == true)
             {
-                del_prop.push_back(DbDatum("polled_attr"));
+                del_prop.emplace_back("polled_attr");
             }
             else
             {
-                upd_prop.push_back(DbDatum("polled_attr"));
+                upd_prop.emplace_back("polled_attr");
                 upd_prop[0] << poll_attr_list;
             }
         }
@@ -1754,7 +1754,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
     if(conf_needs_db_upd == true)
     {
         DbData upd_conf;
-        upd_conf.push_back(DbDatum("polling_threads_pool_conf"));
+        upd_conf.emplace_back("polling_threads_pool_conf");
 
         bool retry = true;
         long db_retries = DB_START_PHASE_RETRIES;

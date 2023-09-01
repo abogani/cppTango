@@ -1375,7 +1375,7 @@ CORBA::Any *FileDatabase ::DbPutDeviceProperty(CORBA::Any &send)
                 index++;
                 for(int j = 0; j < n_values; j++)
                 {
-                    temp_property->value.push_back(string((*data_in)[index]));
+                    temp_property->value.emplace_back((*data_in)[index]);
                     index++;
                 }
                 device_trovato.properties.push_back(temp_property);
@@ -1576,7 +1576,7 @@ CORBA::Any *FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
                         index++;
                         for(unsigned int n = 0; n < num_vals; n++)
                         {
-                            temp_attribute_property->properties[k]->value.push_back(string((*data_in)[index]));
+                            temp_attribute_property->properties[k]->value.emplace_back((*data_in)[index]);
                             index++;
                         }
 
@@ -1600,7 +1600,7 @@ CORBA::Any *FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
                     index++;
                     for(unsigned int n = 0; n < num_vals; n++)
                     {
-                        new_prop->value.push_back(string((*data_in)[index]));
+                        new_prop->value.emplace_back((*data_in)[index]);
                         index++;
                     }
 
@@ -1840,7 +1840,7 @@ CORBA::Any *FileDatabase ::DbPutClassProperty(CORBA::Any &send)
                 index++;
                 for(int j = 0; j < n_values; j++)
                 {
-                    temp_property->value.push_back(string((*data_in)[index]));
+                    temp_property->value.emplace_back((*data_in)[index]);
                     index++;
                 }
                 classe_trovata.properties.push_back(temp_property);
@@ -2050,7 +2050,7 @@ CORBA::Any *FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
                         index++;
                         for(unsigned int n = 0; n < num_vals; n++)
                         {
-                            temp_attribute_property->properties[k]->value.push_back(string((*data_in)[index]));
+                            temp_attribute_property->properties[k]->value.emplace_back((*data_in)[index]);
                             index++;
                         }
 
@@ -2074,7 +2074,7 @@ CORBA::Any *FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
                     index++;
                     for(unsigned int n = 0; n < num_vals; n++)
                     {
-                        new_prop->value.push_back(string((*data_in)[index]));
+                        new_prop->value.emplace_back((*data_in)[index]);
                         index++;
                     }
 

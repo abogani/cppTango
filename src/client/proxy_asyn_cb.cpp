@@ -882,14 +882,14 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
     {
         for(int i = 0; i < nb_attr; i++)
         {
-            att_name.push_back((*att_4)[i].name.in());
+            att_name.emplace_back((*att_4)[i].name.in());
         }
     }
     else
     {
         for(int i = 0; i < nb_attr; i++)
         {
-            att_name.push_back((*att)[i].name.in());
+            att_name.emplace_back((*att)[i].name.in());
         }
     }
 

@@ -136,7 +136,7 @@ void FwdAttribute::set_att_config(const Tango::AttributeConfig_5 &conf)
     size_t enum_labels_nb = conf.enum_labels.length();
     for(size_t loop = 0; loop < enum_labels_nb; loop++)
     {
-        enum_labels.push_back(conf.enum_labels[loop].in());
+        enum_labels.emplace_back(conf.enum_labels[loop].in());
     }
 
     //
@@ -862,8 +862,8 @@ void FwdAttribute::upd_att_label(const char *new_label)
     if(remove_db == true)
     {
         DbData db_data;
-        db_data.push_back(DbDatum(name));
-        db_data.push_back(DbDatum("label"));
+        db_data.emplace_back(name);
+        db_data.emplace_back("label");
 
         try
         {
