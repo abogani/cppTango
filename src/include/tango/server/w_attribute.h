@@ -985,18 +985,18 @@ class WAttribute : public Attribute
     Tango::DevVarCharArray uchar_array_val;
 
     const Tango::DevShort *short_ptr;
-    const Tango::DevLong *long_ptr;
-    const Tango::DevDouble *double_ptr;
-    const Tango::ConstDevString *str_ptr;
-    const Tango::DevFloat *float_ptr;
-    const Tango::DevBoolean *boolean_ptr;
-    const Tango::DevUShort *ushort_ptr;
-    const Tango::DevUChar *uchar_ptr;
-    const Tango::DevEncoded *encoded_ptr;
+    const Tango::DevLong *long_ptr{nullptr};
+    const Tango::DevDouble *double_ptr{nullptr};
+    const Tango::ConstDevString *str_ptr{nullptr};
+    const Tango::DevFloat *float_ptr{nullptr};
+    const Tango::DevBoolean *boolean_ptr{nullptr};
+    const Tango::DevUShort *ushort_ptr{nullptr};
+    const Tango::DevUChar *uchar_ptr{nullptr};
+    const Tango::DevEncoded *encoded_ptr{nullptr};
 
-    bool string_allocated;
-    bool memorized;
-    bool memorized_init;
+    bool string_allocated{false};
+    bool memorized{false};
+    bool memorized_init{false};
     std::string mem_value;
     struct timeval write_date;
 
@@ -1020,15 +1020,15 @@ class WAttribute : public Attribute
     Tango::DevVarULong64Array ulong64_array_val;
     Tango::DevVarStateArray state_array_val;
 
-    const Tango::DevLong64 *long64_ptr;
-    const Tango::DevULong *ulong_ptr;
-    const Tango::DevULong64 *ulong64_ptr;
-    const Tango::DevState *state_ptr;
+    const Tango::DevLong64 *long64_ptr{nullptr};
+    const Tango::DevULong *ulong_ptr{nullptr};
+    const Tango::DevULong64 *ulong64_ptr{nullptr};
+    const Tango::DevState *state_ptr{nullptr};
 
-    bool uswv;                  // User set_write_value
-    DevErrorList mem_exception; // Exception received at start-up in case writing the
-                                // memorized att. failed
-    bool mem_write_failed;      // Flag set to true if the memorized att setting failed
+    bool uswv{false};             // User set_write_value
+    DevErrorList mem_exception;   // Exception received at start-up in case writing the
+                                  // memorized att. failed
+    bool mem_write_failed{false}; // Flag set to true if the memorized att setting failed
 };
 
 } // namespace Tango

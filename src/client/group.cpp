@@ -290,8 +290,8 @@ bool GroupReply::enable_exception(bool exception_mode)
 // class GroupReplyList
 //=============================================================================
 GroupReplyList::GroupReplyList() :
-    std::vector<GroupReply>(0),
-    has_failed_m(false)
+    std::vector<GroupReply>(0)
+
 {
     //-noop impl
 }
@@ -503,8 +503,8 @@ bool GroupCmdReply::extract(std::vector<double> &vd, std::vector<std::string> &v
 // class GroupCmdReplyList
 //=============================================================================
 GroupCmdReplyList::GroupCmdReplyList() :
-    std::vector<GroupCmdReply>(0),
-    has_failed_m(false)
+    std::vector<GroupCmdReply>(0)
+
 {
     //-noop impl
 }
@@ -585,8 +585,8 @@ GroupAttrReply &GroupAttrReply::operator=(GroupAttrReply &&) = default;
 // class GroupAttrReplyList
 //=============================================================================
 GroupAttrReplyList::GroupAttrReplyList() :
-    std::vector<GroupAttrReply>(0),
-    has_failed_m(false)
+    std::vector<GroupAttrReply>(0)
+
 {
     //-noop impl
 }

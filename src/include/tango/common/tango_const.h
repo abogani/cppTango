@@ -1031,16 +1031,11 @@ enum ZmqCmdCode
 
 typedef struct _SendEventType
 {
-    _SendEventType() :
-        change(false),
-        archive(false),
-        periodic(false)
-    {
-    }
+    _SendEventType() { }
 
-    bool change;
-    bool archive;
-    bool periodic;
+    bool change{false};
+    bool archive{false};
+    bool periodic{false};
 } SendEventType;
 
 typedef struct _OptAttrProp

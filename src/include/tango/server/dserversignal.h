@@ -99,15 +99,15 @@ class DServerSignal : public TangoMonitor
       public:
         ThSig(DServerSignal *d) :
             ds(d),
-            my_pid(0),
-            th_data_created(false)
+            my_pid(0)
+
         {
         }
 
         ~ThSig() override { }
 
         TangoSys_Pid my_pid;
-        bool th_data_created;
+        bool th_data_created{false};
 #ifndef _TG_WINDOWS_
         pthread_t my_thread;
 #endif

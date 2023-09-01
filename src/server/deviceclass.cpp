@@ -78,9 +78,8 @@ bool less_than_pipe(Pipe *a, Pipe *b)
 DeviceClass::DeviceClass(const std::string &s) :
     name(s),
     ext(new DeviceClassExt),
-    only_one("class"),
-    default_cmd(nullptr),
-    device_factory_done(false)
+    only_one("class")
+
 {
     //
     // Create the associated DbClass object

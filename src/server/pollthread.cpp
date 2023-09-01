@@ -78,12 +78,11 @@ PollThread::PollThread(PollThCmd &cmd, TangoMonitor &m, bool heartbeat) :
     shared_cmd(cmd),
     p_mon(m),
     sleep(std::chrono::milliseconds(1)),
-    polling_stop(true),
+
     attr_names(1),
-    tune_ctr(1),
-    need_two_tuning(false),
-    send_heartbeat(heartbeat),
-    heartbeat_ctr(0)
+
+    send_heartbeat(heartbeat)
+
 {
     local_cmd.cmd_pending = false;
 

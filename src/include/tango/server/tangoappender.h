@@ -92,7 +92,7 @@ class TangoAppender : public log4tango::Appender
     /**
      *
      **/
-    DeviceProxy *_dev_proxy;
+    DeviceProxy *_dev_proxy{nullptr};
     DevULong _req_ctr;
 };
 

@@ -1917,14 +1917,10 @@ class DeviceImpl : public virtual POA_Tango::Device
     class DeviceImplExt
     {
       public:
-        DeviceImplExt() :
-            alarm_state_user(0),
-            alarm_state_kernel(0)
-        {
-        }
+        DeviceImplExt() { }
 
-        time_t alarm_state_user;
-        time_t alarm_state_kernel;
+        time_t alarm_state_user{0};
+        time_t alarm_state_kernel{0};
     };
 
   protected:

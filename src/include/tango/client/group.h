@@ -490,7 +490,7 @@ class GroupReplyList : public std::vector<GroupReply>
 
   private:
     //- has_failed_m: true if at least one error occurred, false otherwise
-    bool has_failed_m;
+    bool has_failed_m{false};
 };
 
 //=============================================================================
@@ -568,7 +568,7 @@ class GroupCmdReplyList : public std::vector<GroupCmdReply>
 
   private:
     //- has_failed_m: true if at least one error occurred, false otherwise
-    bool has_failed_m;
+    bool has_failed_m{false};
 };
 
 //=============================================================================
@@ -645,7 +645,7 @@ class GroupAttrReplyList : public std::vector<GroupAttrReply>
 
   private:
     //- has_failed_m: true if at least one error occurred, false otherwise
-    bool has_failed_m;
+    bool has_failed_m{false};
 };
 
 //=============================================================================

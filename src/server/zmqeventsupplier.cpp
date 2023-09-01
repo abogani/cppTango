@@ -102,11 +102,8 @@ void get_zmq_port_from_envvar(const char *zmq_port_env_var, std::string &endpoin
 
 ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
     EventSupplier(tg),
-    zmq_context(1),
-    event_pub_sock(nullptr),
-    name_specified(false),
-    double_send(0),
-    double_send_heartbeat(false)
+    zmq_context(1)
+
 {
     _instance = this;
 

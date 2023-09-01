@@ -342,12 +342,12 @@ class KeepAliveThCmd : public omni_mutex
 {
   public:
     KeepAliveThCmd() :
-        cmd_pending(false),
+
         cond(this)
     {
     }
 
-    bool cmd_pending;          // The new command flag
+    bool cmd_pending{false};   // The new command flag
     KeepAliveCmdCode cmd_code; // The command code
     omni_condition cond;
 };
@@ -776,9 +776,9 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
     int old_poll_nb;
     TangoMonitor subscription_monitor;
     omni_mutex sock_bound_mutex;
-    bool ctrl_socket_bound;
+    bool ctrl_socket_bound{false};
     // variable to count the number of ZMQ_DELAY_EVENT requests currently in progress:
-    int nb_current_delay_event_requests;
+    int nb_current_delay_event_requests{0};
 
     void *run_undetached(void *arg) override;
     void push_heartbeat_event(std::string &);
@@ -839,8 +839,8 @@ class DelayEvent
     void release();
 
   private:
-    bool released;
-    ZmqEventConsumer *eve_con;
+    bool released{false};
+    ZmqEventConsumer *eve_con{nullptr};
 };
 
 /********************************************************************************

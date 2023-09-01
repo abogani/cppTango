@@ -325,17 +325,17 @@ class ApiUtil
 
     static ApiUtil *_instance;
     static omni_mutex inst_mutex;
-    bool exit_lock_installed;
-    bool reset_already_executed_flag;
+    bool exit_lock_installed{false};
+    bool reset_already_executed_flag{false};
 
     std::unique_ptr<ApiUtilExt> ext;
 
-    NotifdEventConsumer *notifd_event_consumer;
+    NotifdEventConsumer *notifd_event_consumer{nullptr};
     TangoSys_Pid cl_pid;
-    int user_connect_timeout;
-    ZmqEventConsumer *zmq_event_consumer;
+    int user_connect_timeout{-1};
+    ZmqEventConsumer *zmq_event_consumer{nullptr};
     std::vector<std::string> host_ip_adrs;
-    DevLong user_sub_hwm;
+    DevLong user_sub_hwm{-1};
     /***
      * Process a request.
      * Send the proper call to the connection based on the request type, and, once processed,

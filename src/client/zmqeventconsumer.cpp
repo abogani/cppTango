@@ -71,9 +71,8 @@ ZmqEventConsumer *ZmqEventConsumer::_instance = nullptr;
 ZmqEventConsumer::ZmqEventConsumer(ApiUtil *ptr) :
     EventConsumer(ptr),
     omni_thread((void *) ptr),
-    zmq_context(1),
-    ctrl_socket_bound(false),
-    nb_current_delay_event_requests(0)
+    zmq_context(1)
+
 {
     TANGO_LOG_DEBUG << "calling Tango::ZmqEventConsumer::ZmqEventConsumer() \n";
     _instance = this;
@@ -4006,9 +4005,8 @@ void Tango::ZmqDevPipeDataElt::operator<<=(TangoCdrMemoryStream &_n)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-DelayEvent::DelayEvent(EventConsumer *ec) :
-    released(false),
-    eve_con(nullptr)
+DelayEvent::DelayEvent(EventConsumer *ec)
+
 {
     std::string str;
     ec->get_subscription_command_name(str);

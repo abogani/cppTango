@@ -91,8 +91,8 @@ std::string EventSupplier::fqdn_prefix;
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-EventSupplier::EventSupplier(Util *tg) :
-    one_subscription_cmd(false)
+EventSupplier::EventSupplier(Util *tg)
+
 {
     if(fqdn_prefix.empty() == true)
     {

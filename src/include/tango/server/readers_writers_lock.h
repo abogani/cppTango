@@ -35,15 +35,13 @@ class ReadersWritersLock
   public:
     omni_mutex mut;
     omni_condition cond;
-    int n; // 0 means no-one active, > 0 means n readers, < 0 means writer
-           // (-n times).
-    int writerId;
+    int n{0}; // 0 means no-one active, > 0 means n readers, < 0 means writer
+              // (-n times).
+    int writerId{0};
 
     ReadersWritersLock() :
-        cond(&mut),
-        n(0),
-        writerId(0),
-        auto_self(nullptr)
+        cond(&mut)
+
     {
     }
 
@@ -160,7 +158,7 @@ class ReadersWritersLock
     // a thread without an associated omni_thread, it creates a dummy
     // thread which is released when the ensure_self object is deleted.
 
-    omni_thread::ensure_self *auto_self;
+    omni_thread::ensure_self *auto_self{nullptr};
 };
 
 //

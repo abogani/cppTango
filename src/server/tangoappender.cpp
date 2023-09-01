@@ -50,8 +50,8 @@ TangoAppender::TangoAppender(const std::string &src_name,
                              bool open_connection) :
     log4tango::Appender(name),
     _dev_name(dev_name),
-    _src_name(src_name),
-    _dev_proxy(nullptr)
+    _src_name(src_name)
+
 {
     _req_ctr = 0;
     if(open_connection == true)

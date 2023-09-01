@@ -347,29 +347,15 @@ Util::Util(int argc, char *argv[]) :
     polling_bef_9_def(false)
 #else
 Util::Util(int argc, char *argv[]) :
-    cl_list_ptr(nullptr),
+
     ext(new UtilExt),
-    heartbeat_th(nullptr),
-    heartbeat_th_id(0),
+
     poll_mon("utils_poll"),
-    poll_on(false),
-    ser_model(BY_DEVICE),
+
     only_one("process"),
-    nd_event_supplier(nullptr),
-    db_cache(nullptr),
-    inter(nullptr),
-    svr_starting(true),
-    svr_stopping(false),
-    poll_pool_size(ULONG_MAX),
-    conf_needs_db_upd(false),
-    ev_loop_func(nullptr),
-    shutdown_server(false),
-    _dummy_thread(false),
-    zmq_event_supplier(nullptr),
-    endpoint_specified(false),
-    user_pub_hwm(-1),
-    wattr_nan_allowed(false),
-    polling_bef_9_def(false)
+
+    poll_pool_size(ULONG_MAX)
+
 #endif
 {
     shared_data.cmd_pending = false;

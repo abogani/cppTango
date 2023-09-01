@@ -193,8 +193,8 @@ class FwdAttr : public ImageAttr
     std::string full_root_att; // Root att (dev_name/att_name)
     std::string fwd_dev_name;  // Root att device name (lower case)
     std::string fwd_root_att;  // Root att (lower case)
-    bool fwd_wrongly_conf;
-    FwdAttError err_kind;
+    bool fwd_wrongly_conf{false};
+    FwdAttError err_kind{FWD_ERR_UNKNOWN};
 
   private:
     class FwdAttrExt

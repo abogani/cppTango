@@ -127,32 +127,11 @@ void LastAttrValue::store(const AttributeValue_5 *attr_5,
 //--------------------------------------------------------------------------------------------------------------------
 
 Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const std::string &dev_name, long idx) :
-    date(true),
-    quality(Tango::ATTR_VALID),
-    check_min_value(false),
-    check_max_value(false),
-    enum_nb(0),
-    loc_enum_ptr(nullptr),
-    poll_period(0),
-    event_period(0),
-    archive_period(0),
-    periodic_counter(0),
-    archive_periodic_counter(0),
+
     last_periodic(),
     archive_last_periodic(),
-    archive_last_event(),
-    dev(nullptr),
-    change_event_implmented(false),
-    archive_event_implmented(false),
-    check_change_event_criteria(true),
-    check_archive_event_criteria(true),
-    dr_event_implmented(false),
-    scalar_str_attr_release(false),
-    notifd_event(false),
-    zmq_event(false),
-    check_startup_exceptions(false),
-    startup_exceptions_clear(true),
-    att_mem_exception(false)
+    archive_last_event()
+
 {
     //
     // Create the extension class

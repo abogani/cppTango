@@ -68,24 +68,9 @@ namespace Tango
 
 WAttribute::WAttribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const std::string &dev_name, long idx) :
     Attribute(prop_list, tmp_attr, dev_name, idx),
-    long_ptr(nullptr),
-    double_ptr(nullptr),
-    str_ptr(nullptr),
-    float_ptr(nullptr),
-    boolean_ptr(nullptr),
-    ushort_ptr(nullptr),
-    uchar_ptr(nullptr),
-    encoded_ptr(nullptr),
-    string_allocated(false),
-    memorized(false),
-    memorized_init(false),
-    w_ext(new WAttributeExt),
-    long64_ptr(nullptr),
-    ulong_ptr(nullptr),
-    ulong64_ptr(nullptr),
-    state_ptr(nullptr),
-    uswv(false),
-    mem_write_failed(false)
+
+    w_ext(new WAttributeExt)
+
 {
     //
     // Init some data

@@ -97,14 +97,11 @@ void ApiUtil::cleanup()
 //------------------------------------------------------------------------------------------------------------------
 
 ApiUtil::ApiUtil() :
-    exit_lock_installed(false),
-    reset_already_executed_flag(false),
+
     ext(new ApiUtilExt),
-    notifd_event_consumer(nullptr),
-    cl_pid(0),
-    user_connect_timeout(-1),
-    zmq_event_consumer(nullptr),
-    user_sub_hwm(-1)
+
+    cl_pid(0)
+
 {
     _orb = CORBA::ORB::_nil();
 

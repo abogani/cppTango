@@ -604,10 +604,10 @@ class DeviceClass
     TangoMonitor only_one;
     std::string cvs_tag;
     std::string cvs_location;
-    Command *default_cmd;
+    Command *default_cmd{nullptr};
     std::string svn_tag;
     std::string svn_location;
-    bool device_factory_done;
+    bool device_factory_done{false};
 };
 
 } // namespace Tango

@@ -159,7 +159,7 @@ class PollThread : public omni_thread
     PollClock::time_point after;
     tango_optional<PollClock::duration> sleep;
 
-    bool polling_stop;
+    bool polling_stop{true};
 
   private:
     CORBA::Any in_any;
@@ -168,10 +168,10 @@ class PollThread : public omni_thread
     AttributeValue_3 dummy_att3;
     AttributeValue_4 dummy_att4;
     AttributeValue_5 dummy_att5;
-    long tune_ctr;
-    bool need_two_tuning;
+    long tune_ctr{1};
+    bool need_two_tuning{false};
     bool send_heartbeat;
-    unsigned int heartbeat_ctr;
+    unsigned int heartbeat_ctr{0};
     unsigned int previous_nb_late;
     bool polling_bef_9;
 
