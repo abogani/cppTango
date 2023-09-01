@@ -242,7 +242,7 @@ void Logging::init(const std::string &ds_name, // dserver name
 //+----------------------------------------------------------------------------
 // method : Logging::cleanup
 //-----------------------------------------------------------------------------
-void Logging::cleanup(void)
+void Logging::cleanup()
 {
     delete Tango::_core_logger;
     Tango::_core_logger = nullptr;
@@ -251,7 +251,7 @@ void Logging::cleanup(void)
 //+----------------------------------------------------------------------------
 // method : Logging::get_core_logger
 //-----------------------------------------------------------------------------
-log4tango::Logger *Logging::get_core_logger(void)
+log4tango::Logger *Logging::get_core_logger()
 {
     return _core_logger;
 }
@@ -935,7 +935,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
 //+----------------------------------------------------------------------------
 // method : Logging::stop_logging
 //-----------------------------------------------------------------------------
-void Logging::stop_logging(void)
+void Logging::stop_logging()
 {
     TANGO_LOG_DEBUG << "Entering Logging::stop_logging" << std::endl;
     // get all devices
@@ -950,7 +950,7 @@ void Logging::stop_logging(void)
 //+----------------------------------------------------------------------------
 // method : Logging::start_logging
 //-----------------------------------------------------------------------------
-void Logging::start_logging(void)
+void Logging::start_logging()
 {
     TANGO_LOG_DEBUG << "Entering Logging::start_logging" << std::endl;
     // get all devices
@@ -965,7 +965,7 @@ void Logging::start_logging(void)
 //+----------------------------------------------------------------------------
 // method : Logging::kill_zombie_appenders
 //-----------------------------------------------------------------------------
-void Logging::kill_zombie_appenders(void)
+void Logging::kill_zombie_appenders()
 {
     TANGO_LOG_DEBUG << "Entering kill_zombie_appenders" << std::endl;
     // get all devices

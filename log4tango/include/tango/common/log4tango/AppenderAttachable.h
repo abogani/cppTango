@@ -80,7 +80,7 @@ class AppenderAttachable
      * the returned list when it is no longer needed (the
      * Appender class is ref-counted).
      **/
-    AppenderList get_all_appenders(void);
+    AppenderList get_all_appenders();
 
     /**
      * Get an appender by name.

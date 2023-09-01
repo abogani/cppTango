@@ -7499,7 +7499,7 @@ void DeviceProxy::remove_logging_target(const std::string &target_type_name)
 // DeviceProxy::get_logging_target - Returns the logging target list
 //
 //-----------------------------------------------------------------------------
-std::vector<std::string> DeviceProxy::get_logging_target(void)
+std::vector<std::string> DeviceProxy::get_logging_target()
 {
     check_connect_adm_device();
 
@@ -7532,7 +7532,7 @@ std::vector<std::string> DeviceProxy::get_logging_target(void)
 //
 //-----------------------------------------------------------------------------
 
-int DeviceProxy::get_logging_level(void)
+int DeviceProxy::get_logging_level()
 {
     check_connect_adm_device();
 

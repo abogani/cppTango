@@ -500,7 +500,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void always_executed_hook(void) { }
+    virtual void always_executed_hook() { }
 
     /**
      * Hook method.
@@ -1897,14 +1897,14 @@ class DeviceImpl : public virtual POA_Tango::Device
         }
     }
 
-    inline log4tango::Logger *get_logger(void)
+    inline log4tango::Logger *get_logger()
     {
         return logger ? logger : get_logger_i();
     }
 
-    void init_logger(void);
-    void start_logging(void);
-    void stop_logging(void);
+    void init_logger();
+    void start_logging();
+    void stop_logging();
 
   private:
     PipeEventSubscriptionStates get_pipe_event_subscription_states();
@@ -2041,7 +2041,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     void end_pipe_config();
     void set_pipe_prop(std::vector<PipeProperty> &, Pipe *, PipePropType);
 
-    log4tango::Logger *get_logger_i(void);
+    log4tango::Logger *get_logger_i();
 
     std::string alarm_status;
     Tango::Device_var d_var;

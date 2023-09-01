@@ -50,7 +50,7 @@ class TangoAppender : public log4tango::Appender
     /**
      *
      **/
-    bool requires_layout(void) const override;
+    bool requires_layout() const override;
 
     /**
      *
@@ -60,17 +60,17 @@ class TangoAppender : public log4tango::Appender
     /**
      *
      **/
-    void close(void) override;
+    void close() override;
 
     /**
      *
      **/
-    bool reopen(void) override;
+    bool reopen() override;
 
     /**
      *
      **/
-    bool is_valid(void) const override;
+    bool is_valid() const override;
 
   protected:
     /**

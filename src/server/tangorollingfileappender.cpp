@@ -50,7 +50,7 @@ TangoRollingFileAppender::~TangoRollingFileAppender()
     // no-op
 }
 
-bool TangoRollingFileAppender::isValid(void) const
+bool TangoRollingFileAppender::isValid() const
 {
     return (_fd < 0) ? false : true;
 }

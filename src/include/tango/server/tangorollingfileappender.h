@@ -47,7 +47,7 @@ class TangoRollingFileAppender : public log4tango::RollingFileAppender
     /**
      *
      **/
-    virtual bool isValid(void) const;
+    virtual bool isValid() const;
 };
 
 } // namespace Tango

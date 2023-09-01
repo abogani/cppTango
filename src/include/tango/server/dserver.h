@@ -105,8 +105,8 @@ class DServer : public TANGO_BASE_CLASS
     Tango::DevVarStringArray *get_logging_target(const std::string &dev_name);
     void set_logging_level(const Tango::DevVarLongStringArray *argin);
     Tango::DevVarLongStringArray *get_logging_level(const Tango::DevVarStringArray *argin);
-    void stop_logging(void);
-    void start_logging(void);
+    void stop_logging();
+    void start_logging();
 
     std::string &get_process_name()
     {

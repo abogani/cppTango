@@ -71,19 +71,19 @@ class FileAppender : public LayoutAppender
     have been constructed with a file descriptor.
     @returns true if the reopen succeeded.
     **/
-    bool reopen(void) override;
+    bool reopen() override;
 
     /**
     Closes the logfile.
     **/
-    void close(void) override;
+    void close() override;
 
     /**
      * Check if the appender is valid.
      *
      * @returns true if the appender is valid, false otherwise.
      **/
-    bool is_valid(void) const override;
+    bool is_valid() const override;
 
     /**
     Sets the append vs truncate flag.
@@ -98,7 +98,7 @@ class FileAppender : public LayoutAppender
     /**
     Gets the value of the 'append' option.
     **/
-    virtual bool get_append(void) const;
+    virtual bool get_append() const;
 
     /**
     Sets the file open mode.

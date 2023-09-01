@@ -106,7 +106,7 @@ namespace Tango
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::get_logger_i
 //--------------------------------------------------------------------------
-log4tango::Logger *DeviceImpl::get_logger_i(void)
+log4tango::Logger *DeviceImpl::get_logger_i()
 {
     try
     {
@@ -153,7 +153,7 @@ log4tango::Logger *DeviceImpl::get_logger_i(void)
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::init_logger
 //--------------------------------------------------------------------------
-void DeviceImpl::init_logger(void)
+void DeviceImpl::init_logger()
 {
     try
     {
@@ -284,7 +284,7 @@ void DeviceImpl::init_logger(void)
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::start_logging
 //--------------------------------------------------------------------------
-void DeviceImpl::start_logging(void)
+void DeviceImpl::start_logging()
 {
     get_logger()->set_level(saved_log_level);
 }
@@ -292,7 +292,7 @@ void DeviceImpl::start_logging(void)
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::stop_logging
 //--------------------------------------------------------------------------
-void DeviceImpl::stop_logging(void)
+void DeviceImpl::stop_logging()
 {
     saved_log_level = get_logger()->get_level();
     get_logger()->set_level(log4tango::Level::OFF);

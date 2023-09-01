@@ -47,7 +47,7 @@ LayoutAppender::~LayoutAppender()
     }
 }
 
-bool LayoutAppender::requires_layout(void) const
+bool LayoutAppender::requires_layout() const
 {
     return true;
 }
@@ -65,7 +65,7 @@ void LayoutAppender::set_layout(Layout *layout)
     }
 }
 
-Layout &LayoutAppender::get_layout(void)
+Layout &LayoutAppender::get_layout()
 {
     return *_layout;
 }

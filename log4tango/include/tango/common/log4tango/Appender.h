@@ -86,20 +86,20 @@ class Appender
      * or TCP socket.
      * @returns false if an error occurred during reopening, true otherwise.
      **/
-    virtual bool reopen(void);
+    virtual bool reopen();
 
     /**
      * Release any resources allocated within the appender such as file
      * handles, network connections, etc.
      **/
-    virtual void close(void) = 0;
+    virtual void close() = 0;
 
     /**
      * Check if the appender uses a layout.
      *
      * @returns true if the appender implementation requires a layout.
      **/
-    virtual bool requires_layout(void) const = 0;
+    virtual bool requires_layout() const = 0;
 
     /**
      * Change the layout.
@@ -109,7 +109,7 @@ class Appender
     /**
      * Returns this appender name.
      **/
-    inline const std::string &get_name(void) const
+    inline const std::string &get_name() const
     {
         return _name;
     }
@@ -121,7 +121,7 @@ class Appender
      *
      * @returns true if the appender is valid, false otherwise.
      **/
-    virtual bool is_valid(void) const;
+    virtual bool is_valid() const;
 
   #ifdef APPENDERS_HAVE_LEVEL_THRESHOLD
     /**

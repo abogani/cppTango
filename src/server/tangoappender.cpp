@@ -65,7 +65,7 @@ TangoAppender::~TangoAppender()
     close();
 }
 
-bool TangoAppender::requires_layout(void) const
+bool TangoAppender::requires_layout() const
 {
     return false;
 }
@@ -75,7 +75,7 @@ void TangoAppender::set_layout(log4tango::Layout *)
     // no-op
 }
 
-bool TangoAppender::is_valid(void) const
+bool TangoAppender::is_valid() const
 {
     if(!_dev_proxy)
     {
@@ -155,7 +155,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
     return 0;
 }
 
-bool TangoAppender::reopen(void)
+bool TangoAppender::reopen()
 {
     bool result = true;
     try
@@ -184,7 +184,7 @@ bool TangoAppender::reopen(void)
     return result;
 }
 
-void TangoAppender::close(void)
+void TangoAppender::close()
 {
     if(_dev_proxy)
     {

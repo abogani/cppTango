@@ -39,7 +39,7 @@ class ReadersWritersLock
            // (-n times).
     int writerId;
 
-    ReadersWritersLock(void) :
+    ReadersWritersLock() :
         cond(&mut),
         n(0),
         writerId(0),
@@ -47,7 +47,7 @@ class ReadersWritersLock
     {
     }
 
-    void readerIn(void)
+    void readerIn()
     {
         mut.lock();
 
@@ -75,7 +75,7 @@ class ReadersWritersLock
         mut.unlock();
     }
 
-    void readerOut(void)
+    void readerOut()
     {
         mut.lock();
         if(n < 0)
@@ -93,7 +93,7 @@ class ReadersWritersLock
         mut.unlock();
     }
 
-    void writerIn(void)
+    void writerIn()
     {
         mut.lock();
 
@@ -133,7 +133,7 @@ class ReadersWritersLock
         mut.unlock();
     }
 
-    void writerOut(void)
+    void writerOut()
     {
         mut.lock();
         n++;
@@ -193,7 +193,7 @@ class ReaderLock
         rwl.readerIn();
     }
 
-    ~ReaderLock(void)
+    ~ReaderLock()
     {
         rwl.readerOut();
     }
@@ -215,7 +215,7 @@ class WriterLock
         rwl.writerIn();
     }
 
-    ~WriterLock(void)
+    ~WriterLock()
     {
         rwl.writerOut();
     }

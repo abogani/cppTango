@@ -161,7 +161,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level DEBUG.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_debug_enabled(void) const
+    inline bool is_debug_enabled() const
     {
         return is_level_enabled(Level::DEBUG);
     }
@@ -170,7 +170,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level DEBUG.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream debug_stream(void)
+    inline LoggerStream debug_stream()
     {
         return LoggerStream(*this, Level::DEBUG, true);
     }
@@ -202,7 +202,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level INFO.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_info_enabled(void) const
+    inline bool is_info_enabled() const
     {
         return is_level_enabled(Level::INFO);
     }
@@ -211,7 +211,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level INFO.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream info_stream(void)
+    inline LoggerStream info_stream()
     {
         return LoggerStream(*this, Level::INFO, true);
     }
@@ -243,7 +243,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level WARN.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_warn_enabled(void) const
+    inline bool is_warn_enabled() const
     {
         return is_level_enabled(Level::WARN);
     }
@@ -252,7 +252,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level WARN.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream warn_stream(void)
+    inline LoggerStream warn_stream()
     {
         return LoggerStream(*this, Level::WARN, true);
     }
@@ -284,7 +284,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level ERROR.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_error_enabled(void) const
+    inline bool is_error_enabled() const
     {
         return is_level_enabled(Level::ERROR);
     }
@@ -293,7 +293,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level ERROR.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream error_stream(void)
+    inline LoggerStream error_stream()
     {
         return LoggerStream(*this, Level::ERROR, true);
     }
@@ -325,7 +325,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level FATAL.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_fatal_enabled(void) const
+    inline bool is_fatal_enabled() const
     {
         return is_level_enabled(Level::FATAL);
     }
@@ -334,7 +334,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level FATAL.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream fatal_stream(void)
+    inline LoggerStream fatal_stream()
     {
         return LoggerStream(*this, Level::FATAL, true);
     }

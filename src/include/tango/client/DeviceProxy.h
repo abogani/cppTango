@@ -1931,7 +1931,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return List of loggin target
      */
-    virtual std::vector<std::string> get_logging_target(void);
+    virtual std::vector<std::string> get_logging_target();
     /**
      * Get current device's logging level
      *
@@ -1939,7 +1939,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return The device logging level
      */
-    virtual int get_logging_level(void);
+    virtual int get_logging_level();
     /**
      * Set the  device logging level
      *

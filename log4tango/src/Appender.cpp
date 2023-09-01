@@ -56,12 +56,12 @@ Appender::~Appender()
 #endif
 }
 
-bool Appender::is_valid(void) const
+bool Appender::is_valid() const
 {
     return true;
 }
 
-bool Appender::reopen(void)
+bool Appender::reopen()
 {
     return true;
 }

@@ -71,7 +71,7 @@ LoggerStream::LoggerStream(LoggerStream &&other) :
     other._buffer = nullptr;
 }
 
-void LoggerStream::flush(void)
+void LoggerStream::flush()
 {
     if(_buffer && _buffer->tellp() > 0)
     {

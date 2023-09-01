@@ -53,7 +53,7 @@ void AppenderAttachable::add_appender(Appender *appender)
     }
 }
 
-AppenderList AppenderAttachable::get_all_appenders(void)
+AppenderList AppenderAttachable::get_all_appenders()
 {
     Guard guard(_appendersMutex);
     AppenderList al(0);
@@ -87,7 +87,7 @@ bool AppenderAttachable::is_attached(Appender *appender)
     return false;
 }
 
-void AppenderAttachable::remove_all_appenders(void)
+void AppenderAttachable::remove_all_appenders()
 {
     Guard guard(_appendersMutex);
     auto it = _appenders.begin();

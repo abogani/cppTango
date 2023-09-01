@@ -72,7 +72,7 @@ FileAppender::~FileAppender()
     close();
 }
 
-void FileAppender::close(void)
+void FileAppender::close()
 {
     if(_fd != -1)
     {
@@ -81,7 +81,7 @@ void FileAppender::close(void)
     }
 }
 
-bool FileAppender::is_valid(void) const
+bool FileAppender::is_valid() const
 {
     return (_fd < 0) ? false : true;
 }
@@ -98,7 +98,7 @@ void FileAppender::set_append(bool append)
     }
 }
 
-bool FileAppender::get_append(void) const
+bool FileAppender::get_append() const
 {
     return (_flags & O_TRUNC) == 0;
 }
@@ -108,7 +108,7 @@ void FileAppender::set_mode(mode_t mode)
     _mode = mode;
 }
 
-mode_t FileAppender::get_mode(void) const
+mode_t FileAppender::get_mode() const
 {
     return _mode;
 }
@@ -124,7 +124,7 @@ int FileAppender::_append(const LoggingEvent &event)
     return 0;
 }
 
-bool FileAppender::reopen(void)
+bool FileAppender::reopen()
 {
     if(_file_name != "")
     {

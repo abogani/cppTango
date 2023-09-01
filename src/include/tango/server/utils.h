@@ -1288,8 +1288,8 @@ class Util
     std::vector<PollingThreadInfo *> poll_ths;  // Polling threads
     bool conf_needs_db_upd;                     // Polling conf needs to be udated in db
 
-    bool (*ev_loop_func)(void); // Ptr to user event loop
-    bool shutdown_server;       // Flag to exit the manual event loop
+    bool (*ev_loop_func)(); // Ptr to user event loop
+    bool shutdown_server;   // Flag to exit the manual event loop
 
     SubDevDiag sub_dev_diag; // Object to handle sub device diagnostics
     bool _dummy_thread;      // The main DS thread is not the process main thread
