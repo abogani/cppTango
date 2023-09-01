@@ -43,7 +43,7 @@ std::string StringUtil::vform(const char *format, va_list args)
     size_t size = 1024;
     char *buffer = new char[size];
 
-    while(1)
+    while(true)
     {
         int n = VSNPRINTF(buffer, size, format, args);
 

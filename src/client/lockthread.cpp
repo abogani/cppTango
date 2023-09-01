@@ -101,7 +101,7 @@ void LockThread::run(TANGO_UNUSED(void *ptr))
     // The infinite loop
     //
 
-    while(1)
+    while(true)
     {
         try
         {

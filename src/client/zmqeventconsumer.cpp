@@ -196,7 +196,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
     // Enter the infinite loop
     //
 
-    while(1)
+    while(true)
     {
         zmq::message_t received_event_name, received_endian;
         zmq::message_t received_call, received_event_data;

@@ -316,7 +316,7 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     exp.length(1);
     exp[0].event_types = evs;
     exp[0].constraint_expr = Tango::string_dup(constraint_expr);
-    CORBA::Boolean res = 0; // OK
+    CORBA::Boolean res = false; // OK
 
     try
     {
@@ -330,13 +330,13 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     {
         // cerr << "Exception thrown : Invalid constraint given "
         //      << (const char *)constraint_expr << std::endl;
-        res = 1;
+        res = true;
     }
     catch(...)
     {
         // cerr << "Exception thrown while adding constraint "
         //      << (const char *)constraint_expr << std::endl;
-        res = 1;
+        res = true;
     }
 
     //
@@ -660,7 +660,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     exp.length(1);
     exp[0].event_types = evs;
     exp[0].constraint_expr = Tango::string_dup(constraint_expr);
-    CORBA::Boolean res = 0; // OK
+    CORBA::Boolean res = false; // OK
     try
     {
         CosNotifyFilter::ConstraintInfoSeq_var dummy = filter->add_constraints(exp);
@@ -668,7 +668,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     }
     catch(...)
     {
-        res = 1; // error
+        res = true; // error
     }
 
     //

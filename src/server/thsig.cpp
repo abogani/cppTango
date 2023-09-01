@@ -77,7 +77,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
     // The infinite loop
     //
 
-    while(1)
+    while(true)
     {
 #ifndef _TG_WINDOWS_
         int ret = sigwait(&sigs_to_catch, &signo);

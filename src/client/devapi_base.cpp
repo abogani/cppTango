@@ -636,7 +636,7 @@ void Connection::toIOR(const char *iorstr, IOP::IOR &ior)
     s = (s - 4) / 2; // how many octets are there in the string
     p += 4;
 
-    cdrMemoryStream buf((CORBA::ULong) s, 0);
+    cdrMemoryStream buf((CORBA::ULong) s, false);
 
     for(int i = 0; i < (int) s; i++)
     {

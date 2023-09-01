@@ -381,7 +381,7 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
     exp.length(1);
     exp[0].event_types = evs;
     exp[0].constraint_expr = Tango::string_dup(constraint_expr.c_str());
-    CORBA::Boolean res = 0; // OK
+    CORBA::Boolean res = false; // OK
     try
     {
         CosNotifyFilter::ConstraintInfoSeq_var dummy = filter->add_constraints(exp);
@@ -394,13 +394,13 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
     {
         // cerr << "Exception thrown : Invalid constraint given "
         //      << (const char *)constraint_expr << std::endl;
-        res = 1;
+        res = true;
     }
     catch(...)
     {
         // cerr << "Exception thrown while adding constraint "
         //      << (const char *)constraint_expr << std::endl;
-        res = 1;
+        res = true;
     }
 
     //
