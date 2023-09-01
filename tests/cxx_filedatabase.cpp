@@ -144,6 +144,36 @@ class FileDatabaseTestSuite : public CxxTest::TestSuite
             _test_string_property_roundtrip({value});
         }
     }
+
+    //
+    // A file with a device and a string property whose values has newlines
+    //
+    void test_string_property_value_with_newlines()
+    {
+        for(const auto newline_at_beginning : {true, false})
+        {
+            for(const auto newline_at_end : {true, false})
+            {
+                for(const auto in_quotes : {true, false})
+                {
+                    std::string value = "hi";
+                    if(newline_at_beginning)
+                    {
+                        value = '\n' + value;
+                    }
+                    if(newline_at_end)
+                    {
+                        value = value + '\n';
+                    }
+                    if(in_quotes)
+                    {
+                        value = '"' + value + '"';
+                    }
+                    _test_string_property_roundtrip({value});
+                }
+            }
+        }
+    }
 };
 
 #endif // FileDatabaseTestSuite_h
