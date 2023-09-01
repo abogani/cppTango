@@ -35,7 +35,7 @@
 #include <tango/client/event_templ.h>
 #include <tango/server/tango_clock.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _TG_WINDOWS_
   #include <process.h>

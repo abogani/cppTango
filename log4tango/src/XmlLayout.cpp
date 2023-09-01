@@ -30,7 +30,7 @@
 #include <tango/common/log4tango/LoggingEvent.h>
 #include <tango/common/log4tango/XmlLayout.h>
 
-#include <stdio.h>
+#include <cstdio>
 #include <sstream>
 #include <string>
 

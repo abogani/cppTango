@@ -43,8 +43,8 @@
   #include <pwd.h>
 #endif /* _TG_WINDOWS_ */
 
-#include <time.h>
-#include <signal.h>
+#include <ctime>
+#include <csignal>
 #include <algorithm>
 
 #include <chrono>

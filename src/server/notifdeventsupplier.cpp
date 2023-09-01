@@ -42,7 +42,7 @@
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _TG_WINDOWS_
   #include <process.h>

@@ -42,11 +42,11 @@
 
 #ifndef _TG_WINDOWS_
   #include <unistd.h>
-  #include <signal.h>
+  #include <csignal>
   #include <dlfcn.h>
 #endif /* _TG_WINDOWS_ */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace Tango
 {

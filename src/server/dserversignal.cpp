@@ -36,7 +36,7 @@
 #include <tango/server/dserversignal.h>
 
 #ifndef _TG_WINDOWS_
-  #include <errno.h>
+  #include <cerrno>
 #endif
 
 namespace Tango

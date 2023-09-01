@@ -43,7 +43,7 @@
   #pragma warning(pop)
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <tango/server/dserversignal.h>
 #include <tango/server/dserverclass.h>
 #include <tango/server/eventsupplier.h>

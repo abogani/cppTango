@@ -36,7 +36,7 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _TG_WINDOWS_
   #include <process.h>

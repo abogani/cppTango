@@ -35,7 +35,7 @@
 
 #include <functional>
 #include <algorithm>
-#include <time.h>
+#include <ctime>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

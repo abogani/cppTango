@@ -34,7 +34,7 @@
 #include <tango/internal/net.h>
 #include <tango/client/eventconsumer.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <omniORB4/internal/giopStream.h>
 

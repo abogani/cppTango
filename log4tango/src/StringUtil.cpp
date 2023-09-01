@@ -27,7 +27,7 @@
 
 #include "StringUtil.h"
 #include <iterator>
-#include <stdio.h>
+#include <cstdio>
 
 #if defined(_MSC_VER)
   #define VSNPRINTF _vsnprintf

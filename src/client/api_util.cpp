@@ -39,7 +39,7 @@
   #include <net/if.h>
   #include <sys/ioctl.h>
   #include <netdb.h>
-  #include <signal.h>
+  #include <csignal>
   #include <ifaddrs.h>
   #include <netinet/in.h> // FreeBSD
 #else

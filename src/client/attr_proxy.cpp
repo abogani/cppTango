@@ -30,8 +30,8 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 
-#include <time.h>
-#include <signal.h>
+#include <ctime>
+#include <csignal>
 
 #include <algorithm>
 #include <memory>
