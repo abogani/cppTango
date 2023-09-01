@@ -87,7 +87,7 @@ class WAttribute : public Attribute
     /**
      * The WAttribute desctructor.
      */
-    ~WAttribute();
+    ~WAttribute() override;
 
     //@}
 
@@ -617,7 +617,7 @@ class WAttribute : public Attribute
 
     void set_write_value(Tango::DevEncoded *, long x = 1, long y = 0); // Dummy method for compiler
 
-    virtual void set_rvalue();
+    void set_rvalue() override;
 
     void rollback();
 
@@ -786,7 +786,7 @@ class WAttribute : public Attribute
 
   protected:
     /// @privatesection
-    virtual bool check_rds_alarm();
+    bool check_rds_alarm() override;
 
   private:
     inline void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)

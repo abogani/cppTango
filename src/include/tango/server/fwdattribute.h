@@ -45,9 +45,9 @@ class FwdAttribute : public WAttribute
 {
   public:
     FwdAttribute(std::vector<AttrProperty> &, Attr &, const std::string &, long);
-    ~FwdAttribute();
+    ~FwdAttribute() override;
 
-    virtual bool is_fwd_att()
+    bool is_fwd_att() override
     {
         return true;
     }

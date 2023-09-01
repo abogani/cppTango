@@ -87,7 +87,7 @@ class CallBackThread : public omni_thread
     {
     }
 
-    void *run_undetached(void *);
+    void *run_undetached(void *) override;
 
     void start()
     {

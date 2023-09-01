@@ -234,11 +234,12 @@ class NotifdEventSupplier : public EventSupplier, public POA_CosNotifyComm::Stru
   public:
     static NotifdEventSupplier *create(CORBA::ORB_var, std::string, Util *);
     void connect();
-    void disconnect_structured_push_supplier();
+    void disconnect_structured_push_supplier() override;
     void disconnect_from_notifd();
-    void subscription_change(const CosNotification::EventTypeSeq &added, const CosNotification::EventTypeSeq &deled);
+    void subscription_change(const CosNotification::EventTypeSeq &added,
+                             const CosNotification::EventTypeSeq &deled) override;
 
-    void push_heartbeat_event();
+    void push_heartbeat_event() override;
 
     std::string &get_event_channel_ior()
     {
@@ -249,26 +250,26 @@ class NotifdEventSupplier : public EventSupplier, public POA_CosNotifyComm::Stru
 
     //------------------ Push event -------------------------------
 
-    virtual void push_event(DeviceImpl *,
-                            std::string,
-                            const std::vector<std::string> &,
-                            const std::vector<double> &,
-                            const std::vector<std::string> &,
-                            const std::vector<long> &,
-                            const struct SuppliedEventData &,
-                            const std::string &,
-                            DevFailed *,
-                            bool);
+    void push_event(DeviceImpl *,
+                    std::string,
+                    const std::vector<std::string> &,
+                    const std::vector<double> &,
+                    const std::vector<std::string> &,
+                    const std::vector<long> &,
+                    const struct SuppliedEventData &,
+                    const std::string &,
+                    DevFailed *,
+                    bool) override;
 
-    virtual void push_event_loop(DeviceImpl *,
-                                 EventType,
-                                 const std::vector<std::string> &,
-                                 const std::vector<double> &,
-                                 const std::vector<std::string> &,
-                                 const std::vector<long> &,
-                                 const struct SuppliedEventData &,
-                                 Attribute &,
-                                 DevFailed *)
+    void push_event_loop(DeviceImpl *,
+                         EventType,
+                         const std::vector<std::string> &,
+                         const std::vector<double> &,
+                         const std::vector<std::string> &,
+                         const std::vector<long> &,
+                         const struct SuppliedEventData &,
+                         Attribute &,
+                         DevFailed *) override
     {
     }
 
@@ -312,30 +313,30 @@ class ZmqEventSupplier : public EventSupplier
 {
   public:
     static ZmqEventSupplier *create(Util *);
-    virtual ~ZmqEventSupplier();
+    ~ZmqEventSupplier() override;
 
     //------------------ Push event -------------------------------
 
-    void push_heartbeat_event();
-    virtual void push_event(DeviceImpl *,
-                            std::string,
-                            const std::vector<std::string> &,
-                            const std::vector<double> &,
-                            const std::vector<std::string> &,
-                            const std::vector<long> &,
-                            const struct SuppliedEventData &,
-                            const std::string &,
-                            DevFailed *,
-                            bool);
-    virtual void push_event_loop(DeviceImpl *,
-                                 EventType,
-                                 const std::vector<std::string> &,
-                                 const std::vector<double> &,
-                                 const std::vector<std::string> &,
-                                 const std::vector<long> &,
-                                 const struct SuppliedEventData &,
-                                 Attribute &,
-                                 DevFailed *);
+    void push_heartbeat_event() override;
+    void push_event(DeviceImpl *,
+                    std::string,
+                    const std::vector<std::string> &,
+                    const std::vector<double> &,
+                    const std::vector<std::string> &,
+                    const std::vector<long> &,
+                    const struct SuppliedEventData &,
+                    const std::string &,
+                    DevFailed *,
+                    bool) override;
+    void push_event_loop(DeviceImpl *,
+                         EventType,
+                         const std::vector<std::string> &,
+                         const std::vector<double> &,
+                         const std::vector<std::string> &,
+                         const std::vector<long> &,
+                         const struct SuppliedEventData &,
+                         Attribute &,
+                         DevFailed *) override;
 
     std::string &get_heartbeat_endpoint()
     {

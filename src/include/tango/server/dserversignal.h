@@ -104,14 +104,14 @@ class DServerSignal : public TangoMonitor
         {
         }
 
-        virtual ~ThSig() { }
+        ~ThSig() override { }
 
         TangoSys_Pid my_pid;
         bool th_data_created;
 #ifndef _TG_WINDOWS_
         pthread_t my_thread;
 #endif
-        void *run_undetached(void *);
+        void *run_undetached(void *) override;
 
         void start()
         {

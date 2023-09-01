@@ -53,7 +53,7 @@ struct StringLiteralComponent : public PatternLayout::PatternComponent
         // no-op
     }
 
-    virtual void append(std::ostringstream &out, const LoggingEvent & /*event*/)
+    void append(std::ostringstream &out, const LoggingEvent & /*event*/) override
     {
         out << _literal;
     }
@@ -77,7 +77,7 @@ struct LoggerNameComponent : public PatternLayout::PatternComponent
         }
     }
 
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         if(_precision == -1)
         {
@@ -106,7 +106,7 @@ struct LoggerNameComponent : public PatternLayout::PatternComponent
 
 struct MessageComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << event.message;
     }
@@ -114,7 +114,7 @@ struct MessageComponent : public PatternLayout::PatternComponent
 
 struct LevelComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << Level::get_name(event.level);
     }
@@ -122,7 +122,7 @@ struct LevelComponent : public PatternLayout::PatternComponent
 
 struct ThreadNameComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << event.thread_name;
     }
@@ -130,7 +130,7 @@ struct ThreadNameComponent : public PatternLayout::PatternComponent
 
 struct ThreadIdComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << event.thread_id;
     }
@@ -138,7 +138,7 @@ struct ThreadIdComponent : public PatternLayout::PatternComponent
 
 struct ProcessorTimeComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent & /*event*/)
+    void append(std::ostringstream &out, const LoggingEvent & /*event*/) override
     {
         out << ::clock();
     }
@@ -146,7 +146,7 @@ struct ProcessorTimeComponent : public PatternLayout::PatternComponent
 
 struct FilePathComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << event.file_path;
     }
@@ -154,7 +154,7 @@ struct FilePathComponent : public PatternLayout::PatternComponent
 
 struct LineNumberComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << event.line_number;
     }
@@ -194,7 +194,7 @@ struct TimeStampComponent : public PatternLayout::PatternComponent
         }
     }
 
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         std::string timeFormat;
         if(_printFraction)
@@ -231,7 +231,7 @@ const char *const TimeStampComponent::FORMAT_DATE = "%d %b %Y %H:%M:%S,%l";
 
 struct SecondsSinceEpochComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         out << std::chrono::duration_cast<std::chrono::seconds>(event.timestamp.time_since_epoch()).count();
     }
@@ -239,7 +239,7 @@ struct SecondsSinceEpochComponent : public PatternLayout::PatternComponent
 
 struct MillisSinceEpochComponent : public PatternLayout::PatternComponent
 {
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         auto delta = event.timestamp - LogStartTime;
         out << std::chrono::duration_cast<std::chrono::milliseconds>(delta).count();
@@ -256,12 +256,12 @@ struct FormatModifierComponent : public PatternLayout::PatternComponent
     {
     }
 
-    virtual ~FormatModifierComponent()
+    ~FormatModifierComponent() override
     {
         delete _component;
     }
 
-    virtual void append(std::ostringstream &out, const LoggingEvent &event)
+    void append(std::ostringstream &out, const LoggingEvent &event) override
     {
         std::ostringstream s;
         _component->append(s, event);

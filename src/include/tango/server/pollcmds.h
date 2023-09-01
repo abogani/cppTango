@@ -62,9 +62,9 @@ class PolledDeviceCmd : public Command
   public:
     PolledDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~PolledDeviceCmd() { }
+    ~PolledDeviceCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -83,9 +83,9 @@ class DevPollStatusCmd : public Command
     DevPollStatusCmd(
         const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-    ~DevPollStatusCmd() { }
+    ~DevPollStatusCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -103,9 +103,9 @@ class AddObjPollingCmd : public Command
   public:
     AddObjPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-    ~AddObjPollingCmd() { }
+    ~AddObjPollingCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -125,9 +125,9 @@ class UpdObjPollingPeriodCmd : public Command
                            Tango::CmdArgType out,
                            const std::string &in_desc);
 
-    ~UpdObjPollingPeriodCmd() { }
+    ~UpdObjPollingPeriodCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -145,9 +145,9 @@ class RemObjPollingCmd : public Command
   public:
     RemObjPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-    ~RemObjPollingCmd() { }
+    ~RemObjPollingCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -164,9 +164,9 @@ class StopPollingCmd : public Command
   public:
     StopPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~StopPollingCmd() { }
+    ~StopPollingCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -183,9 +183,9 @@ class StartPollingCmd : public Command
   public:
     StartPollingCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~StartPollingCmd() { }
+    ~StartPollingCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 } // namespace Tango

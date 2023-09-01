@@ -138,7 +138,7 @@ class FwdAttr : public ImageAttr
     /// @privatesection
     FwdAttr(const FwdAttr &);
 
-    virtual bool is_fwd()
+    bool is_fwd() override
     {
         return true;
     }
@@ -173,10 +173,10 @@ class FwdAttr : public ImageAttr
         err_kind = _e;
     }
 
-    virtual void read(DeviceImpl *, Attribute &);
-    virtual void write(DeviceImpl *, WAttribute &);
+    void read(DeviceImpl *, Attribute &) override;
+    void write(DeviceImpl *, WAttribute &) override;
 
-    virtual bool is_allowed(DeviceImpl *, AttReqType)
+    bool is_allowed(DeviceImpl *, AttReqType) override
     {
         return true;
     }

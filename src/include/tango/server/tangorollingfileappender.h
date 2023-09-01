@@ -42,7 +42,7 @@ class TangoRollingFileAppender : public log4tango::RollingFileAppender
     /**
      *
      **/
-    virtual ~TangoRollingFileAppender();
+    ~TangoRollingFileAppender() override;
 
     /**
      *

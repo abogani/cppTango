@@ -106,7 +106,7 @@ class PollThread : public omni_thread
   public:
     PollThread(PollThCmd &, TangoMonitor &, bool);
 
-    void *run_undetached(void *);
+    void *run_undetached(void *) override;
 
     void start()
     {

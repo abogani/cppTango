@@ -58,9 +58,9 @@ class DevStatusCmd : public Command
   public:
     DevStatusCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~DevStatusCmd() { }
+    ~DevStatusCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -78,9 +78,9 @@ class DevStateCmd : public Command
   public:
     DevStateCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~DevStateCmd() { }
+    ~DevStateCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -99,9 +99,9 @@ class DevInitCmd : public Command
   public:
     DevInitCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~DevInitCmd() { }
+    ~DevInitCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 } // namespace Tango

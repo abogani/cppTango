@@ -110,15 +110,15 @@ class DeviceProxy : public Tango::Connection
 
   protected:
     /// @privatesection
-    virtual std::string get_corba_name(bool);
-    virtual std::string build_corba_name();
+    std::string get_corba_name(bool) override;
+    std::string build_corba_name() override;
 
-    virtual int get_lock_ctr()
+    int get_lock_ctr() override
     {
         return lock_ctr;
     }
 
-    virtual void set_lock_ctr(int lo)
+    void set_lock_ctr(int lo) override
     {
         lock_ctr = lo;
     }
@@ -130,7 +130,7 @@ class DeviceProxy : public Tango::Connection
     };
 
     bool is_polled(polled_object, const std::string &, std::string &);
-    virtual void reconnect(bool);
+    void reconnect(bool) override;
     void get_remaining_param(AttributeInfoListEx *);
     template <typename T>
     void from_hist_2_AttHistory(const T &, std::vector<DeviceAttributeHistory> *);
@@ -214,7 +214,7 @@ class DeviceProxy : public Tango::Connection
 
     DeviceProxy(const DeviceProxy &);
     DeviceProxy &operator=(const DeviceProxy &);
-    virtual ~DeviceProxy();
+    ~DeviceProxy() override;
 
     DeviceProxy() :
         Connection(CORBA::ORB::_nil()),
@@ -334,7 +334,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return The device name
      */
-    virtual inline std::string dev_name()
+    inline std::string dev_name() override
     {
         return device_name;
     }

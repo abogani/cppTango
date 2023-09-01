@@ -46,11 +46,11 @@ class LayoutAppender : public Appender
 
     LayoutAppender(const std::string &name);
 
-    virtual ~LayoutAppender();
+    ~LayoutAppender() override;
 
-    virtual bool requires_layout() const;
+    bool requires_layout() const override;
 
-    virtual void set_layout(Layout *layout = nullptr);
+    void set_layout(Layout *layout = nullptr) override;
 
   protected:
     Layout &get_layout();

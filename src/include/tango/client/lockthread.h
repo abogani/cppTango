@@ -96,7 +96,7 @@ class LockThread : public omni_thread
   public:
     LockThread(LockThCmd &, TangoMonitor &, DeviceProxy *, const std::string &, LockClock::duration);
 
-    void run(void *);
+    void run(void *) override;
 
     void execute_cmd();
     void one_more_lock();

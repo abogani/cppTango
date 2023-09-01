@@ -63,9 +63,9 @@ class DevRestartCmd : public Command
   public:
     DevRestartCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevRestartCmd() { }
+    ~DevRestartCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -83,9 +83,9 @@ class DevRestartServerCmd : public Command
   public:
     DevRestartServerCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~DevRestartServerCmd() { }
+    ~DevRestartServerCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *, const CORBA::Any &);
+    CORBA::Any *execute(DeviceImpl *, const CORBA::Any &) override;
 };
 
 //=============================================================================
@@ -104,9 +104,9 @@ class DevQueryClassCmd : public Command
   public:
     DevQueryClassCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevQueryClassCmd() { }
+    ~DevQueryClassCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -125,9 +125,9 @@ class DevQueryDeviceCmd : public Command
   public:
     DevQueryDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevQueryDeviceCmd() { }
+    ~DevQueryDeviceCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -146,9 +146,9 @@ class DevQuerySubDeviceCmd : public Command
   public:
     DevQuerySubDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevQuerySubDeviceCmd() { }
+    ~DevQuerySubDeviceCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -166,9 +166,9 @@ class DevKillCmd : public Command
   public:
     DevKillCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~DevKillCmd() { }
+    ~DevKillCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *, const CORBA::Any &);
+    CORBA::Any *execute(DeviceImpl *, const CORBA::Any &) override;
 };
 
 //=============================================================================
@@ -186,9 +186,9 @@ class DevSetTraceLevelCmd : public Command
   public:
     DevSetTraceLevelCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevSetTraceLevelCmd() { }
+    ~DevSetTraceLevelCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -205,9 +205,9 @@ class DevGetTraceLevelCmd : public Command
   public:
     DevGetTraceLevelCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevGetTraceLevelCmd() { }
+    ~DevGetTraceLevelCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -224,9 +224,9 @@ class DevSetTraceOutputCmd : public Command
   public:
     DevSetTraceOutputCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevSetTraceOutputCmd() { }
+    ~DevSetTraceOutputCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -243,9 +243,9 @@ class DevGetTraceOutputCmd : public Command
   public:
     DevGetTraceOutputCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~DevGetTraceOutputCmd() { }
+    ~DevGetTraceOutputCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -266,9 +266,9 @@ class QueryWizardClassPropertyCmd : public Command
     QueryWizardClassPropertyCmd(
         const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-    ~QueryWizardClassPropertyCmd() { }
+    ~QueryWizardClassPropertyCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -289,9 +289,9 @@ class QueryWizardDevPropertyCmd : public Command
     QueryWizardDevPropertyCmd(
         const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-    ~QueryWizardDevPropertyCmd() { }
+    ~QueryWizardDevPropertyCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -310,9 +310,9 @@ class QueryEventChannelIORCmd : public Command
   public:
     QueryEventChannelIORCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *desc);
 
-    ~QueryEventChannelIORCmd() { }
+    ~QueryEventChannelIORCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -331,9 +331,9 @@ class LockDeviceCmd : public Command
   public:
     LockDeviceCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc);
 
-    ~LockDeviceCmd() { }
+    ~LockDeviceCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -351,9 +351,9 @@ class ReLockDevicesCmd : public Command
   public:
     ReLockDevicesCmd(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc);
 
-    ~ReLockDevicesCmd() { }
+    ~ReLockDevicesCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -372,9 +372,9 @@ class UnLockDeviceCmd : public Command
     UnLockDeviceCmd(
         const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-    ~UnLockDeviceCmd() { }
+    ~UnLockDeviceCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -393,9 +393,9 @@ class DevLockStatusCmd : public Command
     DevLockStatusCmd(
         const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc);
 
-    ~DevLockStatusCmd() { }
+    ~DevLockStatusCmd() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -414,10 +414,10 @@ class EventSubscriptionChangeCmd : public Tango::Command
     EventSubscriptionChangeCmd(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *, const char *);
     EventSubscriptionChangeCmd(const char *, Tango::CmdArgType, Tango::CmdArgType);
 
-    ~EventSubscriptionChangeCmd() { }
+    ~EventSubscriptionChangeCmd() override { }
 
-    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
-    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
+    bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &) override;
+    CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &) override;
 };
 
 //=============================================================================
@@ -437,10 +437,10 @@ class ZmqEventSubscriptionChangeCmd : public Tango::Command
     static const std::string out_desc;
     ZmqEventSubscriptionChangeCmd();
 
-    ~ZmqEventSubscriptionChangeCmd() { }
+    ~ZmqEventSubscriptionChangeCmd() override { }
 
-    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
-    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
+    bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &) override;
+    CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &) override;
 };
 
 //=============================================================================
@@ -459,10 +459,10 @@ class EventConfirmSubscriptionCmd : public Tango::Command
     EventConfirmSubscriptionCmd(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *);
     EventConfirmSubscriptionCmd(const char *, Tango::CmdArgType, Tango::CmdArgType);
 
-    ~EventConfirmSubscriptionCmd() { }
+    ~EventConfirmSubscriptionCmd() override { }
 
-    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
-    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
+    bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &) override;
+    CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &) override;
 };
 
 //=============================================================================
@@ -483,10 +483,10 @@ class DServerClass : public DeviceClass
     static DServerClass *instance();
     static DServerClass *init();
 
-    ~DServerClass() { }
+    ~DServerClass() override { }
 
-    void command_factory();
-    void device_factory(const Tango::DevVarStringArray *devlist);
+    void command_factory() override;
+    void device_factory(const Tango::DevVarStringArray *devlist) override;
 
   protected:
     DServerClass(const std::string &);

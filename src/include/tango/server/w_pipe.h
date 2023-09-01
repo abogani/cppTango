@@ -80,7 +80,7 @@ class WPipe : public Pipe
     /**
      * The object desctructor.
      */
-    virtual ~WPipe() { }
+    ~WPipe() override { }
 
     //@}
 

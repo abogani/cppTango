@@ -156,7 +156,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
     /**
      * The device desctructor.
      */
-    virtual ~Device_2Impl() { }
+    ~Device_2Impl() override { }
 
     //@}
 
@@ -181,7 +181,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual CORBA::Any *command_inout_2(const char *in_cmd, const CORBA::Any &in_data, Tango::DevSource source);
+    CORBA::Any *command_inout_2(const char *in_cmd, const CORBA::Any &in_data, Tango::DevSource source) override;
 
     /**
      * Get device command list.
@@ -194,7 +194,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * device command. Since Tango release 2, the command display level field has
      * been added to this structure
      */
-    virtual Tango::DevCmdInfoList_2 *command_list_query_2();
+    Tango::DevCmdInfoList_2 *command_list_query_2() override;
 
     /**
      * Get command info.
@@ -212,7 +212,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevCmdInfo_2 *command_query_2(const char *command);
+    Tango::DevCmdInfo_2 *command_query_2(const char *command) override;
 
     /**
      * Read attribute(s) value.
@@ -234,8 +234,8 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeValueList *read_attributes_2(const Tango::DevVarStringArray &names,
-                                                         Tango::DevSource source);
+    Tango::AttributeValueList *read_attributes_2(const Tango::DevVarStringArray &names,
+                                                 Tango::DevSource source) override;
 
     /**
      * Get attribute(s) configuration.
@@ -256,7 +256,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeConfigList_2 *get_attribute_config_2(const Tango::DevVarStringArray &names);
+    Tango::AttributeConfigList_2 *get_attribute_config_2(const Tango::DevVarStringArray &names) override;
 
     /**
      * Read attribute value history.
@@ -278,7 +278,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevAttrHistoryList *read_attribute_history_2(const char *name, CORBA::Long n);
+    Tango::DevAttrHistoryList *read_attribute_history_2(const char *name, CORBA::Long n) override;
 
     /**
      * Read command value history.
@@ -302,7 +302,7 @@ class Device_2Impl : public virtual POA_Tango::Device_2, public DeviceImpl
      * to read <b>DevFailed</b> exception specification
      */
 
-    virtual Tango::DevCmdHistoryList *command_inout_history_2(const char *command, CORBA::Long n);
+    Tango::DevCmdHistoryList *command_inout_history_2(const char *command, CORBA::Long n) override;
     //@}
 
   private:

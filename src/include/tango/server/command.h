@@ -1328,7 +1328,7 @@ class TemplCommand : public Command
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any) override;
 
     /**
      * Invoke the command allowed method given at object creation time.
@@ -1347,7 +1347,7 @@ class TemplCommand : public Command
      * does not supply a method to be excuted. If a method has been supplied, the
      * return value is the value returned by the user supplied mehod.
      */
-    bool is_allowed(DeviceImpl *dev, const CORBA::Any &in_any);
+    bool is_allowed(DeviceImpl *dev, const CORBA::Any &in_any) override;
     //@}
 
   private:
@@ -1477,7 +1477,7 @@ class TemplCommandInOut : public TemplCommand
 
     //@}
 
-    ~TemplCommandInOut() { }
+    ~TemplCommandInOut() override { }
 
     /**@name Miscellaneous methods */
     //@{
@@ -1488,7 +1488,7 @@ class TemplCommandInOut : public TemplCommand
      * automatically determined from the class template specialisation
      *
      */
-    void init_types();
+    void init_types() override;
 
     /**
      * Invoke the command execution method given at object creation time.
@@ -1506,7 +1506,7 @@ class TemplCommandInOut : public TemplCommand
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any) override;
     //@}
 
   private:
@@ -1740,7 +1740,7 @@ class TemplCommandIn : public TemplCommand
 
     //@}
 
-    ~TemplCommandIn() { }
+    ~TemplCommandIn() override { }
 
     /**@name Miscellaneous methods */
     //@{
@@ -1751,7 +1751,7 @@ class TemplCommandIn : public TemplCommand
      * automatically determined from the class template specialisation
      *
      */
-    void init_types();
+    void init_types() override;
 
     /**
      * Invoke the command execution method given at object creation time.
@@ -1769,7 +1769,7 @@ class TemplCommandIn : public TemplCommand
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any) override;
     //@}
 
   private:
@@ -1997,7 +1997,7 @@ class TemplCommandOut : public TemplCommand
 
     //@}
 
-    ~TemplCommandOut() { }
+    ~TemplCommandOut() override { }
 
     /**@name Miscellaneous methods */
     //@{
@@ -2008,7 +2008,7 @@ class TemplCommandOut : public TemplCommand
      * automatically determined from the class template specialisation
      *
      */
-    void init_types();
+    void init_types() override;
 
     /**
      * Invoke the command execution method given at object creation time.
@@ -2027,7 +2027,7 @@ class TemplCommandOut : public TemplCommand
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *dev, const CORBA::Any &in_any) override;
     //@}
 
   private:

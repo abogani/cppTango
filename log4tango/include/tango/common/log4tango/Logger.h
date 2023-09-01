@@ -53,7 +53,7 @@ class Logger : public AppenderAttachable
     /**
      * Destructor
      **/
-    virtual ~Logger();
+    ~Logger() override;
 
     /**
      * Return the logger name.

@@ -43,13 +43,13 @@ class OstreamAppender : public LayoutAppender
 {
   public:
     OstreamAppender(const std::string &name, std::ostream *stream);
-    virtual ~OstreamAppender();
+    ~OstreamAppender() override;
 
-    virtual bool reopen();
-    virtual void close();
+    bool reopen() override;
+    void close() override;
 
   protected:
-    virtual int _append(const LoggingEvent &event);
+    int _append(const LoggingEvent &event) override;
     std::ostream *_stream;
 };
 

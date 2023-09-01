@@ -293,7 +293,7 @@ class GroupCmdReply : public GroupReply
     //- ctor
     GroupCmdReply(const std::string &dev_name, const std::string &obj_name, bool group_element_enabled);
     //- dtor
-    virtual ~GroupCmdReply();
+    ~GroupCmdReply() override;
 
     GroupCmdReply(const GroupCmdReply &);
     GroupCmdReply &operator=(const GroupCmdReply &);
@@ -379,7 +379,7 @@ class GroupAttrReply : public GroupReply
     //- ctor
     GroupAttrReply(const std::string &dev_name, const std::string &obj_name, bool group_element_enabled);
     //- dtor
-    virtual ~GroupAttrReply();
+    ~GroupAttrReply() override;
 
     GroupAttrReply(const GroupAttrReply &);
     GroupAttrReply &operator=(const GroupAttrReply &);
@@ -845,7 +845,7 @@ class Group : public GroupElement
      * Tango::Group::get_group() (respectively to @e Tango::Group::get_device()). Use the @e Tango::Group::remove()
      * method instead.
      */
-    virtual ~Group();
+    ~Group() override;
     //@}
 
     //---------------------------------------------
@@ -975,7 +975,7 @@ class Group : public GroupElement
      * @param [in] fwd The forward flag
      * @return True if the hierarchy contains the element
      */
-    virtual bool contains(const std::string &pattern, bool fwd = true);
+    bool contains(const std::string &pattern, bool fwd = true) override;
     /**
      * Returns a reference to the specified device
      *
@@ -1005,7 +1005,7 @@ class Group : public GroupElement
      * @param [in] device_name The device name
      * @return True if the hierarchy contains the element
      */
-    virtual DeviceProxy *get_device(const std::string &device_name);
+    DeviceProxy *get_device(const std::string &device_name) override;
     /**
      * Returns a reference to the "idx-th" device in the hierarchy
      *
@@ -1022,7 +1022,7 @@ class Group : public GroupElement
      * @param [in] idx The device name
      * @return device reference
      */
-    virtual DeviceProxy *get_device(long idx);
+    DeviceProxy *get_device(long idx) override;
     /**
      * Returns a reference to the "idx-th" device in the hierarchy
      *
@@ -1037,7 +1037,7 @@ class Group : public GroupElement
      * @param [in] idx The device name
      * @return device reference
      */
-    virtual DeviceProxy *operator[](long idx);
+    DeviceProxy *operator[](long idx) override;
     /**
      * Returns a reference to the specified group
      *
@@ -1187,7 +1187,7 @@ class Group : public GroupElement
      * @param [in] fwd The forward flag
      * @return True if all devices are alive
      */
-    virtual bool ping(bool fwd = true);
+    bool ping(bool fwd = true) override;
     /**
      * Set client side timeout for all devices in the group
      *
@@ -1196,7 +1196,7 @@ class Group : public GroupElement
      *
      * @param [in] tmo_ms The timeout value
      */
-    virtual void set_timeout_millis(int tmo_ms);
+    void set_timeout_millis(int tmo_ms) override;
 
     //- command execution
     //---------------------------------------------
@@ -1686,9 +1686,9 @@ class Group : public GroupElement
     //- Misc.
     //---------------------------------------------
     //-
-    virtual void dump(int indent_level = 0);
+    void dump(int indent_level = 0) override;
     //-
-    virtual void dump(TangoSys_OMemStream &oms, int indent_level = 0);
+    void dump(TangoSys_OMemStream &oms, int indent_level = 0) override;
     //@}
 
   private:
@@ -1699,21 +1699,21 @@ class Group : public GroupElement
     //-
     void remove_i(const std::string &p, bool fwd = true);
     //-
-    GroupElement *find_i(const std::string &n, bool fwd = true);
+    GroupElement *find_i(const std::string &n, bool fwd = true) override;
     //-
     GroupElements get_hiearchy();
     //-
     Group *get_group_i(const std::string &n);
     //-
-    long get_size_i(bool fwd);
+    long get_size_i(bool fwd) override;
     //-
     void push_async_request(long rid, bool fwded);
     //-
     void pop_async_request(long rid);
     //-
-    virtual bool is_device_i();
+    bool is_device_i() override;
     //-
-    virtual bool is_group_i();
+    bool is_group_i() override;
 
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex elements_mutex;
@@ -1731,25 +1731,25 @@ class Group : public GroupElement
     Group &operator=(const Group &);
 
     //- private part of the asynch impl
-    virtual long command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, long ari);
-    virtual long command_inout_asynch_i(const std::string &c, const DeviceData &d, bool fgt, bool fwd, long ari);
+    long command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, long ari) override;
+    long command_inout_asynch_i(const std::string &c, const DeviceData &d, bool fgt, bool fwd, long ari) override;
     virtual long
         command_inout_asynch_i(const std::string &c, const std::vector<DeviceData> &d, bool fgt, bool fwd, long ari);
     template <typename T>
     long command_inout_asynch_i(const std::string &c, /*const*/ std::vector<T> &d, bool fgt, bool fwd, long ari);
-    virtual GroupCmdReplyList command_inout_reply_i(long req_id, long tmo_ms);
+    GroupCmdReplyList command_inout_reply_i(long req_id, long tmo_ms) override;
 
-    virtual long read_attribute_asynch_i(const std::string &a, bool fwd, long ari);
-    virtual GroupAttrReplyList read_attribute_reply_i(long req_id, long tmo_ms);
+    long read_attribute_asynch_i(const std::string &a, bool fwd, long ari) override;
+    GroupAttrReplyList read_attribute_reply_i(long req_id, long tmo_ms) override;
 
-    virtual long read_attributes_asynch_i(const std::vector<std::string> &al, bool fwd, long ari);
-    virtual GroupAttrReplyList read_attributes_reply_i(long req_id, long tmo_ms);
+    long read_attributes_asynch_i(const std::vector<std::string> &al, bool fwd, long ari) override;
+    GroupAttrReplyList read_attributes_reply_i(long req_id, long tmo_ms) override;
 
-    virtual long write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long ari);
+    long write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long ari) override;
     virtual long write_attribute_asynch_i(const std::vector<DeviceAttribute> &d, bool fwd, long ari);
     template <typename T>
     long write_attribute_asynch_i(const std::string &a, /*const*/ std::vector<T> &d, bool fwd, long ari);
-    virtual GroupReplyList write_attribute_reply_i(long req_id, long tmo_ms);
+    GroupReplyList write_attribute_reply_i(long req_id, long tmo_ms) override;
 };
 
 //=============================================================================
@@ -1765,29 +1765,29 @@ class GroupDeviceElement : public GroupElement
     //- Group management
     //---------------------------------------------
     //-
-    virtual DeviceProxy *get_device(const std::string &n);
+    DeviceProxy *get_device(const std::string &n) override;
     //-
-    virtual DeviceProxy *get_device(long idx);
+    DeviceProxy *get_device(long idx) override;
     //-
-    virtual DeviceProxy *operator[](long idx);
+    DeviceProxy *operator[](long idx) override;
 
     //---------------------------------------------
     //- a la DeviceProxy interface
     //---------------------------------------------
     //-
-    virtual bool ping(bool fwd = true);
+    bool ping(bool fwd = true) override;
     //-
-    virtual void set_timeout_millis(int tmo_ms);
+    void set_timeout_millis(int tmo_ms) override;
 
     //---------------------------------------------
     //- Misc
     //---------------------------------------------
     //-
-    virtual void dump(int indent_level = 0);
+    void dump(int indent_level = 0) override;
     //-
-    virtual void dump(TangoSys_OMemStream &oms, int indent_level = 0);
+    void dump(TangoSys_OMemStream &oms, int indent_level = 0) override;
     //-
-    virtual bool is_connected();
+    bool is_connected() override;
 
   private:
     //- the device proxy
@@ -1805,7 +1805,7 @@ class GroupDeviceElement : public GroupElement
     //- ctor: creates a GroupDeviceElement named <name> with timeout set to tmo_ms milliseconds
     GroupDeviceElement(const std::string &name, int tmo_ms);
     //- dtor: release resources
-    virtual ~GroupDeviceElement();
+    ~GroupDeviceElement() override;
 
     //- build connection to the device (may throw DevFailed)
     DeviceProxy *connect();
@@ -1819,25 +1819,25 @@ class GroupDeviceElement : public GroupElement
     }
 
     //- element identification
-    virtual bool is_device_i();
-    virtual bool is_group_i();
+    bool is_device_i() override;
+    bool is_group_i() override;
 
     //- size (group interface)
-    virtual long get_size_i(bool fwd = true);
+    long get_size_i(bool fwd = true) override;
 
     //- private part of the asynch impl
-    virtual long command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, long ari);
-    virtual long command_inout_asynch_i(const std::string &c, const DeviceData &d, bool fgt, bool fwd, long ari);
-    virtual GroupCmdReplyList command_inout_reply_i(long req_id, long tmo_ms);
+    long command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, long ari) override;
+    long command_inout_asynch_i(const std::string &c, const DeviceData &d, bool fgt, bool fwd, long ari) override;
+    GroupCmdReplyList command_inout_reply_i(long req_id, long tmo_ms) override;
 
-    virtual long read_attribute_asynch_i(const std::string &a, bool fwd, long ari);
-    virtual GroupAttrReplyList read_attribute_reply_i(long req_id, long tmo_ms);
+    long read_attribute_asynch_i(const std::string &a, bool fwd, long ari) override;
+    GroupAttrReplyList read_attribute_reply_i(long req_id, long tmo_ms) override;
 
-    virtual long read_attributes_asynch_i(const std::vector<std::string> &al, bool fwd, long ari);
-    virtual GroupAttrReplyList read_attributes_reply_i(long req_id, long tmo_ms);
+    long read_attributes_asynch_i(const std::vector<std::string> &al, bool fwd, long ari) override;
+    GroupAttrReplyList read_attributes_reply_i(long req_id, long tmo_ms) override;
 
-    virtual long write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long ari);
-    virtual GroupReplyList write_attribute_reply_i(long req_id, long tmo_ms);
+    long write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long ari) override;
+    GroupReplyList write_attribute_reply_i(long req_id, long tmo_ms) override;
 };
 
 //=============================================================================

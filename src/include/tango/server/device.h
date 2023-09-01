@@ -172,7 +172,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     /**
      * The device desctructor.
      */
-    virtual ~DeviceImpl();
+    ~DeviceImpl() override;
 
     //@}
 
@@ -375,7 +375,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the device POA
      */
-    virtual PortableServer::POA_ptr _default_POA();
+    PortableServer::POA_ptr _default_POA() override;
 
     //@}
 
@@ -1593,22 +1593,22 @@ class DeviceImpl : public virtual POA_Tango::Device
         FwdAttError fae;
     } FwdWrongConf;
 
-    virtual char *name();
-    virtual char *adm_name();
-    virtual char *description();
-    virtual char *status();
-    virtual Tango::DevState state();
+    char *name() override;
+    char *adm_name() override;
+    char *description() override;
+    char *status() override;
+    Tango::DevState state() override;
 
-    virtual CORBA::Any *command_inout(const char *in_cmd, const CORBA::Any &in_data);
-    virtual Tango::DevVarStringArray *black_box(CORBA::Long n);
-    virtual Tango::DevCmdInfoList *command_list_query();
-    virtual Tango::DevCmdInfo *command_query(const char *command);
-    virtual Tango::DevInfo *info();
-    virtual void ping();
-    virtual Tango::AttributeConfigList *get_attribute_config(const Tango::DevVarStringArray &names);
-    virtual void set_attribute_config(const Tango::AttributeConfigList &new_conf);
-    virtual Tango::AttributeValueList *read_attributes(const Tango::DevVarStringArray &names);
-    virtual void write_attributes(const Tango::AttributeValueList &values);
+    CORBA::Any *command_inout(const char *in_cmd, const CORBA::Any &in_data) override;
+    Tango::DevVarStringArray *black_box(CORBA::Long n) override;
+    Tango::DevCmdInfoList *command_list_query() override;
+    Tango::DevCmdInfo *command_query(const char *command) override;
+    Tango::DevInfo *info() override;
+    void ping() override;
+    Tango::AttributeConfigList *get_attribute_config(const Tango::DevVarStringArray &names) override;
+    void set_attribute_config(const Tango::AttributeConfigList &new_conf) override;
+    Tango::AttributeValueList *read_attributes(const Tango::DevVarStringArray &names) override;
+    void write_attributes(const Tango::AttributeValueList &values) override;
 
     void set_exported_flag(bool exp)
     {

@@ -50,19 +50,19 @@
 class Database : public Tango::Connection
 {
   private:
-    virtual std::string get_corba_name(bool);
+    std::string get_corba_name(bool) override;
 
-    virtual std::string build_corba_name()
+    std::string build_corba_name() override
     {
         return std::string("nada");
     }
 
-    virtual int get_lock_ctr()
+    int get_lock_ctr() override
     {
         return 0;
     }
 
-    virtual void set_lock_ctr(int) { }
+    void set_lock_ctr(int) override { }
 
     class DatabaseExt
     {
@@ -97,7 +97,7 @@ class Database : public Tango::Connection
     std::vector<DbHistory> make_history_array(bool, CORBA::Any_var &);
 
     void check_access();
-    inline std::string dev_name();
+    inline std::string dev_name() override;
     void set_server_release();
     void check_access_and_get();
 
@@ -1884,7 +1884,7 @@ class Database : public Tango::Connection
     void write_event_channel_ior_filedatabase(const std::string &);
     void build_connection();
     void post_reconnection();
-    ~Database();
+    ~Database() override;
 
     inline Device_var &get_dbase()
     {

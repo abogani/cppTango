@@ -91,7 +91,7 @@ class DevIntrThread : public omni_thread
   public:
     DevIntrThread(ShDevIntrTh &, TangoMonitor &, DeviceImpl *);
 
-    void run(void *);
+    void run(void *) override;
 
     void execute_cmd();
     DevIntrCmdType get_command(DevLong);

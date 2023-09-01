@@ -43,12 +43,12 @@ class CoutAppender : public log4tango::LayoutAppender
     /**
      *
      **/
-    virtual ~CoutAppender();
+    ~CoutAppender() override;
 
     /**
      *
      **/
-    inline virtual bool reopen()
+    inline bool reopen() override
     {
         return true;
     }
@@ -56,7 +56,7 @@ class CoutAppender : public log4tango::LayoutAppender
     /**
      *
      **/
-    inline virtual void close()
+    inline void close() override
     {
         // no-op
     }
@@ -65,7 +65,7 @@ class CoutAppender : public log4tango::LayoutAppender
     /**
      *
      **/
-    virtual int _append(const log4tango::LoggingEvent &event);
+    int _append(const log4tango::LoggingEvent &event) override;
 };
 
 } // namespace Tango
