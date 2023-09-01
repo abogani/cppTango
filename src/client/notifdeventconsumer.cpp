@@ -291,7 +291,7 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
 
     std::snprintf(constraint_expr,
                   sizeof(constraint_expr),
-                  "$domain_name == \'%s/%s\' and $event_name == \'%s\'",
+                  R"($domain_name == '%s/%s' and $event_name == '%s')",
                   d_name.c_str(),
                   att_name.c_str(),
                   event_name.c_str());
