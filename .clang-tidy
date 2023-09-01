@@ -21,6 +21,8 @@ Checks: >
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -readability-named-parameter,
+WarningsAsErrors: >
+  *
 
 CheckOptions:
   - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
