@@ -442,7 +442,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         }
     }
 
-    if(channel_exported)
+    if(channel_exported != 0)
     {
         CORBA::Object *event_channel_obj;
         event_channel_obj = _orb->string_to_object(channel_ior.c_str());
@@ -473,7 +473,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     // The device server event channel does not exist, let's create a new one
     //
 
-    if(!channel_exported)
+    if(channel_exported == 0)
     {
         CosNotification::QoSProperties initialQoS;
         CosNotification::AdminProperties initialAdmin;

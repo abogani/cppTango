@@ -715,7 +715,7 @@ class GroupElement
     //-
     inline const std::string get_fully_qualified_name() const
     {
-        if(parent)
+        if(parent != nullptr)
         {
             return parent->get_fully_qualified_name() + "." + name;
         }
@@ -1163,7 +1163,7 @@ class Group : public GroupElement
     bool is_enabled(const std::string &device_name, bool fwd = true)
     {
         GroupElement *ge = this->find_i(device_name, fwd);
-        return ge ? ge->is_enabled() : false;
+        return ge != nullptr ? ge->is_enabled() : false;
     }
 
     //-
@@ -1815,7 +1815,7 @@ class GroupDeviceElement : public GroupElement
     //- a trick to get a valid device proxy or an exception
     inline DeviceProxy *dev_proxy()
     {
-        return dp ? dp : connect();
+        return dp != nullptr ? dp : connect();
     }
 
     //- element identification

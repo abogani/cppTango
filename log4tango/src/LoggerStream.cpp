@@ -54,7 +54,7 @@ LoggerStream::LoggerStream(Logger &logger, Level::Value level, bool filter) :
 LoggerStream::~LoggerStream()
 {
     flush();
-    if(_buffer)
+    if(_buffer != nullptr)
     {
         delete _buffer;
         _buffer = nullptr;
@@ -73,7 +73,7 @@ LoggerStream::LoggerStream(LoggerStream &&other) :
 
 void LoggerStream::flush()
 {
-    if(_buffer && _buffer->tellp() > 0)
+    if((_buffer != nullptr) && _buffer->tellp() > 0)
     {
         if(_filter)
         {

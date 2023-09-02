@@ -673,7 +673,7 @@ void DeviceImpl::stop_polling(bool with_db_upd)
         {
             int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-            if((shared_cmd.cmd_pending == true) && (interupted == false))
+            if((shared_cmd.cmd_pending == true) && (interupted == 0))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!");
@@ -816,7 +816,7 @@ DeviceImpl::~DeviceImpl()
         delete(poll_obj_list[i]);
     }
 
-    if(logger && logger != Logging::get_core_logger())
+    if((logger != nullptr) && logger != Logging::get_core_logger())
     {
         logger->remove_all_appenders();
         delete logger;

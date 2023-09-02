@@ -1318,8 +1318,8 @@ void Util::connect_db()
 
     if(_daemon == true)
     {
-        int connected = false;
-        while(connected == false)
+        int connected = 0;
+        while(connected == 0)
         {
             try
             {
@@ -1350,7 +1350,7 @@ void Util::connect_db()
                 }
 #endif
                 db->set_tango_utils(this);
-                connected = true;
+                connected = 1;
             }
             catch(Tango::DevFailed &e)
             {
@@ -2614,7 +2614,7 @@ std::vector<DeviceImpl *> Util::get_device_list(const std::string &pattern)
         // add dev to the list
         //
 
-        if(dev)
+        if(dev != nullptr)
         {
             dl.push_back(dev);
         }
@@ -2680,7 +2680,7 @@ std::vector<DeviceImpl *> Util::get_device_list(const std::string &pattern)
             tokens.push_back(token);
         }
         last_pos = pos + 1;
-    } while(!done);
+    } while(done == 0);
     // look for token(s) in device names
     unsigned int i, j, k;
     std::string dev_name;

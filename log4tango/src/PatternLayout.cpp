@@ -421,7 +421,7 @@ int PatternLayout::set_conversion_pattern(const std::string &conversionPattern)
             default:
                 return -1;
             }
-            if(component)
+            if(component != nullptr)
             {
                 if(!literal.empty())
                 {

@@ -115,7 +115,7 @@ void Logging::init(const std::string &ds_name, // dserver name
             Logging::_log_path = kDefaultTangoLogPath;
 #ifndef _TG_WINDOWS_
             struct passwd *pw = getpwuid(getuid());
-            if(pw)
+            if(pw != nullptr)
             {
                 Logging::_log_path = Logging::_log_path + '-' + pw->pw_name;
             }
@@ -346,7 +346,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         // trace
         TANGO_LOG_DEBUG << "Entering Logging::add_logging_target (internal impl)" << std::endl;
         // check input
-        if(!logger)
+        if(logger == nullptr)
         {
             //--TODO::better error handler needed?
             TANGO_LOG_DEBUG << "internal error (logger is null)" << std::endl;
@@ -379,7 +379,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         }
         else
         {
-            if(throw_exception)
+            if(throw_exception != 0)
             {
                 TangoSys_OMemStream o;
                 o << "Invalid logging target type specified (" << ltg_type_str << ")" << std::ends;
@@ -424,7 +424,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         {
             if(ltg_name_str == kDefaultTargetName)
             {
-                if(throw_exception)
+                if(throw_exception != 0)
                 {
                     TangoSys_OMemStream o;
                     o << "Device target name must be specified (no default value)" << std::ends;
@@ -438,7 +438,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         } //  switch (ltg_type)
         // attach the appender to the logger if not already attached
         log4tango::Appender *appender = logger->get_appender(appender_name);
-        if(!appender)
+        if(appender == nullptr)
         {
             TANGO_LOG_DEBUG << "Adding logging target " << appender_name << " to " << logger->get_name() << std::endl;
             // instantiate the appender (i.e. the target) and the layout (if needed)
@@ -450,7 +450,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 if(appender == nullptr)
                 {
                     TANGO_LOG_DEBUG << "Internal error (Appender instantiation failed)" << std::endl;
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -465,7 +465,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 appender = new TangoRollingFileAppender(appender_name, full_file_name, Logging::_rft);
                 if(appender == nullptr)
                 {
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -477,7 +477,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 {
                     delete appender;
                     appender = nullptr;
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Could not open logging file " << full_file_name << std::ends;
@@ -490,7 +490,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 {
                     delete appender;
                     appender = nullptr;
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -506,7 +506,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 appender = new TangoAppender(logger->get_name(), appender_name, ltg_name_str);
                 if(appender == nullptr)
                 {
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -518,7 +518,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 {
                     delete appender;
                     appender = nullptr;
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Could not connect to log consumer " << ltg_name_str << std::ends;
@@ -530,7 +530,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             break; // case LOG_DEVICE
             }
             // attach the appender to the logger
-            if(appender)
+            if(appender != nullptr)
             {
                 logger->add_appender(appender);
             }
@@ -544,7 +544,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
     }
     catch(std::exception &e)
     {
-        if(throw_exception)
+        if(throw_exception != 0)
         {
             TangoSys_OMemStream o;
             o << "std::exception caught [" << e.what() << "]" << std::ends;
@@ -979,7 +979,7 @@ void Logging::kill_zombie_appenders()
     {
         // get device's logger
         logger = dl[i]->get_logger();
-        if(logger)
+        if(logger != nullptr)
         {
             // get logger's appender list
             al = logger->get_all_appenders();
@@ -1004,7 +1004,7 @@ void Logging::kill_zombie_appenders()
 void Logging::set_rolling_file_threshold(log4tango::Logger *logger, size_t rtf)
 {
     // check input: logger
-    if(!logger)
+    if(logger == nullptr)
     {
         return;
     }
@@ -1209,7 +1209,7 @@ int Logging::create_log_dir(const std::string &full_path)
     {
         std::string sub_path;
         sub_path.assign(full_path.begin(), full_path.begin() + pos);
-        if(sub_path.size())
+        if(sub_path.size() != 0u)
         {
             Logging::create_log_dir(sub_path);
         }
@@ -1228,7 +1228,7 @@ int Logging::create_log_dir(const std::string &full_path)
 //-----------------------------------------------------------------------------
 LogAdapter::LogAdapter(Tango::DeviceImpl *dev)
 {
-    if(dev)
+    if(dev != nullptr)
     {
         logger_ = dev->get_logger();
     }

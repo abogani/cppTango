@@ -1762,27 +1762,27 @@ class Attribute
 
     inline bool is_value_set(const char *attr_name)
     {
-        if(!strcmp(attr_name, "min_alarm"))
+        if(strcmp(attr_name, "min_alarm") == 0)
         {
             return alarm_conf.test(max_level);
         }
-        else if(!strcmp(attr_name, "max_alarm"))
+        else if(strcmp(attr_name, "max_alarm") == 0)
         {
             return alarm_conf.test(min_level);
         }
-        else if(!strcmp(attr_name, "min_value"))
+        else if(strcmp(attr_name, "min_value") == 0)
         {
             return check_max_value;
         }
-        else if(!strcmp(attr_name, "max_value"))
+        else if(strcmp(attr_name, "max_value") == 0)
         {
             return check_min_value;
         }
-        else if(!strcmp(attr_name, "min_warning"))
+        else if(strcmp(attr_name, "min_warning") == 0)
         {
             return alarm_conf.test(max_warn);
         }
-        else if(!strcmp(attr_name, "max_warning"))
+        else if(strcmp(attr_name, "max_warning") == 0)
         {
             return alarm_conf.test(min_warn);
         }
@@ -2318,7 +2318,7 @@ inline void Attribute::delete_data_if_needed(T *data, bool release)
 template <>
 inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString *data, bool release)
 {
-    if(!release || !data)
+    if(!release || (data == nullptr))
     {
         return;
     }

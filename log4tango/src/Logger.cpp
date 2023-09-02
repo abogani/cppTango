@@ -79,11 +79,11 @@ void Logger::call_appenders(const LoggingEvent &event)
             {
                 if(i->second->append(event) == -1)
                 {
-                    if(!bad_appenders)
+                    if(bad_appenders == nullptr)
                     {
                         bad_appenders = new std::vector<std::string>;
                     }
-                    if(bad_appenders)
+                    if(bad_appenders != nullptr)
                     {
                         bad_appenders->push_back(i->second->get_name());
                     }
@@ -91,7 +91,7 @@ void Logger::call_appenders(const LoggingEvent &event)
             }
         }
     } //-- End critical section ------------------------------
-    if(bad_appenders)
+    if(bad_appenders != nullptr)
     {
         for(unsigned int a = 0; a < bad_appenders->size(); a++)
         {

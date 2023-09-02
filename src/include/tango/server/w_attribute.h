@@ -791,7 +791,7 @@ class WAttribute : public Attribute
   private:
     inline void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)
     {
-        if((!y && nb_data != x) || (y && nb_data != (x * y)))
+        if(((y == 0u) && nb_data != x) || ((y != 0u) && nb_data != (x * y)))
         {
             TANGO_THROW_EXCEPTION(API_AttrIncorrectDataNumber, "Incorrect data number");
         }

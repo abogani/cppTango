@@ -1169,12 +1169,12 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                    const std::vector<std::string> &filters,
                                    bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer.");
     }
-    else if(!callback)
+    else if(callback == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "CallBack* must be a valid and non-null pointer.");
@@ -1209,7 +1209,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                    const std::vector<std::string> &filters,
                                    bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer");
@@ -1371,7 +1371,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
 
 int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, CallBack *callback, bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer.");
@@ -1380,7 +1380,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, CallBac
     {
         TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs, "Only INTERFACE_CHANGE_EVENT is supported.");
     }
-    else if(stateless && !callback)
+    else if(stateless && (callback == nullptr))
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "Callback* is a null pointer and stateless mode is used.");
@@ -1393,7 +1393,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, CallBac
 
 int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, int event_queue_size, bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer.");
@@ -3644,7 +3644,7 @@ EventData::EventData(const EventData &sou)
     device = sou.device;
     attr_name = sou.attr_name;
     event = sou.event;
-    if(sou.attr_value)
+    if(sou.attr_value != nullptr)
     {
         attr_value = new DeviceAttribute(*(sou.attr_value));
     }
@@ -3673,7 +3673,7 @@ EventData &EventData::operator=(const EventData &ri)
     device = ri.device;
     attr_name = ri.attr_name;
     event = ri.event;
-    if(ri.attr_value)
+    if(ri.attr_value != nullptr)
     {
         attr_value = new DeviceAttribute(*(ri.attr_value));
     }
@@ -4232,7 +4232,7 @@ PipeEventData::PipeEventData(const PipeEventData &sou)
     device = sou.device;
     pipe_name = sou.pipe_name;
     event = sou.event;
-    if(sou.pipe_value)
+    if(sou.pipe_value != nullptr)
     {
         pipe_value = new DevicePipe(*(sou.pipe_value));
     }
@@ -4261,7 +4261,7 @@ PipeEventData &PipeEventData::operator=(const PipeEventData &ri)
     device = ri.device;
     pipe_name = ri.pipe_name;
     event = ri.event;
-    if(ri.pipe_value)
+    if(ri.pipe_value != nullptr)
     {
         pipe_value = new DevicePipe(*(ri.pipe_value));
     }

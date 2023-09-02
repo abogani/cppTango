@@ -75,29 +75,29 @@ void LastAttrValue::store(const AttributeValue_5 *attr_5,
                           const AttributeValue *attr,
                           DevFailed *error)
 {
-    if(error)
+    if(error != nullptr)
     {
         except = *error;
         err = true;
     }
     else
     {
-        if(attr_5)
+        if(attr_5 != nullptr)
         {
             quality = attr_5->quality;
             value_4 = attr_5->value;
         }
-        else if(attr_4)
+        else if(attr_4 != nullptr)
         {
             quality = attr_4->quality;
             value_4 = attr_4->value;
         }
-        else if(attr_3)
+        else if(attr_3 != nullptr)
         {
             quality = attr_3->quality;
             value = attr_3->value;
         }
-        else if(attr)
+        else if(attr != nullptr)
         {
             quality = attr->quality;
             value = attr->value;
@@ -4374,7 +4374,7 @@ void Attribute::fire_change_event(DevFailed *except)
 
                 const AttrQuality old_quality = prev_change_event.quality;
 
-                if(except || quality == Tango::ATTR_INVALID || prev_change_event.err ||
+                if((except != nullptr) || quality == Tango::ATTR_INVALID || prev_change_event.err ||
                    old_quality == Tango::ATTR_INVALID)
                 {
                     force_change = true;
@@ -4854,9 +4854,10 @@ void Attribute::fire_archive_event(DevFailed *except)
                 // Execute detect_change only to calculate the delta_change_rel and
                 // delta_change_abs and force_change !
 
-                if(event_supplier_nd || event_supplier_zmq)
+                if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
                 {
-                    EventSupplier *event_supplier = event_supplier_nd ? event_supplier_nd : event_supplier_zmq;
+                    EventSupplier *event_supplier =
+                        event_supplier_nd != nullptr ? event_supplier_nd : event_supplier_zmq;
                     event_supplier->detect_change(
                         *this, ad, true, delta_change_rel, delta_change_abs, except, force_change, dev);
                 }

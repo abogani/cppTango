@@ -1619,7 +1619,8 @@ bool EventSupplier::detect_change(Attribute &attr,
                     {
                         if(rel_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_db)[i]) != 0 && std::isnan((*curr_seq_db)[i]) == 0)
+                            if(static_cast<int>(std::isnan((*prev_seq_db)[i])) != 0 &&
+                               static_cast<int>(std::isnan((*curr_seq_db)[i])) == 0)
                             {
                                 is_change = true;
                                 return (is_change);
@@ -1646,7 +1647,8 @@ bool EventSupplier::detect_change(Attribute &attr,
                         }
                         if(abs_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_db)[i]) != 0 && std::isnan((*curr_seq_db)[i]) == 0)
+                            if(static_cast<int>(std::isnan((*prev_seq_db)[i])) != 0 &&
+                               static_cast<int>(std::isnan((*curr_seq_db)[i])) == 0)
                             {
                                 is_change = true;
                                 return (is_change);
@@ -1760,7 +1762,8 @@ bool EventSupplier::detect_change(Attribute &attr,
                     {
                         if(rel_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_fl)[i]) != 0 && std::isnan((*curr_seq_fl)[i]) == 0)
+                            if(static_cast<int>(std::isnan((*prev_seq_fl)[i])) != 0 &&
+                               static_cast<int>(std::isnan((*curr_seq_fl)[i])) == 0)
                             {
                                 is_change = true;
                                 return (is_change);
@@ -1786,7 +1789,8 @@ bool EventSupplier::detect_change(Attribute &attr,
                         }
                         if(abs_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_fl)[i]) != 0 && std::isnan((*curr_seq_fl)[i]) == 0)
+                            if(static_cast<int>(std::isnan((*prev_seq_fl)[i])) != 0 &&
+                               static_cast<int>(std::isnan((*curr_seq_fl)[i])) == 0)
                             {
                                 is_change = true;
                                 return (is_change);

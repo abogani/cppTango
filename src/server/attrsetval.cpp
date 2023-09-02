@@ -86,7 +86,7 @@ void Attribute::set_value(Tango::EncodedAttribute *attr)
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    if(size == 0 || !d)
+    if(size == 0 || (d == nullptr))
     {
         TangoSys_OMemStream o;
         o << "DevEncoded data for attribute " << name << " not specified" << std::ends;

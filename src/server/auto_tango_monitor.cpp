@@ -74,7 +74,7 @@ AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceImpl *dev, bool force)
         mon = &(Util::instance()->only_one);
         break;
     }
-    if(mon)
+    if(mon != nullptr)
     {
         mon->get_monitor();
     }
@@ -106,7 +106,7 @@ AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceClass *dev_cl)
 AutoTangoMonitor::AutoTangoMonitor(Tango::TangoMonitor *m) :
     mon(m)
 {
-    if(mon)
+    if(mon != nullptr)
     {
         mon->get_monitor();
     }
@@ -114,7 +114,7 @@ AutoTangoMonitor::AutoTangoMonitor(Tango::TangoMonitor *m) :
 
 AutoTangoMonitor::~AutoTangoMonitor()
 {
-    if(mon)
+    if(mon != nullptr)
     {
         mon->rel_monitor();
     }
@@ -146,7 +146,7 @@ NoSyncModelTangoMonitor::NoSyncModelTangoMonitor(Tango::DeviceImpl *dev)
 
 NoSyncModelTangoMonitor::~NoSyncModelTangoMonitor()
 {
-    if(mon)
+    if(mon != nullptr)
     {
         mon->rel_monitor();
     }

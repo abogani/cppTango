@@ -407,7 +407,7 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
     // If error, destroy filter
     //
 
-    if(res == 1)
+    if(static_cast<int>(res) == 1)
     {
         try
         {
@@ -601,7 +601,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
         // at the end of the process startup. Verified with some ESRF HdbEventHandler process)
         //
 
-        if(event_consumer)
+        if(event_consumer != nullptr)
         {
             event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
         }

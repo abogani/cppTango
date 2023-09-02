@@ -173,7 +173,7 @@ inline void TangoMonitor::get_monitor()
             int interupted;
 
             interupted = wait(_timeout);
-            if(interupted == false)
+            if(interupted == 0)
             {
                 TANGO_LOG_DEBUG << "TIME OUT for thread " << th->id() << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut,

@@ -165,7 +165,7 @@ class LoggerStream
     inline LoggerStream &operator<<(std::ios_base &(*_F)(std::ios_base &) )
     {
 #endif
-        if(_buffer)
+        if(_buffer != nullptr)
         {
             (*_F)(*(std::ios_base *) (_buffer));
         }

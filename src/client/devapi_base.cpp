@@ -622,7 +622,7 @@ void Connection::connect(const std::string &corba_name)
 
 void Connection::toIOR(const char *iorstr, IOP::IOR &ior)
 {
-    size_t s = (iorstr ? strlen(iorstr) : 0);
+    size_t s = (iorstr != nullptr ? strlen(iorstr) : 0);
     if(s < 4)
     {
         throw CORBA::MARSHAL(0, CORBA::COMPLETED_NO);

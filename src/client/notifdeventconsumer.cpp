@@ -343,7 +343,7 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     // If error, destroy filter. Else, set the filter_ok flag to true
     //
 
-    if(res == 1)
+    if(static_cast<int>(res) == 1)
     {
         try
         {
@@ -453,7 +453,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
             DeviceData ddd;
             ddd = adm.command_inout("QueryEventChannelIOR");
             ddd >> channel_ior;
-            channel_exported = true;
+            channel_exported = 1;
 
             // get the hostname where the notifyd should be running
             DeviceInfo info = adm.info();
@@ -470,7 +470,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         }
     }
 
-    if(channel_exported)
+    if(channel_exported != 0)
     {
         try
         {
@@ -675,7 +675,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     // If error, destroy filter
     //
 
-    if(res == 1)
+    if(static_cast<int>(res) == 1)
     {
         try
         {

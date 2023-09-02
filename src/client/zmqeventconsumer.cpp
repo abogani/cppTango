@@ -232,7 +232,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
         // Something received by the heartbeat socket ?
         //
 
-        if(items[1].revents & ZMQ_POLLIN)
+        if((items[1].revents & ZMQ_POLLIN) != 0)
         {
             // TANGO_LOG << "For the heartbeat socket" << std::endl;
             try
@@ -281,7 +281,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
         // Something received by the event socket (TCP transport)?
         //
 
-        if(items[2].revents & ZMQ_POLLIN)
+        if((items[2].revents & ZMQ_POLLIN) != 0)
         {
             try
             {
@@ -338,7 +338,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
         // Something received by the control socket?
         //
 
-        if(items[0].revents & ZMQ_POLLIN)
+        if((items[0].revents & ZMQ_POLLIN) != 0)
         {
             // TANGO_LOG << "For the control socket" << std::endl;
             control_sock->recv(received_ctrl);
@@ -381,7 +381,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
 
         for(int loop = 3; loop < nb_poll_item; loop++)
         {
-            if(items[loop].revents & ZMQ_POLLIN)
+            if((items[loop].revents & ZMQ_POLLIN) != 0)
             {
                 mcast_received_event_name.rebuild();
                 mcast_received_endian.rebuild();
@@ -430,12 +430,12 @@ void ZmqEventConsumer::process_heartbeat(zmq::message_t &received_event_name,
     // For debug and logging purposes
     //
 
-    if(omniORB::trace(20))
+    if(omniORB::trace(20) != 0)
     {
         omniORB::logger log;
         log << "ZMQ: A heartbeat message has been received" << '\n';
     }
-    if(omniORB::trace(30))
+    if(omniORB::trace(30) != 0)
     {
         {
             omniORB::logger log;
@@ -464,7 +464,7 @@ void ZmqEventConsumer::process_heartbeat(zmq::message_t &received_event_name,
     std::string event_name((char *) received_event_name.data(), (size_t) received_event_name.size());
 
     cdrMemoryStream call_info((char *) received_call.data(), (size_t) received_call.size());
-    call_info.setByteSwapFlag(endian);
+    call_info.setByteSwapFlag(endian != 0u);
 
     ZmqCallInfo_var c_info_var = new ZmqCallInfo;
     try
@@ -526,12 +526,12 @@ void ZmqEventConsumer::process_event(zmq::message_t &received_event_name,
     // For debug and logging purposes
     //
 
-    if(omniORB::trace(20))
+    if(omniORB::trace(20) != 0)
     {
         omniORB::logger log;
         log << "ZMQ: A event message has been received" << '\n';
     }
-    if(omniORB::trace(30))
+    if(omniORB::trace(30) != 0)
     {
         {
             omniORB::logger log;
@@ -568,7 +568,7 @@ void ZmqEventConsumer::process_event(zmq::message_t &received_event_name,
     std::string event_name((char *) received_event_name.data(), (size_t) received_event_name.size());
 
     cdrMemoryStream call_info((char *) received_call.data(), (size_t) received_call.size());
-    call_info.setByteSwapFlag(endian);
+    call_info.setByteSwapFlag(endian != 0u);
 
     ZmqCallInfo_var c_info_var = new ZmqCallInfo;
     try
@@ -624,12 +624,12 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
     // For debug and logging purposes
     //
 
-    if(omniORB::trace(20))
+    if(omniORB::trace(20) != 0)
     {
         omniORB::logger log;
         log << "ZMQ: A control message has been received" << '\n';
     }
-    if(omniORB::trace(30))
+    if(omniORB::trace(30) != 0)
     {
         {
             omniORB::logger log;
@@ -2175,7 +2175,7 @@ void ZmqEventConsumer::push_zmq_event(
 
                 if(data_type == PIPE && data64 == true && buffer_aligned64 == false)
                 {
-                    if(omniORB::trace(30))
+                    if(omniORB::trace(30) != 0)
                     {
                         omniORB::logger log;
                         log << "ZMQ: Pipe event -> Shifting received buffer to be aligned on a 8 bytes boundary"
@@ -2190,7 +2190,7 @@ void ZmqEventConsumer::push_zmq_event(
                 }
                 else if(data_type != PIPE && data64 == true && buffer_aligned64 == true && shift_zmq420 == false)
                 {
-                    if(omniORB::trace(30))
+                    if(omniORB::trace(30) != 0)
                     {
                         omniORB::logger log;
                         log << "ZMQ: Classical event -> Shifting received buffer to be aligned on a 8 bytes boundary"
@@ -2223,7 +2223,7 @@ void ZmqEventConsumer::push_zmq_event(
                 }
 
                 TangoCdrMemoryStream event_data_cdr(data_ptr, data_size);
-                event_data_cdr.setByteSwapFlag(endian);
+                event_data_cdr.setByteSwapFlag(endian != 0u);
 
                 //
                 // Unmarshall the data
@@ -3459,7 +3459,7 @@ bool ZmqEventConsumer::check_zmq_endpoint(const std::string &endpoint)
                     return false;
                 }
 
-                if(valopt)
+                if(valopt != 0)
                 {
                     close(sockfd);
                     return false;

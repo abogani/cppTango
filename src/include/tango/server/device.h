@@ -1899,7 +1899,7 @@ class DeviceImpl : public virtual POA_Tango::Device
 
     inline log4tango::Logger *get_logger()
     {
-        return logger ? logger : get_logger_i();
+        return logger != nullptr ? logger : get_logger_i();
     }
 
     void init_logger();

@@ -443,7 +443,7 @@ unsigned char ZmqEventSupplier::test_endian()
 {
     int test_var = 1;
     unsigned char *cptr = (unsigned char *) &test_var;
-    return (!(cptr[0] == 0));
+    return static_cast<unsigned char>(!(cptr[0] == 0));
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -886,12 +886,12 @@ void ZmqEventSupplier::push_heartbeat_event()
 
                 if(nb_event == 1)
                 {
-                    if(omniORB::trace(20))
+                    if(omniORB::trace(20) != 0)
                     {
                         omniORB::logger log;
                         log << "ZMQ: Pushing some data" << '\n';
                     }
-                    if(omniORB::trace(30))
+                    if(omniORB::trace(30) != 0)
                     {
                         {
                             omniORB::logger log;
@@ -1404,12 +1404,12 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         // For debug and logging purposes
         //
 
-        if(omniORB::trace(20))
+        if(omniORB::trace(20) != 0)
         {
             omniORB::logger log;
             log << "ZMQ: Pushing some data" << '\n';
         }
-        if(omniORB::trace(30))
+        if(omniORB::trace(30) != 0)
         {
             {
                 omniORB::logger log;

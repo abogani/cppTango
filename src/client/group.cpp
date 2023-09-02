@@ -658,7 +658,7 @@ TokenList GroupElement::tokenize_i(const std::string &p)
             tokens.push_back(token);
         }
         last_pos = pos + 1;
-    } while(!done);
+    } while(done == 0);
 #if defined(_LOCAL_DEBUGGING)
     TANGO_LOG << "\t\t|- tokens: [";
     for(int t = 0; t < tokens.size(); t++)
@@ -771,7 +771,7 @@ Group *Group::get_parent() const
 //-----------------------------------------------------------------------------
 bool Group::is_root_group() const
 {
-    return parent ? false : true;
+    return parent != nullptr ? false : true;
 }
 
 //-----------------------------------------------------------------------------
@@ -888,7 +888,7 @@ void Group::add(const std::string &p, int tmo_ms)
     GroupElements el = GroupElementFactory::instanciate(p, tmo_ms);
     for(unsigned int e = 0; e < el.size(); e++)
     {
-        if(el[e] && (add_i(el[e]) == false))
+        if((el[e] != nullptr) && (add_i(el[e]) == false))
         {
             GroupElement *te = find_i(el[e]->get_name());
             try
@@ -915,7 +915,7 @@ void Group::add(const std::vector<std::string> &pl, int tmo_ms)
         GroupElements el = GroupElementFactory::instanciate(pl[p], tmo_ms);
         for(unsigned int e = 0; e < el.size(); e++)
         {
-            if(el[e] && (add_i(el[e]) == false))
+            if((el[e] != nullptr) && (add_i(el[e]) == false))
             {
                 GroupElement *te = find_i(el[e]->get_name());
                 try
@@ -1183,7 +1183,7 @@ Group *Group::get_group_i(const std::string &n)
 void Group::enable(const std::string &n, bool fwd)
 {
     GroupElement *e = find_i(n, fwd);
-    if(e)
+    if(e != nullptr)
     {
         e->enable();
     }
@@ -1193,7 +1193,7 @@ void Group::enable(const std::string &n, bool fwd)
 void Group::disable(const std::string &n, bool fwd)
 {
     GroupElement *e = find_i(n, fwd);
-    if(e)
+    if(e != nullptr)
     {
         e->disable();
     }
@@ -1927,7 +1927,7 @@ DeviceProxy *GroupDeviceElement::connect()
 void GroupDeviceElement::disconnect()
 {
     //-TODO: how to handle pending asynch calls ?
-    if(dp)
+    if(dp != nullptr)
     {
         delete dp;
         dp = nullptr;

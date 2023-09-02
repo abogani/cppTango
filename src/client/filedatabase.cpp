@@ -103,7 +103,7 @@ bool equalsIgnoreCase(const string &s1, const string &s2)
     if(s1.size() == s2.size())
     {
         int l = s1.size();
-        while(l)
+        while(l != 0)
         {
             ret = (chartolower(s1.at(l - 1)) == chartolower(s2.at(l - 1)));
             l--;

@@ -117,7 +117,7 @@ int FileAppender::_append(const LoggingEvent &event)
 {
     std::string message(get_layout().format(event));
     // Messages longer than sizeof(uint) will be truncated.
-    if(!::write(_fd, message.data(), static_cast<unsigned int>(message.length())))
+    if(::write(_fd, message.data(), static_cast<unsigned int>(message.length())) == 0)
     {
         return -1;
     }

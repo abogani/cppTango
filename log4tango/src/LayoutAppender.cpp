@@ -40,7 +40,7 @@ LayoutAppender::LayoutAppender(const std::string &name) :
 
 LayoutAppender::~LayoutAppender()
 {
-    if(_layout)
+    if(_layout != nullptr)
     {
         delete _layout;
         _layout = nullptr;
@@ -56,7 +56,7 @@ void LayoutAppender::set_layout(Layout *layout)
 {
     if(layout != _layout)
     {
-        if(_layout)
+        if(_layout != nullptr)
         {
             delete _layout;
             _layout = nullptr;

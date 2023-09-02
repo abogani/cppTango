@@ -77,7 +77,7 @@ void TangoAppender::set_layout(log4tango::Layout *)
 
 bool TangoAppender::is_valid() const
 {
-    if(!_dev_proxy)
+    if(_dev_proxy == nullptr)
     {
         return false;
     }
@@ -97,7 +97,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
     //------------------------------------------------------------
     //- DO NOT LOG FROM THIS METHOD !!!
     //------------------------------------------------------------
-    if(!_dev_proxy)
+    if(_dev_proxy == nullptr)
     {
         //--DO NOT RETURN -1 (ERROR ALREADY HANDLED)
         return 0;
@@ -105,7 +105,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
     try
     {
         auto *dvsa = new Tango::DevVarStringArray(6);
-        if(dvsa)
+        if(dvsa != nullptr)
         {
             dvsa->length(6);
             auto ts_ms =
@@ -121,7 +121,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
             (*dvsa)[3] = Tango::string_dup(event.message.c_str());
             (*dvsa)[4] = Tango::string_dup("");
             omni_thread *ct = omni_thread::self();
-            if(ct)
+            if(ct != nullptr)
             {
                 TangoSys_OMemStream ctstr;
                 ctstr << "@" << std::hex << event.thread_id << " [" << ct->id() << "]" << std::ends;
@@ -186,7 +186,7 @@ bool TangoAppender::reopen()
 
 void TangoAppender::close()
 {
-    if(_dev_proxy)
+    if(_dev_proxy != nullptr)
     {
         try
         {

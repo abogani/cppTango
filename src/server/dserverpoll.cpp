@@ -853,7 +853,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
             while(shared_cmd.cmd_pending == true)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     delete poll_list.back();
@@ -1505,7 +1505,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
                         while(shared_cmd.cmd_pending == true)
                         {
                             int interupted = mon.wait(DEFAULT_TIMEOUT);
-                            if((shared_cmd.cmd_pending == true) && (interupted == false))
+                            if((shared_cmd.cmd_pending == true) && (interupted == 0))
                             {
                                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1849,7 +1849,7 @@ void DServer::stop_polling()
             {
                 interupted = mon.wait(DEFAULT_TIMEOUT);
 
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1912,7 +1912,7 @@ void DServer::start_polling()
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1950,7 +1950,7 @@ void DServer::start_polling(PollingThreadInfo *th_info)
         {
             int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-            if((shared_cmd.cmd_pending == true) && (interupted == false))
+            if((shared_cmd.cmd_pending == true) && (interupted == 0))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut,
@@ -2009,7 +2009,7 @@ void DServer::add_event_heartbeat()
             while(shared_cmd.cmd_pending == true)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -2068,7 +2068,7 @@ void DServer::rem_event_heartbeat()
             while(shared_cmd.cmd_pending == true)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
