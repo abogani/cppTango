@@ -621,7 +621,6 @@ void EventQueue::get_events(EventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-    return;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -691,8 +690,6 @@ void EventQueue::get_events(AttrConfEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -762,8 +759,6 @@ void EventQueue::get_events(DataReadyEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -845,8 +840,6 @@ void EventQueue::get_events(DevIntrChangeEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -928,8 +921,6 @@ void EventQueue::get_events(PipeEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------

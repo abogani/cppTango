@@ -653,8 +653,6 @@ void Database::build_connection()
         //        omniORB::setClientConnectTimeout(0);
         throw;
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -904,8 +902,6 @@ void Database::export_device(const DbDevExportInfo &dev_export)
     {
         CALL_DB_SERVER_NO_RET("DbExportDevice", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -930,8 +926,6 @@ void Database::unexport_device(std::string dev)
     {
         CALL_DB_SERVER_NO_RET("DbUnExportDevice", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -961,8 +955,6 @@ void Database::add_device(const DbDevInfo &dev_info)
     {
         CALL_DB_SERVER_NO_RET("DbAddDevice", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -987,8 +979,6 @@ void Database::delete_device(std::string dev)
     {
         CALL_DB_SERVER_NO_RET("DbDeleteDevice", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1021,8 +1011,6 @@ void Database::add_server(const std::string &server, const DbDevInfos &dev_infos
     {
         CALL_DB_SERVER_NO_RET("DbAddServer", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1047,8 +1035,6 @@ void Database::delete_server(const std::string &server)
     {
         CALL_DB_SERVER_NO_RET("DbDeleteServer", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1090,8 +1076,6 @@ void Database::export_server(const DbDevExportInfos &dev_export)
     {
         CALL_DB_SERVER_NO_RET("DbExportServer", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1116,8 +1100,6 @@ void Database::unexport_server(const std::string &server)
     {
         CALL_DB_SERVER_NO_RET("DbUnExportServer", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1282,8 +1264,6 @@ void Database::get_device_property(std::string dev, DbData &db_data, DbServerCac
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1343,8 +1323,6 @@ void Database::put_device_property(std::string dev, const DbData &db_data)
     {
         CALL_DB_SERVER_NO_RET("DbPutDeviceProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1378,8 +1356,6 @@ void Database::delete_device_property(std::string dev, const DbData &db_data)
     {
         CALL_DB_SERVER_NO_RET("DbDeleteDeviceProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1573,7 +1549,6 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, D
     }
 
     TANGO_LOG_DEBUG << "Leaving get_device_attribute_property" << std::endl;
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1716,8 +1691,6 @@ void Database::put_device_attribute_property(std::string dev, const DbData &db_d
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1754,8 +1727,6 @@ void Database::delete_device_attribute_property(std::string dev, const DbData &d
     {
         CALL_DB_SERVER_NO_RET("DbDeleteDeviceAttributeProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1882,8 +1853,6 @@ void Database::get_class_property(std::string device_class, DbData &db_data, DbS
             index++;
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1943,8 +1912,6 @@ void Database::put_class_property(std::string device_class, const DbData &db_dat
     {
         CALL_DB_SERVER_NO_RET("DbPutClassProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1975,8 +1942,6 @@ void Database::delete_class_property(std::string device_class, const DbData &db_
     {
         CALL_DB_SERVER_NO_RET("DbDeleteClassProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2167,8 +2132,6 @@ void Database::get_class_attribute_property(std::string device_class, DbData &db
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2304,8 +2267,6 @@ void Database::put_class_attribute_property(std::string device_class, const DbDa
             retry = false;
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2342,8 +2303,6 @@ void Database::delete_class_attribute_property(std::string device_class, const D
     {
         CALL_DB_SERVER_NO_RET("DbDeleteClassAttributeProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2726,8 +2685,6 @@ void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2786,8 +2743,6 @@ void Database::put_property(std::string obj, const DbData &db_data)
     {
         CALL_DB_SERVER_NO_RET("DbPutProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2821,8 +2776,6 @@ void Database::delete_property(std::string obj, const DbData &db_data)
     {
         CALL_DB_SERVER_NO_RET("DbDeleteProperty", send);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3382,8 +3335,6 @@ void Database::put_server_info(const DbServerInfo &info)
     send <<= serv_info;
 
     CALL_DB_SERVER_NO_RET("DbPutServerInfo", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3403,8 +3354,6 @@ void Database::delete_server_info(const std::string &servname)
     send <<= servname.c_str();
 
     CALL_DB_SERVER_NO_RET("DbDeleteServerInfo", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3711,8 +3660,6 @@ void Database::put_device_alias(const std::string &devname, const std::string &a
     send <<= alias_info;
 
     CALL_DB_SERVER_NO_RET("DbPutDeviceAlias", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3732,8 +3679,6 @@ void Database::delete_device_alias(const std::string &aliasname)
     send <<= aliasname.c_str();
 
     CALL_DB_SERVER_NO_RET("DbDeleteDeviceAlias", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3757,8 +3702,6 @@ void Database::put_attribute_alias(std::string &attname, const std::string &alia
     send <<= alias_info;
 
     CALL_DB_SERVER_NO_RET("DbPutAttributeAlias", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3778,8 +3721,6 @@ void Database::delete_attribute_alias(const std::string &aliasname)
     send <<= aliasname.c_str();
 
     CALL_DB_SERVER("DbDeleteAttributeAlias", send, received);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -4247,8 +4188,6 @@ void Database::register_service(const std::string &servname, const std::string &
 
     data[0] << new_services;
     put_property(CONTROL_SYSTEM, data);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -4296,8 +4235,6 @@ void Database::unregister_service(const std::string &servname, const std::string
         data[0] << new_services;
         put_property(CONTROL_SYSTEM, data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -4314,8 +4251,6 @@ void Database::export_event(DevVarStringArray *eve_export)
     send <<= eve_export;
 
     CALL_DB_SERVER_NO_RET("DbExportEvent", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -4332,8 +4267,6 @@ void Database::unexport_event(const std::string &event)
     send <<= event.c_str();
 
     CALL_DB_SERVER_NO_RET("DbUnExportEvent", send);
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -5160,8 +5093,6 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
             i_total_props++;
         }
     }
-
-    return;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -5324,7 +5255,6 @@ void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServ
     }
 
     TANGO_LOG_DEBUG << "Leaving get_device_pipe_property" << std::endl;
-    return;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -5360,8 +5290,6 @@ void Database::delete_class_pipe_property(std::string device_class, const DbData
     {
         CALL_DB_SERVER_NO_RET("DbDeleteClassPipeProperty", send);
     }
-
-    return;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -5397,8 +5325,6 @@ void Database::delete_device_pipe_property(std::string dev, const DbData &db_dat
     {
         CALL_DB_SERVER_NO_RET("DbDeleteDevicePipeProperty", send);
     }
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -5574,8 +5500,6 @@ void Database::put_class_pipe_property(std::string device_class, const DbData &d
             retry = false;
         }
     }
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -5671,8 +5595,6 @@ void Database::put_device_pipe_property(std::string dev, const DbData &db_data)
             }
         }
     }
-
-    return;
 }
 
 //------------------------------------------------------------------------------------------------------------------

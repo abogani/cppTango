@@ -121,7 +121,6 @@ void DbAttribute::get_property(DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->get_device_attribute_property(device_name, db_data);
     }
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -141,7 +140,6 @@ void DbAttribute::put_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->put_device_attribute_property(device_name, db_data);
     }
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -161,7 +159,6 @@ void DbAttribute::delete_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->delete_device_attribute_property(device_name, db_data);
     }
-    return;
 }
 
 } // namespace Tango

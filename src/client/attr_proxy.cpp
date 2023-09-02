@@ -873,8 +873,6 @@ void AttributeProxy::get_property(const std::string &property_name, DbData &user
             user_data.push_back(no_data);
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -926,8 +924,6 @@ void AttributeProxy::get_property(const std::vector<std::string> &property_names
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -975,8 +971,6 @@ void AttributeProxy::get_property(DbData &user_data)
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1010,8 +1004,6 @@ void AttributeProxy::put_property(const DbData &user_data)
 
         db_attr->put_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1041,8 +1033,6 @@ void AttributeProxy::delete_property(const std::string &property_name)
 
         db_attr->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1075,8 +1065,6 @@ void AttributeProxy::delete_property(const std::vector<std::string> &property_na
 
         db_attr->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1109,8 +1097,6 @@ void AttributeProxy::delete_property(const DbData &user_data)
 
         db_attr->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------

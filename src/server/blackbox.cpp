@@ -1654,8 +1654,6 @@ void BlackBox::build_info_as_str(long index)
     {
         elt_str = elt_str + "requested from a collocated client";
     }
-
-    return;
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

@@ -1800,8 +1800,6 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
             throw;
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3431,8 +3429,6 @@ void DeviceProxy::get_property(const std::string &property_name, DbData &db_data
 
         db_dev->get_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3462,8 +3458,6 @@ void DeviceProxy::get_property(const std::vector<std::string> &property_names, D
 
         db_dev->get_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3487,8 +3481,6 @@ void DeviceProxy::get_property(DbData &db_data)
     {
         db_dev->get_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3512,8 +3504,6 @@ void DeviceProxy::put_property(const DbData &db_data)
     {
         db_dev->put_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3541,8 +3531,6 @@ void DeviceProxy::delete_property(const std::string &property_name)
 
         db_dev->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3573,8 +3561,6 @@ void DeviceProxy::delete_property(const std::vector<std::string> &property_names
 
         db_dev->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3598,8 +3584,6 @@ void DeviceProxy::delete_property(const DbData &db_data)
     {
         db_dev->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -3631,8 +3615,6 @@ void DeviceProxy::get_property_list(const std::string &wildcard, std::vector<std
         }
         db_dev->get_property_list(wildcard, prop_list);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -4399,8 +4381,6 @@ void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
@@ -4614,8 +4594,6 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -4868,8 +4846,6 @@ void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -6132,8 +6108,6 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -6405,8 +6379,6 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -6537,8 +6509,6 @@ void DeviceProxy::write_attribute(const AttributeValueList &attr_val)
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
@@ -6680,8 +6650,6 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
             TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------

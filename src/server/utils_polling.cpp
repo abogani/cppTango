@@ -2083,8 +2083,6 @@ void Util::remove_polling_thread_info_by_id(int th_id)
 
         TANGO_THROW_EXCEPTION(API_PollingThreadNotFound, o.str());
     }
-
-    return;
 }
 
 } // namespace Tango
