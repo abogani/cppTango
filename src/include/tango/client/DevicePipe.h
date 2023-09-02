@@ -1195,7 +1195,6 @@ class DevicePipe
      */
     friend std::ostream &operator<<(std::ostream &str, const DevicePipe &dd);
 
-  public:
     ///@privatesection
     DevicePipe(const DevicePipe &);
     DevicePipe &operator=(const DevicePipe &);
