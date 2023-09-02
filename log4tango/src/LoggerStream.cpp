@@ -66,7 +66,7 @@ LoggerStream::LoggerStream(LoggerStream &&other) :
     _level(other._level),
     _filter(other._filter),
     _buffer(other._buffer),
-    _source_location(std::move(other._source_location))
+    _source_location(other._source_location)
 {
     other._buffer = nullptr;
 }
