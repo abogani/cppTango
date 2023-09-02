@@ -186,9 +186,9 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                     }
 
                     // only delete the existing admin device if we could create a new one
-                    auto new_adm_proxy{new DeviceProxy(new_adm_name)};
+                    auto *new_adm_proxy{new DeviceProxy(new_adm_name)};
 
-                    auto old_adm_proxy{ipos->second.adm_device_proxy};
+                    auto *old_adm_proxy{ipos->second.adm_device_proxy};
 
                     ipos->second.adm_device_proxy = new_adm_proxy;
 

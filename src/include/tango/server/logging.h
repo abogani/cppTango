@@ -48,7 +48,7 @@ constexpr auto PathSeparator = '/';
 #endif
 inline const char *basename(const char *path)
 {
-    auto last_dir_sep = std::strrchr(path, PathSeparator);
+    const auto *last_dir_sep = std::strrchr(path, PathSeparator);
     if(last_dir_sep == nullptr)
     {
         // No separator, the path does not contains directory components.
