@@ -518,13 +518,13 @@ template <typename JpegCompressDecompressStruct>
 }
 
 // ----------------------------------------------------------------
-static void jpeg_encode_rgb(int width,
-                            int height,
-                            unsigned char *rgb,
-                            double quality,
-                            std::size_t *jpegSize,
-                            unsigned char **jpegData,
-                            color_space type)
+void jpeg_encode_rgb(int width,
+                     int height,
+                     unsigned char *rgb,
+                     double quality,
+                     std::size_t *jpegSize,
+                     unsigned char **jpegData,
+                     color_space type)
 {
     jpeg_compress_struct cinfo{};
     jpeg_error_mgr jerr{};
