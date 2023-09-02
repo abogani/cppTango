@@ -112,7 +112,6 @@ inline void string_free(char *s)
 
 #include <memory>
 #include <typeinfo>
-#include <string>
 #include <vector>
 #include <cmath>
 

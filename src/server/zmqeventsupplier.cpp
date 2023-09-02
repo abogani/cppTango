@@ -46,7 +46,6 @@
   #include <netdb.h>
   #include <sys/socket.h>
   #include <netinet/in.h>
-  #include <arpa/inet.h>
 #endif /* _TG_WINDOWS_ */
 
 using namespace CORBA;
