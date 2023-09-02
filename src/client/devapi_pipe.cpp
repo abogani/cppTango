@@ -77,10 +77,10 @@ DevicePipe::DevicePipe(const DevicePipe &source) :
     time = source.time;
     the_root_blob = source.the_root_blob;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::make_unique<DevicePipeExt>();
-        *(ext.get()) = *(source.ext.get());
+        *(ext) = *(source.ext);
     }
 }
 
@@ -98,10 +98,10 @@ DevicePipe &DevicePipe::operator=(const DevicePipe &rhs)
         time = rhs.time;
         the_root_blob = rhs.the_root_blob;
 
-        if(rhs.ext.get() != nullptr)
+        if(rhs.ext != nullptr)
         {
             ext = std::make_unique<DevicePipeExt>();
-            *(ext.get()) = *(rhs.ext.get());
+            *(ext) = *(rhs.ext);
         }
     }
     return *this;
@@ -120,7 +120,7 @@ DevicePipe::DevicePipe(DevicePipe &&source) :
     time = source.time;
     the_root_blob = std::move(source.the_root_blob);
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -138,7 +138,7 @@ DevicePipe &DevicePipe::operator=(DevicePipe &&rhs)
     time = rhs.time;
     the_root_blob = std::move(rhs.the_root_blob);
 
-    if(rhs.ext.get() != nullptr)
+    if(rhs.ext != nullptr)
     {
         ext = std::move(rhs.ext);
     }
@@ -265,10 +265,10 @@ DevicePipeBlob::DevicePipeBlob(const DevicePipeBlob &source) :
     }
     extract_ctr = source.extract_ctr;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::make_unique<DevicePipeBlobExt>();
-        *(ext.get()) = *(source.ext.get());
+        *(ext) = *(source.ext);
     }
 }
 
@@ -313,10 +313,10 @@ DevicePipeBlob &DevicePipeBlob::operator=(const DevicePipeBlob &rhs)
         }
         extract_ctr = rhs.extract_ctr;
 
-        if(rhs.ext.get() != nullptr)
+        if(rhs.ext != nullptr)
         {
             ext = std::make_unique<DevicePipeBlobExt>();
-            *(ext.get()) = *(rhs.ext.get());
+            *(ext) = *(rhs.ext);
         }
         else
         {
@@ -366,7 +366,7 @@ DevicePipeBlob::DevicePipeBlob(DevicePipeBlob &&source) :
     }
     extract_ctr = source.extract_ctr;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -407,7 +407,7 @@ DevicePipeBlob &DevicePipeBlob::operator=(DevicePipeBlob &&rhs)
     extract_delete = rhs.extract_delete;
     extract_ctr = rhs.extract_ctr;
 
-    if(rhs.ext.get() != nullptr)
+    if(rhs.ext != nullptr)
     {
         ext = std::move(rhs.ext);
     }

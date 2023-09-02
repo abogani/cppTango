@@ -118,10 +118,10 @@ DeviceAttribute::DeviceAttribute(const DeviceAttribute &source) :
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::make_unique<DeviceAttributeExt>();
-        *(ext.get()) = *(source.ext.get());
+        *(ext) = *(source.ext);
     }
 }
 
@@ -202,7 +202,7 @@ DeviceAttribute::DeviceAttribute(DeviceAttribute &&source) :
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -239,10 +239,10 @@ void DeviceAttribute::deep_copy(const DeviceAttribute &source)
     d_state = source.d_state;
     d_state_filled = source.d_state_filled;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::make_unique<DeviceAttributeExt>();
-        ext.get()->deep_copy(*(source.ext.get()));
+        ext->deep_copy(*(source.ext));
     }
     else
     {
@@ -337,10 +337,10 @@ DeviceAttribute &DeviceAttribute::operator=(const DeviceAttribute &rval)
         d_state = rval.d_state;
         d_state_filled = rval.d_state_filled;
 
-        if(rval.ext.get() != nullptr)
+        if(rval.ext != nullptr)
         {
             ext = std::make_unique<DeviceAttributeExt>();
-            *(ext.get()) = *(rval.ext.get());
+            *(ext) = *(rval.ext);
         }
         else
         {
@@ -491,7 +491,7 @@ DeviceAttribute &DeviceAttribute::operator=(DeviceAttribute &&rval)
     d_state = rval.d_state;
     d_state_filled = rval.d_state_filled;
 
-    if(rval.ext.get() != nullptr)
+    if(rval.ext != nullptr)
     {
         ext = std::move(rval.ext);
     }

@@ -216,7 +216,7 @@ ApiUtil::~ApiUtil()
 
     bool event_was_used = false;
 
-    if(ext.get() != nullptr)
+    if(ext != nullptr)
     {
         if((notifd_event_consumer != nullptr) || (zmq_event_consumer != nullptr))
         {

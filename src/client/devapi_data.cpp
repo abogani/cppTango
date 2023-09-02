@@ -71,10 +71,10 @@ DeviceData::DeviceData(const DeviceData &source)
     exceptions_flags = source.exceptions_flags;
     any = source.any;
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::make_unique<DeviceDataExt>();
-        *(ext.get()) = *(source.ext.get());
+        *(ext) = *(source.ext);
     }
 }
 
@@ -90,7 +90,7 @@ DeviceData::DeviceData(DeviceData &&source) :
     exceptions_flags = source.exceptions_flags;
     any = source.any._retn();
 
-    if(source.ext.get() != nullptr)
+    if(source.ext != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -109,10 +109,10 @@ DeviceData &DeviceData::operator=(const DeviceData &rval)
         exceptions_flags = rval.exceptions_flags;
         any = rval.any;
 
-        if(rval.ext.get() != nullptr)
+        if(rval.ext != nullptr)
         {
             ext = std::make_unique<DeviceDataExt>();
-            *(ext.get()) = *(rval.ext.get());
+            *(ext) = *(rval.ext);
         }
         else
         {
@@ -133,7 +133,7 @@ DeviceData &DeviceData::operator=(DeviceData &&rval)
     exceptions_flags = rval.exceptions_flags;
     any = rval.any._retn();
 
-    if(rval.ext.get() != nullptr)
+    if(rval.ext != nullptr)
     {
         ext = std::move(rval.ext);
     }

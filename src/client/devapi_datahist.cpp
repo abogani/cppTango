@@ -83,10 +83,10 @@ DeviceDataHistory::DeviceDataHistory(const DeviceDataHistory &source) :
         (*ref_ctr_ptr)++;
     }
 
-    if(source.ext_hist.get() != nullptr)
+    if(source.ext_hist != nullptr)
     {
         ext_hist = std::make_unique<DeviceDataHistoryExt>();
-        *(ext_hist.get()) = *(source.ext_hist.get());
+        *(ext_hist) = *(source.ext_hist);
     }
 }
 
@@ -101,7 +101,7 @@ DeviceDataHistory::DeviceDataHistory(DeviceDataHistory &&source) :
     seq_ptr = source.seq_ptr;
     ref_ctr_ptr = source.ref_ctr_ptr;
 
-    if(source.ext_hist.get() != nullptr)
+    if(source.ext_hist != nullptr)
     {
         ext_hist = std::move(source.ext_hist);
     }
@@ -171,10 +171,10 @@ DeviceDataHistory &DeviceDataHistory::operator=(const DeviceDataHistory &rval)
         ref_ctr_ptr = rval.ref_ctr_ptr;
         (*ref_ctr_ptr)++;
 
-        if(rval.ext_hist.get() != nullptr)
+        if(rval.ext_hist != nullptr)
         {
             ext_hist = std::make_unique<DeviceDataHistoryExt>();
-            *(ext_hist.get()) = *(rval.ext_hist.get());
+            *(ext_hist) = *(rval.ext_hist);
         }
         else
         {
@@ -231,7 +231,7 @@ DeviceDataHistory &DeviceDataHistory::operator=(DeviceDataHistory &&rval)
     // Extension class
     //
 
-    if(rval.ext_hist.get() != nullptr)
+    if(rval.ext_hist != nullptr)
     {
         ext_hist = std::move(rval.ext_hist);
     }
@@ -627,10 +627,10 @@ DeviceAttributeHistory::DeviceAttributeHistory(const DeviceAttributeHistory &sou
 {
     fail = source.fail;
 
-    if(source.ext_hist.get() != nullptr)
+    if(source.ext_hist != nullptr)
     {
         ext_hist = std::make_unique<DeviceAttributeHistoryExt>();
-        *(ext_hist.get()) = *(source.ext_hist.get());
+        *(ext_hist) = *(source.ext_hist);
     }
 }
 
@@ -640,7 +640,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(DeviceAttributeHistory &&source) 
 {
     fail = source.fail;
 
-    if(source.ext_hist.get() != nullptr)
+    if(source.ext_hist != nullptr)
     {
         ext_hist = std::move(source.ext_hist);
     }
@@ -676,10 +676,10 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(const DeviceAttributeH
 
         fail = rval.fail;
 
-        if(rval.ext_hist.get() != nullptr)
+        if(rval.ext_hist != nullptr)
         {
             ext_hist = std::make_unique<DeviceAttributeHistoryExt>();
-            *(ext_hist.get()) = *(rval.ext_hist.get());
+            *(ext_hist) = *(rval.ext_hist);
         }
         else
         {
@@ -704,7 +704,7 @@ DeviceAttributeHistory &DeviceAttributeHistory::operator=(DeviceAttributeHistory
 
     fail = rval.fail;
 
-    if(rval.ext_hist.get() != nullptr)
+    if(rval.ext_hist != nullptr)
     {
         ext_hist = std::move(rval.ext_hist);
     }

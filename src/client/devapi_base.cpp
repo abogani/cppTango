@@ -203,10 +203,10 @@ Connection::Connection(const Connection &sou) :
 
     device_5 = sou.device_5;
 
-    if(sou.ext.get() != nullptr)
+    if(sou.ext != nullptr)
     {
         ext = std::make_unique<ConnectionExt>();
-        *(ext.get()) = *(sou.ext.get());
+        *(ext) = *(sou.ext);
     }
 }
 
@@ -258,10 +258,10 @@ Connection &Connection::operator=(const Connection &rval)
 
     device_5 = rval.device_5;
 
-    if(rval.ext.get() != nullptr)
+    if(rval.ext != nullptr)
     {
         ext = std::make_unique<ConnectionExt>();
-        *(ext.get()) = *(rval.ext.get());
+        *(ext) = *(rval.ext);
     }
     else
     {
@@ -1859,10 +1859,10 @@ DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
     // Copy extension class
     //
 
-    if(sou.ext_proxy.get() != nullptr)
+    if(sou.ext_proxy != nullptr)
     {
         ext_proxy = std::make_unique<DeviceProxyExt>();
-        *(ext_proxy.get()) = *(sou.ext_proxy.get());
+        *(ext_proxy) = *(sou.ext_proxy);
     }
 }
 
@@ -1921,10 +1921,10 @@ DeviceProxy &DeviceProxy::operator=(const DeviceProxy &rval)
             adm_device = nullptr;
         }
 
-        if(rval.ext_proxy.get() != nullptr)
+        if(rval.ext_proxy != nullptr)
         {
             ext_proxy = std::make_unique<DeviceProxyExt>();
-            *(ext_proxy.get()) = *(rval.ext_proxy.get());
+            *(ext_proxy) = *(rval.ext_proxy);
         }
         else
         {

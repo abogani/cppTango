@@ -398,7 +398,7 @@ Database::Database(const Database &sou) :
     // Copy extension class
     //
 
-    if(sou.ext.get() != nullptr)
+    if(sou.ext != nullptr)
     {
         ext = std::make_unique<DatabaseExt>();
     }
@@ -454,7 +454,7 @@ Database &Database::operator=(const Database &rval)
         access_service_defined = rval.access_service_defined;
         db_tg = rval.db_tg;
 
-        if(rval.ext.get() != nullptr)
+        if(rval.ext != nullptr)
         {
             ext = std::make_unique<DatabaseExt>();
         }

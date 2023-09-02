@@ -292,7 +292,7 @@ AttributeProxy::AttributeProxy(const AttributeProxy &prev) :
         }
     }
 
-    if(prev.ext.get() != nullptr)
+    if(prev.ext != nullptr)
     {
         ext = std::make_unique<AttributeProxyExt>(prev.get_user_defined_name());
     }
@@ -358,7 +358,7 @@ AttributeProxy &AttributeProxy::operator=(const AttributeProxy &rval)
             }
         }
 
-        if(rval.ext.get() != nullptr)
+        if(rval.ext != nullptr)
         {
             ext = std::make_unique<AttributeProxyExt>(rval.get_user_defined_name());
         }
