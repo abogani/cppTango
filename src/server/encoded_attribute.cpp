@@ -184,7 +184,7 @@ void EncodedAttribute::encode_gray8(unsigned char *gray8, int width, int height)
 
 // ----------------------------------------------------------------------------
 
-void EncodedAttribute::encode_gray16(unsigned short *gray16, int width, int height)
+void EncodedAttribute::encode_gray16(const unsigned short *gray16, int width, int height)
 {
     long unsigned int newSize = width * height * 2 + 4;
 

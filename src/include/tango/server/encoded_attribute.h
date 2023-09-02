@@ -140,7 +140,7 @@ class EncodedAttribute
      * @param height   The image height
      *
      */
-    void encode_gray16(unsigned short *gray16, int width, int height);
+    void encode_gray16(const unsigned short *gray16, int width, int height);
 
     /**
      * Encode a 24 bit color image (no compression)
