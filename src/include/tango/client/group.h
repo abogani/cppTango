@@ -713,7 +713,7 @@ class GroupElement
     }
 
     //-
-    inline const std::string get_fully_qualified_name() const
+    inline std::string get_fully_qualified_name() const
     {
         if(parent != nullptr)
         {
