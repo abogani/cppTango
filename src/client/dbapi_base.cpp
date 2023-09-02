@@ -3745,7 +3745,7 @@ std::vector<DbHistory> Database::make_history_array(bool is_attribute, Any_var &
         unsigned int i = 0;
         int count = 0;
         int offset;
-        std::string aName = "";
+        std::string aName;
         std::string pName;
         std::string pDate;
         std::string pCount;

@@ -59,7 +59,7 @@ FileAppender::FileAppender(const std::string &name, const std::string &file_name
 
 FileAppender::FileAppender(const std::string &name, int fd) :
     LayoutAppender(name),
-    _file_name(""),
+
     _fd(fd),
     _flags(O_CREAT | O_APPEND | O_WRONLY),
     _mode(00644)

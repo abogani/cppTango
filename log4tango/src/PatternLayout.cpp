@@ -354,7 +354,7 @@ int PatternLayout::set_conversion_pattern(const std::string &conversionPattern)
             {
                 return -1;
             }
-            std::string specPostfix = "";
+            std::string specPostfix;
             // read postfix
             {
                 char ch2;

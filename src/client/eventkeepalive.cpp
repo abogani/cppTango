@@ -211,7 +211,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                     // function in order to support older (< 9.3) Tango versions.
                     const DevVarLongStringArray *event_sub_change_result;
                     subscriber_out >> event_sub_change_result;
-                    std::string local_callback_key = ""; // We are not interested in event name, pass dummy value.
+                    std::string local_callback_key; // We are not interested in event name, pass dummy value.
                     auto event_and_channel_name = event_consumer->initialize_received_from_admin(
                         event_sub_change_result,
                         local_callback_key,

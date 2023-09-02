@@ -78,8 +78,8 @@ DeviceNames GroupElementFactory::resolve_device_names(const std::string &name_or
     else
     {
         int db_port = 0;
-        std::string db_host = "";
-        std::string name_or_pattern_without_host = "";
+        std::string db_host;
+        std::string name_or_pattern_without_host;
         parse_name(name_or_pattern, db_host, db_port, name_or_pattern_without_host);
 
         const bool is_local_device = db_host.empty();

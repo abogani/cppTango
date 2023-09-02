@@ -55,7 +55,7 @@ Dur duration_abs(Dur d)
 } // namespace
 
 DeviceImpl *PollThread::dev_to_del = nullptr;
-std::string PollThread::name_to_del = "";
+std::string PollThread::name_to_del;
 PollObjType PollThread::type_to_del = Tango::POLL_CMD;
 
 //+-----------------------------------------------------------------------------------------------------------------

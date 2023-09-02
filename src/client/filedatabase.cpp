@@ -393,7 +393,7 @@ void FileDatabase ::jump_space(ifstream &f)
 // ****************************************************
 string FileDatabase ::read_word(ifstream &f)
 {
-    string ret_word = "";
+    string ret_word;
 
     /* Jump space and comments */
     jump_space(f);

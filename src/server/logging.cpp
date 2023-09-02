@@ -77,7 +77,7 @@ static const char *kDefaultConsoleName = "cout";
 // the DServer logger (use to output TANGO low level messages)
 log4tango::Logger *_core_logger = nullptr;
 // the logging path (use to store file logging targets)
-std::string Logging::_log_path("");
+std::string Logging::_log_path;
 // the <rollover> threshold for RollingFileAppender
 size_t Logging::_rft = 0;
 // the cmd line verbose level
