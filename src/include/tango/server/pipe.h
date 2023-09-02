@@ -73,7 +73,7 @@ class Pipe
      * @param    pwt        The pipe R/W type (default to READ)
      *
      */
-    Pipe(const std::string &name, const Tango::DispLevel level, const PipeWriteType pwt = PIPE_READ);
+    Pipe(const std::string &name, Tango::DispLevel level, PipeWriteType pwt = PIPE_READ);
 
     //@}
 

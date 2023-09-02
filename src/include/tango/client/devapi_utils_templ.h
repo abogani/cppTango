@@ -36,9 +36,9 @@ namespace Tango
 namespace
 {
 template <class T, class U, typename std::enable_if<std::is_same<T, U>::value, T>::type * = nullptr>
-CORBA::Any *create_any(const U *, const size_t, const size_t);
+CORBA::Any *create_any(const U *, size_t, size_t);
 template <class T, class U, typename std::enable_if<!std::is_same<T, U>::value, T>::type * = nullptr>
-CORBA::Any *create_any(const U *, const size_t, const size_t);
+CORBA::Any *create_any(const U *, size_t, size_t);
 
 template <class T, class U, typename std::enable_if<std::is_same<T, U>::value, T>::type *>
 CORBA::Any *create_any(const U *tmp, const size_t base, const size_t data_length)

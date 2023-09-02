@@ -130,7 +130,7 @@ void check_nan(const std::string &, const T &, const size_t)
 template <typename T,
           typename std::enable_if<(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value),
                                   T>::type * = nullptr>
-void check_nan(const std::string &, const T &, const size_t);
+void check_nan(const std::string &, const T &, size_t);
 
 template <typename T,
           typename std::enable_if<(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value),

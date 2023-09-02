@@ -815,10 +815,7 @@ class WAttribute : public Attribute
      *          - max : The max allowed value
      */
     template <typename T>
-    void check_data_limits(const size_t,
-                           const typename tango_type_traits<T>::ArrayType &,
-                           Attr_CheckVal &,
-                           Attr_CheckVal &);
+    void check_data_limits(size_t, const typename tango_type_traits<T>::ArrayType &, Attr_CheckVal &, Attr_CheckVal &);
 
     /**
      * Check that provided enum is within limits.
@@ -828,7 +825,7 @@ class WAttribute : public Attribute
      * @param data_size number of elements in the buffer
      */
     template <class T>
-    void check_enum(const typename tango_type_traits<T>::ArrayType &, const size_t);
+    void check_enum(const typename tango_type_traits<T>::ArrayType &, size_t);
 
     /**
      * description :     Check the value sent by the caller and copy incoming data
