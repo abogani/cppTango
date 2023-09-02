@@ -172,7 +172,7 @@ bool FwdAttr::validate_fwd_att(std::vector<AttrProperty> &prop_list, const std::
     }
 
     // check if full_root_att is already set
-    is_full_root_att_set = full_root_att.size() != 0 && full_root_att.compare(RootAttNotDef) != 0;
+    is_full_root_att_set = full_root_att.size() != 0 && full_root_att != RootAttNotDef;
 
     if(!is_full_root_att_set)
     {
