@@ -561,7 +561,7 @@ void DServer::store_subscribed_client_info(DeviceImpl &device,
         {
             Tango::Util *tg = Tango::Util::instance();
             EventType event_type = CHANGE_EVENT;
-            std::string mutable_event_name = event_name;
+            const std::string &mutable_event_name = event_name;
             tg->event_name_2_event_type(mutable_event_name, event_type);
 
             omni_mutex_lock oml(EventSupplier::get_event_mutex());

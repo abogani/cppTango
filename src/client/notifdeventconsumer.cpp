@@ -279,7 +279,7 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     // protocol prefix
     //
 
-    std::string tmp_dev_name(device_name);
+    const std::string &tmp_dev_name(device_name);
     std::string::size_type pos;
     pos = tmp_dev_name.find("://");
     pos = pos + 3;
