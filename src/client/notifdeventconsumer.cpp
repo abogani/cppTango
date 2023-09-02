@@ -719,7 +719,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
         std::string fq_dev_name = domain_name;
         if(event_type.find("tango://") != std::string::npos)
         {
-            if(event_type.find("#") == std::string::npos)
+            if(event_type.find('#') == std::string::npos)
             {
                 fq_dev_name.insert(0, event_type);
             }
@@ -821,7 +821,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
         std::string fq_dev_name = domain_name;
         if(event_type.find("tango://") != std::string::npos)
         {
-            if(event_type.find("#") == std::string::npos)
+            if(event_type.find('#') == std::string::npos)
             {
                 fq_dev_name.insert(0, event_type);
             }

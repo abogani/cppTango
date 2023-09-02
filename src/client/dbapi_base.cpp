@@ -166,7 +166,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
         {
             std::string sub = tango_host_env.substr(old_sep, separator - old_sep);
             old_sep = separator + 1;
-            host_sep = sub.find(":");
+            host_sep = sub.find(':');
             if(host_sep != std::string::npos)
             {
                 if((host_sep == sub.size() - 1) || (host_sep == 0))
@@ -193,7 +193,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
             multi_db_host.push_back(tmp_host);
         }
         std::string last = tango_host_env.substr(old_sep);
-        host_sep = last.find(":");
+        host_sep = last.find(':');
         if(host_sep != std::string::npos)
         {
             if((host_sep == last.size() - 1) || (host_sep == 0))
@@ -229,7 +229,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
         // Single database server case
         //
 
-        separator = tango_host_env.find(":");
+        separator = tango_host_env.find(':');
         if(separator != std::string::npos)
         {
             if((separator == tango_host_env.size() - 1) || (separator == 0))

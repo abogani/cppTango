@@ -151,7 +151,7 @@ bool DbHistory::is_deleted()
 std::string DbHistory::format_mysql_date(std::string _date)
 {
     // Handle MySQL date formating
-    if(_date.find("-") != std::string::npos)
+    if(_date.find('-') != std::string::npos)
     {
         return _date.substr(8, 2) + "/" + _date.substr(5, 2) + "/" + _date.substr(0, 4) + " " + _date.substr(11, 2) +
                ":" + _date.substr(14, 2) + ":" + _date.substr(17, 2);

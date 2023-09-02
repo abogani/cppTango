@@ -207,7 +207,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                         if(tmp_host.find("127.") == 0)
                         {
                         }
-                        else if(tmp_host.find(":") != std::string::npos)
+                        else if(tmp_host.find(':') != std::string::npos)
                         {
                         }
                         else
