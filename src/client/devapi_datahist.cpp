@@ -45,7 +45,7 @@ namespace Tango
 //-----------------------------------------------------------------------------
 
 DeviceDataHistory::DeviceDataHistory() :
-    DeviceData(),
+
     ext_hist(nullptr)
 {
     fail = false;
@@ -316,7 +316,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceDataHistory &dh)
 //-----------------------------------------------------------------------------
 
 DeviceAttributeHistory::DeviceAttributeHistory() :
-    DeviceAttribute(),
+
     ext_hist(nullptr)
 {
     fail = false;

@@ -903,7 +903,7 @@ class DelayedEventUnsubThread : public omni_thread
 {
   public:
     DelayedEventUnsubThread(EventConsumer *ec, int id, TangoMonitor *m) :
-        omni_thread(),
+
         event_id(id),
         ev_cons(ec),
         the_mon(m)
@@ -935,7 +935,7 @@ class DelayedEventSubThread : public omni_thread
                           EventQueue *_ev_queue,
                           const std::string &_ev_name,
                           int _id) :
-        omni_thread(),
+
         ev_cons(ec),
         device(_device),
         attribute(_attribute),

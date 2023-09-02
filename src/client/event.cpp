@@ -3738,7 +3738,7 @@ void EventData::set_time()
 }
 
 FwdEventData::FwdEventData() :
-    EventData(),
+
     av_5(nullptr),
     event_data(nullptr)
 {
@@ -3885,7 +3885,7 @@ void AttrConfEventData::set_time()
 }
 
 FwdAttrConfEventData::FwdAttrConfEventData() :
-    AttrConfEventData(),
+
     fwd_attr_conf(nullptr)
 {
 }

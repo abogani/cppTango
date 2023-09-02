@@ -307,8 +307,8 @@ GroupReplyList &GroupReplyList::operator=(GroupReplyList &&) = default;
 //=============================================================================
 // class GroupCmdReply : reply to command executed on a group
 //=============================================================================
-GroupCmdReply::GroupCmdReply() :
-    GroupReply()
+GroupCmdReply::GroupCmdReply()
+
 {
     //-noop impl
 }

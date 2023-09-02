@@ -68,7 +68,7 @@ PollObj::PollObj(DeviceImpl *d, PollObjType ty, const std::string &na, PollClock
     upd(user_upd),
     needed_time(),
     max_delta_t(upd * dev->get_poll_old_factor()),
-    ring(),
+
     fwd(false)
 {
 }

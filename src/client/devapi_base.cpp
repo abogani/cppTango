@@ -87,7 +87,7 @@ Connection::Connection(CORBA::ORB_var orb_in) :
     source(Tango::CACHE_DEV),
     ext(new ConnectionExt()),
     tr_reco(true),
-    prev_failed_t0(),
+
     user_connect_timeout(-1),
     tango_host_localhost(false)
 {
@@ -136,7 +136,7 @@ Connection::Connection(CORBA::ORB_var orb_in) :
 Connection::Connection(bool dummy) :
     ext(nullptr),
     tr_reco(true),
-    prev_failed_t0(),
+
     user_connect_timeout(-1),
     tango_host_localhost(false)
 {

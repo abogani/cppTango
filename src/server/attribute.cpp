@@ -126,11 +126,7 @@ void LastAttrValue::store(const AttributeValue_5 *attr_5,
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const std::string &dev_name, long idx) :
-
-    last_periodic(),
-    archive_last_periodic(),
-    archive_last_event()
+Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const std::string &dev_name, long idx)
 
 {
     //
