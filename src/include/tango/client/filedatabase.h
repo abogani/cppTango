@@ -112,7 +112,7 @@ class FileDatabaseExt
   public:
     FileDatabaseExt();
 
-    ~FileDatabaseExt();
+    ~FileDatabaseExt() = default;
 };
 
 class FileDatabase

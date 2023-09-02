@@ -252,8 +252,6 @@ char *to_corba_string(CORBA::ULong val)
 
 FileDatabaseExt::FileDatabaseExt() { }
 
-FileDatabaseExt::~FileDatabaseExt() { }
-
 FileDatabase::FileDatabase(const std::string &file_name) :
     ext(new FileDatabaseExt)
 {
