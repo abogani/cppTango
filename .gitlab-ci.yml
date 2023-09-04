@@ -184,6 +184,7 @@ debian12-no-pch:
     <<: *variables
     OS_TYPE: debian12:v2
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    TANGO_WARNINGS_AS_ERRORS: "ON"
 
 debian12-release:
   <<: *job-template-with-tests
@@ -191,6 +192,16 @@ debian12-release:
     <<: *variables
     OS_TYPE: debian12:v2
     CMAKE_BUILD_TYPE: Release
+    TANGO_WARNINGS_AS_ERRORS: "ON"
+
+debian12-release-no-pch:
+  <<: *job-template-with-tests
+  variables:
+    <<: *variables
+    OS_TYPE: debian12:v2
+    CMAKE_BUILD_TYPE: Release
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    TANGO_WARNINGS_AS_ERRORS: "ON"
 
 debian12:
   <<: *job-template-with-tests
