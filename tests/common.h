@@ -6,6 +6,8 @@
 
 #ifndef TS_ASSERT
   #include <assert.h>
+#else
+  #undef assert
 #endif
 
 #ifdef WIN32
