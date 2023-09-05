@@ -7,12 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "cxx_common.h"
+
 #ifdef TANGO_USE_JPEG
   // Needed to get the JCS_EXTENSIONS define
   #include <jpeglib.h>
 #endif
-
-#include "cxx_common.h"
 
 #undef SUITE_NAME
 #define SUITE_NAME JPEGEncodedTestSuite
