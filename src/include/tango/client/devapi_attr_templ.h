@@ -55,7 +55,8 @@ template <typename T>
 struct CheckEnumCompatibleType<T, typename std::enable_if<std::is_enum<T>::value>::type>
 {
     using UT = typename std::underlying_type<T>::type;
-    static constexpr bool value = std::is_same<short, UT>::value || std::is_same<unsigned int, UT>::value;
+    static constexpr bool value =
+        std::is_same<short, UT>::value || std::is_same<unsigned int, UT>::value || std::is_same<int, UT>::value;
 };
 
 } // namespace detail
