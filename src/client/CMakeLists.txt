@@ -34,6 +34,13 @@ add_library(client_objects OBJECT ${SOURCES})
 add_dependencies(client_objects idl_objects common_objects)
 set_cflags_and_include(client_objects)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set_source_files_properties(
+        devapi_attr.cpp
+        PROPERTIES
+        COMPILE_FLAGS -Wno-stringop-overflow)
+endif()
+
 if(WIN32)
     target_compile_definitions(client_objects PRIVATE "${windows_defs}")
 else()

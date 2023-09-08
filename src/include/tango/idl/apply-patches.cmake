@@ -23,6 +23,9 @@ add_after_in_file(tango.h "#define __tango_hh__" "\n\n\
 //Added by Tango team\n\
 #ifdef __clang_analyzer__\n\
 #pragma clang system_header\n\
+#endif\n\
+#if defined(__GNUC__) && !defined(__clang__)\n\
+#pragma GCC system_header\n\
 #endif\n")
 
 add_after_in_file(tango.h "typedef _CORBA_ConstrType_Variable_Var<AttributeValue_4> _var_type;" "\n\n\
