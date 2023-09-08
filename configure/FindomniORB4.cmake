@@ -186,6 +186,20 @@ function(_omniORB4_find_release_and_debug prefix release_names debug_names relea
     set(${prefix}_static_LIBRARY ${${prefix}_static_LIBRARY} PARENT_SCOPE)
 endfunction()
 
+function(_omniORB4_find_runtime_release_and_debug prefix runtime_release_names runtime_debug_names)
+    find_file(${prefix}_RUNTIME_RELEASE
+            NAMES ${runtime_release_names}.dll
+            PATHS "${_omniORB4_PKG_PREFIX}"
+            PATH_SUFFIXES "bin/x86_win32"
+        )
+
+    find_file(${prefix}_RUNTIME_DEBUG
+            NAMES ${runtime_debug_names}.dll
+            PATHS "${_omniORB4_PKG_PREFIX}"
+            PATH_SUFFIXES "bin/x86_win32"
+            )
+endfunction()
+
 function(_omniORB4_add_target prefix targetname)
     if (${prefix}_FOUND)
         if (NOT TARGET omniORB4::${targetname})
@@ -243,6 +257,11 @@ if (WIN32)
     _omniORB4_find_release_and_debug(omniORB4_thread omnithread_rt omnithread_rtd omnithread omnithreadd)
     _omniORB4_find_release_and_debug(omniORB4_COS4 COS4_rt COS4_rtd COS4 COS4d)
     _omniORB4_find_release_and_debug(omniORB4_Dynamic4 omniDynamic4_rt omniDynamic4_rtd omniDynamic4 omniDynamic4d)
+
+    _omniORB4_find_runtime_release_and_debug(omniORB4 omniORB430_vc15_rt omniORB430_vc15_rtd)
+    _omniORB4_find_runtime_release_and_debug(omniORB4_thread omnithread43_vc15_rt omnithread43_vc15_rtd)
+    _omniORB4_find_runtime_release_and_debug(omniORB4_COS4 COS430_vc15_rt COS430_vc15_rtd)
+    _omniORB4_find_runtime_release_and_debug(omniORB4_Dynamic4 omniDynamic430_vc15_rt omniDynamic430_vc15_rtd)
 else()
     _omniORB4_find_release_and_debug(omniORB4 omniORB4 omniORB4 libomniORB4.a libomniORB4.a)
     _omniORB4_find_release_and_debug(omniORB4_thread omnithread omnithread libomnithread.a libomnithread.a)

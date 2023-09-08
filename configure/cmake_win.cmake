@@ -76,112 +76,148 @@ install(DIRECTORY "$<TARGET_FILE_DIR:tango>/"
         FILES_MATCHING PATTERN "*.pdb")
 
 if (TANGO_INSTALL_DEPENDENCIES)
-    install(DIRECTORY ${TANGO_OMNI_BASE}/include/COS DESTINATION include COMPONENT)
-    install(DIRECTORY ${TANGO_OMNI_BASE}/include/omniORB4 DESTINATION include COMPONENT headers)
-    install(DIRECTORY ${TANGO_OMNI_BASE}/include/omnithread DESTINATION include COMPONENT headers FILES_MATCHING PATTERN "*.h" PATTERN "*.in" EXCLUDE)
-    install(DIRECTORY ${TANGO_OMNI_BASE}/include/omniVms DESTINATION include COMPONENT headers)
-    install(FILES ${TANGO_OMNI_BASE}/include/omniconfig.h DESTINATION include COMPONENT headers)
-    install(FILES ${TANGO_OMNI_BASE}/include/omnithread.h DESTINATION include COMPONENT headers)
-    install(FILES ${TANGO_ZMQ_BASE}/include/zmq.h DESTINATION include COMPONENT headers)
-    install(FILES ${TANGO_ZMQ_BASE}/include/zmq_utils.h DESTINATION include COMPONENT headers)
-    install(FILES ${TANGO_CPPZMQ_BASE}/include/zmq.hpp DESTINATION include COMPONENT headers)
-    install(FILES ${TANGO_CPPZMQ_BASE}/include/zmq_addon.hpp DESTINATION include COMPONENT headers)
+    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/COS DESTINATION include COMPONENT)
+    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/omniORB4 DESTINATION include COMPONENT headers)
+    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/omnithread DESTINATION include COMPONENT headers FILES_MATCHING PATTERN "*.h" PATTERN "*.in" EXCLUDE)
+    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/omniVms DESTINATION include COMPONENT headers)
+    install(FILES ${omniORB4_INCLUDE_DIR}/omniconfig.h DESTINATION include COMPONENT headers)
+    install(FILES ${omniORB4_INCLUDE_DIR}/omnithread.h DESTINATION include COMPONENT headers)
+    install(FILES ${ZeroMQ_INCLUDE_DIR}/zmq.h DESTINATION include COMPONENT headers)
+    install(FILES ${ZeroMQ_INCLUDE_DIR}/zmq_utils.h DESTINATION include COMPONENT headers)
+    install(FILES ${cppzmq_INCLUDE_DIR}/zmq.hpp DESTINATION include COMPONENT headers)
+    install(FILES ${cppzmq_INCLUDE_DIR}/zmq_addon.hpp DESTINATION include COMPONENT headers)
 
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        #omniorb static lib
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic4d.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniORB4d.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic4d.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omnithreadd.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/COS4d.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniORB4_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic4_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omnithread_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/COS4_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniORB430_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic430_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omnithread43_rtd.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/COS430_rtd.lib DESTINATION lib COMPONENT dynamic)
-
+        install(FILES ${omniORB4_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_thread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_COS4_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_Dynamic4_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
+        install(FILES ${omniORB4_thread_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
+        install(FILES ${omniORB4_COS4_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
+        install(FILES ${omniORB4_Dynamic4_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
     else()
-
-        #omniorb static lib
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniORB4.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic4.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omnithread.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/COS4.lib DESTINATION lib COMPONENT static)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniORB4_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic4_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omnithread_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/COS4_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniORB430_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omniDynamic430_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/omnithread43_rt.lib DESTINATION lib COMPONENT dynamic)
-        install(FILES ${TANGO_OMNI_BASE}/lib/x86_win32/COS430_rt.lib DESTINATION lib COMPONENT dynamic)
-
+        install(FILES ${omniORB4_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_thread_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_COS4_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_Dynamic4_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        install(FILES ${omniORB4_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
+        install(FILES ${omniORB4_thread_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
+        install(FILES ${omniORB4_COS4_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
+        install(FILES ${omniORB4_Dynamic4_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
     endif()
 
     if(CMAKE_VS_PLATFORM_TOOLSET IN_LIST WINDOWS_SUPPORTED_VS_TOOLSETS)
         if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/omniORB430_vc15_rtd.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/omniDynamic430_vc15_rtd.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/omnithread43_vc15_rtd.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/COS430_vc15_rtd.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_ZMQ_BASE}/lib/Debug/libzmq-v141-mt-gd-4_0_5.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_ZMQ_BASE}/lib/Debug/libzmq-v141-mt-sgd-4_0_5.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_ZMQ_BASE}/bin/Debug/libzmq-v141-mt-gd-4_0_5.dll DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_Dynamic4_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_thread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_COS4_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${ZeroMQ_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+            install(FILES ${ZeroMQ_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
         else()
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/omniORB430_vc15_rt.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/omniDynamic430_vc15_rt.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/omnithread43_vc15_rt.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_OMNI_BASE}/bin/x86_win32/COS430_vc15_rt.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_ZMQ_BASE}/lib/Release/libzmq-v141-mt-4_0_5.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_ZMQ_BASE}/lib/Release/libzmq-v141-mt-s-4_0_5.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_ZMQ_BASE}/bin/Release/libzmq-v141-mt-4_0_5.dll DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_Dynamic4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_thread_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${omniORB4_COS4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+            install(FILES ${ZeroMQ_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+            install(FILES ${ZeroMQ_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
         endif()
     endif()
 
     #pthreads
-    if (PTHREAD_WIN)
-        install(FILES ${PTHREAD_WIN}/lib/pthreadVC2.lib DESTINATION lib COMPONENT static)
-        install(FILES ${PTHREAD_WIN}/lib/pthreadVC2-s.lib DESTINATION lib COMPONENT static)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2.dll DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2.pdb DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2.exp DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2.ilk DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/lib/pthreadVC2d.lib DESTINATION lib COMPONENT static)
-        install(FILES ${PTHREAD_WIN}/lib/pthreadVC2-sd.lib DESTINATION lib COMPONENT static)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2d.dll DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2d.pdb DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2d.exp DESTINATION bin COMPONENT dynamic)
-        install(FILES ${PTHREAD_WIN}/bin/pthreadVC2d.ilk DESTINATION bin COMPONENT dynamic)
+    if (TANGO_USE_PTHREAD)
+        install(FILES ${pthread_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        install(FILES ${pthread_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        install(FILES ${pthread_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+        install(FILES ${pthread_DBG_RELEASE} DESTINATION bin COMPONENT dynamic)
+        install(FILES ${pthread_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+        install(FILES ${pthread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+        install(FILES ${pthread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
+        install(FILES ${pthread_DBG_DEBUG} DESTINATION bin COMPONENT dynamic)
     endif()
 
     #Jpeg
     if (TANGO_USE_JPEG)
-        install(FILES ${TANGO_JPEG_BASE}/include/jconfig.h DESTINATION include COMPONENT headers)
-        install(FILES ${TANGO_JPEG_BASE}/include/jmorecfg.h DESTINATION include COMPONENT headers)
-        install(FILES ${TANGO_JPEG_BASE}/include/jpeglib.h DESTINATION include COMPONENT headers)
-        install(FILES ${TANGO_JPEG_BASE}/include/jerror.h DESTINATION include COMPONENT headers)
-        install(FILES ${TANGO_JPEG_BASE}/include/turbojpeg.h DESTINATION include COMPONENT headers)
+        #We need to find the dll, and the turbojpeg files
+        get_filename_component(JPEG_LIBRARY_DIR ${JPEG_LIBRARY} DIRECTORY)
+        get_filename_component(JPEG_PREFIX ${JPEG_LIBRARY_DIR} DIRECTORY)
+
+        find_library(TURBO_JPEG_LIBRARY_DEBUG
+            NAMES turbojpeg${JPEG_DEBUG_POSTFIX}
+             PATHS "${JPEG_LIBRARY_DIR}")
+        find_library(TURBO_JPEG_LIBRARY_RELEASE
+            NAMES turbojpeg
+             PATHS "${JPEG_LIBRARY_DIR}")
+
+        find_library(TURBO_JPEG_LIBRARY_STATIC_DEBUG
+            NAMES turbojpeg-static${JPEG_DEBUG_POSTFIX}
+             PATHS "${JPEG_LIBRARY_DIR}")
+
+        find_library(TURBO_JPEG_LIBRARY_STATIC_RELEASE
+            NAMES turbojpeg-static
+             PATHS "${JPEG_LIBRARY_DIR}")
+
+        set(_extensions "dll" "pdb")
+
+        foreach(ext IN LISTS _extensions)
+            find_file(jpeg_${ext}_RELEASE
+                NAMES "jpeg62.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+
+            find_file(turbojpeg_${ext}_RELEASE
+                NAMES "turbojpeg.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+            find_file(jpeg_${ext}_DEBUG
+                NAMES "jpeg62${JPEG_DEBUG_POSTFIX}.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+
+            find_file(turbojpeg_${ext}_DEBUG
+                NAMES "turbojpeg${JPEG_DEBUG_POSTFIX}.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+            if(${jpeg_${ext}_RELEASE})
+                list(APPEND JPEG_RUNTIME_RELEASE "${jpeg_${ext}_RELEASE}")
+            endif()
+            if(${turbojpeg_${ext}_RELEASE})
+                list(APPEND JPEG_RUNTIME_RELEASE "${turbojpeg_${ext}_RELEASE}")
+            endif()
+            if(${jpeg_${ext}_DEBUG})
+                list(APPEND JPEG_RUNTIME_DEBUG "${jpeg_${ext}_DEBUG}")
+            endif()
+            if(${turbojpeg_${ext}_DEBUG})
+                list(APPEND JPEG_RUNTIME_DEBUG "${turbojpeg_${ext}_DEBUG}")
+            endif()
+        endforeach(ext IN _extensions)
+
+        unset(_extensions)
+        unset(JPEG_PREFIX)
+        unset(JPEG_LIBRARY_DIR)
+
+        install(FILES ${JPEG_INCLUDE_DIRS}/jconfig.h DESTINATION include COMPONENT headers)
+        install(FILES ${JPEG_INCLUDE_DIRS}/jmorecfg.h DESTINATION include COMPONENT headers)
+        install(FILES ${JPEG_INCLUDE_DIRS}/jpeglib.h DESTINATION include COMPONENT headers)
+        install(FILES ${JPEG_INCLUDE_DIRS}/jerror.h DESTINATION include COMPONENT headers)
+        install(FILES ${JPEG_INCLUDE_DIRS}/turbojpeg.h DESTINATION include COMPONENT headers)
         if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-            install(FILES ${TANGO_JPEG_BASE}/lib/jpeg-static${JPEG_DEBUG_POSTFIX}.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_JPEG_BASE}/lib/jpeg${JPEG_DEBUG_POSTFIX}.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_JPEG_BASE}/lib/turbojpeg-static${JPEG_DEBUG_POSTFIX}.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_JPEG_BASE}/lib/turbojpeg${JPEG_DEBUG_POSTFIX}.lib DESTINATION lib COMPONENT static)
+            install(FILES ${JPEG_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+            install(FILES ${TURBO_JPEG_LIBRARY_STATIC_DEBUG} DESTINATION lib COMPONENT static)
+            install(FILES ${TURBO_JPEG_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
 
-            install(FILES ${TANGO_JPEG_BASE}/bin/jpeg62${JPEG_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_JPEG_BASE}/bin/jpeg62${JPEG_DEBUG_POSTFIX}.pdb DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_JPEG_BASE}/bin/turbojpeg${JPEG_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_JPEG_BASE}/bin/turbojpeg${JPEG_DEBUG_POSTFIX}.pdb DESTINATION bin COMPONENT dynamic)
+            install(FILES ${JPEG_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
         else()
-            install(FILES ${TANGO_JPEG_BASE}/lib/jpeg-static.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_JPEG_BASE}/lib/jpeg.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_JPEG_BASE}/lib/turbojpeg-static.lib DESTINATION lib COMPONENT static)
-            install(FILES ${TANGO_JPEG_BASE}/lib/turbojpeg.lib DESTINATION lib COMPONENT static)
+            install(FILES ${JPEG_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+            install(FILES ${TURBO_JPEG_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+            install(FILES ${TURBO_JPEG_LIBRARY_STATIC_RELEASE} DESTINATION lib COMPONENT static)
 
-            install(FILES ${TANGO_JPEG_BASE}/bin/jpeg62.dll DESTINATION bin COMPONENT dynamic)
-            install(FILES ${TANGO_JPEG_BASE}/bin/turbojpeg.dll DESTINATION bin COMPONENT dynamic)
+            install(FILES ${JPEG_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
         endif()
     endif()
 endif()

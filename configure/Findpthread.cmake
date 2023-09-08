@@ -48,6 +48,17 @@ The following cache variables may also be set:
     The path to the release pthread library, or the debug library
     if the release library is not found
 
+The following cache variables may also be set on windows only:
+
+    ``pthread_RUNTIME_RELEASE``
+	The path to the pthread release dll.
+    ``pthread_RUNTIME_DEBUG``
+	The path to the pthread debug dll.
+    ``pthread_DBG_RELEASE``
+	The path to the pdb, exp, and ilk files.
+    ``pthread_DBG_DEBUG``
+	The path to the pdb, exp, and ilk files.
+
 #]=======================================================================]
 
 find_path(pthread_INCLUDE_DIR
@@ -72,6 +83,37 @@ find_library(pthread_static_LIBRARY_DEBUG
     NAMES "pthreadVC2-sd"
     NAMES_PER_DIR
 )
+
+find_file(pthread_RUNTIME_RELEASE
+    NAMES "pthreadVC2.dll"
+    PATH_SUFFIXES bin
+)
+
+find_file(pthread_RUNTIME_DEBUG
+    NAMES "pthreadVC2d.dll"
+    PATH_SUFFIXES bin
+)
+
+set(_extensions "pdb" "exp" "ilk" )
+
+foreach(ext IN LISTS _extensions)
+    find_file(dbg_${ext}_RELEASE
+        NAMES "pthreadVC2.${ext}"
+    )
+
+    find_file(dbg_${ext}_DEBUG
+        NAMES "pthreadVC2d.${ext}"
+    )
+
+    if(${dbg_${ext}_RELEASE})
+        list(APPEND pthread_DBG_RELEASE "${dbg_${ext}_RELEASE}")
+    endif()
+    if(${dbg_${ext}_DEBUG})
+        list(APPEND pthread_DBG_DEBUG "${dbg_${ext}_DEBUG}")
+    endif()
+endforeach(ext IN _extensions)
+
+unset(_extensions)
 
 include(SelectLibraryConfigurations)
 select_library_configurations(pthread)

@@ -47,6 +47,10 @@ The following cache variables may also be set:
     ``ZeroMQ_static_LIBRARY``
     The path to the release ZeroMQ library, or the debug library
     if the release library is not found
+    ``ZeroMQ_RUNTIME_RELEASE``
+	The path to the release ZeroMQ dll, windows only.
+    ``ZeroMQ_RUNTIME_DEBUG``
+	The path to the debug ZeroMQ dll, windows only.
 
 #]=======================================================================]
 
@@ -77,6 +81,8 @@ if(WIN32)
             list(APPEND _zmq_lib_debug_names "libzmq${vc_ver}-mt-gd-${ver}.lib")
             list(APPEND _zmq_lib_static_release_names "libzmq${vc_ver}-mt-s-${ver}.lib")
             list(APPEND _zmq_lib_static_debug_names "libzmq${vc_ver}-mt-sgd-${ver}.lib")
+            list(APPEND _zmq_runtime_release_names "libzmq${vc_ver}-mt-${ver}.dll")
+            list(APPEND _zmq_runtime_debug_names "libzmq${vc_ver}-mt-gd-${ver}.dll")
         endforeach(vc_ver IN LISTS VC_VERSIONS)
     endforeach(ver IN ZMQ_VERSIONS)
 
@@ -131,6 +137,21 @@ unset(_zmq_lib_release_names)
 unset(_zmq_lib_debug_names)
 unset(_zmq_lib_static_release_names)
 unset(_zmq_lib_static_debug_names)
+
+if(WIN32)
+    find_file(ZeroMQ_RUNTIME_DEBUG
+        NAMES ${_zmq_runtime_debug_names}
+        PATHS "${_ZeroMQ_PKG_PREFIX}"
+        PATH_SUFFIXES "bin/Debug" "bin"
+    )
+    find_file(ZeroMQ_RUNTIME_RELEASE
+        NAMES ${_zmq_runtime_release_names}
+        PATHS "${_ZeroMQ_PKG_PREFIX}"
+        PATH_SUFFIXES "bin/Release" "bin"
+    )
+    unset(_zmq_runtime_release_names)
+    unset(_zmq_runtime_debug_names)
+endif()
 
 include(SelectLibraryConfigurations)
 select_library_configurations(ZeroMQ)
