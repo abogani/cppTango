@@ -90,7 +90,7 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND Git_FOUND)
     endif()
 else()
     set(GIT_DESCRIBE_STDOUT "unknown")
-    set(SUFFIX_VERSION "dev")
+    set(SUFFIX_VERSION "")
 endif()
 
 #convenient versions
