@@ -1,14 +1,20 @@
 # Add the default cflags and include directories to ${target}
 function(set_cflags_and_include target)
-  target_compile_options(${target} PUBLIC ${ZMQ_PKG_CFLAGS_OTHER}
-                                          ${JPEG_PKG_CFLAGS_OTHER}
-                                          ${OMNIORB_PKG_CFLAGS_OTHER}
-                                          ${OMNICOS_PKG_CFLAGS_OTHER}
-                                          ${OMNIDYN_PKG_CFLAGS_OTHER})
+  target_link_libraries(${target}
+    PUBLIC
+        ${CMAKE_DL_LIBS}
+        omniORB4::omniORB4
+        omniORB4::COS4
+        omniORB4::Dynamic4
+        cppzmq::cppzmq
+  )
 
-  target_include_directories(${target} SYSTEM PUBLIC $<$<BOOL:${CPPZMQ_PKG_INCLUDE_DIRS}>:${CPPZMQ_PKG_INCLUDE_DIRS}>
-                                                     ${ZMQ_PKG_INCLUDE_DIRS}
-                                                     ${JPEG_PKG_INCLUDE_DIRS}
-                                                     ${OMNIORB_PKG_INCLUDE_DIRS}
-                                                     ${OMNIDYN_PKG_INCLUDE_DIRS})
+  target_include_directories(${target} SYSTEM PUBLIC
+    ${cppzmq_INCLUDE_DIR}
+    ${omniORB4_INCLUDE_DIR}
+  )
+
+  if(TANGO_USE_JPEG)
+      target_link_libraries(${target} PRIVATE JPEG::JPEG)
+  endif()
 endfunction()

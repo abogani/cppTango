@@ -1,5 +1,6 @@
 # Use a function to introduce a scope so that we can set CMAKE_CXX_FLAGS
 function(test_omniidl)
+    message(STATUS "Using OMNIIDL=${OMNIIDL}")
     message(STATUS "Testing omniidl for bug in generated c++ for IDL union")
 
     execute_process(
@@ -18,26 +19,15 @@ function(test_omniidl)
     if (WIN32)
         # Always statically link on Windows so we don't need the omniorb dll's to be in the PATH
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
-        set(link_libs ${OMNIORB_PKG_LIBRARIES_STA_DEBUG};ws2_32.lib)
+        set(link_libs omniORB4::omniORB4-static;omniORB4::COS4-static;omniORB4::Dynamic4-static;ws2_32.lib)
         set(defs "-D__x86__" "-D__NT__" "-D__OSVERSION__=4" "-D__WIN32__" "-D_WIN32_WINNT=0x0400")
         foreach(def ${static_defs})
             list(APPEND defs "-D${def}")
         endforeach()
     else()
-        set(link_libs ${OMNIORB_PKG_LIBRARIES} ${OMNICOS_PKG_LIBRARIES} ${OMNIDYN_PKG_LIBRARIES})
+        set(link_libs omniORB4::omniORB4 omniORB4::COS4 omniORB4::Dynamic4)
         set(defs "")
     endif()
-
-    set(inc_dirs
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${OMNIORB_PKG_INCLUDE_DIRS}
-        ${OMNIDYN_PKG_INCLUDE_DIRS}
-        ${OMNICOS_PKG_INCLUDE_DIRS})
-
-    set(link_dirs
-        ${OMNIORB_PKG_LIBRARY_DIRS}
-        ${OMNIDYN_PKG_LIBRARY_DIRS}
-        ${OMNICOS_PKG_LIBRARY_DIRS})
 
     try_run(TANGO_OMNIIDL_HAS_NO_UNION_BUG TANGO_OMNIIDL_CHECK_COMPILE
         ${CMAKE_CURRENT_BINARY_DIR}/
@@ -46,8 +36,7 @@ function(test_omniidl)
             ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlSK.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/test_omniidlDynSK.cpp
         CMAKE_FLAGS
-            "-DINCLUDE_DIRECTORIES=${inc_dirs}"
-            "-DLINK_DIRECTORIES=${link_dirs}"
+            "-DINCLUDE_DIRECTORIES=${CMAKE_CURRENT_BINARY_DIR}"
         COMPILE_DEFINITIONS ${defs}
         LINK_LIBRARIES ${link_libs}
         COMPILE_OUTPUT_VARIABLE OMNIIDL_TEST_COMPILE_OUTPUT
