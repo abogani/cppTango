@@ -143,18 +143,21 @@ coverage:
   variables:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --xml --output coverage.xml
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --html-details --output coverage/coverage.html
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
     - tar czf coverage.tar.gz coverage
   artifacts:
     when: always
