@@ -6,20 +6,14 @@
 #undef SUITE_NAME
 #define SUITE_NAME EnumAttTestSuite
 
-enum EnumShort : short
+static_assert(std::is_same<short, DevShort>::value, "short does not match DevShort");
+
+enum EnumShort : DevShort
 {
     EnumShort_A = 0,
     EnumShort_B = 1,
     EnumShort_C = 2,
     EnumShort_D = 3
-};
-
-enum EnumUInt : unsigned int
-{
-    EnumUInt_A = 0,
-    EnumUInt_B = 1,
-    EnumUInt_C = 2,
-    EnumUInt_D = 3
 };
 
 class EnumAttTestSuite : public CxxTest::TestSuite
@@ -321,39 +315,6 @@ class EnumAttTestSuite : public CxxTest::TestSuite
 
         std::vector<EnumShort> sh_rd;
         TS_ASSERT_THROWS_NOTHING(da_read >> sh_rd);
-    }
-
-    void test_enum_scalar_attribute_writing_with_enum_type_uint()
-    {
-        EnumUInt int_wr = EnumUInt_B;
-        DeviceAttribute da_wr;
-        da_wr.set_name("Enum_attr_rw");
-        TS_ASSERT_THROWS_NOTHING(da_wr << int_wr);
-        TS_ASSERT_THROWS_NOTHING(device1->write_attribute(da_wr));
-
-        DeviceAttribute da_read;
-        TS_ASSERT_THROWS_NOTHING(da_read = device1->read_attribute("Enum_attr_rw"));
-        TS_ASSERT_EQUALS(da_read.get_type(), Tango::DEV_ENUM);
-
-        EnumUInt int_rd;
-        TS_ASSERT_THROWS_NOTHING(da_read >> int_rd);
-    }
-
-    void test_enum_spectrum_attribute_writing_with_enum_type_uint()
-    {
-        std::vector<EnumUInt> int_wr = {EnumUInt_A, EnumUInt_B, EnumUInt_C, EnumUInt_D};
-        DeviceAttribute da_wr;
-        da_wr.set_name("Enum_spec_attr_rw");
-        TS_ASSERT_THROWS_NOTHING(da_wr << int_wr);
-        TS_ASSERT_EQUALS(da_wr.get_type(), Tango::DEV_ENUM);
-        TS_ASSERT_THROWS_NOTHING(device1->write_attribute(da_wr));
-
-        DeviceAttribute da_read;
-        TS_ASSERT_THROWS_NOTHING(da_read = device1->read_attribute("Enum_spec_attr_rw"));
-        TS_ASSERT_EQUALS(da_read.get_type(), Tango::DEV_ENUM);
-
-        std::vector<EnumUInt> int_rd;
-        TS_ASSERT_THROWS_NOTHING(da_read >> int_rd);
     }
 
     void test_enum_operators_compile_check_our_types()

@@ -55,8 +55,7 @@ template <typename T>
 struct CheckEnumCompatibleType<T, typename std::enable_if<std::is_enum<T>::value>::type>
 {
     using UT = typename std::underlying_type<T>::type;
-    static constexpr bool value =
-        std::is_same<short, UT>::value || std::is_same<unsigned int, UT>::value || std::is_same<int, UT>::value;
+    static constexpr bool value = std::is_same<DevShort, UT>::value;
 };
 
 } // namespace detail
@@ -440,7 +439,7 @@ void DeviceAttribute::template_type_check()
     static_assert(detail::CheckEnumCompatibleType<T>::value,
                   "Type provided for insertion is not a valid enum."
                   " Only C enum or C++11 enum class with "
-                  "underlying short or unsigned int data type are supported.");
+                  "underlying Tango::DevShort data type is supported.");
 }
 
 } // namespace Tango
