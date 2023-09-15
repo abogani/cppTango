@@ -17,9 +17,15 @@ function(test_omniidl)
     endif()
 
     if (WIN32)
-        # Always statically link on Windows so we don't need the omniorb dll's to be in the PATH
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
-        set(link_libs omniORB4::omniORB4-static;omniORB4::COS4-static;omniORB4::Dynamic4-static;ws2_32.lib)
+        if(TARGET omniORB4::omniORB4-static)
+          # Always statically link on Windows so we don't need the omniorb dll's to be in the PATH
+          set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+          set(link_libs omniORB4::omniORB4-static;omniORB4::COS4-static;omniORB4::Dynamic4-static;ws2_32.lib)
+        else()
+          set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
+          set(link_libs omniORB4::omniORB4;omniORB4::COS4;omniORB4::Dynamic4;ws2_32.lib)
+        endif()
+
         set(defs "-D__x86__" "-D__NT__" "-D__OSVERSION__=4" "-D__WIN32__" "-D_WIN32_WINNT=0x0400")
         foreach(def ${static_defs})
             list(APPEND defs "-D${def}")
