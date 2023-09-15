@@ -124,7 +124,7 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
                 }
             }
 
-            assert(nb_not_arrived >= 1);
+            TS_ASSERT(nb_not_arrived >= 1);
 
             TEST_LOG << "   Asynchronous write_attribute in polling mode --> OK" << endl;
         }
@@ -183,7 +183,7 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
                 }
             }
 
-            assert(nb_not_arrived >= 1);
+            TS_ASSERT(nb_not_arrived >= 1);
 
             // Read the attribute
             long read_id;
@@ -201,7 +201,7 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
                     Tango::DevLong val;
                     *received >> val;
                     TEST_LOG << "attr_asyn_write attribute value = " << val << endl;
-                    assert(val == 444);
+                    TS_ASSERT_EQUALS(val, 444);
                     finish = true;
                 }
                 catch(AsynReplyNotArrived &)
@@ -217,7 +217,7 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
             }
             delete received;
 
-            assert(nb_not_arrived >= 1);
+            TS_ASSERT(nb_not_arrived >= 1);
 
             TEST_LOG << "   Asynchronous read_attribute in polling mode --> OK" << endl;
 

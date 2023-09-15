@@ -5,7 +5,9 @@
 #include <tango/tango.h>
 
 #ifndef TS_ASSERT
-  #include <assert.h>
+  #include <cassert>
+#else
+  #undef assert
 #endif
 
 #ifdef WIN32
