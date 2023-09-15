@@ -57,6 +57,7 @@ if(WIN32)
     include(configure/cmake_win_defs.cmake)
 endif()
 
+include(configure/git.cmake)
 find_package(Git QUIET)
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND Git_FOUND)
   execute_process(
