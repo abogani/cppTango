@@ -143,18 +143,21 @@ coverage:
   variables:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --xml --output coverage.xml
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --html-details --output coverage/coverage.html
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
     - tar czf coverage.tar.gz coverage
   artifacts:
     when: always
@@ -175,14 +178,14 @@ debian12-static:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     BUILD_SHARED_LIBS: "OFF"
 
 debian12-no-pch:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
 
@@ -190,7 +193,7 @@ debian12-release:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     CMAKE_BUILD_TYPE: Release
     TANGO_WARNINGS_AS_ERRORS: "ON"
 
@@ -198,7 +201,7 @@ debian12-release-no-pch:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     CMAKE_BUILD_TYPE: Release
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
@@ -207,13 +210,13 @@ debian12:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
 
 debian12-no-jpeg:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     TANGO_USE_JPEG: "OFF"
 
 debian12-cross-32bit:
@@ -402,7 +405,7 @@ doxygen-documentation:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
     TANGO_MAKE_TARGET: "doc"
@@ -473,7 +476,7 @@ cmake-superproject:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
   script: # override
     - cd tests/superproject
     - ../../ci/config.sh
