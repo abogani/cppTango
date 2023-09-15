@@ -27,3 +27,41 @@ function(_add_cmake_configure_dependencies)
 endfunction()
 
 _add_cmake_configure_dependencies()
+
+# Custom cppTango logic to get git description and suffix
+function(git_describe description_var suffix_var)
+  set(GIT_DESCRIBE_STDOUT "unknown")
+  set(SUFFIX_VERSION "")
+  find_package(Git QUIET)
+  if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND Git_FOUND)
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" describe --tags --exclude=*test* --always HEAD
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        OUTPUT_VARIABLE GIT_DESCRIBE_STDOUT
+        ERROR_VARIABLE GIT_DESCRIBE_STDERR
+        RESULT_VARIABLE GIT_DESCRIBE_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(GIT_DESCRIBE_RESULT)
+      message(WARNING "Could not fetch the git revision (error ${GIT_DESCRIBE_RESULT}): ${GIT_DESCRIBE_STDERR}")
+      set(GIT_DESCRIBE_STDOUT "unknown")
+      set(SUFFIX_VERSION "dev")
+    endif()
+
+    # determine if we are on a tag or not
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" name-rev --name-only --tags --no-undefined HEAD
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        OUTPUT_VARIABLE GIT_NAMEREV_STDOUT
+        ERROR_VARIABLE GIT_NAMEREV_STDERR
+        RESULT_VARIABLE GIT_NAMEREV_RESULT
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    if(GIT_NAMEREV_RESULT)
+      set(SUFFIX_VERSION "dev")
+    endif()
+  endif()
+
+  set(${description_var} ${GIT_DESCRIBE_STDOUT} PARENT_SCOPE)
+  set(${suffix_var} ${SUFFIX_VERSION} PARENT_SCOPE)
+endfunction()
