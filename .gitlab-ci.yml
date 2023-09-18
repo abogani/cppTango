@@ -282,23 +282,27 @@ clang-tidy:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04:v2
+    OS_TYPE: llvm-latest:add-clang-tidy
     CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
     CMAKE_UNITY_BUILD: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "OFF"
     CMAKE_BUILD_TYPE: "Debug"
     TANGO_MAKE_TARGET: "idl_source"
-    CC: /usr/lib/llvm-12/bin/clang
-    CXX: /usr/lib/llvm-12/bin/clang++
   script: # override
-    # Install codeclimate. This is needed for generating HTML report.
     - ci/config.sh
     - ci/build.sh
+    - set -o pipefail
     - >
-      run-clang-tidy-12
-      -p build -header-filter='.*' 'cppapi/(?!server/idl)' 'log4tango/src'
+      ${RUN_CLANG_TIDY}
+      -p build -header-filter='.*' -config-file=ci/report.clang-tidy 'src' 'log4tango/src'
       | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' > clang-tidy-output.txt
+  after_script:
+    - set +o pipefail
+    # Print error summary (check name and occurrence count).
+    - >
+      grep -E 'error: .+ \[.+\]$' clang-tidy-output.txt
+      | sort | uniq | sed -E 's|^.+ \[(.+)\]|\1|' | sort | uniq -c
     # Print warning summary (check name and occurrence count).
     - >
       grep -E 'warning: .+ \[.+\]$' clang-tidy-output.txt
