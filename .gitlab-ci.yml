@@ -114,7 +114,7 @@ abi-api-compliance-check:
   artifacts:
     when: always
     paths:
-      - compat_reports
+      - src/compat_reports
 
 llvm-latest:
   <<: *job-template-no-test-run

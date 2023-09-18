@@ -13,7 +13,7 @@ then
 fi
 
 function exit_on_abi_api_breakages() {
-  local reports=compat_reports/libtango/${old_revision}_to_${new_revision}
+  local reports=compat_reports/libtango/old_to_new
   if [ -e ${reports}/abi_affected.txt ]; then
     echo "ABI breakages detected:"
     cat ${reports}/abi_affected.txt | c++filt
