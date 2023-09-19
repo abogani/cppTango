@@ -143,14 +143,14 @@ if(NOT DEFINED TANGO_ZMQ_USABLE_VERSION)
               -DMINIMUM_VERSION_PATCH=${ZMQ_MIN_VER_PATCH}"
               LINK_LIBRARIES cppzmq::cppzmq
               OUTPUT_VARIABLE ZMQ_TRY_COMPILE_OUTPUT)
+endif()
 
-  set(msg "Check if libzmq version is >= ${ZMQ_MIN_VER_MAJOR}.${ZMQ_MIN_VER_MINOR}.${ZMQ_MIN_VER_PATCH}: ${TANGO_ZMQ_USABLE_VERSION}")
+set(msg "Check if libzmq version is >= ${ZMQ_MIN_VER_MAJOR}.${ZMQ_MIN_VER_MINOR}.${ZMQ_MIN_VER_PATCH}: ${TANGO_ZMQ_USABLE_VERSION}")
 
-  if(${TANGO_ZMQ_USABLE_VERSION})
-    message(STATUS ${msg})
-  else()
+if(${TANGO_ZMQ_USABLE_VERSION})
+  message(STATUS ${msg})
+else()
     message(FATAL_ERROR ${msg} "\n\nBuild output:\n" ${ZMQ_TRY_COMPILE_OUTPUT})
-  endif()
 endif()
 
 if(NOT WIN32)
