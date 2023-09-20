@@ -11,7 +11,6 @@ set(SOURCES main.cpp
         IOSetAttr.cpp
         IOAddAttribute.cpp
         IOSeqVec.cpp
-        FileDb.cpp
         classfactory.cpp
         DevTestClass.cpp
         DevTest.cpp)

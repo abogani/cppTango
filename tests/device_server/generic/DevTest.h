@@ -63,7 +63,6 @@ class DevTest : public Tango::Device_3Impl
     void IOFillPollBuffEncodedAttr();
     void IOFillPollBuffCmd();
     void IOTemplIn(Tango::DevLong);
-    void FileDb();
     void IOSetWAttrLimit(const Tango::DevVarDoubleArray *);
     void push_data_ready(const Tango::DevVarLongStringArray *);
     void set_enum_labels();

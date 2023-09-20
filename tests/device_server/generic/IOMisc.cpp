@@ -1199,42 +1199,6 @@ CORBA::Any *IOFillPollBuffCmd::execute(Tango::DeviceImpl *device, TANGO_UNUSED(c
 
 //+----------------------------------------------------------------------------
 //
-// method : 		FileDbCmd::FileDbCmd()
-//
-// description : 	constructor for the FileDbCmd command of the
-//			DevTest.
-//
-// In : - name : The command name
-//	- in : The input parameter type
-//	- out : The output parameter type
-//	- in_desc : The input parameter description
-//	- out_desc : The output parameter description
-//
-//-----------------------------------------------------------------------------
-
-FileDbCmd::FileDbCmd(
-    const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
-    Tango::Command(name, in, out, in_desc, out_desc)
-{
-}
-
-bool FileDbCmd::is_allowed(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
-{
-    //
-    // command always allowed
-    //
-
-    return (true);
-}
-
-CORBA::Any *FileDbCmd::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
-{
-    (static_cast<DevTest *>(device))->FileDb();
-    return insert();
-}
-
-//+----------------------------------------------------------------------------
-//
 // method : 		ChangeEncodedFormat::ChangeEncodedFormat()
 //
 // description : 	constructor for the ChangeEncodedFormat command of the
