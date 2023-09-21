@@ -262,7 +262,7 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name, lo
                 unsigned int k;
                 for(k = 0; k < attr_list.size(); k++)
                 {
-                    if(attr_name == attr_list[k]->get_name())
+                    if(TG_strcasecmp(attr_name.c_str(), attr_list[k]->get_name().c_str()) == 0)
                     {
                         break;
                     }
@@ -315,8 +315,10 @@ Attr &MultiClassAttribute::get_attr(const std::string &attr_name)
     // Search for the wanted attribute in the attr_list vector from its name
     //
 
-    auto pos = std::find_if(
-        std::begin(attr_list), std::end(attr_list), [&attr_name](Attr *attr) { return attr->get_name() == attr_name; });
+    auto pos = std::find_if(std::begin(attr_list),
+                            std::end(attr_list),
+                            [&attr_name](Attr *attr)
+                            { return TG_strcasecmp(attr->get_name().c_str(), attr_name.c_str()) == 0; });
 
     if(pos == attr_list.end())
     {
@@ -349,7 +351,7 @@ void MultiClassAttribute::remove_attr(const std::string &attr_name, const std::s
     std::vector<Tango::Attr *>::iterator ite;
     for(ite = attr_list.begin(); ite != attr_list.end(); ++ite)
     {
-        if(((*ite)->get_name() == attr_name) && ((*ite)->get_cl_name() == cl_name))
+        if((TG_strcasecmp((*ite)->get_name().c_str(), attr_name.c_str()) == 0) && ((*ite)->get_cl_name() == cl_name))
         {
             attr_list.erase(ite);
             break;

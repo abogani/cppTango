@@ -90,7 +90,8 @@ CORBA::Any *IOAddAttribute::execute(Tango::DeviceImpl *device, const CORBA::Any 
         }
         else if(str == "added_enum_attr")
         {
-            Tango::Attr *at = new Tango::Attr("Added_enum_attr", Tango::DEV_ENUM, Tango::READ);
+            // change casing of added attribute to trigger the bug from the previous commit
+            Tango::Attr *at = new Tango::Attr("added_Enum_Attr", Tango::DEV_ENUM, Tango::READ);
             Tango::UserDefaultAttrProp def_prop;
             std::vector<std::string> v_s;
             v_s.push_back("Red");
