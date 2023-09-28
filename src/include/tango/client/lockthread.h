@@ -36,9 +36,9 @@
 #define _LOCKTHREAD_H
 
 #include <tango/tango.h>
-#include <tango/server/tango_optional.h>
 
 #include <chrono>
+#include <optional>
 
 namespace Tango
 {
@@ -110,7 +110,7 @@ class LockThread : public omni_thread
     TangoMonitor &p_mon;
 
     LockThCmd local_cmd;
-    tango_optional<LockClock::duration> sleep;
+    std::optional<LockClock::duration> sleep;
 
     std::vector<LockedDevice> locked_devices;
     std::vector<std::string> re_lock_cmd_args;

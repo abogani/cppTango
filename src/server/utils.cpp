@@ -71,7 +71,7 @@ namespace
 /// - ARGV
 /// - Environment variable
 /// - OMNIORB configuration file
-Tango::tango_optional<std::string> get_omniorb_variable(int argc, char *argv[], const std::string &name)
+std::optional<std::string> get_omniorb_variable(int argc, char *argv[], const std::string &name)
 {
     //
     // First look at command line arg
@@ -204,7 +204,7 @@ Tango::tango_optional<std::string> get_omniorb_variable(int argc, char *argv[], 
         }
     }
 
-    return Tango::tango_optional<std::string>();
+    return std::optional<std::string>();
 }
 
 } // anonymous namespace
@@ -3011,7 +3011,7 @@ void Util::tango_host_from_fqan(const std::string &fqan, std::string &host, int 
 void Util::check_end_point_specified(int argc, char *argv[])
 {
     {
-        const tango_optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
+        const std::optional<std::string> endpoint = get_omniorb_variable(argc, argv, "endPoint");
         if(endpoint.has_value())
         {
             set_endpoint_specified(true);
@@ -3020,7 +3020,7 @@ void Util::check_end_point_specified(int argc, char *argv[])
     }
 
     {
-        const tango_optional<std::string> endpoint_publish = get_omniorb_variable(argc, argv, "endPointPublish");
+        const std::optional<std::string> endpoint_publish = get_omniorb_variable(argc, argv, "endPointPublish");
         if(endpoint_publish.has_value())
         {
             set_endpoint_publish_specified(true);

@@ -68,7 +68,6 @@ set(SERVER_HEADERS attrdesc.h
     encoded_attribute.h
     encoded_format.h
     event_subscription_state.h
-    tango_optional.h
     tango_clock.h
     tango_current_function.h
     exception_reason_consts.h)
