@@ -50,6 +50,7 @@
   #include <arpa/inet.h>
 #endif /* _TG_WINDOWS_ */
 
+#include <omniORB4/callHandle.h>
 #include <omniORB4/omniInterceptors.h>
 #include <omniORB4/internal/giopStrand.h>
 #include <omniORB4/internal/giopStream.h>
@@ -58,21 +59,8 @@
 namespace Tango
 {
 
-// this 'serverReceiveRequest' interceptor is only executed for remote CORBA calls
-// it will be removed once we adpot omniORB 4.3 - see also cppTango issue #865 for details
-CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::info_T &info)
-{
-    // std::cout << "in BlackBox::get_client_addr: handling remote call" << std::endl;
-
-    omni_thread::self()->set_value(
-        Util::get_tssk_client_info(),
-        new client_addr(((omni::giopStrand &) info.giop_s.strand()).connection->peeraddress()));
-    return true;
-}
-
-// client call interceptor: works for collocated and remote calls so that the client info is properly setup in any case
-// for the moment, we only use it for local calls - it will also be used for remote ones once we adopt ominitORB 4.3
-// see section 10.3 of the omniORB documentation - see also cppTango issue #865
+// Client call interceptor: works for collocated and remote calls so that the client info is properly setup in any case
+// Since the adoption of omniORB 4.3, it is used for both local and remote calls.
 void client_call_interceptor(omniCallDescriptor *d, omniServant *s)
 {
     // be sure omni_thread::self is defined (crash guarantee otherwise)
@@ -89,23 +77,58 @@ void client_call_interceptor(omniCallDescriptor *d, omniServant *s)
 
     try
     {
-        // ---------------------------------------------------------------------
-        // only deal with local calls - get_client_addr deals with remote ones
-        // ---------------------------------------------------------------------
-        // the following is a trick provided by Duncan Grisby for omniORB <= 4.2
-        // a better impl. will be available once we omniORB >= 4.3 is adopted:
-        //  `-> d.objref() != nullptr for local calls and null for remote ones
-        // ---------------------------------------------------------------------
-        if(d->objref() != nullptr)
+        // -------------------------------------------------------------------------------------------------------
+        // the following impl requires omniORB >= 4.3
+        // the omniCallDescriptor object has a callHandle() method that returns a potentially null pointer to an
+        // omniCallHandle object. In a simple local C++ to C++ call, callHandle() returns null. In a remote call,
+        // or a more complex local call (e.g. a call through a POA with a servant locator, or a call from Python
+        // to C++), callHandle() returns a valid pointer to a omniCallHandle. Then, in turn, the omniCallHandle
+        // has methods that allow you tell remote calls from local ones: accessors for connection details
+        // omniCallHandle.connection and omniCallHandle.peeraddress. Both return nullptr in the  case of an
+        // in-process call. If omniCallHandle.connection omniCallHandle.peeraddress return non-null, it is a
+        // remote call.
+        // -------------------------------------------------------------------------------------------------------
+        client_addr *a = nullptr;
+        omniCallHandle *ch = d->callHandle();
+        // collocated c++ to c++ call
+        if(ch == nullptr)
         {
-            // std::cout << "in BlackBox::client_call_interceptor: handling local call" << std::endl;
-            // set client info to 'collocated client'
-            client_addr *a = new client_addr("collocated client");
-            // attach it to he thread handling the call
-            // std::cout << "in BlackBox::client_call_interceptor: attaching client info @" << std::hex << a << std::dec
-            // << " to the thread" << std::endl;
-            t.self()->set_value(Util::get_tssk_client_info(), a);
+            /*
+            std::cout << "in BlackBox::client_call_interceptor: handling collocated c++ to c++ call for op: "
+                      << d->op()
+                      << std::endl;
+            */
+            // set client info
+            a = new client_addr("collocated client (c++ to c++ call)");
         }
+        // collocated client (or python to c++) call
+        else if(ch->connection() == nullptr || ch->peeraddress() == nullptr)
+        {
+            /*
+            std::cout << "in BlackBox::client_call_interceptor: handling collocated (or python to c++) for op: "
+                      << d->op()
+                      << std::endl;
+            */
+            // set client info
+            a = new client_addr("collocated client (POA or Python to c++ call)");
+        }
+        // remote call
+        else
+        {
+            /*
+            std::cout << "in BlackBox::client_call_interceptor: handling remote call from "
+                      << ch->peeraddress()
+                      << " for op: "
+                      << d->op()
+                      << std::endl;
+            */
+            // set client info
+            a = new client_addr(ch->peeraddress());
+        }
+        // attach it to he thread handling the call
+        // std::cout << "in BlackBox::client_call_interceptor: attaching client info @" << std::hex << a << std::dec
+        // << " to the thread" << std::endl;
+        t.self()->set_value(Util::get_tssk_client_info(), a);
         // pass on the (i.e. continue) the call (see section 10.3 of the omniORB documentation)
         // std::cout << "in BlackBox::client_call_interceptor: passing on the (i.e. continue) the call..." << std::endl;
         d->interceptedCall(s);

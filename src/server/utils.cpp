@@ -632,19 +632,11 @@ void Util::create_CORBA_objects()
 
     omni::omniInterceptors *intercep = omniORB::getInterceptors();
 
-    // this is the Tango < 9.4.2 call interceptor
-    // ---------------------------------------------------------------------------
-    // works for remote calls only - will be removed once we adopt omniORB 4.3
-    // ---------------------------------------------------------------------------
-    intercep->serverReceiveRequest.add(Tango::get_client_addr);
-
     // install the client call interceptor
     // works for both colocated and remote calls so that the client info is properly setup in any case
     // see section 10.3 of the omniORB documentation for details
     // ---------------------------------------------------------------------------
-    // so far we use it for lacal calls only
-    // will be used for both local aan remote calls once omniORB 4.3 is adpoted
-    // see why in cppTango issue #865
+    // since the adoption of omniORB 4.3, it is used for both local and remote calls.
     // ---------------------------------------------------------------------------
     omniCallDescriptor::addInterceptor(Tango::client_call_interceptor);
 
