@@ -35,7 +35,7 @@ pre-commit:
       - ${PRE_COMMIT_HOME}
 
 code-format:
-  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/llvm-latest:v3
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/llvm-latest:v4
   services: []
   tags:
     - docker, linux, amd64
@@ -120,7 +120,7 @@ llvm-latest:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v3
+    OS_TYPE: llvm-latest:v4
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
@@ -282,7 +282,7 @@ clang-tidy:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:add-clang-tidy
+    OS_TYPE: llvm-latest:v4
     CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
     CMAKE_UNITY_BUILD: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
@@ -441,7 +441,7 @@ libcpp:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v3
+    OS_TYPE: llvm-latest:v4
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_USE_LIBCPP: "ON"
