@@ -1318,8 +1318,8 @@ void Util::connect_db()
 
     if(_daemon == true)
     {
-        int connected = 0;
-        while(connected == 0)
+        bool connected = false;
+        while(!connected)
         {
             try
             {
@@ -1350,7 +1350,7 @@ void Util::connect_db()
                 }
 #endif
                 db->set_tango_utils(this);
-                connected = 1;
+                connected = true;
             }
             catch(Tango::DevFailed &e)
             {
