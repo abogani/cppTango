@@ -417,9 +417,9 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
 
-    int isGrey = static_cast<int>(strcmp(local_format.c_str(), GRAY_16) == 0);
+    bool isGrey = strcmp(local_format.c_str(), GRAY_16) == 0;
 
-    if(isGrey == 0)
+    if(!isGrey)
     {
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a grayscale 16 bits format");
     }
@@ -430,7 +430,7 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
     DevVarCharArray &encBuff = encData[0].encoded_data;
     rawBuff = encBuff.get_buffer(false);
 
-    if(isGrey != 0)
+    if(isGrey)
     {
         // Get width and height
         int wh = ((int) rawBuff[0] & 0xFF);
