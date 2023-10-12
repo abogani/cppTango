@@ -1209,7 +1209,7 @@ int Logging::create_log_dir(const std::string &full_path)
     {
         std::string sub_path;
         sub_path.assign(full_path.begin(), full_path.begin() + pos);
-        if(sub_path.size() != 0u)
+        if(!sub_path.empty())
         {
             Logging::create_log_dir(sub_path);
         }
