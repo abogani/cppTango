@@ -394,7 +394,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     // started with the -file option)
     //
 
-    int channel_exported;
+    bool channel_exported;
     std::string channel_ior;
     std::string hostname;
 
@@ -439,7 +439,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
 
         received.inout() >>= dev_import_list;
         channel_ior = std::string((dev_import_list->svalue)[1]);
-        channel_exported = dev_import_list->lvalue[0];
+        channel_exported = static_cast<bool>(dev_import_list->lvalue[0]);
 
         // get the hostname where the notifyd should be running
         hostname = std::string(dev_import_list->svalue[3]);
@@ -453,7 +453,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
             DeviceData ddd;
             ddd = adm.command_inout("QueryEventChannelIOR");
             ddd >> channel_ior;
-            channel_exported = 1;
+            channel_exported = true;
 
             // get the hostname where the notifyd should be running
             DeviceInfo info = adm.info();
@@ -470,7 +470,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         }
     }
 
-    if(channel_exported != 0)
+    if(channel_exported)
     {
         try
         {
@@ -487,7 +487,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
 
             if(CORBA::is_nil(eventChannel))
             {
-                channel_exported = 0;
+                channel_exported = false;
             }
         }
         catch(...)
