@@ -925,7 +925,7 @@ void DevicePipeBlob::set_data_elt_names(const std::vector<std::string> &elt_name
                     }
                 }
             }
-            TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_PipeDuplicateDEName, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_PipeDuplicateDEName, desc.str());
         }
     }
 
@@ -2260,7 +2260,7 @@ void DevicePipeBlob::throw_type_except(const std::string &_ty, const std::string
     ss << "Can't get data element " << extract_ctr << " (numbering starting from 0) into a " << _ty << " data type";
     std::string m_name("DevicePipeBlob::");
     m_name = m_name + _meth;
-    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, ss.str());
+    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, ss.str());
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2302,7 +2302,7 @@ void DevicePipeBlob::throw_too_many(const std::string &_meth, bool _extract)
         extract_delete = false;
     }
 
-    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_PipeWrongArg, ss.str());
+    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_PipeWrongArg, ss.str());
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2330,7 +2330,7 @@ void DevicePipeBlob::throw_is_empty(const std::string &_meth)
 
     std::string m_name("DevicePipeBlob::");
     m_name = m_name + _meth;
-    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDataElement, "The data element is empty");
+    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_EmptyDataElement, "The data element is empty");
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -2358,7 +2358,8 @@ void DevicePipeBlob::throw_name_not_set(const std::string &_meth)
 
     std::string m_name("DevicePipeBlob::");
     m_name = m_name + _meth;
-    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_PipeNoDataElement, "The blob data element number (or name) not set");
+    TANGO_THROW_DETAILED_EXCEPTION(
+        ApiDataExcept, API_PipeNoDataElement, "The blob data element number (or name) not set");
 }
 
 //+------------------------------------------------------------------------------------------------------------------

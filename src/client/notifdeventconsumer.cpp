@@ -261,15 +261,16 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     }
     catch(CORBA::COMM_FAILURE &)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught CORBA::COMM_FAILURE exception while creating event filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            EventSystemExcept,
+            API_NotificationServiceFailed,
+            "Caught CORBA::COMM_FAILURE exception while creating event filter (check filter)");
     }
     catch(...)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught exception while creating event filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Caught exception while creating event filter (check filter)");
     }
 
     //
@@ -354,9 +355,9 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
         }
 
         filter = CosNotifyFilter::Filter::_nil();
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught exception while creating event filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Caught exception while creating event filter (check filter)");
     }
     else
     {
@@ -492,15 +493,16 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         }
         catch(...)
         {
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to narrow EventChannel from notification daemon (hint: make sure the "
-                                      "notifd process is running on this host)");
+            TANGO_THROW_DETAILED_EXCEPTION(
+                EventSystemExcept,
+                API_NotificationServiceFailed,
+                "Failed to narrow EventChannel from notification daemon (hint: make sure the "
+                "notifd process is running on this host)");
         }
     }
     else
     {
-        TANGO_THROW_API_EXCEPTION(
+        TANGO_THROW_DETAILED_EXCEPTION(
             EventSystemExcept,
             API_EventChannelNotExported,
             "Failed to narrow EventChannel (hint: make sure a notifd process is running on the server host)");
@@ -521,18 +523,20 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         if(CORBA::is_nil(consumerAdmin))
         {
             // cerr << "Could not get CosNotifyChannelAdmin::ConsumerAdmin" << std::endl;
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to get default Consumer admin from notification daemon (hint: make sure "
-                                      "the notifd process is running on this host)");
+            TANGO_THROW_DETAILED_EXCEPTION(
+                EventSystemExcept,
+                API_NotificationServiceFailed,
+                "Failed to get default Consumer admin from notification daemon (hint: make sure "
+                "the notifd process is running on this host)");
         }
     }
     catch(...)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Failed to get default Consumer admin from notification daemon (hint: make sure the "
-                                  "notifd process is running on this host)");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            EventSystemExcept,
+            API_NotificationServiceFailed,
+            "Failed to get default Consumer admin from notification daemon (hint: make sure the "
+            "notifd process is running on this host)");
     }
 
     //
@@ -550,10 +554,11 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         if(CORBA::is_nil(proxySupplier))
         {
             // cerr << "Could not get CosNotifyChannelAdmin::ProxySupplier" << std::endl;
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to obtain a push supplier from notification daemon (hint: make sure the "
-                                      "notifd process is running on this host)");
+            TANGO_THROW_DETAILED_EXCEPTION(
+                EventSystemExcept,
+                API_NotificationServiceFailed,
+                "Failed to obtain a push supplier from notification daemon (hint: make sure the "
+                "notifd process is running on this host)");
         }
 
         structuredProxyPushSupplier = CosNotifyChannelAdmin::StructuredProxyPushSupplier::_narrow(proxySupplier);
@@ -561,10 +566,11 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         {
             // cerr << "Tango::NotifdEventConsumer::NotifdEventConsumer() could not get
             // CosNotifyChannelAdmin::StructuredProxyPushSupplier" << std::endl;
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to narrow the push supplier from notification daemon (hint: make sure "
-                                      "the notifd process is running on this host)");
+            TANGO_THROW_DETAILED_EXCEPTION(
+                EventSystemExcept,
+                API_NotificationServiceFailed,
+                "Failed to narrow the push supplier from notification daemon (hint: make sure "
+                "the notifd process is running on this host)");
         }
 
         //
@@ -576,10 +582,10 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     }
     catch(const CosNotifyChannelAdmin::AdminLimitExceeded &)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Failed to get PushSupplier from notification daemon due to AdminLimitExceeded "
-                                  "(hint: make sure the notifd process is running on this host)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Failed to get PushSupplier from notification daemon due to AdminLimitExceeded "
+                                       "(hint: make sure the notifd process is running on this host)");
     }
 
     //
@@ -646,9 +652,9 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     catch(...)
     {
         // cerr << "Caught exception obtaining filter object" << std::endl;
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught exception while creating heartbeat filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Caught exception while creating heartbeat filter (check filter)");
     }
 
     //
@@ -687,9 +693,9 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
 
         filter = CosNotifyFilter::Filter::_nil();
 
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught exception while adding constraint for heartbeat (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Caught exception while adding constraint for heartbeat (check filter)");
     }
 }
 

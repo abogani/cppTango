@@ -632,7 +632,7 @@ void ApiUtil::get_asynch_replies(long call_timeout)
             {
                 TangoSys_OMemStream desc;
                 desc << "Still some reply(ies) for asynchronous callback call(s) to be received" << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiAsynNotThereExcept, API_AsynReplyNotArrived, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiAsynNotThereExcept, API_AsynReplyNotArrived, desc.str());
             }
         }
         else
@@ -1367,7 +1367,7 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &at
         TangoSys_OMemStream desc;
         desc << "Device " << d_name;
         desc << " does not support DevEncoded data type" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, desc.str());
     }
 }
 

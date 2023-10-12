@@ -937,7 +937,7 @@ DevAttrHistory_5 *FwdAttribute::read_root_att_history(long n)
                 dp->set_connection_state(CONNECTION_NOTOK);
                 TangoSys_OMemStream desc;
                 desc << "Attribute_history failed on device " << get_fwd_dev_name() << std::ends;
-                TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, one, API_CommunicationFailed, desc.str());
+                TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, one, API_CommunicationFailed, desc.str());
             }
         }
         catch(CORBA::COMM_FAILURE &comm)
@@ -951,7 +951,7 @@ DevAttrHistory_5 *FwdAttribute::read_root_att_history(long n)
                 dp->set_connection_state(CONNECTION_NOTOK);
                 TangoSys_OMemStream desc;
                 desc << "Attribute_history failed on device " << get_fwd_dev_name() << std::ends;
-                TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, comm, API_CommunicationFailed, desc.str());
+                TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, comm, API_CommunicationFailed, desc.str());
             }
         }
         catch(CORBA::SystemException &ce)
@@ -959,7 +959,7 @@ DevAttrHistory_5 *FwdAttribute::read_root_att_history(long n)
             dp->set_connection_state(CONNECTION_NOTOK);
             TangoSys_OMemStream desc;
             desc << "Attribute_history failed on device " << get_fwd_dev_name() << std::ends;
-            TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
+            TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
 
@@ -1039,7 +1039,7 @@ AttributeValueList_5 *FwdAttribute::write_read_root_att(Tango::AttributeValueLis
                 TangoSys_OMemStream desc;
                 desc << "Writing attribute(s) on device " << get_fwd_dev_name() << " is not authorized" << std::ends;
 
-                TANGO_THROW_API_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(NotAllowedExcept, API_ReadOnlyMode, desc.str());
             }
 
             //
@@ -1074,7 +1074,7 @@ AttributeValueList_5 *FwdAttribute::write_read_root_att(Tango::AttributeValueLis
 
             if(::strcmp(e.errors[0].reason, DEVICE_UNLOCKED_REASON) == 0)
             {
-                TANGO_RETHROW_API_EXCEPTION(DeviceUnlockedExcept, e, DEVICE_UNLOCKED_REASON, desc.str());
+                TANGO_RETHROW_DETAILED_EXCEPTION(DeviceUnlockedExcept, e, DEVICE_UNLOCKED_REASON, desc.str());
             }
             else
             {
@@ -1096,7 +1096,7 @@ AttributeValueList_5 *FwdAttribute::write_read_root_att(Tango::AttributeValueLis
                 dp->set_connection_state(CONNECTION_NOTOK);
                 TangoSys_OMemStream desc;
                 desc << "Failed to execute write_read_attribute on device " << get_fwd_dev_name() << std::ends;
-                TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, one, API_CommunicationFailed, desc.str());
+                TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, one, API_CommunicationFailed, desc.str());
             }
         }
         catch(CORBA::COMM_FAILURE &comm)
@@ -1110,7 +1110,7 @@ AttributeValueList_5 *FwdAttribute::write_read_root_att(Tango::AttributeValueLis
                 dp->set_connection_state(CONNECTION_NOTOK);
                 TangoSys_OMemStream desc;
                 desc << "Failed to execute write_attribute on device " << get_fwd_dev_name() << std::ends;
-                TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, comm, API_CommunicationFailed, desc.str());
+                TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, comm, API_CommunicationFailed, desc.str());
             }
         }
         catch(CORBA::SystemException &ce)
@@ -1119,7 +1119,7 @@ AttributeValueList_5 *FwdAttribute::write_read_root_att(Tango::AttributeValueLis
 
             TangoSys_OMemStream desc;
             desc << "Failed to execute write_attributes on device " << get_fwd_dev_name() << std::ends;
-            TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
+            TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
 

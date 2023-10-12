@@ -108,7 +108,7 @@ been handled by the code.
 
 #### Guidelines
 
-- Prefer reporting exceptions using the `TANGO_THROW_API_EXCEPTION` macro with
+- Prefer reporting exceptions using the `TANGO_THROW_DETAILED_EXCEPTION` macro with
 an appropriate `ExceptionClass`.  If no such appropriate `ExceptionClass` exists
 use the `TANGO_THROW_EXCEPTION` macro, which will through an exception of the
 `Tango::DevFailed` base class.
@@ -136,7 +136,7 @@ some prompts for what information to include in your description:
     + Will the current execution be aborted or
     + Will the current execution continue?
 - Consider catching exceptions just to add more contextual information for the
-user.  Use `TANGO_RETHROW_API_EXCEPTION`/`TANGO_RETHROW_EXCEPTION` to rethrow
+user.  Use `TANGO_RETHROW_DETAILED_EXCEPTION`/`TANGO_RETHROW_EXCEPTION` to rethrow
 the exception.
 
 ### Assertions

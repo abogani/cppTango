@@ -419,7 +419,7 @@ void ZmqEventSupplier::tango_bind(zmq::socket_t *sock, std::string &endpoint)
     }
     catch(...)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_ZmqInitFailed, "Can't bind the ZMQ socket!");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept, API_ZmqInitFailed, "Can't bind the ZMQ socket!");
     }
 }
 

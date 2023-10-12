@@ -75,7 +75,7 @@ Database::Database(CORBA::ORB_var orb_in) :
     {
         TangoSys_MemStream desc;
         desc << "TANGO_HOST env. variable not set, set it and retry (e.g. TANGO_HOST=<host>:<port>)" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
     }
 
     check_tango_host(tango_host_env_var.c_str());
@@ -114,7 +114,7 @@ Database::Database(CORBA::ORB_var orb_in, std::string &ds_exec_name, std::string
     {
         TangoSys_MemStream desc;
         desc << "TANGO_HOST env. variable not set, set it and retry (e.g. TANGO_HOST=<host>:<port>)" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
     }
 
     check_tango_host(tango_host_env_c_str);
@@ -174,7 +174,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
                     TangoSys_MemStream desc;
                     desc << "TANGO_HOST env. variable syntax incorrect (e.g. TANGO_HOST=<host>:<port>,<host>:<port>)"
                          << std::ends;
-                    TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
                 }
                 multi_db_port.push_back(sub.substr(host_sep + 1));
             }
@@ -183,7 +183,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
                 TangoSys_MemStream desc;
                 desc << "TANGO_HOST env. variable syntax incorrect (e.g. TANGO_HOST=<host>:<port>,<host>:<port>)"
                      << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
             }
             std::string tmp_host(sub.substr(0, host_sep));
             if(tmp_host.find('.') == std::string::npos)
@@ -201,7 +201,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
                 TangoSys_MemStream desc;
                 desc << "TANGO_HOST env. variable syntax incorrect (e.g. TANGO_HOST=<host>:<port>,<host>:<port>)"
                      << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
             }
             multi_db_port.push_back(last.substr(host_sep + 1));
         }
@@ -210,7 +210,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
             TangoSys_MemStream desc;
             desc << "TANGO_HOST env. variable syntax incorrect (e.g. TANGO_HOST=<host>:<port>,<host>:<port>)"
                  << std::ends;
-            TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
         }
         std::string tmp_host(last.substr(0, host_sep));
         if(tmp_host.find('.') == std::string::npos)
@@ -236,7 +236,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
             {
                 TangoSys_MemStream desc;
                 desc << "TANGO_HOST env. variable syntax incorrect (e.g. TANGO_HOST=<host>:<port>)" << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
             }
             db_port = tango_host_env.substr(separator + 1);
             db_port_num = atoi(db_port.c_str());
@@ -245,7 +245,7 @@ void Database::check_tango_host(const char *tango_host_env_c_str)
         {
             TangoSys_MemStream desc;
             desc << "TANGO_HOST env. variable syntax incorrect (e.g. TANGO_HOST=<host>:<port>)" << std::ends;
-            TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_TangoHostNotSet, desc.str());
         }
         db_host = tango_host_env.substr(0, separator);
 

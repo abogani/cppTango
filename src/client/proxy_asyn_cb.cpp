@@ -61,7 +61,7 @@ void Connection::command_inout_asynch(const std::string &command, const DeviceDa
         TangoSys_OMemStream desc;
         desc << "Failed to execute command_inout on device " << dev_name();
         desc << ", command " << command << std::ends;
-        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
     }
 
     //
@@ -1013,7 +1013,7 @@ void Connection::get_asynch_replies(long call_timeout)
             {
                 TangoSys_OMemStream desc;
                 desc << "Still some reply(ies) for asynchronous callback call(s) to be received" << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiAsynNotThereExcept, API_AsynReplyNotArrived, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiAsynNotThereExcept, API_AsynReplyNotArrived, desc.str());
             }
         }
         else
@@ -1091,7 +1091,7 @@ void DeviceProxy::read_attributes_asynch(const std::vector<std::string> &attr_na
     {
         TangoSys_OMemStream desc;
         desc << "Failed to execute read_attributes_asynch on device " << dev_name() << std::ends;
-        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
     }
 
     //
@@ -1200,7 +1200,7 @@ void DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &at
     {
         TangoSys_OMemStream desc;
         desc << "Failed to execute read_attributes_asynch on device " << dev_name() << std::ends;
-        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
     }
 
     //
@@ -1305,7 +1305,7 @@ void DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr, CallBack &
     {
         TangoSys_OMemStream desc;
         desc << "Failed to execute read_attributes_asynch on device " << dev_name() << std::ends;
-        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, e, API_CommandFailed, desc.str());
     }
 
     //

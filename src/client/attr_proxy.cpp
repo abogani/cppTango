@@ -142,7 +142,7 @@ void AttributeProxy::real_constructor(std::string &name)
             TangoSys_OMemStream desc;
             desc << "Attribute " << attr_name << " is not supported by device " << device_name << std::ends;
 
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_UnsupportedAttribute, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_UnsupportedAttribute, desc.str());
         }
     }
 }
@@ -221,7 +221,7 @@ void AttributeProxy::ctor_from_dp(const DeviceProxy *dev_ptr, const std::string 
             TangoSys_OMemStream desc;
             desc << "Attribute " << attr_name << " is not supported by device " << device_name << std::ends;
 
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_UnsupportedAttribute, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_UnsupportedAttribute, desc.str());
         }
     }
 }
@@ -428,7 +428,7 @@ void AttributeProxy::parse_name(std::string &full_name)
             TangoSys_OMemStream desc;
             desc << protocol;
             desc << " protocol is an unsupported protocol" << std::ends;
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_UnsupportedProtocol, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_UnsupportedProtocol, desc.str());
         }
     }
 
@@ -458,7 +458,7 @@ void AttributeProxy::parse_name(std::string &full_name)
             TangoSys_OMemStream desc;
             desc << mod;
             desc << " modifier is an unsupported db modifier" << std::ends;
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_UnsupportedDBaseModifier, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_UnsupportedDBaseModifier, desc.str());
         }
     }
     else
@@ -476,7 +476,7 @@ void AttributeProxy::parse_name(std::string &full_name)
         pos = name_wo_db_mod.find(HOST_SEP);
         if(pos == std::string::npos)
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiWrongNameExcept, API_WrongAttributeNameSyntax, "Host and port not correctly defined in device name");
         }
 
@@ -484,7 +484,7 @@ void AttributeProxy::parse_name(std::string &full_name)
         std::string::size_type tmp = name_wo_db_mod.find(PORT_SEP);
         if(tmp == std::string::npos)
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiWrongNameExcept, API_WrongAttributeNameSyntax, "Host and port not correctly defined in device name");
         }
         port = name_wo_db_mod.substr(pos + 1, tmp - pos - 1);
@@ -553,19 +553,21 @@ void AttributeProxy::parse_name(std::string &full_name)
         {
             if(pos == 0)
             {
-                TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept,
-                                          API_WrongAttributeNameSyntax,
-                                          "Attribute name must have four fields separated by /'s or no /'s at all if "
-                                          "it is an alias (e.g. my/device/name/an_attr or myalias)");
+                TANGO_THROW_DETAILED_EXCEPTION(
+                    ApiWrongNameExcept,
+                    API_WrongAttributeNameSyntax,
+                    "Attribute name must have four fields separated by /'s or no /'s at all if "
+                    "it is an alias (e.g. my/device/name/an_attr or myalias)");
             }
             n_sep++;
             device_name_tmp = device_name_tmp.substr(pos + 1);
             if(device_name_tmp.size() == 0)
             {
-                TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept,
-                                          API_WrongAttributeNameSyntax,
-                                          "Attribute name must have four fields separated by /'s or no /'s at all if "
-                                          "it is an alias (e.g. my/device/name/an_attr or myalias)");
+                TANGO_THROW_DETAILED_EXCEPTION(
+                    ApiWrongNameExcept,
+                    API_WrongAttributeNameSyntax,
+                    "Attribute name must have four fields separated by /'s or no /'s at all if "
+                    "it is an alias (e.g. my/device/name/an_attr or myalias)");
             }
             device_name_end_pos += pos + 1;
         }
@@ -573,10 +575,11 @@ void AttributeProxy::parse_name(std::string &full_name)
 
     if((n_sep > 1) && (n_sep != 3))
     {
-        TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept,
-                                  API_WrongAttributeNameSyntax,
-                                  "Attribute name must have four fields separated by /'s or no /'s at all if it is an "
-                                  "alias (e.g. my/device/name/an_attr or myalias)");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            ApiWrongNameExcept,
+            API_WrongAttributeNameSyntax,
+            "Attribute name must have four fields separated by /'s or no /'s at all if it is an "
+            "alias (e.g. my/device/name/an_attr or myalias)");
     }
 
     //
@@ -588,9 +591,9 @@ void AttributeProxy::parse_name(std::string &full_name)
     {
         if(dbase_used == false)
         {
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept,
-                                      API_WrongAttributeNameSyntax,
-                                      "Attribute alias is not supported when not using database");
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept,
+                                           API_WrongAttributeNameSyntax,
+                                           "Attribute alias is not supported when not using database");
         }
 
         //
@@ -600,14 +603,14 @@ void AttributeProxy::parse_name(std::string &full_name)
         pos = device_name.find(HOST_SEP);
         if(pos != std::string::npos)
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiWrongNameExcept, API_WrongAttributeNameSyntax, "Wrong alias name (: not allowed in alias name)");
         }
 
         pos = device_name.find(RES_SEP);
         if(pos != std::string::npos)
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiWrongNameExcept, API_WrongAttributeNameSyntax, "Wrong alias name (-> not allowed in alias name)");
         }
 
@@ -631,7 +634,7 @@ void AttributeProxy::parse_name(std::string &full_name)
                     {
                         TangoSys_OMemStream desc;
                         desc << "Can't connect to attribute with alias " << device_name << std::ends;
-                        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, dfe, API_AliasNotDefined, desc.str());
+                        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, dfe, API_AliasNotDefined, desc.str());
                     }
                     else
                     {
@@ -652,7 +655,7 @@ void AttributeProxy::parse_name(std::string &full_name)
                     {
                         TangoSys_OMemStream desc;
                         desc << "Can't connect to attribute with alias " << device_name << std::ends;
-                        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, dfe, API_AliasNotDefined, desc.str());
+                        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, dfe, API_AliasNotDefined, desc.str());
                     }
                     else
                     {
@@ -674,7 +677,7 @@ void AttributeProxy::parse_name(std::string &full_name)
                 {
                     TangoSys_OMemStream desc;
                     desc << "Can't connect to attribute with alias " << device_name << std::ends;
-                    TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, dfe, API_AliasNotDefined, desc.str());
+                    TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, dfe, API_AliasNotDefined, desc.str());
                 }
                 else
                 {
@@ -701,7 +704,7 @@ void AttributeProxy::parse_name(std::string &full_name)
 
         if(n_sep != 3)
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiWrongNameExcept,
                 API_WrongAttributeNameSyntax,
                 "Attribute name must have four fields separated by /'s (check the alias entry in the database) ");
@@ -728,9 +731,9 @@ void AttributeProxy::parse_name(std::string &full_name)
                 // but the no dbase option was used. This is an error.
                 // We can't have alias without db
                 //
-                TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept,
-                                          API_WrongAttributeNameSyntax,
-                                          "Can't use device or attribute alias without database");
+                TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept,
+                                               API_WrongAttributeNameSyntax,
+                                               "Can't use device or attribute alias without database");
             }
 
             if(from_env_var == false)
@@ -842,7 +845,7 @@ void AttributeProxy::get_property(const std::string &property_name, DbData &user
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -890,7 +893,7 @@ void AttributeProxy::get_property(const std::vector<std::string> &property_names
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -941,7 +944,7 @@ void AttributeProxy::get_property(DbData &user_data)
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -988,7 +991,7 @@ void AttributeProxy::put_property(const DbData &user_data)
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -1021,7 +1024,7 @@ void AttributeProxy::delete_property(const std::string &property_name)
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -1050,7 +1053,7 @@ void AttributeProxy::delete_property(const std::vector<std::string> &property_na
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -1082,7 +1085,7 @@ void AttributeProxy::delete_property(const DbData &user_data)
         desc << device_name;
         desc << " which is a non database device";
 
-        TANGO_THROW_API_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
     else
     {
@@ -1129,7 +1132,7 @@ void AttributeProxy::set_config(AttributeInfo &dev_attr_info)
     {
         TangoSys_OMemStream desc;
         desc << "Failed to execute set_attribute_config on device " << device_name << std::ends;
-        TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
     }
 }
 
@@ -1146,7 +1149,7 @@ void AttributeProxy::set_config(AttributeInfoEx &dev_attr_info)
     {
         TangoSys_OMemStream desc;
         desc << "Failed to execute set_attribute_config on device " << device_name << std::ends;
-        TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
     }
 }
 

@@ -3581,10 +3581,10 @@ ReceivedFromAdmin ZmqEventConsumer::initialize_received_from_admin(const Tango::
     ReceivedFromAdmin result;
     if(dvlsa->lvalue.length() == 0)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotSupported,
-                                  "Server did not send its tango lib version. The server is possibly too old. The "
-                                  "event system is not initialized!");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotSupported,
+                                       "Server did not send its tango lib version. The server is possibly too old. The "
+                                       "event system is not initialized!");
     }
 
     long server_tango_lib_ver = dvlsa->lvalue[0];
@@ -3626,7 +3626,7 @@ ReceivedFromAdmin ZmqEventConsumer::initialize_received_from_admin(const Tango::
 
     if(result.event_name.empty())
     {
-        TANGO_THROW_API_EXCEPTION(
+        TANGO_THROW_DETAILED_EXCEPTION(
             EventSystemExcept,
             API_NotSupported,
             "Server did not send the event name. The server is possibly too old. The event system is not initialized!");
@@ -3635,10 +3635,11 @@ ReceivedFromAdmin ZmqEventConsumer::initialize_received_from_admin(const Tango::
     TANGO_LOG_DEBUG << "received_from_admin.event_name = " << result.event_name << std::endl;
     if(result.channel_name.empty())
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotSupported,
-                                  "Server did not send the channel name. The server is possibly too old. The event "
-                                  "system is not initialized!");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            EventSystemExcept,
+            API_NotSupported,
+            "Server did not send the channel name. The server is possibly too old. The event "
+            "system is not initialized!");
     }
     TANGO_LOG_DEBUG << "received_from_admin.channel_name = " << result.channel_name << std::endl;
     return result;

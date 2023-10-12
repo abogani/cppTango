@@ -525,16 +525,16 @@ MAKE_EXCEPT(ProgrammingError, ProgrammingErrorExcept)
             E, (const char *) API_CommunicationFailed, desc.str(), (const char *) "Connection::command_inout()"); \
     }
 
-#define TANGO_THROW_API_EXCEPTION(ExceptionClass, reason, desc) \
-    ExceptionClass ::throw_exception(                           \
+#define TANGO_THROW_DETAILED_EXCEPTION(ExceptionClass, reason, desc) \
+    ExceptionClass ::throw_exception(                                \
         reason, desc, (std::string(TANGO_CURRENT_FUNCTION) + " at (" TANGO_FILE_AND_LINE ")").c_str())
 
-#define TANGO_RETHROW_API_EXCEPTION(ExceptionClass, original, reason, desc) \
-    ExceptionClass ::re_throw_exception(                                    \
+#define TANGO_RETHROW_DETAILED_EXCEPTION(ExceptionClass, original, reason, desc) \
+    ExceptionClass ::re_throw_exception(                                         \
         original, reason, desc, (std::string(TANGO_CURRENT_FUNCTION) + " at (" TANGO_FILE_AND_LINE ")").c_str())
 
 #define TANGO_THROW_ON_DEFAULT(switchValue) \
-    TANGO_THROW_API_EXCEPTION(              \
+    TANGO_THROW_DETAILED_EXCEPTION(         \
         ProgrammingErrorExcept,             \
         "Programming Error",                \
         ((std::string("Reached unexpected default branch with value: ") + std::to_string(switchValue)).c_str()))

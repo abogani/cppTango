@@ -192,7 +192,7 @@ void GroupElementFactory::parse_name(const std::string &p, std::string &db_host,
             TangoSys_OMemStream desc;
             desc << protocol;
             desc << " protocol is an unsupported protocol" << std::ends;
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_UnsupportedProtocol, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_UnsupportedProtocol, desc.str());
         }
     }
 
@@ -204,7 +204,7 @@ void GroupElementFactory::parse_name(const std::string &p, std::string &db_host,
         TangoSys_OMemStream desc;
         desc << "Wrong device name syntax in " << p << std::ends;
 
-        TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_WrongDeviceNameSyntax, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_WrongDeviceNameSyntax, desc.str());
     }
 
     std::string bef_sep = name_wo_prot.substr(0, pos);
@@ -223,7 +223,7 @@ void GroupElementFactory::parse_name(const std::string &p, std::string &db_host,
             TangoSys_OMemStream desc;
             desc << "Wrong device name syntax in " << p << std::ends;
 
-            TANGO_THROW_API_EXCEPTION(ApiWrongNameExcept, API_WrongDeviceNameSyntax, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept, API_WrongDeviceNameSyntax, desc.str());
         }
         TangoSys_MemStream s;
         s << db_port_str << std::ends;
@@ -1352,7 +1352,7 @@ long Group::command_inout_asynch_i(const std::string &c, const std::vector<Devic
         TangoSys_OMemStream desc;
         desc << "the size of the input argument list must equal the number of device in the group"
              << " [expected:" << gsize << " - got:" << d.size() << "]" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
     }
 
     if(id == -1)
@@ -1683,7 +1683,7 @@ long Group::write_attribute_asynch_i(const std::vector<DeviceAttribute> &d, bool
         TangoSys_OMemStream desc;
         desc << "the size of the input argument list must equal the number of device in the group"
              << " [expected:" << gsize << " - got:" << d.size() << "]" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
     }
     if(id == -1)
     {

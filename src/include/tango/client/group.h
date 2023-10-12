@@ -2009,7 +2009,7 @@ long Group::command_inout_asynch_i(const std::string &c, /*const*/ std::vector<T
         TangoSys_OMemStream desc;
         desc << "the size of the input argument list must equal the number of device in the group"
              << " [expected:" << gsize << " - got:" << d.size() << "]" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
     }
 
     if(ari == -1)
@@ -2079,7 +2079,7 @@ long Group::write_attribute_asynch_i(const std::string &a, /*const*/ std::vector
         TangoSys_OMemStream desc;
         desc << "the size of the input argument list must equal the number of device in the group"
              << " [expected:" << gsize << " - got:" << d.size() << "]" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_MethodArgument, desc.str().c_str());
     }
 
     if(ari == -1)

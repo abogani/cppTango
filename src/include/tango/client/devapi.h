@@ -902,59 +902,59 @@ inline int
 ///                    -----------
 ///
 
-#define READ_ATT_EXCEPT(NAME_CHAR, OBJ)                                                            \
-    catch(Tango::ConnectionFailed & e)                                                             \
-    {                                                                                              \
-        TangoSys_OMemStream desc;                                                                  \
-        desc << "Failed to read_attribute on device " << device_name;                              \
-        desc << ", attribute " << NAME_CHAR << std::ends;                                          \
-        TANGO_RETHROW_API_EXCEPTION(ApiConnExcept, e, API_AttributeFailed, desc.str());            \
-    }                                                                                              \
-    catch(Tango::DevFailed & e)                                                                    \
-    {                                                                                              \
-        TangoSys_OMemStream desc;                                                                  \
-        desc << "Failed to read_attribute on device " << device_name;                              \
-        desc << ", attribute " << NAME_CHAR << std::ends;                                          \
-        TANGO_RETHROW_EXCEPTION(e, API_AttributeFailed, desc.str());                               \
-    }                                                                                              \
-    catch(CORBA::TRANSIENT & trans)                                                                \
-    {                                                                                              \
-        TRANSIENT_NOT_EXIST_EXCEPT(trans, "DeviceProxy", "read_attribute", OBJ);                   \
-    }                                                                                              \
-    catch(CORBA::OBJECT_NOT_EXIST & one)                                                           \
-    {                                                                                              \
-        if(one.minor() == omni::OBJECT_NOT_EXIST_NoMatch || one.minor() == 0)                      \
-        {                                                                                          \
-            TRANSIENT_NOT_EXIST_EXCEPT(one, "DeviceProxy", "read_attribute", OBJ);                 \
-        }                                                                                          \
-        else                                                                                       \
-        {                                                                                          \
-            set_connection_state(CONNECTION_NOTOK);                                                \
-            TangoSys_OMemStream desc;                                                              \
-            desc << "Failed to read_attribute on device " << device_name << std::ends;             \
-            TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, one, API_CommunicationFailed, desc.str());  \
-        }                                                                                          \
-    }                                                                                              \
-    catch(CORBA::COMM_FAILURE & comm)                                                              \
-    {                                                                                              \
-        if(comm.minor() == omni::COMM_FAILURE_WaitingForReply)                                     \
-        {                                                                                          \
-            TRANSIENT_NOT_EXIST_EXCEPT(comm, "DeviceProxy", "read_attribute", OBJ);                \
-        }                                                                                          \
-        else                                                                                       \
-        {                                                                                          \
-            set_connection_state(CONNECTION_NOTOK);                                                \
-            TangoSys_OMemStream desc;                                                              \
-            desc << "Failed to read_attribute on device " << device_name << std::ends;             \
-            TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, comm, API_CommunicationFailed, desc.str()); \
-        }                                                                                          \
-    }                                                                                              \
-    catch(CORBA::SystemException & ce)                                                             \
-    {                                                                                              \
-        set_connection_state(CONNECTION_NOTOK);                                                    \
-        TangoSys_OMemStream desc;                                                                  \
-        desc << "Failed to read_attribute on device " << device_name << std::ends;                 \
-        TANGO_RETHROW_API_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());       \
+#define READ_ATT_EXCEPT(NAME_CHAR, OBJ)                                                                 \
+    catch(Tango::ConnectionFailed & e)                                                                  \
+    {                                                                                                   \
+        TangoSys_OMemStream desc;                                                                       \
+        desc << "Failed to read_attribute on device " << device_name;                                   \
+        desc << ", attribute " << NAME_CHAR << std::ends;                                               \
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, e, API_AttributeFailed, desc.str());            \
+    }                                                                                                   \
+    catch(Tango::DevFailed & e)                                                                         \
+    {                                                                                                   \
+        TangoSys_OMemStream desc;                                                                       \
+        desc << "Failed to read_attribute on device " << device_name;                                   \
+        desc << ", attribute " << NAME_CHAR << std::ends;                                               \
+        TANGO_RETHROW_EXCEPTION(e, API_AttributeFailed, desc.str());                                    \
+    }                                                                                                   \
+    catch(CORBA::TRANSIENT & trans)                                                                     \
+    {                                                                                                   \
+        TRANSIENT_NOT_EXIST_EXCEPT(trans, "DeviceProxy", "read_attribute", OBJ);                        \
+    }                                                                                                   \
+    catch(CORBA::OBJECT_NOT_EXIST & one)                                                                \
+    {                                                                                                   \
+        if(one.minor() == omni::OBJECT_NOT_EXIST_NoMatch || one.minor() == 0)                           \
+        {                                                                                               \
+            TRANSIENT_NOT_EXIST_EXCEPT(one, "DeviceProxy", "read_attribute", OBJ);                      \
+        }                                                                                               \
+        else                                                                                            \
+        {                                                                                               \
+            set_connection_state(CONNECTION_NOTOK);                                                     \
+            TangoSys_OMemStream desc;                                                                   \
+            desc << "Failed to read_attribute on device " << device_name << std::ends;                  \
+            TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, one, API_CommunicationFailed, desc.str());  \
+        }                                                                                               \
+    }                                                                                                   \
+    catch(CORBA::COMM_FAILURE & comm)                                                                   \
+    {                                                                                                   \
+        if(comm.minor() == omni::COMM_FAILURE_WaitingForReply)                                          \
+        {                                                                                               \
+            TRANSIENT_NOT_EXIST_EXCEPT(comm, "DeviceProxy", "read_attribute", OBJ);                     \
+        }                                                                                               \
+        else                                                                                            \
+        {                                                                                               \
+            set_connection_state(CONNECTION_NOTOK);                                                     \
+            TangoSys_OMemStream desc;                                                                   \
+            desc << "Failed to read_attribute on device " << device_name << std::ends;                  \
+            TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, comm, API_CommunicationFailed, desc.str()); \
+        }                                                                                               \
+    }                                                                                                   \
+    catch(CORBA::SystemException & ce)                                                                  \
+    {                                                                                                   \
+        set_connection_state(CONNECTION_NOTOK);                                                         \
+        TangoSys_OMemStream desc;                                                                       \
+        desc << "Failed to read_attribute on device " << device_name << std::ends;                      \
+        TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());       \
     }
 
 #define COPY_BASE_CONFIG(A, B)                           \

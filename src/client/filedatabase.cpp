@@ -463,7 +463,7 @@ string FileDatabase ::read_word(ifstream &f)
             TangoSys_MemStream desc;
             desc << "File database: Error in file at line " << StartLine;
             desc << " in file " << filename << "." << ends;
-            TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
         }
         read_char(f);
         return ret_word;
@@ -526,7 +526,7 @@ string FileDatabase::read_full_word(ifstream &f)
             TangoSys_MemStream desc;
             desc << "File database: String too long at line " << StartLine;
             desc << " in file " << filename << "." << ends;
-            TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
         }
         read_char(f);
         if(ret_word.length() == 0)
@@ -560,7 +560,7 @@ void FileDatabase::CHECK_LEX(int lt, int le)
         TangoSys_MemStream desc;
         desc << "File database: Error in file at line " << StartLine;
         desc << " in file " << filename << "." << ends;
-        TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
     }
 }
 
@@ -628,7 +628,7 @@ std::string FileDatabase::parse_res_file(const std::string &file_name)
     {
         TangoSys_MemStream desc;
         desc << "FILEDATABASE could not open file " << file_name << "." << ends;
-        TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
     }
 
     /* CHECK BEGINING OF CONFIG FILE  */
@@ -2137,7 +2137,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceList(CORBA::Any &send)
                 TangoSys_MemStream desc;
                 desc << "File database: Can't find class " << (*data_in)[1];
                 desc << " in file " << filename << "." << ends;
-                TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
             }
         }
         else
@@ -2148,7 +2148,7 @@ CORBA::Any *FileDatabase ::DbGetDeviceList(CORBA::Any &send)
             TangoSys_MemStream desc;
             desc << "File database: Can't find device server " << (*data_in)[0];
             desc << " in file " << filename << "." << ends;
-            TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
+            TANGO_THROW_DETAILED_EXCEPTION(ApiConnExcept, API_DatabaseFileError, desc.str());
         }
     }
 

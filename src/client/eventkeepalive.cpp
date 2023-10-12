@@ -359,15 +359,16 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
     }
     catch(CORBA::COMM_FAILURE &)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught CORBA::COMM_FAILURE exception while creating event filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            EventSystemExcept,
+            API_NotificationServiceFailed,
+            "Caught CORBA::COMM_FAILURE exception while creating event filter (check filter)");
     }
     catch(...)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught exception while creating event filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Caught exception while creating event filter (check filter)");
     }
 
     //
@@ -418,9 +419,9 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
         }
 
         filter = CosNotifyFilter::Filter::_nil();
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Caught exception while creating event filter (check filter)");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                       API_NotificationServiceFailed,
+                                       "Caught exception while creating event filter (check filter)");
     }
 }
 

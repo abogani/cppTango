@@ -124,7 +124,7 @@ bool DbDatum::is_empty()
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "The DbDatum object is empty");
+            TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_EmptyDbDatum, "The DbDatum object is empty");
         }
         return true;
     }
@@ -166,7 +166,7 @@ bool DbDatum::operator>>(bool &datum)
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "Cannot extract short, no data in DbDatum object ");
         }
         ret = false;
@@ -181,7 +181,7 @@ bool DbDatum::operator>>(bool &datum)
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(
+                TANGO_THROW_DETAILED_EXCEPTION(
                     ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a short");
             }
             ret = false;
@@ -227,7 +227,7 @@ bool DbDatum::operator>>(short &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "Cannot extract short, no data in DbDatum object ");
         }
         ret = false;
@@ -241,7 +241,7 @@ bool DbDatum::operator>>(short &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(
+                TANGO_THROW_DETAILED_EXCEPTION(
                     ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a short");
             }
             ret = false;
@@ -286,7 +286,7 @@ bool DbDatum::operator>>(unsigned char &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short, no data in DbDatum object ");
         }
         ret = false;
@@ -299,9 +299,9 @@ bool DbDatum::operator>>(unsigned char &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                          API_IncompatibleArgumentType,
-                                          "Cannot extract, data in DbDatum is not an unsigned short");
+                TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                               API_IncompatibleArgumentType,
+                                               "Cannot extract, data in DbDatum is not an unsigned short");
             }
             ret = false;
         }
@@ -345,7 +345,7 @@ bool DbDatum::operator>>(unsigned short &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short, no data in DbDatum object ");
         }
         ret = false;
@@ -358,9 +358,9 @@ bool DbDatum::operator>>(unsigned short &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                          API_IncompatibleArgumentType,
-                                          "Cannot extract, data in DbDatum is not an unsigned short");
+                TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                               API_IncompatibleArgumentType,
+                                               "Cannot extract, data in DbDatum is not an unsigned short");
             }
             ret = false;
         }
@@ -404,7 +404,7 @@ bool DbDatum::operator>>(DevLong &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDbDatum, "cannot extract long, no data in DbDatum object ");
         }
         ret = false;
@@ -417,9 +417,9 @@ bool DbDatum::operator>>(DevLong &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                          API_IncompatibleArgumentType,
-                                          "Cannot extract, data in DbDatum is not a DevLong (long 32 bits)");
+                TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                               API_IncompatibleArgumentType,
+                                               "Cannot extract, data in DbDatum is not a DevLong (long 32 bits)");
             }
             ret = false;
         }
@@ -463,7 +463,7 @@ bool DbDatum::operator>>(DevULong &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
         }
         ret = false;
@@ -476,9 +476,10 @@ bool DbDatum::operator>>(DevULong &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                          API_IncompatibleArgumentType,
-                                          "Cannot extract, data in DbDatum is not a DevULong (unsigned long 32 bits)");
+                TANGO_THROW_DETAILED_EXCEPTION(
+                    ApiDataExcept,
+                    API_IncompatibleArgumentType,
+                    "Cannot extract, data in DbDatum is not a DevULong (unsigned long 32 bits)");
             }
             ret = false;
         }
@@ -522,7 +523,7 @@ bool DbDatum::operator>>(DevLong64 &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
         }
         ret = false;
@@ -535,9 +536,9 @@ bool DbDatum::operator>>(DevLong64 &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                          API_IncompatibleArgumentType,
-                                          "Cannot extract, data in DbDatum is not a DevLong64 (long 64 bits)");
+                TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                               API_IncompatibleArgumentType,
+                                               "Cannot extract, data in DbDatum is not a DevLong64 (long 64 bits)");
             }
             ret = false;
         }
@@ -581,7 +582,7 @@ bool DbDatum::operator>>(DevULong64 &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long, no data in DbDatum object ");
         }
         ret = false;
@@ -594,7 +595,7 @@ bool DbDatum::operator>>(DevULong64 &datum) const
         {
             if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(
+                TANGO_THROW_DETAILED_EXCEPTION(
                     ApiDataExcept,
                     API_IncompatibleArgumentType,
                     "Cannot extract, data in DbDatum is not a DevULong64 (unsigned long 64 bits)");
@@ -641,7 +642,7 @@ bool DbDatum::operator>>(float &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDbDatum, "cannot extract float, no data in DbDatum object ");
         }
         ret = false;
@@ -668,7 +669,7 @@ bool DbDatum::operator>>(float &datum) const
             }
             else if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(
+                TANGO_THROW_DETAILED_EXCEPTION(
                     ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a float");
             }
             else
@@ -716,7 +717,7 @@ bool DbDatum::operator>>(double &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract double, no data in DbDatum object ");
         }
         ret = false;
@@ -743,7 +744,7 @@ bool DbDatum::operator>>(double &datum) const
             }
             else if(exceptions_flags.test(wrongtype_flag))
             {
-                TANGO_THROW_API_EXCEPTION(
+                TANGO_THROW_DETAILED_EXCEPTION(
                     ApiDataExcept, API_IncompatibleArgumentType, "Cannot extract, data in DbDatum is not a double");
             }
             else
@@ -787,7 +788,7 @@ bool DbDatum::operator>>(std::string &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract string, no data in DbDatum object ");
         }
         ret = false;
@@ -858,7 +859,7 @@ bool DbDatum::operator>>(const char *&datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract string, no data in DbDatum object ");
         }
         ret = false;
@@ -906,7 +907,7 @@ bool DbDatum::operator>>(std::vector<short> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract short vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -932,7 +933,7 @@ bool DbDatum::operator>>(std::vector<short> &datum) const
                     desc << "Cannot extract short vector, elt number ";
                     desc << i + 1 << " is not a short" << std::ends;
 
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 ret = false;
                 break;
@@ -976,7 +977,7 @@ bool DbDatum::operator>>(std::vector<unsigned short> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned short vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1002,7 +1003,7 @@ bool DbDatum::operator>>(std::vector<unsigned short> &datum) const
                     desc << "Cannot extract unsigned short vector, elt number ";
                     desc << i + 1 << " is not an unsigned short" << std::ends;
 
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 ret = false;
                 break;
@@ -1047,7 +1048,7 @@ bool DbDatum::operator>>(std::vector<DevLong> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract long vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1073,7 +1074,7 @@ bool DbDatum::operator>>(std::vector<DevLong> &datum) const
                     desc << "Cannot extract long vector, elt number ";
                     desc << i + 1 << " is not a DevLong (long 32 bits)" << std::ends;
 
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 ret = false;
                 break;
@@ -1118,7 +1119,7 @@ bool DbDatum::operator>>(std::vector<DevULong> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1144,7 +1145,7 @@ bool DbDatum::operator>>(std::vector<DevULong> &datum) const
                     desc << "Cannot extract unsigned long vector, elt number ";
                     desc << i + 1 << " is not a DevULong (unsigned long 32 bits)" << std::ends;
 
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 ret = false;
                 break;
@@ -1189,7 +1190,7 @@ bool DbDatum::operator>>(std::vector<DevLong64> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1215,7 +1216,7 @@ bool DbDatum::operator>>(std::vector<DevLong64> &datum) const
                     desc << "Cannot extract unsigned long vector, elt number ";
                     desc << i + 1 << " is not a DevLong64 (long 64 bits)" << std::ends;
 
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 ret = false;
                 break;
@@ -1260,7 +1261,7 @@ bool DbDatum::operator>>(std::vector<DevULong64> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract unsigned long vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1286,7 +1287,7 @@ bool DbDatum::operator>>(std::vector<DevULong64> &datum) const
                     desc << "Cannot extract unsigned long vector, elt number ";
                     desc << i + 1 << " is not a DevULong64 (unsigned long 64 bits)" << std::ends;
 
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 ret = false;
                 break;
@@ -1331,7 +1332,7 @@ bool DbDatum::operator>>(std::vector<float> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract float vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1370,7 +1371,7 @@ bool DbDatum::operator>>(std::vector<float> &datum) const
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract float vector, elt number ";
                     desc << i + 1 << " is not a float" << std::ends;
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 else
                 {
@@ -1419,7 +1420,7 @@ bool DbDatum::operator>>(std::vector<double> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract double vector, no data in DbDatum object ");
         }
         datum.resize(0);
@@ -1458,7 +1459,7 @@ bool DbDatum::operator>>(std::vector<double> &datum) const
                     TangoSys_OMemStream desc;
                     desc << "Cannot extract double vector, elt number ";
                     desc << i + 1 << " is not a double" << std::ends;
-                    TANGO_THROW_API_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
+                    TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept, API_IncompatibleArgumentType, desc.str());
                 }
                 else
                 {
@@ -1501,7 +1502,7 @@ bool DbDatum::operator>>(std::vector<std::string> &datum) const
     {
         if(exceptions_flags.test(isempty_flag))
         {
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 ApiDataExcept, API_EmptyDbDatum, "cannot extract string vector, no data in DbDatum object ");
         }
         datum.resize(0);
