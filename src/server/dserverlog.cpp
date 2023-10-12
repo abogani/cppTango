@@ -160,7 +160,7 @@ DevVarLongStringArray *DServer::get_logging_level(const DevVarStringArray *argin
 // method : DServer::stop_logging
 //
 //-----------------------------------------------------------------------------
-void DServer::stop_logging(void)
+void DServer::stop_logging()
 {
     NoSyncModelTangoMonitor mon(this);
     TANGO_LOG_DEBUG << "Entering DServer::stop_logging" << std::endl;
@@ -173,7 +173,7 @@ void DServer::stop_logging(void)
 // method : DServer::start_logging
 //
 //-----------------------------------------------------------------------------
-void DServer::start_logging(void)
+void DServer::start_logging()
 {
     NoSyncModelTangoMonitor mon(this);
     TANGO_LOG_DEBUG << "Entering DServer::start_logging" << std::endl;

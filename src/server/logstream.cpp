@@ -290,7 +290,7 @@ log4tango::LoggerStream &operator<<(log4tango::LoggerStream &ls, const Attr &a)
 {
     std::vector<AttrProperty> v = (const_cast<Attr &>(a)).get_class_properties();
     unsigned int n = v.size();
-    if(n)
+    if(n != 0u)
     {
         for(unsigned i = 0; i < n; i++)
         {

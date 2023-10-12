@@ -92,7 +92,7 @@ class client_addr : public omni_thread::value_t
         strcpy(client_ip, addr);
     }
 
-    ~client_addr() { }
+    ~client_addr() override { }
 
     client_addr(const client_addr &);
     client_addr &operator=(const client_addr &);

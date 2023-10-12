@@ -50,8 +50,8 @@ TangoAppender::TangoAppender(const std::string &src_name,
                              bool open_connection) :
     log4tango::Appender(name),
     _dev_name(dev_name),
-    _src_name(src_name),
-    _dev_proxy(0)
+    _src_name(src_name)
+
 {
     _req_ctr = 0;
     if(open_connection == true)
@@ -65,7 +65,7 @@ TangoAppender::~TangoAppender()
     close();
 }
 
-bool TangoAppender::requires_layout(void) const
+bool TangoAppender::requires_layout() const
 {
     return false;
 }
@@ -75,9 +75,9 @@ void TangoAppender::set_layout(log4tango::Layout *)
     // no-op
 }
 
-bool TangoAppender::is_valid(void) const
+bool TangoAppender::is_valid() const
 {
-    if(!_dev_proxy)
+    if(_dev_proxy == nullptr)
     {
         return false;
     }
@@ -97,15 +97,15 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
     //------------------------------------------------------------
     //- DO NOT LOG FROM THIS METHOD !!!
     //------------------------------------------------------------
-    if(!_dev_proxy)
+    if(_dev_proxy == nullptr)
     {
         //--DO NOT RETURN -1 (ERROR ALREADY HANDLED)
         return 0;
     }
     try
     {
-        Tango::DevVarStringArray *dvsa = new Tango::DevVarStringArray(6);
-        if(dvsa)
+        auto *dvsa = new Tango::DevVarStringArray(6);
+        if(dvsa != nullptr)
         {
             dvsa->length(6);
             auto ts_ms =
@@ -121,7 +121,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
             (*dvsa)[3] = Tango::string_dup(event.message.c_str());
             (*dvsa)[4] = Tango::string_dup("");
             omni_thread *ct = omni_thread::self();
-            if(ct)
+            if(ct != nullptr)
             {
                 TangoSys_OMemStream ctstr;
                 ctstr << "@" << std::hex << event.thread_id << " [" << ct->id() << "]" << std::ends;
@@ -155,7 +155,7 @@ int TangoAppender::_append(const log4tango::LoggingEvent &event)
     return 0;
 }
 
-bool TangoAppender::reopen(void)
+bool TangoAppender::reopen()
 {
     bool result = true;
     try
@@ -184,9 +184,9 @@ bool TangoAppender::reopen(void)
     return result;
 }
 
-void TangoAppender::close(void)
+void TangoAppender::close()
 {
-    if(_dev_proxy)
+    if(_dev_proxy != nullptr)
     {
         try
         {
@@ -203,7 +203,7 @@ void TangoAppender::close(void)
             // Ignore error: some old logviewer may not support UnRegister
         }
         delete _dev_proxy;
-        _dev_proxy = 0;
+        _dev_proxy = nullptr;
     }
 }
 

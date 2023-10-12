@@ -53,9 +53,9 @@ class AddLoggingTarget : public Command
   public:
     AddLoggingTarget(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-    ~AddLoggingTarget() { }
+    ~AddLoggingTarget() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -72,9 +72,9 @@ class RemoveLoggingTarget : public Command
   public:
     RemoveLoggingTarget(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-    ~RemoveLoggingTarget() { }
+    ~RemoveLoggingTarget() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -94,9 +94,9 @@ class GetLoggingTarget : public Command
                      const std::string &in_desc,
                      const std::string &out_desc);
 
-    ~GetLoggingTarget() { }
+    ~GetLoggingTarget() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -112,9 +112,9 @@ class SetLoggingLevel : public Command
   public:
     SetLoggingLevel(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out, const std::string &in_desc);
 
-    ~SetLoggingLevel() { }
+    ~SetLoggingLevel() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -134,9 +134,9 @@ class GetLoggingLevel : public Command
                     const std::string &in_desc,
                     const std::string &out_desc);
 
-    ~GetLoggingLevel() { }
+    ~GetLoggingLevel() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -152,9 +152,9 @@ class StopLogging : public Command
   public:
     StopLogging(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~StopLogging() { }
+    ~StopLogging() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 //=============================================================================
@@ -170,9 +170,9 @@ class StartLogging : public Command
   public:
     StartLogging(const char *cmd_name, Tango::CmdArgType in, Tango::CmdArgType out);
 
-    ~StartLogging() { }
+    ~StartLogging() override { }
 
-    virtual CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any);
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
 };
 
 } // namespace Tango

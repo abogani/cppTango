@@ -36,13 +36,13 @@
 #include <tango/server/dserversignal.h>
 
 #ifndef _TG_WINDOWS_
-  #include <errno.h>
+  #include <cerrno>
 #endif
 
 namespace Tango
 {
 
-DServerSignal *DServerSignal::_instance = NULL;
+DServerSignal *DServerSignal::_instance = nullptr;
 DevSigAction DServerSignal::reg_sig[_NSIG];
 std::string DServerSignal::sig_name[_NSIG];
 #ifdef _TG_WINDOWS_
@@ -63,7 +63,7 @@ int DServerSignal::win_signo = 0;
 
 DServerSignal *DServerSignal::instance()
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         try
         {
@@ -211,7 +211,7 @@ DServerSignal::DServerSignal() :
     sigdelset(&sigs_to_block, SIGTSTP);
     sigdelset(&sigs_to_block, SIGUSR1);
     sigdelset(&sigs_to_block, SIGUSR2);
-    sigprocmask(SIG_BLOCK, &sigs_to_block, NULL);
+    sigprocmask(SIG_BLOCK, &sigs_to_block, nullptr);
 #else  /* _TG_WINDOWS_ */
     win_ev = CreateEvent(NULL, FALSE, FALSE, NULL);
 
@@ -296,7 +296,7 @@ void DServerSignal::register_class_signal(long signo, bool handler, DeviceClass 
     // Otherwise, record class pointer
     //
 
-    std::vector<DeviceClass *>::iterator f = find_class(signo, cl_ptr);
+    auto f = find_class(signo, cl_ptr);
 
     if(f == reg_sig[signo].registered_classes.end())
     {
@@ -398,7 +398,7 @@ void DServerSignal::register_dev_signal(long signo, bool handler, DeviceImpl *de
     // Otherwise, record class pointer
     //
 
-    std::vector<DeviceImpl *>::iterator f = find_device(signo, dev_ptr);
+    auto f = find_device(signo, dev_ptr);
 
     if(f == reg_sig[signo].registered_devices.end())
     {
@@ -471,7 +471,7 @@ void DServerSignal::unregister_class_signal(long signo, DeviceClass *cl_ptr)
     // Otherwise, record class pointer
     //
 
-    std::vector<DeviceClass *>::iterator f = find_class(signo, cl_ptr);
+    auto f = find_class(signo, cl_ptr);
 
     if(f == reg_sig[signo].registered_classes.end())
     {
@@ -528,7 +528,7 @@ void DServerSignal::unregister_dev_signal(long signo, DeviceImpl *dev_ptr)
     // Otherwise, leave method
     //
 
-    std::vector<DeviceImpl *>::iterator f = find_device(signo, dev_ptr);
+    auto f = find_device(signo, dev_ptr);
 
     if(f == reg_sig[signo].registered_devices.end())
     {
@@ -576,7 +576,7 @@ void DServerSignal::unregister_dev_signal(DeviceImpl *dev_ptr)
         // Check if device is registered for this signal. If yes, remove it. Otherwise, go to next signal
         //
 
-        std::vector<DeviceImpl *>::iterator f = find_device(i, dev_ptr);
+        auto f = find_device(i, dev_ptr);
 
         if(f == reg_sig[i].registered_devices.end())
         {
@@ -625,7 +625,7 @@ void DServerSignal::unregister_class_signal(DeviceClass *cl_ptr)
         // Check if classes is registered for this signal. If yes, remove it. Otherwise, go to next signal
         //
 
-        std::vector<DeviceClass *>::iterator f = find_class(i, cl_ptr);
+        auto f = find_class(i, cl_ptr);
 
         if(f == reg_sig[i].registered_classes.end())
         {
@@ -686,7 +686,7 @@ void DServerSignal::register_handler(long signo, bool handler)
         sigemptyset(&sigs_to_unblock);
         sigaddset(&sigs_to_unblock, signo);
 
-        if(pthread_sigmask(SIG_UNBLOCK, &sigs_to_unblock, NULL) != 0)
+        if(pthread_sigmask(SIG_UNBLOCK, &sigs_to_unblock, nullptr) != 0)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -699,7 +699,7 @@ void DServerSignal::register_handler(long signo, bool handler)
         sa.sa_handler = DServerSignal::main_sig_handler;
         sigemptyset(&sa.sa_mask);
 
-        if(sigaction((int) signo, &sa, 0) == -1)
+        if(sigaction((int) signo, &sa, nullptr) == -1)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;
@@ -757,7 +757,7 @@ void DServerSignal::unregister_handler(long signo)
         sa.sa_handler = SIG_DFL;
         sigemptyset(&sa.sa_mask);
 
-        if(sigaction((int) signo, &sa, 0) == -1)
+        if(sigaction((int) signo, &sa, nullptr) == -1)
         {
             TangoSys_OMemStream o;
             o << "Can't install signal " << signo << ". OS error = " << errno << std::ends;

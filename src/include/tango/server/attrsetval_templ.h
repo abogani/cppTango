@@ -825,7 +825,7 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
 
                 unsigned long nb_data = p_data->encoded_data.length();
                 tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
-                p_data->encoded_data.replace(0, 0, NULL, false);
+                p_data->encoded_data.replace(0, 0, nullptr, false);
 
                 value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, tmp_ptr, true);
                 delete p_data;

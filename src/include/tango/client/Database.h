@@ -50,19 +50,19 @@
 class Database : public Tango::Connection
 {
   private:
-    virtual std::string get_corba_name(bool);
+    std::string get_corba_name(bool) override;
 
-    virtual std::string build_corba_name()
+    std::string build_corba_name() override
     {
         return std::string("nada");
     }
 
-    virtual int get_lock_ctr()
+    int get_lock_ctr() override
     {
         return 0;
     }
 
-    virtual void set_lock_ctr(int) { }
+    void set_lock_ctr(int) override { }
 
     class DatabaseExt
     {
@@ -97,7 +97,7 @@ class Database : public Tango::Connection
     std::vector<DbHistory> make_history_array(bool, CORBA::Any_var &);
 
     void check_access();
-    inline std::string dev_name();
+    inline std::string dev_name() override;
     void set_server_release();
     void check_access_and_get();
 
@@ -458,7 +458,7 @@ class Database : public Tango::Connection
      */
     void get_property(std::string obj_name, DbData &db)
     {
-        get_property(obj_name, db, NULL);
+        get_property(obj_name, db, nullptr);
     }
 
     /**
@@ -573,7 +573,7 @@ class Database : public Tango::Connection
      */
     void get_device_property(std::string dev_name, DbData &db)
     {
-        get_device_property(dev_name, db, NULL);
+        get_device_property(dev_name, db, nullptr);
     }
 
     /**
@@ -692,7 +692,7 @@ class Database : public Tango::Connection
      */
     void get_device_attribute_property(std::string dev_name, DbData &db)
     {
-        get_device_attribute_property(dev_name, db, NULL);
+        get_device_attribute_property(dev_name, db, nullptr);
     }
 
     /**
@@ -858,7 +858,7 @@ class Database : public Tango::Connection
      */
     void get_device_pipe_property(std::string dev_name, DbData &db)
     {
-        get_device_pipe_property(dev_name, db, NULL);
+        get_device_pipe_property(dev_name, db, nullptr);
     }
 
     /**
@@ -970,7 +970,7 @@ class Database : public Tango::Connection
      */
     void get_class_property(std::string class_name, DbData &db)
     {
-        get_class_property(class_name, db, NULL);
+        get_class_property(class_name, db, nullptr);
     }
 
     /**
@@ -1089,7 +1089,7 @@ class Database : public Tango::Connection
      */
     void get_class_attribute_property(std::string class_name, DbData &db)
     {
-        get_class_attribute_property(class_name, db, NULL);
+        get_class_attribute_property(class_name, db, nullptr);
     }
 
     /**
@@ -1225,7 +1225,7 @@ class Database : public Tango::Connection
      */
     void get_class_pipe_property(std::string class_name, DbData &db)
     {
-        get_class_pipe_property(class_name, db, NULL);
+        get_class_pipe_property(class_name, db, nullptr);
     }
 
     /**
@@ -1884,7 +1884,7 @@ class Database : public Tango::Connection
     void write_event_channel_ior_filedatabase(const std::string &);
     void build_connection();
     void post_reconnection();
-    ~Database();
+    ~Database() override;
 
     inline Device_var &get_dbase()
     {
@@ -1983,13 +1983,13 @@ class Database : public Tango::Connection
     //
 
     void get_property(std::string, DbData &, DbServerCache *dsc);
-    void get_property_forced(std::string, DbData &, DbServerCache *dsc = NULL);
+    void get_property_forced(std::string, DbData &, DbServerCache *dsc = nullptr);
     void get_device_property(std::string, DbData &, DbServerCache *dsc);
     DbDatum get_device_property_list(const std::string &, const std::string &);
     void get_device_property_list(std::string &,
                                   const std::string &,
                                   std::vector<std::string> &,
-                                  DbServerCache *dsc = NULL);
+                                  DbServerCache *dsc = nullptr);
     void get_device_attribute_property(std::string, DbData &, DbServerCache *dsc);
     void get_device_pipe_property(std::string, DbData &, DbServerCache *dsc);
     void delete_all_device_attribute_property(std::string, const DbData &);

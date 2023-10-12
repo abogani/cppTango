@@ -35,19 +35,17 @@ class ReadersWritersLock
   public:
     omni_mutex mut;
     omni_condition cond;
-    int n; // 0 means no-one active, > 0 means n readers, < 0 means writer
-           // (-n times).
-    int writerId;
+    int n{0}; // 0 means no-one active, > 0 means n readers, < 0 means writer
+              // (-n times).
+    int writerId{0};
 
-    ReadersWritersLock(void) :
-        cond(&mut),
-        n(0),
-        writerId(0),
-        auto_self(NULL)
+    ReadersWritersLock() :
+        cond(&mut)
+
     {
     }
 
-    void readerIn(void)
+    void readerIn()
     {
         mut.lock();
 
@@ -55,7 +53,7 @@ class ReadersWritersLock
         // return a NULL pointer!
         int threadId = 0;
         omni_thread *th = omni_thread::self();
-        if(th != NULL)
+        if(th != nullptr)
         {
             threadId = th->id();
         }
@@ -75,7 +73,7 @@ class ReadersWritersLock
         mut.unlock();
     }
 
-    void readerOut(void)
+    void readerOut()
     {
         mut.lock();
         if(n < 0)
@@ -93,7 +91,7 @@ class ReadersWritersLock
         mut.unlock();
     }
 
-    void writerIn(void)
+    void writerIn()
     {
         mut.lock();
 
@@ -101,7 +99,7 @@ class ReadersWritersLock
         // return a NULL pointer!
         int threadId = 0;
         omni_thread *th = omni_thread::self();
-        if(th != NULL)
+        if(th != nullptr)
         {
             threadId = th->id();
         }
@@ -124,7 +122,7 @@ class ReadersWritersLock
         // Make sure we get a correct thread ID
         // With the class ensure_self it should return always a thread ID.
         // Create the ensure_self object only for the thread which takes the writer lock!
-        if(th == NULL)
+        if(th == nullptr)
         {
             auto_self = new omni_thread::ensure_self();
         }
@@ -133,17 +131,17 @@ class ReadersWritersLock
         mut.unlock();
     }
 
-    void writerOut(void)
+    void writerOut()
     {
         mut.lock();
         n++;
         if(n == 0)
         {
             // delete the dummy thread when it was created.
-            if(auto_self != NULL)
+            if(auto_self != nullptr)
             {
                 delete auto_self;
-                auto_self = NULL;
+                auto_self = nullptr;
             }
 
             cond.broadcast(); // might as well wake up all readers
@@ -160,7 +158,7 @@ class ReadersWritersLock
     // a thread without an associated omni_thread, it creates a dummy
     // thread which is released when the ensure_self object is deleted.
 
-    omni_thread::ensure_self *auto_self;
+    omni_thread::ensure_self *auto_self{nullptr};
 };
 
 //
@@ -193,7 +191,7 @@ class ReaderLock
         rwl.readerIn();
     }
 
-    ~ReaderLock(void)
+    ~ReaderLock()
     {
         rwl.readerOut();
     }
@@ -215,7 +213,7 @@ class WriterLock
         rwl.writerIn();
     }
 
-    ~WriterLock(void)
+    ~WriterLock()
     {
         rwl.writerOut();
     }

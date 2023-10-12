@@ -30,10 +30,11 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 
-#include <time.h>
-#include <signal.h>
+#include <ctime>
+#include <csignal>
 
 #include <algorithm>
+#include <memory>
 
 using namespace CORBA;
 
@@ -47,14 +48,14 @@ namespace Tango
 //-----------------------------------------------------------------------------
 
 AttributeProxy::AttributeProxy(std::string &name) :
-    dev_proxy(NULL),
+    dev_proxy(nullptr),
     ext(new AttributeProxyExt(name))
 {
     real_constructor(name);
 }
 
 AttributeProxy::AttributeProxy(const char *na) :
-    dev_proxy(NULL),
+    dev_proxy(nullptr),
     ext(new AttributeProxyExt(na))
 {
     std::string name(na);
@@ -107,7 +108,7 @@ void AttributeProxy::real_constructor(std::string &name)
     }
     else
     {
-        db_attr = NULL;
+        db_attr = nullptr;
 
         std::string::size_type stop;
         stop = name.rfind(DEVICE_SEP);
@@ -291,9 +292,9 @@ AttributeProxy::AttributeProxy(const AttributeProxy &prev) :
         }
     }
 
-    if(prev.ext.get() != NULL)
+    if(prev.ext != nullptr)
     {
-        ext.reset(new AttributeProxyExt(prev.get_user_defined_name()));
+        ext = std::make_unique<AttributeProxyExt>(prev.get_user_defined_name());
     }
 }
 
@@ -357,9 +358,9 @@ AttributeProxy &AttributeProxy::operator=(const AttributeProxy &rval)
             }
         }
 
-        if(rval.ext.get() != NULL)
+        if(rval.ext != nullptr)
         {
-            ext.reset(new AttributeProxyExt(rval.get_user_defined_name()));
+            ext = std::make_unique<AttributeProxyExt>(rval.get_user_defined_name());
         }
         else
         {
@@ -872,8 +873,6 @@ void AttributeProxy::get_property(const std::string &property_name, DbData &user
             user_data.push_back(no_data);
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -925,8 +924,6 @@ void AttributeProxy::get_property(const std::vector<std::string> &property_names
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -974,8 +971,6 @@ void AttributeProxy::get_property(DbData &user_data)
             }
         }
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1009,8 +1004,6 @@ void AttributeProxy::put_property(const DbData &user_data)
 
         db_attr->put_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1036,12 +1029,10 @@ void AttributeProxy::delete_property(const std::string &property_name)
 
         DbDatum att(attr_name);
         db_data.push_back(att);
-        db_data.push_back(DbDatum(property_name));
+        db_data.emplace_back(property_name);
 
         db_attr->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1069,13 +1060,11 @@ void AttributeProxy::delete_property(const std::vector<std::string> &property_na
         db_data.push_back(att);
         for(unsigned int i = 0; i < property_names.size(); i++)
         {
-            db_data.push_back(DbDatum(property_names[i]));
+            db_data.emplace_back(property_names[i]);
         }
 
         db_attr->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1108,8 +1097,6 @@ void AttributeProxy::delete_property(const DbData &user_data)
 
         db_attr->delete_property(db_data);
     }
-
-    return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1289,7 +1276,7 @@ int AttributeProxy::subscribe_event(EventType event,
                                     bool stateless)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -1309,7 +1296,7 @@ int AttributeProxy::subscribe_event(EventType event,
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(ApiUtil::instance()->get_notifd_event_consumer() == NULL)
+            if(ApiUtil::instance()->get_notifd_event_consumer() == nullptr)
             {
                 ApiUtil::instance()->create_notifd_event_consumer();
             }
@@ -1346,7 +1333,7 @@ int AttributeProxy::subscribe_event(EventType event,
                                     bool stateless)
 {
     ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == NULL)
+    if(api_ptr->get_zmq_event_consumer() == nullptr)
     {
         api_ptr->create_zmq_event_consumer();
     }
@@ -1362,7 +1349,7 @@ int AttributeProxy::subscribe_event(EventType event,
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == NULL)
+            if(api_ptr->get_notifd_event_consumer() == nullptr)
             {
                 api_ptr->create_notifd_event_consumer();
             }

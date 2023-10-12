@@ -87,7 +87,7 @@ class WAttribute : public Attribute
     /**
      * The WAttribute desctructor.
      */
-    ~WAttribute();
+    ~WAttribute() override;
 
     //@}
 
@@ -617,7 +617,7 @@ class WAttribute : public Attribute
 
     void set_write_value(Tango::DevEncoded *, long x = 1, long y = 0); // Dummy method for compiler
 
-    virtual void set_rvalue();
+    void set_rvalue() override;
 
     void rollback();
 
@@ -786,12 +786,12 @@ class WAttribute : public Attribute
 
   protected:
     /// @privatesection
-    virtual bool check_rds_alarm();
+    bool check_rds_alarm() override;
 
   private:
     inline void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)
     {
-        if((!y && nb_data != x) || (y && nb_data != (x * y)))
+        if(((y == 0u) && nb_data != x) || ((y != 0u) && nb_data != (x * y)))
         {
             TANGO_THROW_EXCEPTION(API_AttrIncorrectDataNumber, "Incorrect data number");
         }
@@ -815,10 +815,7 @@ class WAttribute : public Attribute
      *          - max : The max allowed value
      */
     template <typename T>
-    void check_data_limits(const size_t,
-                           const typename tango_type_traits<T>::ArrayType &,
-                           Attr_CheckVal &,
-                           Attr_CheckVal &);
+    void check_data_limits(size_t, const typename tango_type_traits<T>::ArrayType &, Attr_CheckVal &, Attr_CheckVal &);
 
     /**
      * Check that provided enum is within limits.
@@ -828,7 +825,7 @@ class WAttribute : public Attribute
      * @param data_size number of elements in the buffer
      */
     template <class T>
-    void check_enum(const typename tango_type_traits<T>::ArrayType &, const size_t);
+    void check_enum(const typename tango_type_traits<T>::ArrayType &, size_t);
 
     /**
      * description :     Check the value sent by the caller and copy incoming data
@@ -985,18 +982,18 @@ class WAttribute : public Attribute
     Tango::DevVarCharArray uchar_array_val;
 
     const Tango::DevShort *short_ptr;
-    const Tango::DevLong *long_ptr;
-    const Tango::DevDouble *double_ptr;
-    const Tango::ConstDevString *str_ptr;
-    const Tango::DevFloat *float_ptr;
-    const Tango::DevBoolean *boolean_ptr;
-    const Tango::DevUShort *ushort_ptr;
-    const Tango::DevUChar *uchar_ptr;
-    const Tango::DevEncoded *encoded_ptr;
+    const Tango::DevLong *long_ptr{nullptr};
+    const Tango::DevDouble *double_ptr{nullptr};
+    const Tango::ConstDevString *str_ptr{nullptr};
+    const Tango::DevFloat *float_ptr{nullptr};
+    const Tango::DevBoolean *boolean_ptr{nullptr};
+    const Tango::DevUShort *ushort_ptr{nullptr};
+    const Tango::DevUChar *uchar_ptr{nullptr};
+    const Tango::DevEncoded *encoded_ptr{nullptr};
 
-    bool string_allocated;
-    bool memorized;
-    bool memorized_init;
+    bool string_allocated{false};
+    bool memorized{false};
+    bool memorized_init{false};
     std::string mem_value;
     struct timeval write_date;
 
@@ -1020,15 +1017,15 @@ class WAttribute : public Attribute
     Tango::DevVarULong64Array ulong64_array_val;
     Tango::DevVarStateArray state_array_val;
 
-    const Tango::DevLong64 *long64_ptr;
-    const Tango::DevULong *ulong_ptr;
-    const Tango::DevULong64 *ulong64_ptr;
-    const Tango::DevState *state_ptr;
+    const Tango::DevLong64 *long64_ptr{nullptr};
+    const Tango::DevULong *ulong_ptr{nullptr};
+    const Tango::DevULong64 *ulong64_ptr{nullptr};
+    const Tango::DevState *state_ptr{nullptr};
 
-    bool uswv;                  // User set_write_value
-    DevErrorList mem_exception; // Exception received at start-up in case writing the
-                                // memorized att. failed
-    bool mem_write_failed;      // Flag set to true if the memorized att setting failed
+    bool uswv{false};             // User set_write_value
+    DevErrorList mem_exception;   // Exception received at start-up in case writing the
+                                  // memorized att. failed
+    bool mem_write_failed{false}; // Flag set to true if the memorized att setting failed
 };
 
 } // namespace Tango

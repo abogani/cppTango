@@ -141,7 +141,7 @@ Tango::DevAttrHistory_4 *Device_4Impl::read_attribute_history_4(const char *name
 
     blackbox_ptr->insert_op(Op_Read_Attr_history_4);
 
-    Tango::DevAttrHistory_4 *back = NULL;
+    Tango::DevAttrHistory_4 *back = nullptr;
     std::vector<PollObj *> &poll_list = get_poll_obj_list();
     long nb_poll = poll_list.size();
 
@@ -160,7 +160,7 @@ Tango::DevAttrHistory_4 *Device_4Impl::read_attribute_history_4(const char *name
     //
 
     long j;
-    PollObj *polled_attr = NULL;
+    PollObj *polled_attr = nullptr;
     for(j = 0; j < nb_poll; j++)
     {
         if((poll_list[j]->get_type() == Tango::POLL_ATTR) && (poll_list[j]->get_name() == attr_str))
@@ -169,7 +169,7 @@ Tango::DevAttrHistory_4 *Device_4Impl::read_attribute_history_4(const char *name
             break;
         }
     }
-    if(polled_attr == NULL)
+    if(polled_attr == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Attribute " << attr_str << " not polled" << std::ends;
@@ -257,7 +257,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
     AutoTangoMonitor sync(&mon);
 
     TANGO_LOG_DEBUG << "Device_4Impl::command_inout_history_4 arrived" << std::endl;
-    Tango::DevCmdHistory_4 *back = NULL;
+    Tango::DevCmdHistory_4 *back = nullptr;
 
     std::string cmd_str(command);
 
@@ -296,7 +296,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
     // Check that the command is polled
     //
 
-    PollObj *polled_cmd = NULL;
+    PollObj *polled_cmd = nullptr;
     std::vector<PollObj *> &poll_list = get_poll_obj_list();
     unsigned long i;
     for(i = 0; i < poll_list.size(); i++)
@@ -320,7 +320,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
         }
     }
 
-    if(polled_cmd == NULL)
+    if(polled_cmd == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Command " << cmd_str << " not polled" << std::ends;
@@ -371,7 +371,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
 
     if((state_cmd == true) || (status_cmd == true))
     {
-        Tango::DevAttrHistory_4 *back_attr = NULL;
+        Tango::DevAttrHistory_4 *back_attr = nullptr;
         try
         {
             back_attr = new Tango::DevAttrHistory_4;
@@ -559,7 +559,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
 
     try
     {
-        Tango::AttributeValue_4 *l_back = new Tango::AttributeValue_4[nb_names];
+        auto *l_back = new Tango::AttributeValue_4[nb_names];
         aid.data_4 = new Tango::AttributeValueList_4(nb_names, nb_names, l_back, true);
 
         for(unsigned long loop = 0; loop < nb_names; loop++)
@@ -787,7 +787,7 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
     // Call the Device_3Impl write_attributes
     //
 
-    return write_attributes_34(NULL, &values);
+    return write_attributes_34(nullptr, &values);
 }
 
 //+-------------------------------------------------------------------------

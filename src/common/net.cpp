@@ -70,7 +70,7 @@ std::vector<std::string> resolve_hostname_address(const std::string &hostname)
     for(struct addrinfo *ptr = info; ptr != nullptr; ptr = ptr->ai_next)
     {
         struct sockaddr_in *s_in = (sockaddr_in *) ptr->ai_addr;
-        results.push_back(inet_ntoa(s_in->sin_addr));
+        results.emplace_back(inet_ntoa(s_in->sin_addr));
     }
 
     freeaddrinfo(info);

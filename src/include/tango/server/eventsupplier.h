@@ -220,7 +220,7 @@ class EventSupplier
     static omni_condition push_cond;
 
   private:
-    bool one_subscription_cmd;
+    bool one_subscription_cmd{false};
 };
 
 //---------------------------------------------------------------------
@@ -234,11 +234,12 @@ class NotifdEventSupplier : public EventSupplier, public POA_CosNotifyComm::Stru
   public:
     static NotifdEventSupplier *create(CORBA::ORB_var, std::string, Util *);
     void connect();
-    void disconnect_structured_push_supplier();
+    void disconnect_structured_push_supplier() override;
     void disconnect_from_notifd();
-    void subscription_change(const CosNotification::EventTypeSeq &added, const CosNotification::EventTypeSeq &deled);
+    void subscription_change(const CosNotification::EventTypeSeq &added,
+                             const CosNotification::EventTypeSeq &deled) override;
 
-    void push_heartbeat_event();
+    void push_heartbeat_event() override;
 
     std::string &get_event_channel_ior()
     {
@@ -249,26 +250,26 @@ class NotifdEventSupplier : public EventSupplier, public POA_CosNotifyComm::Stru
 
     //------------------ Push event -------------------------------
 
-    virtual void push_event(DeviceImpl *,
-                            std::string,
-                            const std::vector<std::string> &,
-                            const std::vector<double> &,
-                            const std::vector<std::string> &,
-                            const std::vector<long> &,
-                            const struct SuppliedEventData &,
-                            const std::string &,
-                            DevFailed *,
-                            bool);
+    void push_event(DeviceImpl *,
+                    std::string,
+                    const std::vector<std::string> &,
+                    const std::vector<double> &,
+                    const std::vector<std::string> &,
+                    const std::vector<long> &,
+                    const struct SuppliedEventData &,
+                    const std::string &,
+                    DevFailed *,
+                    bool) override;
 
-    virtual void push_event_loop(DeviceImpl *,
-                                 EventType,
-                                 const std::vector<std::string> &,
-                                 const std::vector<double> &,
-                                 const std::vector<std::string> &,
-                                 const std::vector<long> &,
-                                 const struct SuppliedEventData &,
-                                 Attribute &,
-                                 DevFailed *)
+    void push_event_loop(DeviceImpl *,
+                         EventType,
+                         const std::vector<std::string> &,
+                         const std::vector<double> &,
+                         const std::vector<std::string> &,
+                         const std::vector<long> &,
+                         const struct SuppliedEventData &,
+                         Attribute &,
+                         DevFailed *) override
     {
     }
 
@@ -312,30 +313,30 @@ class ZmqEventSupplier : public EventSupplier
 {
   public:
     static ZmqEventSupplier *create(Util *);
-    virtual ~ZmqEventSupplier();
+    ~ZmqEventSupplier() override;
 
     //------------------ Push event -------------------------------
 
-    void push_heartbeat_event();
-    virtual void push_event(DeviceImpl *,
-                            std::string,
-                            const std::vector<std::string> &,
-                            const std::vector<double> &,
-                            const std::vector<std::string> &,
-                            const std::vector<long> &,
-                            const struct SuppliedEventData &,
-                            const std::string &,
-                            DevFailed *,
-                            bool);
-    virtual void push_event_loop(DeviceImpl *,
-                                 EventType,
-                                 const std::vector<std::string> &,
-                                 const std::vector<double> &,
-                                 const std::vector<std::string> &,
-                                 const std::vector<long> &,
-                                 const struct SuppliedEventData &,
-                                 Attribute &,
-                                 DevFailed *);
+    void push_heartbeat_event() override;
+    void push_event(DeviceImpl *,
+                    std::string,
+                    const std::vector<std::string> &,
+                    const std::vector<double> &,
+                    const std::vector<std::string> &,
+                    const std::vector<long> &,
+                    const struct SuppliedEventData &,
+                    const std::string &,
+                    DevFailed *,
+                    bool) override;
+    void push_event_loop(DeviceImpl *,
+                         EventType,
+                         const std::vector<std::string> &,
+                         const std::vector<double> &,
+                         const std::vector<std::string> &,
+                         const std::vector<long> &,
+                         const struct SuppliedEventData &,
+                         Attribute &,
+                         DevFailed *) override;
 
     std::string &get_heartbeat_endpoint()
     {
@@ -413,7 +414,7 @@ class ZmqEventSupplier : public EventSupplier
 
     zmq::context_t zmq_context;                        // ZMQ context
     zmq::socket_t *heartbeat_pub_sock;                 // heartbeat publisher socket
-    zmq::socket_t *event_pub_sock;                     // events publisher socket
+    zmq::socket_t *event_pub_sock{nullptr};            // events publisher socket
     std::map<std::string, McastSocketPub> event_mcast; // multicast socket(s) map
                                                        // The key is the full event name
                                                        // ie: tango://kidiboo.esrf.fr:1000/dev/test/10/att.change
@@ -437,9 +438,9 @@ class ZmqEventSupplier : public EventSupplier
 
     unsigned char host_endian; // the host endianess
 
-    bool ip_specified;   // The user has specified an IP address
-    bool name_specified; // The user has specified a name as IP address
-    std::string user_ip; // The specified IP address
+    bool ip_specified;          // The user has specified an IP address
+    bool name_specified{false}; // The user has specified a name as IP address
+    std::string user_ip;        // The specified IP address
 
     std::string event_endpoint;                    // event publisher endpoint
     std::vector<std::string> alternate_e_endpoint; // Alternate event endpoint (host with several NIC)
@@ -447,8 +448,8 @@ class ZmqEventSupplier : public EventSupplier
     std::map<std::string, unsigned int> event_cptr; // event counter map
 
     std::list<ConnectedClient> con_client; // Connected clients
-    int double_send;                       // Double send ctr
-    bool double_send_heartbeat;
+    int double_send{0};                    // Double send ctr
+    bool double_send_heartbeat{false};
 
     int zmq_release; // ZMQ lib release
 

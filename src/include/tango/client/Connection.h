@@ -112,16 +112,13 @@ class Connection
     class ConnectionExt
     {
       public:
-        ConnectionExt() :
-            has_alt_adr(false)
-        {
-        }
+        ConnectionExt() { }
 
         ~ConnectionExt() { }
 
         ConnectionExt &operator=(const ConnectionExt &);
 
-        bool has_alt_adr;
+        bool has_alt_adr{false};
     };
 
     std::unique_ptr<ConnectionExt> ext;

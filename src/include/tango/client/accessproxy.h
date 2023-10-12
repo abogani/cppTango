@@ -38,7 +38,7 @@ class AccessProxy : public Tango::DeviceProxy
     AccessProxy(const std::string &);
     AccessProxy(const char *);
 
-    ~AccessProxy() { }
+    ~AccessProxy() override { }
 
     AccessControlType check_access_control(const std::string &);
     bool is_command_allowed(std::string &, const std::string &);

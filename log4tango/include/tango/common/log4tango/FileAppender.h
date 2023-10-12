@@ -62,7 +62,7 @@ class FileAppender : public LayoutAppender
     /**
      Destructor
     **/
-    virtual ~FileAppender();
+    ~FileAppender() override;
 
     /**
     Reopens the logfile.
@@ -71,19 +71,19 @@ class FileAppender : public LayoutAppender
     have been constructed with a file descriptor.
     @returns true if the reopen succeeded.
     **/
-    virtual bool reopen(void);
+    bool reopen() override;
 
     /**
     Closes the logfile.
     **/
-    virtual void close(void);
+    void close() override;
 
     /**
      * Check if the appender is valid.
      *
      * @returns true if the appender is valid, false otherwise.
      **/
-    virtual bool is_valid(void) const;
+    bool is_valid() const override;
 
     /**
     Sets the append vs truncate flag.
@@ -98,7 +98,7 @@ class FileAppender : public LayoutAppender
     /**
     Gets the value of the 'append' option.
     **/
-    virtual bool get_append(void) const;
+    virtual bool get_append() const;
 
     /**
     Sets the file open mode.
@@ -111,7 +111,7 @@ class FileAppender : public LayoutAppender
     virtual mode_t get_mode() const;
 
   protected:
-    virtual int _append(const LoggingEvent &event);
+    int _append(const LoggingEvent &event) override;
 
     const std::string _file_name;
     int _fd;

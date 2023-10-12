@@ -42,7 +42,7 @@
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _TG_WINDOWS_
   #include <process.h>
@@ -55,7 +55,7 @@ using namespace CORBA;
 namespace Tango
 {
 
-NotifdEventSupplier *NotifdEventSupplier::_instance = NULL;
+NotifdEventSupplier *NotifdEventSupplier::_instance = nullptr;
 
 /************************************************************************/
 /*                                                                           */
@@ -96,7 +96,7 @@ NotifdEventSupplier *NotifdEventSupplier::create(CORBA::ORB_var _orb, std::strin
     // does the NotifdEventSupplier singleton exist already ? if so simply return it
     //
 
-    if(_instance != NULL)
+    if(_instance != nullptr)
     {
         return _instance;
     }
@@ -191,7 +191,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     {
         try
         {
-            if(tg->get_db_cache() != NULL)
+            if(tg->get_db_cache() != nullptr)
             {
                 dev_import_list = tg->get_db_cache()->import_notifd_event();
             }
@@ -256,7 +256,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
                                       "Failed to import the EventChannelFactory from the Tango database");
         }
 
-        if(tg->get_db_cache() == NULL)
+        if(tg->get_db_cache() == nullptr)
         {
             received.inout() >>= dev_import_list;
         }
@@ -381,7 +381,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     {
         try
         {
-            if(tg->get_db_cache() != NULL)
+            if(tg->get_db_cache() != nullptr)
             {
                 dev_import_list = tg->get_db_cache()->DbServerCache::import_adm_event();
             }
@@ -406,7 +406,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
 
         if(channel_exported != 0)
         {
-            if(tg->get_db_cache() == NULL)
+            if(tg->get_db_cache() == nullptr)
             {
                 received.inout() >>= dev_import_list;
             }
@@ -442,7 +442,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         }
     }
 
-    if(channel_exported)
+    if(channel_exported != 0)
     {
         CORBA::Object *event_channel_obj;
         event_channel_obj = _orb->string_to_object(channel_ior.c_str());
@@ -473,7 +473,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     // The device server event channel does not exist, let's create a new one
     //
 
-    if(!channel_exported)
+    if(channel_exported == 0)
     {
         CosNotification::QoSProperties initialQoS;
         CosNotification::AdminProperties initialAdmin;
@@ -488,7 +488,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
 
             if(!tg->use_file_db())
             {
-                Tango::DevVarStringArray *eve_export_list = new Tango::DevVarStringArray;
+                auto *eve_export_list = new Tango::DevVarStringArray;
                 eve_export_list->length(5);
                 (*eve_export_list)[0] = Tango::string_dup(d_name.c_str());
                 (*eve_export_list)[1] = Tango::string_dup(ior_string.c_str());
@@ -705,7 +705,7 @@ void NotifdEventSupplier::push_heartbeat_event()
 
     Tango::Util *tg = Tango::Util::instance();
     DServer *adm_dev = tg->get_dserver_device();
-    now_time = time(NULL);
+    now_time = time(nullptr);
     delta_time = now_time - adm_dev->last_heartbeat;
     TANGO_LOG_DEBUG << "NotifdEventSupplier::push_heartbeat_event(): delta time since last heartbeat " << delta_time
                     << std::endl;
@@ -956,17 +956,17 @@ void NotifdEventSupplier::push_event(DeviceImpl *device_impl,
         }
     }
 
-    if(except == NULL)
+    if(except == nullptr)
     {
-        if(attr_value.attr_val != NULL)
+        if(attr_value.attr_val != nullptr)
         {
             struct_event.remainder_of_body <<= (*attr_value.attr_val);
         }
-        else if(attr_value.attr_val_3 != NULL)
+        else if(attr_value.attr_val_3 != nullptr)
         {
             struct_event.remainder_of_body <<= (*attr_value.attr_val_3);
         }
-        else if(attr_value.attr_val_4 != NULL)
+        else if(attr_value.attr_val_4 != nullptr)
         {
             struct_event.remainder_of_body <<= (*attr_value.attr_val_4);
 
@@ -981,9 +981,9 @@ void NotifdEventSupplier::push_event(DeviceImpl *device_impl,
 
             const Tango::AttributeValue_4 *tmp_ptr;
             struct_event.remainder_of_body >>= tmp_ptr;
-            const_cast<Tango::AttributeValue_4 *>(tmp_ptr)->mut_ptr = NULL;
+            const_cast<Tango::AttributeValue_4 *>(tmp_ptr)->mut_ptr = nullptr;
         }
-        else if(attr_value.attr_val_5 != NULL)
+        else if(attr_value.attr_val_5 != nullptr)
         {
             std::string str("Can't send event! Client is too old (Tango 7 or less).\n");
             str = str + ("Please, re-compile your client with at least Tango 8");
@@ -991,11 +991,11 @@ void NotifdEventSupplier::push_event(DeviceImpl *device_impl,
             std::cerr << str << std::endl;
             TANGO_THROW_EXCEPTION(API_NotSupported, str);
         }
-        else if(attr_value.attr_conf_2 != NULL)
+        else if(attr_value.attr_conf_2 != nullptr)
         {
             struct_event.remainder_of_body <<= (*attr_value.attr_conf_2);
         }
-        else if(attr_value.attr_conf_3 != NULL)
+        else if(attr_value.attr_conf_3 != nullptr)
         {
             struct_event.remainder_of_body <<= (*attr_value.attr_conf_3);
         }

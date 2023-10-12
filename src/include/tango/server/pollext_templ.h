@@ -66,7 +66,7 @@ inline AttrData<T>::AttrData(const T *p) :
     ptr(p),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     qual = Tango::ATTR_VALID;
     x = 1;
@@ -80,7 +80,7 @@ inline AttrData<T>::AttrData(const T *p, Tango::AttrQuality q) :
     qual(q),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     x = 1;
     y = 0;
@@ -94,7 +94,7 @@ inline AttrData<T>::AttrData(const T *p, Tango::AttrQuality q, bool rel) :
     release(rel),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     x = 1;
     y = 0;
@@ -147,7 +147,7 @@ inline AttrData<T>::AttrData(const T *p, long nb) :
     x(nb),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     __CHECK_DIM_X();
     qual = Tango::ATTR_VALID;
@@ -162,7 +162,7 @@ inline AttrData<T>::AttrData(const T *p, long nb, Tango::AttrQuality q) :
     x(nb),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     __CHECK_DIM_X();
     y = 0;
@@ -177,7 +177,7 @@ inline AttrData<T>::AttrData(const T *p, long nb, Tango::AttrQuality q, bool rel
     release(rel),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     __CHECK_DIM_X();
     y = 0;
@@ -234,7 +234,7 @@ inline AttrData<T>::AttrData(const T *p, long nb, long nb2) :
     y(nb2),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     __CHECK_DIM();
     qual = Tango::ATTR_VALID;
@@ -249,7 +249,7 @@ inline AttrData<T>::AttrData(const T *p, long nb, long nb2, Tango::AttrQuality q
     y(nb2),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     __CHECK_DIM();
     release = false;
@@ -264,7 +264,7 @@ inline AttrData<T>::AttrData(const T *p, long nb, long nb2, Tango::AttrQuality q
     release(rel),
     wr_x(0),
     wr_y(0),
-    wr_ptr(NULL)
+    wr_ptr(nullptr)
 {
     __CHECK_DIM();
 }

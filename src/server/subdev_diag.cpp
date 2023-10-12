@@ -276,7 +276,7 @@ Tango::DevVarStringArray *SubDevDiag::get_sub_devices()
 
     // Should never reach here. To make compiler happy
 
-    ret = NULL;
+    ret = nullptr;
     return ret;
 }
 
@@ -412,10 +412,10 @@ void SubDevDiag::get_sub_devices_from_cache()
     catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
-        db_cache = NULL;
+        db_cache = nullptr;
     }
 
-    if(db_cache != NULL)
+    if(db_cache != nullptr)
     {
         // get the name of the admin device
         DServer *adm_dev = tg->get_dserver_device();
@@ -453,7 +453,7 @@ void SubDevDiag::get_sub_devices_from_cache()
 
                     for(unsigned int i = 4; i < property_values->length(); i++)
                     {
-                        sub_device_startup_map[dev_name].sub_devices.push_back((*property_values)[i].in());
+                        sub_device_startup_map[dev_name].sub_devices.emplace_back((*property_values)[i].in());
                     }
                 }
             }

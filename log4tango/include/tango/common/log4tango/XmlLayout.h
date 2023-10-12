@@ -48,12 +48,12 @@ class XMLLayout : public Layout
     /**
      * Dtor.
      **/
-    virtual ~XMLLayout();
+    ~XMLLayout() override;
 
     /**
      * Formats the LoggingEvent in XML
      **/
-    virtual std::string format(const LoggingEvent &event);
+    std::string format(const LoggingEvent &event) override;
 };
 
 } // namespace log4tango

@@ -165,7 +165,7 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
     /**
      * The device desctructor.
      */
-    virtual ~Device_3Impl() { }
+    ~Device_3Impl() override { }
 
     //@}
 
@@ -193,8 +193,8 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeValueList_3 *read_attributes_3(const Tango::DevVarStringArray &names,
-                                                           Tango::DevSource source);
+    Tango::AttributeValueList_3 *read_attributes_3(const Tango::DevVarStringArray &names,
+                                                   Tango::DevSource source) override;
 
     /**
      * Write attribute(s) value.
@@ -211,7 +211,7 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void write_attributes_3(const Tango::AttributeValueList &values);
+    void write_attributes_3(const Tango::AttributeValueList &values) override;
 
     /**
      * Read attribute value history.
@@ -233,7 +233,7 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevAttrHistoryList_3 *read_attribute_history_3(const char *name, CORBA::Long n);
+    Tango::DevAttrHistoryList_3 *read_attribute_history_3(const char *name, CORBA::Long n) override;
 
     /**
      * Get device info.
@@ -244,7 +244,7 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
      *
      * @return A DevInfo object
      */
-    virtual Tango::DevInfo_3 *info_3();
+    Tango::DevInfo_3 *info_3() override;
 
     /**
      * Get attribute(s) configuration.
@@ -266,7 +266,7 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeConfigList_3 *get_attribute_config_3(const Tango::DevVarStringArray &names);
+    Tango::AttributeConfigList_3 *get_attribute_config_3(const Tango::DevVarStringArray &names) override;
 
     /**
      * Set attribute(s) configuration.
@@ -283,7 +283,7 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void set_attribute_config_3(const Tango::AttributeConfigList_3 &new_conf);
+    void set_attribute_config_3(const Tango::AttributeConfigList_3 &new_conf) override;
     //@}
 
     /// @privatesection

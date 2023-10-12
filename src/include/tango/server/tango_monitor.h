@@ -52,7 +52,7 @@ class TangoMonitor : public omni_mutex
     TangoMonitor(const char *na) :
         _timeout(DEFAULT_TIMEOUT),
         cond(this),
-        locking_thread(NULL),
+        locking_thread(nullptr),
         locked_ctr(0),
         name(na)
     {
@@ -61,7 +61,7 @@ class TangoMonitor : public omni_mutex
     TangoMonitor() :
         _timeout(DEFAULT_TIMEOUT),
         cond(this),
-        locking_thread(NULL),
+        locking_thread(nullptr),
         locked_ctr(0),
         name("unknown")
     {
@@ -125,7 +125,7 @@ class TangoMonitor : public omni_mutex
 
 inline int TangoMonitor::get_locking_thread_id()
 {
-    if(locking_thread != NULL)
+    if(locking_thread != nullptr)
     {
         return locking_thread->id();
     }
@@ -173,7 +173,7 @@ inline void TangoMonitor::get_monitor()
             int interupted;
 
             interupted = wait(_timeout);
-            if(interupted == false)
+            if(interupted == 0)
             {
                 TANGO_LOG_DEBUG << "TIME OUT for thread " << th->id() << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut,
@@ -217,7 +217,7 @@ inline void TangoMonitor::rel_monitor()
     if(locked_ctr == 0)
     {
         TANGO_LOG_DEBUG << "Signalling !" << std::endl;
-        locking_thread = NULL;
+        locking_thread = nullptr;
         cond.signal();
     }
 }

@@ -659,7 +659,7 @@ class MultiAttrProp
 
         CmdArgType type =
             Tango::tango_type_traits<T>::type_value(); // restricts template initialisation to supported types
-        if(type)
+        if(type != 0u)
         {
         } // prevents compiler warning about unused variable type
 

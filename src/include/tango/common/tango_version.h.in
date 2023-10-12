@@ -1,0 +1,15 @@
+#ifndef _TANGO_VERSION_H
+#define _TANGO_VERSION_H
+
+// clang-format off
+// The next lines are invalid C++ before the replacement
+#define TANGO_VERSION_MAJOR @MAJOR_VERSION@
+#define TANGO_VERSION_MINOR @MINOR_VERSION@
+#define TANGO_VERSION_PATCH @PATCH_VERSION@
+// clang-format on
+
+#define TANGO_GIT_REVISION "@TANGO_GIT_REVISION@"
+
+#cmakedefine TANGO_USE_JPEG
+
+#endif

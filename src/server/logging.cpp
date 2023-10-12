@@ -42,7 +42,7 @@
   #include <sys/types.h>
   #include <sys/stat.h>
   #include <sys/time.h>
-  #include <time.h>
+  #include <ctime>
   #include <pwd.h>
 #endif
 
@@ -75,9 +75,9 @@ static const char *kDefaultConsoleName = "cout";
 // STATIC MEMBERS
 //-----------------------------------------------------------------------------
 // the DServer logger (use to output TANGO low level messages)
-log4tango::Logger *_core_logger = 0;
+log4tango::Logger *_core_logger = nullptr;
 // the logging path (use to store file logging targets)
-std::string Logging::_log_path("");
+std::string Logging::_log_path;
 // the <rollover> threshold for RollingFileAppender
 size_t Logging::_rft = 0;
 // the cmd line verbose level
@@ -115,7 +115,7 @@ void Logging::init(const std::string &ds_name, // dserver name
             Logging::_log_path = kDefaultTangoLogPath;
 #ifndef _TG_WINDOWS_
             struct passwd *pw = getpwuid(getuid());
-            if(pw)
+            if(pw != nullptr)
             {
                 Logging::_log_path = Logging::_log_path + '-' + pw->pw_name;
             }
@@ -156,13 +156,13 @@ void Logging::init(const std::string &ds_name, // dserver name
             {
                 DbData db_data;
                 // the logging path property (overwrites env.var.)
-                db_data.push_back(DbDatum("logging_path"));
+                db_data.emplace_back("logging_path");
                 // the core-logger's rolling file threshold
-                db_data.push_back(DbDatum("logging_rft"));
+                db_data.emplace_back("logging_rft");
                 // the core-logger's logging level
-                db_data.push_back(DbDatum("logging_level"));
+                db_data.emplace_back("logging_level");
                 // the core-logger's logging target list
-                db_data.push_back(DbDatum("logging_target"));
+                db_data.emplace_back("logging_target");
                 // get properties from TANGO-db
                 db.get_device_property(dserver_dev_name, db_data, tg->get_db_cache());
                 // set logging path
@@ -242,16 +242,16 @@ void Logging::init(const std::string &ds_name, // dserver name
 //+----------------------------------------------------------------------------
 // method : Logging::cleanup
 //-----------------------------------------------------------------------------
-void Logging::cleanup(void)
+void Logging::cleanup()
 {
     delete Tango::_core_logger;
-    Tango::_core_logger = 0;
+    Tango::_core_logger = nullptr;
 }
 
 //+----------------------------------------------------------------------------
 // method : Logging::get_core_logger
 //-----------------------------------------------------------------------------
-log4tango::Logger *Logging::get_core_logger(void)
+log4tango::Logger *Logging::get_core_logger()
 {
     return _core_logger;
 }
@@ -346,7 +346,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         // trace
         TANGO_LOG_DEBUG << "Entering Logging::add_logging_target (internal impl)" << std::endl;
         // check input
-        if(!logger)
+        if(logger == nullptr)
         {
             //--TODO::better error handler needed?
             TANGO_LOG_DEBUG << "internal error (logger is null)" << std::endl;
@@ -379,7 +379,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         }
         else
         {
-            if(throw_exception)
+            if(throw_exception != 0)
             {
                 TangoSys_OMemStream o;
                 o << "Invalid logging target type specified (" << ltg_type_str << ")" << std::ends;
@@ -424,7 +424,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         {
             if(ltg_name_str == kDefaultTargetName)
             {
-                if(throw_exception)
+                if(throw_exception != 0)
                 {
                     TangoSys_OMemStream o;
                     o << "Device target name must be specified (no default value)" << std::ends;
@@ -438,7 +438,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
         } //  switch (ltg_type)
         // attach the appender to the logger if not already attached
         log4tango::Appender *appender = logger->get_appender(appender_name);
-        if(!appender)
+        if(appender == nullptr)
         {
             TANGO_LOG_DEBUG << "Adding logging target " << appender_name << " to " << logger->get_name() << std::endl;
             // instantiate the appender (i.e. the target) and the layout (if needed)
@@ -447,10 +447,10 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             case LOG_CONSOLE:
             {
                 appender = new CoutAppender(appender_name);
-                if(appender == 0)
+                if(appender == nullptr)
                 {
                     TANGO_LOG_DEBUG << "Internal error (Appender instantiation failed)" << std::endl;
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -463,9 +463,9 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             case LOG_FILE:
             {
                 appender = new TangoRollingFileAppender(appender_name, full_file_name, Logging::_rft);
-                if(appender == 0)
+                if(appender == nullptr)
                 {
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -476,8 +476,8 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 if(appender->is_valid() == false)
                 {
                     delete appender;
-                    appender = 0;
-                    if(throw_exception)
+                    appender = nullptr;
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Could not open logging file " << full_file_name << std::ends;
@@ -485,12 +485,12 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                     }
                     break;
                 }
-                log4tango::XMLLayout *layout = new log4tango::XMLLayout();
-                if(layout == 0)
+                auto *layout = new log4tango::XMLLayout();
+                if(layout == nullptr)
                 {
                     delete appender;
-                    appender = 0;
-                    if(throw_exception)
+                    appender = nullptr;
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -504,9 +504,9 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             case LOG_DEVICE:
             {
                 appender = new TangoAppender(logger->get_name(), appender_name, ltg_name_str);
-                if(appender == 0)
+                if(appender == nullptr)
                 {
-                    if(throw_exception)
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Out of memory error" << std::ends;
@@ -517,8 +517,8 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                 if(appender->is_valid() == false)
                 {
                     delete appender;
-                    appender = 0;
-                    if(throw_exception)
+                    appender = nullptr;
+                    if(throw_exception != 0)
                     {
                         TangoSys_OMemStream o;
                         o << "Could not connect to log consumer " << ltg_name_str << std::ends;
@@ -530,7 +530,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
             break; // case LOG_DEVICE
             }
             // attach the appender to the logger
-            if(appender)
+            if(appender != nullptr)
             {
                 logger->add_appender(appender);
             }
@@ -544,7 +544,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
     }
     catch(std::exception &e)
     {
-        if(throw_exception)
+        if(throw_exception != 0)
         {
             TangoSys_OMemStream o;
             o << "std::exception caught [" << e.what() << "]" << std::ends;
@@ -646,7 +646,7 @@ void Logging::remove_logging_target(const Tango::DevVarStringArray *argin)
             {
                 // get device's logger
                 logger = dl[j]->get_logger();
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     TangoSys_OMemStream o;
                     o << "Internal error (got a NULL logger)" << std::ends;
@@ -724,7 +724,7 @@ void Logging::remove_logging_target(const Tango::DevVarStringArray *argin)
 //-----------------------------------------------------------------------------
 Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_name)
 {
-    Tango::DevVarStringArray *ret = 0;
+    Tango::DevVarStringArray *ret = nullptr;
     try
     {
         // fight against the "zombie appender" syndrom
@@ -732,7 +732,7 @@ Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_nam
         // trace
         TANGO_LOG_DEBUG << "Entering Logging::get_logging_target " << std::endl;
         // first check device name (does it exist?)
-        DeviceImpl *dev = 0;
+        DeviceImpl *dev = nullptr;
         try
         {
             dev = Tango::Util::instance()->get_device_by_name(dev_name);
@@ -745,7 +745,7 @@ Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_nam
         }
         // get device's logger
         log4tango::Logger *logger = dev->get_logger();
-        if(logger == 0)
+        if(logger == nullptr)
         {
             TangoSys_OMemStream o;
             o << "Could not instantiate logger (out of memory error)" << std::ends;
@@ -755,7 +755,7 @@ Tango::DevVarStringArray *Logging::get_logging_target(const std::string &dev_nam
         log4tango::AppenderList al = logger->get_all_appenders();
         // instantiate the returned value
         ret = new Tango::DevVarStringArray(al.size());
-        if(ret == 0)
+        if(ret == nullptr)
         {
             TangoSys_OMemStream o;
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Out of memory error (DevVarStringArray allocation failed)");
@@ -810,7 +810,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
         // a device list
         std::vector<DeviceImpl *> dl(0);
         // a logger
-        log4tango::Logger *logger = 0;
+        log4tango::Logger *logger = nullptr;
         // for each entry in argin->svalue
         for(i = 0; i < argin->svalue.length(); i++)
         {
@@ -837,7 +837,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
             {
                 // get device's logger (created if does not already exist)
                 logger = dl[j]->get_logger();
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     //--TODO::change the following message
                     TANGO_THROW_EXCEPTION(API_MemoryAllocation, "out of memory error");
@@ -865,7 +865,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
 //-----------------------------------------------------------------------------
 DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin)
 {
-    Tango::DevVarLongStringArray *ret = 0;
+    Tango::DevVarLongStringArray *ret = nullptr;
     try
     {
         // trace
@@ -877,7 +877,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
         }
         // instance the returned CORBA::seq
         ret = new Tango::DevVarLongStringArray;
-        if(ret == 0)
+        if(ret == nullptr)
         {
             TangoSys_OMemStream o;
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "out of memory error");
@@ -889,7 +889,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
         // a device list
         std::vector<DeviceImpl *> dl(0);
         // a logger
-        log4tango::Logger *logger = 0;
+        log4tango::Logger *logger = nullptr;
         for(i = 0; i < argin->length(); i++)
         {
             // get ith wilcard
@@ -903,7 +903,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
             {
                 // get device's logger (created if does not already exist)
                 logger = dl[j]->get_logger();
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     TangoSys_OMemStream o;
                     //--TODO: change the following message
@@ -935,7 +935,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
 //+----------------------------------------------------------------------------
 // method : Logging::stop_logging
 //-----------------------------------------------------------------------------
-void Logging::stop_logging(void)
+void Logging::stop_logging()
 {
     TANGO_LOG_DEBUG << "Entering Logging::stop_logging" << std::endl;
     // get all devices
@@ -950,7 +950,7 @@ void Logging::stop_logging(void)
 //+----------------------------------------------------------------------------
 // method : Logging::start_logging
 //-----------------------------------------------------------------------------
-void Logging::start_logging(void)
+void Logging::start_logging()
 {
     TANGO_LOG_DEBUG << "Entering Logging::start_logging" << std::endl;
     // get all devices
@@ -965,7 +965,7 @@ void Logging::start_logging(void)
 //+----------------------------------------------------------------------------
 // method : Logging::kill_zombie_appenders
 //-----------------------------------------------------------------------------
-void Logging::kill_zombie_appenders(void)
+void Logging::kill_zombie_appenders()
 {
     TANGO_LOG_DEBUG << "Entering kill_zombie_appenders" << std::endl;
     // get all devices
@@ -973,13 +973,13 @@ void Logging::kill_zombie_appenders(void)
     dl = Util::instance()->get_device_list("*");
     // for each device in <dl>
     log4tango::AppenderList al;
-    log4tango::Logger *logger = 0;
+    log4tango::Logger *logger = nullptr;
     unsigned int i, j;
     for(i = 0; i < dl.size(); i++)
     {
         // get device's logger
         logger = dl[i]->get_logger();
-        if(logger)
+        if(logger != nullptr)
         {
             // get logger's appender list
             al = logger->get_all_appenders();
@@ -1004,7 +1004,7 @@ void Logging::kill_zombie_appenders(void)
 void Logging::set_rolling_file_threshold(log4tango::Logger *logger, size_t rtf)
 {
     // check input: logger
-    if(!logger)
+    if(logger == nullptr)
     {
         return;
     }
@@ -1168,7 +1168,7 @@ std::string Logging::dev_to_file_name(const std::string &_dev_name)
         }
         file_name.replace(pos, 1, "_", 1);
         pos++;
-    } while(1);
+    } while(true);
     TANGO_LOG_DEBUG << "Leaving Logging::dev_to_file_name (output " << file_name << ")" << std::endl;
     return file_name;
 }
@@ -1209,7 +1209,7 @@ int Logging::create_log_dir(const std::string &full_path)
     {
         std::string sub_path;
         sub_path.assign(full_path.begin(), full_path.begin() + pos);
-        if(sub_path.size())
+        if(!sub_path.empty())
         {
             Logging::create_log_dir(sub_path);
         }
@@ -1228,7 +1228,7 @@ int Logging::create_log_dir(const std::string &full_path)
 //-----------------------------------------------------------------------------
 LogAdapter::LogAdapter(Tango::DeviceImpl *dev)
 {
-    if(dev)
+    if(dev != nullptr)
     {
         logger_ = dev->get_logger();
     }

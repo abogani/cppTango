@@ -59,7 +59,7 @@ FileAppender::FileAppender(const std::string &name, const std::string &file_name
 
 FileAppender::FileAppender(const std::string &name, int fd) :
     LayoutAppender(name),
-    _file_name(""),
+
     _fd(fd),
     _flags(O_CREAT | O_APPEND | O_WRONLY),
     _mode(00644)
@@ -72,7 +72,7 @@ FileAppender::~FileAppender()
     close();
 }
 
-void FileAppender::close(void)
+void FileAppender::close()
 {
     if(_fd != -1)
     {
@@ -81,7 +81,7 @@ void FileAppender::close(void)
     }
 }
 
-bool FileAppender::is_valid(void) const
+bool FileAppender::is_valid() const
 {
     return (_fd < 0) ? false : true;
 }
@@ -98,7 +98,7 @@ void FileAppender::set_append(bool append)
     }
 }
 
-bool FileAppender::get_append(void) const
+bool FileAppender::get_append() const
 {
     return (_flags & O_TRUNC) == 0;
 }
@@ -108,7 +108,7 @@ void FileAppender::set_mode(mode_t mode)
     _mode = mode;
 }
 
-mode_t FileAppender::get_mode(void) const
+mode_t FileAppender::get_mode() const
 {
     return _mode;
 }
@@ -117,14 +117,14 @@ int FileAppender::_append(const LoggingEvent &event)
 {
     std::string message(get_layout().format(event));
     // Messages longer than sizeof(uint) will be truncated.
-    if(!::write(_fd, message.data(), static_cast<unsigned int>(message.length())))
+    if(::write(_fd, message.data(), static_cast<unsigned int>(message.length())) == 0)
     {
         return -1;
     }
     return 0;
 }
 
-bool FileAppender::reopen(void)
+bool FileAppender::reopen()
 {
     if(_file_name != "")
     {

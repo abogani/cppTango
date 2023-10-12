@@ -929,12 +929,12 @@ class Util
 
     void clr_poll_th_ptr()
     {
-        heartbeat_th = NULL;
+        heartbeat_th = nullptr;
     }
 
     void clr_heartbeat_th_ptr()
     {
-        heartbeat_th = NULL;
+        heartbeat_th = nullptr;
     }
 
     int get_polling_thread_id()
@@ -964,10 +964,10 @@ class Util
 
     void unvalidate_db_cache()
     {
-        if(db_cache != NULL)
+        if(db_cache != nullptr)
         {
             delete db_cache;
-            db_cache = NULL;
+            db_cache = nullptr;
         }
     }
 
@@ -1050,7 +1050,7 @@ class Util
 
     bool is_server_event_loop_set()
     {
-        if(ev_loop_func != NULL)
+        if(ev_loop_func != nullptr)
         {
             return true;
         }
@@ -1247,10 +1247,10 @@ class Util
     void validate_sort(const std::vector<std::string> &);
     void check_end_point_specified(int, char **);
 
-    bool display_help;                             // display help message flag
-    const std::vector<DeviceClass *> *cl_list_ptr; // Ptr to server device class list
-    std::unique_ptr<UtilExt> ext;                  // Class extension
-    std::vector<DeviceClass *> cl_list;            // Full class list ptr
+    bool display_help;                                      // display help message flag
+    const std::vector<DeviceClass *> *cl_list_ptr{nullptr}; // Ptr to server device class list
+    std::unique_ptr<UtilExt> ext;                           // Class extension
+    std::vector<DeviceClass *> cl_list;                     // Full class list ptr
 
     //
     // Ported from the extension class
@@ -1259,20 +1259,20 @@ class Util
     std::map<std::string, std::vector<std::string>>
         cmd_line_name_list; // Command line map <Class name, device name list>
 
-    PollThread *heartbeat_th;               // The heartbeat thread object
-    int heartbeat_th_id;                    // The heartbeat thread identifier
-    PollThCmd shared_data;                  // The shared buffer
-    TangoMonitor poll_mon;                  // The monitor
-    bool poll_on;                           // Polling on flag
-    SerialModel ser_model;                  // The serialization model
-    TangoMonitor only_one;                  // Serialization monitor
-    NotifdEventSupplier *nd_event_supplier; // The notifd event supplier object
+    PollThread *heartbeat_th{nullptr};               // The heartbeat thread object
+    int heartbeat_th_id{0};                          // The heartbeat thread identifier
+    PollThCmd shared_data;                           // The shared buffer
+    TangoMonitor poll_mon;                           // The monitor
+    bool poll_on{false};                             // Polling on flag
+    SerialModel ser_model{BY_DEVICE};                // The serialization model
+    TangoMonitor only_one;                           // Serialization monitor
+    NotifdEventSupplier *nd_event_supplier{nullptr}; // The notifd event supplier object
 
-    DbServerCache *db_cache; // The db cache
-    Interceptors *inter;     // The user interceptors
+    DbServerCache *db_cache{nullptr}; // The db cache
+    Interceptors *inter{nullptr};     // The user interceptors
 
-    bool svr_starting; // Server is starting flag
-    bool svr_stopping; // Server is shutting down flag
+    bool svr_starting{true};  // Server is starting flag
+    bool svr_stopping{false}; // Server is shutting down flag
 
     std::vector<std::string> polled_dyn_attr_names; // Dynamic att. names (used for polling clean-up)
     std::vector<std::string> polled_dyn_cmd_names;  // Dynamic cmd. names (used for polling clean-up)
@@ -1286,27 +1286,27 @@ class Util
     std::vector<std::string> poll_pool_conf;    // Polling threads pool conf.
     std::map<std::string, int> dev_poll_th_map; // Link between device name and polling thread id
     std::vector<PollingThreadInfo *> poll_ths;  // Polling threads
-    bool conf_needs_db_upd;                     // Polling conf needs to be udated in db
+    bool conf_needs_db_upd{false};              // Polling conf needs to be udated in db
 
-    bool (*ev_loop_func)(void); // Ptr to user event loop
-    bool shutdown_server;       // Flag to exit the manual event loop
+    bool (*ev_loop_func)(){nullptr}; // Ptr to user event loop
+    bool shutdown_server{false};     // Flag to exit the manual event loop
 
-    SubDevDiag sub_dev_diag; // Object to handle sub device diagnostics
-    bool _dummy_thread;      // The main DS thread is not the process main thread
+    SubDevDiag sub_dev_diag;   // Object to handle sub device diagnostics
+    bool _dummy_thread{false}; // The main DS thread is not the process main thread
 
     std::string svr_port_num; // Server port when using file as database
 
-    ZmqEventSupplier *zmq_event_supplier; // The zmq event supplier object
-    bool endpoint_specified;              // Endpoint specified on cmd line
-    std::string specified_ip;             // IP address specified in the endpoint
-    DevLong user_pub_hwm;                 // User defined pub HWM
+    ZmqEventSupplier *zmq_event_supplier{nullptr}; // The zmq event supplier object
+    bool endpoint_specified{false};                // Endpoint specified on cmd line
+    std::string specified_ip;                      // IP address specified in the endpoint
+    DevLong user_pub_hwm{-1};                      // User defined pub HWM
 
     std::vector<std::string> restarting_devices; // Restarting devices name
-    bool wattr_nan_allowed;                      // NaN allowed when writing attribute
+    bool wattr_nan_allowed{false};               // NaN allowed when writing attribute
     RootAttRegistry root_att_reg;                // Root attribute(s) registry
 
-    bool polling_bef_9_def; // Is polling algo requirement defined
-    bool polling_bef_9;     // use Tango < 9 polling algo. flag
+    bool polling_bef_9_def{false}; // Is polling algo requirement defined
+    bool polling_bef_9;            // use Tango < 9 polling algo. flag
 
     // thread specific storage key for client info (addr & more)
     //---------------------------------------------------------------------------------
@@ -1481,7 +1481,7 @@ inline void Util::event_name_2_event_type(const std::string &event_name, EventTy
  */
 inline CORBA::Any *return_empty_any(const char *cmd)
 {
-    CORBA::Any *out_any = NULL;
+    CORBA::Any *out_any = nullptr;
     try
     {
         out_any = new CORBA::Any();
@@ -1523,21 +1523,19 @@ void clear_att_dim(Tango::AttributeValue_5 &att_val);
 
 struct PollingThreadInfo
 {
-    int thread_id;                                   // The polling thread identifier
-    PollThread *poll_th;                             // The polling thread object
+    int thread_id{0};                                // The polling thread identifier
+    PollThread *poll_th{nullptr};                    // The polling thread object
     PollThCmd shared_data;                           // The shared buffer
     TangoMonitor poll_mon;                           // The monitor
     std::vector<std::string> polled_devices;         // Polled devices for this thread
-    int nb_polled_objects;                           // Polled objects number in this thread
-    int smallest_upd;                                // Smallest thread update period
+    int nb_polled_objects{0};                        // Polled objects number in this thread
+    int smallest_upd{0};                             // Smallest thread update period
     std::vector<DevVarLongStringArray *> v_poll_cmd; // Command(s) to send
 
     PollingThreadInfo() :
-        thread_id(0),
-        poll_th(NULL),
-        poll_mon("Polling_thread_mon"),
-        nb_polled_objects(0),
-        smallest_upd(0)
+
+        poll_mon("Polling_thread_mon")
+
     {
         shared_data.cmd_pending = false;
         shared_data.trigger = false;

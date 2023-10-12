@@ -204,7 +204,7 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name, lo
 
         for(i = 0; i < nb_attr; i++)
         {
-            db_list.push_back(DbDatum(attr_list[i + base]->get_name()));
+            db_list.emplace_back(attr_list[i + base]->get_name());
         }
 
         try
@@ -244,11 +244,11 @@ void MultiClassAttribute::init_class_attribute(const std::string &class_name, lo
                         tmp = tmp + " ";
                         tmp = tmp + db_list[ind].value_string[k];
                     }
-                    prop_list.push_back(AttrProperty(db_list[ind].name, tmp));
+                    prop_list.emplace_back(db_list[ind].name, tmp);
                 }
                 else
                 {
-                    prop_list.push_back(AttrProperty(db_list[ind].name, db_list[ind].value_string[0]));
+                    prop_list.emplace_back(db_list[ind].name, db_list[ind].value_string[0]);
                 }
                 ind++;
             }

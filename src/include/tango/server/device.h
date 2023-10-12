@@ -172,7 +172,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     /**
      * The device desctructor.
      */
-    virtual ~DeviceImpl();
+    ~DeviceImpl() override;
 
     //@}
 
@@ -375,7 +375,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the device POA
      */
-    virtual PortableServer::POA_ptr _default_POA();
+    PortableServer::POA_ptr _default_POA() override;
 
     //@}
 
@@ -500,7 +500,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void always_executed_hook(void) { }
+    virtual void always_executed_hook() { }
 
     /**
      * Hook method.
@@ -968,7 +968,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @param attr_name The name of the attribute
      * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
      */
-    void push_change_event(const std::string &attr_name, DevFailed *except = NULL);
+    void push_change_event(const std::string &attr_name, DevFailed *except = nullptr);
 
     /**
      * Push a change event for an attribute with Tango::DevShort attribute data type.
@@ -1115,7 +1115,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @param attr_name The name of the attribute
      * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
      */
-    void push_archive_event(const std::string &attr_name, DevFailed *except = NULL);
+    void push_archive_event(const std::string &attr_name, DevFailed *except = nullptr);
 
     /**
      * Push an archive event for an attribute with Tango::DevShort attribute data type.
@@ -1254,7 +1254,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     void push_event(const std::string &attr_name,
                     const std::vector<std::string> &filt_names,
                     const std::vector<double> &filt_vals,
-                    DevFailed *except = NULL);
+                    DevFailed *except = nullptr);
 
     /**
      * Push a user event for an attribute with Tango::DevShort attribute data type.
@@ -1593,22 +1593,22 @@ class DeviceImpl : public virtual POA_Tango::Device
         FwdAttError fae;
     } FwdWrongConf;
 
-    virtual char *name();
-    virtual char *adm_name();
-    virtual char *description();
-    virtual char *status();
-    virtual Tango::DevState state();
+    char *name() override;
+    char *adm_name() override;
+    char *description() override;
+    char *status() override;
+    Tango::DevState state() override;
 
-    virtual CORBA::Any *command_inout(const char *in_cmd, const CORBA::Any &in_data);
-    virtual Tango::DevVarStringArray *black_box(CORBA::Long n);
-    virtual Tango::DevCmdInfoList *command_list_query();
-    virtual Tango::DevCmdInfo *command_query(const char *command);
-    virtual Tango::DevInfo *info();
-    virtual void ping();
-    virtual Tango::AttributeConfigList *get_attribute_config(const Tango::DevVarStringArray &names);
-    virtual void set_attribute_config(const Tango::AttributeConfigList &new_conf);
-    virtual Tango::AttributeValueList *read_attributes(const Tango::DevVarStringArray &names);
-    virtual void write_attributes(const Tango::AttributeValueList &values);
+    CORBA::Any *command_inout(const char *in_cmd, const CORBA::Any &in_data) override;
+    Tango::DevVarStringArray *black_box(CORBA::Long n) override;
+    Tango::DevCmdInfoList *command_list_query() override;
+    Tango::DevCmdInfo *command_query(const char *command) override;
+    Tango::DevInfo *info() override;
+    void ping() override;
+    Tango::AttributeConfigList *get_attribute_config(const Tango::DevVarStringArray &names) override;
+    void set_attribute_config(const Tango::AttributeConfigList &new_conf) override;
+    Tango::AttributeValueList *read_attributes(const Tango::DevVarStringArray &names) override;
+    void write_attributes(const Tango::AttributeValueList &values) override;
 
     void set_exported_flag(bool exp)
     {
@@ -1764,8 +1764,8 @@ class DeviceImpl : public virtual POA_Tango::Device
 
     void clean_locker_ptrs()
     {
-        locker_client = NULL;
-        old_locker_client = NULL;
+        locker_client = nullptr;
+        old_locker_client = nullptr;
     }
 
     void set_locking_param(client_addr *, client_addr *, time_t, DevLong, DevLong);
@@ -1897,14 +1897,14 @@ class DeviceImpl : public virtual POA_Tango::Device
         }
     }
 
-    inline log4tango::Logger *get_logger(void)
+    inline log4tango::Logger *get_logger()
     {
-        return logger ? logger : get_logger_i();
+        return logger != nullptr ? logger : get_logger_i();
     }
 
-    void init_logger(void);
-    void start_logging(void);
-    void stop_logging(void);
+    void init_logger();
+    void start_logging();
+    void stop_logging();
 
   private:
     PipeEventSubscriptionStates get_pipe_event_subscription_states();
@@ -1917,19 +1917,15 @@ class DeviceImpl : public virtual POA_Tango::Device
     class DeviceImplExt
     {
       public:
-        DeviceImplExt() :
-            alarm_state_user(0),
-            alarm_state_kernel(0)
-        {
-        }
+        DeviceImplExt() { }
 
-        time_t alarm_state_user;
-        time_t alarm_state_kernel;
+        time_t alarm_state_user{0};
+        time_t alarm_state_kernel{0};
     };
 
   protected:
     /// @privatesection
-    void check_lock(const char *, const char *cmd = NULL);
+    void check_lock(const char *, const char *cmd = nullptr);
     void throw_locked_exception(const char *meth);
 
     void init_cmd_poll_period();
@@ -2041,7 +2037,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     void end_pipe_config();
     void set_pipe_prop(std::vector<PipeProperty> &, Pipe *, PipePropType);
 
-    log4tango::Logger *get_logger_i(void);
+    log4tango::Logger *get_logger_i();
 
     std::string alarm_status;
     Tango::Device_var d_var;
@@ -2069,7 +2065,7 @@ inline void DeviceImpl::set_state(const Tango::DevState &new_state)
     device_state = new_state;
     if(new_state == Tango::ALARM)
     {
-        ext->alarm_state_user = time(NULL);
+        ext->alarm_state_user = time(nullptr);
     }
     else
     {

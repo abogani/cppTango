@@ -120,14 +120,14 @@ class AttrData
     // For error
 
     AttrData(DevErrorList &e) :
-        ptr(NULL),
+        ptr(nullptr),
         x(0),
         y(0),
         release(false),
         err(e),
         wr_x(0),
         wr_y(0),
-        wr_ptr(NULL)
+        wr_ptr(nullptr)
     {
     }
 };
@@ -587,7 +587,7 @@ class TimedCmdData
      * @param when The date
      */
     TimedCmdData(DevErrorList errs, const TangoTimestamp &when) :
-        ptr(NULL),
+        ptr(nullptr),
         err(errs),
         tp(when),
         release(false)

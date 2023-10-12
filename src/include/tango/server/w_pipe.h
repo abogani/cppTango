@@ -70,7 +70,7 @@ class WPipe : public Pipe
      * @param    level    The pipe display level
      *
      */
-    WPipe(const std::string &na, const Tango::DispLevel level);
+    WPipe(const std::string &_name, Tango::DispLevel level);
 
     //@}
 
@@ -80,7 +80,7 @@ class WPipe : public Pipe
     /**
      * The object desctructor.
      */
-    virtual ~WPipe() { }
+    ~WPipe() override { }
 
     //@}
 

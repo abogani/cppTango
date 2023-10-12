@@ -42,16 +42,16 @@
 
 #ifndef _TG_WINDOWS_
   #include <unistd.h>
-  #include <signal.h>
+  #include <csignal>
   #include <dlfcn.h>
 #endif /* _TG_WINDOWS_ */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace Tango
 {
 
-ClassFactoryFuncPtr DServer::class_factory_func_ptr = NULL;
+ClassFactoryFuncPtr DServer::class_factory_func_ptr = nullptr;
 
 //+------------------------------------------------------------------------------------------------------------------
 //
@@ -84,7 +84,7 @@ DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevSt
     fqdn = "tango://";
     Tango::Util *tg = Tango::Util::instance();
     Database *db = tg->get_database();
-    if(db != NULL)
+    if(db != nullptr)
     {
         fqdn = fqdn + db->get_db_host() + ':' + db->get_db_port() + "/dserver/" + full_name;
     }
@@ -93,7 +93,7 @@ DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevSt
         fqdn = "dserver/" + full_name;
     }
 
-    last_heartbeat = time(NULL);
+    last_heartbeat = time(nullptr);
     last_heartbeat_zmq = last_heartbeat;
     heartbeat_started = false;
 
@@ -164,7 +164,7 @@ void DServer::init_device()
         // Create user TDSOM implementation
         //
 
-        if(class_factory_func_ptr == NULL)
+        if(class_factory_func_ptr == nullptr)
         {
             class_factory();
         }
@@ -300,7 +300,7 @@ void DServer::init_device()
                     //
 
                     std::vector<std::string> &list = class_list[i]->get_nodb_name_list();
-                    Tango::DevVarStringArray *dev_list_nodb = new Tango::DevVarStringArray();
+                    auto *dev_list_nodb = new Tango::DevVarStringArray();
 
                     tg->get_cmd_line_name_list(class_list[i]->get_name(), list);
                     if(i == class_list.size() - 1)
@@ -560,7 +560,7 @@ void DServer::delete_devices()
                 // Wait for POA to destroy the object before going to the next one. Limit this waiting time to 200 mS
                 //
 
-                std::vector<DeviceImpl *>::iterator it = devs.begin();
+                auto it = devs.begin();
                 devs.erase(it);
             }
             devs.clear();
@@ -613,7 +613,7 @@ Tango::DevVarStringArray *DServer::query_class()
     TANGO_LOG_DEBUG << "In query_class command" << std::endl;
 
     long nb_class = class_list.size();
-    Tango::DevVarStringArray *ret = NULL;
+    Tango::DevVarStringArray *ret = nullptr;
 
     try
     {
@@ -652,7 +652,7 @@ Tango::DevVarStringArray *DServer::query_device()
     TANGO_LOG_DEBUG << "In query_device command" << std::endl;
 
     long nb_class = class_list.size();
-    Tango::DevVarStringArray *ret = NULL;
+    Tango::DevVarStringArray *ret = nullptr;
     std::vector<std::string> vs;
 
     try
@@ -855,8 +855,8 @@ void DServer::restart(const std::string &d_name)
     // Also get device locker parameters if device locked
     //
 
-    client_addr *cl_addr = NULL;
-    client_addr *old_cl_addr = NULL;
+    client_addr *cl_addr = nullptr;
+    client_addr *old_cl_addr = nullptr;
     time_t l_date = 0;
     DevLong l_ctr = 0, l_valid = 0;
 
@@ -951,7 +951,7 @@ void DServer::restart(const std::string &d_name)
     // Re-start device polling (if any)
     //
 
-    DevVarLongStringArray *send = new DevVarLongStringArray();
+    auto *send = new DevVarLongStringArray();
     send->lvalue.length(1);
     send->svalue.length(3);
 
@@ -992,7 +992,7 @@ void DServer::restart(const std::string &d_name)
     // Find the new device
     //
 
-    DeviceImpl *new_dev = NULL;
+    DeviceImpl *new_dev = nullptr;
 
     std::vector<Tango::DeviceImpl *> &d_list = dev_cl->get_device_list();
 
@@ -1045,7 +1045,7 @@ void DServer::restart(const std::string &d_name)
     // Re-lock device if necessary
     //
 
-    if(cl_addr != NULL)
+    if(cl_addr != nullptr)
     {
         new_dev->set_locking_param(cl_addr, old_cl_addr, l_date, l_ctr, l_valid);
     }
@@ -1233,7 +1233,7 @@ Tango::DevVarStringArray *DServer::query_class_prop(std::string &class_name)
     TANGO_LOG_DEBUG << "In query_class_prop command" << std::endl;
 
     long nb_class = class_list.size();
-    Tango::DevVarStringArray *ret = NULL;
+    Tango::DevVarStringArray *ret = nullptr;
 
     //
     // Find the wanted class in server and throw exception if not found
@@ -1300,7 +1300,7 @@ Tango::DevVarStringArray *DServer::query_dev_prop(std::string &class_name)
     TANGO_LOG_DEBUG << "In query_dev_prop command" << std::endl;
 
     long nb_class = class_list.size();
-    Tango::DevVarStringArray *ret = NULL;
+    Tango::DevVarStringArray *ret = nullptr;
 
     //
     // Find the wanted class in server and throw exception if not found
@@ -1389,7 +1389,7 @@ void *KillThread::run_undetached(TANGO_UNUSED(void *ptr))
     Tango::Util *tg = Tango::Util::instance();
     tg->shutdown_ds();
 
-    return NULL;
+    return nullptr;
 }
 
 //+----------------------------------------------------------------------------------------------------------------
@@ -1457,7 +1457,7 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
     lib_name = lib_name + ".so";
 
     lib_ptr = dlopen(lib_name.c_str(), RTLD_NOW);
-    if(lib_ptr == NULL)
+    if(lib_ptr == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Trying to load shared library " << lib_name << " failed. It returns error: " << dlerror() << std::ends;
@@ -1476,7 +1476,7 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
     TANGO_LOG_DEBUG << "Symbol name = " << sym_name << std::endl;
 
     sym = dlsym(lib_ptr, sym_name.c_str());
-    if(sym == NULL)
+    if(sym == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Class " << cl_name << " does not have the C creator function (_create_<Class name>_class)" << std::ends;
@@ -1517,9 +1517,9 @@ void DServer::get_dev_prop(Tango::Util *tg)
     {
         DbData db_data;
 
-        db_data.push_back(DbDatum("polling_threads_pool_size"));
-        db_data.push_back(DbDatum("polling_threads_pool_conf"));
-        db_data.push_back(DbDatum("polling_before_9"));
+        db_data.emplace_back("polling_threads_pool_size");
+        db_data.emplace_back("polling_threads_pool_conf");
+        db_data.emplace_back("polling_before_9");
 
         try
         {
@@ -1680,13 +1680,13 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
 
         DbData db_data;
 
-        db_data.push_back(DbDatum("MulticastEvent"));
-        db_data.push_back(DbDatum("MulticastHops"));
-        db_data.push_back(DbDatum("MulticastRate"));
-        db_data.push_back(DbDatum("MulticastIvl"));
-        db_data.push_back(DbDatum("DSEventBufferHwm"));
-        db_data.push_back(DbDatum("EventBufferHwm"));
-        db_data.push_back(DbDatum("WAttrNaNAllowed"));
+        db_data.emplace_back("MulticastEvent");
+        db_data.emplace_back("MulticastHops");
+        db_data.emplace_back("MulticastRate");
+        db_data.emplace_back("MulticastIvl");
+        db_data.emplace_back("DSEventBufferHwm");
+        db_data.emplace_back("EventBufferHwm");
+        db_data.emplace_back("WAttrNaNAllowed");
 
         try
         {

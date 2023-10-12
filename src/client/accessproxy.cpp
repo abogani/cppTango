@@ -150,7 +150,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                     return ACCESS_READ;
                 }
 
-                if(pw_ptr == NULL)
+                if(pw_ptr == nullptr)
                 {
                     std::cerr << "AccessProxy::check_access_control: Can't get the user UID !" << std::endl;
                     std::cerr << "Access right set to ACCESS_READ" << std::endl;
@@ -207,7 +207,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                         if(tmp_host.find("127.") == 0)
                         {
                         }
-                        else if(tmp_host.find(":") != std::string::npos)
+                        else if(tmp_host.find(':') != std::string::npos)
                         {
                         }
                         else

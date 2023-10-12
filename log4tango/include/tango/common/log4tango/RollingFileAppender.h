@@ -58,7 +58,7 @@ class RollingFileAppender : public FileAppender
     virtual void roll_over();
 
   protected:
-    virtual int _append(const LoggingEvent &event);
+    int _append(const LoggingEvent &event) override;
 
     unsigned int _max_backup_index;
 

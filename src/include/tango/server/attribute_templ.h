@@ -226,7 +226,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -453,7 +453,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -680,7 +680,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -907,7 +907,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -1097,7 +1097,7 @@ void Attribute::get_properties(Tango::MultiAttrProp<T> &props)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -1224,7 +1224,7 @@ void Attribute::set_properties(Tango::MultiAttrProp<T> &props)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());

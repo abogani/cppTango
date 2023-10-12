@@ -78,7 +78,7 @@ void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
         {
             std::cerr << "OUPS !! A omni thread fatal exception !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -87,7 +87,7 @@ void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
 
     omni_thread::exit();
 
-    return NULL;
+    return nullptr;
 }
 
 } // namespace Tango

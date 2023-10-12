@@ -67,7 +67,7 @@ class DServer : public TANGO_BASE_CLASS
 {
   public:
     DServer(DeviceClass *, const char *, const char *, Tango::DevState, const char *);
-    ~DServer();
+    ~DServer() override;
 
     Tango::DevVarStringArray *query_class();
     Tango::DevVarStringArray *query_device();
@@ -105,8 +105,8 @@ class DServer : public TANGO_BASE_CLASS
     Tango::DevVarStringArray *get_logging_target(const std::string &dev_name);
     void set_logging_level(const Tango::DevVarLongStringArray *argin);
     Tango::DevVarLongStringArray *get_logging_level(const Tango::DevVarStringArray *argin);
-    void stop_logging(void);
-    void start_logging(void);
+    void stop_logging();
+    void start_logging();
 
     std::string &get_process_name()
     {
@@ -148,9 +148,9 @@ class DServer : public TANGO_BASE_CLASS
         return class_list;
     }
 
-    virtual void init_device();
+    void init_device() override;
 
-    virtual void server_init_hook();
+    void server_init_hook() override;
 
     unsigned long get_poll_th_pool_size()
     {
@@ -265,7 +265,7 @@ class DServer : public TANGO_BASE_CLASS
 class KillThread : public omni_thread
 {
   public:
-    void *run_undetached(void *);
+    void *run_undetached(void *) override;
 
     void start()
     {
@@ -281,7 +281,7 @@ class ServRestartThread : public omni_thread
     {
     }
 
-    void run(void *);
+    void run(void *) override;
 };
 
 struct Pol

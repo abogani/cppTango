@@ -125,7 +125,7 @@ class RootAttRegistry
             ci.cpp_clnt(0);
         }
 
-        virtual void push_event(Tango::AttrConfEventData *);
+        void push_event(Tango::AttrConfEventData *) override;
 
         void add_att(const std::string &, const std::string &, const std::string &, FwdAttr *, DeviceImpl *);
         void remove_att(const std::string &);
@@ -157,8 +157,8 @@ class RootAttRegistry
         {
         }
 
-        virtual void push_event(Tango::EventData *);
-        virtual void push_event(Tango::DataReadyEventData *);
+        void push_event(Tango::EventData *) override;
+        void push_event(Tango::DataReadyEventData *) override;
 
       private:
         RootAttRegistry *rar;

@@ -69,7 +69,7 @@ Tango::DevVarStringArray *DServer::polled_device()
             {
                 if((class_list[i]->get_device_list())[j]->is_polled() == true)
                 {
-                    dev_name.push_back((class_list[i]->get_device_list())[j]->get_name().c_str());
+                    dev_name.emplace_back((class_list[i]->get_device_list())[j]->get_name().c_str());
                 }
             }
         }
@@ -85,7 +85,7 @@ Tango::DevVarStringArray *DServer::polled_device()
 
     if(dev_name.empty() == true)
     {
-        Tango::DevVarStringArray *ret = new Tango::DevVarStringArray();
+        auto *ret = new Tango::DevVarStringArray();
         ret->length(0);
         return ret;
     }
@@ -96,7 +96,7 @@ Tango::DevVarStringArray *DServer::polled_device()
 
     sort(dev_name.begin(), dev_name.end());
     long nb_dev = dev_name.size();
-    Tango::DevVarStringArray *ret = new Tango::DevVarStringArray(nb_dev);
+    auto *ret = new Tango::DevVarStringArray(nb_dev);
     ret->length(nb_dev);
     for(long k = 0; k < nb_dev; k++)
     {
@@ -619,7 +619,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
     try
     {
         dev = tg->get_device_by_name((argin->svalue)[0]);
@@ -853,7 +853,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
             while(shared_cmd.cmd_pending == true)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     delete poll_list.back();
@@ -1011,7 +1011,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
         if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
         {
             DbData send_data;
-            send_data.push_back(DbDatum("polling_threads_pool_conf"));
+            send_data.emplace_back("polling_threads_pool_conf");
 
             std::vector<std::string> &ppc = tg->get_poll_pool_conf();
 
@@ -1108,7 +1108,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
     try
     {
         dev = tg->get_device_by_name((argin->svalue)[0]);
@@ -1179,7 +1179,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
         TANGO_THROW_EXCEPTION(API_NotSupported, o.str());
     }
 
-    std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(type, obj_name);
+    auto ite = dev->get_polled_obj_by_type_name(type, obj_name);
 
     //
     // Check that the requested polling period is not below the one authorized (if defined)
@@ -1363,7 +1363,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    DeviceImpl *dev = NULL;
+    DeviceImpl *dev = nullptr;
     try
     {
         dev = tg->get_device_by_name((*argin)[0]);
@@ -1432,7 +1432,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         TANGO_THROW_EXCEPTION(API_NotSupported, o.str());
     }
 
-    std::vector<PollObj *>::iterator ite = dev->get_polled_obj_by_type_name(type, obj_name);
+    auto ite = dev->get_polled_obj_by_type_name(type, obj_name);
     auto tmp_upd = (*ite)->get_upd();
 
     PollingThreadInfo *th_info = nullptr;
@@ -1460,7 +1460,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         // Test whether the polling thread is still running!
         //
 
-        if(th_info->poll_th != NULL)
+        if(th_info->poll_th != nullptr)
         {
             //
             // Send command to the polling thread
@@ -1505,7 +1505,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
                         while(shared_cmd.cmd_pending == true)
                         {
                             int interupted = mon.wait(DEFAULT_TIMEOUT);
-                            if((shared_cmd.cmd_pending == true) && (interupted == false))
+                            if((shared_cmd.cmd_pending == true) && (interupted == 0))
                             {
                                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1709,7 +1709,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         }
         else
         {
-            std::vector<std::string>::iterator iter = pool_conf.begin() + ind;
+            auto iter = pool_conf.begin() + ind;
             pool_conf.erase(iter);
             kill_thread = true;
         }
@@ -1749,7 +1749,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
         {
             DbData send_data;
-            send_data.push_back(DbDatum("polling_threads_pool_conf"));
+            send_data.emplace_back("polling_threads_pool_conf");
             send_data[0] << tg->get_poll_pool_conf();
 
             tg->get_dserver_device()->get_db_device()->put_property(send_data);
@@ -1849,7 +1849,7 @@ void DServer::stop_polling()
             {
                 interupted = mon.wait(DEFAULT_TIMEOUT);
 
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1912,7 +1912,7 @@ void DServer::start_polling()
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1950,7 +1950,7 @@ void DServer::start_polling(PollingThreadInfo *th_info)
         {
             int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-            if((shared_cmd.cmd_pending == true) && (interupted == false))
+            if((shared_cmd.cmd_pending == true) && (interupted == 0))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut,
@@ -2009,7 +2009,7 @@ void DServer::add_event_heartbeat()
             while(shared_cmd.cmd_pending == true)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -2068,7 +2068,7 @@ void DServer::rem_event_heartbeat()
             while(shared_cmd.cmd_pending == true)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == false))
+                if((shared_cmd.cmd_pending == true) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -2115,7 +2115,7 @@ void DServer::check_upd_authorized(DeviceImpl *dev, int upd, PollObjType obj_typ
         v_ptr = &(dev->get_attr_min_poll_period());
     }
 
-    std::vector<std::string>::iterator ite = find(v_ptr->begin(), v_ptr->end(), obj_name);
+    auto ite = find(v_ptr->begin(), v_ptr->end(), obj_name);
     if(ite != v_ptr->end())
     {
         ++ite;

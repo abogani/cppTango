@@ -40,14 +40,14 @@ LayoutAppender::LayoutAppender(const std::string &name) :
 
 LayoutAppender::~LayoutAppender()
 {
-    if(_layout)
+    if(_layout != nullptr)
     {
         delete _layout;
-        _layout = 0;
+        _layout = nullptr;
     }
 }
 
-bool LayoutAppender::requires_layout(void) const
+bool LayoutAppender::requires_layout() const
 {
     return true;
 }
@@ -56,16 +56,16 @@ void LayoutAppender::set_layout(Layout *layout)
 {
     if(layout != _layout)
     {
-        if(_layout)
+        if(_layout != nullptr)
         {
             delete _layout;
-            _layout = 0;
+            _layout = nullptr;
         }
-        _layout = (layout == 0) ? new DefaultLayoutType() : layout;
+        _layout = (layout == nullptr) ? new DefaultLayoutType() : layout;
     }
 }
 
-Layout &LayoutAppender::get_layout(void)
+Layout &LayoutAppender::get_layout()
 {
     return *_layout;
 }

@@ -138,7 +138,7 @@ class FwdAttr : public ImageAttr
     /// @privatesection
     FwdAttr(const FwdAttr &);
 
-    virtual bool is_fwd()
+    bool is_fwd() override
     {
         return true;
     }
@@ -173,10 +173,10 @@ class FwdAttr : public ImageAttr
         err_kind = _e;
     }
 
-    virtual void read(DeviceImpl *, Attribute &);
-    virtual void write(DeviceImpl *, WAttribute &);
+    void read(DeviceImpl *, Attribute &) override;
+    void write(DeviceImpl *, WAttribute &) override;
 
-    virtual bool is_allowed(DeviceImpl *, AttReqType)
+    bool is_allowed(DeviceImpl *, AttReqType) override
     {
         return true;
     }
@@ -193,8 +193,8 @@ class FwdAttr : public ImageAttr
     std::string full_root_att; // Root att (dev_name/att_name)
     std::string fwd_dev_name;  // Root att device name (lower case)
     std::string fwd_root_att;  // Root att (lower case)
-    bool fwd_wrongly_conf;
-    FwdAttError err_kind;
+    bool fwd_wrongly_conf{false};
+    FwdAttError err_kind{FWD_ERR_UNKNOWN};
 
   private:
     class FwdAttrExt

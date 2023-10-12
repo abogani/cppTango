@@ -36,9 +36,9 @@ namespace Tango
 namespace
 {
 template <class T, class U, typename std::enable_if<std::is_same<T, U>::value, T>::type * = nullptr>
-CORBA::Any *create_any(const U *, const size_t, const size_t);
+CORBA::Any *create_any(const U *, size_t, size_t);
 template <class T, class U, typename std::enable_if<!std::is_same<T, U>::value, T>::type * = nullptr>
-CORBA::Any *create_any(const U *, const size_t, const size_t);
+CORBA::Any *create_any(const U *, size_t, size_t);
 
 template <class T, class U, typename std::enable_if<std::is_same<T, U>::value, T>::type *>
 CORBA::Any *create_any(const U *tmp, const size_t base, const size_t data_length)
@@ -399,7 +399,7 @@ void DeviceProxy::extract_value<Tango::DevVarDoubleStringArray>(CORBA::Any &valu
         //
         // Real copy now
         //
-        Tango::DevVarDoubleStringArray *dvdsa = new Tango::DevVarDoubleStringArray();
+        auto *dvdsa = new Tango::DevVarDoubleStringArray();
         dvdsa->svalue.length(data_length);
         dvdsa->dvalue.length(data_num_length);
 
@@ -458,7 +458,7 @@ void DeviceProxy::extract_value<Tango::DevVarLongStringArray>(CORBA::Any &value,
         //
         // Real copy now
         //
-        Tango::DevVarLongStringArray *dvdsa = new Tango::DevVarLongStringArray();
+        auto *dvdsa = new Tango::DevVarLongStringArray();
         dvdsa->svalue.length(data_length);
         dvdsa->lvalue.length(data_num_length);
 

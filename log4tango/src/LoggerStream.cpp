@@ -54,10 +54,10 @@ LoggerStream::LoggerStream(Logger &logger, Level::Value level, bool filter) :
 LoggerStream::~LoggerStream()
 {
     flush();
-    if(_buffer)
+    if(_buffer != nullptr)
     {
         delete _buffer;
-        _buffer = 0;
+        _buffer = nullptr;
     }
 }
 
@@ -66,14 +66,14 @@ LoggerStream::LoggerStream(LoggerStream &&other) :
     _level(other._level),
     _filter(other._filter),
     _buffer(other._buffer),
-    _source_location(std::move(other._source_location))
+    _source_location(other._source_location)
 {
     other._buffer = nullptr;
 }
 
-void LoggerStream::flush(void)
+void LoggerStream::flush()
 {
-    if(_buffer && _buffer->tellp() > 0)
+    if((_buffer != nullptr) && _buffer->tellp() > 0)
     {
         if(_filter)
         {

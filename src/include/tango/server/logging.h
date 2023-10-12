@@ -48,7 +48,7 @@ constexpr auto PathSeparator = '/';
 #endif
 inline const char *basename(const char *path)
 {
-    auto last_dir_sep = std::strrchr(path, PathSeparator);
+    const auto *last_dir_sep = std::strrchr(path, PathSeparator);
     if(last_dir_sep == nullptr)
     {
         // No separator, the path does not contains directory components.
@@ -115,12 +115,12 @@ class Logging
     /**
      * Shutdown the Tango Logging service
      **/
-    static void cleanup(void);
+    static void cleanup();
 
     /**
      * Returns the core logger substitute
      **/
-    static log4tango::Logger *get_core_logger(void);
+    static log4tango::Logger *get_core_logger();
 
     /**
      * Implementation of the DServer AddLoggingTarget Tango command
@@ -163,12 +163,12 @@ class Logging
     /**
      * Implementation of the DServer StartLogging Tango command
      **/
-    static void start_logging(void);
+    static void start_logging();
 
     /**
      * Implementation of the DServer StopLogging Tango command
      **/
-    static void stop_logging(void);
+    static void stop_logging();
 
     /**
      * Converts a Tango logging level into a log4tango level
@@ -195,7 +195,7 @@ class Logging
     /**
      *
      **/
-    static void kill_zombie_appenders(void);
+    static void kill_zombie_appenders();
 
     /**
      *

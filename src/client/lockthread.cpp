@@ -35,7 +35,7 @@
 
 #include <functional>
 #include <algorithm>
-#include <time.h>
+#include <ctime>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>
@@ -101,7 +101,7 @@ void LockThread::run(TANGO_UNUSED(void *ptr))
     // The infinite loop
     //
 
-    while(1)
+    while(true)
     {
         try
         {
@@ -124,7 +124,7 @@ void LockThread::run(TANGO_UNUSED(void *ptr))
         {
             std::cerr << "OUPS !! A omni thread fatal exception !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(NULL);
+            time_t t = time(nullptr);
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;

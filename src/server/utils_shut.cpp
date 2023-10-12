@@ -103,7 +103,7 @@ void Util::shutdown_ds()
     if(au->is_notifd_event_consumer_created() == true)
     {
         NotifdEventConsumer *ec = ApiUtil::instance()->get_notifd_event_consumer();
-        if(ec != NULL)
+        if(ec != nullptr)
         {
             ec->shutdown();
         }
@@ -111,7 +111,7 @@ void Util::shutdown_ds()
     if(au->is_zmq_event_consumer_created() == true)
     {
         ZmqEventConsumer *ec = ApiUtil::instance()->get_zmq_event_consumer();
-        if(ec != NULL)
+        if(ec != nullptr)
         {
             ec->shutdown();
         }
@@ -122,7 +122,7 @@ void Util::shutdown_ds()
     //
 
     NotifdEventSupplier *ev = get_notifd_event_supplier();
-    if(ev != NULL)
+    if(ev != nullptr)
     {
         ev->disconnect_from_notifd();
     }

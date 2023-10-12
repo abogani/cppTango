@@ -110,15 +110,15 @@ class DeviceProxy : public Tango::Connection
 
   protected:
     /// @privatesection
-    virtual std::string get_corba_name(bool);
-    virtual std::string build_corba_name();
+    std::string get_corba_name(bool) override;
+    std::string build_corba_name() override;
 
-    virtual int get_lock_ctr()
+    int get_lock_ctr() override
     {
         return lock_ctr;
     }
 
-    virtual void set_lock_ctr(int lo)
+    void set_lock_ctr(int lo) override
     {
         lock_ctr = lo;
     }
@@ -130,7 +130,7 @@ class DeviceProxy : public Tango::Connection
     };
 
     bool is_polled(polled_object, const std::string &, std::string &);
-    virtual void reconnect(bool);
+    void reconnect(bool) override;
     void get_remaining_param(AttributeInfoListEx *);
     template <typename T>
     void from_hist_2_AttHistory(const T &, std::vector<DeviceAttributeHistory> *);
@@ -214,12 +214,12 @@ class DeviceProxy : public Tango::Connection
 
     DeviceProxy(const DeviceProxy &);
     DeviceProxy &operator=(const DeviceProxy &);
-    virtual ~DeviceProxy();
+    ~DeviceProxy() override;
 
     DeviceProxy() :
-        Connection(CORBA::ORB::_nil()),
-        db_dev(NULL),
-        adm_device(NULL),
+        Connection(CORBA::ORB::_nil() != nullptr),
+        db_dev(nullptr),
+        adm_device(nullptr),
         lock_ctr(0),
         ext_proxy(nullptr)
     {
@@ -334,7 +334,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return The device name
      */
-    virtual inline std::string dev_name()
+    inline std::string dev_name() override
     {
         return device_name;
     }
@@ -1931,7 +1931,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return List of loggin target
      */
-    virtual std::vector<std::string> get_logging_target(void);
+    virtual std::vector<std::string> get_logging_target();
     /**
      * Get current device's logging level
      *
@@ -1939,7 +1939,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return The device logging level
      */
-    virtual int get_logging_level(void);
+    virtual int get_logging_level();
     /**
      * Set the  device logging level
      *

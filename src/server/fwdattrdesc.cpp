@@ -57,8 +57,7 @@ namespace Tango
 FwdAttr::FwdAttr(const std::string &att_name, const std::string &root_attribute) :
     ImageAttr(att_name.c_str()),
     full_root_att(root_attribute),
-    fwd_wrongly_conf(false),
-    err_kind(FWD_ERR_UNKNOWN),
+
     ext(nullptr)
 {
     writable = Tango::READ; // Difficult to switch it to WT_UNKNOWN
@@ -173,7 +172,7 @@ bool FwdAttr::validate_fwd_att(std::vector<AttrProperty> &prop_list, const std::
     }
 
     // check if full_root_att is already set
-    is_full_root_att_set = full_root_att.size() != 0 && full_root_att.compare(RootAttNotDef) != 0;
+    is_full_root_att_set = full_root_att.size() != 0 && full_root_att != RootAttNotDef;
 
     if(!is_full_root_att_set)
     {
@@ -685,7 +684,7 @@ void FwdAttr::set_default_properties(UserDefaultFwdAttrProp &prop_list)
     if((prop_list.label.empty() == false) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.label.c_str(), NotANumber) != 0))
     {
-        user_default_properties.push_back(AttrProperty("label", prop_list.label));
+        user_default_properties.emplace_back("label", prop_list.label);
     }
 }
 

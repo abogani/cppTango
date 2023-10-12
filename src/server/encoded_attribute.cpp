@@ -55,11 +55,11 @@ EncodedAttribute::EncodedAttribute() :
     ext(nullptr)
 {
     buffer_array = (unsigned char **) calloc(1, sizeof(unsigned char *));
-    buffer_array[0] = NULL;
+    buffer_array[0] = nullptr;
     buffSize_array = (std::size_t *) calloc(1, sizeof(std::size_t));
     buffSize_array[0] = 0;
-    format = NULL;
-    mutex_array = NULL;
+    format = nullptr;
+    mutex_array = nullptr;
     index = 0;
     buf_elt_nb = 1;
 }
@@ -72,10 +72,10 @@ EncodedAttribute::EncodedAttribute(int si, bool excl) :
     buffSize_array = (std::size_t *) calloc(si, sizeof(std::size_t));
     for(int i = 0; i < si; i++)
     {
-        buffer_array[i] = NULL;
+        buffer_array[i] = nullptr;
         buffSize_array[i] = 0;
     }
-    format = NULL;
+    format = nullptr;
     index = 0;
     buf_elt_nb = si;
 
@@ -96,7 +96,7 @@ EncodedAttribute::~EncodedAttribute()
     SAFE_FREE(buffer_array);
     SAFE_FREE(buffSize_array);
 
-    if(mutex_array != NULL)
+    if(mutex_array != nullptr)
     {
         delete[] mutex_array;
     }
@@ -152,7 +152,7 @@ void EncodedAttribute::encode_jpeg_rgb24(unsigned char *rgb24, int width, int he
 
 // ----------------------------------------------------------------------------
 
-void EncodedAttribute::encode_gray8(unsigned char *gray8, int width, int height)
+void EncodedAttribute::encode_gray8(const unsigned char *gray8, int width, int height)
 {
     long unsigned int newSize = width * height + 4;
 
@@ -184,7 +184,7 @@ void EncodedAttribute::encode_gray8(unsigned char *gray8, int width, int height)
 
 // ----------------------------------------------------------------------------
 
-void EncodedAttribute::encode_gray16(unsigned short *gray16, int width, int height)
+void EncodedAttribute::encode_gray16(const unsigned short *gray16, int width, int height)
 {
     long unsigned int newSize = width * height * 2 + 4;
 
@@ -226,7 +226,7 @@ void EncodedAttribute::encode_gray16(unsigned short *gray16, int width, int heig
 
 // ----------------------------------------------------------------------------
 
-void EncodedAttribute::encode_rgb24(unsigned char *rgb24, int width, int height)
+void EncodedAttribute::encode_rgb24(const unsigned char *rgb24, int width, int height)
 {
     long unsigned int newSize = width * height * 3 + 4;
 
@@ -265,7 +265,7 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
     }
 
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
-    if(encDataSeq.operator->() == NULL)
+    if(encDataSeq.operator->() == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(ApiDataExcept,
                                   API_IncompatibleAttrArgumentType,
@@ -274,15 +274,15 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
 
-    int isRGB = (strcmp(local_format.c_str(), RGB_24) == 0);
-    int isJPEG = (strcmp(local_format.c_str(), JPEG_RGB) == 0);
+    bool isRGB = strcmp(local_format.c_str(), RGB_24) == 0;
+    bool isJPEG = strcmp(local_format.c_str(), JPEG_RGB) == 0;
 
-    if(!isRGB && !isJPEG)
+    if((!isRGB) && (!isJPEG))
     {
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a color format");
     }
 
-    unsigned char *rawBuff = NULL;
+    unsigned char *rawBuff = nullptr;
 
     DevVarEncodedArray &encData = encDataSeq.inout();
     DevVarCharArray &encBuff = encData[0].encoded_data;
@@ -343,7 +343,7 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
     }
 
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
-    if(encDataSeq.operator->() == NULL)
+    if(encDataSeq.operator->() == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(ApiDataExcept,
                                   API_IncompatibleAttrArgumentType,
@@ -352,15 +352,15 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
 
-    int isGrey = (strcmp(local_format.c_str(), GRAY_8) == 0);
-    int isJPEG = (strcmp(local_format.c_str(), JPEG_GRAY_8) == 0);
+    bool isGrey = strcmp(local_format.c_str(), GRAY_8) == 0;
+    bool isJPEG = strcmp(local_format.c_str(), JPEG_GRAY_8) == 0;
 
-    if(!isGrey && !isJPEG)
+    if((!isGrey) && (!isJPEG))
     {
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a grayscale 8bit format");
     }
 
-    unsigned char *rawBuff = NULL;
+    unsigned char *rawBuff = nullptr;
 
     DevVarEncodedArray &encData = encDataSeq.inout();
     DevVarCharArray &encBuff = encData[0].encoded_data;
@@ -408,7 +408,7 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
     }
 
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
-    if(encDataSeq.operator->() == NULL)
+    if(encDataSeq.operator->() == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(ApiDataExcept,
                                   API_IncompatibleAttrArgumentType,
@@ -417,14 +417,14 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
 
-    int isGrey = (strcmp(local_format.c_str(), GRAY_16) == 0);
+    bool isGrey = strcmp(local_format.c_str(), GRAY_16) == 0;
 
     if(!isGrey)
     {
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a grayscale 16 bits format");
     }
 
-    unsigned char *rawBuff = NULL;
+    unsigned char *rawBuff = nullptr;
 
     DevVarEncodedArray &encData = encDataSeq.inout();
     DevVarCharArray &encBuff = encData[0].encoded_data;
@@ -518,13 +518,13 @@ template <typename JpegCompressDecompressStruct>
 }
 
 // ----------------------------------------------------------------
-static void jpeg_encode_rgb(int width,
-                            int height,
-                            unsigned char *rgb,
-                            double quality,
-                            std::size_t *jpegSize,
-                            unsigned char **jpegData,
-                            color_space type)
+void jpeg_encode_rgb(int width,
+                     int height,
+                     unsigned char *rgb,
+                     double quality,
+                     std::size_t *jpegSize,
+                     unsigned char **jpegData,
+                     color_space type)
 {
     jpeg_compress_struct cinfo{};
     jpeg_error_mgr jerr{};

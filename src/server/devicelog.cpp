@@ -106,7 +106,7 @@ namespace Tango
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::get_logger_i
 //--------------------------------------------------------------------------
-log4tango::Logger *DeviceImpl::get_logger_i(void)
+log4tango::Logger *DeviceImpl::get_logger_i()
 {
     try
     {
@@ -115,7 +115,7 @@ log4tango::Logger *DeviceImpl::get_logger_i(void)
         // instantiate the logger (
         // shame on me for a such huggly impl. but polymorphism
         // can't be used here !
-        if(logger == 0)
+        if(logger == nullptr)
         {
             if(TG_strcasecmp(device_class->get_name().c_str(), "DServer") == 0)
             {
@@ -129,7 +129,7 @@ log4tango::Logger *DeviceImpl::get_logger_i(void)
                 std::transform(dev_name.begin(), dev_name.end(), dev_name.begin(), ::tolower);
                 // instantiate the logger using device name
                 logger = new log4tango::Logger(dev_name);
-                if(logger == 0)
+                if(logger == nullptr)
                 {
                     logger = Logging::get_core_logger();
                 }
@@ -153,7 +153,7 @@ log4tango::Logger *DeviceImpl::get_logger_i(void)
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::init_logger
 //--------------------------------------------------------------------------
-void DeviceImpl::init_logger(void)
+void DeviceImpl::init_logger()
 {
     try
     {
@@ -207,9 +207,9 @@ void DeviceImpl::init_logger(void)
         }
         // get both logging level and targets from database
         DbData db_data;
-        db_data.push_back(DbDatum("logging_level"));
-        db_data.push_back(DbDatum("logging_target"));
-        db_data.push_back(DbDatum("logging_rft"));
+        db_data.emplace_back("logging_level");
+        db_data.emplace_back("logging_target");
+        db_data.emplace_back("logging_rft");
         try
         {
             db_dev->get_property(db_data);
@@ -284,7 +284,7 @@ void DeviceImpl::init_logger(void)
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::start_logging
 //--------------------------------------------------------------------------
-void DeviceImpl::start_logging(void)
+void DeviceImpl::start_logging()
 {
     get_logger()->set_level(saved_log_level);
 }
@@ -292,7 +292,7 @@ void DeviceImpl::start_logging(void)
 //+-------------------------------------------------------------------------
 // method : DeviceImpl::stop_logging
 //--------------------------------------------------------------------------
-void DeviceImpl::stop_logging(void)
+void DeviceImpl::stop_logging()
 {
     saved_log_level = get_logger()->get_level();
     get_logger()->set_level(log4tango::Level::OFF);

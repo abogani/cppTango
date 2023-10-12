@@ -49,7 +49,7 @@ class PatternLayout : public Layout
 
     PatternLayout();
 
-    virtual ~PatternLayout();
+    ~PatternLayout() override;
 
     // NOTE:
     // All double percentage signs ('%%') followed by a character
@@ -61,7 +61,7 @@ class PatternLayout : public Layout
      * the set_conversion_pattern call. By default, set
      * to "%%m%%n"
      **/
-    virtual std::string format(const LoggingEvent &event);
+    std::string format(const LoggingEvent &event) override;
 
     /**
      * Sets the format of log lines handled by this

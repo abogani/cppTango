@@ -216,7 +216,7 @@ Tango::TgRequest *AsynReq::get_request(Tango::Connection *dev)
 
     if(found == false)
     {
-        return NULL;
+        return nullptr;
     }
     else
     {

@@ -175,7 +175,6 @@ void DbDevice::export_device(const DbDevExportInfo &dev_export)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->export_device(dev_export);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -199,7 +198,7 @@ void DbDevice::get_property(DbData &db_data)
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     if(ext_dbase == true)
@@ -210,7 +209,6 @@ void DbDevice::get_property(DbData &db_data)
     {
         (au->get_db_vect())[db_ind]->get_device_property(name, db_data);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -234,7 +232,6 @@ void DbDevice::put_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->put_device_property(name, db_data);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -258,7 +255,6 @@ void DbDevice::delete_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->delete_device_property(name, db_data);
     }
-    return;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -282,7 +278,6 @@ void DbDevice::get_attribute_property(DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->get_device_attribute_property(name, db_data);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -306,7 +301,6 @@ void DbDevice::put_attribute_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->put_device_attribute_property(name, db_data);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -330,7 +324,6 @@ void DbDevice::delete_attribute_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->delete_device_attribute_property(name, db_data);
     }
-    return;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -354,7 +347,6 @@ void DbDevice::get_pipe_property(DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->get_device_pipe_property(name, db_data);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -378,7 +370,6 @@ void DbDevice::put_pipe_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->put_device_pipe_property(name, db_data);
     }
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -402,7 +393,6 @@ void DbDevice::delete_pipe_property(const DbData &db_data)
         ApiUtil *au = ApiUtil::instance();
         (au->get_db_vect())[db_ind]->delete_device_pipe_property(name, db_data);
     }
-    return;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -474,7 +464,7 @@ void DbDevice::get_property_list(const std::string &wildcard, std::vector<std::s
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     if(ext_dbase == true)
@@ -485,7 +475,6 @@ void DbDevice::get_property_list(const std::string &wildcard, std::vector<std::s
     {
         (au->get_db_vect())[db_ind]->get_device_property_list(name, wildcard, prop_list);
     }
-    return;
 }
 
 } // namespace Tango

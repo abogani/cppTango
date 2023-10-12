@@ -104,7 +104,7 @@ void DbClass::get_property(DbData &db_data)
     }
     else
     {
-        dsc = NULL;
+        dsc = nullptr;
     }
 
     //

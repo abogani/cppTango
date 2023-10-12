@@ -8,6 +8,17 @@ function(add_after_in_file FILENAME SEARCH CONTENT)
     replace_in_file(${FILENAME} "${SEARCH}" "${SEARCH} ${CONTENT}")
 endfunction()
 
+function(nolint_file FILENAME)
+    file(READ "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}" ORIGINAL_DATA)
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}" "// Added by Tango team\n// NOLINTBEGIN\n\n")
+    file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}" "${ORIGINAL_DATA}")
+    file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}" "// Added by Tango team\n// NOLINTEND\n")
+endfunction()
+
+nolint_file(tango.h)
+nolint_file(tangoSK.cpp)
+nolint_file(tangoDynSK.cpp)
+
 add_after_in_file(tango.h "#define __tango_hh__" "\n\n\
 //Added by Tango team\n\
 #ifdef __clang_analyzer__\n\

@@ -155,7 +155,7 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
     /**
      * The device desctructor.
      */
-    virtual ~Device_4Impl() { }
+    ~Device_4Impl() override { }
 
     //@}
 
@@ -184,7 +184,7 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevAttrHistory_4 *read_attribute_history_4(const char *name, CORBA::Long n);
+    Tango::DevAttrHistory_4 *read_attribute_history_4(const char *name, CORBA::Long n) override;
 
     /**
      * Read command value history.
@@ -208,7 +208,7 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * to read <b>DevFailed</b> exception specification
      */
 
-    virtual Tango::DevCmdHistory_4 *command_inout_history_4(const char *command, CORBA::Long n);
+    Tango::DevCmdHistory_4 *command_inout_history_4(const char *command, CORBA::Long n) override;
 
     /**
      * Execute a command.
@@ -230,10 +230,10 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual CORBA::Any *command_inout_4(const char *in_cmd,
-                                        const CORBA::Any &in_data,
-                                        Tango::DevSource source,
-                                        const Tango::ClntIdent &cl_ident);
+    CORBA::Any *command_inout_4(const char *in_cmd,
+                                const CORBA::Any &in_data,
+                                Tango::DevSource source,
+                                const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Read attribute(s) value.
@@ -257,9 +257,9 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeValueList_4 *read_attributes_4(const Tango::DevVarStringArray &names,
-                                                           Tango::DevSource source,
-                                                           const Tango::ClntIdent &cl_ident);
+    Tango::AttributeValueList_4 *read_attributes_4(const Tango::DevVarStringArray &names,
+                                                   Tango::DevSource source,
+                                                   const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Write attribute(s) value.
@@ -278,7 +278,7 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void write_attributes_4(const Tango::AttributeValueList_4 &values, const Tango::ClntIdent &cl_ident);
+    void write_attributes_4(const Tango::AttributeValueList_4 &values, const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Set attribute(s) configuration.
@@ -297,7 +297,8 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void set_attribute_config_4(const Tango::AttributeConfigList_3 &new_conf, const Tango::ClntIdent &cl_ident);
+    void set_attribute_config_4(const Tango::AttributeConfigList_3 &new_conf,
+                                const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Write then read attribute(s) value.
@@ -322,8 +323,8 @@ class Device_4Impl : public virtual POA_Tango::Device_4, public Device_3Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeValueList_4 *write_read_attributes_4(const Tango::AttributeValueList_4 &values,
-                                                                 const Tango::ClntIdent &cl_ident);
+    Tango::AttributeValueList_4 *write_read_attributes_4(const Tango::AttributeValueList_4 &values,
+                                                         const Tango::ClntIdent &cl_ident) override;
 
     //@}
 

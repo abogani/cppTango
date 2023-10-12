@@ -508,7 +508,7 @@ class DeviceDataHistory : public DeviceData
     DeviceDataHistory(DeviceDataHistory &&);
     DeviceDataHistory &operator=(DeviceDataHistory &&);
 
-    ~DeviceDataHistory();
+    ~DeviceDataHistory() override;
 
     ///@publicsection
     /**
@@ -658,7 +658,7 @@ class DeviceAttributeHistory : public DeviceAttribute
     DeviceAttributeHistory(DeviceAttributeHistory &&);
     DeviceAttributeHistory &operator=(DeviceAttributeHistory &&);
 
-    ~DeviceAttributeHistory();
+    ~DeviceAttributeHistory() override;
 
     ///@publicsection
     /**
@@ -775,26 +775,26 @@ class DummyDeviceProxy : public Tango::Connection
     {
     }
 
-    virtual std::string get_corba_name(bool)
+    std::string get_corba_name(bool) override
     {
         std::string str;
         return str;
     }
 
-    virtual std::string build_corba_name()
+    std::string build_corba_name() override
     {
         std::string str;
         return str;
     }
 
-    virtual int get_lock_ctr()
+    int get_lock_ctr() override
     {
         return 0;
     }
 
-    virtual void set_lock_ctr(int) { }
+    void set_lock_ctr(int) override { }
 
-    virtual std::string dev_name()
+    std::string dev_name() override
     {
         std::string str;
         return str;
@@ -867,7 +867,7 @@ inline void Connection::dec_asynch_counter(asyn_req_type ty)
 inline void DeviceProxy::check_connect_adm_device()
 {
     omni_mutex_lock guard(adm_dev_mutex);
-    if(adm_device == NULL)
+    if(adm_device == nullptr)
     {
         connect_to_adm_device();
     }

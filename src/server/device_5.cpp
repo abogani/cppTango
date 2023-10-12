@@ -175,7 +175,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
 
     try
     {
-        Tango::AttributeValue_5 *l_back = new Tango::AttributeValue_5[nb_names];
+        auto *l_back = new Tango::AttributeValue_5[nb_names];
         aid.data_5 = new Tango::AttributeValueList_5(nb_names, nb_names, l_back, true);
 
         for(unsigned long loop = 0; loop < nb_names; loop++)
@@ -539,7 +539,7 @@ Tango::AttributeConfigList_5 *Device_5Impl::get_attribute_config_5(const Tango::
     TANGO_LOG_DEBUG << "Device_5Impl::get_attribute_config_5 arrived" << std::endl;
 
     long nb_attr = names.length();
-    Tango::AttributeConfigList_5 *back = NULL;
+    Tango::AttributeConfigList_5 *back = nullptr;
     bool all_attr = false;
 
     //
@@ -730,7 +730,7 @@ Tango::DevAttrHistory_5 *Device_5Impl::read_attribute_history_5(const char *name
     //
 
     long j;
-    PollObj *polled_attr = NULL;
+    PollObj *polled_attr = nullptr;
     for(j = 0; j < nb_poll; j++)
     {
         if((poll_list[j]->get_type() == Tango::POLL_ATTR) && (poll_list[j]->get_name() == attr_str))
@@ -739,7 +739,7 @@ Tango::DevAttrHistory_5 *Device_5Impl::read_attribute_history_5(const char *name
             break;
         }
     }
-    if((polled_attr == NULL) && (att.is_fwd_att() == false))
+    if((polled_attr == nullptr) && (att.is_fwd_att() == false))
     {
         TangoSys_OMemStream o;
         o << "Attribute " << attr_str << " not polled" << std::ends;

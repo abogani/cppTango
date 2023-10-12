@@ -45,38 +45,38 @@ class TangoAppender : public log4tango::Appender
     /**
      *
      **/
-    virtual ~TangoAppender();
+    ~TangoAppender() override;
 
     /**
      *
      **/
-    virtual bool requires_layout(void) const;
+    bool requires_layout() const override;
 
     /**
      *
      **/
-    virtual void set_layout(log4tango::Layout *layout);
+    void set_layout(log4tango::Layout *layout) override;
 
     /**
      *
      **/
-    virtual void close(void);
+    void close() override;
 
     /**
      *
      **/
-    virtual bool reopen(void);
+    bool reopen() override;
 
     /**
      *
      **/
-    virtual bool is_valid(void) const;
+    bool is_valid() const override;
 
   protected:
     /**
      *
      **/
-    virtual int _append(const log4tango::LoggingEvent &event);
+    int _append(const log4tango::LoggingEvent &event) override;
 
   private:
     /**
@@ -92,7 +92,7 @@ class TangoAppender : public log4tango::Appender
     /**
      *
      **/
-    DeviceProxy *_dev_proxy;
+    DeviceProxy *_dev_proxy{nullptr};
     DevULong _req_ctr;
 };
 

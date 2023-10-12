@@ -728,7 +728,7 @@ TemplCommand::TemplCommand(const std::string &s, void (DeviceImpl::*f)(), Tango:
     exe_ptr(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
 }
 
 TemplCommand::TemplCommand(const std::string &s,
@@ -764,7 +764,7 @@ TemplCommand::TemplCommand(const std::string &s,
     exe_ptr(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
 }
 
 TemplCommand::TemplCommand(const std::string &s, Tango::DispLevel level) :
@@ -962,7 +962,7 @@ void TemplCommand::set_type(const std::type_info &data_type, Tango::CmdArgType &
 
 bool TemplCommand::is_allowed(DeviceImpl *dev_ptr, const CORBA::Any &in_any)
 {
-    if(allowed_ptr == NULL)
+    if(allowed_ptr == nullptr)
     {
         return true;
     }

@@ -85,7 +85,7 @@ class LoggerStream
      * Returns the destination Logger for this stream.
      * @returns The Logger.
      **/
-    inline Logger &get_logger(void) const
+    inline Logger &get_logger() const
     {
         return _logger;
     }
@@ -94,7 +94,7 @@ class LoggerStream
      * Returns the level for this stream.
      * @returns The level.
      **/
-    inline Level::Value get_level(void) const
+    inline Level::Value get_level() const
     {
         return _level;
     }
@@ -151,7 +151,7 @@ class LoggerStream
      * Flush the contents of the stream buffer to the Logger and
      * empties the buffer.
      **/
-    void flush(void);
+    void flush();
 
     /**
      * Streams in a std stream manipulator.
@@ -165,7 +165,7 @@ class LoggerStream
     inline LoggerStream &operator<<(std::ios_base &(*_F)(std::ios_base &) )
     {
 #endif
-        if(_buffer)
+        if(_buffer != nullptr)
         {
             (*_F)(*(std::ios_base *) (_buffer));
         }

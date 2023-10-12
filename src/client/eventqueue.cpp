@@ -176,11 +176,11 @@ void EventQueue::insert_event(EventData *new_event)
         // allocate ring buffer when not yet done
         if(event_buffer.empty() == true)
         {
-            event_buffer.resize(max_elt, NULL);
+            event_buffer.resize(max_elt, nullptr);
         }
 
         // free data when necessary
-        if(event_buffer[insert_elt] != NULL)
+        if(event_buffer[insert_elt] != nullptr)
         {
             delete event_buffer[insert_elt];
         }
@@ -230,11 +230,11 @@ void EventQueue::insert_event(AttrConfEventData *new_event)
         // allocate ring buffer when not yet done
         if(conf_event_buffer.empty() == true)
         {
-            conf_event_buffer.resize(max_elt, NULL);
+            conf_event_buffer.resize(max_elt, nullptr);
         }
 
         // free data when necessary
-        if(conf_event_buffer[insert_elt] != NULL)
+        if(conf_event_buffer[insert_elt] != nullptr)
         {
             delete conf_event_buffer[insert_elt];
         }
@@ -284,11 +284,11 @@ void EventQueue::insert_event(DataReadyEventData *new_event)
         // allocate ring buffer when not yet done
         if(ready_event_buffer.empty() == true)
         {
-            ready_event_buffer.resize(max_elt, NULL);
+            ready_event_buffer.resize(max_elt, nullptr);
         }
 
         // free data when necessary
-        if(ready_event_buffer[insert_elt] != NULL)
+        if(ready_event_buffer[insert_elt] != nullptr)
         {
             delete ready_event_buffer[insert_elt];
         }
@@ -350,14 +350,14 @@ void EventQueue::insert_event(DevIntrChangeEventData *new_event)
 
         if(dev_inter_event_buffer.empty() == true)
         {
-            dev_inter_event_buffer.resize(max_elt, NULL);
+            dev_inter_event_buffer.resize(max_elt, nullptr);
         }
 
         //
         // free data when necessary
         //
 
-        if(dev_inter_event_buffer[insert_elt] != NULL)
+        if(dev_inter_event_buffer[insert_elt] != nullptr)
         {
             delete dev_inter_event_buffer[insert_elt];
         }
@@ -413,11 +413,11 @@ void EventQueue::insert_event(PipeEventData *new_event)
         // allocate ring buffer when not yet done
         if(pipe_event_buffer.empty() == true)
         {
-            pipe_event_buffer.resize(max_elt, NULL);
+            pipe_event_buffer.resize(max_elt, nullptr);
         }
 
         // free data when necessary
-        if(pipe_event_buffer[insert_elt] != NULL)
+        if(pipe_event_buffer[insert_elt] != nullptr)
         {
             delete pipe_event_buffer[insert_elt];
         }
@@ -605,7 +605,7 @@ void EventQueue::get_events(EventDataList &event_list)
 
         // we do not want to free the event data when cleaning-up
         // the vector
-        event_buffer[index] = NULL;
+        event_buffer[index] = nullptr;
 
         if(index == 0)
         {
@@ -621,7 +621,6 @@ void EventQueue::get_events(EventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-    return;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -675,7 +674,7 @@ void EventQueue::get_events(AttrConfEventDataList &event_list)
 
         // we do not want to free the event data when cleaning-up
         // the vector
-        conf_event_buffer[index] = NULL;
+        conf_event_buffer[index] = nullptr;
 
         if(index == 0)
         {
@@ -691,8 +690,6 @@ void EventQueue::get_events(AttrConfEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -746,7 +743,7 @@ void EventQueue::get_events(DataReadyEventDataList &event_list)
 
         // we do not want to free the event data when cleaning-up
         // the vector
-        ready_event_buffer[index] = NULL;
+        ready_event_buffer[index] = nullptr;
 
         if(index == 0)
         {
@@ -762,8 +759,6 @@ void EventQueue::get_events(DataReadyEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -826,7 +821,7 @@ void EventQueue::get_events(DevIntrChangeEventDataList &event_list)
         // the vector
         //
 
-        dev_inter_event_buffer[index] = NULL;
+        dev_inter_event_buffer[index] = nullptr;
 
         if(index == 0)
         {
@@ -845,8 +840,6 @@ void EventQueue::get_events(DevIntrChangeEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -909,7 +902,7 @@ void EventQueue::get_events(PipeEventDataList &event_list)
         // the vector
         //
 
-        pipe_event_buffer[index] = NULL;
+        pipe_event_buffer[index] = nullptr;
 
         if(index == 0)
         {
@@ -928,8 +921,6 @@ void EventQueue::get_events(PipeEventDataList &event_list)
     nb_elt = 0;
 
     TANGO_LOG_DEBUG << "EventQueue::get_events() : size = " << event_list.size() << std::endl;
-
-    return;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -951,7 +942,7 @@ void EventQueue::get_events(CallBack *cb)
 {
     TANGO_LOG_DEBUG << "Entering EventQueue::get_events" << std::endl;
 
-    if(cb == NULL)
+    if(cb == nullptr)
     {
         TangoSys_OMemStream o;
         o << "No callback object given!\n";

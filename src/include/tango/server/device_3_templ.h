@@ -76,8 +76,8 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
     // Get some event related data
     //
 
-    EventSupplier *event_supplier_nd = NULL;
-    EventSupplier *event_supplier_zmq = NULL;
+    EventSupplier *event_supplier_nd = nullptr;
+    EventSupplier *event_supplier_zmq = nullptr;
 
     Tango::Util *tg = Tango::Util::instance();
 
@@ -139,7 +139,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
             }
             else
             {
-                event_supplier_nd = NULL;
+                event_supplier_nd = nullptr;
             }
 
             if(attr.use_zmq_event() == true)
@@ -148,10 +148,10 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
             }
             else
             {
-                event_supplier_zmq = NULL;
+                event_supplier_zmq = nullptr;
             }
 
-            if((event_supplier_nd != NULL) || (event_supplier_zmq != NULL))
+            if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
             {
                 std::string tmp_name(new_conf[i].name);
 
@@ -196,22 +196,24 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                                 ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *));
                             }
 
-                            if(event_supplier_nd != NULL)
+                            if(event_supplier_nd != nullptr)
                             {
-                                event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                                event_supplier_nd->push_att_conf_events(
+                                    this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                             }
-                            if(event_supplier_zmq != NULL)
+                            if(event_supplier_zmq != nullptr)
                             {
-                                event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                                event_supplier_zmq->push_att_conf_events(
+                                    this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                             }
 
                             if(cl_lib[i] == 5)
                             {
-                                ad.attr_conf_5 = NULL;
+                                ad.attr_conf_5 = nullptr;
                             }
                             else
                             {
-                                ad.attr_conf_3 = NULL;
+                                ad.attr_conf_3 = nullptr;
                             }
                         }
                     }
@@ -231,22 +233,24 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                                 ::memcpy(&(ad.attr_conf_5), &(tmp_ptr), sizeof(V *));
                             }
 
-                            if(event_supplier_nd != NULL)
+                            if(event_supplier_nd != nullptr)
                             {
-                                event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                                event_supplier_nd->push_att_conf_events(
+                                    this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                             }
-                            if(event_supplier_zmq != NULL)
+                            if(event_supplier_zmq != nullptr)
                             {
-                                event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                                event_supplier_zmq->push_att_conf_events(
+                                    this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                             }
 
                             if(cl_lib[i] == 5)
                             {
-                                ad.attr_conf_5 = NULL;
+                                ad.attr_conf_5 = nullptr;
                             }
                             else
                             {
-                                ad.attr_conf_3 = NULL;
+                                ad.attr_conf_3 = nullptr;
                             }
                         }
                     }
@@ -255,13 +259,13 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                 {
                     ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *));
 
-                    if(event_supplier_nd != NULL)
+                    if(event_supplier_nd != nullptr)
                     {
-                        event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                        event_supplier_nd->push_att_conf_events(this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                     }
-                    if(event_supplier_zmq != NULL)
+                    if(event_supplier_zmq != nullptr)
                     {
-                        event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) NULL, tmp_name);
+                        event_supplier_zmq->push_att_conf_events(this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                     }
                 }
             }

@@ -95,7 +95,7 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
                                 // create one from the AttributeInfoEx
                                 //
 
-                                FwdAttrConfEventData *ev_fwd = static_cast<FwdAttrConfEventData *>(ev);
+                                auto *ev_fwd = static_cast<FwdAttrConfEventData *>(ev);
                                 AttributeConfig_5 *ptr = const_cast<AttributeConfig_5 *>(ev_fwd->get_fwd_attr_conf());
                                 if(ptr == nullptr)
                                 {
@@ -183,8 +183,7 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
                                                    local_att_lower.end(),
                                                    local_att_lower.begin(),
                                                    ::tolower);
-                                    std::vector<std::string>::iterator pos =
-                                        find(poll_attr_list.begin(), poll_attr_list.end(), local_att_lower);
+                                    auto pos = find(poll_attr_list.begin(), poll_attr_list.end(), local_att_lower);
                                     if(pos != poll_attr_list.end())
                                     {
                                         DevVarLongStringArray send;
@@ -486,7 +485,7 @@ void RootAttRegistry::RootAttConfCallBack::remove_att(const std::string &root_at
 
         if(used_elsewhere == false)
         {
-            std::map<std::string, DeviceImpl *>::iterator ite_dp = local_dis.find(local_dev_name);
+            auto ite_dp = local_dis.find(local_dev_name);
             local_dis.erase(ite_dp);
         }
     }
@@ -670,7 +669,7 @@ bool RootAttRegistry::RootAttConfCallBack::is_root_dev_not_started_err()
     std::map<std::string, struct NameFwdAttr>::iterator ite;
     for(ite = map_attrdesc.begin(); ite != map_attrdesc.end(); ++ite)
     {
-        if(ite->second.fwd_attr != NULL)
+        if(ite->second.fwd_attr != nullptr)
         {
             if(ite->second.fwd_attr->get_err_kind() == FWD_ROOT_DEV_NOT_STARTED)
             {
@@ -861,7 +860,7 @@ void RootAttRegistry::clear_attrdesc(const std::string &dev_name, const std::str
 void RootAttRegistry::remove_root_att(const std::string &root_dev_name, const std::string &root_att_name)
 {
     std::string full_root_att_name = root_dev_name + '/' + root_att_name;
-    std::map<std::string, DeviceProxy *>::iterator pos = dps.find(root_dev_name);
+    auto pos = dps.find(root_dev_name);
 
     //
     // Unsubscribe from all user events registered on this forwarded attribute (if any)
@@ -896,7 +895,7 @@ void RootAttRegistry::remove_root_att(const std::string &root_dev_name, const st
     // Unsubscribe from the event and if the root device is not used elsewhere, remove its device proxy
     //
 
-    std::map<std::string, int>::iterator ite = map_event_id.find(full_root_att_name);
+    auto ite = map_event_id.find(full_root_att_name);
     if(ite != map_event_id.end())
     {
         if(pos != dps.end())
@@ -1300,7 +1299,7 @@ void RootAttRegistry::auto_unsub()
     // A loop on each events
     //
 
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
 
     {
         WriterLock wl(id_user_lock);
@@ -1453,7 +1452,7 @@ bool RootAttRegistry::check_loop(const std::string &device_name,
         //
 
         DbData db_data;
-        db_data.push_back(DbDatum(att_name));
+        db_data.emplace_back(att_name);
 
         if(db_port == tg_port && db_host == tg_host)
         {

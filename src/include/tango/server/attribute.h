@@ -751,7 +751,7 @@ class Attribute
      *
      * @param except A pointer to a DevFailed exception to be thrown as archive event.
      */
-    void fire_change_event(DevFailed *except = NULL);
+    void fire_change_event(DevFailed *except = nullptr);
 
     /**
      * Set a flag to indicate that the server fires change events manually, without
@@ -820,7 +820,7 @@ class Attribute
      *
      * @param except A pointer to a DevFailed exception to be thrown as archive event.
      */
-    void fire_archive_event(DevFailed *except = NULL);
+    void fire_archive_event(DevFailed *except = nullptr);
 
     /**
      * Set a flag to indicate that the server fires archive events manually, without
@@ -911,7 +911,7 @@ class Attribute
      */
     void fire_event(const std::vector<std::string> &filt_names,
                     const std::vector<double> &filt_vals,
-                    DevFailed *except = NULL);
+                    DevFailed *except = nullptr);
 
     /**
      * Remove the attribute configuration from the database.
@@ -1130,11 +1130,11 @@ class Attribute
     /**
      * Flag set to true if the date must be set
      */
-    bool date;
+    bool date{true};
     /**
      * The attribute quality factor
      */
-    Tango::AttrQuality quality;
+    Tango::AttrQuality quality{Tango::ATTR_VALID};
 
     /**
      * The attribute name
@@ -1271,11 +1271,11 @@ class Attribute
     /**
      * Flag set to true if a minimum value is defined
      */
-    bool check_min_value;
+    bool check_min_value{false};
     /**
      * Flag set to true if a maximum alarm is defined
      */
-    bool check_max_value;
+    bool check_max_value{false};
     /**
      * Authorized delta between the last written value and the
      * actual read. Used if the attribute has an alarm on
@@ -1593,7 +1593,7 @@ class Attribute
 
     void set_quality_event_sub()
     {
-        event_quality_subscription = time(NULL);
+        event_quality_subscription = time(nullptr);
     }
 
     time_t get_quality_event_sub()
@@ -1612,7 +1612,7 @@ class Attribute
 
     void set_data_ready_event_sub()
     {
-        event_data_ready_subscription = time(NULL);
+        event_data_ready_subscription = time(nullptr);
     }
 
     time_t get_data_ready_event_sub()
@@ -1762,27 +1762,27 @@ class Attribute
 
     inline bool is_value_set(const char *attr_name)
     {
-        if(!strcmp(attr_name, "min_alarm"))
+        if(strcmp(attr_name, "min_alarm") == 0)
         {
             return alarm_conf.test(max_level);
         }
-        else if(!strcmp(attr_name, "max_alarm"))
+        else if(strcmp(attr_name, "max_alarm") == 0)
         {
             return alarm_conf.test(min_level);
         }
-        else if(!strcmp(attr_name, "min_value"))
+        else if(strcmp(attr_name, "min_value") == 0)
         {
             return check_max_value;
         }
-        else if(!strcmp(attr_name, "max_value"))
+        else if(strcmp(attr_name, "max_value") == 0)
         {
             return check_min_value;
         }
-        else if(!strcmp(attr_name, "min_warning"))
+        else if(strcmp(attr_name, "min_warning") == 0)
         {
             return alarm_conf.test(max_warn);
         }
-        else if(!strcmp(attr_name, "max_warning"))
+        else if(strcmp(attr_name, "max_warning") == 0)
         {
             return alarm_conf.test(min_warn);
         }
@@ -1813,13 +1813,10 @@ class Attribute
     class AttributeExt
     {
       public:
-        AttributeExt() :
-            user_attr_mutex(NULL)
-        {
-        }
+        AttributeExt() { }
 
-        omni_mutex attr_mutex;       // Mutex to protect the attributes shared data buffer
-        omni_mutex *user_attr_mutex; // Ptr for user mutex in case he manages exclusion
+        omni_mutex attr_mutex;                // Mutex to protect the attributes shared data buffer
+        omni_mutex *user_attr_mutex{nullptr}; // Ptr for user mutex in case he manages exclusion
     };
 
     AttributeExt *ext;
@@ -1940,23 +1937,23 @@ class Attribute
 
     std::vector<AttrProperty>::iterator pos_end;
 
-    std::uint32_t enum_nb; // For enum attribute
-    short *loc_enum_ptr;   // For enum attribute
+    std::uint32_t enum_nb{0};     // For enum attribute
+    short *loc_enum_ptr{nullptr}; // For enum attribute
 
     //
     // Ported from the extension class
     //
 
     Tango::DispLevel disp_level;      // Display level
-    long poll_period;                 // Polling period
+    long poll_period{0};              // Polling period
     double rel_change[2];             // Delta for relative change events in %
     double abs_change[2];             // Delta for absolute change events
     double archive_rel_change[2];     // Delta for relative archive change events in %
     double archive_abs_change[2];     // Delta for absolute change events
-    int event_period;                 // Delta for periodic events in ms
-    int archive_period;               // Delta for archive periodic events in ms
-    long periodic_counter;            // Number of periodic events sent so far
-    long archive_periodic_counter;    // Number of periodic events sent so far
+    int event_period{0};              // Delta for periodic events in ms
+    int archive_period{0};            // Delta for archive periodic events in ms
+    long periodic_counter{0};         // Number of periodic events sent so far
+    long archive_periodic_counter{0}; // Number of periodic events sent so far
     LastAttrValue prev_change_event;  // Last change attribute
     LastAttrValue prev_quality_event; // Last quality attribute
     LastAttrValue prev_archive_event; // Last archive attribute
@@ -1982,30 +1979,32 @@ class Attribute
     time_t event_attr_conf5_subscription; // Last time() a subscription was made
     time_t event_data_ready_subscription; // Last time() a subscription was made
 
-    long idx_in_attr;                  // Index in MultiClassAttribute vector
-    std::string d_name;                // The device name
-    DeviceImpl *dev;                   // The device object
-    bool change_event_implmented;      // Flag true if a manual fire change event is implemented.
-    bool archive_event_implmented;     // Flag true if a manual fire archive event is implemented.
-    bool check_change_event_criteria;  // True if change event criteria should be checked when sending the event
-    bool check_archive_event_criteria; // True if change event criteria should be checked when sending the event
+    long idx_in_attr;                        // Index in MultiClassAttribute vector
+    std::string d_name;                      // The device name
+    DeviceImpl *dev{nullptr};                // The device object
+    bool change_event_implmented{false};     // Flag true if a manual fire change event is implemented.
+    bool archive_event_implmented{false};    // Flag true if a manual fire archive event is implemented.
+    bool check_change_event_criteria{true};  // True if change event criteria should be checked when sending the event
+    bool check_archive_event_criteria{true}; // True if change event criteria should be checked when sending the event
     Tango::DevLong64 tmp_lo64[2];
     Tango::DevULong tmp_ulo[2];
     Tango::DevULong64 tmp_ulo64[2];
     Tango::DevState tmp_state[2];
     AttrSerialModel attr_serial_model;                   // Flag for attribute serialization model
-    bool dr_event_implmented;                            // Flag true if fire data ready event is implemented
-    bool scalar_str_attr_release;                        // Need memory freeing (scalar string attr, R/W att)
-    bool notifd_event;                                   // Set to true if event required using notifd
-    bool zmq_event;                                      // Set to true if event required using ZMQ
+    bool dr_event_implmented{false};                     // Flag true if fire data ready event is implemented
+    bool scalar_str_attr_release{false};                 // Need memory freeing (scalar string attr, R/W att)
+    bool notifd_event{false};                            // Set to true if event required using notifd
+    bool zmq_event{false};                               // Set to true if event required using ZMQ
     std::vector<std::string> mcast_event;                // In case of multicasting used for event transport
     AttrQuality old_quality;                             // Previous attribute quality
     std::bitset<numFlags> old_alarm;                     // Previous attribute alarm
     std::map<std::string, DevFailed> startup_exceptions; // Map containing exceptions related to attribute configuration
                                                          // raised during the server startup sequence
-    bool check_startup_exceptions; // Flag set to true if there is at least one exception in startup_exceptions map
-    bool startup_exceptions_clear; // Flag set to true when the cause for the device startup exceptions has been fixed
-    bool att_mem_exception;        // Flag set to true if the attribute is writable and
+    bool check_startup_exceptions{
+        false}; // Flag set to true if there is at least one exception in startup_exceptions map
+    bool startup_exceptions_clear{
+        true};                     // Flag set to true when the cause for the device startup exceptions has been fixed
+    bool att_mem_exception{false}; // Flag set to true if the attribute is writable and
                                    // memorized and if it failed at init
     std::vector<int> client_lib[numEventType]; // Clients lib used (for event sending and compat)
 };
@@ -2189,15 +2188,15 @@ inline void Attribute::set_change_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_change5_subscription = time(NULL);
+        event_change5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_change4_subscription = time(NULL);
+        event_change4_subscription = time(nullptr);
         break;
 
     default:
-        event_change3_subscription = time(NULL);
+        event_change3_subscription = time(nullptr);
         break;
     }
 }
@@ -2207,15 +2206,15 @@ inline void Attribute::set_periodic_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_periodic5_subscription = time(NULL);
+        event_periodic5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_periodic4_subscription = time(NULL);
+        event_periodic4_subscription = time(nullptr);
         break;
 
     default:
-        event_periodic3_subscription = time(NULL);
+        event_periodic3_subscription = time(nullptr);
         break;
     }
 }
@@ -2225,15 +2224,15 @@ inline void Attribute::set_archive_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_archive5_subscription = time(NULL);
+        event_archive5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_archive4_subscription = time(NULL);
+        event_archive4_subscription = time(nullptr);
         break;
 
     default:
-        event_archive3_subscription = time(NULL);
+        event_archive3_subscription = time(nullptr);
         break;
     }
 }
@@ -2243,15 +2242,15 @@ inline void Attribute::set_user_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_user5_subscription = time(NULL);
+        event_user5_subscription = time(nullptr);
         break;
 
     case 4:
-        event_user4_subscription = time(NULL);
+        event_user4_subscription = time(nullptr);
         break;
 
     default:
-        event_user3_subscription = time(NULL);
+        event_user3_subscription = time(nullptr);
         break;
     }
 }
@@ -2261,11 +2260,11 @@ inline void Attribute::set_att_conf_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 5:
-        event_attr_conf5_subscription = time(NULL);
+        event_attr_conf5_subscription = time(nullptr);
         break;
 
     default:
-        event_attr_conf_subscription = time(NULL);
+        event_attr_conf_subscription = time(nullptr);
         break;
     }
 }
@@ -2319,7 +2318,7 @@ inline void Attribute::delete_data_if_needed(T *data, bool release)
 template <>
 inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString *data, bool release)
 {
-    if(!release || !data)
+    if(!release || (data == nullptr))
     {
         return;
     }

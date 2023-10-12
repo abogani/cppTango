@@ -61,7 +61,7 @@ DbServerData::DbServerData(const std::string &exec_name, const std::string &inst
 
     std::string adm_name("dserver/");
     adm_name = adm_name + full_server_name;
-    Database *db_ptr = NULL;
+    Database *db_ptr = nullptr;
 
     try
     {
@@ -435,7 +435,7 @@ DbServerData::TangoDevice::TangoDevice(const std::string &na) :
     for(size_t loop = 0; loop < att_list.size(); loop++)
     {
         DbData db_data;
-        db_data.push_back(DbDatum(att_list[loop]));
+        db_data.emplace_back(att_list[loop]);
         db->get_device_attribute_property(na, db_data);
         for(size_t lo = 1; lo < db_data.size(); lo++)
         {
@@ -460,7 +460,7 @@ DbServerData::TangoDevice::TangoDevice(const std::string &na) :
         for(size_t loop = 0; loop < pipe_list.size(); loop++)
         {
             DbData db_data;
-            db_data.push_back(DbDatum(pipe_list[loop]));
+            db_data.emplace_back(pipe_list[loop]);
             db->get_device_pipe_property(na, db_data);
             for(size_t lo = 1; lo < db_data.size(); lo++)
             {
@@ -623,7 +623,7 @@ DbServerData::TangoClass::TangoClass(const std::string &na, const std::string &f
         DbData db_data;
         for(size_t loop = 0; loop < vs.size(); loop++)
         {
-            db_data.push_back(DbDatum(vs[loop]));
+            db_data.emplace_back(vs[loop]);
         }
         db->get_class_property(name, db_data);
 
@@ -837,7 +837,7 @@ void DbServerData::TangoClass::remove_properties(Database *db_ptr)
         DbData props;
         for(size_t loop = 0; loop < properties.size(); loop++)
         {
-            props.push_back(DbDatum(properties[loop].name));
+            props.emplace_back(properties[loop].name);
         }
 
         db_ptr->delete_class_property(name, props);
@@ -854,10 +854,10 @@ void DbServerData::TangoClass::remove_properties(Database *db_ptr)
             if(attributes[loop].empty() == false)
             {
                 DbData db_data;
-                db_data.push_back(DbDatum(attributes[loop].name));
+                db_data.emplace_back(attributes[loop].name);
                 for(size_t ctr = 0; ctr < attributes[loop].size(); ctr++)
                 {
-                    db_data.push_back(DbDatum(attributes[loop][ctr].name));
+                    db_data.emplace_back(attributes[loop][ctr].name);
                 }
                 db_ptr->delete_class_attribute_property(name, db_data);
             }
@@ -875,10 +875,10 @@ void DbServerData::TangoClass::remove_properties(Database *db_ptr)
             if(pipes[loop].empty() == false)
             {
                 DbData db_data;
-                db_data.push_back(DbDatum(pipes[loop].name));
+                db_data.emplace_back(pipes[loop].name);
                 for(size_t ctr = 0; ctr < pipes[loop].size(); ctr++)
                 {
-                    db_data.push_back(DbDatum(pipes[loop][ctr].name));
+                    db_data.emplace_back(pipes[loop][ctr].name);
                 }
                 db_ptr->delete_class_pipe_property(name, db_data);
             }

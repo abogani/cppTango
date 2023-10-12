@@ -35,7 +35,7 @@
 #include <tango/client/event_templ.h>
 #include <tango/server/tango_clock.h>
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef _TG_WINDOWS_
   #include <process.h>
@@ -48,7 +48,7 @@ using namespace CORBA;
 namespace Tango
 {
 
-EventConsumerKeepAliveThread *EventConsumer::keep_alive_thread = NULL;
+EventConsumerKeepAliveThread *EventConsumer::keep_alive_thread = nullptr;
 std::map<std::string, std::string> EventConsumer::device_channel_map;
 std::map<std::string, EventChannelStruct> EventConsumer::channel_map;
 std::map<std::string, EventCallBackStruct> EventConsumer::event_callback_map;
@@ -101,7 +101,7 @@ void leavefunc()
 
     NotifdEventConsumer *notifd_ec = au->get_notifd_event_consumer();
 
-    if(notifd_ec != NULL && already_executed == false)
+    if(notifd_ec != nullptr && already_executed == false)
     {
         notifd_ec->shutdown();
 
@@ -116,7 +116,7 @@ void leavefunc()
 
     ZmqEventConsumer *zmq_ec = au->get_zmq_event_consumer();
 
-    if(zmq_ec != NULL && already_executed == false)
+    if(zmq_ec != nullptr && already_executed == false)
     {
         zmq_ec->shutdown();
     }
@@ -127,7 +127,7 @@ void leavefunc()
 
     if(already_executed == false)
     {
-        if(notifd_ec == NULL)
+        if(notifd_ec == nullptr)
         {
             CORBA::ORB_var orb = au->get_orb();
             orb->shutdown(true);
@@ -189,7 +189,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
         }
         catch(Tango::DevFailed &)
         {
-            env_var_fqdn_prefix.push_back(TangoHostNotSet);
+            env_var_fqdn_prefix.emplace_back(TangoHostNotSet);
         }
     }
 
@@ -197,7 +197,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
     // initialise the unique event id for the client;
     //
 
-    if(keep_alive_thread == NULL)
+    if(keep_alive_thread == nullptr)
     {
         subscribe_event_id = 0;
     }
@@ -223,7 +223,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
     //
 
     cmd.cmd_pending = false;
-    if(keep_alive_thread == NULL)
+    if(keep_alive_thread == nullptr)
     {
         api_ptr->need_reset_already_flag(true);
     }
@@ -235,7 +235,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
     // ptr is also used as a "init done" flag.
     //
 
-    if(keep_alive_thread == NULL)
+    if(keep_alive_thread == nullptr)
     {
         keep_alive_thread = new EventConsumerKeepAliveThread(cmd);
         keep_alive_thread->start();
@@ -368,7 +368,7 @@ void EventConsumer::shutdown_keep_alive_thread()
     // Shut-down the KeepAliveThread and wait for it to exit
     //
 
-    if(keep_alive_thread != NULL)
+    if(keep_alive_thread != nullptr)
     {
         {
             omni_mutex_lock sync(cmd);
@@ -382,7 +382,7 @@ void EventConsumer::shutdown_keep_alive_thread()
         int *rv;
         keep_alive_thread->join((void **) &rv);
 
-        keep_alive_thread = NULL;
+        keep_alive_thread = nullptr;
     }
 }
 
@@ -408,14 +408,14 @@ void EventConsumer::connect(
     DeviceProxy *device_proxy, const std::string &d_name, DeviceData &dd, const std::string &adm_name, bool &necm)
 {
     // We always assume that the channel name is a fully qualified admin device name.
-    std::string channel_name = adm_name;
+    const std::string &channel_name = adm_name;
 
     //
     // If no connection exists to this channel then connect to it. Sometimes, this method is called in order to
     // reconnect to the notifd. In such a case, the lock is already locked before the method is called
     //
 
-    std::map<std::string, EventChannelStruct>::iterator ipos = channel_map.find(channel_name);
+    auto ipos = channel_map.find(channel_name);
     if(ipos == channel_map.end())
     {
         connect_event_channel(channel_name, device_proxy->get_device_db(), false, dd);
@@ -1169,18 +1169,18 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                    const std::vector<std::string> &filters,
                                    bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer.");
     }
-    else if(!callback)
+    else if(callback == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "CallBack* must be a valid and non-null pointer.");
     }
 
-    return (subscribe_event(device, attribute, event, callback, NULL, filters, stateless));
+    return (subscribe_event(device, attribute, event, callback, nullptr, filters, stateless));
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1209,7 +1209,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                    const std::vector<std::string> &filters,
                                    bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer");
@@ -1223,7 +1223,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
 
     EventQueue *ev_queue = new EventQueue(event_queue_size);
 
-    return (subscribe_event(device, attribute, event, NULL, ev_queue, filters, stateless));
+    return (subscribe_event(device, attribute, event, nullptr, ev_queue, filters, stateless));
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -1287,7 +1287,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
             subscribe_event_id++;
             int ret_event_id = subscribe_event_id;
 
-            DelayedEventSubThread *th =
+            auto *th =
                 new DelayedEventSubThread(this, device, attribute, event, callback, ev_queue, event_name, ret_event_id);
             th->start();
 
@@ -1331,7 +1331,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         conn_params.callback = callback;
         conn_params.ev_queue = ev_queue;
         conn_params.filters = filters;
-        conn_params.last_heartbeat = time(NULL);
+        conn_params.last_heartbeat = time(nullptr);
         if(env_var_fqdn_prefix.empty() == false)
         {
             conn_params.prefix = env_var_fqdn_prefix[0];
@@ -1344,8 +1344,8 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
 
         event_not_connected.push_back(conn_params);
 
-        std::vector<EventNotConnected>::iterator vpos = event_not_connected.end() - 1;
-        time_t now = time(NULL);
+        auto vpos = event_not_connected.end() - 1;
+        time_t now = time(nullptr);
         keep_alive_thread->stateless_subscription_failed(vpos, e, now);
         return subscribe_event_id;
     }
@@ -1371,7 +1371,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
 
 int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, CallBack *callback, bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer.");
@@ -1380,7 +1380,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, CallBac
     {
         TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_InvalidArgs, "Only INTERFACE_CHANGE_EVENT is supported.");
     }
-    else if(stateless && !callback)
+    else if(stateless && (callback == nullptr))
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "Callback* is a null pointer and stateless mode is used.");
@@ -1388,12 +1388,12 @@ int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, CallBac
 
     std::vector<std::string> filters;
 
-    return (subscribe_event(device, "dummy", event, callback, NULL, filters, stateless));
+    return (subscribe_event(device, "dummy", event, callback, nullptr, filters, stateless));
 }
 
 int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, int event_queue_size, bool stateless)
 {
-    if(!device)
+    if(device == nullptr)
     {
         TANGO_THROW_API_EXCEPTION(
             EventSystemExcept, API_InvalidArgs, "DeviceProxy* must be a valid and non-null pointer.");
@@ -1412,7 +1412,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, int eve
     // create an event queue object
 
     EventQueue *ev_queue = new EventQueue(event_queue_size);
-    return (subscribe_event(device, "dummy", event, NULL, ev_queue, filters, stateless));
+    return (subscribe_event(device, "dummy", event, nullptr, ev_queue, filters, stateless));
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -1547,14 +1547,14 @@ int EventConsumer::connect_event(DeviceProxy *device,
     std::vector<std::string> subscriber_info;
     subscriber_info.push_back(local_device_name);
     subscriber_info.push_back(obj_name_lower);
-    subscriber_info.push_back("subscribe");
+    subscriber_info.emplace_back("subscribe");
     subscriber_info.push_back(event_name);
 
-    DeviceProxy *adm_dev = NULL;
+    DeviceProxy *adm_dev = nullptr;
     bool allocated = false;
 
-    std::map<std::string, std::string>::iterator ipos = device_channel_map.find(device_name);
-    EvChanIte evt_it = channel_map.end();
+    auto ipos = device_channel_map.find(device_name);
+    auto evt_it = channel_map.end();
 
     std::string adm_name;
 
@@ -1690,7 +1690,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // list If it's a ATTR_CONF_EVENT, don't forget to look for the two different event kinds
     //
 
-    EvCbIte iter = event_callback_map.find(received_from_admin.event_name);
+    auto iter = event_callback_map.find(received_from_admin.event_name);
 
     if(iter == event_callback_map.end() && add_compat_info == true)
     {
@@ -1761,7 +1761,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         if(evt_it == channel_map.end())
         {
             evt_it = channel_map.find(ipos->second);
-            evt_it->second.last_subscribed = time(NULL);
+            evt_it->second.last_subscribed = time(nullptr);
             valid_endpoint_nb = evt_it->second.valid_endpoint;
 
             if(new_entry_in_channel_map == true)
@@ -1897,7 +1897,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     pos = local_callback_key.find(':', 6);
     std::string tg_host = local_callback_key.substr(8, pos - 8);
-    std::map<std::string, std::string>::iterator ite = alias_map.find(tg_host);
+    auto ite = alias_map.find(tg_host);
     if(ite != alias_map.end())
     {
         new_event_callback.alias_used = true;
@@ -2006,8 +2006,7 @@ void EventConsumer::unsubscribe_event(int event_id)
                             //                           is in its callback !!!!!!!!!!" << endl;
                             esspos->id = -event_id;
 
-                            DelayedEventUnsubThread *th =
-                                new DelayedEventUnsubThread(this, event_id, epos->second.callback_monitor);
+                            auto *th = new DelayedEventUnsubThread(this, event_id, epos->second.callback_monitor);
                             th->start();
 
                             return;
@@ -2055,7 +2054,7 @@ void EventConsumer::unsubscribe_event(int event_id)
 
                 if(evt_cb.callback_list.empty() == true)
                 {
-                    EvChanIte evt_it = channel_map.find(evt_cb.channel_name);
+                    auto evt_it = channel_map.find(evt_cb.channel_name);
                     EventChannelStruct &evt_ch = evt_it->second;
                     if(evt_ch.channel_type == NOTIFD)
                     {
@@ -2115,7 +2114,7 @@ void EventConsumer::unsubscribe_event(int event_id)
                             {
                                 EventChannelStruct &evt_ch = chan_pos->second;
 
-                                if(evt_ch.adm_device_proxy != NULL)
+                                if(evt_ch.adm_device_proxy != nullptr)
                                 {
                                     if(evt_ch.channel_type == NOTIFD)
                                     {
@@ -2271,7 +2270,7 @@ void DelayedEventSubThread::run(TANGO_UNUSED(void *ptr))
         conn_params.callback = callback;
         conn_params.ev_queue = ev_queue;
         conn_params.filters = v_s;
-        conn_params.last_heartbeat = time(NULL);
+        conn_params.last_heartbeat = time(nullptr);
         conn_params.event_id = ev_id;
 
         ev_cons->add_not_connected_event(e, conn_params);
@@ -2304,8 +2303,8 @@ void EventConsumer::add_not_connected_event(DevFailed &e, EventNotConnected &not
 
     event_not_connected.push_back(not_con);
 
-    std::vector<EventNotConnected>::iterator vpos = event_not_connected.end() - 1;
-    time_t now = time(NULL);
+    auto vpos = event_not_connected.end() - 1;
+    time_t now = time(nullptr);
     keep_alive_thread->stateless_subscription_failed(vpos, e, now);
 }
 
@@ -2349,7 +2348,7 @@ void EventConsumer::get_events(int event_id, EventDataList &event_list)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the events from the queue
                     esspos->ev_queue->get_events(event_list);
@@ -2378,7 +2377,7 @@ void EventConsumer::get_events(int event_id, EventDataList &event_list)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the events from the queue
                     vpos->ev_queue->get_events(event_list);
@@ -2442,7 +2441,7 @@ void EventConsumer::get_events(int event_id, AttrConfEventDataList &event_list)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the events from the queue
                     esspos->ev_queue->get_events(event_list);
@@ -2471,7 +2470,7 @@ void EventConsumer::get_events(int event_id, AttrConfEventDataList &event_list)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the events from the queue
                     vpos->ev_queue->get_events(event_list);
@@ -2535,7 +2534,7 @@ void EventConsumer::get_events(int event_id, DataReadyEventDataList &event_list)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the events from the queue
                     esspos->ev_queue->get_events(event_list);
@@ -2564,7 +2563,7 @@ void EventConsumer::get_events(int event_id, DataReadyEventDataList &event_list)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the events from the queue
                     vpos->ev_queue->get_events(event_list);
@@ -2628,7 +2627,7 @@ void EventConsumer::get_events(int event_id, DevIntrChangeEventDataList &event_l
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the events from the queue
                     esspos->ev_queue->get_events(event_list);
@@ -2657,7 +2656,7 @@ void EventConsumer::get_events(int event_id, DevIntrChangeEventDataList &event_l
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the events from the queue
                     vpos->ev_queue->get_events(event_list);
@@ -2721,7 +2720,7 @@ void EventConsumer::get_events(int event_id, PipeEventDataList &event_list)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the events from the queue
                     esspos->ev_queue->get_events(event_list);
@@ -2750,7 +2749,7 @@ void EventConsumer::get_events(int event_id, PipeEventDataList &event_list)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the events from the queue
                     vpos->ev_queue->get_events(event_list);
@@ -2814,7 +2813,7 @@ void EventConsumer::get_events(int event_id, CallBack *cb)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the events from the queue
                     esspos->ev_queue->get_events(cb);
@@ -2843,7 +2842,7 @@ void EventConsumer::get_events(int event_id, CallBack *cb)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the events from the queue
                     vpos->ev_queue->get_events(cb);
@@ -2903,7 +2902,7 @@ int EventConsumer::event_queue_size(int event_id)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the event queue size
                     return (esspos->ev_queue->size());
@@ -2931,7 +2930,7 @@ int EventConsumer::event_queue_size(int event_id)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the event queue size
                     return (vpos->ev_queue->size());
@@ -2995,7 +2994,7 @@ bool EventConsumer::is_event_queue_empty(int event_id)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // check whether the event queue is empty
                     return (esspos->ev_queue->is_empty());
@@ -3023,7 +3022,7 @@ bool EventConsumer::is_event_queue_empty(int event_id)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // check whether the event queue is empty
                     return (vpos->ev_queue->is_empty());
@@ -3087,7 +3086,7 @@ TimeVal EventConsumer::get_last_event_date(int event_id)
             if(esspos->id == event_id)
             {
                 // check wether an event queue is used!
-                if(esspos->callback == NULL)
+                if(esspos->callback == nullptr)
                 {
                     // get the last insertion date
                     return (esspos->ev_queue->get_last_event_date());
@@ -3115,7 +3114,7 @@ TimeVal EventConsumer::get_last_event_date(int event_id)
             if(vpos->event_id == event_id)
             {
                 // check wether an event queue is used!
-                if(vpos->callback == NULL)
+                if(vpos->callback == nullptr)
                 {
                     // get the last insertion date
                     return (vpos->ev_queue->get_last_event_date());
@@ -3301,7 +3300,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         // If a callback method was specified, call it!
         //
 
-        if(callback != NULL)
+        if(callback != nullptr)
         {
             try
             {
@@ -3334,7 +3333,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         DevErrorList err;
         err.length(0);
         std::string local_domain_name = cb.get_client_attribute_name();
-        AttributeInfoEx *aie = NULL;
+        AttributeInfoEx *aie = nullptr;
 
         std::string local_event_name = event_name;
         std::string::size_type pos = local_event_name.find(EVENT_COMPAT);
@@ -3353,15 +3352,14 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             err = e.errors;
         }
 
-        FwdAttrConfEventData *event_data =
-            new FwdAttrConfEventData(device, local_domain_name, local_event_name, aie, err);
+        auto *event_data = new FwdAttrConfEventData(device, local_domain_name, local_event_name, aie, err);
         AutoTangoMonitor _mon(cb.callback_monitor);
 
         //
         // If a callback method was specified, call it!
         //
 
-        if(callback != NULL)
+        if(callback != nullptr)
         {
             try
             {
@@ -3407,8 +3405,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             err = e.errors;
         }
 
-        DevIntrChangeEventData *event_data =
-            new DevIntrChangeEventData(device, ev_name, device_name, c_list, a_list, true, err);
+        auto *event_data = new DevIntrChangeEventData(device, ev_name, device_name, c_list, a_list, true, err);
 
         AutoTangoMonitor _mon(cb.callback_monitor);
 
@@ -3416,7 +3413,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         // if a callback method was specified, call it!
         //
 
-        if(callback != NULL)
+        if(callback != nullptr)
         {
             try
             {
@@ -3482,7 +3479,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         // If a callback method was specified, call it!
         //
 
-        if(callback != NULL)
+        if(callback != nullptr)
         {
             try
             {
@@ -3549,7 +3546,7 @@ ChannelType EventConsumer::get_event_system_for_event_id(int event_id)
             if(esspos->id == event_id)
             {
                 found = true;
-                EvChanIte evt_it = channel_map.find(ecs.channel_name);
+                auto evt_it = channel_map.find(ecs.channel_name);
                 if(evt_it == channel_map.end())
                 {
                     TangoSys_OMemStream o;
@@ -3647,13 +3644,13 @@ EventData::EventData(const EventData &sou)
     device = sou.device;
     attr_name = sou.attr_name;
     event = sou.event;
-    if(sou.attr_value)
+    if(sou.attr_value != nullptr)
     {
         attr_value = new DeviceAttribute(*(sou.attr_value));
     }
     else
     {
-        attr_value = NULL;
+        attr_value = nullptr;
     }
     err = sou.err;
     errors = sou.errors;
@@ -3676,13 +3673,13 @@ EventData &EventData::operator=(const EventData &ri)
     device = ri.device;
     attr_name = ri.attr_name;
     event = ri.event;
-    if(ri.attr_value)
+    if(ri.attr_value != nullptr)
     {
         attr_value = new DeviceAttribute(*(ri.attr_value));
     }
     else
     {
-        attr_value = NULL;
+        attr_value = nullptr;
     }
     err = ri.err;
     errors = ri.errors;
@@ -3741,7 +3738,7 @@ void EventData::set_time()
 }
 
 FwdEventData::FwdEventData() :
-    EventData(),
+
     av_5(nullptr),
     event_data(nullptr)
 {
@@ -3817,14 +3814,14 @@ AttrConfEventData::AttrConfEventData(const AttrConfEventData &sou)
     device = sou.device;
     attr_name = sou.attr_name;
     event = sou.event;
-    if(sou.attr_conf != NULL)
+    if(sou.attr_conf != nullptr)
     {
         attr_conf = new(AttributeInfoEx);
         *attr_conf = *(sou.attr_conf);
     }
     else
     {
-        attr_conf = NULL;
+        attr_conf = nullptr;
     }
     err = sou.err;
     errors = sou.errors;
@@ -3847,14 +3844,14 @@ AttrConfEventData &AttrConfEventData::operator=(const AttrConfEventData &ri)
     device = ri.device;
     attr_name = ri.attr_name;
     event = ri.event;
-    if(ri.attr_conf != NULL)
+    if(ri.attr_conf != nullptr)
     {
         attr_conf = new(AttributeInfoEx);
         *attr_conf = *(ri.attr_conf);
     }
     else
     {
-        attr_conf = NULL;
+        attr_conf = nullptr;
     }
     err = ri.err;
     errors = ri.errors;
@@ -3888,7 +3885,7 @@ void AttrConfEventData::set_time()
 }
 
 FwdAttrConfEventData::FwdAttrConfEventData() :
-    AttrConfEventData(),
+
     fwd_attr_conf(nullptr)
 {
 }
@@ -3924,7 +3921,7 @@ DataReadyEventData::DataReadyEventData(DeviceProxy *dev,
     errors(errors_in)
 {
     device = dev;
-    if(dr != NULL)
+    if(dr != nullptr)
     {
         attr_name = dr->name.in();
         attr_data_type = dr->data_type;
@@ -4235,13 +4232,13 @@ PipeEventData::PipeEventData(const PipeEventData &sou)
     device = sou.device;
     pipe_name = sou.pipe_name;
     event = sou.event;
-    if(sou.pipe_value)
+    if(sou.pipe_value != nullptr)
     {
         pipe_value = new DevicePipe(*(sou.pipe_value));
     }
     else
     {
-        pipe_value = NULL;
+        pipe_value = nullptr;
     }
     err = sou.err;
     errors = sou.errors;
@@ -4264,13 +4261,13 @@ PipeEventData &PipeEventData::operator=(const PipeEventData &ri)
     device = ri.device;
     pipe_name = ri.pipe_name;
     event = ri.event;
-    if(ri.pipe_value)
+    if(ri.pipe_value != nullptr)
     {
         pipe_value = new DevicePipe(*(ri.pipe_value));
     }
     else
     {
-        pipe_value = NULL;
+        pipe_value = nullptr;
     }
     err = ri.err;
     errors = ri.errors;

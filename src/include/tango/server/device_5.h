@@ -153,7 +153,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
     /**
      * The device desctructor.
      */
-    virtual ~Device_5Impl() { }
+    ~Device_5Impl() override { }
 
     //@}
 
@@ -183,9 +183,9 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeValueList_5 *read_attributes_5(const Tango::DevVarStringArray &names,
-                                                           Tango::DevSource source,
-                                                           const Tango::ClntIdent &cl_ident);
+    Tango::AttributeValueList_5 *read_attributes_5(const Tango::DevVarStringArray &names,
+                                                   Tango::DevSource source,
+                                                   const Tango::ClntIdent &cl_ident) override;
     /**
      * Write then read attribute(s) value.
      *
@@ -211,9 +211,9 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * to read <b>DevFailed</b> exception specification
      */
 
-    virtual Tango::AttributeValueList_5 *write_read_attributes_5(const Tango::AttributeValueList_4 &values,
-                                                                 const Tango::DevVarStringArray &r_names,
-                                                                 const Tango::ClntIdent &cl_ident);
+    Tango::AttributeValueList_5 *write_read_attributes_5(const Tango::AttributeValueList_4 &values,
+                                                         const Tango::DevVarStringArray &r_names,
+                                                         const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Get attribute(s) configuration.
@@ -235,7 +235,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::AttributeConfigList_5 *get_attribute_config_5(const Tango::DevVarStringArray &names);
+    Tango::AttributeConfigList_5 *get_attribute_config_5(const Tango::DevVarStringArray &names) override;
 
     /**
      * Set attribute(s) configuration.
@@ -254,7 +254,8 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void set_attribute_config_5(const Tango::AttributeConfigList_5 &new_conf, const Tango::ClntIdent &cl_ident);
+    void set_attribute_config_5(const Tango::AttributeConfigList_5 &new_conf,
+                                const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Read attribute value history.
@@ -277,7 +278,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevAttrHistory_5 *read_attribute_history_5(const char *name, CORBA::Long n);
+    Tango::DevAttrHistory_5 *read_attribute_history_5(const char *name, CORBA::Long n) override;
 
     /**
      * Get pipe(s) configuration.
@@ -297,7 +298,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::PipeConfigList *get_pipe_config_5(const Tango::DevVarStringArray &names);
+    Tango::PipeConfigList *get_pipe_config_5(const Tango::DevVarStringArray &names) override;
 
     /**
      * Set pipe(s) configuration.
@@ -316,7 +317,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void set_pipe_config_5(const Tango::PipeConfigList &new_conf, const Tango::ClntIdent &cl_ident);
+    void set_pipe_config_5(const Tango::PipeConfigList &new_conf, const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Read pipe value.
@@ -334,7 +335,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevPipeData *read_pipe_5(const char *name, const Tango::ClntIdent &cl_ident);
+    Tango::DevPipeData *read_pipe_5(const char *name, const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Write pipe value.
@@ -349,7 +350,7 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual void write_pipe_5(const Tango::DevPipeData &pipe_value, const Tango::ClntIdent &cl_ident);
+    void write_pipe_5(const Tango::DevPipeData &pipe_value, const Tango::ClntIdent &cl_ident) override;
 
     /**
      * Write then read pipe value.
@@ -368,8 +369,8 @@ class Device_5Impl : public virtual POA_Tango::Device_5, public Device_4Impl
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    virtual Tango::DevPipeData *write_read_pipe_5(const Tango::DevPipeData &pipe_value,
-                                                  const Tango::ClntIdent &cl_ident);
+    Tango::DevPipeData *write_read_pipe_5(const Tango::DevPipeData &pipe_value,
+                                          const Tango::ClntIdent &cl_ident) override;
     //@}
 
     /// @privatesection

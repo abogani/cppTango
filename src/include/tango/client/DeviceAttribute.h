@@ -1081,7 +1081,7 @@ class DeviceAttribute
     bool has_failed() const
     {
         const DevErrorList *errors = err_list.operator->();
-        if(errors)
+        if(errors != nullptr)
         {
             return 0 != errors->length();
         }

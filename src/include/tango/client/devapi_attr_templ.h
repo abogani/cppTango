@@ -210,7 +210,7 @@ bool DeviceAttribute::operator>>(T &datum)
             return false;
         }
 
-        if(ShortSeq.operator->() != NULL)
+        if(ShortSeq.operator->() != nullptr)
         {
             if(ShortSeq->length() != 0)
             {
@@ -253,7 +253,7 @@ bool DeviceAttribute::operator>>(std::vector<T> &datum)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -298,7 +298,7 @@ bool DeviceAttribute::extract_read(std::vector<T> &_data)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -344,7 +344,7 @@ bool DeviceAttribute::extract_set(std::vector<T> &_data)
         return false;
     }
 
-    if(ShortSeq.operator->() != NULL)
+    if(ShortSeq.operator->() != nullptr)
     {
         if(ShortSeq->length() != 0)
         {
@@ -421,7 +421,7 @@ void DeviceAttribute::operator<<(const std::vector<T> &_datum)
     data_format = Tango::FMT_UNKNOWN;
     data_type = DEV_ENUM;
 
-    if(ShortSeq.operator->() == NULL)
+    if(ShortSeq.operator->() == nullptr)
     {
         DevVarShortArray *short_vararr = new(DevVarShortArray);
         ShortSeq = short_vararr;

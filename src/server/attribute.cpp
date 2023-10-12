@@ -75,29 +75,29 @@ void LastAttrValue::store(const AttributeValue_5 *attr_5,
                           const AttributeValue *attr,
                           DevFailed *error)
 {
-    if(error)
+    if(error != nullptr)
     {
         except = *error;
         err = true;
     }
     else
     {
-        if(attr_5)
+        if(attr_5 != nullptr)
         {
             quality = attr_5->quality;
             value_4 = attr_5->value;
         }
-        else if(attr_4)
+        else if(attr_4 != nullptr)
         {
             quality = attr_4->quality;
             value_4 = attr_4->value;
         }
-        else if(attr_3)
+        else if(attr_3 != nullptr)
         {
             quality = attr_3->quality;
             value = attr_3->value;
         }
-        else if(attr)
+        else if(attr != nullptr)
         {
             quality = attr->quality;
             value = attr->value;
@@ -126,33 +126,8 @@ void LastAttrValue::store(const AttributeValue_5 *attr_5,
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const std::string &dev_name, long idx) :
-    date(true),
-    quality(Tango::ATTR_VALID),
-    check_min_value(false),
-    check_max_value(false),
-    enum_nb(0),
-    loc_enum_ptr(nullptr),
-    poll_period(0),
-    event_period(0),
-    archive_period(0),
-    periodic_counter(0),
-    archive_periodic_counter(0),
-    last_periodic(),
-    archive_last_periodic(),
-    archive_last_event(),
-    dev(NULL),
-    change_event_implmented(false),
-    archive_event_implmented(false),
-    check_change_event_criteria(true),
-    check_archive_event_criteria(true),
-    dr_event_implmented(false),
-    scalar_str_attr_release(false),
-    notifd_event(false),
-    zmq_event(false),
-    check_startup_exceptions(false),
-    startup_exceptions_clear(true),
-    att_mem_exception(false)
+Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const std::string &dev_name, long idx)
+
 {
     //
     // Create the extension class
@@ -1488,7 +1463,7 @@ void Attribute::delete_startup_exception(std::string prop_name, std::string dev_
 {
     if(check_startup_exceptions == true)
     {
-        std::map<std::string, DevFailed>::iterator it = startup_exceptions.find(prop_name);
+        auto it = startup_exceptions.find(prop_name);
         if(it != startup_exceptions.end())
         {
             startup_exceptions.erase(it);
@@ -1632,7 +1607,7 @@ void Attribute::throw_min_max_value(const std::string &dev_name,
 bool Attribute::is_polled()
 {
     Tango::Util *tg = Util::instance();
-    if(dev == NULL)
+    if(dev == nullptr)
     {
         dev = tg->get_device_by_name(d_name);
     }
@@ -1695,7 +1670,7 @@ bool Attribute::is_polled()
 
 bool Attribute::is_polled(DeviceImpl *the_dev)
 {
-    if((the_dev != NULL) && (dev == NULL))
+    if((the_dev != nullptr) && (dev == nullptr))
     {
         dev = the_dev;
     }
@@ -4091,7 +4066,7 @@ void Attribute::fire_change_event(DevFailed *except)
 {
     TANGO_LOG_DEBUG << "Attribute::fire_change_event() entering ..." << std::endl;
 
-    if(except != NULL)
+    if(except != nullptr)
     {
         set_value_flag(false);
     }
@@ -4109,7 +4084,7 @@ void Attribute::fire_change_event(DevFailed *except)
         time_t now;
         time_t change3_subscription, change4_subscription, change5_subscription;
 
-        now = time(NULL);
+        now = time(nullptr);
 
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
@@ -4122,8 +4097,8 @@ void Attribute::fire_change_event(DevFailed *except)
         // Get the event supplier(s)
         //
 
-        EventSupplier *event_supplier_nd = NULL;
-        EventSupplier *event_supplier_zmq = NULL;
+        EventSupplier *event_supplier_nd = nullptr;
+        EventSupplier *event_supplier_zmq = nullptr;
         bool pub_socket_created = false;
 
         Tango::Util *tg = Util::instance();
@@ -4145,7 +4120,7 @@ void Attribute::fire_change_event(DevFailed *except)
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(CHANGE_EVENT); // We want a copy
-            if(use_zmq_event() == true && event_supplier_zmq != NULL)
+            if(use_zmq_event() == true && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
                 if(sock_endpoint.empty() == false)
@@ -4211,7 +4186,7 @@ void Attribute::fire_change_event(DevFailed *except)
         // Simply return if event supplier(s) are not created
         //
 
-        if((event_supplier_nd == NULL) && (event_supplier_zmq == NULL))
+        if((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr))
         {
             if(name_lower != "state")
             {
@@ -4239,12 +4214,12 @@ void Attribute::fire_change_event(DevFailed *except)
         // Retrieve device object if not already done
         //
 
-        if(dev == NULL)
+        if(dev == nullptr)
         {
             dev = tg->get_device_by_name(d_name);
         }
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             //
             // Check that the attribute value has been set
@@ -4298,13 +4273,13 @@ void Attribute::fire_change_event(DevFailed *except)
         // Don`t try to access the attribute data when an exception was indicated
         //
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             if(send_attr_5 != nullptr)
             {
                 Attribute_2_AttributeValue(send_attr_5, dev);
             }
-            else if(send_attr_4 != NULL)
+            else if(send_attr_4 != nullptr)
             {
                 Attribute_2_AttributeValue(send_attr_4, dev);
             }
@@ -4348,13 +4323,13 @@ void Attribute::fire_change_event(DevFailed *except)
             //
 
             bool send_event = false;
-            if(event_supplier_nd != NULL)
+            if(event_supplier_nd != nullptr)
             {
                 send_event = event_supplier_nd->detect_and_push_change_event(dev, ad, *this, name, except, true);
             }
-            if(event_supplier_zmq != NULL)
+            if(event_supplier_zmq != nullptr)
             {
-                if(event_supplier_nd != NULL)
+                if(event_supplier_nd != nullptr)
                 {
                     if(send_event == true && pub_socket_created == true)
                     {
@@ -4395,7 +4370,7 @@ void Attribute::fire_change_event(DevFailed *except)
 
                 const AttrQuality old_quality = prev_change_event.quality;
 
-                if(except || quality == Tango::ATTR_INVALID || prev_change_event.err ||
+                if((except != nullptr) || quality == Tango::ATTR_INVALID || prev_change_event.err ||
                    old_quality == Tango::ATTR_INVALID)
                 {
                     force_change = true;
@@ -4411,7 +4386,7 @@ void Attribute::fire_change_event(DevFailed *except)
             std::vector<std::string> filterable_names_lg;
             std::vector<long> filterable_data_lg;
 
-            filterable_names.push_back("forced_event");
+            filterable_names.emplace_back("forced_event");
             if(force_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4421,7 +4396,7 @@ void Attribute::fire_change_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("quality");
+            filterable_names.emplace_back("quality");
             if(quality_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4448,7 +4423,7 @@ void Attribute::fire_change_event(DevFailed *except)
             // Finally push the event(s)
             //
 
-            if(event_supplier_nd != NULL)
+            if(event_supplier_nd != nullptr)
             {
                 event_supplier_nd->push_event(dev,
                                               "change",
@@ -4462,7 +4437,7 @@ void Attribute::fire_change_event(DevFailed *except)
                                               false);
             }
 
-            if(event_supplier_zmq != NULL && pub_socket_created == true)
+            if(event_supplier_zmq != nullptr && pub_socket_created == true)
             {
                 event_supplier_zmq->push_event_loop(dev,
                                                     CHANGE_EVENT,
@@ -4516,7 +4491,7 @@ void Attribute::fire_change_event(DevFailed *except)
         {
             delete send_attr_5;
         }
-        else if(send_attr_4 != NULL)
+        else if(send_attr_4 != nullptr)
         {
             delete send_attr_4;
         }
@@ -4562,7 +4537,7 @@ void Attribute::fire_archive_event(DevFailed *except)
 {
     TANGO_LOG_DEBUG << "Attribute::fire_archive_event() entering ..." << std::endl;
 
-    if(except != NULL)
+    if(except != nullptr)
     {
         set_value_flag(false);
     }
@@ -4580,7 +4555,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         time_t now;
         time_t archive3_subscription, archive4_subscription, archive5_subscription;
 
-        now = time(NULL);
+        now = time(nullptr);
 
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
@@ -4593,8 +4568,8 @@ void Attribute::fire_archive_event(DevFailed *except)
         // Get the event supplier(s)
         //
 
-        EventSupplier *event_supplier_nd = NULL;
-        EventSupplier *event_supplier_zmq = NULL;
+        EventSupplier *event_supplier_nd = nullptr;
+        EventSupplier *event_supplier_zmq = nullptr;
         bool pub_socket_created = false;
 
         Tango::Util *tg = Util::instance();
@@ -4616,7 +4591,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(ARCHIVE_EVENT); // We want a copy
-            if(use_zmq_event() == true && event_supplier_zmq != NULL)
+            if(use_zmq_event() == true && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
                 if(sock_endpoint.empty() == false)
@@ -4688,7 +4663,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         // Simply return if event supplier(s) are not created
         //
 
-        if((event_supplier_nd == NULL) && (event_supplier_zmq == NULL))
+        if((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr))
         {
             if(name_lower != "state")
             {
@@ -4722,12 +4697,12 @@ void Attribute::fire_archive_event(DevFailed *except)
         // Retrieve device object if not already done
         //
 
-        if(dev == NULL)
+        if(dev == nullptr)
         {
             dev = tg->get_device_by_name(d_name);
         }
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             //
             // Check that the attribute value has been set
@@ -4780,7 +4755,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         // Don`t try to access the attribute data when an exception was indicated
         //
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             if(send_attr_5 != nullptr)
             {
@@ -4832,14 +4807,14 @@ void Attribute::fire_archive_event(DevFailed *except)
             //
 
             bool send_event = false;
-            if(event_supplier_nd != NULL)
+            if(event_supplier_nd != nullptr)
             {
                 send_event =
                     event_supplier_nd->detect_and_push_archive_event(dev, ad, *this, name, except, now_timeval, true);
             }
-            if(event_supplier_zmq != NULL)
+            if(event_supplier_zmq != nullptr)
             {
-                if(event_supplier_nd != NULL)
+                if(event_supplier_nd != nullptr)
                 {
                     if(send_event == true && pub_socket_created == true)
                     {
@@ -4875,9 +4850,10 @@ void Attribute::fire_archive_event(DevFailed *except)
                 // Execute detect_change only to calculate the delta_change_rel and
                 // delta_change_abs and force_change !
 
-                if(event_supplier_nd || event_supplier_zmq)
+                if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
                 {
-                    EventSupplier *event_supplier = event_supplier_nd ? event_supplier_nd : event_supplier_zmq;
+                    EventSupplier *event_supplier =
+                        event_supplier_nd != nullptr ? event_supplier_nd : event_supplier_zmq;
                     event_supplier->detect_change(
                         *this, ad, true, delta_change_rel, delta_change_abs, except, force_change, dev);
                 }
@@ -4892,7 +4868,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             std::vector<std::string> filterable_names_lg;
             std::vector<long> filterable_data_lg;
 
-            filterable_names.push_back("forced_event");
+            filterable_names.emplace_back("forced_event");
             if(force_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4902,7 +4878,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("quality");
+            filterable_names.emplace_back("quality");
             if(quality_change == true)
             {
                 filterable_data.push_back((double) 1.0);
@@ -4912,15 +4888,15 @@ void Attribute::fire_archive_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("counter");
+            filterable_names.emplace_back("counter");
             filterable_data_lg.push_back(-1);
 
-            filterable_names.push_back("delta_change_rel");
+            filterable_names.emplace_back("delta_change_rel");
             filterable_data.push_back(delta_change_rel);
-            filterable_names.push_back("delta_change_abs");
+            filterable_names.emplace_back("delta_change_abs");
             filterable_data.push_back(delta_change_abs);
 
-            if(event_supplier_nd != NULL)
+            if(event_supplier_nd != nullptr)
             {
                 event_supplier_nd->push_event(dev,
                                               "archive",
@@ -4934,7 +4910,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                                               false);
             }
 
-            if(event_supplier_zmq != NULL && pub_socket_created == true)
+            if(event_supplier_zmq != nullptr && pub_socket_created == true)
             {
                 event_supplier_zmq->push_event_loop(dev,
                                                     ARCHIVE_EVENT,
@@ -5036,7 +5012,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
 {
     TANGO_LOG_DEBUG << "Attribute::fire_event() entring ..." << std::endl;
 
-    if(except != NULL)
+    if(except != nullptr)
     {
         set_value_flag(false);
     }
@@ -5054,7 +5030,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         time_t now;
         time_t user3_subscription, user4_subscription, user5_subscription;
 
-        now = time(NULL);
+        now = time(nullptr);
 
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
@@ -5067,8 +5043,8 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         // Get the event supplier(s)
         //
 
-        EventSupplier *event_supplier_nd = NULL;
-        EventSupplier *event_supplier_zmq = NULL;
+        EventSupplier *event_supplier_nd = nullptr;
+        EventSupplier *event_supplier_zmq = nullptr;
         bool pub_socket_created = false;
 
         Tango::Util *tg = Util::instance();
@@ -5090,7 +5066,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(USER_EVENT); // We want a copy
-            if(use_zmq_event() == true && event_supplier_zmq != NULL)
+            if(use_zmq_event() == true && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
                 if(sock_endpoint.empty() == false)
@@ -5132,7 +5108,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         // Simply return if event suplier(s) are not created
         //
 
-        if(((event_supplier_nd == NULL) && (event_supplier_zmq == NULL)) || client_libs.empty() == true)
+        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty() == true)
         {
             if(name_lower != "state")
             {
@@ -5166,12 +5142,12 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         // Retrieve device object if not already done
         //
 
-        if(dev == NULL)
+        if(dev == nullptr)
         {
             dev = tg->get_device_by_name(d_name);
         }
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             //
             // Check that the attribute value has been set
@@ -5224,7 +5200,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         // Don`t try to access the attribute data when an exception was indicated
         //
 
-        if(except == NULL)
+        if(except == nullptr)
         {
             if(send_attr_5 != nullptr)
             {
@@ -5251,7 +5227,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         {
             ad.attr_val_5 = send_attr_5;
         }
-        else if(send_attr_4 != NULL)
+        else if(send_attr_4 != nullptr)
         {
             ad.attr_val_4 = send_attr_4;
         }
@@ -5267,7 +5243,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         std::vector<std::string> filterable_names_lg;
         std::vector<long> filterable_data_lg;
 
-        if(event_supplier_nd != NULL)
+        if(event_supplier_nd != nullptr)
         {
             event_supplier_nd->push_event(dev,
                                           "user_event",
@@ -5280,7 +5256,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
                                           except,
                                           false);
         }
-        if(event_supplier_zmq != NULL && pub_socket_created == true)
+        if(event_supplier_zmq != nullptr && pub_socket_created == true)
         {
             event_supplier_zmq->push_event_loop(
                 dev, USER_EVENT, filt_names, filt_vals, filterable_names_lg, filterable_data_lg, ad, *this, except);
@@ -5377,7 +5353,7 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
     time_t now;
     time_t periodic3_subscription, periodic4_subscription, periodic5_subscription;
 
-    now = time(NULL);
+    now = time(nullptr);
 
     {
         omni_mutex_lock oml(EventSupplier::get_event_mutex());
@@ -5420,8 +5396,8 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
     // Get the event supplier, and simply return if not created
     //
 
-    EventSupplier *event_supplier_nd = NULL;
-    EventSupplier *event_supplier_zmq = NULL;
+    EventSupplier *event_supplier_nd = nullptr;
+    EventSupplier *event_supplier_zmq = nullptr;
 
     Tango::Util *tg = Util::instance();
     if(use_notifd_event() == true)
@@ -5433,7 +5409,7 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
         event_supplier_zmq = tg->get_zmq_event_supplier();
     }
 
-    if(((event_supplier_nd == NULL) && (event_supplier_zmq == NULL)) || client_libs.empty() == true)
+    if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty() == true)
     {
         return;
     }
@@ -5442,7 +5418,7 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
     // Retrieve device object if not already done
     //
 
-    if(dev == NULL)
+    if(dev == nullptr)
     {
         dev = tg->get_device_by_name(d_name);
     }
@@ -5462,7 +5438,7 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
     std::vector<long> filterable_data_lg;
     std::vector<double> filt_vals;
 
-    if(event_supplier_nd != NULL)
+    if(event_supplier_nd != nullptr)
     {
         event_supplier_nd->push_event(dev,
                                       "periodic_event",
@@ -5475,7 +5451,7 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
                                       except,
                                       false);
     }
-    if(event_supplier_zmq != NULL)
+    if(event_supplier_zmq != nullptr)
     {
         event_supplier_zmq->push_event_loop(
             dev, PERIODIC_EVENT, filt_names, filt_vals, filterable_names_lg, filterable_data_lg, ad, *this, except);
@@ -5617,8 +5593,8 @@ void Attribute::remove_configuration()
     DbData db_read_data;
     DbData db_delete_data;
 
-    db_read_data.push_back(DbDatum(name));
-    db_delete_data.push_back(DbDatum(name));
+    db_read_data.emplace_back(name);
+    db_delete_data.emplace_back(name);
 
     //
     // Implement a reconnection schema. The first exception received if the db
@@ -5646,7 +5622,7 @@ void Attribute::remove_configuration()
     for(int k = 1; k < (nb_prop + 1); k++)
     {
         std::string &prop_name = db_read_data[k].name;
-        db_delete_data.push_back(DbDatum(prop_name));
+        db_delete_data.emplace_back(prop_name);
     }
 
     //
@@ -5683,7 +5659,7 @@ void Attribute::remove_configuration()
 
 DeviceImpl *Attribute::get_att_device()
 {
-    if(dev == NULL)
+    if(dev == nullptr)
     {
         Tango::Util *tg = Tango::Util::instance();
         dev = tg->get_device_by_name(d_name);
@@ -5740,7 +5716,7 @@ DeviceClass *Attribute::get_att_device_class(const std::string &dev_name)
     //
 
     Tango::Util *tg = Tango::Util::instance();
-    Tango::DeviceClass *dev_class = NULL;
+    Tango::DeviceClass *dev_class = nullptr;
 
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
@@ -5806,7 +5782,7 @@ void Attribute::log_quality()
     // Set device if not already done
     //
 
-    if(dev == NULL)
+    if(dev == nullptr)
     {
         Tango::Util *tg = Tango::Util::instance();
         dev = tg->get_device_by_name(d_name);
@@ -5930,7 +5906,7 @@ void Attribute::avns_in_db(const char *prop_name, const std::string &dev_name)
 void Attribute::avns_in_att(prop_type pt)
 {
     Tango::Util *tg = Tango::Util::instance();
-    Tango::TangoMonitor *mon_ptr = NULL;
+    Tango::TangoMonitor *mon_ptr = nullptr;
     if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
@@ -6156,7 +6132,7 @@ void Attribute::def_format_in_dbdatum(DbDatum &db)
 bool Attribute::change_event_subscribed()
 {
     bool ret = false;
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
 
     if(event_change5_subscription != 0)
     {
@@ -6205,7 +6181,7 @@ bool Attribute::change_event_subscribed()
 bool Attribute::periodic_event_subscribed()
 {
     bool ret = false;
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
 
     if(event_periodic5_subscription != 0)
     {
@@ -6254,7 +6230,7 @@ bool Attribute::periodic_event_subscribed()
 bool Attribute::archive_event_subscribed()
 {
     bool ret = false;
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
 
     if(event_archive5_subscription != 0)
     {
@@ -6306,7 +6282,7 @@ bool Attribute::quality_event_subscribed()
 
     if(event_quality_subscription != 0)
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         if(now - event_quality_subscription > EVENT_RESUBSCRIBE_PERIOD)
         {
             ret = false;
@@ -6323,7 +6299,7 @@ bool Attribute::quality_event_subscribed()
 bool Attribute::user_event_subscribed()
 {
     bool ret = false;
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
 
     if(event_user5_subscription != 0)
     {
@@ -6375,7 +6351,7 @@ bool Attribute::attr_conf_event_subscribed()
 
     if(event_attr_conf5_subscription != 0)
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         if(now - event_attr_conf5_subscription > EVENT_RESUBSCRIBE_PERIOD)
         {
             ret = false;
@@ -6390,7 +6366,7 @@ bool Attribute::attr_conf_event_subscribed()
     {
         if(event_attr_conf_subscription != 0)
         {
-            time_t now = time(NULL);
+            time_t now = time(nullptr);
             if(now - event_attr_conf_subscription > EVENT_RESUBSCRIBE_PERIOD)
             {
                 ret = false;
@@ -6410,7 +6386,7 @@ bool Attribute::data_ready_event_subscribed()
 
     if(event_data_ready_subscription != 0)
     {
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         if(now - event_data_ready_subscription > EVENT_RESUBSCRIBE_PERIOD)
         {
             ret = false;
@@ -6476,7 +6452,7 @@ void Attribute::remove_client_lib(int _l, const std::string &ev_name)
         }
     }
 
-    std::vector<int>::iterator pos = find(client_lib[i].begin(), client_lib[i].end(), _l);
+    auto pos = find(client_lib[i].begin(), client_lib[i].end(), _l);
     if(pos != client_lib[i].end())
     {
         client_lib[i].erase(pos);

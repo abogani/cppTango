@@ -46,7 +46,7 @@ namespace Tango
 
 void Attribute::set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data, long size, bool release)
 {
-    if(p_data_str == NULL || p_data == NULL)
+    if(p_data_str == nullptr || p_data == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Data pointer for attribute " << name << " is NULL!" << std::ends;
@@ -79,14 +79,14 @@ void Attribute::set_value(Tango::EncodedAttribute *attr)
     Tango::DevUChar *d = attr->get_data();
     long size = attr->get_size();
 
-    if(*f == NULL)
+    if(*f == nullptr)
     {
         TangoSys_OMemStream o;
         o << "DevEncoded format for attribute " << name << " not specified" << std::ends;
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    if(size == 0 || !d)
+    if(size == 0 || (d == nullptr))
     {
         TangoSys_OMemStream o;
         o << "DevEncoded data for attribute " << name << " not specified" << std::ends;

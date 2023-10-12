@@ -43,10 +43,7 @@ namespace Tango
 class CbThreadCmd : public omni_mutex
 {
   public:
-    CbThreadCmd() :
-        stop(false)
-    {
-    }
+    CbThreadCmd() { }
 
     void stop_thread()
     {
@@ -66,7 +63,7 @@ class CbThreadCmd : public omni_mutex
         return stop;
     }
 
-    bool stop;
+    bool stop{false};
 };
 
 //=============================================================================
@@ -87,7 +84,7 @@ class CallBackThread : public omni_thread
     {
     }
 
-    void *run_undetached(void *);
+    void *run_undetached(void *) override;
 
     void start()
     {

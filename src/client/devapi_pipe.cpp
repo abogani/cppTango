@@ -29,6 +29,7 @@
 
 #include <tango/tango.h>
 #include <iomanip>
+#include <memory>
 
 using namespace CORBA;
 
@@ -76,10 +77,10 @@ DevicePipe::DevicePipe(const DevicePipe &source) :
     time = source.time;
     the_root_blob = source.the_root_blob;
 
-    if(source.ext.get() != NULL)
+    if(source.ext != nullptr)
     {
-        ext.reset(new DevicePipeExt);
-        *(ext.get()) = *(source.ext.get());
+        ext = std::make_unique<DevicePipeExt>();
+        *(ext) = *(source.ext);
     }
 }
 
@@ -97,10 +98,10 @@ DevicePipe &DevicePipe::operator=(const DevicePipe &rhs)
         time = rhs.time;
         the_root_blob = rhs.the_root_blob;
 
-        if(rhs.ext.get() != NULL)
+        if(rhs.ext != nullptr)
         {
-            ext.reset(new DevicePipeExt);
-            *(ext.get()) = *(rhs.ext.get());
+            ext = std::make_unique<DevicePipeExt>();
+            *(ext) = *(rhs.ext);
         }
     }
     return *this;
@@ -119,7 +120,7 @@ DevicePipe::DevicePipe(DevicePipe &&source) :
     time = source.time;
     the_root_blob = std::move(source.the_root_blob);
 
-    if(source.ext.get() != NULL)
+    if(source.ext != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -137,7 +138,7 @@ DevicePipe &DevicePipe::operator=(DevicePipe &&rhs)
     time = rhs.time;
     the_root_blob = std::move(rhs.the_root_blob);
 
-    if(rhs.ext.get() != NULL)
+    if(rhs.ext != nullptr)
     {
         ext = std::move(rhs.ext);
     }
@@ -253,7 +254,7 @@ DevicePipeBlob::DevicePipeBlob(const DevicePipeBlob &source) :
 
     if(source.extract_elt_array != nullptr)
     {
-        DevVarPipeDataEltArray *tmp = new DevVarPipeDataEltArray();
+        auto *tmp = new DevVarPipeDataEltArray();
         *tmp = (*source.extract_elt_array);
         set_extract_data(tmp);
         extract_delete = true;
@@ -264,10 +265,10 @@ DevicePipeBlob::DevicePipeBlob(const DevicePipeBlob &source) :
     }
     extract_ctr = source.extract_ctr;
 
-    if(source.ext.get() != NULL)
+    if(source.ext != nullptr)
     {
-        ext.reset(new DevicePipeBlobExt);
-        *(ext.get()) = *(source.ext.get());
+        ext = std::make_unique<DevicePipeBlobExt>();
+        *(ext) = *(source.ext);
     }
 }
 
@@ -301,7 +302,7 @@ DevicePipeBlob &DevicePipeBlob::operator=(const DevicePipeBlob &rhs)
 
         if(rhs.extract_elt_array != nullptr)
         {
-            DevVarPipeDataEltArray *tmp = new DevVarPipeDataEltArray();
+            auto *tmp = new DevVarPipeDataEltArray();
             *tmp = (*rhs.extract_elt_array);
             set_extract_data(tmp);
             extract_delete = true;
@@ -312,10 +313,10 @@ DevicePipeBlob &DevicePipeBlob::operator=(const DevicePipeBlob &rhs)
         }
         extract_ctr = rhs.extract_ctr;
 
-        if(rhs.ext.get() != NULL)
+        if(rhs.ext != nullptr)
         {
-            ext.reset(new DevicePipeBlobExt);
-            *(ext.get()) = *(rhs.ext.get());
+            ext = std::make_unique<DevicePipeBlobExt>();
+            *(ext) = *(rhs.ext);
         }
         else
         {
@@ -354,7 +355,7 @@ DevicePipeBlob::DevicePipeBlob(DevicePipeBlob &&source) :
 
     if(source.extract_elt_array != nullptr)
     {
-        DevVarPipeDataEltArray *tmp = new DevVarPipeDataEltArray();
+        auto *tmp = new DevVarPipeDataEltArray();
         *tmp = (*source.extract_elt_array);
         set_extract_data(tmp);
         extract_delete = true;
@@ -365,7 +366,7 @@ DevicePipeBlob::DevicePipeBlob(DevicePipeBlob &&source) :
     }
     extract_ctr = source.extract_ctr;
 
-    if(source.ext.get() != NULL)
+    if(source.ext != nullptr)
     {
         ext = std::move(source.ext);
     }
@@ -406,7 +407,7 @@ DevicePipeBlob &DevicePipeBlob::operator=(DevicePipeBlob &&rhs)
     extract_delete = rhs.extract_delete;
     extract_ctr = rhs.extract_ctr;
 
-    if(rhs.ext.get() != NULL)
+    if(rhs.ext != nullptr)
     {
         ext = std::move(rhs.ext);
     }
@@ -446,7 +447,7 @@ std::vector<std::string> DevicePipeBlob::get_data_elt_names()
 
     for(size_t loop = 0; loop < nb_elt; loop++)
     {
-        v_str.push_back(std::string((*extract_elt_array)[loop].name.in()));
+        v_str.emplace_back((*extract_elt_array)[loop].name.in());
     }
 
     return v_str;
@@ -902,7 +903,7 @@ void DevicePipeBlob::set_data_elt_names(const std::vector<std::string> &elt_name
         sort(same_de.begin(), same_de.end());
         std::vector<std::string> same_de_lower = same_de;
 
-        std::vector<std::string>::iterator pos = unique(same_de.begin(), same_de.end());
+        auto pos = unique(same_de.begin(), same_de.end());
 
         int duplicate_de;
         duplicate_de = distance(elt_names.begin(), elt_names.end()) - distance(same_de.begin(), pos);

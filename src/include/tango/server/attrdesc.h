@@ -818,7 +818,7 @@ class SpectrumAttr : public Attr
     /**
      * The object destructor.
      */
-    ~SpectrumAttr() { }
+    ~SpectrumAttr() override { }
 
     //@}
 
@@ -932,7 +932,7 @@ class ImageAttr : public SpectrumAttr
     /**
      * The object destructor.
      */
-    ~ImageAttr() { }
+    ~ImageAttr() override { }
 
     //@}
 

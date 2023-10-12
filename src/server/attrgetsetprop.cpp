@@ -2028,7 +2028,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
 
         try
         {
-            if(dev == NULL)
+            if(dev == nullptr)
             {
                 // TODO: check how to make cerr quiet
                 std::cerr.setstate(std::ios::failbit);
@@ -3907,8 +3907,8 @@ void Attribute::upd_database(std::vector<AttPropDb> &v_db)
     Tango::DbData db_d;
     Tango::DbData db_del;
 
-    db_d.push_back(DbDatum(name));
-    db_del.push_back(DbDatum(name));
+    db_d.emplace_back(name);
+    db_del.emplace_back(name);
 
     std::vector<AttPropDb>::iterator ite;
 
