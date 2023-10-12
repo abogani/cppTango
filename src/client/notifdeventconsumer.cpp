@@ -316,7 +316,7 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     exp.length(1);
     exp[0].event_types = evs;
     exp[0].constraint_expr = Tango::string_dup(constraint_expr);
-    CORBA::Boolean res = false; // OK
+    bool error_occurred = false;
 
     try
     {
@@ -330,20 +330,20 @@ void NotifdEventConsumer::connect_event_system(const std::string &device_name,
     {
         // cerr << "Exception thrown : Invalid constraint given "
         //      << (const char *)constraint_expr << std::endl;
-        res = true;
+        error_occurred = true;
     }
     catch(...)
     {
         // cerr << "Exception thrown while adding constraint "
         //      << (const char *)constraint_expr << std::endl;
-        res = true;
+        error_occurred = true;
     }
 
     //
     // If error, destroy filter. Else, set the filter_ok flag to true
     //
 
-    if(static_cast<int>(res) == 1)
+    if(error_occurred)
     {
         try
         {
