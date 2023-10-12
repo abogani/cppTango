@@ -352,10 +352,10 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
 
-    int isGrey = static_cast<int>(strcmp(local_format.c_str(), GRAY_8) == 0);
-    int isJPEG = static_cast<int>(strcmp(local_format.c_str(), JPEG_GRAY_8) == 0);
+    bool isGrey = strcmp(local_format.c_str(), GRAY_8) == 0;
+    bool isJPEG = strcmp(local_format.c_str(), JPEG_GRAY_8) == 0;
 
-    if((isGrey == 0) && (isJPEG == 0))
+    if((!isGrey) && (!isJPEG))
     {
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a grayscale 8bit format");
     }
@@ -367,7 +367,7 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
     std::size_t size = encBuff.length();
     rawBuff = encBuff.get_buffer(false);
 
-    if(isGrey != 0)
+    if(isGrey)
     {
         // Get width and height
         int wh = ((int) rawBuff[0] & 0xFF);
@@ -390,7 +390,7 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
         return;
     }
 
-    if(isJPEG != 0)
+    if(isJPEG)
     {
         jpeg_decode(size, &(rawBuff[0]), width, height, *gray8);
 
