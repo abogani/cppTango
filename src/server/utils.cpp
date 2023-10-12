@@ -2660,7 +2660,7 @@ std::vector<DeviceImpl *> Util::get_device_list(const std::string &pattern)
     // build the token list
     //
 
-    int done = 0;
+    bool done = false;
     do
     {
         pos = pattern.find('*', last_pos);
@@ -2673,14 +2673,14 @@ std::vector<DeviceImpl *> Util::get_device_list(const std::string &pattern)
                     break;
                 }
                 pos = pattern.size();
-                done = 1;
+                done = true;
             }
             token.assign(pattern.begin() + last_pos, pattern.begin() + pos);
             TANGO_LOG_DEBUG << "Found pattern " << token << std::endl;
             tokens.push_back(token);
         }
         last_pos = pos + 1;
-    } while(done == 0);
+    } while(!done);
     // look for token(s) in device names
     unsigned int i, j, k;
     std::string dev_name;
