@@ -274,10 +274,10 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
 
-    int isRGB = static_cast<int>(strcmp(local_format.c_str(), RGB_24) == 0);
-    int isJPEG = static_cast<int>(strcmp(local_format.c_str(), JPEG_RGB) == 0);
+    bool isRGB = strcmp(local_format.c_str(), RGB_24) == 0;
+    bool isJPEG = strcmp(local_format.c_str(), JPEG_RGB) == 0;
 
-    if((isRGB == 0) && (isJPEG == 0))
+    if((!isRGB) && (!isJPEG))
     {
         TANGO_THROW_EXCEPTION(API_WrongFormat, "Not a color format");
     }
@@ -289,7 +289,7 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
     std::size_t size = encBuff.length();
     rawBuff = encBuff.get_buffer(false);
 
-    if(isRGB != 0)
+    if(isRGB)
     {
         // Get width and height
         int wh = ((int) rawBuff[0] & 0xFF);
@@ -325,7 +325,7 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
         return;
     }
 
-    if(isJPEG != 0)
+    if(isJPEG)
     {
         jpeg_decode(size, &(rawBuff[0]), width, height, *rgb32);
 
