@@ -660,7 +660,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     exp.length(1);
     exp[0].event_types = evs;
     exp[0].constraint_expr = Tango::string_dup(constraint_expr);
-    CORBA::Boolean res = false; // OK
+    bool error_occurred = false;
     try
     {
         CosNotifyFilter::ConstraintInfoSeq_var dummy = filter->add_constraints(exp);
@@ -668,14 +668,14 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     }
     catch(...)
     {
-        res = true; // error
+        error_occurred = true;
     }
 
     //
     // If error, destroy filter
     //
 
-    if(static_cast<int>(res) == 1)
+    if(error_occurred)
     {
         try
         {
