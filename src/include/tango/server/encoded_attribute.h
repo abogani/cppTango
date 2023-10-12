@@ -130,7 +130,7 @@ class EncodedAttribute
      * @param height   The image height
      *
      */
-    void encode_gray8(unsigned char *gray8, int width, int height);
+    void encode_gray8(const unsigned char *gray8, int width, int height);
 
     /**
      * Encode a 16 bit grayscale image (no compression)
@@ -150,7 +150,7 @@ class EncodedAttribute
      * @param height   The image height
      *
      */
-    void encode_rgb24(unsigned char *rgb24, int width, int height);
+    void encode_rgb24(const unsigned char *rgb24, int width, int height);
     //@}
 
     /**@name Image Decoding Methods
