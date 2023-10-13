@@ -262,7 +262,6 @@ void DevTestClass::command_factory()
         new IOFillPollBuffEncodedAttr("IOFillPollBuffEncodedAttr", Tango::DEV_VOID, Tango::DEV_VOID, "void", "void"));
     command_list.push_back(
         new IOFillPollBuffCmd("IOFillPollBuffCmd", Tango::DEV_VOID, Tango::DEV_VOID, "void", "void"));
-    command_list.push_back(new FileDbCmd("FileDb", Tango::DEV_VOID, Tango::DEV_VOID, "void", "void"));
     command_list.push_back(new OLong("OLong", Tango::DEV_VOID, Tango::DEV_LONG, "void", "A long"));
     command_list.push_back(new OULong("OULong", Tango::DEV_VOID, Tango::DEV_ULONG, "void", "An unsigned long"));
     command_list.push_back(

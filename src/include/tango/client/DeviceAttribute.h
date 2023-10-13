@@ -331,7 +331,7 @@ class DeviceAttribute
     bool extract_set(std::vector<T> &);
 
     template <typename T>
-    bool template_type_check(T &);
+    void template_type_check();
 
     virtual ~DeviceAttribute();
 

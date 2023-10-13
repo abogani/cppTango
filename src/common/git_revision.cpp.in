@@ -1,0 +1,11 @@
+namespace Tango
+{
+
+static const char *static_git_revision = "@TANGO_GIT_REVISION@";
+
+const char *git_revision()
+{
+	return static_git_revision;
+}
+
+} // namespace Tango

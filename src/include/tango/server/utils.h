@@ -756,7 +756,7 @@ class Util
     /**
      * The process trace level
      */
-    static int _tracelevel;
+    TANGO_IMP static int _tracelevel;
     /**
      * The database use flag (Use with extreme care). Implemented for device
      * server started without database usage.

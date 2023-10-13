@@ -12,7 +12,7 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     DeviceProxy *device1;
 
   public:
-    enum Color
+    enum Color : DevShort
     {
         red,
         green,

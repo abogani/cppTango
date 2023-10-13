@@ -203,7 +203,7 @@ class PipeConfTestSuite : public CxxTest::TestSuite
         device1->set_pipe_config(pi_list);
 
         pi = device1->get_pipe_config(pipe_name);
-        assert(pi.description == "No description");
+        TS_ASSERT_EQUALS(pi.description, "No description");
     }
 
     void check_description(
@@ -274,7 +274,7 @@ class PipeConfTestSuite : public CxxTest::TestSuite
         device1->set_pipe_config(pi_list);
 
         pi = device1->get_pipe_config(pipe_name);
-        assert(pi.description == lib_desc);
+        TS_ASSERT_EQUALS(pi.description, lib_desc);
 
         root_admin->command_inout("DevRestart", dd);
 

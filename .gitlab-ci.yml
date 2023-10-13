@@ -143,18 +143,21 @@ coverage:
   variables:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --xml --output coverage.xml
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
         --html-details --output coverage/coverage.html
     - >
-        gcovr --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
+        gcovr --gcov-ignore-parse-errors=negative_hits.warn_once_per_file
+        --filter '^src/' --filter '^log4tango/(?!tests/)' -j$(nproc)
     - tar czf coverage.tar.gz coverage
   artifacts:
     when: always
@@ -175,34 +178,45 @@ debian12-static:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     BUILD_SHARED_LIBS: "OFF"
 
 debian12-no-pch:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    TANGO_WARNINGS_AS_ERRORS: "ON"
 
 debian12-release:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     CMAKE_BUILD_TYPE: Release
+    TANGO_WARNINGS_AS_ERRORS: "ON"
+
+debian12-release-no-pch:
+  <<: *job-template-with-tests
+  variables:
+    <<: *variables
+    OS_TYPE: debian12:v3
+    CMAKE_BUILD_TYPE: Release
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    TANGO_WARNINGS_AS_ERRORS: "ON"
 
 debian12:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
 
 debian12-no-jpeg:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     TANGO_USE_JPEG: "OFF"
 
 debian12-cross-32bit:
@@ -327,8 +341,8 @@ clang-tidy:
       - code-quality-report.html
 
 # job to build against custom library locations and minimum supported versions of dependent libraries
-# using TANGO_XXX_BASE
-cmake-with-locations-and-min-versions-BASE:
+# using <PackageName>_ROOT
+cmake-with-locations-and-min-versions-ROOT:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
@@ -345,11 +359,11 @@ cmake-with-locations-and-min-versions-BASE:
       -Werror=dev
       -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
-      -DTANGO_IDL_BASE=${INSTALL_PREFIX}/tango-idl
-      -DTANGO_OMNI_BASE=${INSTALL_PREFIX}/omniORB
-      -DTANGO_ZMQ_BASE=${INSTALL_PREFIX}/libzmq
-      -DTANGO_JPEG_BASE=${INSTALL_PREFIX}/libjpeg
+      -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
+      -Dtangoidl_ROOT=${INSTALL_PREFIX}/tango-idl
+      -DomniORB4_ROOT=${INSTALL_PREFIX}/omniORB
+      -DZeroMQ_ROOT=${INSTALL_PREFIX}/libzmq
+      -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
     - ci/build.sh
 
 # and pkg-config
@@ -371,7 +385,8 @@ cmake-with-locations-and-min-versions-PKGCONFIG:
       -Werror=dev
       -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -DTANGO_CPPZMQ_BASE=${INSTALL_PREFIX}/cppzmq
+      -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
+      -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
     - ci/build.sh
 
 debian-maximum-cmake:
@@ -390,7 +405,7 @@ doxygen-documentation:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
     TANGO_MAKE_TARGET: "doc"
@@ -461,7 +476,7 @@ cmake-superproject:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v2
+    OS_TYPE: debian12:v3
   script: # override
     - cd tests/superproject
     - ../../ci/config.sh

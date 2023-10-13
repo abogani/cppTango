@@ -57,47 +57,14 @@ if(WIN32)
     include(configure/cmake_win_defs.cmake)
 endif()
 
-find_package(Git QUIET)
-if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND Git_FOUND)
-  execute_process(
-      COMMAND "${GIT_EXECUTABLE}" describe --tags --exclude=*test* --always HEAD
-      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-      OUTPUT_VARIABLE GIT_DESCRIBE_STDOUT
-      ERROR_VARIABLE GIT_DESCRIBE_STDERR
-      RESULT_VARIABLE GIT_DESCRIBE_RESULT
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  if(GIT_DESCRIBE_RESULT)
-    message(WARNING "Could not fetch the git revision (error ${GIT_DESCRIBE_RESULT}): ${GIT_DESCRIBE_STDERR}")
-    set(GIT_DESCRIBE_STDOUT "unknown")
-    set(SUFFIX_VERSION "dev")
-  endif()
-
-  # determine if we are on a tag or not
-  execute_process(
-      COMMAND "${GIT_EXECUTABLE}" name-rev --name-only --tags --no-undefined HEAD
-      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-      OUTPUT_VARIABLE GIT_NAMEREV_STDOUT
-      ERROR_VARIABLE GIT_NAMEREV_STDERR
-      RESULT_VARIABLE GIT_NAMEREV_RESULT
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    if(GIT_NAMEREV_RESULT)
-      set(SUFFIX_VERSION "dev")
-    else()
-      # tagged version, empty suffix
-      set(SUFFIX_VERSION "")
-    endif()
-else()
-    set(GIT_DESCRIBE_STDOUT "unknown")
-    set(SUFFIX_VERSION "dev")
-endif()
+include(configure/git.cmake)
+git_describe(GIT_DESCRIPTION SUFFIX_VERSION)
 
 #convenient versions
 set(LIBRARY_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}${SUFFIX_VERSION}")
 set(SO_VERSION "${MAJOR_VERSION}")
 
-set(TANGO_GIT_REVISION "${GIT_DESCRIBE_STDOUT}")
+set(TANGO_GIT_REVISION "${GIT_DESCRIPTION}")
 
 set(TANGO_HOST $ENV{TANGO_HOST})
 include(configure/CMakeLists.txt)
@@ -127,6 +94,31 @@ if(BUILD_TESTING)
     message(WARNING "Not building the tests, because that is currently supported only when BUILD_SHARED_LIBS is ON")
     set(BUILD_TESTING OFF)
   endif()
+endif()
+
+
+add_library(tango $<TARGET_OBJECTS:log4tango_objects>
+                  $<TARGET_OBJECTS:common_objects>
+                  $<TARGET_OBJECTS:client_objects>
+                  $<TARGET_OBJECTS:idl_objects>
+                  $<TARGET_OBJECTS:server_objects>)
+
+target_link_libraries(tango
+    PUBLIC
+        ${CMAKE_DL_LIBS}
+        omniORB4::omniORB4
+        omniORB4::COS4
+        omniORB4::Dynamic4
+        cppzmq::cppzmq
+    )
+
+target_include_directories(tango PUBLIC
+    ${cppzmq_INCLUDE_DIR}
+    ${omniORB4_INCLUDE_DIR}
+)
+
+if(TANGO_USE_JPEG)
+    target_link_libraries(tango PUBLIC JPEG::JPEG)
 endif()
 
 if(WIN32)

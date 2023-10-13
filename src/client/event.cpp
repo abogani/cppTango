@@ -523,6 +523,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
 
         if(ty->kind() == tk_enum)
         {
+            dev_attr->data_type = Tango::DEV_STATE;
             attr_value_3->value >>= dev_attr->d_state;
             dev_attr->d_state_filled = true;
         }
@@ -533,6 +534,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
             switch(ty_seq->kind())
             {
             case tk_long:
+                dev_attr->data_type = Tango::DEV_LONG;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_lo;
@@ -556,6 +558,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_longlong:
+                dev_attr->data_type = Tango::DEV_LONG64;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_64;
@@ -579,6 +582,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_short:
+                dev_attr->data_type = Tango::DEV_SHORT;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_sh;
@@ -602,6 +606,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_double:
+                dev_attr->data_type = Tango::DEV_DOUBLE;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_db;
@@ -625,6 +630,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_string:
+                dev_attr->data_type = Tango::DEV_STRING;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_str;
@@ -648,6 +654,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_float:
+                dev_attr->data_type = Tango::DEV_FLOAT;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_fl;
@@ -671,6 +678,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_boolean:
+                dev_attr->data_type = Tango::DEV_BOOLEAN;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_boo;
@@ -694,6 +702,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_ushort:
+                dev_attr->data_type = Tango::DEV_USHORT;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_ush;
@@ -717,6 +726,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_octet:
+                dev_attr->data_type = Tango::DEV_UCHAR;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_uch;
@@ -740,6 +750,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_ulong:
+                dev_attr->data_type = Tango::DEV_ULONG;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_ulo;
@@ -763,6 +774,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_ulonglong:
+                dev_attr->data_type = Tango::DEV_ULONG64;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_u64;
@@ -786,6 +798,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             case tk_enum:
+                dev_attr->data_type = Tango::DEV_STATE;
                 if(vers == 3)
                 {
                     attr_value_3->value >>= tmp_seq_state;
@@ -809,6 +822,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 break;
 
             default:
+                dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
                 TANGO_THROW_ON_DEFAULT(ty_seq->kind());
             }
         }
@@ -830,27 +844,12 @@ void EventConsumer::attr_to_device(const AttributeValue_4 *attr_value_4, DeviceA
     {
         att_union_to_device(&attr_value_4->value, dev_attr);
     }
-    //
-    // Warning: Since Tango 9, data type SHORT is used for both short attribute and enumeration attribute!
-    // Therefore, we need to store somewhere which exact type it is. With IDL 5, it is easy, because the data type is
-    // transferred on the network (modified IDL), For previous release, we do not have enumerated data type and
-    // therefore the data type could be used only for SHORT.
-    //
-    dev_attr->data_type = Tango::DEV_SHORT;
     dev_attr->data_format = attr_value_4->data_format;
 }
 
 void EventConsumer::attr_to_device(const ZmqAttributeValue_4 *attr_value_4, DeviceAttribute *dev_attr)
 {
     base_attr_to_device(attr_value_4, dev_attr);
-
-    //
-    // Warning: Since Tango 9, data type SHORT is used for both short attribute and enumeration attribute!
-    // Therefore, we need to store somewhere which exact type it is. With IDL 5, it is easy, because the data type is
-    // transferred on the network (modified IDL), For previous release, we do not have enumerated data type and
-    // therefore the data type could be used only for SHORT.
-    //
-    dev_attr->data_type = Tango::DEV_SHORT;
 }
 
 void EventConsumer::attr_to_device(const ZmqAttributeValue_5 *attr_value_5, DeviceAttribute *dev_attr)
@@ -912,6 +911,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq.get_buffer());
             dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, false);
         }
+        dev_attr->data_type = Tango::DEV_BOOLEAN;
     }
     break;
 
@@ -930,6 +930,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_sh = const_cast<CORBA::Short *>(tmp_seq.get_buffer());
             dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, false);
         }
+        dev_attr->data_type = Tango::DEV_SHORT;
     }
     break;
 
@@ -948,6 +949,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_lo = const_cast<CORBA::Long *>(tmp_seq.get_buffer());
             dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, false);
         }
+        dev_attr->data_type = Tango::DEV_LONG;
     }
     break;
 
@@ -966,6 +968,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq.get_buffer());
             dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, false);
         }
+        dev_attr->data_type = Tango::DEV_LONG64;
     }
     break;
 
@@ -984,6 +987,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_fl = const_cast<CORBA::Float *>(tmp_seq.get_buffer());
             dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, false);
         }
+        dev_attr->data_type = Tango::DEV_FLOAT;
     }
     break;
 
@@ -1002,6 +1006,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_db = const_cast<CORBA::Double *>(tmp_seq.get_buffer());
             dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, false);
         }
+        dev_attr->data_type = Tango::DEV_DOUBLE;
     }
     break;
 
@@ -1020,6 +1025,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_uch = const_cast<CORBA::Octet *>(tmp_seq.get_buffer());
             dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, false);
         }
+        dev_attr->data_type = Tango::DEV_UCHAR;
     }
     break;
 
@@ -1038,6 +1044,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_ush = const_cast<CORBA::UShort *>(tmp_seq.get_buffer());
             dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, false);
         }
+        dev_attr->data_type = Tango::DEV_USHORT;
     }
     break;
 
@@ -1056,6 +1063,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq.get_buffer());
             dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, false);
         }
+        dev_attr->data_type = Tango::DEV_ULONG;
     }
     break;
 
@@ -1074,6 +1082,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq.get_buffer());
             dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, false);
         }
+        dev_attr->data_type = Tango::DEV_ULONG64;
     }
     break;
 
@@ -1092,6 +1101,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_str = const_cast<char **>(tmp_seq.get_buffer());
             dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, false);
         }
+        dev_attr->data_type = Tango::DEV_STRING;
     }
     break;
 
@@ -1110,17 +1120,24 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_state = const_cast<Tango::DevState *>(tmp_seq.get_buffer());
             dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, false);
         }
+        dev_attr->data_type = Tango::DEV_STATE;
     }
     break;
 
     case DEVICE_STATE:
+    {
         sta_dev = union_ptr->dev_state_att();
         dev_attr->d_state_filled = true;
         dev_attr->d_state = sta_dev;
-        break;
+        dev_attr->data_type = Tango::DEV_STATE;
+    }
+    break;
 
     case ATT_NO_DATA:
-        break;
+    {
+        dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+    }
+    break;
 
     case ATT_ENCODED:
     {
@@ -1137,8 +1154,12 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
             tmp_enc = const_cast<Tango::DevEncoded *>(tmp_seq.get_buffer());
             dev_attr->EncodedSeq = new DevVarEncodedArray(max, len, tmp_enc, false);
         }
+        dev_attr->data_type = Tango::DEV_ENCODED;
     }
     break;
+
+    default:
+        dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
     }
 }
 

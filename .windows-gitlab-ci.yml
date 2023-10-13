@@ -23,14 +23,14 @@ windows-build:
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 16 2019"
-    TANGO_JPEG_BASE: dependencies/libjpeg
+    TANGO_JPEG_ROOT: dependencies/libjpeg
     TANGO_JPEG_SOURCE: dependencies/source/libjpeg-turbo-${JPEG_VERSION}
-    TANGO_ZMQ_BASE: dependencies/zeromq
-    TANGO_CPPZMQ_BASE: dependencies/zeromq # coincides with TANGO_ZMQ_BASE
-    TANGO_OMNI_BASE: dependencies/omniORB
+    TANGO_ZMQ_ROOT: dependencies/zeromq
+    TANGO_CPPZMQ_ROOT: dependencies/zeromq # coincides with TANGO_ZMQ_ROOT
+    TANGO_OMNI_ROOT: dependencies/omniORB
     TANGO_IDL_SOURCE: dependencies/source/tango-idl
-    TANGO_IDL_BASE: dependencies/tango-idl
-    PTHREAD_WIN: dependencies/pthread
+    TANGO_IDL_ROOT: dependencies/tango-idl
+    PTHREAD_ROOT: dependencies/pthread
     WIX_TOOLSET_LOCATION: dependencies/wix
     PYTHON_LOCATION: dependencies/python
     TANGO_WARNINGS_AS_ERRORS: "ON"
@@ -79,18 +79,18 @@ windows-build:
     # zmq/cppzmq
     - $FILENAME="zmq-${ZMQ_VERSION}_${VC_ARCH_VER}.zip"
     - curl.exe -JOL https://github.com/tango-controls/zmq-windows-ci/releases/download/${ZMQ_VERSION}/${FILENAME}
-    - md -Force ${TANGO_ZMQ_BASE}
-    - Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_ZMQ_BASE}
+    - md -Force ${TANGO_ZMQ_ROOT}
+    - Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_ZMQ_ROOT}
     # omniORB
     - $FILENAME="omniorb-${OMNI_VERSION}_${VC_ARCH_VER}_${PYVER}.zip"
     - curl.exe -JOL https://github.com/tango-controls/omniorb-windows-ci/releases/download/${OMNI_VERSION}/${FILENAME}
-    - md -Force ${TANGO_OMNI_BASE}
-    - Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_OMNI_BASE}
+    - md -Force ${TANGO_OMNI_ROOT}
+    - Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_OMNI_ROOT}
     # pthread
     - $FILENAME="pthreads-win32-${PTHREAD_VERSION}_${VC_ARCH_VER}.zip"
     - curl.exe -JOL https://github.com/tango-controls/Pthread_WIN32/releases/download/${PTHREAD_VERSION}/${FILENAME}
-    - md -Force ${PTHREAD_WIN}
-    - Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_WIN}
+    - md -Force ${PTHREAD_ROOT}
+    - Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_ROOT}
     # nasm (for libjpeg-turbo)
     - curl.exe -L ${NASM_DOWNLOAD_LINK} -o nasm.exe
     - ./nasm.exe /S /v/qn
@@ -106,7 +106,7 @@ windows-build:
         -G "${CMAKE_GENERATOR}"
         -A "${ARCHITECTURE}"
         -DWITH_TURBOJPEG=ON
-        -DCMAKE_INSTALL_PREFIX="${TANGO_JPEG_BASE}"
+        -DCMAKE_INSTALL_PREFIX="${TANGO_JPEG_ROOT}"
         -DCMAKE_DEBUG_POSTFIX=d
     - cmake
         --build "${TANGO_JPEG_SOURCE}/build"
@@ -120,7 +120,7 @@ windows-build:
         -B "${TANGO_IDL_SOURCE}/build"
         -G "${CMAKE_GENERATOR}"
         -A "${ARCHITECTURE}"
-        -DCMAKE_INSTALL_PREFIX="${TANGO_IDL_BASE}"
+        -DCMAKE_INSTALL_PREFIX="${TANGO_IDL_ROOT}"
     - cmake
         --build "${TANGO_IDL_SOURCE}/build"
         --target install
@@ -145,13 +145,14 @@ windows-build:
         -DBUILD_SHARED_LIBS="${BUILD_SHARED_LIBS}"
         -DTANGO_WARNINGS_AS_ERRORS="${TANGO_WARNINGS_AS_ERRORS}"
         -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
-        -DTANGO_IDL_BASE="${cwd}/${TANGO_IDL_BASE}"
+        -Dtangoidl_ROOT="${cwd}/${TANGO_IDL_ROOT}"
         -DTANGO_INSTALL_DEPENDENCIES=ON
-        -DTANGO_OMNI_BASE="${cwd}/${TANGO_OMNI_BASE}"
-        -DTANGO_ZMQ_BASE="${cwd}/${TANGO_ZMQ_BASE}"
-        -DTANGO_CPPZMQ_BASE="${cwd}/${TANGO_CPPZMQ_BASE}"
-        -DTANGO_JPEG_BASE="${cwd}/${TANGO_JPEG_BASE}"
-        -DPTHREAD_WIN="${PTHREAD_WIN}"
+        -DomniORB4_ROOT="${cwd}/${TANGO_OMNI_ROOT}"
+        -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}"
+        -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}"
+        -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}"
+        -Dpthread_ROOT="${PTHREAD_ROOT}"
+        -DTANGO_USE_PTHREAD=ON
         -DTANGO_USE_JPEG=ON
         -DJPEG_DEBUG_POSTFIX=d
         -DBUILD_TESTING="${BUILD_TESTING}"

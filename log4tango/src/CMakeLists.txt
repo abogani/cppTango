@@ -18,6 +18,10 @@ set(SOURCES
 
 add_library(log4tango_objects OBJECT ${SOURCES})
 
+target_include_directories(log4tango_objects PRIVATE
+    $<TARGET_PROPERTY:omniORB4::omniORB4,INTERFACE_INCLUDE_DIRECTORIES>
+)
+
 if(WIN32)
     target_compile_definitions(log4tango_objects PRIVATE "${windows_defs}")
 else()

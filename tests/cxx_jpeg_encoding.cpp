@@ -7,12 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "cxx_common.h"
+
 #ifdef TANGO_USE_JPEG
   // Needed to get the JCS_EXTENSIONS define
   #include <jpeglib.h>
 #endif
-
-#include "cxx_common.h"
 
 #undef SUITE_NAME
 #define SUITE_NAME JPEGEncodedTestSuite
@@ -40,7 +40,7 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
     std::vector<unsigned char> load_file(const std::string &file)
     {
         std::ifstream read_file(file, std::ios::binary);
-        assert(read_file.is_open());
+        TS_ASSERT(read_file.is_open());
 
         auto signed_vec = std::vector<char>{std::istreambuf_iterator<char>(read_file), {}};
 
@@ -56,7 +56,7 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
     template <typename T>
     std::size_t find_jpeg_start(const T *buffer, std::size_t length)
     {
-        assert(length > 1);
+        TS_ASSERT(length > 1);
         for(std::size_t i = 0; i < length - 1; ++i)
         {
             if(buffer[i] == 0xFF && buffer[i + 1] == 0xDA)
@@ -64,7 +64,10 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
                 return i;
             }
         }
-        assert(false);
+
+        TS_FAIL("Expected finding start of a jpeg file");
+        // workaround compiler not recognizing that TS_FAIL never returns
+        return zero;
     }
 
   public:

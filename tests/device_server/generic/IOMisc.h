@@ -301,17 +301,6 @@ class IOFillPollBuffCmd : public Tango::Command
     virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
 };
 
-class FileDbCmd : public Tango::Command
-{
-  public:
-    FileDbCmd(const char *, Tango::CmdArgType, Tango::CmdArgType, const char *, const char *);
-
-    ~FileDbCmd() { }
-
-    virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
-    virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
-};
-
 class IOSetWAttrLimit : public Tango::Command
 {
   public:

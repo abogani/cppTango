@@ -6,6 +6,16 @@
 #undef SUITE_NAME
 #define SUITE_NAME EnumAttTestSuite
 
+static_assert(std::is_same<short, DevShort>::value, "short does not match DevShort");
+
+enum EnumShort : DevShort
+{
+    EnumShort_A = 0,
+    EnumShort_B = 1,
+    EnumShort_C = 2,
+    EnumShort_D = 3
+};
+
 class EnumAttTestSuite : public CxxTest::TestSuite
 {
   protected:
@@ -274,6 +284,57 @@ class EnumAttTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(v_sh_write[0], 1);
         TS_ASSERT_EQUALS(v_sh_write[1], 1);
     }
+
+    void test_enum_scalar_attribute_writing_with_enum_type_short()
+    {
+        EnumShort sh_wr = EnumShort_B;
+        DeviceAttribute da_wr;
+        da_wr.set_name("Enum_attr_rw");
+        TS_ASSERT_THROWS_NOTHING(da_wr << sh_wr);
+        TS_ASSERT_THROWS_NOTHING(device1->write_attribute(da_wr));
+
+        DeviceAttribute da_read;
+        TS_ASSERT_THROWS_NOTHING(da_read = device1->read_attribute("Enum_attr_rw"));
+        TS_ASSERT_EQUALS(da_read.get_type(), Tango::DEV_ENUM);
+
+        EnumShort sh_rd;
+        TS_ASSERT_THROWS_NOTHING(da_read >> sh_rd);
+    }
+
+    void test_enum_spectrum_attribute_writing_with_enum_type_short()
+    {
+        std::vector<EnumShort> sh_wr = {EnumShort_A, EnumShort_B, EnumShort_C, EnumShort_D};
+        DeviceAttribute da_wr;
+        da_wr.set_name("Enum_spec_attr_rw");
+        TS_ASSERT_THROWS_NOTHING(da_wr << sh_wr);
+        TS_ASSERT_THROWS_NOTHING(device1->write_attribute(da_wr));
+
+        DeviceAttribute da_read;
+        TS_ASSERT_THROWS_NOTHING(da_read = device1->read_attribute("Enum_spec_attr_rw"));
+        TS_ASSERT_EQUALS(da_read.get_type(), Tango::DEV_ENUM);
+
+        std::vector<EnumShort> sh_rd;
+        TS_ASSERT_THROWS_NOTHING(da_read >> sh_rd);
+    }
+
+    void test_enum_operators_compile_check_our_types()
+    {
+        DeviceAttribute da_ll;
+        DevLong64 ll = 0;
+        TS_ASSERT_THROWS_NOTHING(da_ll << ll);
+
+        DeviceAttribute da_ull;
+        DevULong64 ull = 0;
+        TS_ASSERT_THROWS_NOTHING(da_ull << ull);
+    }
+
+    // can't test compile failures
+    // void test_enum_operators_compile_check_fails()
+    // {
+    //     EnumUInt int_wr = EnumUInt_B;
+    //     DeviceAttribute da_wr;
+    //     TS_ASSERT_THROWS_NOTHING(da_wr << int_wr);
+    // }
 
     void test_enum_attribute_write_read()
     {
