@@ -1001,7 +1001,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                     break;
 
                 default:
-                    TANGO_THROW_ON_DEFAULT(cmd_type);
+                    TANGO_ASSERT_ON_DEFAULT(cmd_type);
                 }
                 seq_size = seq_size + data_length;
             }
@@ -1461,7 +1461,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(cmd_type);
+                TANGO_ASSERT_ON_DEFAULT(cmd_type);
             }
         }
 
@@ -1592,7 +1592,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(cmd_type);
+                TANGO_ASSERT_ON_DEFAULT(cmd_type);
             }
         }
 

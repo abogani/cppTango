@@ -4036,7 +4036,7 @@ AttributeInfoListEx *DeviceProxy::get_attribute_config_ex(const std::vector<std:
             break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(version);
+                TANGO_ASSERT_ON_DEFAULT(version);
             }
 
             ctr = 2;
@@ -9610,7 +9610,7 @@ int DeviceProxy::get_tango_lib_version()
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(admin_idl_vers);
+        TANGO_ASSERT_ON_DEFAULT(admin_idl_vers);
     }
 
     delete cmd_list;

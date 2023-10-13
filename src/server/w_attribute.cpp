@@ -466,7 +466,7 @@ void WAttribute::rollback()
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 }
 
@@ -1344,7 +1344,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 
     return ret;

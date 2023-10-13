@@ -1211,7 +1211,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
 
         default:
             dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
-            TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+            TANGO_ASSERT_ON_DEFAULT(ty_seq->kind());
         }
     }
 }
@@ -1425,7 +1425,7 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(aie->memorized);
+        TANGO_ASSERT_ON_DEFAULT(aie->memorized);
     }
     att_conf_5->enum_labels.length(aie->enum_labels.size());
     for(size_t j = 0; j < aie->enum_labels.size(); j++)
@@ -1979,7 +1979,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
         // do nothing
         break;
     default:
-        TANGO_THROW_ON_DEFAULT(p.data_format);
+        TANGO_ASSERT_ON_DEFAULT(p.data_format);
     }
 
     o_str << "Attribute writable type = " << p.writable << std::endl;
@@ -2005,7 +2005,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(p.data_format);
+            TANGO_ASSERT_ON_DEFAULT(p.data_format);
         }
     }
 

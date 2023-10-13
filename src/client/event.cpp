@@ -823,7 +823,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
 
             default:
                 dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
-                TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+                TANGO_ASSERT_ON_DEFAULT(ty_seq->kind());
             }
         }
     }

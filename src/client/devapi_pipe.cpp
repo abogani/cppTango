@@ -2568,7 +2568,7 @@ void DevicePipeBlob::print(std::ostream &o_str, int indent, bool insert_extract)
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT((*dvpdea)[ctr].value._d());
+                TANGO_ASSERT_ON_DEFAULT((*dvpdea)[ctr].value._d());
             }
 
             //

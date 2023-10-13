@@ -418,7 +418,6 @@ MAKE_EXCEPT(AsynReplyNotArrived, ApiAsynNotThereExcept)
 MAKE_EXCEPT(EventSystemFailed, EventSystemExcept)
 MAKE_EXCEPT(DeviceUnlocked, DeviceUnlockedExcept)
 MAKE_EXCEPT(NotAllowed, NotAllowedExcept)
-MAKE_EXCEPT(ProgrammingError, ProgrammingErrorExcept)
 
 //
 // Define macros for the management of the Corba TRANSIENT exception
@@ -532,12 +531,6 @@ MAKE_EXCEPT(ProgrammingError, ProgrammingErrorExcept)
 #define TANGO_RETHROW_DETAILED_EXCEPTION(ExceptionClass, original, reason, desc) \
     ExceptionClass ::re_throw_exception(                                         \
         original, reason, desc, (std::string(TANGO_CURRENT_FUNCTION) + " at (" TANGO_FILE_AND_LINE ")").c_str())
-
-#define TANGO_THROW_ON_DEFAULT(switchValue) \
-    TANGO_THROW_DETAILED_EXCEPTION(         \
-        ProgrammingErrorExcept,             \
-        "Programming Error",                \
-        ((std::string("Reached unexpected default branch with value: ") + std::to_string(switchValue)).c_str()))
 
 } // namespace Tango
 

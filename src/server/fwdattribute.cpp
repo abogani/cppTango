@@ -346,7 +346,7 @@ void FwdAttribute::set_att_config(AttributeInfoEx *aie_ptr)
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(aie_ptr->memorized);
+        TANGO_ASSERT_ON_DEFAULT(aie_ptr->memorized);
     }
 
     writable_attr_name = aie_ptr->writable_attr_name;

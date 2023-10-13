@@ -306,7 +306,7 @@ int DeviceData::get_type()
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(tc_seq->kind());
+                TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
             }
             break;
 
@@ -328,7 +328,7 @@ int DeviceData::get_type()
                     break;
 
                 default:
-                    TANGO_THROW_ON_DEFAULT(tc_seq->kind());
+                    TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
                 }
                 break;
 
@@ -337,7 +337,7 @@ int DeviceData::get_type()
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(tc_al->kind());
+                TANGO_ASSERT_ON_DEFAULT(tc_al->kind());
             }
             break;
 
@@ -346,7 +346,7 @@ int DeviceData::get_type()
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(tc->kind());
+            TANGO_ASSERT_ON_DEFAULT(tc->kind());
         }
 
         CORBA::release(tc);
@@ -2368,7 +2368,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(tc_seq->kind());
+                TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
             }
             break;
 
@@ -2396,7 +2396,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                     break;
 
                 default:
-                    TANGO_THROW_ON_DEFAULT(tc_seq->kind());
+                    TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
                 }
                 break;
 
@@ -2418,7 +2418,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(tc_al->kind());
+                TANGO_ASSERT_ON_DEFAULT(tc_al->kind());
             }
             break;
 
@@ -2429,7 +2429,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(tc->kind());
+            TANGO_ASSERT_ON_DEFAULT(tc->kind());
         }
 
         CORBA::release(tc);

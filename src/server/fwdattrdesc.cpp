@@ -418,7 +418,7 @@ void FwdAttr::read(DeviceImpl *dev, Attribute &attr)
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(fwd_attr.get_data_type());
+            TANGO_ASSERT_ON_DEFAULT(fwd_attr.get_data_type());
         }
     }
     catch(Tango::DevFailed &e)
@@ -554,7 +554,7 @@ void FwdAttr::write(TANGO_UNUSED(DeviceImpl *dev), WAttribute &attr)
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(fwd_attr.get_data_type());
+        TANGO_ASSERT_ON_DEFAULT(fwd_attr.get_data_type());
     }
 
     try
@@ -620,7 +620,7 @@ void FwdAttr::init_conf(AttrConfEventData *ev_data)
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(ev_data->attr_conf->memorized);
+        TANGO_ASSERT_ON_DEFAULT(ev_data->attr_conf->memorized);
     }
 
     //

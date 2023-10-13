@@ -2270,7 +2270,7 @@ void ZmqEventConsumer::push_zmq_event(
                         break;
 
                     default:
-                        TANGO_THROW_ON_DEFAULT(data_type);
+                        TANGO_ASSERT_ON_DEFAULT(data_type);
                     }
 
                     try
@@ -3855,7 +3855,7 @@ void ZmqAttrValUnion::operator<<=(TangoCdrMemoryStream &_n)
         break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(_pd__d);
+            TANGO_ASSERT_ON_DEFAULT(_pd__d);
         }
     }
 }

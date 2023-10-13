@@ -1366,7 +1366,7 @@ void RootAttRegistry::auto_unsub()
                         break;
 
                     default:
-                        TANGO_THROW_ON_DEFAULT(posi->event_type);
+                        TANGO_ASSERT_ON_DEFAULT(posi->event_type);
                         ;
                     }
                 }

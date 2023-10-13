@@ -5839,7 +5839,7 @@ void Attribute::log_quality()
                 break;
 
             default:
-                TANGO_THROW_ON_DEFAULT(quality);
+                TANGO_ASSERT_ON_DEFAULT(quality);
             }
         }
         else
@@ -5972,7 +5972,7 @@ void Attribute::avns_in_att(prop_type pt)
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(pt);
+            TANGO_ASSERT_ON_DEFAULT(pt);
         }
 
         if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
@@ -6023,7 +6023,7 @@ void Attribute::set_format_notspec()
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 }
 
@@ -6089,7 +6089,7 @@ bool Attribute::is_format_notspec(const char *format)
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 
     return ret;
@@ -6141,7 +6141,7 @@ void Attribute::def_format_in_dbdatum(DbDatum &db)
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 }
 
