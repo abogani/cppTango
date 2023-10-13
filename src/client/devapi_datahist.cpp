@@ -466,7 +466,9 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_var &se
             break;
 
         default:
-            TANGO_ASSERT_ON_DEFAULT(ty_seq->kind());
+            TangoSys_OMemStream desc;
+            desc << "'seq[" << n << "].value.value' with unexpected sequence kind '" << ty_seq->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
     }
 }
@@ -616,7 +618,9 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_3_var &
             break;
 
         default:
-            TANGO_ASSERT_ON_DEFAULT(ty_seq->kind());
+            TangoSys_OMemStream desc;
+            desc << "'seq[" << n << "].value.value' with unexpected sequence kind '" << ty_seq->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
     }
 }

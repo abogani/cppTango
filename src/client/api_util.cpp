@@ -1211,7 +1211,10 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
 
         default:
             dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
-            TANGO_ASSERT_ON_DEFAULT(ty_seq->kind());
+            TangoSys_OMemStream desc;
+            desc << (vers == 3 ? "'attr_value_3" : "'attr_value") << "->value' with unexpected sequence kind '"
+                 << ty_seq->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
     }
 }

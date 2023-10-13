@@ -306,7 +306,9 @@ int DeviceData::get_type()
                 break;
 
             default:
-                TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
+                TangoSys_OMemStream desc;
+                desc << "'this->any' with unexpected sequence kind '" << tc_seq->kind() << "'.";
+                TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
             }
             break;
 
@@ -328,7 +330,9 @@ int DeviceData::get_type()
                     break;
 
                 default:
-                    TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
+                    TangoSys_OMemStream desc;
+                    desc << "'this->any' with unexpected struct field sequence kind '" << tc_seq->kind() << "'.";
+                    TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
                 }
                 break;
 
@@ -337,7 +341,9 @@ int DeviceData::get_type()
                 break;
 
             default:
-                TANGO_ASSERT_ON_DEFAULT(tc_al->kind());
+                TangoSys_OMemStream desc;
+                desc << "'this->any' with unexpected struct field alias kind '" << tc_al->kind() << "'.";
+                TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
             }
             break;
 
@@ -346,7 +352,9 @@ int DeviceData::get_type()
             break;
 
         default:
-            TANGO_ASSERT_ON_DEFAULT(tc->kind());
+            TangoSys_OMemStream desc;
+            desc << "'this->any' with unexpected kind '" << tc->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
 
         CORBA::release(tc);
@@ -2368,7 +2376,9 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                 break;
 
             default:
-                TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
+                TangoSys_OMemStream desc;
+                desc << "'dd.any' with unexpected sequence kind '" << tc_seq->kind() << "'.";
+                TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
             }
             break;
 
@@ -2396,7 +2406,9 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                     break;
 
                 default:
-                    TANGO_ASSERT_ON_DEFAULT(tc_seq->kind());
+                    TangoSys_OMemStream desc;
+                    desc << "'dd.any' with unexpected struct field sequence kind '" << tc_seq->kind() << "'.";
+                    TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
                 }
                 break;
 
@@ -2418,7 +2430,9 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
                 break;
 
             default:
-                TANGO_ASSERT_ON_DEFAULT(tc_al->kind());
+                TangoSys_OMemStream desc;
+                desc << "'dd.any' with unexpected struct field alias kind '" << tc_al->kind() << "'.";
+                TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
             }
             break;
 
@@ -2429,7 +2443,9 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
             break;
 
         default:
-            TANGO_ASSERT_ON_DEFAULT(tc->kind());
+            TangoSys_OMemStream desc;
+            desc << "'dd.any' with unexpected kind '" << tc->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
 
         CORBA::release(tc);

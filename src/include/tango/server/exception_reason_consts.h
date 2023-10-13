@@ -103,6 +103,7 @@ constexpr const char *API_InitNotPublic = "API_InitNotPublic";
 constexpr const char *API_InitThrowsException = "API_InitThrowsException";
 constexpr const char *API_InternalError = "API_InternalError";
 constexpr const char *API_InvalidArgs = "API_InvalidArgs";
+constexpr const char *API_InvalidCorbaAny = "API_InvalidCorbaAny";
 constexpr const char *API_JavaRuntimeSecurityException = "API_JavaRuntimeSecurityException";
 constexpr const char *API_MemAttFailedDuringInit = "API_MemAttFailedDuringInit";
 constexpr const char *API_MemoryAllocation = "API_MemoryAllocation";
