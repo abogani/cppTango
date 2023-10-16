@@ -1986,6 +1986,13 @@ size_t ZmqEventSupplier::get_data_elt_data_nb(DevPipeDataElt &dvde)
         }
         break;
 
+        case DEVICE_STATE:
+            [[fallthrough]];
+        case ATT_NO_DATA:
+            TANGO_THROW_EXCEPTION(API_PipeWrongArg,
+                                  "Unsupported data type in data element! (ATT_NO_DATA, DEVICE_STATE)");
+            break;
+
         default:
             TANGO_ASSERT_ON_DEFAULT(dvde.value._d());
         }

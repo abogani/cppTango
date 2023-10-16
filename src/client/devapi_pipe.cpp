@@ -705,10 +705,15 @@ int DevicePipeBlob::get_data_elt_type(size_t _ind)
         }
         break;
 
-        default:
+        case DEVICE_STATE:
+            [[fallthrough]];
+        case ATT_NO_DATA:
             TANGO_THROW_EXCEPTION(API_PipeWrongArg,
                                   "Unsupported data type in data element! (ATT_NO_DATA, DEVICE_STATE)");
             break;
+
+        default:
+            TANGO_ASSERT_ON_DEFAULT((*extract_elt_array)[_ind].value._d());
         }
     }
 
