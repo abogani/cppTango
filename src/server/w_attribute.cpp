@@ -1347,6 +1347,20 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         }
         break;
 
+    case Tango::DEV_ENUM:
+        [[fallthrough]];
+    case Tango::DEV_STRING:
+        [[fallthrough]];
+    case Tango::DEV_BOOLEAN:
+        [[fallthrough]];
+    case Tango::DEV_STATE:
+    {
+        TangoSys_OMemStream msg;
+        msg << "This is a not supported call in case of " << data_type_to_string(data_type) << " attribute";
+        TANGO_THROW_EXCEPTION(API_NotSupportedFeature, msg.str().c_str());
+    }
+    break;
+
     default:
         TANGO_ASSERT_ON_DEFAULT(data_type);
     }
