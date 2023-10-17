@@ -1000,6 +1000,22 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                     seq_number_size = seq_number_size + tmp_db_str->dvalue.length();
                     break;
 
+                case DEV_ENUM:
+                    [[fallthrough]];
+                case DEV_PIPE_BLOB:
+                    [[fallthrough]];
+                case DEVVAR_STATEARRAY:
+                    [[fallthrough]];
+                case DEVVAR_ENCODEDARRAY:
+                    [[fallthrough]];
+                case DATA_TYPE_UNKNOWN:
+                {
+                    TangoSys_OMemStream msg;
+                    msg << "Unhandled command argument type " << data_type_to_string(cmd_type);
+                    TANGO_THROW_EXCEPTION(API_CmdArgumentTypeNotSupported, msg.str().c_str());
+                }
+                break;
+
                 default:
                     TANGO_ASSERT_ON_DEFAULT(cmd_type);
                 }
@@ -1460,6 +1476,30 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 MANAGE_DIM_SIMPLE();
                 break;
 
+            case DEV_UCHAR:
+                [[fallthrough]];
+            case CONST_DEV_STRING:
+                [[fallthrough]];
+            case DEV_STATE:
+                [[fallthrough]];
+            case DEV_VOID:
+                [[fallthrough]];
+            case DEV_ENUM:
+                [[fallthrough]];
+            case DEV_PIPE_BLOB:
+                [[fallthrough]];
+            case DEVVAR_STATEARRAY:
+                [[fallthrough]];
+            case DEVVAR_ENCODEDARRAY:
+                [[fallthrough]];
+            case DATA_TYPE_UNKNOWN:
+            {
+                TangoSys_OMemStream msg;
+                msg << "Unhandled command argument type " << data_type_to_string(cmd_type);
+                TANGO_THROW_EXCEPTION(API_CmdArgumentTypeNotSupported, msg.str().c_str());
+            }
+            break;
+
             default:
                 TANGO_ASSERT_ON_DEFAULT(cmd_type);
             }
@@ -1590,6 +1630,28 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
             case Tango::DEV_VOID:
                 // do nothing
                 break;
+
+            case DEV_UCHAR:
+                [[fallthrough]];
+            case CONST_DEV_STRING:
+                [[fallthrough]];
+            case DEV_STATE:
+                [[fallthrough]];
+            case DEV_ENUM:
+                [[fallthrough]];
+            case DEV_PIPE_BLOB:
+                [[fallthrough]];
+            case DEVVAR_STATEARRAY:
+                [[fallthrough]];
+            case DEVVAR_ENCODEDARRAY:
+                [[fallthrough]];
+            case DATA_TYPE_UNKNOWN:
+            {
+                TangoSys_OMemStream msg;
+                msg << "Unhandled command argument type " << data_type_to_string(cmd_type);
+                TANGO_THROW_EXCEPTION(API_CmdArgumentTypeNotSupported, msg.str().c_str());
+            }
+            break;
 
             default:
                 TANGO_ASSERT_ON_DEFAULT(cmd_type);
