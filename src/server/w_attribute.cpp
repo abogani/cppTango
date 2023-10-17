@@ -465,6 +465,10 @@ void WAttribute::rollback()
         dev_state_val = old_dev_state_val;
         break;
 
+    case Tango::DEV_ENCODED:
+        TANGO_THROW_EXCEPTION(API_NotSupportedFeature, "This is a not supported call in case of DevEncoded attribute");
+        break;
+
     default:
         TANGO_ASSERT_ON_DEFAULT(data_type);
     }
