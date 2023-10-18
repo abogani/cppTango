@@ -48,10 +48,6 @@ namespace Tango
 
 #define IP_ADDR_BUFFER_SIZE 80
 
-// client call interceptor for remote calls
-// will be removed once omniORB 4.3 is adopted
-CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::info_T &);
-
 //==================================================================================================================
 // client_call_interceptor: a omniORB server-side call interceptor dealing with client info & more
 //==================================================================================================================
@@ -72,9 +68,8 @@ CORBA::Boolean get_client_addr(omni::omniInterceptors::serverReceiveRequest_T::i
 // parameter s: a pointer an omniORB omniServant (base class of any Tango device dealing with CORBA low level stuffs)
 ///==================================================================================================================
 // Comments:
-// This interceptor works for both collocated and remote calls so that the client info is properly setup in any case.
-// However, for the moment, we only use it for local calls. It will also be used for remote ones once we adopt ominitORB
-// 4.3. See also cppTango issue #865 for details.
+// this interceptor works for both collocated and remote calls so that the client info is properly setup in any case.
+// since the adoption of omniORB 4.3, it is used for both local and remote calls.
 ///==================================================================================================================
 void client_call_interceptor(omniCallDescriptor *d, omniServant *s);
 
