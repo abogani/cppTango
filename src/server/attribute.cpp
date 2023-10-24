@@ -1834,6 +1834,11 @@ bool Attribute::check_alarm()
         TANGO_THROW_EXCEPTION(API_AttrNoAlarm, o.str());
     }
 
+    if(quality == Tango::ATTR_ALARM)
+    {
+        return true;
+    }
+
     //
     // If the attribute quality is different than VALID don`t do any checking to avoid
     // to override a user positioned quality value.
