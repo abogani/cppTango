@@ -72,7 +72,7 @@ find_path(ZeroMQ_INCLUDE_DIR
 )
 
 if(WIN32)
-    set(_zmq_versions "4_0_5" "4_3_4")
+    set(_zmq_versions "4_0_5" "4_3_4" "4_3_5")
     set(_zmq_vc_versions "" "-v141" "-v142")
 
     foreach(ver IN LISTS _zmq_versions)
