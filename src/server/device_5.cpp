@@ -131,7 +131,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_attr(names, cl_id, 5, source);
+        blackbox_ptr->insert_attr(names, cl_id, idl_version, source);
     }
     store_in_bb = true;
 
@@ -389,7 +389,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     // Record operation request in black box
     //
 
-    blackbox_ptr->insert_wr_attr(values, r_names, cl_id, 5);
+    blackbox_ptr->insert_wr_attr(values, r_names, cl_id, idl_version);
 
     //
     // Check if the device is locked and by who
@@ -677,7 +677,7 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     // Call the Device_3Impl set_attribute_config
     //
 
-    return set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, 5);
+    return set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, idl_version);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -1058,7 +1058,7 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_attr(name, cl_id, 5);
+        blackbox_ptr->insert_attr(name, cl_id, idl_version);
     }
     store_in_bb = true;
 

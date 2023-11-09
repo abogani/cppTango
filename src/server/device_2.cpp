@@ -138,7 +138,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_cmd(in_cmd, 2, source);
+        blackbox_ptr->insert_cmd(in_cmd, idl_version, source);
 
         //
         // Do not check lock validity if State or Status is requested using command
@@ -468,7 +468,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
         // Record operation request in black box
         //
 
-        blackbox_ptr->insert_attr(names, 2, source);
+        blackbox_ptr->insert_attr(names, idl_version, source);
 
         //
         // If the source parameter specifies device, call the read_attributes method
