@@ -238,21 +238,21 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
     long seq_size = 0;
     long error_nb = 0;
 
-    long vers;
+    bool idl_version_5_or_later;
     if(ring[index].attr_value_4 == nullptr)
     {
-        vers = 5;
+        idl_version_5_or_later = true;
     }
     else
     {
-        vers = 4;
+        idl_version_5_or_later = false;
     }
 
     for(i = 0; i < n; i++)
     {
         if(ring[index].except == nullptr)
         {
-            if(vers == 4)
+            if(!idl_version_5_or_later)
             {
                 int r_dim_x = (*ring[index].attr_value_4)[0].r_dim.dim_x;
                 int r_dim_y = (*ring[index].attr_value_4)[0].r_dim.dim_y;
@@ -353,7 +353,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
         if(ring[index].except == nullptr)
         {
-            if(vers == 4)
+            if(!idl_version_5_or_later)
             {
                 ptr->dates[seq_index].tv_sec = (*ring[index].attr_value_4)[0].time.tv_sec;
                 ptr->dates[seq_index].tv_usec = (*ring[index].attr_value_4)[0].time.tv_usec;
@@ -378,7 +378,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
         if(ring[index].except == nullptr)
         {
             AttrQuality qu;
-            if(vers == 4)
+            if(!idl_version_5_or_later)
             {
                 qu = (*ring[index].attr_value_4)[0].quality;
             }
@@ -389,7 +389,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
             if((quals_length == 1) || (qu != last_quality))
             {
-                if(vers == 4)
+                if(!idl_version_5_or_later)
                 {
                     last_quality = (*ring[index].attr_value_4)[0].quality;
                 }
@@ -426,7 +426,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
             bool check = false;
 
-            if(vers == 4)
+            if(!idl_version_5_or_later)
             {
                 if(((*ring[index].attr_value_4)[0].r_dim.dim_x == last_dim_read.dim_x) &&
                    ((*ring[index].attr_value_4)[0].r_dim.dim_y == last_dim_read.dim_y))
@@ -449,7 +449,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             }
             else
             {
-                if(vers == 4)
+                if(!idl_version_5_or_later)
                 {
                     last_dim_read = (*ring[index].attr_value_4)[0].r_dim;
                 }
@@ -471,7 +471,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
 
             check = false;
 
-            if(vers == 4)
+            if(!idl_version_5_or_later)
             {
                 if(((*ring[index].attr_value_4)[0].w_dim.dim_x == last_dim_write.dim_x) &&
                    ((*ring[index].attr_value_4)[0].w_dim.dim_y == last_dim_write.dim_y))
@@ -494,7 +494,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             }
             else
             {
-                if(vers == 4)
+                if(!idl_version_5_or_later)
                 {
                     last_dim_write = (*ring[index].attr_value_4)[0].w_dim;
                 }
@@ -652,7 +652,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
             //
 
             AttrValUnion *union_ptr;
-            if(vers == 4)
+            if(!idl_version_5_or_later)
             {
                 union_ptr = &((*ring[index].attr_value_4)[0].value);
             }
