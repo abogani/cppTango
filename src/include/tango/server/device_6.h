@@ -2,7 +2,7 @@
 //
 // file :		Device_6.h
 //
-// description :	Include for the Device root classes in its release 5 (IDL release 5, Tango release 9)
+// description :	Include for the Device root classes in its release 6 (IDL release 6, Tango release 10)
 //
 // project :		TANGO
 //
@@ -38,8 +38,6 @@
 namespace Tango
 {
 
-class WPipe;
-
 //==================================================================================================================
 //
 //			The Device_6Impl class
@@ -55,7 +53,7 @@ class WPipe;
 //==================================================================================================================
 
 /**
- * Base class for all TANGO device since version 5.
+ * Base class for all TANGO device since version 6.
  *
  * This class inherits from DeviceImpl class which itself inherits from
  * CORBA classes where all the network layer is implemented.

@@ -177,6 +177,13 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
+        case 6:
+            if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(6, std::string(EventName[CHANGE_EVENT]));
+            }
+            break;
+
         case 5:
             if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
@@ -220,6 +227,12 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
+        case 6:
+            if(periodic5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(6, std::string(EventName[PERIODIC_EVENT]));
+            }
+            break;
         case 5:
             if(periodic5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
@@ -263,6 +276,13 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
+        case 6:
+            if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(6, std::string(EventName[ARCHIVE_EVENT]));
+            }
+            break;
+
         case 5:
             if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
@@ -445,6 +465,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
@@ -718,6 +739,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
@@ -880,6 +902,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);

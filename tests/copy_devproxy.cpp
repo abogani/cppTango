@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 
         assert(dev2.name() == device1_name);
 #ifndef COMPAT
-        assert(dev2.get_idl_version() == 5);
+        assert(dev2.get_idl_version() == 6);
 #endif
     }
     catch(Tango::DevFailed &e)
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     assert(dev3.name() == device1_name);
 #ifndef COMPAT
-    assert(dev3.get_idl_version() == 5);
+    assert(dev3.get_idl_version() == 6);
 #endif
 
     TEST_LOG << "   Assignement operator --> OK" << endl;

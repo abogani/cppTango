@@ -4534,7 +4534,7 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
                 ApiUtil *au = ApiUtil::instance();
                 ci.cpp_clnt(au->get_client_pid());
 
-                if(version == 5)
+                if(version >= 5)
                 {
                     Device_5_var dev = Device_5::_duplicate(device_5);
                     dev->set_attribute_config_5(attr_config_list_5, ci);
@@ -5312,7 +5312,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
             ApiUtil *au = ApiUtil::instance();
             ci.cpp_clnt(au->get_client_pid());
 
-            if(version == 5)
+            if(version >= 5)
             {
                 Device_5_var dev = Device_5::_duplicate(device_5);
                 attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, ci);
@@ -9594,8 +9594,10 @@ int DeviceProxy::get_tango_lib_version()
     }
 
     case 5:
-    case 6:
         ret = 902;
+        break;
+    case 6:
+        ret = 1000;
         break;
 
     default:
