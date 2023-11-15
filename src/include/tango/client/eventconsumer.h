@@ -215,14 +215,14 @@ struct ZmqDevPipeDataElt : public DevPipeDataElt
 /***    Macros to help coding       ***/
 
 #ifndef Swap16
-  #define Swap16(s) ((((s) &0xff) << 8) | (((s) >> 8) & 0xff))
+  #define Swap16(s) ((((s) & 0xff) << 8) | (((s) >> 8) & 0xff))
 #else
   #error "Swap16 has already been defined"
 #endif
 
 #ifndef Swap32
   #define Swap32(l) \
-      ((((l) &0xff000000) >> 24) | (((l) &0x00ff0000) >> 8) | (((l) &0x0000ff00) << 8) | (((l) &0x000000ff) << 24))
+      ((((l) & 0xff000000) >> 24) | (((l) & 0x00ff0000) >> 8) | (((l) & 0x0000ff00) << 8) | (((l) & 0x000000ff) << 24))
 #else
   #error "Swap32 has already been defined"
 #endif

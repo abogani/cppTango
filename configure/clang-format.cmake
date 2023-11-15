@@ -1,9 +1,9 @@
 option(TANGO_CLANG_FORMAT "Add a target \"clang-format\" for formatting the C++ source code" OFF)
 
-set(CLANG_FORMAT_REF_VERSION 16)
+set(CLANG_FORMAT_REF_VERSION 17)
 
 if(TANGO_CLANG_FORMAT)
-  find_program(CLANG_FORMAT NAMES clang-format-16 clang-format)
+  find_program(CLANG_FORMAT NAMES clang-format-17 clang-format)
 
   if(CLANG_FORMAT)
     execute_process(COMMAND "${CLANG_FORMAT}" --version

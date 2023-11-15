@@ -80,7 +80,7 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
   `cmake -S . -B build -DTANGO_CLANG_FORMAT=ON` and call it like `cmake --build build --target clang-format`
 - Please refrain from adding "fix formatting" commits as these are in general
   not necessary and will also not be accepted.
-- The current reference version of clang-format is 16, packages are available
+- The current reference version of clang-format is 17, packages are available
   for [debian](https://apt.llvm.org),
   [fedora](https://copr.fedorainfracloud.org/coprs/g/fedora-llvm-team/llvm-snapshots/),
   [MacOSX](https://formulae.brew.sh/formula/clang-format#default),
