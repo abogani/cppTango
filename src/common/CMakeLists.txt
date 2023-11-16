@@ -15,9 +15,8 @@ else()
         # in order to keep the same behaviour as in the past:
         # A Linux Tango Device server using the debug tango lib will display
         # twice "Ready to accept requests" at startup
-        target_compile_definitions(common_objects PRIVATE _REENTRANT)
     else()
-        target_compile_definitions(common_objects PRIVATE _REENTRANT _TANGO_LIB)
+        target_compile_definitions(common_objects PRIVATE _TANGO_LIB)
     endif()
 endif()
 

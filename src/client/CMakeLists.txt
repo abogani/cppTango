@@ -50,9 +50,8 @@ else()
         # in order to keep the same behaviour as in the past:
         # cout messages are not redirected to the logging system but are
         # instead displayed directly on the console
-        target_compile_definitions(client_objects PRIVATE _REENTRANT)
     else()
-        target_compile_definitions(client_objects PRIVATE _REENTRANT _TANGO_LIB)
+        target_compile_definitions(client_objects PRIVATE _TANGO_LIB)
     endif()
 endif()
 
