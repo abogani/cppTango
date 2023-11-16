@@ -65,7 +65,6 @@ cmake                                                                    \
   -DCMAKE_VERBOSE_MAKEFILE=ON                                            \
   -Dcppzmq_ROOT=${INSTALL_DIR}                                           \
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                 \
-  -DCMAKE_CXX_FLAGS_RELEASE="-g -O3"                                     \
   -DCMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS} \
   -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                                     \
   -DTANGO_USE_LIBCPP=${TANGO_USE_LIBCPP}                                 \
