@@ -1046,11 +1046,7 @@ AttributeValueList_5 *FwdAttribute::write_read_root_att(Tango::AttributeValueLis
             // Now, call the root device server
             //
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
-            attr_value_list_5 = dev5->write_read_attributes_5(values, dvsa, ci);
+            attr_value_list_5 = dev5->write_read_attributes_5(values, dvsa, dp->get_client_identification());
 
             ctr = 2;
         }

@@ -653,7 +653,8 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
 
     bool from_fwd_cb = false;
     Tango::LockerLanguage cl_lang = cl_id._d();
-    if(cl_lang == Tango::CPP && cl_id.cpp_clnt() == 0)
+    if((cl_lang == Tango::CPP && cl_id.cpp_clnt() == 0) ||
+       (cl_lang == Tango::CPP_6 && cl_id.cpp_clnt_6().cpp_clnt == 0))
     {
         from_fwd_cb = true;
     }

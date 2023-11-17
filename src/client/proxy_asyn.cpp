@@ -142,12 +142,8 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
 
     if(version >= 4)
     {
-        ClntIdent ci;
-        ApiUtil *au = ApiUtil::instance();
-        ci.cpp_clnt(au->get_client_pid());
-
         request->add_in_arg() <<= source;
-        request->add_in_arg() <<= ci;
+        request->add_in_arg() <<= get_client_identification();
     }
     else if(version >= 2)
     {
@@ -811,24 +807,18 @@ long DeviceProxy::read_attributes_asynch(const std::vector<std::string> &attr_na
     CORBA::Request_ptr request;
     if(version >= 5)
     {
-        ClntIdent ci;
-        ApiUtil *au = ApiUtil::instance();
-        ci.cpp_clnt(au->get_client_pid());
         request = Connection::device_5->_request("read_attributes_5");
         request->add_in_arg() <<= names;
         request->add_in_arg() <<= source;
-        request->add_in_arg() <<= ci;
+        request->add_in_arg() <<= get_client_identification();
         request->set_return_type(Tango::_tc_AttributeValueList_5);
     }
     else if(version == 4)
     {
-        ClntIdent ci;
-        ApiUtil *au = ApiUtil::instance();
-        ci.cpp_clnt(au->get_client_pid());
         request = Connection::device_4->_request("read_attributes_4");
         request->add_in_arg() <<= names;
         request->add_in_arg() <<= source;
-        request->add_in_arg() <<= ci;
+        request->add_in_arg() <<= get_client_identification();
         request->set_return_type(Tango::_tc_AttributeValueList_4);
     }
     else if(version == 3)
@@ -2017,13 +2007,9 @@ long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &at
     CORBA::Request_ptr request;
     if(version >= 4)
     {
-        ClntIdent ci;
-        ApiUtil *au = ApiUtil::instance();
-        ci.cpp_clnt(au->get_client_pid());
-
         request = device_4->_request("write_attributes_4");
         request->add_in_arg() <<= att_4;
-        request->add_in_arg() <<= ci;
+        request->add_in_arg() <<= get_client_identification();
         request->exceptions()->add(Tango::_tc_MultiDevFailed);
     }
     else if(version == 3)
@@ -2102,13 +2088,9 @@ long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
 
     if(version >= 4)
     {
-        ClntIdent ci;
-        ApiUtil *au = ApiUtil::instance();
-        ci.cpp_clnt(au->get_client_pid());
-
         request = device_4->_request("write_attributes_4");
         request->add_in_arg() <<= att_4;
-        request->add_in_arg() <<= ci;
+        request->add_in_arg() <<= get_client_identification();
         request->exceptions()->add(Tango::_tc_MultiDevFailed);
     }
     else if(version == 3)
