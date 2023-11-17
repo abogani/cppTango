@@ -13,6 +13,18 @@ variables: &variables
   TOOLCHAIN_FILE: ""
   CTEST_PARALLEL_LEVEL: "1"
   BUILD_TESTING: "ON"
+  # docker image names and versions
+  DEBIAN_12_IMAGE: "debian12:v4"
+  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v3"
+  DEBIAN_11_IMAGE: "debian11:v3"
+  UBUNTU_20_IMAGE: "ubuntu-20.04:v3"
+  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v3"
+  LLVM_LATEST_IMAGE: "llvm-latest:v6"
+  GCC_LATEST_IMAGE: "gcc-latest:v3"
+  FEDORA_IMAGE: "fedora37:v3"
+  ALPINE_IMAGE: "alpine-3.15:v3"
+  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v3"
+  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v2"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
 workflow:
@@ -35,7 +47,7 @@ pre-commit:
       - ${PRE_COMMIT_HOME}
 
 code-format:
-  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/llvm-latest:v5
+  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${LLVM_LATEST_IMAGE}
   services: []
   tags:
     - docker, linux, amd64
@@ -97,7 +109,7 @@ abi-api-compliance-check:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: gcc-latest:v2
+    OS_TYPE: "${GCC_LATEST_IMAGE}"
     GIT_COMMITTER_NAME: "$GITLAB_USER_NAME"
     GIT_COMMITTER_EMAIL: "$GITLAB_USER_EMAIL"
     CI_TARGET_BRANCH: "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
@@ -120,7 +132,7 @@ llvm-latest:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v5
+    OS_TYPE: "${LLVM_LATEST_IMAGE}"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
@@ -128,7 +140,7 @@ gcc-latest:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: gcc-latest:v2
+    OS_TYPE: "${GCC_LATEST_IMAGE}"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
 
@@ -136,14 +148,14 @@ ubuntu-20.04:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04:v2
+    OS_TYPE: "${UBUNTU_20_IMAGE}"
 
 coverage:
   <<: *job-template-with-tests
   variables:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
@@ -178,14 +190,14 @@ debian12-static:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
     BUILD_SHARED_LIBS: "OFF"
 
 debian12-no-pch:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
 
@@ -193,7 +205,7 @@ debian12-release:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
     CMAKE_BUILD_TYPE: Release
     TANGO_WARNINGS_AS_ERRORS: "ON"
 
@@ -201,7 +213,7 @@ debian12-release-no-pch:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
     CMAKE_BUILD_TYPE: Release
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
@@ -210,20 +222,20 @@ debian12:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
 
 debian12-no-jpeg:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
     TANGO_USE_JPEG: "OFF"
 
 debian12-cross-32bit:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12-cross-32bit:v2
+    OS_TYPE: "${DEBIAN_12_CROSS_IMAGE}"
     CMAKE_BUILD_TYPE: "Debug"
     TOOLCHAIN_FILE: "configure/toolchain-i686.cmake"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
@@ -234,19 +246,19 @@ debian11:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: debian11:v2
+    OS_TYPE: "${DEBIAN_11_IMAGE}"
 
 ubuntu-20.04-jpeg9:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04-jpeg9:v2
+    OS_TYPE: "${UBUNTU_20_JPEG9_IMAGE}"
 
 clang-analyzer:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04:v2
+    OS_TYPE: "${UBUNTU_20_IMAGE}"
     CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "OFF"
@@ -296,7 +308,7 @@ clang-tidy:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v5
+    OS_TYPE: "${LLVM_LATEST_IMAGE}"
     CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
     CMAKE_UNITY_BUILD: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
@@ -346,7 +358,7 @@ cmake-with-locations-and-min-versions-ROOT:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian-minimum-versions:v2
+    OS_TYPE: "${DEBIAN_MINIMUM_VERSIONS_IMAGE}"
   parallel:
     matrix:
       - BUILD_TYPE: [Release, Debug, RelWithDebInfo, MinSizeRel]
@@ -371,7 +383,7 @@ cmake-with-locations-and-min-versions-PKGCONFIG:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian-minimum-versions:v2
+    OS_TYPE: "${DEBIAN_MINIMUM_VERSIONS_IMAGE}"
   parallel:
     matrix:
       - BUILD_TYPE: [Release, Debug, RelWithDebInfo, MinSizeRel]
@@ -393,19 +405,19 @@ debian-maximum-cmake:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian-maximum-cmake:v1
+    OS_TYPE: "${DEBIAN_MAXIMUM_CMAKE_IMAGE}"
 
 alpine:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: alpine-3.15:v2
+    OS_TYPE: "${ALPINE_IMAGE}"
 
 doxygen-documentation:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
     TANGO_MAKE_TARGET: "doc"
@@ -418,7 +430,7 @@ sanitizer:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: ubuntu-20.04:v2
+    OS_TYPE: "${UBUNTU_20_IMAGE}"
     CC: /usr/lib/llvm-12/bin/clang
     CXX: /usr/lib/llvm-12/bin/clang++
     ASAN_OPTIONS: detect_stack_use_after_return=1
@@ -456,7 +468,7 @@ libcpp:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: llvm-latest:v5
+    OS_TYPE: "${LLVM_LATEST_IMAGE}"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_USE_LIBCPP: "ON"
@@ -465,7 +477,7 @@ pkgconfig-fedora37:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: fedora37:v2
+    OS_TYPE: "${FEDORA_IMAGE}"
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
   script: # override
@@ -476,7 +488,7 @@ cmake-superproject:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: debian12:v3
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
   script: # override
     - cd tests/superproject
     - ../../ci/config.sh

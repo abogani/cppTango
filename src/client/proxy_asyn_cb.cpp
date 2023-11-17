@@ -445,6 +445,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
 
         switch(version)
         {
+        case 6:
         case 5:
             dii_any >>= received_5;
             nb_received = received_5->length();
@@ -472,7 +473,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
         {
             if(version >= 3)
             {
-                if(version == 5)
+                if(version >= 5)
                 {
                     ApiUtil::attr_to_device(&((*received_5)[i]), version, &((*dev_attr)[i]));
                 }

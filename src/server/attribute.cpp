@@ -4135,6 +4135,13 @@ void Attribute::fire_change_event(DevFailed *except)
         {
             switch(*ite)
             {
+            case 6:
+                if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                {
+                    remove_client_lib(6, std::string(EventName[CHANGE_EVENT]));
+                }
+                break;
+
             case 5:
                 if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
@@ -4606,6 +4613,13 @@ void Attribute::fire_archive_event(DevFailed *except)
         {
             switch(*ite)
             {
+            case 6:
+                if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                {
+                    remove_client_lib(6, std::string(EventName[ARCHIVE_EVENT]));
+                }
+                break;
+
             case 5:
                 if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
@@ -5081,6 +5095,13 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         {
             switch(*ite)
             {
+            case 6:
+                if(user5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                {
+                    remove_client_lib(6, std::string(EventName[USER_EVENT]));
+                }
+                break;
+
             case 5:
                 if(user5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
@@ -5369,6 +5390,13 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
     {
         switch(*ite)
         {
+        case 6:
+            if(periodic5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                remove_client_lib(6, std::string(EventName[PERIODIC_EVENT]));
+            }
+            break;
+
         case 5:
             if(periodic5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {

@@ -997,6 +997,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
 
         switch(version)
         {
+        case 6:
         case 5:
             dii_any >>= received_5;
             nb_received = received_5->length();
@@ -1024,7 +1025,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
         {
             if(version >= 3)
             {
-                if(version == 5)
+                if(version >= 5)
                 {
                     ApiUtil::attr_to_device(&((*received_5)[i]), version, &((*dev_attr)[i]));
                 }
@@ -1200,6 +1201,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
 
         switch(version)
         {
+        case 6:
         case 5:
             dii_any >>= received_5;
             break;
@@ -1219,7 +1221,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
 
         if(version >= 3)
         {
-            if(version == 5)
+            if(version >= 5)
             {
                 ApiUtil::attr_to_device(&((*received_5)[0]), version, dev_attr);
             }
@@ -1432,6 +1434,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
 
     switch(version)
     {
+    case 6:
     case 5:
         dii_any >>= received_5;
         nb_received = received_5->length();
@@ -1459,7 +1462,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
     {
         if(version >= 3)
         {
-            if(version == 5)
+            if(version >= 5)
             {
                 ApiUtil::attr_to_device(&((*received_5)[i]), version, &((*dev_attr)[i]));
             }
@@ -1670,6 +1673,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 
     switch(version)
     {
+    case 6:
     case 5:
         dii_any >>= received_5;
         break;
@@ -1689,7 +1693,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 
     if(version >= 3)
     {
-        if(version == 5)
+        if(version >= 5)
         {
             ApiUtil::attr_to_device(&((*received_5)[0]), version, dev_attr);
         }

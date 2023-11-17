@@ -183,7 +183,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
 
                         for(size_t i = 0; i < cl_lib.size(); i++)
                         {
-                            if(cl_lib[i] == 5)
+                            if(cl_lib[i] >= 5)
                             {
                                 attr.AttributeConfig_3_2_AttributeConfig_5(mod_conf, conf5);
                                 attr.add_config_5_specific(conf5);
@@ -207,7 +207,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                                     this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                             }
 
-                            if(cl_lib[i] == 5)
+                            if(cl_lib[i] >= 5)
                             {
                                 ad.attr_conf_5 = nullptr;
                             }
@@ -244,7 +244,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                                     this, ad, (Tango::DevFailed *) nullptr, tmp_name);
                             }
 
-                            if(cl_lib[i] == 5)
+                            if(cl_lib[i] >= 5)
                             {
                                 ad.attr_conf_5 = nullptr;
                             }

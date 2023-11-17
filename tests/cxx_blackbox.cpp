@@ -138,6 +138,7 @@ class BlackboxTestSuite : public CxxTest::TestSuite
             break;
         case 4:
         case 5:
+        case 6:
             version_str = "_4";
             break;
         default:

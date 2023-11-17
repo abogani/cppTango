@@ -125,7 +125,7 @@ Tango::AttributeValueList_3 *Device_3Impl::read_attributes_3(const Tango::DevVar
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_attr(names, 3, source);
+        blackbox_ptr->insert_attr(names, idl_version, source);
     }
     store_in_bb = true;
 
@@ -1567,7 +1567,7 @@ void Device_3Impl::write_attributes_3(const Tango::AttributeValueList &values)
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_attr(values, 3);
+        blackbox_ptr->insert_attr(values, idl_version);
         check_lock("write_attributes_3");
     }
     store_in_bb = true;
@@ -2435,7 +2435,7 @@ void Device_3Impl::set_attribute_config_3(const Tango::AttributeConfigList_3 &ne
     }
     store_in_bb = true;
 
-    return set_attribute_config_3_local(new_conf, new_conf[0], false, 3);
+    return set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

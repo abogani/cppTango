@@ -203,6 +203,8 @@ Connection::Connection(const Connection &sou) :
 
     device_5 = sou.device_5;
 
+    device_6 = sou.device_6;
+
     if(sou.ext != nullptr)
     {
         ext = std::make_unique<ConnectionExt>();
@@ -426,70 +428,85 @@ void Connection::connect(const std::string &corba_name)
                 }
             }
 
-            device_5 = Device_5::_narrow(obj);
+            device_6 = Device_6::_narrow(obj);
 
-            if(CORBA::is_nil(device_5))
+            if(CORBA::is_nil(device_6))
             {
-                device_4 = Device_4::_narrow(obj);
+                device_5 = Device_5::_narrow(obj);
 
-                if(CORBA::is_nil(device_4))
+                if(CORBA::is_nil(device_5))
                 {
-                    device_3 = Device_3::_narrow(obj);
+                    device_4 = Device_4::_narrow(obj);
 
-                    if(CORBA::is_nil(device_3))
+                    if(CORBA::is_nil(device_4))
                     {
-                        device_2 = Device_2::_narrow(obj);
-                        if(CORBA::is_nil(device_2))
-                        {
-                            device = Device::_narrow(obj);
-                            if(CORBA::is_nil(device))
-                            {
-                                std::cerr << "Can't build connection to object " << corba_name << std::endl;
-                                connection_state = CONNECTION_NOTOK;
+                        device_3 = Device_3::_narrow(obj);
 
-                                TangoSys_OMemStream desc;
-                                desc << "Failed to connect to device " << dev_name();
-                                desc << " (device nil after _narrowing)" << std::ends;
-                                TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_CantConnectToDevice, desc.str());
+                        if(CORBA::is_nil(device_3))
+                        {
+                            device_2 = Device_2::_narrow(obj);
+                            if(CORBA::is_nil(device_2))
+                            {
+                                device = Device::_narrow(obj);
+                                if(CORBA::is_nil(device))
+                                {
+                                    std::cerr << "Can't build connection to object " << corba_name << std::endl;
+                                    connection_state = CONNECTION_NOTOK;
+
+                                    TangoSys_OMemStream desc;
+                                    desc << "Failed to connect to device " << dev_name();
+                                    desc << " (device nil after _narrowing)" << std::ends;
+                                    TANGO_THROW_API_EXCEPTION(ApiConnExcept, API_CantConnectToDevice, desc.str());
+                                }
+                                else
+                                {
+                                    device->_non_existent();
+                                    version = 1;
+                                }
                             }
                             else
                             {
-                                device->_non_existent();
-                                version = 1;
+                                device_2->_non_existent();
+                                version = 2;
+                                device = Device_2::_duplicate(device_2);
                             }
                         }
                         else
                         {
-                            device_2->_non_existent();
-                            version = 2;
-                            device = Device_2::_duplicate(device_2);
+                            device_3->_non_existent();
+                            version = 3;
+                            device_2 = Device_3::_duplicate(device_3);
+                            device = Device_3::_duplicate(device_3);
                         }
                     }
                     else
                     {
-                        device_3->_non_existent();
-                        version = 3;
-                        device_2 = Device_3::_duplicate(device_3);
-                        device = Device_3::_duplicate(device_3);
+                        device_4->_non_existent();
+                        version = 4;
+                        device_3 = Device_4::_duplicate(device_4);
+                        device_2 = Device_4::_duplicate(device_4);
+                        device = Device_4::_duplicate(device_4);
                     }
                 }
                 else
                 {
-                    device_4->_non_existent();
-                    version = 4;
-                    device_3 = Device_4::_duplicate(device_4);
-                    device_2 = Device_4::_duplicate(device_4);
-                    device = Device_4::_duplicate(device_4);
+                    device_5->_non_existent();
+                    version = 5;
+                    device_4 = Device_5::_duplicate(device_5);
+                    device_3 = Device_5::_duplicate(device_5);
+                    device_2 = Device_5::_duplicate(device_5);
+                    device = Device_5::_duplicate(device_5);
                 }
             }
             else
             {
-                device_5->_non_existent();
-                version = 5;
-                device_4 = Device_5::_duplicate(device_5);
-                device_3 = Device_5::_duplicate(device_5);
-                device_2 = Device_5::_duplicate(device_5);
-                device = Device_5::_duplicate(device_5);
+                device_6->_non_existent();
+                version = 6;
+                device_5 = Device_6::_duplicate(device_6);
+                device_4 = Device_6::_duplicate(device_6);
+                device_3 = Device_6::_duplicate(device_6);
+                device_2 = Device_6::_duplicate(device_6);
+                device = Device_6::_duplicate(device_6);
             }
 
             //
@@ -3905,6 +3922,7 @@ AttributeInfoListEx *DeviceProxy::get_attribute_config_ex(const std::vector<std:
             break;
 
             case 5:
+            case 6:
             {
                 Device_5_var dev = Device_5::_duplicate(device_5);
                 attr_config_list_5 = dev->get_attribute_config_5(attr_list);
@@ -4516,7 +4534,7 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
                 ApiUtil *au = ApiUtil::instance();
                 ci.cpp_clnt(au->get_client_pid());
 
-                if(version == 5)
+                if(version >= 5)
                 {
                     Device_5_var dev = Device_5::_duplicate(device_5);
                     dev->set_attribute_config_5(attr_config_list_5, ci);
@@ -5294,7 +5312,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
             ApiUtil *au = ApiUtil::instance();
             ci.cpp_clnt(au->get_client_pid());
 
-            if(version == 5)
+            if(version >= 5)
             {
                 Device_5_var dev = Device_5::_duplicate(device_5);
                 attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, ci);
@@ -5422,7 +5440,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
     {
         if(version >= 3)
         {
-            if(version == 5)
+            if(version >= 5)
             {
                 ApiUtil::attr_to_device(&(attr_value_list_5[i]), version, &(*dev_attr)[i]);
             }
@@ -9577,6 +9595,9 @@ int DeviceProxy::get_tango_lib_version()
 
     case 5:
         ret = 902;
+        break;
+    case 6:
+        ret = 1000;
         break;
 
     default:

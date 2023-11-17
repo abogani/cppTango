@@ -2284,7 +2284,7 @@ void ZmqEventConsumer::push_zmq_event(
                         if(evt_cb.device_idl > 4)
                         {
                             //
-                            // Event if the device sending the event is IDL 5
+                            // Event if the device sending the event is IDL 5/6
                             //
 
                             try
@@ -2292,7 +2292,7 @@ void ZmqEventConsumer::push_zmq_event(
                                 ev_attr_conf = true;
                                 (AttributeConfig_5 &) ac5 <<= event_data_cdr;
                                 attr_conf_5 = &ac5.in();
-                                vers = 5;
+                                vers = evt_cb.device_idl;
                                 attr_info_ex = new AttributeInfoEx();
                                 *attr_info_ex = const_cast<AttributeConfig_5 *>(attr_conf_5);
                             }
@@ -2393,7 +2393,7 @@ void ZmqEventConsumer::push_zmq_event(
                             event_data_cdr.set_un_marshal_type(TangoCdrMemoryStream::UN_ATT);
                             try
                             {
-                                vers = 5;
+                                vers = evt_cb.device_idl;
                                 zav5.operator<<=(event_data_cdr);
                                 z_attr_value_5 = &zav5;
                                 dev_attr = new(DeviceAttribute);

@@ -177,6 +177,13 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
+        case 6:
+            if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(6, std::string(EventName[CHANGE_EVENT]));
+            }
+            break;
+
         case 5:
             if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
@@ -220,6 +227,12 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
+        case 6:
+            if(periodic5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(6, std::string(EventName[PERIODIC_EVENT]));
+            }
+            break;
         case 5:
             if(periodic5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
@@ -263,6 +276,13 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
+        case 6:
+            if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(6, std::string(EventName[ARCHIVE_EVENT]));
+            }
+            break;
+
         case 5:
             if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
@@ -445,6 +465,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
@@ -718,6 +739,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
@@ -880,6 +902,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
@@ -2287,14 +2310,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
     // Called for AttributeConfig_3 or AttributeConfig_5 ?
     //
 
-    bool conf5 = false;
-    int vers = 4;
-
-    if(attr_conf.attr_conf_5 != nullptr)
-    {
-        conf5 = true;
-        vers = 5;
-    }
+    const int vers = device_impl->get_dev_idl_version();
 
     //
     // Return if there is no client or if the last client subscription is more than 10 mins ago
@@ -2303,7 +2319,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
     {
         omni_mutex_lock oml(event_mutex);
 
-        if(conf5 == true)
+        if(vers >= 5)
         {
             attr_sub = attr.event_attr_conf5_subscription;
         }
@@ -2340,7 +2356,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
     std::vector<long> filterable_data_lg;
 
     std::string ev_type = CONF_TYPE_EVENT;
-    if(conf5 == true)
+    if(vers >= 5)
     {
         ev_type = EVENT_COMPAT_IDL5 + ev_type;
     }

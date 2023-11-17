@@ -311,7 +311,7 @@ int main(int argc, char **argv)
 
 #ifndef COMPAT
         int vers = device->get_idl_version();
-        assert(vers == 5);
+        assert(vers == 6);
 
         TEST_LOG << "   Get IDL version --> OK" << endl;
 #endif

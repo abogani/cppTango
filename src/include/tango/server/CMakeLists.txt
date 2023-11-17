@@ -21,6 +21,7 @@ set(SERVER_HEADERS attrdesc.h
     device_3_templ.h
     device_4.h
     device_5.h
+    device_6.h
     deviceclass.h
     devintr.h
     dintrthread.h

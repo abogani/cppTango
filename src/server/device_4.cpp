@@ -462,7 +462,7 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
     // Record operation request in black box
     //
 
-    blackbox_ptr->insert_cmd_cl_ident(in_cmd, cl_id, 4, source);
+    blackbox_ptr->insert_cmd_cl_ident(in_cmd, cl_id, idl_version, source);
 
     //
     // Do not check lock validity if State or Status is requested using command
@@ -514,7 +514,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_attr(names, cl_id, 4, source);
+        blackbox_ptr->insert_attr(names, cl_id, idl_version, source);
     }
     store_in_bb = true;
 
@@ -773,7 +773,7 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
 
     if(store_in_bb == true)
     {
-        blackbox_ptr->insert_attr(values, cl_id, 4);
+        blackbox_ptr->insert_attr(values, cl_id, idl_version);
     }
     store_in_bb = true;
 
@@ -834,7 +834,7 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
     //
 
     store_in_bb = false;
-    return set_attribute_config_3_local(new_conf, new_conf[0], false, 4);
+    return set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
 }
 
 //+-------------------------------------------------------------------------
@@ -864,7 +864,7 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
     dvsa.length(1);
     dvsa[0] = Tango::string_dup(values[0].name);
 
-    blackbox_ptr->insert_wr_attr(values, dvsa, cl_id, 4);
+    blackbox_ptr->insert_wr_attr(values, dvsa, cl_id, idl_version);
 
     //
     // Check if the device is locked and by who
