@@ -48,6 +48,12 @@ if(TANGO_ENABLE_SANITIZER)
     endif()
 endif()
 
+
+# telemetry
+option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" OFF)
+option(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
+option(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
+
 #need to define the version of the library
 set(MAJOR_VERSION "10")
 set(MINOR_VERSION "0")
@@ -114,6 +120,21 @@ target_include_directories(tango PUBLIC
 
 if(TANGO_USE_JPEG)
     target_link_libraries(tango PUBLIC JPEG::JPEG)
+endif()
+
+if (TANGO_USE_TELEMETRY)
+    if(NOT TANGO_TELEMETRY_USE_HTTP AND NOT TANGO_TELEMETRY_USE_GRPC)
+        message(FATAL_ERROR 
+        "neither TANGO_TELEMETRY_USE_HTTP nor TANGO_TELEMETRY_USE_GRPC is defined!\n"
+        "use TANGO_TELEMETRY_USE_HTTP and/or TANGO_TELEMETRY_USE_GRPC to select the suported protocol(s).")
+    endif()
+    target_link_libraries(tango PUBLIC opentelemetry-cpp::trace)
+    if (TANGO_TELEMETRY_USE_HTTP)
+        target_link_libraries(tango PUBLIC opentelemetry-cpp::otlp_http_exporter)
+    endif()
+    if (TANGO_TELEMETRY_USE_GRPC)
+        target_link_libraries(tango PUBLIC opentelemetry-cpp::otlp_grpc_exporter)
+    endif()
 endif()
 
 if(WIN32)

@@ -2,6 +2,9 @@ include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
 option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
+option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" OFF)
+option(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
+option(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
 
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
@@ -51,11 +54,19 @@ message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
 find_package(cppzmq REQUIRED)
 find_package(tangoidl REQUIRED)
-
 find_package(omniORB4 REQUIRED)
 
+if (TANGO_USE_TELEMETRY)
+    find_package(protobuf REQUIRED)
+    find_package(gRPC REQUIRED)
+    message(STATUS "Tango telemetry (OpenTelemetry) enabled")
+    find_package(opentelemetry-cpp REQUIRED)
+else()
+    message(STATUS "Tango telemetry (OpenTelemetry) disabled")
+endif()
+
 if(NOT OMNIIDL)
-  message(FATAL_ERROR "Could not find a usable omniidl")
+    message(FATAL_ERROR "Could not find a usable omniidl")
 endif()
 
 function(tango_find_omniorb_version)

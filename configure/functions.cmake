@@ -17,4 +17,16 @@ function(set_cflags_and_include target)
   if(TANGO_USE_JPEG)
       target_link_libraries(${target} PRIVATE JPEG::JPEG)
   endif()
+
+  if (TANGO_USE_TELEMETRY)
+    target_link_libraries(${target} PUBLIC opentelemetry-cpp::trace)
+    if (TANGO_TELEMETRY_USE_HTTP)
+      target_link_libraries(${target} PUBLIC opentelemetry-cpp::otlp_http_exporter)
+    endif()
+    if (TANGO_TELEMETRY_USE_GRPC)
+      target_link_libraries(${target} PUBLIC opentelemetry-cpp::otlp_grpc_exporter)
+    endif()
+  endif()
+
+
 endfunction()
