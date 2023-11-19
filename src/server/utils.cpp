@@ -60,6 +60,10 @@
   #include <ws2tcpip.h>
 #endif /* _TG_WINDOWS_ */
 
+#if defined(OBSERVABILITY_ENABLED)
+  #include <tango/common/observability/observability.h>
+#endif
+
 #include <omniORB4/omniInterceptors.h>
 
 namespace
@@ -539,6 +543,13 @@ void Util::effective_job(int argc, char *argv[])
         //
 
         create_CORBA_objects();
+
+        //
+        // Initialize observability stuffs
+        //
+#if defined(OBSERVABILITY_ENABLED)
+        observability::Service::initialize(ds_name);
+#endif
 
         //
         // Initialize logging stuffs
@@ -1854,6 +1865,9 @@ Util::~Util()
         // JM : 9.8.2005 : destroy() should be called at the exit of run()!
         // orb->destroy();
         Logging::cleanup();
+  #if defined(OBSERVABILITY_ENABLED)
+        Tango::observability::Service::terminate();
+  #endif
     }
 #endif
 }
