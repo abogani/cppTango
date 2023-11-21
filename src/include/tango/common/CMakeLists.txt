@@ -1,5 +1,5 @@
 add_subdirectory(utils)
-add_subdirectory(observability)
+add_subdirectory(telemetry)
 
 set(tango_version_h ${CMAKE_CURRENT_BINARY_DIR}/tango_version.h)
 configure_file(tango_version.h.in ${tango_version_h})

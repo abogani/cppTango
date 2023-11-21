@@ -90,7 +90,7 @@ include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/include>
 include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/log4tango/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-#source code
+#source code 
 add_subdirectory("log4tango")
 add_subdirectory("src")
 
@@ -103,7 +103,6 @@ if(BUILD_TESTING)
 
   add_subdirectory("tests")
 endif()
-
 
 add_library(tango $<TARGET_OBJECTS:log4tango_objects>
                   $<TARGET_OBJECTS:common_objects>

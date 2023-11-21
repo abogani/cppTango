@@ -37,7 +37,7 @@
 #include <tango/server/eventsupplier.h>
 
 #if defined(OBSERVABILITY_ENABLED)
-  #include <tango/common/observability/observability.h>
+  #include <tango/common/telemetry/telemetry.h>
 #endif
 
 namespace Tango
@@ -173,11 +173,6 @@ void Util::shutdown_ds()
 
     Logging::cleanup();
     TANGO_LOG_DEBUG << "Logging cleaned-up" << std::endl;
-
-#if defined(OBSERVABILITY_ENABLED)
-    Tango::observability::Service::terminate();
-    TANGO_LOG_DEBUG << "observability::Service cleaned-up" << std::endl;
-#endif
 }
 
 } // namespace Tango

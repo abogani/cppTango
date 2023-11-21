@@ -1,37 +1,26 @@
-#if defined(OBSERVABILITY_ENABLED)
+#if defined(TELEMETRY_ENABLED)
 
-  #include <memory>
-  #include <iostream>
   #include <grpcpp/grpcpp.h>
+  #include <iostream>
+  #include <memory>
+  #include <opentelemetry/sdk/version/version.h>
+  #include <opentelemetry/context/propagation/global_propagator.h>
   #include <opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h>
   #include <opentelemetry/sdk/resource/resource.h>
   #include <opentelemetry/sdk/trace/processor.h>
   #include <opentelemetry/sdk/trace/simple_processor_factory.h>
-  #include <opentelemetry/sdk/trace/tracer_provider_factory.h>
   #include <opentelemetry/sdk/trace/tracer_provider.h>
+  #include <opentelemetry/sdk/trace/tracer_provider_factory.h>
   #include <opentelemetry/trace/provider.h>
-  #include <opentelemetry/context/propagation/global_propagator.h>
-  #include <tango/common/observability/observability.h>
-  #include "opentelemetry/sdk/version/version.h"
+  #include <tango/common/telemetry/telemetry.h>
 
-namespace Tango::observability
+namespace Tango::telemetry
 {
-
 //-------------------------------------------------------------------------------------------------
 // The default endpoint to which traces are exported (default value)
 //-------------------------------------------------------------------------------------------------
 // TODO: default endpoint port
-const std::string Service::DEFAULT_COLLECTOR_ENDPOINT = "localhost:4317";
-
-//-------------------------------------------------------------------------------------------------
-// The default endpoint of the observability service (overwrites the DEFAULT_COLLECTOR_ENDPOINT)
-//-------------------------------------------------------------------------------------------------
-std::string Service::default_collector_endpoint;
-
-//-------------------------------------------------------------------------------------------------
-// The bridge between Tango (CORBA) and OpenTelemetry
-//-------------------------------------------------------------------------------------------------
-TangoCarrier Service::carrier;
+const std::string Interface::DEFAULT_COLLECTOR_ENDPOINT = "localhost:4317";
 
 //-------------------------------------------------------------------------------------------------
 // TangoCarrier::Set - trace context propagation - input
@@ -50,9 +39,9 @@ void TangoCarrier::Set(opentelemetry::nostd::string_view key, opentelemetry::nos
 //-------------------------------------------------------------------------------------------------
 opentelemetry::nostd::string_view TangoCarrier::Get(opentelemetry::nostd::string_view key) const noexcept
 {
-    // Get: implementation to retrieve the value for the given key from the carrier
-    // For example, we might look up the value in a map or another data structure.
-    // Here, we return a dummy string for demonstration purposes.
+    // Get: implementation to retrieve the value for the given key from the
+    // carrier For example, we might look up the value in a map or another data
+    // structure. Here, we return a dummy string for demonstration purposes.
 
     std::cout << "TangoCarrier::Get::key: " << key.data() << std::endl;
 
@@ -70,8 +59,9 @@ Tracer::Tracer(const opentelemetry::nostd::shared_ptr<opentelemetry::trace::Trac
 //-------------------------------------------------------------------------------------------------
 // Tracer::start_span
 //-------------------------------------------------------------------------------------------------
-std::shared_ptr<Tango::observability::Span>
-    Tracer::start_span(const std::string &name, const Span::Attributes &attributes, const Span::Kind &kind) noexcept
+std::shared_ptr<Tango::telemetry::Span> Tracer::start_span(const std::string &name,
+                                                           const Tango::telemetry::Attributes &attributes,
+                                                           const Tango::telemetry::Span::Kind &kind) noexcept
 {
     opentelemetry::trace::StartSpanOptions start_span_opts;
 
@@ -94,21 +84,20 @@ std::shared_ptr<Tango::observability::Span>
         break;
     }
 
-    return std::shared_ptr<Tango::observability::Span>(
-        new Tango::observability::Span(otel_tracer->StartSpan(name, attributes, start_span_opts)));
+    return std::make_shared<Tango::telemetry::Span>(otel_tracer->StartSpan(name, attributes, start_span_opts));
 }
 
 //-------------------------------------------------------------------------------------------------
-// Service::initialize
+// Interface::initialize
 //-------------------------------------------------------------------------------------------------
-void Service::initialize(const std::string &dserver_name, const std::string &endpoint)
+void Interface::initialize(const Interface::Configuration &srv_cfg) noexcept
 {
-    // overwrite (or not) the default endpoint
-    Service::default_collector_endpoint = endpoint;
+    // TODO: check config???
+    cfg = srv_cfg;
 
     // init the trace provider
     // --------------------------------------------------------
-    init_trace_provider(dserver_name, endpoint);
+    init_trace_provider();
 
     // init the propagator
     // --------------------------------------------------------
@@ -116,52 +105,82 @@ void Service::initialize(const std::string &dserver_name, const std::string &end
 }
 
 //-------------------------------------------------------------------------------------------------
-// Service::terminate
+// Interface::terminate
 //-------------------------------------------------------------------------------------------------
-void Service::terminate()
+void Interface::terminate() noexcept
 {
     cleanup_trace_provider();
     cleanup_propagator();
 }
 
 //-------------------------------------------------------------------------------------------------
-// Service::init_trace_provider
+// Interface::init_trace_provider
 //-------------------------------------------------------------------------------------------------
-void Service::init_trace_provider(const std::string &dserver_name, const std::string &endpoint)
+void Interface::init_trace_provider() noexcept
 {
     // init the trace provider
     // --------------------------------------------------------
-
-    // step 1 - create the exporter
     opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;
-    opts.endpoint = endpoint;
+    opts.endpoint = cfg.collector_endpoint;
     opts.use_ssl_credentials = false;
     auto exporter = opentelemetry::exporter::otlp::OtlpGrpcExporterFactory::Create(opts);
 
-    // step 2 - create the processor
     auto processor = opentelemetry::sdk::trace::SimpleSpanProcessorFactory::Create(std::move(exporter));
 
-    // step 3 - create the provider
-    // TODO: add more "service" information - e.g., {"service.namespace", "aControlSystemDomain"}
-    auto resource_attributes = opentelemetry::sdk::resource::ResourceAttributes{{"service.name", dserver_name}};
+    auto util = Util::instance();
+    auto tg_api_util = Tango::ApiUtil::instance();
+
+    std::string tango_host;
+    tg_api_util->get_env_var("TANGO_HOST", tango_host);
+
+    std::string default_tracer;
+
+    opentelemetry::sdk::resource::ResourceAttributes resource_attributes;
+
+    std::string server_name(util->get_ds_name());
+
+    // check interface configuration kind
+    if(cfg.is_a(Interface::Kind::Server))
+    {
+        // interface is instantiated for a server
+        const Server &srv_info = std::get<0>(cfg.details);
+        default_tracer = srv_info.device_name;
+        resource_attributes = opentelemetry::sdk::resource::ResourceAttributes{
+            {"server.namespace", cfg.name_space.empty() ? "tango" : cfg.name_space},
+            {"service.name", srv_info.class_name},
+            {"service.instance.id", srv_info.device_name},
+            {"tango.server.name", util->get_ds_exec_name()},
+            {"tango.server.instance.id", util->get_ds_inst_name()},
+            {"tango.server.idl.version", util->get_version_str()},
+            {"tango.server.lib.version", util->get_tango_lib_release()},
+            {"process.id", util->get_pid()},
+            {"tango.process.kind", tg_api_util->in_server() ? "server" : "client"}};
+    }
+    else
+    {
+        // interface is instantiated for a client
+        const Client &clt_info = std::get<1>(cfg.details);
+        default_tracer = clt_info.name;
+        resource_attributes = opentelemetry::sdk::resource::ResourceAttributes{
+            {"interface.namespace", cfg.name_space.empty() ? "tango" : cfg.name_space},
+            {"service.name", clt_info.name},
+            {"service.instance.id", clt_info.name},
+            {"process.id", tg_api_util->get_client_pid()},
+            {"tango.process.kind", tg_api_util->in_server() ? "server" : "client"}};
+    }
+
     auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
+    provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
 
-    std::shared_ptr<opentelemetry::trace::TracerProvider> provider =
-        opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
-
-    // step 4 - set the global trace providermy
-    opentelemetry::trace::Provider::SetTracerProvider(provider);
+    auto otel_tracer = provider->GetTracer(default_tracer, OPENTELEMETRY_SDK_VERSION);
+    tracer = std::make_shared<Tango::telemetry::Tracer>(otel_tracer);
 }
 
 //-------------------------------------------------------------------------------------------------
-// Service::cleanup_trace_provider
+// Interface::cleanup_trace_provider
 //-------------------------------------------------------------------------------------------------
-void Service::cleanup_trace_provider()
+void Interface::cleanup_trace_provider() noexcept
 {
-    // we call ForceFlush to prevent to cancel running exportings, it's optional.
-    opentelemetry::nostd::shared_ptr<opentelemetry::trace::TracerProvider> provider =
-        opentelemetry::trace::Provider::GetTracerProvider();
-
     if(provider)
     {
         static_cast<opentelemetry::sdk::trace::TracerProvider *>(provider.get())->ForceFlush();
@@ -169,24 +188,35 @@ void Service::cleanup_trace_provider()
 }
 
 //-------------------------------------------------------------------------------------------------
-// Service::init_propagator
+// Interface::init_propagator
 //-------------------------------------------------------------------------------------------------
-void Service::init_propagator()
+void Interface::init_propagator() noexcept
 {
     // make the link between Tango (CORBA) and OpenTelemetry
     auto crtc = opentelemetry::context::RuntimeContext::GetCurrent();
     auto prop = opentelemetry::context::propagation::GlobalTextMapPropagator::GetGlobalPropagator();
-    prop->Inject(Service::carrier, crtc);
+    prop->Inject(Interface::carrier, crtc);
 }
 
 //-------------------------------------------------------------------------------------------------
-// Service::cleanup_propagator
+// Interface::cleanup_propagator
 //-------------------------------------------------------------------------------------------------
-void Service::cleanup_propagator()
+void Interface::cleanup_propagator() noexcept
 {
     //- noop so far
 }
 
-} // namespace Tango::observability
+//-------------------------------------------------------------------------------------------------
+// InterfaceFactory
+//-------------------------------------------------------------------------------------------------
+std::shared_ptr<Tango::telemetry::Interface>
+    InterfaceFactory::create(const Tango::telemetry::Interface::Configuration &cfg)
+{
+    auto srv = std::make_shared<Tango::telemetry::Interface>();
+    srv->initialize(cfg);
+    return srv;
+}
 
-#endif // OBSERVABILITY_ENABLED
+} // namespace Tango::telemetry
+
+#endif // TELEMETRY_ENABLED

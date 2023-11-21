@@ -1144,6 +1144,13 @@ void ServRestartThread::run(void *ptr)
     dev->init_logger();
 
     //
+    // Setup telemetry
+    //
+#if defined(TELEMETRY_ENABLED)
+    dev->initialize_telemetry_interface();
+#endif
+
+    //
     // Reset initial state and status
     //
 

@@ -48,6 +48,10 @@
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
 
+#if defined(TELEMETRY_ENABLED)
+  #include <tango/common/telemetry/telemetry.h>
+#endif
+
 namespace Tango
 {
 
@@ -1927,6 +1931,43 @@ class DeviceImpl : public virtual POA_Tango::Device
     void start_logging();
     void stop_logging();
 
+#if defined(TELEMETRY_ENABLED)
+    // TODO: doc
+    // see implementation in devicetelemetry.cpp
+    void initialize_telemetry_interface();
+
+    // TODO: doc
+    // see implementation in devicetelemetry.cpp
+    void cleanup_telemetry_interface();
+
+    // TODO: doc
+    inline std::shared_ptr<Tango::telemetry::Interface> &telemetry()
+    {
+        if(!telemetry_interface)
+        {
+            std::stringstream msg;
+            msg << "the telemetry interface is not properly initialized for device '" << get_name_lower() << "'"
+                << std::ends;
+            TANGO_THROW_EXCEPTION(API_ClassNotFound, msg.str());
+        }
+        return telemetry_interface;
+    }
+
+    // TODO: doc
+    // see implementation in devicetelemetry.cpp
+    inline std::shared_ptr<Tango::telemetry::Tracer> &get_tracer()
+    {
+        telemetry()->get_tracer();
+    }
+
+    // TODO: doc
+    // see implementation in devicetelemetry.cpp
+    inline std::shared_ptr<Tango::telemetry::Tracer> &get_tracer(const std::string &name)
+    {
+        telemetry()->get_tracer(name);
+    }
+#endif
+
   private:
     PipeEventSubscriptionStates get_pipe_event_subscription_states();
     void set_pipe_event_subscription_states(const PipeEventSubscriptionStates &);
@@ -2077,7 +2118,9 @@ class DeviceImpl : public virtual POA_Tango::Device
                     long y,
                     bool release);
 
-  protected:
+#if defined(TELEMETRY_ENABLED)
+    std::shared_ptr<Tango::telemetry::Interface> telemetry_interface;
+#endif
 };
 
 inline void DeviceImpl::set_state(const Tango::DevState &new_state)
@@ -2213,6 +2256,23 @@ void DeviceImpl::push_event(const std::string &attr_name,
     // push the event
     attr.fire_event(filt_names, filt_vals);
 }
+
+#if defined(TELEMETRY_ENABLED)
+
+  #define TELEMETRY_SCOPE(...) auto __telemetry_scope__ = telemetry() -> scope(__FILE__, __LINE__, __VA_ARGS__)
+
+  #define TELEMETRY_ADD_EVENT(__MSG__) __telemetry_scope__->add_event(__MSG__)
+
+  #define TELEMETRY_SET_ERROR_STATUS(__MSG__) \
+      __telemetry_scope__->set_status(Tango::telemetry::Span::Status::Error, __MSG__)
+
+#else
+
+  #define TELEMETRY_SCOPE
+  #define TELEMETRY_ADD_EVENT
+  #define TELEMETRY_SET_ERROR_STATUS
+
+#endif
 
 } // namespace Tango
 

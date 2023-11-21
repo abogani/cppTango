@@ -619,6 +619,13 @@ void DeviceImpl::real_ctor()
     zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH;
     add_version_info("zmq", zmq_version.str());
 
+    //
+    // Init telemetry
+    //
+#if defined(TELEMETRY_ENABLED)
+    initialize_telemetry_interface();
+#endif
+
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::real_ctor for device " << device_name << std::endl;
 }
 
@@ -839,6 +846,10 @@ DeviceImpl::~DeviceImpl()
 
     delete locker_client;
     delete old_locker_client;
+
+#if defined(TELEMETRY_ENABLED)
+    cleanup_telemetry_interface();
+#endif
 
     //
     // Delete the extension class instance
