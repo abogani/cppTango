@@ -19,7 +19,7 @@ function(set_cflags_and_include target)
   endif()
 
   if (TANGO_USE_TELEMETRY)
-      target_link_libraries(${target} PRIVATE opentelemetry-cpp::trace opentelemetry-cpp::sdk opentelemetry-cpp::api)
+      target_link_libraries(${target} PRIVATE opentelemetry-cpp::trace opentelemetry-cpp::sdk opentelemetry-cpp::api opentelemetry-cpp::ostream_span_exporter)
       if (TANGO_TELEMETRY_USE_HTTP)
         target_link_libraries(${target} PRIVATE opentelemetry-cpp::otlp_http_exporter)
       endif()

@@ -7,6 +7,7 @@
   #include <map>
   #include <string>
   #include <variant>
+  #include <omniORB4/omniInterceptors.h>
   #include <opentelemetry/context/context.h>
   #include <opentelemetry/context/propagation/text_map_propagator.h>
   #include <opentelemetry/sdk/version/version.h>
@@ -434,12 +435,13 @@ class Interface
         Configuration &operator=(const Configuration &) = default;
         Configuration &operator=(Configuration &&) = default;
 
+        //- an optional telemetry interface name (user defined)
+        std::string id{"unspecified interface name"};
         //- the optional name space to which the Interface owner belongs (user defined)
         std::string name_space{"tango"};
         //- the client or server info
         std::variant<Server, Client> details{Server()};
-        //- the telemetry data collector endpoint - a string of the form:
-        //"addr:port"
+        //- the telemetry data collector endpoint - a string of the form: "addr:port"
         std::string collector_endpoint{Interface::DEFAULT_COLLECTOR_ENDPOINT};
 
         // get configuration kind
@@ -460,7 +462,7 @@ class Interface
     };
 
     //- constructor
-    Interface() = default;
+    Interface();
 
     //- disabled features
     Interface(const Interface &) = delete;
@@ -479,10 +481,29 @@ class Interface
     void terminate() noexcept;
 
     //---------------------------------------------------------------------------------------------
+    //! Check configured (or still in post instanciation state)
+    //---------------------------------------------------------------------------------------------
+    inline bool is_configured() const noexcept
+    {
+        return configured;
+    }
+
+    //---------------------------------------------------------------------------------------------
+    //! Get the interface identifier.
+    //!
+    //! Returns:
+    //!   the interface identifier.
+    //---------------------------------------------------------------------------------------------
+    inline const std::string &get_id() const noexcept
+    {
+        return cfg.id;
+    }
+
+    //---------------------------------------------------------------------------------------------
     //! Get the default Tracer instance.
     //!
     //! Returns:
-    //!   the requested Tracer (as a std::shared_ptr).
+    //!   the default Tracer (as a std::shared_ptr).
     //---------------------------------------------------------------------------------------------
     inline std::shared_ptr<Tango::telemetry::Tracer> &get_tracer() noexcept
     {
@@ -496,23 +517,12 @@ class Interface
     //!   name – name Tracer instrumentation scope.
     //!
     //! Returns:
-    //!   the requested Tracer (as a std::shared_ptr).
+    //!   the named Tracer (as a std::shared_ptr).
     //---------------------------------------------------------------------------------------------
     inline std::shared_ptr<Tango::telemetry::Tracer> get_tracer(const std::string &name) noexcept
     {
         auto otel_tracer = provider->GetTracer(name, OPENTELEMETRY_SDK_VERSION);
-        return std::shared_ptr<Tango::telemetry::Tracer>(new Tango::telemetry::Tracer(otel_tracer));
-    }
-
-    //---------------------------------------------------------------------------------------------
-    //! Get the default Tracer instance.
-    //!
-    //! Returns:
-    //!   the requested Tracer (as a std::shared_ptr).
-    //---------------------------------------------------------------------------------------------
-    inline std::shared_ptr<Tango::telemetry::Tracer> &operator->() noexcept
-    {
-        return get_tracer();
+        return std::make_shared<Tango::telemetry::Tracer>(otel_tracer);
     }
 
     //-------------------------------------------------------------------------------------------------
@@ -533,7 +543,15 @@ class Interface
         return Tango::telemetry::Scope(get_tracer()->start_span(name, span_attributes, kind));
     }
 
+    //-------------------------------------------------------------------------------------------------
+    // rpc_exception_hook: interceptor hook - allows to catch and trace exception
+    //-------------------------------------------------------------------------------------------------
+    static CORBA::Boolean rpc_exception_hook(omni::omniInterceptors::serverSendException_T::info_T &);
+
   private:
+    //- default (dummy) tracer initialization
+    void init_default_trace_provider() noexcept;
+
     //- tracer initialization and cleanup
     void init_trace_provider() noexcept;
     void cleanup_trace_provider() noexcept;
@@ -541,6 +559,9 @@ class Interface
     //- propagator initialization and cleanup
     void init_propagator() noexcept;
     void cleanup_propagator() noexcept;
+
+    // not  yet configured
+    bool configured{false};
 
     //- the interface configuration
     Interface::Configuration cfg;
@@ -584,7 +605,136 @@ class InterfaceFactory
   #define PRODUCER_SPAN Tango::telemetry::Span::Kind::Producer
   #define CONSUMER_SPAN Tango::telemetry::Span::Kind::Consumer
 
-  #define SPAN_OK Tango::
+  //-------------------------------------------------------------------------------
+  // TELEMETRY_SCOPE
+  //
+  // Start a new "scoped" span.
+  //
+  // The "location" (i.e., the file name and the line number) where the scope (i.e.,
+  // the span) has been created is automatically added to the span attributes.
+  //
+  // Usage:
+  //
+  //    TELEMETRY_SCOPE(TANGO_CURRENT_FUNCTION);
+  //        `-> span name = current function name (see TANGO_CURRENT_FUNCTION)
+  //        `-> no span attributes
+  //        `-> span kind = Tango::telemetry::Span::Kind::Internal
+  //
+  //    TELEMETRY_SCOPE("MyCustomSpanName");
+  //        `-> span name = user defined span name
+  //        `-> no span attributes
+  //        `-> span kind = Tango::telemetry::Span::Kind::Internal
+  //
+  //    TELEMETRY_SCOPE("MyCustomSpanName", myAttrs);
+  //        `-> user defined span name
+  //        `-> user defined span attributes
+  //        `-> span kind = Tango::telemetry::Span::Kind::Internal
+  //
+  //    TELEMETRY_SCOPE("MyCustomSpanName", myAttrs, Tango::telemetry::Span::Kind::Producer);
+  //        `-> user defined span name
+  //        `-> user defined span attributes
+  //        `-> user defined span kind
+  //-------------------------------------------------------------------------------
+  #define TELEMETRY_SCOPE(...) \
+      auto __telemetry_scope__ = Tango::utils::tss::current_telemetry_interface->scope(__FILE__, __LINE__, __VA_ARGS__)
+
+  //-------------------------------------------------------------------------------
+  // TELEMETRY_CLIENT_SCOPE
+  //
+  // Start a new "client" span.
+  //
+  // For Tango kernel internal usage only. This is used by the Tango::DeviceProxy
+  // to initiate a client RPC. This follows the Opentelemetry semantic convention.
+  //
+  // Usage:
+  //
+  //    TELEMETRY_CLIENT_SCOPE;
+  //-------------------------------------------------------------------------------
+  #define TELEMETRY_CLIENT_SCOPE TELEMETRY_SCOPE(TANGO_CURRENT_FUNCTION, {}, CLIENT_SPAN)
+
+  //-------------------------------------------------------------------------------
+  // TELEMETRY_SERVER_SCOPE
+  //
+  // Start a new "server" span.
+  //
+  // For Tango kernel internal usage only. This is used by the,several flavors of
+  // Tango::DeviceImpl to initiate a reply to a client RPC. This follows the
+  // Opentelemetry semantic convention.
+  //
+  // Usage:
+  //
+  //    TELEMETRY_CLIENT_SCOPE;
+  //-------------------------------------------------------------------------------
+  #define TELEMETRY_SERVER_SCOPE TELEMETRY_SCOPE(TANGO_CURRENT_FUNCTION, {}, SERVER_SPAN)
+
+  //-------------------------------------------------------------------------------
+  // TELEMETRY_ADD_EVENT
+  //
+  // Add an event to the current span.
+  //
+  // To be used in a context where TELEMETRY_SCOPE, TELEMETRY_CLIENT_SCOPE or
+  // TELEMETRY_SERVER_SCOPE has been previously called.
+  //
+  // Usage:
+  //
+  //    TELEMETRY_SCOPE;
+  //    ...
+  //    TELEMETRY_ADD_EVENT("this event msg will be attached to the current span");
+  //-------------------------------------------------------------------------------
+  #define TELEMETRY_ADD_EVENT(__MSG__) __telemetry_scope__->add_event(__MSG__)
+
+  //-------------------------------------------------------------------------------
+  // TELEMETRY_SET_ERROR_STATUS
+  //
+  // Set the error status of the current span.
+  //
+  // To be used in a context where TELEMETRY_SCOPE, TELEMETRY_CLIENT_SCOPE or
+  // TELEMETRY_SERVER_SCOPE has been previously called. This is typically
+  // called in error/exception context.
+  //
+  // Usage:
+  //
+  //    TELEMETRY_SCOPE;
+  //    try
+  //    {
+  //       do_some_job();
+  //    }
+  //    catch (...)
+  //    {
+  //      TELEMETRY_SET_ERROR_STATUS("oops, an error occurred in the current span");
+  //    }
+  //-------------------------------------------------------------------------------
+  #define TELEMETRY_SET_ERROR_STATUS(__MSG__) \
+      __telemetry_scope__->set_status(Tango::telemetry::Span::Status::Error, __MSG__)
+
+  //-------------------------------------------------------------------------------
+  // TSS_ATTACH_TELEMETRY_INTERFACE
+  //
+  // Attach the specified interface to the current thread (Thread Specific Storage).
+  // Uses the magic provide by the C++11 "thread_local" keyword. See Tango::utils::tss.
+  //
+  //
+  // To be used in a context where TELEMETRY_SCOPE, TELEMETRY_CLIENT_SCOPE or
+  // TELEMETRY_SERVER_SCOPE has been previously called. This is typically
+  // called in error/exception context. The argument of this macro must be a
+  // std::shared_ptr<Tango::telemetry::Interface>. An isolated thread would be
+  // a typical context in which one would use this macro.
+  //
+  // Usage:
+  //
+  //    std::shared_ptr<Tango::telemetry::Interface> ti = get_my_telemetry_interface();
+  //
+  //    void thread_entry_point()
+  //    {
+  //        TSS_ATTACH_TELEMETRY_INTERFACE(ti);
+  //        while (go_on)
+  //        {
+  //            TELEMETRY_SCOPE("myThreadLoop");
+  //            do_some_job();
+  //        }
+  //    }
+  //-------------------------------------------------------------------------------
+  #define TSS_ATTACH_TELEMETRY_INTERFACE(__TI__) Tango::utils::tss::current_telemetry_interface = __TI__
 
 #else // TELEMETRY_ENABLED
 
@@ -593,6 +743,13 @@ class InterfaceFactory
   #define SERVER_SPAN 2
   #define PRODUCER_SPAN 3
   #define CONSUMER_SPAN 4
+
+  #define TELEMETRY_SCOPE
+  #define TELEMETRY_CLIENT_SCOPE
+  #define TELEMETRY_SERVER_SCOPE
+  #define TELEMETRY_ADD_EVENT
+  #define TELEMETRY_SET_ERROR_STATUS
+  #define TSS_ATTACH_TELEMETRY_INTERFACE
 
 #endif // TELEMETRY_ENABLED
 

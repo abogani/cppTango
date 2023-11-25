@@ -56,6 +56,10 @@
 #include <tango/server/device_6.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/device_3_templ.h>
+#include <tango/common/utils/thread_specific_storage.h>
+#if defined(TELEMETRY_ENABLED)
+  #include <tango/common/telemetry/telemetry.h>
+#endif
 
 namespace Tango
 {

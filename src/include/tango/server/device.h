@@ -47,7 +47,6 @@
 #include <tango/server/dintrthread.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
-
 #if defined(TELEMETRY_ENABLED)
   #include <tango/common/telemetry/telemetry.h>
 #endif
@@ -1934,11 +1933,11 @@ class DeviceImpl : public virtual POA_Tango::Device
 #if defined(TELEMETRY_ENABLED)
     // TODO: doc
     // see implementation in devicetelemetry.cpp
-    void initialize_telemetry_interface();
+    void initialize_telemetry_interface() noexcept;
 
     // TODO: doc
     // see implementation in devicetelemetry.cpp
-    void cleanup_telemetry_interface();
+    void cleanup_telemetry_interface() noexcept;
 
     // TODO: doc
     inline std::shared_ptr<Tango::telemetry::Interface> &telemetry()
@@ -1957,14 +1956,14 @@ class DeviceImpl : public virtual POA_Tango::Device
     // see implementation in devicetelemetry.cpp
     inline std::shared_ptr<Tango::telemetry::Tracer> &get_tracer()
     {
-        telemetry()->get_tracer();
+        return telemetry()->get_tracer();
     }
 
     // TODO: doc
     // see implementation in devicetelemetry.cpp
-    inline std::shared_ptr<Tango::telemetry::Tracer> &get_tracer(const std::string &name)
+    inline std::shared_ptr<Tango::telemetry::Tracer> get_tracer(const std::string &name)
     {
-        telemetry()->get_tracer(name);
+        return telemetry()->get_tracer(name);
     }
 #endif
 
@@ -2256,23 +2255,6 @@ void DeviceImpl::push_event(const std::string &attr_name,
     // push the event
     attr.fire_event(filt_names, filt_vals);
 }
-
-#if defined(TELEMETRY_ENABLED)
-
-  #define TELEMETRY_SCOPE(...) auto __telemetry_scope__ = telemetry() -> scope(__FILE__, __LINE__, __VA_ARGS__)
-
-  #define TELEMETRY_ADD_EVENT(__MSG__) __telemetry_scope__->add_event(__MSG__)
-
-  #define TELEMETRY_SET_ERROR_STATUS(__MSG__) \
-      __telemetry_scope__->set_status(Tango::telemetry::Span::Status::Error, __MSG__)
-
-#else
-
-  #define TELEMETRY_SCOPE
-  #define TELEMETRY_ADD_EVENT
-  #define TELEMETRY_SET_ERROR_STATUS
-
-#endif
 
 } // namespace Tango
 

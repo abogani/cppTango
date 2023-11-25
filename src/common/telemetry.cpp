@@ -3,15 +3,18 @@
   #include <grpcpp/grpcpp.h>
   #include <iostream>
   #include <memory>
+  #include <iostream>
   #include <opentelemetry/sdk/version/version.h>
   #include <opentelemetry/context/propagation/global_propagator.h>
   #include <opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h>
+  #include <opentelemetry/exporters/ostream/span_exporter_factory.h>
   #include <opentelemetry/sdk/resource/resource.h>
   #include <opentelemetry/sdk/trace/processor.h>
   #include <opentelemetry/sdk/trace/simple_processor_factory.h>
   #include <opentelemetry/sdk/trace/tracer_provider.h>
   #include <opentelemetry/sdk/trace/tracer_provider_factory.h>
   #include <opentelemetry/trace/provider.h>
+  #include <tango/tango.h>
   #include <tango/common/telemetry/telemetry.h>
 
 namespace Tango::telemetry
@@ -88,20 +91,33 @@ std::shared_ptr<Tango::telemetry::Span> Tracer::start_span(const std::string &na
 }
 
 //-------------------------------------------------------------------------------------------------
+// Interface::Interface
+//-------------------------------------------------------------------------------------------------
+Interface::Interface()
+{
+    // default/dummy configuration
+    initialize(cfg);
+
+    // mark as not configured
+    configured = false;
+}
+
+//-------------------------------------------------------------------------------------------------
 // Interface::initialize
 //-------------------------------------------------------------------------------------------------
 void Interface::initialize(const Interface::Configuration &srv_cfg) noexcept
 {
-    // TODO: check config???
+    // copy configuration locally
     cfg = srv_cfg;
 
     // init the trace provider
-    // --------------------------------------------------------
     init_trace_provider();
 
     // init the propagator
-    // --------------------------------------------------------
     init_propagator();
+
+    // mark as configured
+    configured = true;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -111,6 +127,28 @@ void Interface::terminate() noexcept
 {
     cleanup_trace_provider();
     cleanup_propagator();
+}
+
+//-------------------------------------------------------------------------------------------------
+// Interface::init_default_trace_provider
+//-------------------------------------------------------------------------------------------------
+void Interface::init_default_trace_provider() noexcept
+{
+    std::ostream &output_stream = std::cout;
+
+    auto exporter = opentelemetry::exporter::trace::OStreamSpanExporterFactory::Create(output_stream);
+
+    auto processor = opentelemetry::sdk::trace::SimpleSpanProcessorFactory::Create(std::move(exporter));
+
+    opentelemetry::sdk::resource::ResourceAttributes resource_attributes{{"service.name", "tango.unknown"}};
+
+    auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
+
+    provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
+
+    auto otel_tracer = provider->GetTracer("default_tracer", OPENTELEMETRY_SDK_VERSION);
+
+    tracer = std::make_shared<Tango::telemetry::Tracer>(otel_tracer);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -127,7 +165,7 @@ void Interface::init_trace_provider() noexcept
 
     auto processor = opentelemetry::sdk::trace::SimpleSpanProcessorFactory::Create(std::move(exporter));
 
-    auto util = Util::instance();
+    auto util = Tango::Util::instance();
     auto tg_api_util = Tango::ApiUtil::instance();
 
     std::string tango_host;
@@ -162,7 +200,7 @@ void Interface::init_trace_provider() noexcept
         const Client &clt_info = std::get<1>(cfg.details);
         default_tracer = clt_info.name;
         resource_attributes = opentelemetry::sdk::resource::ResourceAttributes{
-            {"interface.namespace", cfg.name_space.empty() ? "tango" : cfg.name_space},
+            {"client.namespace", cfg.name_space.empty() ? "tango" : cfg.name_space},
             {"service.name", clt_info.name},
             {"service.instance.id", clt_info.name},
             {"process.id", tg_api_util->get_client_pid()},
@@ -170,9 +208,11 @@ void Interface::init_trace_provider() noexcept
     }
 
     auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
+
     provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
 
     auto otel_tracer = provider->GetTracer(default_tracer, OPENTELEMETRY_SDK_VERSION);
+
     tracer = std::make_shared<Tango::telemetry::Tracer>(otel_tracer);
 }
 
@@ -205,6 +245,36 @@ void Interface::cleanup_propagator() noexcept
 {
     //- noop so far
 }
+
+//-------------------------------------------------------------------------------------------------
+// rpc_exception_hook: interceptor hook - allows to catch and trace RPCs throwing an exception
+//-------------------------------------------------------------------------------------------------
+/*
+CORBA::Boolean Interface::rpc_exception_hook(omni::omniInterceptors::serverSendException_T::info_T &)
+{
+    // catch trace context (see Tango::utils::tss)
+    auto telemetry = Tango::utils::tss::current_telemetry_interface;
+
+    std::cout << "in Interface::rpc_exception_hook: current_telemetry_interface is: " << telemetry->get_id()
+              << std::endl;
+
+    // the callee (i.e., the device) attached its telemetry interface to the thread executing this code.
+    // we consequently have a change to be sure that any error will be reported to the telemetry service.
+    // the last span created is certainly "ended" so we need to create one for our specific need and
+    // force the error status on it.
+    if(telemetry->is_configured())
+    {
+        auto s = Tango::telemetry::Scope(
+            telemetry->get_tracer()->start_span("Tango::telemetry::Interface::rpc_exception_hook"));
+
+        s->set_status(Tango::telemetry::Span::Status::Error,
+                      "client request is resulting in an exception being thrown [see upstream part of the call
+stack]");
+    }
+
+    return true;
+}
+*/
 
 //-------------------------------------------------------------------------------------------------
 // InterfaceFactory
