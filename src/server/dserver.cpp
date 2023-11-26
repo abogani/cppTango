@@ -47,7 +47,6 @@
 #endif /* _TG_WINDOWS_ */
 
 #include <cstdlib>
-#include <tango/common/utils/thread_specific_storage.h>
 
 namespace Tango
 {
@@ -1147,11 +1146,11 @@ void ServRestartThread::run(void *ptr)
     //
     // Setup telemetry
     //
-#if defined(TELEMETRY_ENABLED)
+#if defined(TANGO_USE_TELEMETRY)
     // initialize the telemetry interface
     dev->initialize_telemetry_interface();
     // attach the device's telemetry interface
-    Tango::utils::tss::current_telemetry_interface = dev->telemetry();
+    Tango::telemetry::Interface::set_current(dev->telemetry());
 #endif
 
     //

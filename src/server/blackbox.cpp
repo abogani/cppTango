@@ -55,7 +55,6 @@
 #include <omniORB4/internal/giopStrand.h>
 #include <omniORB4/internal/giopStream.h>
 #include <omniORB4/internal/GIOP_S.h>
-#include <tango/common/utils/thread_specific_storage.h>
 
 namespace Tango
 {
@@ -137,7 +136,7 @@ void client_call_interceptor(omniCallDescriptor *d, omniServant *s)
         // std::cout << "in BlackBox::client_call_interceptor: restoring initial client info" << std::endl;
         t.self()->set_value(Util::get_tssk_client_info(), previous_client_addr);
         // catch trace context
-        auto ti = Tango::utils::tss::current_telemetry_interface;
+        // auto ti = Tango::telemetry::Interface::get_current();
         // std::cout << "in BlackBox::client_call_interceptor: current_telemetry_interface is: " << ti->get_id() <<
         // std::endl;
         // std::cout << "in BlackBox::client_call_interceptor: done!" << std::endl;
@@ -148,22 +147,21 @@ void client_call_interceptor(omniCallDescriptor *d, omniServant *s)
         // std::cout << "in BlackBox::client_call_interceptor: restoring initial client info (exception context)" <<
         // std::endl;
         t.self()->set_value(Util::get_tssk_client_info(), previous_client_addr);
-
-#if defined(TELEMETRY_ENABLED)
+#if defined(TANGO_USE_TELEMETRY)
         // force error status on an dedicated "exit span"
         //--------------------------------------------------------------------------------------------------
+        // extract exception info
+        std::string err = Tango::telemetry::Interface::extract_exception_info();
         // catch trace context (see Tango::utils::tss)
-        auto telemetry = Tango::utils::tss::current_telemetry_interface;
-        // unfortunately, we can attach the telemetry context of the caller from this interceptor cause it's
+        auto telemetry = Tango::telemetry::Interface::get_current();
+        // unfortunately, we can't attach the telemetry context of the caller from this interceptor cause it's
         // called at a early stage of the RPC and almost nothing is accessible. However, the callee attached
         // its telemetry interface to the thread executing this code. We consequently have a change to be
         // sure that any error will be reported to the telemetry service. The last span created is certainly
         // "ended" so we need to create one for our specific need and force the error status on it.
-        if(telemetry->is_configured())
-        {
-            auto s = Tango::telemetry::Scope(telemetry->get_tracer()->start_span("client_call_interceptor"));
-            s->set_status(Tango::telemetry::Span::Status::Error, "exception caught by client_call_interceptor");
-        }
+        // TODO: auto span = telemetry->start_span("cppTango::client_call_interceptor");
+        // TODO: span->set_status(Tango::telemetry::Span::Status::kError, "exception caught by
+        // client_call_interceptor");
 #endif
         // propagate the exception
         throw;

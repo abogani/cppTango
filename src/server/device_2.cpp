@@ -40,10 +40,6 @@
 #include <tango/server/device_2.h>
 #include <tango/server/tango_clock.h>
 #include <new>
-#include <tango/common/utils/thread_specific_storage.h>
-#if defined(TELEMETRY_ENABLED)
-  #include <tango/common/telemetry/telemetry.h>
-#endif
 
 namespace Tango
 {
@@ -125,18 +121,6 @@ Device_2Impl::Device_2Impl(DeviceClass *device_class,
 
 CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &in_data, Tango::DevSource source)
 {
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
-
     TANGO_LOG_DEBUG << "Device_2Impl::command_inout_2 arrived, source = " << source << ", command = " << in_cmd
                     << std::endl;
     PollObj *polled_cmd = nullptr;
@@ -459,18 +443,6 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
 {
     //    AutoTangoMonitor sync(this);
 
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
-
     TANGO_LOG_DEBUG << "Device_2Impl::read_attributes_2 arrived" << std::endl;
 
     bool att_in_fault = false;
@@ -478,18 +450,15 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
     Tango::AttributeValueList *back = nullptr;
 
     //
-    //  Write the device name into the per thread data for
-    //  sub device diagnostics.
+    //  Write the device name into the per thread data for sub device diagnostics.
     //  Keep the old name, to put it back at the end!
-    //  During device access inside the same server,
-    //  the thread stays the same!
+    //  During device access inside the same server, the thread stays the same!
     //
     SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
     std::string last_associated_device = sub.get_associated_device();
     sub.set_associated_device(get_name());
 
-    // Catch all execeptions to set back the associated device after
-    // execution
+    // Catch all execeptions to set back the associated device after execution
     try
     {
         //
@@ -956,18 +925,6 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
 
 Tango::DevCmdInfoList_2 *Device_2Impl::command_list_query_2()
 {
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
-
     TANGO_LOG_DEBUG << "Device_2Impl::command_list_query_2 arrived" << std::endl;
 
     //
@@ -1088,18 +1045,6 @@ Tango::DevCmdInfoList_2 *Device_2Impl::command_list_query_2()
 
 Tango::DevCmdInfo_2 *Device_2Impl::command_query_2(const char *command)
 {
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
-
     TANGO_LOG_DEBUG << "DeviceImpl::command_query_2 arrived" << std::endl;
 
     Tango::DevCmdInfo_2 *back = nullptr;
@@ -1233,18 +1178,6 @@ Tango::AttributeConfigList_2 *Device_2Impl::get_attribute_config_2(const Tango::
     TangoMonitor &mon = get_att_conf_monitor();
     AutoTangoMonitor sync(&mon);
 
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
-
     TANGO_LOG_DEBUG << "Device_2Impl::get_attribute_config_2 arrived" << std::endl;
 
     long nb_attr = names.length();
@@ -1361,18 +1294,6 @@ Tango::DevCmdHistoryList *Device_2Impl::command_inout_history_2(const char *comm
 {
     TangoMonitor &mon = get_poll_monitor();
     AutoTangoMonitor sync(&mon);
-
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
 
     TANGO_LOG_DEBUG << "Device_2Impl::command_inout_history_2 arrived" << std::endl;
     Tango::DevCmdHistoryList *back = nullptr;
@@ -1575,18 +1496,6 @@ Tango::DevAttrHistoryList *Device_2Impl::read_attribute_history_2(const char *na
 {
     TangoMonitor &mon = get_poll_monitor();
     AutoTangoMonitor sync(&mon);
-
-#if defined(TELEMETRY_ENABLED)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC -  WE CAN HARDLY REACH A MORE
-    // "UPSTREAM POINT" THE DISTRUNTED CALL STACK - WE CONSEQUENTLY CONSIDER
-    // THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC.
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    TSS_ATTACH_TELEMETRY_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry semantic convention)
-    TELEMETRY_SERVER_SCOPE;
-#endif
 
     TANGO_LOG_DEBUG << "Device_2Impl::read_attribute_history_2 arrived" << std::endl;
 

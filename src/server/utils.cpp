@@ -1858,9 +1858,6 @@ Util::~Util()
         // JM : 9.8.2005 : destroy() should be called at the exit of run()!
         // orb->destroy();
         Logging::cleanup();
-  #if defined(OBSERVABILITY_ENABLED)
-        Tango::telemetry::Service::terminate();
-  #endif
     }
 #endif
 }

@@ -142,6 +142,11 @@ inline void string_free(char *s)
 #endif
 
 //
+// Telemetry for both clients & servers
+//
+#include <tango/common/telemetry/telemetry.h>
+
+//
 // Include Tango files in order to simplfy device server developer include
 // file list
 //

@@ -47,7 +47,7 @@
 #include <tango/server/dintrthread.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
-#if defined(TELEMETRY_ENABLED)
+#if defined(TANGO_USE_TELEMETRY)
   #include <tango/common/telemetry/telemetry.h>
 #endif
 
@@ -1930,17 +1930,16 @@ class DeviceImpl : public virtual POA_Tango::Device
     void start_logging();
     void stop_logging();
 
-#if defined(TELEMETRY_ENABLED)
-    // TODO: doc
-    // see implementation in devicetelemetry.cpp
-    void initialize_telemetry_interface() noexcept;
+#if defined(TANGO_USE_TELEMETRY)
+    // initialize the telemetry interface.
+    // throw an ewception is the telemetry endpoint is invalid
+    void initialize_telemetry_interface();
 
-    // TODO: doc
-    // see implementation in devicetelemetry.cpp
+    // cleanup the telemetry interface.
     void cleanup_telemetry_interface() noexcept;
 
-    // TODO: doc
-    inline std::shared_ptr<Tango::telemetry::Interface> &telemetry()
+    // get access to the telemetry interface.
+    inline Tango::telemetry::InterfacePtr &telemetry()
     {
         if(!telemetry_interface)
         {
@@ -1952,18 +1951,28 @@ class DeviceImpl : public virtual POA_Tango::Device
         return telemetry_interface;
     }
 
-    // TODO: doc
-    // see implementation in devicetelemetry.cpp
-    inline std::shared_ptr<Tango::telemetry::Tracer> &get_tracer()
+    // enable the telemetry interface (enable tracing).
+    inline void enable_telemetry() noexcept
     {
-        return telemetry()->get_tracer();
+        telemetry()->enable();
     }
 
-    // TODO: doc
-    // see implementation in devicetelemetry.cpp
-    inline std::shared_ptr<Tango::telemetry::Tracer> get_tracer(const std::string &name)
+    // disable the telemetry interface (disable tracing).
+    inline void disable_telemetry() noexcept
     {
-        return telemetry()->get_tracer(name);
+        telemetry()->disable();
+    }
+
+    // enable traces of the kernel api.
+    inline void enable_kernel_traces() noexcept
+    {
+        telemetry()->enable_kernel_traces();
+    }
+
+    // disable traces of the kernel api.
+    inline void disable_kernel_traces() noexcept
+    {
+        telemetry()->disable_kernel_traces();
     }
 #endif
 
@@ -2117,8 +2126,8 @@ class DeviceImpl : public virtual POA_Tango::Device
                     long y,
                     bool release);
 
-#if defined(TELEMETRY_ENABLED)
-    std::shared_ptr<Tango::telemetry::Interface> telemetry_interface;
+#if defined(TANGO_USE_TELEMETRY)
+    Tango::telemetry::InterfacePtr telemetry_interface;
 #endif
 };
 

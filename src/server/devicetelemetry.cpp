@@ -8,27 +8,37 @@
 namespace Tango
 {
 
-#if defined(TELEMETRY_ENABLED)
+#if defined(TANGO_USE_TELEMETRY)
 
 //-------------------------------------------------------------------------------------------------
 //  method : DeviceImpl::initialize_telemetry_interface
 //-------------------------------------------------------------------------------------------------
-void DeviceImpl::initialize_telemetry_interface() noexcept
+void DeviceImpl::initialize_telemetry_interface()
 {
-    // std::cout << "DeviceImpl::initialize_telemetry_interface: " << device_name << "@" << std::hex << this << std::dec
-    // << " << " << std::endl;
+    // TODO: DServer tracing?
+    bool telemetry_enabled = device_class->get_name() != "DServer" ? true : false;
 
-    // TOD: ill-formatted endpint causes crash in otel - e.g., localhost::4317 (two ':')
-    std::string endpoint{"localhost:4317"};
-    ApiUtil::instance()->get_env_var("TANGO_TELEMETRY_ENDPOINT", endpoint);
+    // TODO
+    bool kernel_traces_enabled = false;
 
-    Tango::telemetry::Interface::Configuration cfg{
-        device_name, "tango", Tango::telemetry::Interface::Server{device_class->get_name(), device_name}, endpoint};
+    // configure the telemetry
+    // TODO: offer a way to specify the endpoint by Tango property (only env. var. so far)
+    // TODO: it means that, so far, any endpoint specified through Interface::Configuration
+    // TODO: will be ignored - it here there for (near) future use- we simple pass an empty
+    // TODO: string till we provide the ability to get the endpoint using a Tango property.
+    Tango::telemetry::Configuration cfg{telemetry_enabled,
+                                        kernel_traces_enabled,
+                                        device_name,
+                                        "tango",
+                                        Tango::telemetry::Configuration::Server{device_class->get_name(), device_name},
+                                        ""};
 
+    // this might throw an exception in case there's no valid endpoint defined
     telemetry_interface = Tango::telemetry::InterfaceFactory::create(cfg);
 
-    // std::cout << "DeviceImpl::initialize_telemetry_interface: " << device_name << "@" << std::hex << this << std::dec
-    // << " << " << std::endl;
+    // attach a telemetry appender to the logger
+    log4tango::Appender *appender = telemetry_interface->get_appender();
+    get_logger()->add_appender(appender);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -36,16 +46,9 @@ void DeviceImpl::initialize_telemetry_interface() noexcept
 //-------------------------------------------------------------------------------------------------
 void DeviceImpl::cleanup_telemetry_interface() noexcept
 {
-    // std::cout << "DeviceImpl::cleanup_telemetry_interface <<" << std::endl;
-
-    if(telemetry_interface)
-    {
-        telemetry_interface->terminate();
-    }
-
-    // std::cout << "DeviceImpl::cleanup_telemetry_interface >>" << std::endl;
+    // noop so far
 }
 
-#endif // #if defined(TELEMETRY_ENABLED)
+#endif // #if defined(TANGO_USE_TELEMETRY)
 
 } // namespace Tango

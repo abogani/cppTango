@@ -10,7 +10,7 @@
 
 #cmakedefine TANGO_USE_JPEG
 #cmakedefine TANGO_USE_TELEMETRY
-#cmakedefine TANGO_TELEMETRY_USE_GRPC
 #cmakedefine TANGO_TELEMETRY_USE_HTTP
+#cmakedefine TANGO_TELEMETRY_USE_GRPC
 
 #endif

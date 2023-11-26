@@ -36,10 +36,6 @@
 #include <tango/client/eventconsumer.h>
 #include <tango/server/eventsupplier.h>
 
-#if defined(OBSERVABILITY_ENABLED)
-  #include <tango/common/telemetry/telemetry.h>
-#endif
-
 namespace Tango
 {
 //+----------------------------------------------------------------------------

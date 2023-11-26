@@ -50,6 +50,10 @@
 #include <chrono>
 #include <memory>
 
+#if defined(TANGO_USE_TELEMETRY)
+  #include <tango/common/telemetry/telemetry_kernel_macros.h>
+#endif
+
 using namespace CORBA;
 
 namespace Tango
@@ -407,12 +411,12 @@ void Connection::connect(const std::string &corba_name)
             // But we have want to know if the connection to the device is OK or not.
             // The _narrow() call does not necessary generates a remote call. It all depends on the object IDL type
             // stored in the IOR. If in the IOR, the IDL is the same than the one on which the narrow is done (Device_5
-            // on both side for instance), then the _narrow call will not generate any remote call and therefore, we don
-            // know if the connection is OK or NOT. This is the reason of the _non_existent() call. In case the IDl in
-            // the IOR and in the narrow() call are different, then the _narrow() call try to execute a remote _is_a()
-            // call and therefore tries to connect to the device. IN this case, the _non_existent() call is useless. But
-            // because we don want to analyse the IOR ourself, we always call _non_existent() Reset the connection
-            // timeout only after the _non_existent call.
+            // on both side for instance), then the _narrow call will not generate any remote call and therefore, we
+            // don't know if the connection is OK or NOT. This is the reason of the _non_existent() call. In case the
+            // IDl in the IOR and in the narrow() call are different, then the _narrow() call try to execute a remote
+            // _is_a() call and therefore tries to connect to the device. IN this case, the _non_existent() call is
+            // useless. But because we don want to analyse the IOR ourself, we always call _non_existent() Reset the
+            // connection timeout only after the _non_existent call.
             //
 
             if(corba_name.find(DbObjName) != std::string::npos)
@@ -869,6 +873,14 @@ ClntIdent Connection::get_client_identification() const
         CppClntIdent_6 ci_v6;
         ci_v6.cpp_clnt = pid;
         auto trace_context{W3CTraceContextV0()};
+#if defined(TANGO_USE_TELEMETRY)
+        // populate W3C headers of the IDLv6 data structure for trace context propagation
+        std::string trace_parent;
+        std::string trace_state;
+        Tango::telemetry::Interface::get_trace_context(trace_parent, trace_state);
+        trace_context.trace_parent = Tango::string_dup(trace_parent.c_str());
+        trace_context.trace_state = Tango::string_dup(trace_state.c_str());
+#endif
         ci_v6.trace_context.data(trace_context);
         ci.cpp_clnt_6(ci_v6);
     }
@@ -1264,6 +1276,17 @@ DeviceData Connection::command_inout(const std::string &command)
 
 DeviceData Connection::command_inout(const std::string &command, const DeviceData &data_in)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", command}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     //
     // We are using a pointer to an Any as the return value of the command_inout
     // call. This is because the assignament to the Any_var any in the
@@ -1464,6 +1487,11 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
     }
 
     return data_out;
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1475,6 +1503,17 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
 
 CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA::Any &any)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", command}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     int ctr = 0;
     Tango::DevSource local_source;
     Tango::AccessControlType local_act;
@@ -1662,6 +1701,11 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
 
     CORBA::Any_var tmp;
     return tmp;
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1718,6 +1762,16 @@ DeviceProxy::DeviceProxy(const char *na, bool need_check_acc, CORBA::ORB_var orb
 
 void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span and create a scope so that the RPCs related to the construction of
+    // the device proxy will traced under a specific scope and will enhance readability on backend
+    // side - we use the current telemetry interface or the default one if none.
+    // by default, the traces generated in this scope are silently ignored (see Tango::telemetry::SilentKernelScope)
+    auto silent_kernel_scope = TELEMETRY_SILENT_KERNEL_SCOPE;
+    auto span = TELEMETRY_SPAN("Tango::DeviceProxy::DeviceProxy", {{"tango.operation.argument", name}});
+    auto scope = TELEMETRY_SCOPE(span);
+#endif
+
     //
     // Parse device name
     //
@@ -4364,6 +4418,16 @@ AttributeInfoEx DeviceProxy::get_attribute_config(const std::string &attr_string
 
 void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeConfigList attr_config_list;
     DevVarStringArray attr_list;
     int ctr = 0;
@@ -4461,10 +4525,25 @@ void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeConfigList attr_config_list;
     AttributeConfigList_3 attr_config_list_3;
     AttributeConfigList_5 attr_config_list_5;
@@ -4667,6 +4746,11 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -4819,6 +4903,16 @@ PipeInfo DeviceProxy::get_pipe_config(const std::string &pipe_name)
 
 void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     //
     // Error if device does not support IDL 5
     //
@@ -4916,6 +5010,11 @@ void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -4951,6 +5050,17 @@ std::vector<std::string> *DeviceProxy::get_pipe_list()
 
 DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", pipe_name}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     DevPipeData_var pipe_value_5;
     DevicePipe dev_pipe;
     int ctr = 0;
@@ -5054,6 +5164,11 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
     dev_pipe.get_root_blob().set_extract_delete(true);
 
     return dev_pipe;
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -5064,6 +5179,17 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
 
 void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", dev_pipe.get_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     DevPipeData pipe_value_5;
     int ctr = 0;
 
@@ -5182,6 +5308,11 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 
     dev_pipe.get_root_blob().reset_insert_ctr();
     delete tmp_ptr;
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -5192,6 +5323,17 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 
 DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", pipe_data.get_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     DevPipeData pipe_value_5;
     DevPipeData_var r_pipe_value_5;
     DevicePipe r_dev_pipe;
@@ -5313,6 +5455,11 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
     r_dev_pipe.get_root_blob().set_extract_delete(true);
 
     return r_dev_pipe;
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -5323,6 +5470,16 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
 
 std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std::string> &attr_string_list)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeValueList_var attr_value_list;
     AttributeValueList_3_var attr_value_list_3;
     AttributeValueList_4_var attr_value_list_4;
@@ -5520,6 +5677,11 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
     }
 
     return (dev_attr);
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -5530,6 +5692,17 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
 
 DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", attr_string}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeValueList_var attr_value_list;
     AttributeValueList_3_var attr_value_list_3;
     AttributeValueList_4_var attr_value_list_4;
@@ -5621,10 +5794,26 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
     }
 
     return (dev_attr);
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", std::string(attr_str)}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeValueList *attr_value_list = nullptr;
     AttributeValueList_3 *attr_value_list_3 = nullptr;
     AttributeValueList_4 *attr_value_list_4 = nullptr;
@@ -5717,10 +5906,26 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
         ApiUtil::attr_to_device(&((*attr_value_list)[0]), nullptr, version, &dev_attr);
         delete attr_value_list;
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *&av_4)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", std::string(attr_str)}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     DevVarStringArray attr_list;
     int ctr = 0;
     Tango::DevSource local_source;
@@ -5773,10 +5978,26 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *
         av_4->err_list[nb_except].desc = Tango::string_dup(st.c_str());
         av_4->err_list[nb_except].severity = Tango::ERR;
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *&av_5)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", std::string(attr_str)}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     DevVarStringArray attr_list;
     int ctr = 0;
     Tango::DevSource local_source;
@@ -5829,6 +6050,11 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
         av_5->err_list[nb_except].desc = Tango::string_dup(st.c_str());
         av_5->err_list[nb_except].severity = Tango::ERR;
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -5839,6 +6065,16 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
 
 void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeValueList attr_value_list;
     AttributeValueList_4 attr_value_list_4;
 
@@ -6147,6 +6383,11 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -6157,6 +6398,17 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
 
 void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", dev_attr.name}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     AttributeValueList attr_value_list;
     AttributeValueList_4 attr_value_list_4;
     Tango::AccessControlType local_act;
@@ -6414,6 +6666,11 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -6424,6 +6681,17 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
 
 void DeviceProxy::write_attribute(const AttributeValueList &attr_val)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", attr_val[0].name.in()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     int ctr = 0;
     Tango::AccessControlType local_act;
 
@@ -6544,10 +6812,26 @@ void DeviceProxy::write_attribute(const AttributeValueList &attr_val)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", attr_val[0].name.in()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     Tango::AccessControlType local_act;
 
     if(version == detail::INVALID_IDL_VERSION)
@@ -6682,6 +6966,11 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -8886,6 +9175,17 @@ void DeviceProxy::get_locker_host(const std::string &f_addr, std::string &ip_add
 
 DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_attr)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
+                                          {"tango.operation.argument", dev_attr.name}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     //
     // This call is available only for Devices implemented IDL V4
     //
@@ -9129,6 +9429,11 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
     }
 
     return (ret_dev_attr);
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -9140,6 +9445,16 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
 std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vector<DeviceAttribute> &attr_list,
                                                                  const std::vector<std::string> &r_names)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
+    // use the current telemetry interface or the default one if none.
+    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
+    auto span = TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
+    auto scope = TELEMETRY_SCOPE(span);
+    // do our best to catch and trace any exception
+    TELEMETRY_TRY;
+#endif
+
     //
     // This call is available only for Devices implemented IDL V5
     //
@@ -9384,6 +9699,11 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
     }
 
     return (dev_attr);
+
+#if defined(TANGO_USE_TELEMETRY)
+    // do our best to catch and trace any exception
+    TELEMETRY_CATCH;
+#endif
 }
 
 //-----------------------------------------------------------------------------

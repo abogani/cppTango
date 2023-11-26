@@ -1,6 +1,6 @@
 set(git_revision_cpp ${CMAKE_CURRENT_BINARY_DIR}/git_revision.cpp)
 configure_file(git_revision.cpp.in ${git_revision_cpp})
-set(SOURCES net.cpp utils.cpp assert.cpp telemetry.cpp thread_specific_storage.cpp ${git_revision_cpp})
+set(SOURCES net.cpp utils.cpp assert.cpp telemetry.cpp ${git_revision_cpp})
 
 add_library(common_objects OBJECT ${SOURCES})
 add_dependencies(common_objects idl_objects)
