@@ -325,9 +325,6 @@ void NTService::control(DWORD ctrlCode)
         // Update the service status.
         //
         break;
-
-    default:
-        TANGO_ASSERT_ON_DEFAULT(ctrlCode);
     }
 
     statusUpdate(status_.dwCurrentState);
