@@ -1,5 +1,7 @@
 include:
   - local: '.windows-gitlab-ci.yml'
+  - project: 'tango-controls/gitlab-ci-templates'
+    file: 'ArchiveWithSubmodules.gitlab-ci.yml'
 
 variables: &variables
   DOCKER_HOST: tcp://docker:2375
@@ -25,6 +27,7 @@ variables: &variables
   ALPINE_IMAGE: "alpine-3.15:v4"
   DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v4"
   DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v3"
+  GIT_SUBMODULE_STRATEGY: "recursive"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
 workflow:
