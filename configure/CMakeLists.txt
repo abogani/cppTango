@@ -3,6 +3,7 @@ include(GNUInstallDirs)
 option(TANGO_USE_JPEG "Build jpeg support" ON)
 option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/TangoCMakeModules)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 if(NOT CMAKE_BUILD_TYPE)
