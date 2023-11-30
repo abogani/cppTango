@@ -14,17 +14,17 @@ variables: &variables
   CTEST_PARALLEL_LEVEL: "1"
   BUILD_TESTING: "ON"
   # docker image names and versions
-  DEBIAN_12_IMAGE: "debian12:v4"
-  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v3"
-  DEBIAN_11_IMAGE: "debian11:v3"
-  UBUNTU_20_IMAGE: "ubuntu-20.04:v3"
-  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v3"
-  LLVM_LATEST_IMAGE: "llvm-latest:v6"
-  GCC_LATEST_IMAGE: "gcc-latest:v3"
-  FEDORA_IMAGE: "fedora37:v3"
-  ALPINE_IMAGE: "alpine-3.15:v3"
-  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v3"
-  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v2"
+  DEBIAN_12_IMAGE: "debian12:v5"
+  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v4"
+  DEBIAN_11_IMAGE: "debian11:v4"
+  UBUNTU_20_IMAGE: "ubuntu-20.04:v4"
+  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v4"
+  LLVM_LATEST_IMAGE: "llvm-latest:v7"
+  GCC_LATEST_IMAGE: "gcc-latest:v4"
+  FEDORA_IMAGE: "fedora37:v4"
+  ALPINE_IMAGE: "alpine-3.15:v4"
+  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v4"
+  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v3"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
 workflow:
