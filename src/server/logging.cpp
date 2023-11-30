@@ -1166,7 +1166,7 @@ std::string Logging::dev_to_file_name(const std::string &_dev_name)
         {
             break;
         }
-        file_name.replace(pos, 1, "_", 1);
+        file_name.replace(pos, 1, '_', 1);
         pos++;
     } while(true);
     TANGO_LOG_DEBUG << "Leaving Logging::dev_to_file_name (output " << file_name << ")" << std::endl;
