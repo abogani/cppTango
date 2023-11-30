@@ -141,11 +141,15 @@ llvm-latest:
 
 gcc-latest:
   <<: *job-template-no-test-run
+  parallel:
+    matrix:
+      - cxx: [17, 20, 23]
   variables:
     <<: *variables
     OS_TYPE: "${GCC_LATEST_IMAGE}"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    CMAKE_CXX_STANDARD: "${cxx}"
 
 ubuntu-20.04:
   <<: *job-template-with-tests
