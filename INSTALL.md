@@ -25,6 +25,24 @@ sudo apt install cmake cppzmq-dev build-essential git libjpeg-dev python3
 If your linux does not have precompiled packages for these dependencies jump to the
 [next](#compiling-the-dependencies) section for compilation instructions.
 
+## Keeping Up-to-date
+
+This repository uses git submodules.
+
+- Ensure that you use `--recurse-submodules` when cloning:
+
+    `git clone --recurse-submodules ...`
+
+- If you didn't clone with `--recurse-submodules`, run
+
+    `git submodule update --init`
+
+  to initialise and fetch submodules data.
+
+- Ensure that updates to git submodules are pulled:
+
+    `git pull --recurse-submodules`
+
 ## Compiling tango
 
 ## tango-idl
