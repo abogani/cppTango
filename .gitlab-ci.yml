@@ -21,7 +21,7 @@ variables: &variables
   DEBIAN_11_IMAGE: "debian11:v4"
   UBUNTU_20_IMAGE: "ubuntu-20.04:v4"
   UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v4"
-  LLVM_LATEST_IMAGE: "llvm-latest:v7"
+  LLVM_LATEST_IMAGE: "llvm-latest:v8"
   GCC_LATEST_IMAGE: "gcc-latest:v4"
   FEDORA_IMAGE: "fedora37:v4"
   ALPINE_IMAGE: "alpine-3.15:v4"

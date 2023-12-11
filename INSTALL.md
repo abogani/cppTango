@@ -2,7 +2,7 @@
 
 The following software packages are required to build cppTango:
 
-- A C++14 compliant compiler like GCC, clang or Visual Studio (2017 or newer)
+- A C++17 compliant compiler like GCC, clang or Visual Studio (2019 or newer)
 - [cmake](https://cmake.org), 3.18 or newer
 - [tango-idl](https://gitlab.com/tango-controls/tango-idl)
 - [omniORB](http://omniorb.sourceforge.net), 4.3.0 or newer
@@ -248,7 +248,7 @@ link_directories(${TANGO_PKG_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${TANGO_PKG_INCLUDE_DIRS})
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${TANGO_PKG_CFLAGS_OTHER})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${TANGO_PKG_LIBRARIES})
 ```

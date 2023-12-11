@@ -341,7 +341,8 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
         if((items[0].revents & ZMQ_POLLIN) != 0)
         {
             // TANGO_LOG << "For the control socket" << std::endl;
-            control_sock->recv(received_ctrl);
+            auto result = control_sock->recv(received_ctrl);
+            TANGO_ASSERT(result);
 
             std::string ret_str;
             bool ret = false;
@@ -362,7 +363,8 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
 
             zmq::message_t reply(ret_str.size());
             ::memcpy((void *) reply.data(), ret_str.data(), ret_str.size());
-            control_sock->send(reply, zmq::send_flags::none);
+            result = control_sock->send(reply, zmq::send_flags::none);
+            TANGO_ASSERT(result);
 
             if(ret == true)
             {
@@ -390,10 +392,14 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
 
                 zmq::socket_ref s(zmq::from_handle, items[loop].socket);
 
-                s.recv(mcast_received_event_name, zmq::recv_flags::none);
-                s.recv(mcast_received_endian, zmq::recv_flags::none);
-                s.recv(mcast_received_call, zmq::recv_flags::none);
-                s.recv(mcast_received_event_data, zmq::recv_flags::none);
+                auto result = s.recv(mcast_received_event_name, zmq::recv_flags::none);
+                TANGO_ASSERT(result);
+                result = s.recv(mcast_received_endian, zmq::recv_flags::none);
+                TANGO_ASSERT(result);
+                result = s.recv(mcast_received_call, zmq::recv_flags::none);
+                TANGO_ASSERT(result);
+                result = s.recv(mcast_received_event_data, zmq::recv_flags::none);
+                TANGO_ASSERT(result);
 
                 process_event(
                     mcast_received_event_name, mcast_received_endian, mcast_received_call, mcast_received_event_data);
@@ -1158,9 +1164,11 @@ void ZmqEventConsumer::cleanup_EventChannel_map()
 
         zmq::message_t send_data(length);
         ::memcpy(send_data.data(), buffer, length);
-        sender.send(send_data, zmq::send_flags::none);
+        auto result = sender.send(send_data, zmq::send_flags::none);
+        TANGO_ASSERT(result);
 
-        sender.recv(reply);
+        result = sender.recv(reply);
+        TANGO_ASSERT(result);
     }
     catch(zmq::error_t &)
     {
@@ -1368,9 +1376,11 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
 
         zmq::message_t send_data(length);
         ::memcpy(send_data.data(), buffer, length);
-        sender.send(send_data, zmq::send_flags::none);
+        auto result = sender.send(send_data, zmq::send_flags::none);
+        TANGO_ASSERT(result);
 
-        sender.recv(reply);
+        result = sender.recv(reply);
+        TANGO_ASSERT(result);
     }
     catch(zmq::error_t &e)
     {
@@ -1503,9 +1513,11 @@ void ZmqEventConsumer::disconnect_event_channel(const std::string &channel_name,
 
         zmq::message_t send_data(length);
         ::memcpy(send_data.data(), buffer, length);
-        sender.send(send_data, zmq::send_flags::none);
+        auto result = sender.send(send_data, zmq::send_flags::none);
+        TANGO_ASSERT(result);
 
-        sender.recv(reply);
+        result = sender.recv(reply);
+        TANGO_ASSERT(result);
     }
     catch(zmq::error_t &e)
     {
@@ -1589,9 +1601,11 @@ void ZmqEventConsumer::disconnect_event(const std::string &event_name, const std
 
         zmq::message_t send_data(length);
         ::memcpy(send_data.data(), buffer, length);
-        sender.send(send_data, zmq::send_flags::none);
+        auto result = sender.send(send_data, zmq::send_flags::none);
+        TANGO_ASSERT(result);
 
-        sender.recv(reply);
+        result = sender.recv(reply);
+        TANGO_ASSERT(result);
     }
     catch(zmq::error_t &e)
     {
@@ -1757,9 +1771,11 @@ void ZmqEventConsumer::connect_event_system(TANGO_UNUSED(const std::string &devi
 
         zmq::message_t send_data(length);
         ::memcpy(send_data.data(), buffer, length);
-        sender.send(send_data, zmq::send_flags::none);
+        auto result = sender.send(send_data, zmq::send_flags::none);
+        TANGO_ASSERT(result);
 
-        sender.recv(reply);
+        result = sender.recv(reply);
+        TANGO_ASSERT(result);
     }
     catch(zmq::error_t &e)
     {
@@ -4084,9 +4100,11 @@ DelayEvent::DelayEvent(EventConsumer *ec)
 
             zmq::message_t send_data(length);
             ::memcpy(send_data.data(), buffer, length);
-            sender.send(send_data, zmq::send_flags::none);
+            auto result = sender.send(send_data, zmq::send_flags::none);
+            TANGO_ASSERT(result);
 
-            sender.recv(reply);
+            result = sender.recv(reply);
+            TANGO_ASSERT(result);
         }
         catch(zmq::error_t &e)
         {
@@ -4159,9 +4177,12 @@ void DelayEvent::release()
 
             zmq::message_t send_data(length);
             ::memcpy(send_data.data(), buffer, length);
-            sender.send(send_data, zmq::send_flags::none);
+            auto result = sender.send(send_data, zmq::send_flags::none);
+            TANGO_ASSERT(result);
 
-            sender.recv(reply);
+            result = sender.recv(reply);
+            TANGO_ASSERT(result);
+
             released = true;
             eve_con->subscription_monitor.rel_monitor();
         }

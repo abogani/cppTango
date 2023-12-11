@@ -38,10 +38,10 @@
 #include <tango/tango.h>
 #include <tango/server/pollobj.h>
 #include <tango/server/utils.h>
-#include <tango/server/tango_optional.h>
 #include <tango/server/tango_clock.h>
 
 #include <list>
+#include <optional>
 #include <utility>
 
 #ifdef _TG_WINDOWS_
@@ -157,7 +157,7 @@ class PollThread : public omni_thread
 
     PollClock::time_point now;
     PollClock::time_point after;
-    tango_optional<PollClock::duration> sleep;
+    std::optional<PollClock::duration> sleep;
 
     bool polling_stop{true};
 

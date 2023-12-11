@@ -778,7 +778,7 @@ void Connection::reconnect(bool db_used)
                 device->ping();
                 //                omniORB::setClientConnectTimeout(0);
 
-                prev_failed_t0 = tango_nullopt;
+                prev_failed_t0 = std::nullopt;
 
                 //
                 // If the device is the database, call its post-reconnection method

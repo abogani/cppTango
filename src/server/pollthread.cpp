@@ -1334,7 +1334,7 @@ void PollThread::compute_sleep_time()
                     {
                         previous_nb_late = nb_late;
                     }
-                    sleep = tango_nullopt;
+                    sleep = std::nullopt;
                 }
             }
         }
@@ -1358,7 +1358,7 @@ void PollThread::compute_sleep_time()
             {
                 if((after - next) < DISCARD_THRESHOLD)
                 {
-                    sleep = tango_nullopt;
+                    sleep = std::nullopt;
                 }
                 else
                 {
@@ -1381,7 +1381,7 @@ void PollThread::compute_sleep_time()
 
                     if(duration_abs(next - after) < DISCARD_THRESHOLD)
                     {
-                        sleep = tango_nullopt;
+                        sleep = std::nullopt;
                     }
                     else
                     {

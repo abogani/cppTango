@@ -460,7 +460,7 @@ void LockThread::compute_sleep_time(bool cmd)
         auto diff = next_work - PollClock::now();
         if(diff < PollClock::duration::zero())
         {
-            sleep = tango_nullopt;
+            sleep = std::nullopt;
         }
         else
         {

@@ -30,9 +30,8 @@
 #ifndef _CONNECTION_H
 #define _CONNECTION_H
 
-#include <tango/server/tango_optional.h>
-
 #include <chrono>
+#include <optional>
 
 /****************************************************************************************
  *                                                                                         *
@@ -126,7 +125,7 @@ class Connection
     bool tr_reco;
     Tango::Device_3_var device_3;
 
-    tango_optional<std::chrono::steady_clock::time_point> prev_failed_t0;
+    std::optional<std::chrono::steady_clock::time_point> prev_failed_t0;
 
     Tango::Device_4_var device_4;
     omni_mutex adm_dev_mutex;

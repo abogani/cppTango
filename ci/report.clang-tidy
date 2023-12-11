@@ -7,6 +7,7 @@ Checks: >
     modernize-*,
     readability-*,
     bugprone-*,
+    -bugprone-unchecked-optional-access,
     -modernize-use-nodiscard,
     -modernize-use-trailing-return-type,
     -readability-named-parameter,
