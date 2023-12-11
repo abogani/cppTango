@@ -97,7 +97,7 @@ namespace CxxTest
     unsigned ValueTraits<const double>::requiredDigitsOnLeft( double t )
     {
         unsigned digits = 1;
-        for ( t = (t < 0.0) ? -t : t; t > 1.0; t /= BASE )
+        for ( t = (t < 0.0) ? -t : t; t > 1.0; t /= static_cast<int>(BASE) )
             ++ digits;
         return digits;
     }
@@ -116,7 +116,7 @@ namespace CxxTest
         char *s = doNegative( t );
         s = doubleToString( t, s, 0, 1 );
         s = copyString( s, "." );
-        s = doubleToString( t, s, 1, DIGITS_ON_RIGHT );
+        s = doubleToString( t, s, 1, static_cast<int>(DIGITS_ON_RIGHT) );
         s = copyString( s, "E" );
         s = numberToString( requiredDigitsOnLeft( t ) - 1, s );
     }
@@ -126,8 +126,8 @@ namespace CxxTest
         char *s = doNegative( t );
         s = doubleToString( t, s );
         s = copyString( s, "." );
-        for ( unsigned i = 0; i < DIGITS_ON_RIGHT; ++ i )
-            s = numberToString( (unsigned)(t *= BASE) % BASE, s );
+        for ( unsigned i = 0; i < static_cast<int>(DIGITS_ON_RIGHT); ++ i )
+            s = numberToString( (unsigned)(t *= static_cast<int>(BASE)) % static_cast<int>(BASE), s );
     }
 
     char *ValueTraits<const double>::doubleToString( double t, char *s, unsigned skip, unsigned max )

@@ -20,6 +20,7 @@ echo "BUILD_TESTING=$BUILD_TESTING"
 echo "TANGO_ENABLE_SANITIZER=$TANGO_ENABLE_SANITIZER"
 echo "TANGO_ENABLE_COVERAGE=$TANGO_ENABLE_COVERAGE"
 echo "TANGO_CLANG_FORMAT=$TANGO_CLANG_FORMAT"
+echo "CMAKE_CXX_STANDARD=$CMAKE_CXX_STANDARD"
 echo "############################"
 
 # set defaults
@@ -49,6 +50,11 @@ fi
 if [[ -n "$OMNIORB_VERSION" ]]
 then
   ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DOMNIORB_VERSION=${OMNIORB_VERSION}"
+fi
+
+if [[ -n "$CMAKE_CXX_STANDARD" ]]
+then
+  ADDITIONAL_ARGS="${ADDITIONAL_ARGS} -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}"
 fi
 
 cmake                                                                    \
