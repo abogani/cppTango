@@ -641,16 +641,19 @@ void Database::reread_filedatabase()
 
 void Database::build_connection()
 {
-    std::string corba_name = get_corba_name(true);
-    //    omniORB::setClientConnectTimeout(CORBA::ULong(DB_CONNECT_TIMEOUT));
+    // omniORB::setClientConnectTimeout(CORBA::ULong(DB_CONNECT_TIMEOUT));
     try
     {
-        connect(corba_name);
-        //        omniORB::setClientConnectTimeout(0);
+        // we now use reconnect instead of connect
+        // it allows us to know more about the device we are talking to
+        // see Connection::reconnect for details
+        reconnect(true);
+
+        // omniORB::setClientConnectTimeout(0);
     }
     catch(Tango::DevFailed &)
     {
-        //        omniORB::setClientConnectTimeout(0);
+        // omniORB::setClientConnectTimeout(0);
         throw;
     }
 }
@@ -4352,14 +4355,10 @@ CORBA::Any *Database::fill_server_cache(const std::string &ds_name, const std::s
 
     try
     {
-        ClntIdent ci;
-        ApiUtil *au = ApiUtil::instance();
-        ci.cpp_clnt(au->get_client_pid());
-
         if(version >= 5)
         {
             Device_5_var dev = Device_5::_duplicate(device_5);
-            attr_value_list_5 = dev->read_attributes_5(attr_list, DEV, ci);
+            attr_value_list_5 = dev->read_attributes_5(attr_list, DEV, get_client_identification());
 
             ApiUtil::attr_to_device(&((*attr_value_list_5)[0]), version, &da);
             delete attr_value_list_5;
@@ -4367,7 +4366,7 @@ CORBA::Any *Database::fill_server_cache(const std::string &ds_name, const std::s
         else if(version == 4)
         {
             Device_4_var dev = Device_4::_duplicate(device_4);
-            attr_value_list_4 = dev->read_attributes_4(attr_list, DEV, ci);
+            attr_value_list_4 = dev->read_attributes_4(attr_list, DEV, get_client_identification());
 
             ApiUtil::attr_to_device(&((*attr_value_list_4)[0]), version, &da);
             delete attr_value_list_4;

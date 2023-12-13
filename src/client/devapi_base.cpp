@@ -83,13 +83,15 @@ Connection::Connection(CORBA::ORB_var orb_in) :
     pasyn_ctr(0),
     pasyn_cb_ctr(0),
     timeout(CLNT_TIMEOUT),
+    connection_state(CONNECTION_NOTOK),
     version(detail::INVALID_IDL_VERSION),
+    server_version(detail::INVALID_IDL_VERSION),
     source(Tango::CACHE_DEV),
     ext(new ConnectionExt()),
     tr_reco(true),
-
     user_connect_timeout(-1),
     tango_host_localhost(false)
+
 {
     //
     // Some default init for access control
@@ -186,6 +188,7 @@ Connection::Connection(const Connection &sou) :
     timeout = sou.timeout;
     connection_state = sou.connection_state;
     version = sou.version;
+    server_version = sou.server_version;
     source = sou.source;
 
     check_acc = sou.check_acc;
@@ -243,6 +246,7 @@ Connection &Connection::operator=(const Connection &rval)
     timeout = rval.timeout;
     connection_state = rval.connection_state;
     version = rval.version;
+    server_version = rval.server_version;
     source = rval.source;
 
     check_acc = rval.check_acc;
@@ -775,7 +779,26 @@ void Connection::reconnect(bool db_used)
                 //                    omniORB::setClientConnectTimeout(user_connect_timeout);
                 //                else
                 //                    omniORB::setClientConnectTimeout(NARROW_CLNT_TIMEOUT);
-                device->ping();
+
+                //
+                // Impl. change for Tango-10 + IDLv6 - see cppTango #1193
+                //
+                // we now call 'info' instead of 'ping' so that we can obtain the so called
+                // 'server_version' - i.e., the ultimate version supported by the server in
+                // which the device we are connected to is running.
+                //
+                // in some particular cases, this allows us to offer new features to devices
+                // simply recompiled against the latest version of tango without modifing
+                // their inheritance schema.
+                //
+                // the telemetry service is an example of such a case - devices inheriting
+                // from Device_4Impl or Device5_impl will be able to propagate the trace
+                // context as far as they are running within a server where idl 6 or above is
+                // supported.
+                //
+                std::unique_ptr<Tango::DevInfo> device_info(device->info());
+                server_version = device_info->server_version;
+
                 //                omniORB::setClientConnectTimeout(0);
 
                 prev_failed_t0 = std::nullopt;
@@ -810,6 +833,52 @@ void Connection::reconnect(bool db_used)
 
         throw;
     }
+}
+
+//+----------------------------------------------------------------------------------------------------------------
+//
+// function:
+//
+// 		ClntIdent Connection::get_client_identification() const
+//
+// description:
+//
+//      Returns a ClntIdent initialized according to the IDL version of the device (peer) and the ultimate
+//      IDL version supported by the server in which the peer is running.
+//
+//      Added for the telemetry service introduced in IDLv6.
+//
+//      Any device with IDL version >= 4 running in a server in which the ultimate version of the IDL is >= 6,
+//      will benefit from the telemetry features offered at the kernel level (low level profiling). This
+//      will limit the discontinuity in the tracing information.
+//
+//      See ClntIdent in tango.idl v6 for details.
+//
+//-----------------------------------------------------------------------------------------------------------------
+ClntIdent Connection::get_client_identification() const
+{
+    // the client identification struct to be returned
+    ClntIdent ci;
+
+    // the pid of the cpp server (acting as a client) or the pure cpp client within which this code is executed
+    TangoSys_Pid pid = ApiUtil::instance()->get_client_pid();
+
+    if(version >= 4 && server_version >= 6)
+    {
+        // IDLv6 case
+        CppClntIdent_6 ci_v6;
+        ci_v6.cpp_clnt = pid;
+        auto trace_context{W3CTraceContextV0()};
+        ci_v6.trace_context.data(trace_context);
+        ci.cpp_clnt_6(ci_v6);
+    }
+    else
+    {
+        // pre-IDLv6 case (the pid is the only info set for a cpp client)
+        ci.cpp_clnt(pid);
+    }
+
+    return ci;
 }
 
 //-----------------------------------------------------------------------------
@@ -1309,12 +1378,9 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
             CORBA::Any *received;
             if(version >= 4)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
-
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                received = dev->command_inout_4(command.c_str(), data_in.any, local_source, ci);
+                received =
+                    dev->command_inout_4(command.c_str(), data_in.any, local_source, get_client_identification());
             }
             else if(version >= 2)
             {
@@ -1508,12 +1574,8 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
 
             if(version >= 4)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
-
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                return (dev->command_inout_4(command.c_str(), any, local_source, ci));
+                return (dev->command_inout_4(command.c_str(), any, local_source, get_client_identification()));
             }
             else if(version >= 2)
             {
@@ -1745,7 +1807,10 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     {
         if(exported == true)
         {
-            connect(corba_name);
+            // we now use reconnect instead of connect
+            // it allows us to know more about the device we are talking to
+            // see Connection::reconnect for details
+            reconnect(dbase_used);
 
             if(is_alias == true)
             {
@@ -4528,22 +4593,15 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
         {
             check_and_reconnect();
 
-            if(version >= 4)
+            if(version >= 5)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
-
-                if(version >= 5)
-                {
-                    Device_5_var dev = Device_5::_duplicate(device_5);
-                    dev->set_attribute_config_5(attr_config_list_5, ci);
-                }
-                else
-                {
-                    Device_4_var dev = Device_4::_duplicate(device_4);
-                    dev->set_attribute_config_4(attr_config_list_3, ci);
-                }
+                Device_5_var dev = Device_5::_duplicate(device_5);
+                dev->set_attribute_config_5(attr_config_list_5, get_client_identification());
+            }
+            else if(version == 4)
+            {
+                Device_4_var dev = Device_4::_duplicate(device_4);
+                dev->set_attribute_config_4(attr_config_list_3, get_client_identification());
             }
             else if(version == 3)
             {
@@ -4801,11 +4859,8 @@ void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
         {
             check_and_reconnect();
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
             Device_5_var dev = Device_5::_duplicate(device_5);
-            dev->set_pipe_config_5(pipe_config_list, ci);
+            dev->set_pipe_config_5(pipe_config_list, get_client_identification());
 
             ctr = 2;
         }
@@ -4921,11 +4976,8 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
         {
             check_and_reconnect();
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
             Device_5_var dev = Device_5::_duplicate(device_5);
-            pipe_value_5 = dev->read_pipe_5(pipe_name.c_str(), ci);
+            pipe_value_5 = dev->read_pipe_5(pipe_name.c_str(), get_client_identification());
 
             ctr = 2;
         }
@@ -5058,11 +5110,8 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
         {
             check_and_reconnect();
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
             Device_5_var dev = Device_5::_duplicate(device_5);
-            dev->write_pipe_5(pipe_value_5, ci);
+            dev->write_pipe_5(pipe_value_5, get_client_identification());
 
             ctr = 2;
         }
@@ -5188,11 +5237,8 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
         {
             check_and_reconnect();
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
             Device_5_var dev = Device_5::_duplicate(device_5);
-            r_pipe_value_5 = dev->write_read_pipe_5(pipe_value_5, ci);
+            r_pipe_value_5 = dev->write_read_pipe_5(pipe_value_5, get_client_identification());
 
             ctr = 2;
         }
@@ -5308,19 +5354,15 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
         {
             check_and_reconnect(local_source);
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             if(version >= 5)
             {
                 Device_5_var dev = Device_5::_duplicate(device_5);
-                attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, ci);
+                attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, get_client_identification());
             }
             else if(version == 4)
             {
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, ci);
+                attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, get_client_identification());
             }
             else if(version == 3)
             {
@@ -5511,19 +5553,13 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
 
             if(version >= 5)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
                 Device_5_var dev = Device_5::_duplicate(device_5);
-                attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, ci);
+                attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, get_client_identification());
             }
             else if(version == 4)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, ci);
+                attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, get_client_identification());
             }
             else if(version == 3)
             {
@@ -5609,19 +5645,15 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
         {
             check_and_reconnect(local_source);
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             if(version >= 5)
             {
                 Device_5_var dev = Device_5::_duplicate(device_5);
-                attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, ci);
+                attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, get_client_identification());
             }
             else if(version == 4)
             {
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, ci);
+                attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, get_client_identification());
             }
             else if(version == 3)
             {
@@ -5713,12 +5745,10 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *
         {
             check_and_reconnect(local_source);
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             Device_4_var dev = Device_4::_duplicate(device_4);
-            AttributeValueList_4 *attr_value_list_4 = dev->read_attributes_4(attr_list, local_source, ci);
+            AttributeValueList_4 *attr_value_list_4 =
+                dev->read_attributes_4(attr_list, local_source, get_client_identification());
+
             av_4 = attr_value_list_4->get_buffer(true);
             delete attr_value_list_4;
 
@@ -5771,12 +5801,10 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
         {
             check_and_reconnect(local_source);
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             Device_5_var dev = Device_5::_duplicate(device_5);
-            AttributeValueList_5 *attr_value_list_5 = dev->read_attributes_5(attr_list, local_source, ci);
+            AttributeValueList_5 *attr_value_list_5 =
+                dev->read_attributes_5(attr_list, local_source, get_client_identification());
+
             av_5 = attr_value_list_5->get_buffer(true);
             delete attr_value_list_5;
 
@@ -6036,12 +6064,8 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
 
             if(version >= 4)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
-
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                dev->write_attributes_4(attr_value_list_4, ci);
+                dev->write_attributes_4(attr_value_list_4, get_client_identification());
             }
             else if(version == 3)
             {
@@ -6306,12 +6330,8 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
 
             if(version >= 4)
             {
-                ClntIdent ci;
-                ApiUtil *au = ApiUtil::instance();
-                ci.cpp_clnt(au->get_client_pid());
-
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                dev->write_attributes_4(attr_value_list_4, ci);
+                dev->write_attributes_4(attr_value_list_4, get_client_identification());
             }
             else if(version == 3)
             {
@@ -6588,12 +6608,9 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
             // Now, write the attribute(s)
             //
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             Device_4_var dev = Device_4::_duplicate(device_4);
-            dev->write_attributes_4(attr_val, ci);
+            dev->write_attributes_4(attr_val, get_client_identification());
+
             ctr = 2;
         }
         catch(Tango::MultiDevFailed &e)
@@ -8688,7 +8705,7 @@ bool DeviceProxy::get_locker(LockerInfo &lock_info)
 
         if(v_l[1] != 0)
         {
-            lock_info.ll = Tango::CPP;
+            lock_info.ll = Tango::CPP; // TODO: what about the Tango::CPP_6 case
             lock_info.li.LockerPid = v_l[1];
 
             lock_info.locker_class = "Not defined";
@@ -8993,19 +9010,15 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
             // Now, call the server
             //
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             if(version >= 5)
             {
                 Device_5_var dev = Device_5::_duplicate(device_5);
-                attr_value_list_5 = dev->write_read_attributes_5(attr_value_list, dvsa, ci);
+                attr_value_list_5 = dev->write_read_attributes_5(attr_value_list, dvsa, get_client_identification());
             }
             else
             {
                 Device_4_var dev = Device_4::_duplicate(device_4);
-                attr_value_list_4 = dev->write_read_attributes_4(attr_value_list, ci);
+                attr_value_list_4 = dev->write_read_attributes_4(attr_value_list, get_client_identification());
             }
 
             ctr = 2;
@@ -9260,12 +9273,8 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
             // Now, call the server
             //
 
-            ClntIdent ci;
-            ApiUtil *au = ApiUtil::instance();
-            ci.cpp_clnt(au->get_client_pid());
-
             Device_5_var dev = Device_5::_duplicate(device_5);
-            attr_value_list_5 = dev->write_read_attributes_5(attr_value_list, dvsa, ci);
+            attr_value_list_5 = dev->write_read_attributes_5(attr_value_list, dvsa, get_client_identification());
 
             ctr = 2;
         }

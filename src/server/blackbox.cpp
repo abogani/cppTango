@@ -383,9 +383,14 @@ void BlackBox::insert_cmd_cl_ident(const char *cmd, const ClntIdent &cl_id, long
 void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
 {
     cl_addr->client_ident = true;
+
     Tango::LockerLanguage cl_lang = cl_ident._d();
+
     cl_addr->client_lang = cl_lang;
-    if(cl_lang == Tango::CPP)
+
+    switch(cl_lang)
+    {
+    case Tango::CPP:
     {
         cl_addr->client_pid = cl_ident.cpp_clnt();
         std::string str(cl_addr->client_ip);
@@ -398,12 +403,46 @@ void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
             }
         }
     }
-    else
+    break;
+    case Tango::CPP_6:
+    {
+        Tango::CppClntIdent_6 eci = cl_ident.cpp_clnt_6();
+        cl_addr->client_pid = eci.cpp_clnt;
+        std::string str(cl_addr->client_ip);
+        if(str.find(":unix:") != std::string::npos)
+        {
+            std::string::size_type pos = str.find(' ');
+            if(pos != std::string::npos)
+            {
+                cl_addr->client_ip[pos] = '\0';
+            }
+        }
+    }
+    break;
+    case Tango::JAVA:
     {
         Tango::JavaClntIdent jci = cl_ident.java_clnt();
         cl_addr->java_main_class = jci.MainClass;
         cl_addr->java_ident[0] = jci.uuid[0];
         cl_addr->java_ident[1] = jci.uuid[1];
+    }
+    break;
+    case Tango::JAVA_6:
+    {
+        Tango::JavaClntIdent_6 eci = cl_ident.java_clnt_6();
+        Tango::JavaClntIdent jci = eci.java_clnt;
+        cl_addr->java_main_class = jci.MainClass;
+        cl_addr->java_ident[0] = jci.uuid[0];
+        cl_addr->java_ident[1] = jci.uuid[1];
+    }
+    break;
+    default:
+    {
+        cl_addr->java_main_class = "undefined";
+        cl_addr->java_ident[0] = 0;
+        cl_addr->java_ident[1] = 0;
+    }
+    break;
     }
 }
 
@@ -1622,7 +1661,7 @@ void BlackBox::build_info_as_str(long index)
 
         if(box[index].client_ident == true)
         {
-            if(box[index].client_lang == Tango::CPP)
+            if(box[index].client_lang == Tango::CPP || box[index].client_lang == Tango::CPP_6)
             {
                 elt_str = elt_str + " (CPP/Python client with PID ";
                 TangoSys_MemStream o;
@@ -1647,7 +1686,7 @@ void BlackBox::build_info_as_str(long index)
 
         if(box[index].client_ident == true)
         {
-            if(box[index].client_lang == Tango::CPP)
+            if(box[index].client_lang == Tango::CPP || box[index].client_lang == Tango::CPP_6)
             {
                 elt_str = elt_str + " (CPP/Python client with PID ";
                 TangoSys_MemStream o;
@@ -1919,7 +1958,7 @@ bool client_addr::operator==(const client_addr &rhs)
     }
     else
     {
-        if(client_lang == Tango::CPP)
+        if(client_lang == Tango::CPP || client_lang == Tango::CPP_6)
         {
             if(client_pid != rhs.client_pid)
             {
@@ -1978,7 +2017,7 @@ bool client_addr::operator!=(const client_addr &rhs)
     }
     else
     {
-        if(client_lang == Tango::CPP)
+        if(client_lang == Tango::CPP || client_lang == Tango::CPP_6)
         {
             if(client_pid != rhs.client_pid)
             {
@@ -2133,7 +2172,7 @@ std::ostream &operator<<(std::ostream &o_str, const client_addr &ca)
     }
     else
     {
-        if(ca.client_lang == Tango::CPP)
+        if(ca.client_lang == Tango::CPP || ca.client_lang == Tango::CPP_6)
         {
             std::string cl_name;
             o_str << "CPP or Python client with PID " << ca.client_pid << " from host ";

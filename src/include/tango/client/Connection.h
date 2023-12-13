@@ -78,7 +78,21 @@ class Connection
     int timeout;
 
     int connection_state;
+
+    // the idl version of the peer
     int version;
+
+    // the ultimate idl version supported by the server in which the peer is running - introduced for the
+    // telemetry service to offer the related features to any device inheriting from device_4impl or higher.
+    int server_version;
+
+    // returns a ClntIdent initialized according to the IDL version of the device (peer) and the ultimate IDL version
+    // supported by the server in which the peer is running. Added for the telemetry service introduced in IDLv6. Any
+    // device with IDL version >= 4 running in a server in which the ultimate version of the IDL is >= 6, will benefit
+    // from the telemetry features offered at the kernel level (low level profiling). This will limit the discontinuity
+    // in the tracing information. See ClntIdent in tango.idl v6 for details.
+    ClntIdent get_client_identification() const;
+
     Tango::DevSource source;
 
     bool check_acc;
@@ -168,9 +182,21 @@ class Connection
      *
      * @return The device IDL version
      */
-    int get_idl_version()
+    int get_idl_version() const
     {
         return version;
+    }
+
+    /**
+     * Get server IDL version
+     *
+     * Get the ultimate idl version supported by the server in which the device is running
+     *
+     * @return The server IDL version
+     */
+    int get_server_idl_version() const
+    {
+        return server_version;
     }
 
     /**

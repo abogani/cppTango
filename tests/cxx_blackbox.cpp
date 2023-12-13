@@ -294,7 +294,7 @@ class BlackboxTestSuite : public CxxTest::TestSuite
                         TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));*/
         delete device3;
 
-        reference_str = "Operation ping requested from " + client_host;
+        reference_str = "Operation info requested from " + client_host;
         TS_ASSERT_THROWS_NOTHING(blackbox_out = device2->black_box(1));
         out_str = (*blackbox_out)[0];
         out_str.erase(0, out_str.rfind(": ") + 2);
