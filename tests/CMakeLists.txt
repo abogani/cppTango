@@ -233,7 +233,6 @@ set(TESTS asyn_attr_cb
           allowed_cmd
           att_conf
           attr_conf_test
-          attr_manip
           attr_misc
           attr_proxy
           attr_types
@@ -292,6 +291,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         COMPILE_FLAGS -Wno-stringop-overflow)
 endif()
 
+add_subdirectory(bdd)
+tango_add_test(NAME "bdd::attr_manip" COMMAND $<TARGET_FILE:BddTests>
+    --warn NoAssertions --filenames-as-tags -s
+    "[#test_attr_manip]")
+
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
 target_include_directories(lock PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -329,7 +333,6 @@ tango_add_test(NAME "old_tests::ConfEventBugClient"  COMMAND $<TARGET_FILE:ConfE
 tango_add_test(NAME "old_tests::att_conf"  COMMAND $<TARGET_FILE:att_conf> ${DEV1})
 tango_add_test(NAME "old_tests::attr_conf_test"  COMMAND $<TARGET_FILE:attr_conf_test> ${DEV1})
 tango_add_test(NAME "old_tests::multi_thread_sighandler"  COMMAND $<TARGET_FILE:multi_thread_sighandler>)
-tango_add_test(NAME "old_tests::attr_manip"  COMMAND $<TARGET_FILE:attr_manip> ${DEV1})
 tango_add_test(NAME "old_tests::attr_misc"  COMMAND $<TARGET_FILE:attr_misc> ${DEV1})
 tango_add_test(NAME "old_tests::attr_proxy"  COMMAND $<TARGET_FILE:attr_proxy> ${DEV1}/Short_attr_rw)
 tango_add_test(NAME "old_tests::attr_types"  COMMAND $<TARGET_FILE:attr_types> ${DEV1} 10)
