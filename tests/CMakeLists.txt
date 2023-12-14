@@ -284,6 +284,13 @@ foreach(TEST ${TESTS})
     TEST_SUITE_ADD_TEST(${TEST})
 endforeach(TEST)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set_source_files_properties(
+        cxx_encoded.cpp cmd_types.cpp helper.cpp
+        PROPERTIES
+        COMPILE_FLAGS -Wno-stringop-overflow)
+endif()
+
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
 target_include_directories(lock PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
