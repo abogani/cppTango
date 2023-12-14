@@ -97,6 +97,18 @@ class Except
      * @param ex The exception object reference
      */
     static void print_exception(const CORBA::Exception &ex);
+
+    //@}
+    /**@name Exception related method */
+    //@{
+    /**
+     * Print a TANGO exception.
+     *
+     * Print all the details of a TANGO exception to os.
+     *
+     * @param ex The exception object reference
+     */
+    static void print_exception(const CORBA::Exception &ex, std::ostream &os);
     //@}
 
     /**@name Error stack related method */
