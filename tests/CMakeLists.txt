@@ -43,6 +43,11 @@ function(tango_add_test name_tag name command_tag command)
         NAME "${name}"
         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${command}"
         ${ARGN})
+
+    add_test(
+        NAME "idl5::${name}"
+        COMMAND "env" "IDL_SUFFIX=_IDL5" "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${command}"
+        ${ARGN})
 endfunction()
 
 add_executable(conf_devtest conf_devtest.cpp)
