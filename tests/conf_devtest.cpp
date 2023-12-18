@@ -6,7 +6,7 @@ using namespace Tango;
 
 #define CLASS_NAME "DevTest"
 
-void print_changes(std::string &desc, std::string &server, DbData &db_data)
+void print_changes(const std::string &desc, const std::string &server, DbData &db_data)
 {
     TEST_LOG << desc << " -> " << server << " : " << std::endl;
 
@@ -24,12 +24,6 @@ void print_changes(std::string &desc, std::string &server, DbData &db_data)
         ++it;
     }
     TEST_LOG << std::endl;
-}
-
-void print_changes(const char *desc, const char *server, DbData &db_data)
-{
-    std::string desc_str(desc), server_str(server);
-    print_changes(desc_str, server_str, db_data);
 }
 
 /*
