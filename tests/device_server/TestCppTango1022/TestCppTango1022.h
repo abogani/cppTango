@@ -39,6 +39,11 @@
 
 #include <tango/tango.h>
 
+#ifdef TANGO_TEST_BASE_CLASS
+  #undef TANGO_BASE_CLASS
+  #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
+#endif
+
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022.h
 

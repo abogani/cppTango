@@ -21,6 +21,11 @@ enum _CardinalPoints
 
 typedef _CardinalPoints CardinalPoints;
 
+#ifdef TANGO_TEST_BASE_CLASS
+  #undef TANGO_BASE_CLASS
+  #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
+#endif
+
 #ifndef COMPAT
 class DevTest : public TANGO_BASE_CLASS
 {
