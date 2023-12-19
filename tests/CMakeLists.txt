@@ -18,7 +18,9 @@ endif()
 
 #TODO different OS
 set(SERV_NAME "DevTest")
+set(FWD_SERV_NAME "FwdTest")
 set(INST_NAME "test")
+set(INST_NAME2 "test2")
 set(DEV1 "${INST_NAME}/debian8/10")
 set(DEV2 "${INST_NAME}/debian8/11")
 set(DEV3 "${INST_NAME}/debian8/12")
