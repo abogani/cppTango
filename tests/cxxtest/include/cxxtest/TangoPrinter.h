@@ -31,6 +31,14 @@
 #include <config.h>
 #include <cstdlib>
 
+#ifdef WIN32
+// On Windows system() returns "the value that is returned by the command
+// interpreter"[1], so the exit status is just the return value from system().
+//
+// [1] https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/system-wsystem?view=msvc-170
+#define WEXITSTATUS(X) X
+#endif
+
 // Tango exceptions handling
 //#undef _TS_CATCH_ABORT
 //#define _TS_CATCH_ABORT(b) _TS_CATCH_TYPE( (const Tango::DevFailed &e), {cout << "\n\nException : \n" << endl; Tango::Except::print_exception(e); throw;} ) _TS_CATCH_TYPE( (const CxxTest::AbortTest &), b )
@@ -807,11 +815,29 @@ public:
 
             command << " " << device_server_exec;
 
-            system(command.str().c_str());
+            int ret = system(command.str().c_str());
+            if (ret == -1) {
+                std::stringstream ss;
+                ss << "system() failed with errno=" << errno << " (" << strerror(errno) << ")";
+                throw std::runtime_error(ss.str());
+            } else if (WEXITSTATUS(ret) != 0) {
+                std::stringstream ss;
+                ss << "\"" << command.str() << "\" failed with exit status " << WEXITSTATUS(ret);
+                throw std::runtime_error(ss.str());
+            }
         }
 
         static void kill_server() {
-            system(Tango::kKillServerCmd.c_str());
+            int ret = system(Tango::kKillServerCmd.c_str());
+            if (ret == -1) {
+                std::stringstream ss;
+                ss << "system() failed with errno=" << errno << " (" << strerror(errno) << ")";
+                throw std::runtime_error(ss.str());
+            } else if (WEXITSTATUS(ret) != 0) {
+                std::stringstream ss;
+                ss << "\"" << Tango::kKillServerCmd << "\" failed with exit status " << WEXITSTATUS(ret);
+                throw std::runtime_error(ss.str());
+            }
         }
 
 private:
