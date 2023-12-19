@@ -27,6 +27,7 @@
 #include <string>
 #include <string.h>
 #include <map>
+#include <vector>
 #include <config.h>
 #include <cstdlib>
 
@@ -786,10 +787,19 @@ public:
         return params_tmp;
     }
 
-        static void start_server(const std::string& instance){
-            std::string command = Tango::kStartServerCmd;
-            command += instance;
-            system(command.c_str());
+
+        // env should be strings in the form "VAR=VAL"
+        static void start_server(const std::string& instance, const std::vector<std::string>& env = {}){
+            std::stringstream command;
+            command << "/usr/bin/env ";
+
+            for(const auto& variable: env) {
+                command << variable << " ";
+            }
+
+            command << Tango::kStartServerCmd;
+            command << instance;
+            system(command.str().c_str());
         }
 
         static void kill_server() {

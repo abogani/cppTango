@@ -83,20 +83,23 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     // startup device server with optional fixed ports
     void start_server_with_ports(std::string event_port, std::string heartbeat_port)
     {
-        std::string env = "/usr/bin/env ";
+        std::vector<std::string> env;
         if(!event_port.empty())
         {
-            env = env + " TANGO_ZMQ_EVENT_PORT=" + event_port + " ";
+            env.push_back("TANGO_ZMQ_EVENT_PORT=" + event_port);
         }
         if(!heartbeat_port.empty())
         {
-            env = env + " TANGO_ZMQ_HEARTBEAT_PORT=" + heartbeat_port + " ";
+            env.push_back("TANGO_ZMQ_HEARTBEAT_PORT=" + heartbeat_port);
         }
         // Restart the test server with env vars for the fixed ports
-        TEST_LOG << endl
-                 << "cxx_server_configure_zmq_ports: relaunching DevTest/test with port specification - "
-                 << env + Tango::kStartServerCmd + device1_instance_name << endl;
-        TS_ASSERT_THROWS_NOTHING(system((env + Tango::kStartServerCmd + device1_instance_name).c_str()););
+        TEST_LOG << "\ncxx_server_configure_zmq_ports: relaunching DevTest/test with port specification:\n";
+        for(const auto &variable : env)
+        {
+            TEST_LOG << variable << "\n";
+        }
+        TEST_LOG << "instance name = " << device1_instance_name << endl;
+        CxxTest::TangoPrinter::start_server(device1_instance_name, env);
         CxxTest::TangoPrinter::restore_set("test/debian8/10 started.");
 
         // wait a bit for the server to properly start
