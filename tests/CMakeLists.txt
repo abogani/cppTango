@@ -38,16 +38,18 @@ message("HOST_NAME=${HOST_NAME}")
 
 add_subdirectory(environment)
 
-function(tango_add_test name_tag name command_tag command)
-    add_test(
-        NAME "${name}"
-        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${command}"
-        ${ARGN})
+function(tango_add_test)
+    cmake_parse_arguments(TT "" "NAME;COMMAND" "IDL6;IDL5" ${ARGN})
 
     add_test(
-        NAME "idl5::${name}"
-        COMMAND "env" "IDL_SUFFIX=_IDL5" "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${command}"
-        ${ARGN})
+        NAME "${TT_NAME}"
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${TT_COMMAND}"
+        ${TT_UNPARSED_ARGUMENTS} ${TT_IDL6})
+
+    add_test(
+        NAME "idl5::${TT_NAME}"
+        COMMAND "env" "IDL_SUFFIX=_IDL5" "${CMAKE_CURRENT_BINARY_DIR}/environment/run_with_fixture.sh" "${TT_COMMAND}"
+        ${TT_UNPARSED_ARGUMENTS} ${TT_IDL5})
 endfunction()
 
 add_executable(conf_devtest conf_devtest.cpp)
@@ -104,7 +106,6 @@ function(CXX_GENERATE_TEST name)
             --device20=${DEV20}
             --fwd_device=${FWD_DEV}
             --loop=1
-            --fulldsname=${SERV_NAME}/${INST_NAME}
             --serverhost=${HOST_NAME}
             --clienthost=${HOST_NAME}
             --serverversion=6
@@ -117,7 +118,9 @@ function(CXX_GENERATE_TEST name)
             --dsloglevel=5
             --suiteloop=1
             --devicealias=${DEV1_ALIAS}
-            --attributealias=${ATTR_ALIAS})
+            --attributealias=${ATTR_ALIAS}
+            IDL6 --fulldsname=${SERV_NAME}/${INST_NAME}
+            IDL5 --fulldsname=${SERV_NAME}_IDL5/${INST_NAME})
 endfunction()
 
 CXX_GENERATE_TEST(cxx_always_hook)
@@ -142,7 +145,8 @@ CXX_GENERATE_TEST_EXEC(cxx_dynamic_attributes)
 tango_add_test(NAME "CXX::cxx_dynamic_attributes" COMMAND $<TARGET_FILE:cxx_dynamic_attributes>
             --device1=${TEST_CPPTANGO_1022_DEV1}
             --loop=1
-            --fulldsname=${TEST_CPPTANGO_1022_SERV_NAME}/${INST_NAME})
+            IDL6 --fulldsname=${TEST_CPPTANGO_1022_SERV_NAME}/${INST_NAME}
+            IDL5 --fulldsname=${TEST_CPPTANGO_1022_SERV_NAME}_IDL5/${INST_NAME})
 CXX_GENERATE_TEST(cxx_encoded)
 CXX_GENERATE_TEST(cxx_enum_att)
 CXX_GENERATE_TEST(cxx_exception)
