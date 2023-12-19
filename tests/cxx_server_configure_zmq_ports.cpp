@@ -88,7 +88,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
         {
             env = env + " TANGO_ZMQ_EVENT_PORT=" + event_port + " ";
         }
-        if(!event_port.empty())
+        if(!heartbeat_port.empty())
         {
             env = env + " TANGO_ZMQ_HEARTBEAT_PORT=" + heartbeat_port + " ";
         }
