@@ -4,15 +4,16 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if(argc != 4)
+    if(argc != 5)
     {
-        TEST_LOG << "usage: copy_devproxy <device1> <device2> <device3>" << endl;
+        TEST_LOG << "usage: copy_devproxy <device1> <device2> <device3> <idlver>" << endl;
         exit(-1);
     }
 
     string device1_name(argv[1]);
     string device2_name(argv[2]);
     string device3_name(argv[3]);
+    int idlver = parse_as<int>(argv[4]);
 
     try
     {
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
 
         assert(dev2.name() == device1_name);
 #ifndef COMPAT
-        assert(dev2.get_idl_version() == 6);
+        assert(dev2.get_idl_version() == idlver);
 #endif
     }
     catch(Tango::DevFailed &e)
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
 
     assert(dev3.name() == device1_name);
 #ifndef COMPAT
-    assert(dev3.get_idl_version() == 6);
+    assert(dev3.get_idl_version() == idlver);
 #endif
 
     TEST_LOG << "   Assignement operator --> OK" << endl;

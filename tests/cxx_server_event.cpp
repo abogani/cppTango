@@ -13,7 +13,7 @@ class ServerEventTestSuite : public CxxTest::TestSuite
 {
   protected:
     DeviceProxy *device1, *device2;
-    string device1_name, device2_name, device1_instance_name, device2_instance_name;
+    string device1_name, device2_name, device1_instance_name, device2_instance_name, full_ds_name;
     DevLong eve_id;
 
   public:
@@ -27,6 +27,7 @@ class ServerEventTestSuite : public CxxTest::TestSuite
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device20");
+        full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
 
         CxxTest::TangoPrinter::validate_args();
 
@@ -141,8 +142,11 @@ class ServerEventTestSuite : public CxxTest::TestSuite
     void test_reconnection_after_ds_instance_rename()
     {
         const std::string new_instance_name = "renamed_ds";
-        const std::string new_ds_name = "DevTest/" + new_instance_name;
-        const std::string old_ds_name = "DevTest/" + device1_instance_name;
+        const std::string old_ds_name = full_ds_name;
+
+        size_t exec_part_end = full_ds_name.find("/");
+        std::string new_ds_name = full_ds_name.substr(0, exec_part_end + 1);
+        new_ds_name += new_instance_name;
 
         const std::string attribute_name = "event_change_tst";
 
