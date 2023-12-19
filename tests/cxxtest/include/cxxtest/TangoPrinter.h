@@ -790,6 +790,10 @@ public:
 
         // env should be strings in the form "VAR=VAL"
         static void start_server(const std::string& instance, const std::vector<std::string>& env = {}){
+            std::string device_server_name = get_param("fulldsname");
+            size_t exec_part_end = device_server_name.find("/");
+            std::string device_server_exec = device_server_name.substr(0, exec_part_end);
+
             std::stringstream command;
             command << "/usr/bin/env ";
 
@@ -797,8 +801,12 @@ public:
                 command << variable << " ";
             }
 
+
             command << Tango::kStartServerCmd;
-            command << instance;
+            command << " " << instance;
+
+            command << " " << device_server_exec;
+
             system(command.str().c_str());
         }
 
