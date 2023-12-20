@@ -1859,6 +1859,17 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
                 throw;
             }
         }
+        catch(Tango::DevFailed &tdf)
+        {
+            // this deals with "not running no-db devices" for which the call to "reconnect"
+            // fails in this case, we just catch the exception and gently wait for the next
+            // connection attempt. added following the adoption of a call to "reconnect" instead
+            // of a call to "connect" (side effect).
+            if(strcmp(tdf.errors[0].reason, API_CantConnectToDevice) != 0)
+            {
+                throw;
+            }
+        }
     }
 
     //
