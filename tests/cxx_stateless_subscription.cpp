@@ -69,7 +69,14 @@ class StatelessSubTestSuite : public CxxTest::TestSuite
                 [this]()
                 {
                     std::this_thread::sleep_for(std::chrono::seconds(24));
-                    CxxTest::TangoPrinter::start_server(device2_instance_name);
+                    try
+                    {
+                        CxxTest::TangoPrinter::start_server(device2_instance_name);
+                    }
+                    catch(const std::runtime_error &ex)
+                    {
+                        std::cerr << "start_server failed in background thread: \"" << ex.what() << "\"\n";
+                    }
                     CxxTest::TangoPrinter::restore_set("test2/debian8/20 started.");
                 })
                 .detach();
@@ -85,10 +92,24 @@ class StatelessSubTestSuite : public CxxTest::TestSuite
     {
         if(CxxTest::TangoPrinter::is_restore_set("test2/debian8/20 started."))
         {
-            CxxTest::TangoPrinter::kill_server();
+            try
+            {
+                CxxTest::TangoPrinter::kill_server();
+            }
+            catch(const std::runtime_error &ex)
+            {
+                std::cerr << "kill_server failed during teardown: \"" << ex.what() << "\"\n";
+            }
         }
 
-        CxxTest::TangoPrinter::start_server("test");
+        try
+        {
+            CxxTest::TangoPrinter::start_server("test");
+        }
+        catch(const std::runtime_error &ex)
+        {
+            std::cerr << "start_server failed during teardown: \"" << ex.what() << "\"\n";
+        }
 
         delete device2;
     }

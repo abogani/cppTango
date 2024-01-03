@@ -835,7 +835,7 @@ class GroupTestSuite : public CxxTest::TestSuite
         // prepare environment
         CxxTest::TangoPrinter::restore_set("double_attr_value");
 
-        CxxTest::TangoPrinter::kill_server();
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::kill_server());
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         delete device3;
@@ -849,7 +849,7 @@ class GroupTestSuite : public CxxTest::TestSuite
         TS_ASSERT(rl.has_failed());
 
         // start server
-        CxxTest::TangoPrinter::start_server("test");
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::start_server("test"));
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         // test write attribute with remote server running
@@ -888,7 +888,7 @@ class GroupTestSuite : public CxxTest::TestSuite
     void test_command_execution_when_server_starts_after_client()
     {
         // prepare environment
-        CxxTest::TangoPrinter::kill_server();
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::kill_server());
         delete device3;
         device3 = new DeviceProxy(device3_name);
         Tango::Group *test_group = new Tango::Group("g1");
@@ -903,7 +903,7 @@ class GroupTestSuite : public CxxTest::TestSuite
         TS_ASSERT(crl.has_failed());
 
         // start server
-        CxxTest::TangoPrinter::start_server("test");
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::start_server("test"));
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         // test command execution with remote server running
