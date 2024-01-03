@@ -2,6 +2,13 @@
 #include <stdio.h>
 #include <algorithm>
 
+#ifdef WIN32
+  #include <process.h>
+using pid_t = int;
+#else
+  #include <unistd.h>
+#endif
+
 #include "logging.h"
 
 using namespace std;
@@ -54,6 +61,21 @@ bool compare_lines(const std::string &ref_line, const std::string &out_line)
 }
 
 } // namespace
+
+//+-------------------------------------------------------------------------
+//
+// method :            make_filename_unique
+//
+// description :    Returns a filename from `base` which is guaranteed to be
+//                  unique among all the running copies of this program.
+// argument : in :    - base : basename for the file
+std::string CmpTst::CompareTest::make_filename_unique(std::string base)
+{
+    pid_t pid = getpid();
+    std::stringstream unique_filename;
+    unique_filename << base << "." << pid;
+    return unique_filename.str();
+}
 
 //+-------------------------------------------------------------------------
 //
@@ -373,7 +395,7 @@ void CmpTst::CompareTest::ref_replace_keywords(string file, map<string, string> 
             throw CmpTst::CompareTestException("[CmpTst::CompareTest::ref_replace_keywords] Cannot open file: " + file);
         }
 
-        string outfile_name = file + TMP_SUFFIX; // temporary file
+        string outfile_name = make_filename_unique(file + TMP_SUFFIX); // temporary file
         outfile.open(string(outfile_name).c_str());
         if(!outfile)
         {
@@ -548,7 +570,7 @@ void CmpTst::CompareTest::compare(string ref, string out)
 {
     ifstream refstream, outstream;
 
-    string ref_tmp = ref + TMP_SUFFIX;
+    string ref_tmp = make_filename_unique(ref + TMP_SUFFIX);
     refstream.open(ref_tmp.c_str());
     if(!refstream)
     {
@@ -612,7 +634,7 @@ void CmpTst::CompareTest::compare(string ref, string out)
 //--------------------------------------------------------------------------
 void CmpTst::CompareTest::clean_on_startup(string ref, string out)
 {
-    string ref_tmp = ref + TMP_SUFFIX;
+    string ref_tmp = make_filename_unique(ref + TMP_SUFFIX);
     remove(ref_tmp.c_str());
     remove(out.c_str());
 }
@@ -629,7 +651,7 @@ void CmpTst::CompareTest::clean_on_startup(string ref, string out)
 //--------------------------------------------------------------------------
 void CmpTst::CompareTest::clean_up(string ref, string out)
 {
-    string ref_tmp = ref + TMP_SUFFIX;
+    string ref_tmp = make_filename_unique(ref + TMP_SUFFIX);
     bool ref_err = false, out_err = false;
 
     if(remove(ref_tmp.c_str()) != 0)
@@ -664,7 +686,7 @@ void CmpTst::CompareTest::clean_up(string ref, string out)
 //--------------------------------------------------------------------------
 void CmpTst::CompareTest::leave_output(string ref)
 {
-    string ref_tmp = ref + TMP_SUFFIX;
+    string ref_tmp = make_filename_unique(ref + TMP_SUFFIX);
 
     if(remove(ref_tmp.c_str()) != 0)
     {

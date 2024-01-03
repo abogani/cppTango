@@ -63,7 +63,7 @@ class ClassDevSignalTestSuite : public CxxTest::TestSuite
         //
 
         ref_file = refpath + file_name;
-        out_file = outpath + file_name;
+        out_file = CmpTst::CompareTest::make_filename_unique(outpath + file_name);
         CmpTst::CompareTest::clean_on_startup(ref_file, out_file);
     }
 

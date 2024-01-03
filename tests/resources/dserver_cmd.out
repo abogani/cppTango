@@ -254,7 +254,7 @@
 </log4j:event>
 
 <log4j:event logger="DSERVER" timestamp="10" level="DEBUG" thread="1">
-<log4j:message><![CDATA[Input string = file::/tmp/dserver_cmd.out]]></log4j:message>
+<log4j:message><![CDATA[Input string = file::FILE]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
 
@@ -264,16 +264,16 @@
 </log4j:event>
 
 <log4j:event logger="DSERVER" timestamp="10" level="DEBUG" thread="1">
-<log4j:message><![CDATA[Logging::get_target_type_and_name (input file::/tmp/dserver_cmd.out)]]></log4j:message>
+<log4j:message><![CDATA[Logging::get_target_type_and_name (input file::FILE)]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
 
 <log4j:event logger="DSERVER" timestamp="10" level="DEBUG" thread="1">
-<log4j:message><![CDATA[Logging::get_target_type_and_name (output file /tmp/dserver_cmd.out)]]></log4j:message>
+<log4j:message><![CDATA[Logging::get_target_type_and_name (output file FILE)]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
 
 <log4j:event logger="DSERVER" timestamp="10" level="DEBUG" thread="1">
-<log4j:message><![CDATA[removing target file::/tmp/dserver_cmd.out from DSERVER]]></log4j:message>
+<log4j:message><![CDATA[removing target file::FILE from DSERVER]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
