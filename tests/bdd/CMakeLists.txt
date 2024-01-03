@@ -2,6 +2,7 @@ find_package(Catch2 3 REQUIRED)
 
 add_library(bdd SHARED
     test_attr_manip.cpp
+    utils/auto_device_class.cpp
     utils/entry_points.cpp
     utils/utils.cpp)
 

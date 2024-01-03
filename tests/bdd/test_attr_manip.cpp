@@ -5,8 +5,35 @@
 #include "utils/utils.h"
 
 // Hard code device name as we plan to not need this
-static constexpr const char *DEVICE_NAME = "test/debian8/10";
+static constexpr const char *DEVICE_NAME = "tango://127.0.0.1:10000/attr_manip/test/1#dbase=no";
 static constexpr double SERVER_VALUE = 8.888;
+
+template <class Base>
+class AttrManipDev : public Base
+{
+  public:
+    using Base::Base;
+
+    ~AttrManipDev() override { }
+
+    void init_device() override { }
+
+    void read_attribute(Tango::Attribute &att)
+    {
+        attr_dq_double = SERVER_VALUE;
+        att.set_value_date_quality(&attr_dq_double, std::chrono::system_clock::now(), Tango::ATTR_VALID);
+    }
+
+    static void attribute_factory(std::vector<Tango::Attr *> &attrs)
+    {
+        attrs.push_back(new TangoTest::AutoAttr<&AttrManipDev::read_attribute>("attr_dq_db", Tango::DEV_DOUBLE));
+    }
+
+  private:
+    Tango::DevDouble attr_dq_double;
+};
+
+TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrManipDev)
 
 SCENARIO("attribute formatting can be controlled")
 {

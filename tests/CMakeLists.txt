@@ -292,9 +292,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 add_subdirectory(bdd)
-tango_add_test(NAME "bdd::attr_manip" COMMAND $<TARGET_FILE:BddTests>
-    --warn NoAssertions --filenames-as-tags -s
-    "[#test_attr_manip]")
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
 target_include_directories(lock PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
