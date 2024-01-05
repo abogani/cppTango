@@ -75,7 +75,7 @@ Checks: >
 
 # All the suppressed warnings above must be duplicated below
 WarningsAsErrors: >
-  *
+  *,
   -bugprone-assignment-in-if-condition,
   -bugprone-branch-clone,
   -bugprone-easily-swappable-parameters,
