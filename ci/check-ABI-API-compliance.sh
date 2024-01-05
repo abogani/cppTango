@@ -28,6 +28,9 @@ function exit_on_abi_api_breakages() {
 function prepare_old() {
   git worktree remove --force old-branch 2>/dev/null || true
   git worktree add old-branch origin/${CI_TARGET_BRANCH}
+  cd old-branch
+  git submodule update --init
+  cd "${base}"
 }
 
 function prepare_new() {
@@ -37,7 +40,10 @@ function prepare_new() {
   git branch -D ci/abi-api-test-merge 2>/dev/null || true
   git worktree add -b ci/abi-api-test-merge new-branch origin/${CI_TARGET_BRANCH}
   cd new-branch
+  # We initialise submodules after the merge in case they are updated in the MR
+  # branch.
   git merge ${revision} --no-commit
+  git submodule update --init
   cd "${base}"
 }
 
