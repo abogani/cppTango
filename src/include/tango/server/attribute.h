@@ -2052,9 +2052,7 @@ inline void Attribute::throw_startup_exception(const char *origin)
         std::string err_msg;
         std::vector<std::string> event_exceptions;
         std::vector<std::string> opt_exceptions;
-        for(std::map<std::string, DevFailed>::const_iterator it = startup_exceptions.begin();
-            it != startup_exceptions.end();
-            ++it)
+        for(auto it = startup_exceptions.begin(); it != startup_exceptions.end(); ++it)
         {
             if(it->first == "event_period" || it->first == "archive_period" || it->first == "rel_change" ||
                it->first == "abs_change" || it->first == "archive_rel_change" || it->first == "archive_abs_change")

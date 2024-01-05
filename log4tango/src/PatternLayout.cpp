@@ -309,7 +309,7 @@ PatternLayout::~PatternLayout()
 
 void PatternLayout::clear_conversion_pattern()
 {
-    for(ComponentVector::const_iterator i = _components.begin(); i != _components.end(); ++i)
+    for(auto i = _components.begin(); i != _components.end(); ++i)
     {
         delete(*i);
     }
@@ -461,7 +461,7 @@ std::string PatternLayout::format(const LoggingEvent &event)
 {
     std::ostringstream message;
 
-    for(ComponentVector::const_iterator i = _components.begin(); i != _components.end(); ++i)
+    for(auto i = _components.begin(); i != _components.end(); ++i)
     {
         (*i)->append(message, event);
     }
