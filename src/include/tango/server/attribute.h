@@ -703,9 +703,7 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <class T,
-              typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type * =
-                  nullptr>
+    template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> * = nullptr>
     void set_value(T *, long x = 1, long y = 0, bool release = false);
 
     /**
@@ -720,9 +718,7 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <class T,
-              typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type * =
-                  nullptr>
+    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
     void set_value(T *, long x = 1, long y = 0, bool release = false);
     //---------------------------------------------------------------------------
 

@@ -543,9 +543,7 @@ class WAttribute : public Attribute
      * @param y The attribute set value y length. Default value is 0
 
      */
-    template <class T,
-              typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type * =
-                  nullptr>
+    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
     void set_write_value(T *val, size_t x = 1, size_t y = 0);
     /**@name Set new value for attribute
      * Miscellaneous method to set a WAttribute value
@@ -560,9 +558,7 @@ class WAttribute : public Attribute
      * @param y The attribute set value y length. Default value is 0
 
      */
-    template <class T,
-              typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type * =
-                  nullptr>
+    template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> * = nullptr>
     void set_write_value(T *val, size_t x = 1, size_t y = 0);
 
     /**@name Set new value for attribute

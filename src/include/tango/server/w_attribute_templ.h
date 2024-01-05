@@ -119,22 +119,18 @@ inline const Tango::DevVarEncodedArray &get_value(const AttrValUnion &att_union)
     return att_union.encoded_att_value();
 }
 
-template <
-    typename T,
-    typename std::enable_if<!(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value),
-                            T>::type * = nullptr>
+template <typename T,
+          std::enable_if_t<!(std::is_same_v<T, Tango::DevDouble> || std::is_same_v<T, Tango::DevFloat>), T> * = nullptr>
 void check_nan(const std::string &, const T &, const size_t)
 {
 }
 
 template <typename T,
-          typename std::enable_if<(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value),
-                                  T>::type * = nullptr>
+          std::enable_if_t<(std::is_same_v<T, Tango::DevDouble> || std::is_same_v<T, Tango::DevFloat>), T> * = nullptr>
 void check_nan(const std::string &, const T &, size_t);
 
 template <typename T,
-          typename std::enable_if<(std::is_same<T, Tango::DevDouble>::value || std::is_same<T, Tango::DevFloat>::value),
-                                  T>::type *>
+          std::enable_if_t<(std::is_same_v<T, Tango::DevDouble> || std::is_same_v<T, Tango::DevFloat>), T> *>
 void check_nan(const std::string &name, const T &val, const size_t i)
 {
     if(std::isfinite(val) == 0)

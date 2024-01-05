@@ -102,8 +102,8 @@ void WAttribute::get_write_value(const T *&ptr)
 template <typename T>
 void WAttribute::check_type(const std::string &origin)
 {
-    bool short_enum = std::is_same<short, typename std::underlying_type<T>::type>::value;
-    bool uns_int_enum = std::is_same<unsigned int, typename std::underlying_type<T>::type>::value;
+    bool short_enum = std::is_same<short, std::underlying_type_t<T>>::value;
+    bool uns_int_enum = std::is_same<unsigned int, std::underlying_type_t<T>>::value;
 
     if(short_enum == false && uns_int_enum == false)
     {
@@ -169,8 +169,7 @@ void WAttribute::check_type(const std::string &origin)
 //             - val : Data to be set as written value
 //
 //-----------------------------------------------------------------------------------------------------------------
-template <class T,
-          typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type *>
+template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> *>
 inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 {
     check_type<T>("WAttribute::set_write_value");
@@ -212,8 +211,7 @@ inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
     }
 }
 
-template <class T,
-          typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type *>
+template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
 inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 {
     size_t nb_data;

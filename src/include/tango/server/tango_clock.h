@@ -29,13 +29,13 @@ template <typename A, typename B>
 using SameClocks = std::is_same<typename A::clock, typename B::clock>;
 
 template <typename DstTp, typename SrcTp>
-typename std::enable_if<SameClocks<DstTp, SrcTp>::value, DstTp>::type convert_time_point(SrcTp src)
+std::enable_if_t<SameClocks<DstTp, SrcTp>::value, DstTp> convert_time_point(SrcTp src)
 {
     return std::chrono::time_point_cast<typename DstTp::duration>(src);
 }
 
 template <typename DstTp, typename SrcTp>
-typename std::enable_if<!SameClocks<DstTp, SrcTp>::value, DstTp>::type convert_time_point(SrcTp src)
+std::enable_if_t<!SameClocks<DstTp, SrcTp>::value, DstTp> convert_time_point(SrcTp src)
 {
     // The conversion is based on the duration equality assumption:
     // (src_ref - src) == (dst_ref - dst)

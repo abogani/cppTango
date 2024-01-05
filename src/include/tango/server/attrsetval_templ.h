@@ -60,8 +60,7 @@ namespace Tango
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-template <class T,
-          typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type *>
+template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 {
     //
@@ -79,8 +78,8 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    bool short_enum = std::is_same<short, typename std::underlying_type<T>::type>::value;
-    bool uns_int_enum = std::is_same<unsigned int, typename std::underlying_type<T>::type>::value;
+    bool short_enum = std::is_same<short, std::underlying_type_t<T>>::value;
+    bool uns_int_enum = std::is_same<unsigned int, std::underlying_type_t<T>>::value;
 
     if(short_enum == false && uns_int_enum == false)
     {
@@ -253,8 +252,7 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     set_time();
 }
 
-template <class T,
-          typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type *>
+template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *p_data, long x, long y, bool release)
 {
     using ArrayType = typename tango_type_traits<T>::ArrayType;
