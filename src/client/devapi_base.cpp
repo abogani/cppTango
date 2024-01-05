@@ -6838,7 +6838,7 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
 
         for(unsigned int i = 0; i < hist->length(); i++)
         {
-            ddh->push_back(DeviceDataHistory(i, ctr_ptr, hist));
+            ddh->emplace_back(i, ctr_ptr, hist);
         }
     }
     else
@@ -6846,7 +6846,7 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
         ddh->reserve(hist_4->dates.length());
         for(unsigned int i = 0; i < hist_4->dates.length(); i++)
         {
-            ddh->push_back(DeviceDataHistory());
+            ddh->emplace_back();
         }
         from_hist4_2_DataHistory(hist_4, ddh);
     }
@@ -6957,7 +6957,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist_5->dates.length());
         for(unsigned int i = 0; i < hist_5->dates.length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory());
+            ddh->emplace_back();
         }
         from_hist_2_AttHistory(hist_5, ddh);
         for(unsigned int i = 0; i < hist_5->dates.length(); i++)
@@ -6970,7 +6970,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist_4->dates.length());
         for(unsigned int i = 0; i < hist_4->dates.length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory());
+            ddh->emplace_back();
         }
         from_hist_2_AttHistory(hist_4, ddh);
     }
@@ -6979,7 +6979,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist_3->length());
         for(unsigned int i = 0; i < hist_3->length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory(i, hist_3));
+            ddh->emplace_back(i, hist_3);
         }
     }
     else
@@ -6987,7 +6987,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist->length());
         for(unsigned int i = 0; i < hist->length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory(i, hist));
+            ddh->emplace_back(i, hist);
         }
     }
 
