@@ -1,9 +1,7 @@
 #ifndef _INTERNAL_UTILS_H
 #define _INTERNAL_UTILS_H
 
-namespace Tango
-{
-namespace detail
+namespace Tango::detail
 {
 
 constexpr int INVALID_IDL_VERSION = 0;
@@ -14,7 +12,6 @@ constexpr int INVALID_IDL_VERSION = 0;
 /// devices with version 0 (which is not a valid IDL version).
 bool IDLVersionIsTooOld(int version, int desiredVersion);
 
-} // namespace detail
-} // namespace Tango
+} // namespace Tango::detail
 
 #endif // _INTERNAL_UTILS_H

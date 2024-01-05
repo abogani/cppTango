@@ -37,9 +37,7 @@
 #include <cstring>
 #include <tango/server/tango_current_function.h>
 
-namespace Tango
-{
-namespace logging_detail
+namespace Tango::logging_detail
 {
 #ifdef _TG_WINDOWS_
 constexpr auto PathSeparator = '\\';
@@ -60,8 +58,7 @@ inline const char *basename(const char *path)
     // as long as the path is null-terminated.
     return last_dir_sep + 1;
 }
-} // namespace logging_detail
-} // namespace Tango
+} // namespace Tango::logging_detail
 
 // A shortcut to the core logger ------------------------------
 #define API_LOGGER Tango::Logging::get_core_logger()

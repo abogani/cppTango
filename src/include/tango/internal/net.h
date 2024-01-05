@@ -8,9 +8,7 @@
   #include <unistd.h>
 #endif
 
-namespace Tango
-{
-namespace detail
+namespace Tango::detail
 {
 
 #if defined(MAXHOSTNAMELEN)
@@ -43,7 +41,6 @@ void split_endpoint(const std::string &endpoint, std::string &name, std::string 
 /// As specified by omniORB both port and hostname can be empty.
 std::string parse_hostname_from_CORBA_URI(const std::string &input);
 
-} // namespace detail
-} // namespace Tango
+} // namespace Tango::detail
 
 #endif // _INTERNAL_MISC_H
