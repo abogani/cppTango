@@ -429,7 +429,7 @@ void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
     break;
     case Tango::JAVA_6:
     {
-        Tango::JavaClntIdent_6 eci = cl_ident.java_clnt_6();
+        const Tango::JavaClntIdent_6 &eci = cl_ident.java_clnt_6();
         Tango::JavaClntIdent jci = eci.java_clnt;
         cl_addr->java_main_class = jci.MainClass;
         cl_addr->java_ident[0] = jci.uuid[0];
