@@ -212,7 +212,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      */
     void append_status(const std::string &stat, bool new_line = false)
     {
-        if(new_line == true)
+        if(new_line)
         {
             device_status.append(1, '\n');
         }

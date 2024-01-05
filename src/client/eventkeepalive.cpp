@@ -97,7 +97,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos, E
                 }
             }
 
-            if(need_reconnect == true)
+            if(need_reconnect)
             {
                 try
                 {
@@ -167,7 +167,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                 }
             }
 
-            if(need_reconnect == true)
+            if(need_reconnect)
             {
                 try
                 {
@@ -292,7 +292,7 @@ void EventConsumerKeepAliveThread::reconnect_to_event(const EvChanIte &ipos, Eve
                 }
             }
 
-            if(need_reconnect == true)
+            if(need_reconnect)
             {
                 try
                 {
@@ -470,7 +470,7 @@ void EventConsumerKeepAliveThread::reconnect_to_zmq_event(const EvChanIte &ipos,
                 }
             }
 
-            if(need_reconnect == true)
+            if(need_reconnect)
             {
                 try
                 {
@@ -491,7 +491,7 @@ void EventConsumerKeepAliveThread::reconnect_to_zmq_event(const EvChanIte &ipos,
                         std::string prefix = fqen.substr(0, pos + 1);
                         d_name.insert(0, prefix);
 
-                        if(disconnect_called == false)
+                        if(!disconnect_called)
                         {
                             event_consumer->disconnect_event(epos->second.fully_qualified_event_name,
                                                              epos->second.endpoint);
@@ -561,7 +561,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
     event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
     notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
 
-    while(exit_th == false)
+    while(!exit_th)
     {
         time_to_sleep = EVENT_HEARTBEAT_PERIOD;
 
@@ -573,7 +573,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
 
         {
             omni_mutex_lock sync(shared_cmd);
-            if(shared_cmd.cmd_pending == false)
+            if(!shared_cmd.cmd_pending)
             {
                 unsigned long s, n;
 
@@ -584,7 +584,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
                 omni_thread::get_time(&s, &n, nb_sec, nb_nanos);
                 shared_cmd.cond.timedwait(s, n);
             }
-            if(shared_cmd.cmd_pending == true)
+            if(shared_cmd.cmd_pending)
             {
                 exit_th = true;
                 return (void *) nullptr;
@@ -612,7 +612,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
         }
 
         now = time(nullptr);
-        if(event_consumer->event_not_connected.empty() == false)
+        if(!event_consumer->event_not_connected.empty())
         {
             DelayEvent de(event_consumer);
             event_consumer->map_modification_lock.writerIn();
@@ -670,7 +670,7 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
                     bool heartbeat_skipped;
                     heartbeat_skipped = ((now - ipos->second.last_heartbeat) >= EVENT_HEARTBEAT_PERIOD);
 
-                    if(heartbeat_skipped || ipos->second.heartbeat_skipped || ipos->second.event_system_failed == true)
+                    if(heartbeat_skipped || ipos->second.heartbeat_skipped || ipos->second.event_system_failed)
                     {
                         ipos->second.heartbeat_skipped = true;
                         main_reconnect(event_consumer, notifd_event_consumer, epos, ipos);
@@ -998,7 +998,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
         }
     }
 
-    if(ipos->second.channel_type == ZMQ && cmd_params.empty() == false)
+    if(ipos->second.channel_type == ZMQ && !cmd_params.empty())
     {
         try
         {
@@ -1142,7 +1142,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
         // The notify deamon might have closed the connection, try to reconnect!
         //
 
-        if(ipos->second.event_system_failed == false && ipos->second.has_notifd_closed_the_connection >= 3)
+        if(!ipos->second.event_system_failed && ipos->second.has_notifd_closed_the_connection >= 3)
         {
             ipos->second.event_system_failed = true;
         }
@@ -1152,19 +1152,12 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
         // channel, then reconnect callbacks to this new event channel
         //
 
-        if(ipos->second.event_system_failed == true)
+        if(ipos->second.event_system_failed)
         {
             bool notifd_reco = reconnect_to_channel(ipos, notifd_event_consumer);
-            if(notifd_reco)
-            {
-                ipos->second.event_system_failed = false;
-            }
-            else
-            {
-                ipos->second.event_system_failed = true;
-            }
+            ipos->second.event_system_failed = !notifd_reco;
 
-            if(ipos->second.event_system_failed == false)
+            if(!ipos->second.event_system_failed)
             {
                 reconnect_to_event(ipos, notifd_event_consumer);
             }
@@ -1174,16 +1167,9 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
     {
         DeviceData dd;
         bool zmq_reco = reconnect_to_zmq_channel(ipos, event_consumer, dd);
-        if(zmq_reco)
-        {
-            ipos->second.event_system_failed = false;
-        }
-        else
-        {
-            ipos->second.event_system_failed = true;
-        }
+        ipos->second.event_system_failed = !zmq_reco;
 
-        if(ipos->second.event_system_failed == false)
+        if(!ipos->second.event_system_failed)
         {
             reconnect_to_zmq_event(ipos, event_consumer, dd);
         }
@@ -1223,9 +1209,9 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
             {
                 epos->second.callback_monitor->get_monitor();
 
-                if(need_reconnect == true)
+                if(need_reconnect)
                 {
-                    if((ipos->second.channel_type == NOTIFD) && (epos->second.filter_ok == false))
+                    if((ipos->second.channel_type == NOTIFD) && (!epos->second.filter_ok))
                     {
                         try
                         {
@@ -1432,7 +1418,7 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
                     }
                 }
 
-                if(ipos->second.event_system_failed == false)
+                if(!ipos->second.event_system_failed)
                 {
                     re_subscribe_after_reconnect(event_consumer, notifd_event_consumer, epos, ipos, domain_name);
                 }
@@ -1510,7 +1496,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
         ds_failed = true;
     }
 
-    if(ds_failed == false)
+    if(!ds_failed)
     {
         //
         // Push an event with the value just read from the re-connected server
@@ -1544,7 +1530,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 da = new DeviceAttribute();
                 *da = device.read_attribute(epos->second.obj_name.c_str());
 
-                if(da->has_failed() == true)
+                if(da->has_failed())
                 {
                     err = da->get_err_stack();
                 }
@@ -1634,10 +1620,10 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             }
             else
             {
-                if(device.get_from_env_var() == false)
+                if(!device.get_from_env_var())
                 {
                     prefix = "tango://";
-                    if(device.is_dbase_used() == false)
+                    if(!device.is_dbase_used())
                     {
                         prefix = prefix + device.get_dev_host() + ':' + device.get_dev_port() + '/';
                     }
@@ -1653,7 +1639,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             }
 
             std::string dom_name = prefix + device.dev_name();
-            if(device.is_dbase_used() == false)
+            if(!device.is_dbase_used())
             {
                 dom_name = dom_name + MODIFIER_DBASE_NO;
             }

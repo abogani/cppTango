@@ -231,7 +231,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
             // for this server event channel, clear it.
             //
 
-            if(tg->is_svr_starting() == true)
+            if(tg->is_svr_starting())
             {
                 try
                 {
@@ -273,7 +273,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         }
         catch(Tango::DevFailed &)
         {
-            if(tg->is_svr_starting() == true)
+            if(tg->is_svr_starting())
             {
                 TANGO_LOG_DEBUG << "Failed to import EventChannelFactory from the Device Server property file"
                                 << std::endl;
@@ -339,7 +339,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         // for this server event channel, clear it.
         //
 
-        if(!tg->use_file_db() && (tg->is_svr_starting() == true))
+        if(!tg->use_file_db() && (tg->is_svr_starting()))
         {
             try
             {
@@ -357,7 +357,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         // Print these messages only during DS startup sequence
         //
 
-        if(tg->is_svr_starting() == true)
+        if(tg->is_svr_starting())
         {
             TANGO_LOG_DEBUG << "Failed to narrow the EventChannelFactory - Notifd events will not be generated (hint: "
                                "start the notifd daemon on this host)"
@@ -505,7 +505,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
 
                 db->set_timeout_millis(db_to * 2);
 
-                while((retry == true) && (ctr < 4))
+                while((retry) && (ctr < 4))
                 {
                     try
                     {
@@ -595,7 +595,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     // which did a core dump (or similar)
     //
 
-    if(tg->is_svr_starting() == true)
+    if(tg->is_svr_starting())
     {
         CosNotifyChannelAdmin::ProxyIDSeq_var proxies;
 
@@ -777,7 +777,7 @@ void NotifdEventSupplier::push_heartbeat_event()
         // try a reconnection
         //
 
-        if(fail == true)
+        if(fail)
         {
             try
             {
@@ -1054,7 +1054,7 @@ void NotifdEventSupplier::push_event(DeviceImpl *device_impl,
     // If it was not possible to communicate with notifd, try a reconnection
     //
 
-    if(fail == true)
+    if(fail)
     {
         try
         {

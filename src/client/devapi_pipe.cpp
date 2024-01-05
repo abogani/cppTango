@@ -219,7 +219,7 @@ DevicePipeBlob::DevicePipeBlob(const std::string &blob_name) :
 
 DevicePipeBlob::~DevicePipeBlob()
 {
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
     }
@@ -394,7 +394,7 @@ DevicePipeBlob &DevicePipeBlob::operator=(DevicePipeBlob &&rhs)
     rhs.insert_elt_array = nullptr;
     insert_ctr = rhs.insert_ctr;
 
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
     }
@@ -768,7 +768,7 @@ size_t DevicePipeBlob::get_extract_ind_from_name(const std::string &_na)
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         std::stringstream ss;
 
@@ -811,7 +811,7 @@ size_t DevicePipeBlob::get_insert_ind_from_name(const std::string &_na)
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         std::stringstream ss;
 
@@ -1180,22 +1180,22 @@ DevicePipeBlob &DevicePipeBlob::operator<<(const DevString &datum)
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(blobdenamenotset_flag) == true && exceptions_flags.test(blobdenamenotset_flag) == true)
+    if(ext_state.test(blobdenamenotset_flag) && exceptions_flags.test(blobdenamenotset_flag))
     {
         throw_name_not_set("operator<<");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator<<", false);
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
@@ -1258,22 +1258,22 @@ DevicePipeBlob &DevicePipeBlob::operator<<(const std::string &datum)
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(blobdenamenotset_flag) == true && exceptions_flags.test(blobdenamenotset_flag) == true)
+    if(ext_state.test(blobdenamenotset_flag) && exceptions_flags.test(blobdenamenotset_flag))
     {
         throw_name_not_set("operator<<");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator<<", false);
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
@@ -1330,22 +1330,22 @@ DevicePipeBlob &DevicePipeBlob::operator<<(const DevicePipeBlob &datum)
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(blobdenamenotset_flag) == true && exceptions_flags.test(blobdenamenotset_flag) == true)
+    if(ext_state.test(blobdenamenotset_flag) && exceptions_flags.test(blobdenamenotset_flag))
     {
         throw_name_not_set("operator<<");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator<<", false);
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
@@ -1395,22 +1395,22 @@ DevicePipeBlob &DevicePipeBlob::operator<<(const std::vector<DevBoolean> &datum)
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(blobdenamenotset_flag) == true && exceptions_flags.test(blobdenamenotset_flag) == true)
+    if(ext_state.test(blobdenamenotset_flag) && exceptions_flags.test(blobdenamenotset_flag))
     {
         throw_name_not_set("operator<<");
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator<<", false);
     }
@@ -1549,22 +1549,22 @@ DevicePipeBlob &DevicePipeBlob::operator<<(const std::vector<std::string> &datum
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(blobdenamenotset_flag) == true && exceptions_flags.test(blobdenamenotset_flag) == true)
+    if(ext_state.test(blobdenamenotset_flag) && exceptions_flags.test(blobdenamenotset_flag))
     {
         throw_name_not_set("operator<<");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator<<", false);
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
@@ -1888,27 +1888,27 @@ DevicePipeBlob &DevicePipeBlob::operator>>(DevString &datum)
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(isempty_flag) == true && exceptions_flags.test(isempty_flag) == true)
+    if(ext_state.test(isempty_flag) && exceptions_flags.test(isempty_flag))
     {
         throw_is_empty("operator>>");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator>>", true);
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
 
-    if(ext_state.test(wrongtype_flag) == true && exceptions_flags.test(wrongtype_flag) == true)
+    if(ext_state.test(wrongtype_flag) && exceptions_flags.test(wrongtype_flag))
     {
         throw_type_except("DevString", "operator>>");
     }
@@ -1995,27 +1995,27 @@ DevicePipeBlob &DevicePipeBlob::operator>>(DevicePipeBlob &datum)
         }
     }
 
-    if(ext_state.any() == true)
+    if(ext_state.any())
     {
         failed = true;
     }
 
-    if(ext_state.test(isempty_flag) == true && exceptions_flags.test(isempty_flag) == true)
+    if(ext_state.test(isempty_flag) && exceptions_flags.test(isempty_flag))
     {
         throw_is_empty("operator>>");
     }
 
-    if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)
+    if(ext_state.test(notenoughde_flag) && exceptions_flags.test(notenoughde_flag))
     {
         throw_too_many("operator>>", true);
     }
 
-    if(ext_state.test(mixing_flag) == true && exceptions_flags.test(mixing_flag) == true)
+    if(ext_state.test(mixing_flag) && exceptions_flags.test(mixing_flag))
     {
         throw_mixing("operator>>");
     }
 
-    if(ext_state.test(wrongtype_flag) == true && exceptions_flags.test(wrongtype_flag) == true)
+    if(ext_state.test(wrongtype_flag) && exceptions_flags.test(wrongtype_flag))
     {
         throw_type_except("DevicePipeBlob", "operator>>");
     }
@@ -2224,10 +2224,10 @@ DevicePipeBlob &DevicePipeBlob::operator>>(DevVarEncodedArray *datum)
 
 bool DevicePipeBlob::has_failed()
 {
-    if(failed == true)
+    if(failed)
     {
         delete insert_elt_array;
-        if(extract_delete == true)
+        if(extract_delete)
         {
             delete extract_elt_array;
             extract_delete = false;
@@ -2254,7 +2254,7 @@ bool DevicePipeBlob::has_failed()
 void DevicePipeBlob::throw_type_except(const std::string &_ty, const std::string &_meth)
 {
     delete insert_elt_array;
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
         extract_delete = false;
@@ -2287,7 +2287,7 @@ void DevicePipeBlob::throw_too_many(const std::string &_meth, bool _extract)
 {
     std::stringstream ss;
     ss << "Not enough data element in blob (";
-    if(_extract == true)
+    if(_extract)
     {
         ss << get_data_elt_nb();
     }
@@ -2301,7 +2301,7 @@ void DevicePipeBlob::throw_too_many(const std::string &_meth, bool _extract)
 
     delete insert_elt_array;
     insert_elt_array = nullptr;
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
         extract_delete = false;
@@ -2327,7 +2327,7 @@ void DevicePipeBlob::throw_too_many(const std::string &_meth, bool _extract)
 void DevicePipeBlob::throw_is_empty(const std::string &_meth)
 {
     delete insert_elt_array;
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
         extract_delete = false;
@@ -2355,7 +2355,7 @@ void DevicePipeBlob::throw_is_empty(const std::string &_meth)
 void DevicePipeBlob::throw_name_not_set(const std::string &_meth)
 {
     delete insert_elt_array;
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
         extract_delete = false;
@@ -2384,7 +2384,7 @@ void DevicePipeBlob::throw_name_not_set(const std::string &_meth)
 void DevicePipeBlob::throw_mixing(const std::string &_meth)
 {
     delete insert_elt_array;
-    if(extract_delete == true)
+    if(extract_delete)
     {
         delete extract_elt_array;
         extract_delete = false;
@@ -2419,7 +2419,7 @@ void DevicePipeBlob::print(std::ostream &o_str, int indent, bool insert_extract)
     // Print blob name (if any)
     //
 
-    if(name.size() != 0 && insert_extract == true)
+    if(name.size() != 0 && insert_extract)
     {
         int max = indent;
         if(indent > 1)
@@ -2438,7 +2438,7 @@ void DevicePipeBlob::print(std::ostream &o_str, int indent, bool insert_extract)
     //
 
     const DevVarPipeDataEltArray *dvpdea;
-    if(insert_extract == false)
+    if(!insert_extract)
     {
         dvpdea = get_extract_data();
     }

@@ -89,7 +89,7 @@ inline void operator<<(DevVarCharArray &lval, const std::vector<unsigned char> &
 inline void operator<<(std::vector<unsigned char> &lval, const DevVarCharArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -133,7 +133,7 @@ inline void operator<<(DevVarShortArray &lval, const std::vector<short> &rval)
 inline void operator<<(std::vector<short> &lval, const DevVarShortArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -177,7 +177,7 @@ inline void operator<<(DevVarLongArray &lval, const std::vector<DevLong> &rval)
 inline void operator<<(std::vector<DevLong> &lval, const DevVarLongArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -221,7 +221,7 @@ inline void operator<<(DevVarLong64Array &lval, const std::vector<DevLong64> &rv
 inline void operator<<(std::vector<DevLong64> &lval, const DevVarLong64Array &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -266,7 +266,7 @@ inline void operator<<(DevVarFloatArray &lval, const std::vector<float> &rval)
 inline void operator<<(std::vector<float> &lval, const DevVarFloatArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -311,7 +311,7 @@ inline void operator<<(DevVarDoubleArray &lval, const std::vector<double> &rval)
 inline void operator<<(std::vector<double> &lval, const DevVarDoubleArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -356,7 +356,7 @@ inline void operator<<(DevVarBooleanArray &lval, const std::vector<bool> &rval)
 inline void operator<<(std::vector<bool> &lval, const DevVarBooleanArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -401,7 +401,7 @@ inline void operator<<(DevVarUShortArray &lval, const std::vector<unsigned short
 inline void operator<<(std::vector<unsigned short> &lval, const DevVarUShortArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -446,7 +446,7 @@ inline void operator<<(DevVarULongArray &lval, const std::vector<DevULong> &rval
 inline void operator<<(std::vector<DevULong> &lval, const DevVarULongArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -491,7 +491,7 @@ inline void operator<<(DevVarULong64Array &lval, const std::vector<DevULong64> &
 inline void operator<<(std::vector<DevULong64> &lval, const DevVarULong64Array &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -535,7 +535,7 @@ inline void operator<<(DevVarStringArray &lval, const std::vector<std::string> &
 inline void operator<<(std::vector<std::string> &lval, const DevVarStringArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }
@@ -581,7 +581,7 @@ inline void operator<<(DevVarStateArray &lval, const std::vector<DevState> &rval
 inline void operator<<(std::vector<DevState> &lval, const DevVarStateArray &rval)
 {
     long nb_elt = rval.length();
-    if(lval.empty() == false)
+    if(!lval.empty())
     {
         lval.clear();
     }

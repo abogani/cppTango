@@ -119,7 +119,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     }
     else
     {
-        if(cl->client_ident == true)
+        if(cl->client_ident)
         {
             client_release = 4;
         }
@@ -151,7 +151,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     // Init one subscription command flag in Eventsupplier
     //
 
-    if(ev != nullptr && ev->get_one_subscription_cmd() == false)
+    if(ev != nullptr && !ev->get_one_subscription_cmd())
     {
         ev->set_one_subscription_cmd(true);
     }
@@ -204,7 +204,7 @@ void DServer::event_subscription(DeviceImpl &device,
 
     if(channel_type == NOTIFD)
     {
-        if(attribute.is_fwd_att() == true)
+        if(attribute.is_fwd_att())
         {
             std::stringstream ss;
             ss << "The attribute " << obj_name << " is a forwarded attribute.";
@@ -215,7 +215,7 @@ void DServer::event_subscription(DeviceImpl &device,
     }
     else
     {
-        if(attribute.is_fwd_att() == true && client_lib_version < 5)
+        if(attribute.is_fwd_att() && client_lib_version < 5)
         {
             std::stringstream ss;
             ss << "The attribute " << obj_name << " is a forwarded attribute.";
@@ -242,7 +242,7 @@ void DServer::event_subscription(DeviceImpl &device,
     }
     else if(event == "data_ready")
     {
-        if(attribute.is_fwd_att() == false && attribute.is_data_ready_event() == false)
+        if(!attribute.is_fwd_att() && !attribute.is_data_ready_event())
         {
             TangoSys_OMemStream o;
             o << "The attribute ";
@@ -258,7 +258,7 @@ void DServer::event_subscription(DeviceImpl &device,
         // If the polling is necessary to send events, check whether the polling is started for the requested attribute.
         //
 
-        if(attribute.is_polled() == false)
+        if(!attribute.is_polled())
         {
             TangoSys_OMemStream o;
             o << "The polling (necessary to send events) for the attribute ";
@@ -267,21 +267,21 @@ void DServer::event_subscription(DeviceImpl &device,
 
             if(event == "change")
             {
-                if(attribute.is_fwd_att() == false && attribute.is_change_event() == false)
+                if(!attribute.is_fwd_att() && !attribute.is_change_event())
                 {
                     TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
                 }
             }
             else if(event == "archive")
             {
-                if(attribute.is_fwd_att() == false && attribute.is_archive_event() == false)
+                if(!attribute.is_fwd_att() && !attribute.is_archive_event())
                 {
                     TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
                 }
             }
             else
             {
-                if(attribute.is_fwd_att() == false)
+                if(!attribute.is_fwd_att())
                 {
                     TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
                 }
@@ -303,7 +303,7 @@ void DServer::event_subscription(DeviceImpl &device,
                    (attribute.get_data_type() != Tango::DEV_ENCODED) &&
                    (attribute.get_data_type() != Tango::DEV_STATE) && (attribute.get_data_type() != Tango::DEV_ENUM))
                 {
-                    if(attribute.is_check_change_criteria() == true)
+                    if(attribute.is_check_change_criteria())
                     {
                         if((attribute.rel_change[0] == INT_MAX) && (attribute.rel_change[1] == INT_MAX) &&
                            (attribute.abs_change[0] == INT_MAX) && (attribute.abs_change[1] == INT_MAX))
@@ -332,7 +332,7 @@ void DServer::event_subscription(DeviceImpl &device,
                    (attribute.get_data_type() != Tango::DEV_ENCODED) &&
                    (attribute.get_data_type() != Tango::DEV_STATE) && (attribute.get_data_type() != Tango::DEV_ENUM))
                 {
-                    if(attribute.is_check_archive_criteria() == true)
+                    if(attribute.is_check_archive_criteria())
                     {
                         if((attribute.archive_abs_change[0] == INT_MAX) &&
                            (attribute.archive_abs_change[1] == INT_MAX) &&
@@ -459,7 +459,7 @@ MulticastParameters
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         result.rate = 0;
         result.recovery_ivl = 0;
@@ -575,7 +575,7 @@ void DServer::store_subscribed_client_info(DeviceImpl &device,
 
     try
     {
-        if(get_heartbeat_started() == false)
+        if(!get_heartbeat_started())
         {
             add_event_heartbeat();
             set_heartbeat_started(true);
@@ -679,7 +679,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                     if(ev->get_alternate_event_endpoint().size() != 0)
                     {
                         std::string ev_end = ev->get_alternate_event_endpoint()[loop];
-                        if(ev_end.empty() == false)
+                        if(!ev_end.empty())
                         {
                             tmp_str = "Alternate event: " + ev_end;
                         }
@@ -726,7 +726,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
             }
         }
 
-        if(found == false)
+        if(!found)
         {
             std::stringstream ss;
             ss << "The event type you sent (" << event << ") is not  valid event type";
@@ -795,7 +795,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                         }
                         else
                         {
-                            if(cl->client_ident == true)
+                            if(cl->client_ident)
                             {
                                 client_release = 4;
                             }
@@ -888,7 +888,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         //
 
         bool new_client = ev->update_connected_client(get_client_ident());
-        if(new_client == true)
+        if(new_client)
         {
             ev->set_double_send();
         }
@@ -909,7 +909,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         }
 
         ev_name = ev_name + dev->get_name_lower();
-        if(intr_change == false)
+        if(!intr_change)
         {
             ev_name = ev_name + '/' + obj_name_lower;
         }
@@ -966,7 +966,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // Init one subscription command flag in Eventsupplier
         //
 
-        if(ev->get_one_subscription_cmd() == false)
+        if(!ev->get_one_subscription_cmd())
         {
             ev->set_one_subscription_cmd(true);
         }
@@ -975,13 +975,13 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // For forwarded attribute, eventually subscribe to events coming from root attribute
         //
 
-        if(intr_change == false && pipe_event == false)
+        if(!intr_change && !pipe_event)
         {
             Attribute &attribute = dev->get_device_attr()->get_attr_by_name(obj_name.c_str());
             EventType et;
             tg->event_name_2_event_type(event, et);
 
-            if(attribute.is_fwd_att() == true && et != ATTR_CONF_EVENT)
+            if(attribute.is_fwd_att() && et != ATTR_CONF_EVENT)
             {
                 FwdAttribute &fwd_att = static_cast<FwdAttribute &>(attribute);
                 std::string root_name = fwd_att.get_fwd_dev_name() + "/" + fwd_att.get_fwd_att_name();
@@ -994,7 +994,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                 // polling is not started for the root attribute is sent at subscription time
                 //
 
-                if(already_there == true)
+                if(already_there)
                 {
                     rar.unsubscribe_user_event(fwd_att.get_fwd_dev_name(), fwd_att.get_fwd_att_name(), et);
                 }
@@ -1026,7 +1026,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         }
         else
         {
-            if(local_call == true)
+            if(local_call)
             {
                 std::string &event_endpoint = ev->get_event_endpoint();
                 ret_data->svalue[1] = Tango::string_dup(event_endpoint.c_str());

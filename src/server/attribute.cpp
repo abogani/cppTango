@@ -763,11 +763,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     {
     case Tango::DEV_SHORT:
         is_err_format = !(str >> prop.sh && str.eof());
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.sh >= prop_comp.sh)
                     {
@@ -788,11 +788,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     case Tango::DEV_LONG:
         is_err_format = !(str >> prop.db && str.eof());
         prop.lg = (DevLong) prop.db;
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.lg >= prop_comp.lg)
                     {
@@ -813,11 +813,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     case Tango::DEV_LONG64:
         is_err_format = !(str >> prop.db && str.eof());
         prop.lg64 = (DevLong64) prop.db;
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.lg64 >= prop_comp.lg64)
                     {
@@ -837,11 +837,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
 
     case Tango::DEV_DOUBLE:
         is_err_format = !(str >> prop.db && str.eof());
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.db >= prop_comp.db)
                     {
@@ -861,11 +861,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
 
     case Tango::DEV_FLOAT:
         is_err_format = !(str >> prop.fl && str.eof());
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.fl >= prop_comp.fl)
                     {
@@ -885,11 +885,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
 
     case Tango::DEV_USHORT:
         is_err_format = !(str >> prop.ush && str.eof());
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.ush >= prop_comp.ush)
                     {
@@ -910,11 +910,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     case Tango::DEV_UCHAR:
         is_err_format = !(str >> prop.sh && str.eof());
         prop.uch = (DevUChar) prop.sh;
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.uch >= prop_comp.uch)
                     {
@@ -935,11 +935,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     case Tango::DEV_ULONG:
         is_err_format = !(str >> prop.db && str.eof());
         prop.ulg = (DevULong) prop.db;
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.ulg >= prop_comp.ulg)
                     {
@@ -960,11 +960,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     case Tango::DEV_ULONG64:
         is_err_format = !(str >> prop.db && str.eof());
         prop.ulg64 = (DevULong64) prop.db;
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.ulg64 >= prop_comp.ulg64)
                     {
@@ -985,11 +985,11 @@ bool Attribute::init_check_val_prop(std::vector<AttrProperty> &prop_list,
     case Tango::DEV_ENCODED:
         is_err_format = !(str >> prop.sh && str.eof());
         prop.uch = (DevUChar) prop.sh;
-        if(is_err_format == false)
+        if(!is_err_format)
         {
-            if(is_value_set(prop_name) == true)
+            if(is_value_set(prop_name))
             {
-                if(min_prop == true)
+                if(min_prop)
                 {
                     if(prop.uch >= prop_comp.uch)
                     {
@@ -1068,7 +1068,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(init_check_val_prop(prop_list, dev_name, "min_alarm", min_alarm_str, min_alarm, max_alarm) == true)
+        if(init_check_val_prop(prop_list, dev_name, "min_alarm", min_alarm_str, min_alarm, max_alarm))
         {
             alarm_conf.set(min_level);
         }
@@ -1084,7 +1084,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(init_check_val_prop(prop_list, dev_name, "max_alarm", max_alarm_str, max_alarm, min_alarm) == true)
+        if(init_check_val_prop(prop_list, dev_name, "max_alarm", max_alarm_str, max_alarm, min_alarm))
         {
             alarm_conf.set(max_level);
         }
@@ -1100,7 +1100,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(init_check_val_prop(prop_list, dev_name, "min_value", min_value_str, min_value, max_value) == true)
+        if(init_check_val_prop(prop_list, dev_name, "min_value", min_value_str, min_value, max_value))
         {
             check_min_value = true;
         }
@@ -1116,7 +1116,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(init_check_val_prop(prop_list, dev_name, "max_value", max_value_str, max_value, min_value) == true)
+        if(init_check_val_prop(prop_list, dev_name, "max_value", max_value_str, max_value, min_value))
         {
             check_max_value = true;
         }
@@ -1132,7 +1132,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(init_check_val_prop(prop_list, dev_name, "min_warning", min_warning_str, min_warning, max_warning) == true)
+        if(init_check_val_prop(prop_list, dev_name, "min_warning", min_warning_str, min_warning, max_warning))
         {
             alarm_conf.set(min_warn);
         }
@@ -1148,7 +1148,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(init_check_val_prop(prop_list, dev_name, "max_warning", max_warning_str, max_warning, min_warning) == true)
+        if(init_check_val_prop(prop_list, dev_name, "max_warning", max_warning_str, max_warning, min_warning))
         {
             alarm_conf.set(max_warn);
         }
@@ -1308,8 +1308,7 @@ void Attribute::init_opt_prop(std::vector<AttrProperty> &prop_list, const std::s
 
     try
     {
-        if(((delta_t_defined == true) && (delta_val_defined == false)) ||
-           ((delta_t_defined == false) && (delta_val_defined == true)))
+        if(((delta_t_defined) && (!delta_val_defined)) || ((!delta_t_defined) && (delta_val_defined)))
         {
             TangoSys_OMemStream o;
 
@@ -1386,7 +1385,7 @@ void Attribute::build_check_enum_labels(const std::string &labs)
     // Build vector with enum labels
     //
 
-    while(exit == false)
+    while(!exit)
     {
         pos = labs.find(',', start);
         if(pos == std::string::npos)
@@ -1461,14 +1460,14 @@ void Attribute::add_startup_exception(std::string prop_name, const DevFailed &ex
 
 void Attribute::delete_startup_exception(std::string prop_name, std::string dev_name)
 {
-    if(check_startup_exceptions == true)
+    if(check_startup_exceptions)
     {
         auto it = startup_exceptions.find(prop_name);
         if(it != startup_exceptions.end())
         {
             startup_exceptions.erase(it);
         }
-        if(startup_exceptions.empty() == true)
+        if(startup_exceptions.empty())
         {
             check_startup_exceptions = false;
         }
@@ -1479,7 +1478,7 @@ void Attribute::delete_startup_exception(std::string prop_name, std::string dev_
         {
             dev_restart = tg->is_device_restarting(dev_name);
         }
-        if(tg->is_svr_starting() == false && dev_restart == false)
+        if(!tg->is_svr_starting() && !dev_restart)
         {
             DeviceImpl *dev = get_att_device();
             dev->set_run_att_conf_loop(true);
@@ -1631,14 +1630,7 @@ bool Attribute::is_polled()
             // mark the attribute as not polled! No events can be send by the polling thread!
             //
 
-            if(attr_list[i + 1] == "0")
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return attr_list[i + 1] != "0";
         }
     }
 
@@ -1693,14 +1685,7 @@ bool Attribute::is_polled(DeviceImpl *the_dev)
 
 bool Attribute::is_writ_associated()
 {
-    if(writable_attr_name != AssocWritNotSpec)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return writable_attr_name != AssocWritNotSpec;
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1808,7 +1793,7 @@ void Attribute::set_data_size()
 
 void Attribute::set_time()
 {
-    if(date == true)
+    if(date)
     {
         when = make_TimeVal(std::chrono::system_clock::now());
     }
@@ -1833,7 +1818,7 @@ bool Attribute::check_alarm()
     // Throw exception if no alarm is defined for this attribute
     //
 
-    if(is_alarmed().none() == true)
+    if(is_alarmed().none())
     {
         TangoSys_OMemStream o;
 
@@ -1847,7 +1832,7 @@ bool Attribute::check_alarm()
     // If no alarms levels are specified, just return without alarm.
     //
 
-    if(is_fwd_att() == false && quality != Tango::ATTR_VALID)
+    if(!is_fwd_att() && quality != Tango::ATTR_VALID)
     {
         log_quality();
         return returned;
@@ -1866,19 +1851,19 @@ bool Attribute::check_alarm()
 
     std::bitset<numFlags> &bs = is_alarmed();
 
-    if((bs.test(Attribute::min_level) == true) || (bs.test(Attribute::max_level) == true))
+    if((bs.test(Attribute::min_level)) || (bs.test(Attribute::max_level)))
     {
-        if(check_level_alarm() == true)
+        if(check_level_alarm())
         {
             returned = true;
         }
     }
 
-    if(returned == false)
+    if(!returned)
     {
-        if((bs.test(Attribute::min_warn) == true) || (bs.test(Attribute::max_warn) == true))
+        if((bs.test(Attribute::min_warn)) || (bs.test(Attribute::max_warn)))
         {
-            if(check_warn_alarm() == true)
+            if(check_warn_alarm())
             {
                 returned = true;
             }
@@ -1889,9 +1874,9 @@ bool Attribute::check_alarm()
     // If the RDS alarm is set, check attribute level
     //
 
-    if((bs.test(Attribute::rds) == true))
+    if((bs.test(Attribute::rds)))
     {
-        if(check_rds_alarm() == true)
+        if(check_rds_alarm())
         {
             returned = true;
         }
@@ -1923,15 +1908,15 @@ bool Attribute::check_level_alarm()
     //
 
     std::uint32_t i;
-    if(alarm_conf.test(min_level) == true)
+    if(alarm_conf.test(min_level))
     {
         switch(data_type)
         {
         case Tango::DEV_SHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 short tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.sh_seq)[0];
                 }
@@ -1959,10 +1944,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_LONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.lg_seq)[0];
                 }
@@ -1990,10 +1975,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_LONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong64 tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.lg64_seq)[0];
                 }
@@ -2021,10 +2006,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_DOUBLE:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevDouble tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.db_seq)[0];
                 }
@@ -2052,10 +2037,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_FLOAT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevFloat tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.fl_seq)[0];
                 }
@@ -2083,10 +2068,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_USHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUShort tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.ush_seq)[0];
                 }
@@ -2114,10 +2099,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_UCHAR:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUChar tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.cha_seq)[0];
                 }
@@ -2145,10 +2130,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_ULONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong64 tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.ulg64_seq)[0];
                 }
@@ -2176,10 +2161,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_ULONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.ulg_seq)[0];
                 }
@@ -2207,7 +2192,7 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_ENCODED:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 for(unsigned int i = 0; i < tmp_enc[0].encoded_data.length(); i++)
                 {
@@ -2231,7 +2216,7 @@ bool Attribute::check_level_alarm()
             }
             break;
         }
-        if(returned == true)
+        if(returned)
         {
             quality = Tango::ATTR_ALARM;
             alarm.set(min_level);
@@ -2244,15 +2229,15 @@ bool Attribute::check_level_alarm()
     //
 
     returned = false;
-    if(alarm_conf.test(max_level) == true)
+    if(alarm_conf.test(max_level))
     {
         switch(data_type)
         {
         case Tango::DEV_SHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevShort tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.sh_seq)[0];
                 }
@@ -2280,10 +2265,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_LONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.lg_seq)[0];
                 }
@@ -2311,10 +2296,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_LONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong64 tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.lg64_seq)[0];
                 }
@@ -2342,10 +2327,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_DOUBLE:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevDouble tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.db_seq)[0];
                 }
@@ -2373,10 +2358,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_FLOAT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevFloat tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.fl_seq)[0];
                 }
@@ -2404,10 +2389,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_USHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUShort tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.ush_seq)[0];
                 }
@@ -2435,10 +2420,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_UCHAR:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUChar tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.cha_seq)[0];
                 }
@@ -2466,10 +2451,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_ULONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.ulg_seq)[0];
                 }
@@ -2497,10 +2482,10 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_ULONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong64 tmp_val;
-                if(date == false)
+                if(!date)
                 {
                     tmp_val = (*value.ulg64_seq)[0];
                 }
@@ -2528,7 +2513,7 @@ bool Attribute::check_level_alarm()
             break;
 
         case Tango::DEV_ENCODED:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 for(unsigned int i = 0; i < tmp_enc[0].encoded_data.length(); i++)
                 {
@@ -2552,7 +2537,7 @@ bool Attribute::check_level_alarm()
             }
             break;
         }
-        if(returned == true)
+        if(returned)
         {
             quality = Tango::ATTR_ALARM;
             alarm.set(max_level);
@@ -2584,15 +2569,15 @@ bool Attribute::check_warn_alarm()
     //
 
     std::uint32_t i;
-    if(alarm_conf.test(min_warn) == true)
+    if(alarm_conf.test(min_warn))
     {
         switch(data_type)
         {
         case Tango::DEV_SHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevShort tmp_val;
-                tmp_val = date == false ? (*value.sh_seq)[0] : tmp_sh[0];
+                tmp_val = !date ? (*value.sh_seq)[0] : tmp_sh[0];
 
                 if(tmp_val <= min_warning.sh)
                 {
@@ -2613,10 +2598,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_LONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong tmp_val;
-                tmp_val = date == false ? (*value.lg_seq)[0] : tmp_lo[0];
+                tmp_val = !date ? (*value.lg_seq)[0] : tmp_lo[0];
 
                 if(tmp_val <= min_warning.lg)
                 {
@@ -2637,10 +2622,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_LONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong64 tmp_val;
-                tmp_val = date == false ? (*value.lg64_seq)[0] : tmp_lo64[0];
+                tmp_val = !date ? (*value.lg64_seq)[0] : tmp_lo64[0];
 
                 if(tmp_val <= min_warning.lg64)
                 {
@@ -2661,10 +2646,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_DOUBLE:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevDouble tmp_val;
-                tmp_val = date == false ? (*value.db_seq)[0] : tmp_db[0];
+                tmp_val = !date ? (*value.db_seq)[0] : tmp_db[0];
 
                 if(tmp_val <= min_warning.db)
                 {
@@ -2685,10 +2670,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_FLOAT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevFloat tmp_val;
-                tmp_val = date == false ? (*value.fl_seq)[0] : tmp_fl[0];
+                tmp_val = !date ? (*value.fl_seq)[0] : tmp_fl[0];
 
                 if(tmp_val <= min_warning.fl)
                 {
@@ -2709,10 +2694,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_USHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUShort tmp_val;
-                tmp_val = date == false ? (*value.ush_seq)[0] : tmp_ush[0];
+                tmp_val = !date ? (*value.ush_seq)[0] : tmp_ush[0];
 
                 if(tmp_val <= min_warning.ush)
                 {
@@ -2733,10 +2718,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_UCHAR:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUChar tmp_val;
-                tmp_val = date == false ? (*value.cha_seq)[0] : tmp_cha[0];
+                tmp_val = !date ? (*value.cha_seq)[0] : tmp_cha[0];
 
                 if(tmp_val <= min_warning.uch)
                 {
@@ -2757,10 +2742,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_ULONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong tmp_val;
-                tmp_val = date == false ? (*value.ulg_seq)[0] : tmp_ulo[0];
+                tmp_val = !date ? (*value.ulg_seq)[0] : tmp_ulo[0];
 
                 if(tmp_val <= min_warning.ulg)
                 {
@@ -2781,10 +2766,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_ULONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong64 tmp_val;
-                tmp_val = date == false ? (*value.ulg64_seq)[0] : tmp_ulo64[0];
+                tmp_val = !date ? (*value.ulg64_seq)[0] : tmp_ulo64[0];
 
                 if(tmp_val <= min_warning.ulg64)
                 {
@@ -2805,12 +2790,12 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_ENCODED:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 for(unsigned int i = 0; i < tmp_enc[0].encoded_data.length(); i++)
                 {
                     Tango::DevUChar tmp_val;
-                    tmp_val = date == false ? (*value.enc_seq)[0].encoded_data[i] : tmp_enc[0].encoded_data[i];
+                    tmp_val = !date ? (*value.enc_seq)[0].encoded_data[i] : tmp_enc[0].encoded_data[i];
 
                     if(tmp_val <= min_warning.uch)
                     {
@@ -2832,7 +2817,7 @@ bool Attribute::check_warn_alarm()
             }
             break;
         }
-        if(returned == true)
+        if(returned)
         {
             quality = Tango::ATTR_WARNING;
             alarm.set(min_warn);
@@ -2845,15 +2830,15 @@ bool Attribute::check_warn_alarm()
     //
 
     returned = false;
-    if(alarm_conf.test(max_warn) == true)
+    if(alarm_conf.test(max_warn))
     {
         switch(data_type)
         {
         case Tango::DEV_SHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevShort tmp_val;
-                tmp_val = date == false ? (*value.sh_seq)[0] : tmp_sh[0];
+                tmp_val = !date ? (*value.sh_seq)[0] : tmp_sh[0];
 
                 if(tmp_val >= max_warning.sh)
                 {
@@ -2874,10 +2859,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_LONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong tmp_val;
-                tmp_val = date == false ? (*value.lg_seq)[0] : tmp_lo[0];
+                tmp_val = !date ? (*value.lg_seq)[0] : tmp_lo[0];
 
                 if(tmp_val >= max_warning.lg)
                 {
@@ -2898,10 +2883,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_LONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevLong64 tmp_val;
-                tmp_val = date == false ? (*value.lg64_seq)[0] : tmp_lo64[0];
+                tmp_val = !date ? (*value.lg64_seq)[0] : tmp_lo64[0];
 
                 if(tmp_val >= max_warning.lg64)
                 {
@@ -2922,10 +2907,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_DOUBLE:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevDouble tmp_val;
-                tmp_val = date == false ? (*value.db_seq)[0] : tmp_db[0];
+                tmp_val = !date ? (*value.db_seq)[0] : tmp_db[0];
 
                 if(tmp_val >= max_warning.db)
                 {
@@ -2946,10 +2931,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_FLOAT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevFloat tmp_val;
-                tmp_val = date == false ? (*value.fl_seq)[0] : tmp_fl[0];
+                tmp_val = !date ? (*value.fl_seq)[0] : tmp_fl[0];
 
                 if(tmp_val >= max_warning.fl)
                 {
@@ -2970,10 +2955,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_USHORT:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUShort tmp_val;
-                tmp_val = date == false ? (*value.ush_seq)[0] : tmp_ush[0];
+                tmp_val = !date ? (*value.ush_seq)[0] : tmp_ush[0];
 
                 if(tmp_val >= max_warning.ush)
                 {
@@ -2994,10 +2979,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_UCHAR:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevUChar tmp_val;
-                tmp_val = date == false ? (*value.cha_seq)[0] : tmp_cha[0];
+                tmp_val = !date ? (*value.cha_seq)[0] : tmp_cha[0];
 
                 if(tmp_val >= max_warning.uch)
                 {
@@ -3018,10 +3003,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_ULONG:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong tmp_val;
-                tmp_val = date == false ? (*value.ulg_seq)[0] : tmp_ulo[0];
+                tmp_val = !date ? (*value.ulg_seq)[0] : tmp_ulo[0];
 
                 if(tmp_val >= max_warning.ulg)
                 {
@@ -3042,10 +3027,10 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_ULONG64:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 Tango::DevULong64 tmp_val;
-                tmp_val = date == false ? (*value.ulg64_seq)[0] : tmp_ulo64[0];
+                tmp_val = !date ? (*value.ulg64_seq)[0] : tmp_ulo64[0];
 
                 if(tmp_val >= max_warning.ulg64)
                 {
@@ -3066,12 +3051,12 @@ bool Attribute::check_warn_alarm()
             break;
 
         case Tango::DEV_ENCODED:
-            if(check_scalar_wattribute() == true)
+            if(check_scalar_wattribute())
             {
                 for(unsigned int i = 0; i < tmp_enc[0].encoded_data.length(); i++)
                 {
                     Tango::DevUChar tmp_val;
-                    tmp_val = date == false ? (*value.enc_seq)[0].encoded_data[i] : tmp_enc[0].encoded_data[i];
+                    tmp_val = !date ? (*value.enc_seq)[0].encoded_data[i] : tmp_enc[0].encoded_data[i];
 
                     if(tmp_val >= max_warning.uch)
                     {
@@ -3093,7 +3078,7 @@ bool Attribute::check_warn_alarm()
             }
             break;
         }
-        if(returned == true)
+        if(returned)
         {
             quality = Tango::ATTR_WARNING;
             alarm.set(max_warn);
@@ -3301,7 +3286,7 @@ void Attribute::add_write_value(Tango::DevVarStringArray *val_ptr)
 {
     if(data_format == Tango::SCALAR)
     {
-        if(scalar_str_attr_release == true)
+        if(scalar_str_attr_release)
         {
             char **strvec = Tango::DevVarStringArray::allocbuf(2);
             strvec[0] = tmp_str[0];
@@ -3516,7 +3501,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
             }
 
             // check for alarms to position the data quality value.
-            if(is_alarmed().any() == true)
+            if(is_alarmed().any())
             {
                 check_alarm();
             }
@@ -4102,12 +4087,12 @@ void Attribute::fire_change_event(DevFailed *except)
         bool pub_socket_created = false;
 
         Tango::Util *tg = Util::instance();
-        if(use_notifd_event() == true)
+        if(use_notifd_event())
         {
             event_supplier_nd = tg->get_notifd_event_supplier();
             pub_socket_created = true;
         }
-        if(use_zmq_event() == true)
+        if(use_zmq_event())
         {
             event_supplier_zmq = tg->get_zmq_event_supplier();
         }
@@ -4120,10 +4105,10 @@ void Attribute::fire_change_event(DevFailed *except)
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(CHANGE_EVENT); // We want a copy
-            if(use_zmq_event() == true && event_supplier_zmq != nullptr)
+            if(use_zmq_event() && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                if(sock_endpoint.empty() == false)
+                if(!sock_endpoint.empty())
                 {
                     pub_socket_created = true;
                 }
@@ -4165,13 +4150,13 @@ void Attribute::fire_change_event(DevFailed *except)
             }
         }
 
-        if(client_libs.empty() == true)
+        if(client_libs.empty())
         {
             if((name_lower != "state") && (name_lower != "status"))
             {
                 // delete the data values allocated in the attribute
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     // For writable scalar attributes the sequence for the
                     // attribute data is not yet allocated. This will happen
@@ -4199,7 +4184,7 @@ void Attribute::fire_change_event(DevFailed *except)
             {
                 // delete the data values allocated in the attribute
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     // For writable scalar attributes the sequence for the
                     // attribute data is not yet allcoated. This will happen
@@ -4236,7 +4221,7 @@ void Attribute::fire_change_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    if(value_flag == false)
+                    if(!value_flag)
                     {
                         TangoSys_OMemStream o;
 
@@ -4307,7 +4292,7 @@ void Attribute::fire_change_event(DevFailed *except)
         // Fire event
         //
 
-        if(is_check_change_criteria() == true)
+        if(is_check_change_criteria())
         {
             if(send_attr_5 != nullptr)
             {
@@ -4338,7 +4323,7 @@ void Attribute::fire_change_event(DevFailed *except)
             {
                 if(event_supplier_nd != nullptr)
                 {
-                    if(send_event == true && pub_socket_created == true)
+                    if(send_event && pub_socket_created)
                     {
                         std::vector<std::string> f_names;
                         std::vector<double> f_data;
@@ -4351,7 +4336,7 @@ void Attribute::fire_change_event(DevFailed *except)
                 }
                 else
                 {
-                    if(pub_socket_created == true)
+                    if(pub_socket_created)
                     {
                         event_supplier_zmq->detect_and_push_change_event(dev, ad, *this, name, except, true);
                     }
@@ -4394,7 +4379,7 @@ void Attribute::fire_change_event(DevFailed *except)
             std::vector<long> filterable_data_lg;
 
             filterable_names.emplace_back("forced_event");
-            if(force_change == true)
+            if(force_change)
             {
                 filterable_data.push_back((double) 1.0);
             }
@@ -4404,7 +4389,7 @@ void Attribute::fire_change_event(DevFailed *except)
             }
 
             filterable_names.emplace_back("quality");
-            if(quality_change == true)
+            if(quality_change)
             {
                 filterable_data.push_back((double) 1.0);
             }
@@ -4444,7 +4429,7 @@ void Attribute::fire_change_event(DevFailed *except)
                                               false);
             }
 
-            if(event_supplier_zmq != nullptr && pub_socket_created == true)
+            if(event_supplier_zmq != nullptr && pub_socket_created)
             {
                 event_supplier_zmq->push_event_loop(dev,
                                                     CHANGE_EVENT,
@@ -4482,7 +4467,7 @@ void Attribute::fire_change_event(DevFailed *except)
         if((name_lower != "state") && (name_lower != "status"))
         {
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -4512,7 +4497,7 @@ void Attribute::fire_change_event(DevFailed *except)
             // delete the data values allocated in the attribute
 
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -4580,12 +4565,12 @@ void Attribute::fire_archive_event(DevFailed *except)
         bool pub_socket_created = false;
 
         Tango::Util *tg = Util::instance();
-        if(use_notifd_event() == true)
+        if(use_notifd_event())
         {
             event_supplier_nd = tg->get_notifd_event_supplier();
             pub_socket_created = true;
         }
-        if(use_zmq_event() == true)
+        if(use_zmq_event())
         {
             event_supplier_zmq = tg->get_zmq_event_supplier();
         }
@@ -4598,10 +4583,10 @@ void Attribute::fire_archive_event(DevFailed *except)
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(ARCHIVE_EVENT); // We want a copy
-            if(use_zmq_event() == true && event_supplier_zmq != nullptr)
+            if(use_zmq_event() && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                if(sock_endpoint.empty() == false)
+                if(!sock_endpoint.empty())
                 {
                     pub_socket_created = true;
                 }
@@ -4643,7 +4628,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             }
         }
 
-        if(client_libs.empty() == true)
+        if(client_libs.empty())
         {
             if((name_lower != "state") && (name_lower != "status"))
             {
@@ -4652,7 +4637,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                 //
 
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     //
                     // For writable scalar attributes the sequence for the
@@ -4686,7 +4671,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                 //
 
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     //
                     // For writable scalar attributes the sequence for the
@@ -4726,7 +4711,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    if(value_flag == false)
+                    if(!value_flag)
                     {
                         TangoSys_OMemStream o;
 
@@ -4809,7 +4794,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         // Fire event
         //
 
-        if(is_check_archive_criteria() == true)
+        if(is_check_archive_criteria())
         {
             auto now_timeval = PollClock::now();
 
@@ -4830,7 +4815,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             {
                 if(event_supplier_nd != nullptr)
                 {
-                    if(send_event == true && pub_socket_created == true)
+                    if(send_event && pub_socket_created)
                     {
                         std::vector<std::string> f_names;
                         std::vector<double> f_data;
@@ -4843,7 +4828,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                 }
                 else
                 {
-                    if(pub_socket_created == true)
+                    if(pub_socket_created)
                     {
                         event_supplier_zmq->detect_and_push_archive_event(
                             dev, ad, *this, name, except, now_timeval, true);
@@ -4883,7 +4868,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             std::vector<long> filterable_data_lg;
 
             filterable_names.emplace_back("forced_event");
-            if(force_change == true)
+            if(force_change)
             {
                 filterable_data.push_back((double) 1.0);
             }
@@ -4893,7 +4878,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             }
 
             filterable_names.emplace_back("quality");
-            if(quality_change == true)
+            if(quality_change)
             {
                 filterable_data.push_back((double) 1.0);
             }
@@ -4924,7 +4909,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                                               false);
             }
 
-            if(event_supplier_zmq != nullptr && pub_socket_created == true)
+            if(event_supplier_zmq != nullptr && pub_socket_created)
             {
                 event_supplier_zmq->push_event_loop(dev,
                                                     ARCHIVE_EVENT,
@@ -4958,7 +4943,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         if((name_lower != "state") && (name_lower != "status"))
         {
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -4990,7 +4975,7 @@ void Attribute::fire_archive_event(DevFailed *except)
         if((name_lower != "state") && (name_lower != "status"))
         {
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -5062,12 +5047,12 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         bool pub_socket_created = false;
 
         Tango::Util *tg = Util::instance();
-        if(use_notifd_event() == true)
+        if(use_notifd_event())
         {
             event_supplier_nd = tg->get_notifd_event_supplier();
             pub_socket_created = true;
         }
-        if(use_zmq_event() == true)
+        if(use_zmq_event())
         {
             event_supplier_zmq = tg->get_zmq_event_supplier();
         }
@@ -5080,10 +5065,10 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(USER_EVENT); // We want a copy
-            if(use_zmq_event() == true && event_supplier_zmq != nullptr)
+            if(use_zmq_event() && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                if(sock_endpoint.empty() == false)
+                if(!sock_endpoint.empty())
                 {
                     pub_socket_created = true;
                 }
@@ -5129,7 +5114,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         // Simply return if event suplier(s) are not created
         //
 
-        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty() == true)
+        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
         {
             if(name_lower != "state")
             {
@@ -5138,7 +5123,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
                 //
 
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     //
                     // For writable scalar attributes the sequence for the
@@ -5178,7 +5163,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    if(value_flag == false)
+                    if(!value_flag)
                     {
                         TangoSys_OMemStream o;
 
@@ -5277,7 +5262,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
                                           except,
                                           false);
         }
-        if(event_supplier_zmq != nullptr && pub_socket_created == true)
+        if(event_supplier_zmq != nullptr && pub_socket_created)
         {
             event_supplier_zmq->push_event_loop(
                 dev, USER_EVENT, filt_names, filt_vals, filterable_names_lg, filterable_data_lg, ad, *this, except);
@@ -5303,7 +5288,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         if((name_lower != "state") && (name_lower != "status"))
         {
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -5335,7 +5320,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         if((name_lower != "state") && (name_lower != "status"))
         {
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -5428,16 +5413,16 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
     EventSupplier *event_supplier_zmq = nullptr;
 
     Tango::Util *tg = Util::instance();
-    if(use_notifd_event() == true)
+    if(use_notifd_event())
     {
         event_supplier_nd = tg->get_notifd_event_supplier();
     }
-    if(use_zmq_event() == true)
+    if(use_zmq_event())
     {
         event_supplier_zmq = tg->get_zmq_event_supplier();
     }
 
-    if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty() == true)
+    if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
     {
         return;
     }
@@ -5497,7 +5482,7 @@ void Attribute::fire_error_periodic_event(DevFailed *except)
 void Attribute::set_quality(Tango::AttrQuality qua, bool send_event)
 {
     quality = qua;
-    if(send_event == true)
+    if(send_event)
     {
         fire_change_event();
     }
@@ -5580,7 +5565,7 @@ void Attribute::upd_att_prop_db(const Tango::Attr_CheckVal &new_value, const cha
 
     Tango::Util *tg = Tango::Util::instance();
     bool retry = true;
-    while(retry == true)
+    while(retry)
     {
         try
         {
@@ -5631,7 +5616,7 @@ void Attribute::remove_configuration()
     //
 
     bool retry = true;
-    while(retry == true)
+    while(retry)
     {
         try
         {
@@ -5662,7 +5647,7 @@ void Attribute::remove_configuration()
     if(nb_prop > 0)
     {
         retry = true;
-        while(retry == true)
+        while(retry)
         {
             try
             {
@@ -5746,7 +5731,7 @@ DeviceClass *Attribute::get_att_device_class(const std::string &dev_name)
     Tango::Util *tg = Tango::Util::instance();
     Tango::DeviceClass *dev_class = nullptr;
 
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         Tango::DeviceImpl *dev = get_att_device();
         dev_class = dev->get_device_class();
@@ -5757,7 +5742,7 @@ DeviceClass *Attribute::get_att_device_class(const std::string &dev_name)
         size_t loop;
         for(loop = 0; loop < tmp_cl_list.size(); ++loop)
         {
-            if(tmp_cl_list[loop]->get_device_factory_done() == false)
+            if(!tmp_cl_list[loop]->get_device_factory_done())
             {
                 break;
             }
@@ -5902,7 +5887,7 @@ void Attribute::avns_in_db(const char *prop_name, const std::string &dev_name)
         db_data.push_back(prop_dd);
 
         bool retry = true;
-        while(retry == true)
+        while(retry)
         {
             try
             {
@@ -5935,7 +5920,7 @@ void Attribute::avns_in_att(prop_type pt)
 {
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -5975,7 +5960,7 @@ void Attribute::avns_in_att(prop_type pt)
             TANGO_ASSERT_ON_DEFAULT(pt);
         }
 
-        if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+        if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
         {
             get_att_device()->push_att_conf_event(this);
         }
@@ -6164,42 +6149,21 @@ bool Attribute::change_event_subscribed()
 
     if(event_change5_subscription != 0)
     {
-        if(now - event_change5_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_change5_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
-    if(ret == false)
+    if(!ret)
     {
         if(event_change4_subscription != 0)
         {
-            if(now - event_change4_subscription > EVENT_RESUBSCRIBE_PERIOD)
-            {
-                ret = false;
-            }
-            else
-            {
-                ret = true;
-            }
+            ret = now - event_change4_subscription <= EVENT_RESUBSCRIBE_PERIOD;
         }
 
-        if(ret == false)
+        if(!ret)
         {
             if(event_change3_subscription != 0)
             {
-                if(now - event_change3_subscription > EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    ret = false;
-                }
-                else
-                {
-                    ret = true;
-                }
+                ret = now - event_change3_subscription <= EVENT_RESUBSCRIBE_PERIOD;
             }
         }
     }
@@ -6213,42 +6177,21 @@ bool Attribute::periodic_event_subscribed()
 
     if(event_periodic5_subscription != 0)
     {
-        if(now - event_periodic5_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_periodic5_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
-    if(ret == false)
+    if(!ret)
     {
         if(event_periodic4_subscription != 0)
         {
-            if(now - event_periodic4_subscription > EVENT_RESUBSCRIBE_PERIOD)
-            {
-                ret = false;
-            }
-            else
-            {
-                ret = true;
-            }
+            ret = now - event_periodic4_subscription <= EVENT_RESUBSCRIBE_PERIOD;
         }
 
-        if(ret == false)
+        if(!ret)
         {
             if(event_periodic3_subscription != 0)
             {
-                if(now - event_periodic3_subscription > EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    ret = false;
-                }
-                else
-                {
-                    ret = true;
-                }
+                ret = now - event_periodic3_subscription <= EVENT_RESUBSCRIBE_PERIOD;
             }
         }
     }
@@ -6262,42 +6205,21 @@ bool Attribute::archive_event_subscribed()
 
     if(event_archive5_subscription != 0)
     {
-        if(now - event_archive5_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_archive5_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
-    if(ret == false)
+    if(!ret)
     {
         if(event_archive4_subscription != 0)
         {
-            if(now - event_archive4_subscription > EVENT_RESUBSCRIBE_PERIOD)
-            {
-                ret = false;
-            }
-            else
-            {
-                ret = true;
-            }
+            ret = now - event_archive4_subscription <= EVENT_RESUBSCRIBE_PERIOD;
         }
 
-        if(ret == false)
+        if(!ret)
         {
             if(event_archive3_subscription != 0)
             {
-                if(now - event_archive3_subscription > EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    ret = false;
-                }
-                else
-                {
-                    ret = true;
-                }
+                ret = now - event_archive3_subscription <= EVENT_RESUBSCRIBE_PERIOD;
             }
         }
     }
@@ -6311,14 +6233,7 @@ bool Attribute::quality_event_subscribed()
     if(event_quality_subscription != 0)
     {
         time_t now = time(nullptr);
-        if(now - event_quality_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_quality_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
     return ret;
@@ -6331,42 +6246,21 @@ bool Attribute::user_event_subscribed()
 
     if(event_user5_subscription != 0)
     {
-        if(now - event_user5_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_user5_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
-    if(ret == false)
+    if(!ret)
     {
         if(event_user4_subscription != 0)
         {
-            if(now - event_user4_subscription > EVENT_RESUBSCRIBE_PERIOD)
-            {
-                ret = false;
-            }
-            else
-            {
-                ret = true;
-            }
+            ret = now - event_user4_subscription <= EVENT_RESUBSCRIBE_PERIOD;
         }
 
-        if(ret == false)
+        if(!ret)
         {
             if(event_user3_subscription != 0)
             {
-                if(now - event_user3_subscription > EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    ret = false;
-                }
-                else
-                {
-                    ret = true;
-                }
+                ret = now - event_user3_subscription <= EVENT_RESUBSCRIBE_PERIOD;
             }
         }
     }
@@ -6380,29 +6274,15 @@ bool Attribute::attr_conf_event_subscribed()
     if(event_attr_conf5_subscription != 0)
     {
         time_t now = time(nullptr);
-        if(now - event_attr_conf5_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_attr_conf5_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
-    if(ret == false)
+    if(!ret)
     {
         if(event_attr_conf_subscription != 0)
         {
             time_t now = time(nullptr);
-            if(now - event_attr_conf_subscription > EVENT_RESUBSCRIBE_PERIOD)
-            {
-                ret = false;
-            }
-            else
-            {
-                ret = true;
-            }
+            ret = now - event_attr_conf_subscription <= EVENT_RESUBSCRIBE_PERIOD;
         }
     }
     return ret;
@@ -6415,14 +6295,7 @@ bool Attribute::data_ready_event_subscribed()
     if(event_data_ready_subscription != 0)
     {
         time_t now = time(nullptr);
-        if(now - event_data_ready_subscription > EVENT_RESUBSCRIBE_PERIOD)
-        {
-            ret = false;
-        }
-        else
-        {
-            ret = true;
-        }
+        ret = now - event_data_ready_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
     return ret;

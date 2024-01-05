@@ -184,7 +184,7 @@ class AttrProp
      */
     T get_val()
     {
-        if(is_value == false)
+        if(!is_value)
         {
             std::string err_msg = "Numeric representation of the property's value (" + str + ") has not been set";
             TANGO_THROW_EXCEPTION(API_AttrPropValueNotSet, err_msg);
@@ -489,7 +489,7 @@ class DoubleAttrProp
      */
     std::vector<T> get_val()
     {
-        if(is_value == false)
+        if(!is_value)
         {
             std::string err_msg = "Numeric representation of the property's value (" + str + ") has not been set";
             TANGO_THROW_EXCEPTION(API_AttrPropValueNotSet, err_msg);

@@ -51,7 +51,7 @@ long AsynReq::store_request(CORBA::Request_ptr req, TgRequest::ReqType type)
     //
 
     omni_mutex_lock sync(*this);
-    if(cancelled_request.empty() == false)
+    if(!cancelled_request.empty())
     {
         std::vector<long>::iterator ite;
         bool ret;
@@ -66,7 +66,7 @@ long AsynReq::store_request(CORBA::Request_ptr req, TgRequest::ReqType type)
                 ret = false;
             }
 
-            if(ret == true)
+            if(ret)
             {
                 ite = cancelled_request.erase(ite);
                 if(ite == cancelled_request.end())
@@ -207,14 +207,14 @@ Tango::TgRequest *AsynReq::get_request(Tango::Connection *dev)
     omni_mutex_lock sync(*this);
     for(pos = cb_dev_table.lower_bound(dev); pos != cb_dev_table.upper_bound(dev); ++pos)
     {
-        if(pos->second.arrived == true)
+        if(pos->second.arrived)
         {
             found = true;
             break;
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         return nullptr;
     }
@@ -306,7 +306,7 @@ bool AsynReq::remove_cancelled_request(long req_id)
 
     if(pos != asyn_poll_req_table.end())
     {
-        if(pos->second.request->poll_response() == false)
+        if(!pos->second.request->poll_response())
         {
             ret = false;
         }

@@ -2013,7 +2013,7 @@ class Database : public Tango::Connection
 
 inline std::string Database::dev_name()
 {
-    if(db_device_name.empty() == true)
+    if(db_device_name.empty())
     {
         CORBA::String_var n = device->name();
         db_device_name = n;

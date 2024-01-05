@@ -88,14 +88,13 @@ void Pipe::set_default_properties(const UserDefaultPipeProp &prop_list)
     // Init value in Pipe instance
     //
 
-    if((prop_list.label.empty() == false) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
+    if((!prop_list.label.empty()) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.label.c_str(), NotANumber) != 0))
     {
         label = prop_list.label;
     }
 
-    if(prop_list.description.empty() == false &&
-       (TG_strcasecmp(prop_list.description.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.description.empty() && (TG_strcasecmp(prop_list.description.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.description.c_str(), NotANumber) != 0))
     {
         desc = prop_list.description;
@@ -106,13 +105,13 @@ void Pipe::set_default_properties(const UserDefaultPipeProp &prop_list)
     //
 
     user_def_prop.clear();
-    if(prop_list.label.empty() == false)
+    if(!prop_list.label.empty())
     {
         PipeProperty pp("label", prop_list.label);
         user_def_prop.push_back(pp);
     }
 
-    if(prop_list.description.empty() == false)
+    if(!prop_list.description.empty())
     {
         PipeProperty pp("description", prop_list.description);
         user_def_prop.push_back(pp);
@@ -306,7 +305,7 @@ void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db, const std::stri
         //
 
         bool retry = true;
-        while(retry == true)
+        while(retry)
         {
             try
             {
@@ -335,7 +334,7 @@ void Pipe::upd_database(std::vector<Attribute::AttPropDb> &v_db, const std::stri
         //
 
         bool retry = true;
-        while(retry == true)
+        while(retry)
         {
             try
             {
@@ -464,7 +463,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
 
         if(old_val != pipe_conf)
         {
-            if(user_defaults == true || class_defaults == true)
+            if(user_defaults || class_defaults)
             {
                 apd.dba = Attribute::UPD;
                 apd.db_value = pipe_conf;
@@ -486,7 +485,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
 
         std::string old_val = pipe_conf;
 
-        if(user_defaults == true)
+        if(user_defaults)
         {
             pipe_conf = usr_def_val;
         }
@@ -497,7 +496,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
 
         if(old_val != pipe_conf)
         {
-            if(class_defaults == true)
+            if(class_defaults)
             {
                 apd.dba = Attribute::UPD;
                 apd.db_value = pipe_conf;
@@ -518,11 +517,11 @@ void Pipe::set_one_str_prop(const char *prop_name,
 
         std::string old_val = pipe_conf;
 
-        if(class_defaults == true)
+        if(class_defaults)
         {
             pipe_conf = class_def_val;
         }
-        else if(user_defaults == true)
+        else if(user_defaults)
         {
             pipe_conf = usr_def_val;
         }
@@ -546,7 +545,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
         std::string old_val = pipe_conf;
         pipe_conf = conf_val;
 
-        if(user_defaults == true && pipe_conf == usr_def_val)
+        if(user_defaults && pipe_conf == usr_def_val)
         {
             //
             // Property value is the same than the user default value
@@ -554,7 +553,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
 
             if(old_val != pipe_conf)
             {
-                if(class_defaults == true)
+                if(class_defaults)
                 {
                     apd.dba = Attribute::UPD;
                     apd.db_value = pipe_conf;
@@ -567,7 +566,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
                 }
             }
         }
-        else if(class_defaults == true && pipe_conf == class_def_val)
+        else if(class_defaults && pipe_conf == class_def_val)
         {
             //
             // Property value is the same than the class default value
@@ -579,7 +578,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
                 v_db.push_back(apd);
             }
         }
-        else if(class_defaults == false && TG_strcasecmp(pipe_conf.c_str(), lib_def) == 0)
+        else if(!class_defaults && TG_strcasecmp(pipe_conf.c_str(), lib_def) == 0)
         {
             //
             // Property value is the same than the lib default value
@@ -591,7 +590,7 @@ void Pipe::set_one_str_prop(const char *prop_name,
                 v_db.push_back(apd);
             }
         }
-        else if(class_defaults == false && strcmp(prop_name, "label") == 0)
+        else if(!class_defaults && strcmp(prop_name, "label") == 0)
         {
             //
             // Property Label: Property value is the same than the lib default value
@@ -826,7 +825,7 @@ void Pipe::fire_event(DeviceImpl *dev, DevicePipeBlob *p_data, const TangoTimest
     std::string event_type("pipe");
     event_supplier_zmq->push_event(dev, event_type, f_names, f_data, f_names_lg, f_data_lg, ad, name, nullptr, true);
 
-    if(reuse_it == false)
+    if(!reuse_it)
     {
         p_data->reset_insert_ctr();
         delete tmp_ptr;

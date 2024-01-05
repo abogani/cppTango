@@ -109,14 +109,7 @@ ApiUtil::ApiUtil() :
     // Check if it is created from a device server
     //
 
-    if(Util::_constructed == true)
-    {
-        in_serv = true;
-    }
-    else
-    {
-        in_serv = false;
-    }
+    in_serv = Util::_constructed;
 
     //
     // Create the Asynchronous polling request Id generator
@@ -240,9 +233,9 @@ ApiUtil::~ApiUtil()
     // Properly shutdown the ORB
     //
 
-    if((in_serv == false) && (CORBA::is_nil(_orb) == false))
+    if((!in_serv) && (!CORBA::is_nil(_orb)))
     {
-        if(event_was_used == false)
+        if(!event_was_used)
         {
             try
             {
@@ -268,7 +261,7 @@ ApiUtil::~ApiUtil()
 void ApiUtil::set_sig_handler()
 {
 #ifndef _TG_WINDOWS_
-    if(in_serv == false)
+    if(!in_serv)
     {
         struct sigaction sa, old_action;
 
@@ -382,7 +375,7 @@ int ApiUtil::get_db_ind()
 
     for(unsigned int i = 0; i < db_vect.size(); i++)
     {
-        if(db_vect[i]->get_from_env_var() == true)
+        if(db_vect[i]->get_from_env_var())
         {
             return i;
         }
@@ -440,7 +433,7 @@ void ApiUtil::get_asynch_replies()
 
     try
     {
-        while(_orb->poll_next_response() == true)
+        while(_orb->poll_next_response())
         {
             CORBA::Request_ptr req;
             _orb->get_next_response(req);
@@ -478,7 +471,7 @@ void ApiUtil::get_asynch_replies()
 
     for(pos = req_table.begin(); pos != req_table.end(); ++pos)
     {
-        if(pos->second.arrived == true)
+        if(pos->second.arrived)
         {
             process_request(pos->first, pos->second, pos->second.request);
         }
@@ -532,7 +525,7 @@ void ApiUtil::get_asynch_replies(long call_timeout)
 
     for(pos = req_table.begin(); pos != req_table.end(); ++pos)
     {
-        if(pos->second.arrived == true)
+        if(pos->second.arrived)
         {
             switch(pos->second.req_type)
             {
@@ -578,7 +571,7 @@ void ApiUtil::get_asynch_replies(long call_timeout)
 
                 try
                 {
-                    if(_orb->poll_next_response() == true)
+                    if(_orb->poll_next_response())
                     {
                         _orb->get_next_response(req);
 
@@ -789,12 +782,12 @@ void ApiUtil::clean_locking_threads(bool clean)
 {
     omni_mutex_lock oml(lock_th_map);
 
-    if(lock_threads.empty() == false)
+    if(!lock_threads.empty())
     {
         std::map<std::string, LockingThread>::iterator pos;
         for(pos = lock_threads.begin(); pos != lock_threads.end(); ++pos)
         {
-            if(pos->second.shared->suicide == true)
+            if(pos->second.shared->suicide)
             {
                 delete pos->second.shared;
                 delete pos->second.mon;
@@ -805,7 +798,7 @@ void ApiUtil::clean_locking_threads(bool clean)
                     omni_mutex_lock sync(*(pos->second.mon));
 
                     pos->second.shared->cmd_pending = true;
-                    if(clean == true)
+                    if(clean)
                     {
                         pos->second.shared->cmd_code = LOCK_UNLOCK_ALL_EXIT;
                     }
@@ -818,7 +811,7 @@ void ApiUtil::clean_locking_threads(bool clean)
 
                     TANGO_LOG_DEBUG << "Cmd sent to locking thread" << std::endl;
 
-                    if(pos->second.shared->cmd_pending == true)
+                    if(pos->second.shared->cmd_pending)
                     {
                         pos->second.mon->wait(DEFAULT_TIMEOUT);
                     }
@@ -828,7 +821,7 @@ void ApiUtil::clean_locking_threads(bool clean)
             }
         }
 
-        if(clean == false)
+        if(!clean)
         {
             lock_threads.clear();
         }
@@ -933,7 +926,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_lo->maximum();
             len = tmp_seq_lo->length();
-            if(tmp_seq_lo->release() == true)
+            if(tmp_seq_lo->release())
             {
                 tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
                 dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
@@ -957,7 +950,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_64->maximum();
             len = tmp_seq_64->length();
-            if(tmp_seq_64->release() == true)
+            if(tmp_seq_64->release())
             {
                 tmp_lolo = (const_cast<DevVarLong64Array *>(tmp_seq_64))->get_buffer((CORBA::Boolean) true);
                 dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
@@ -981,7 +974,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_sh->maximum();
             len = tmp_seq_sh->length();
-            if(tmp_seq_sh->release() == true)
+            if(tmp_seq_sh->release())
             {
                 tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
                 dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
@@ -1005,7 +998,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_db->maximum();
             len = tmp_seq_db->length();
-            if(tmp_seq_db->release() == true)
+            if(tmp_seq_db->release())
             {
                 tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
                 dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
@@ -1029,7 +1022,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_str->maximum();
             len = tmp_seq_str->length();
-            if(tmp_seq_str->release() == true)
+            if(tmp_seq_str->release())
             {
                 tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
                 dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
@@ -1053,7 +1046,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_fl->maximum();
             len = tmp_seq_fl->length();
-            if(tmp_seq_fl->release() == true)
+            if(tmp_seq_fl->release())
             {
                 tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
                 dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
@@ -1077,7 +1070,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_boo->maximum();
             len = tmp_seq_boo->length();
-            if(tmp_seq_boo->release() == true)
+            if(tmp_seq_boo->release())
             {
                 tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
                 dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
@@ -1101,7 +1094,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_ush->maximum();
             len = tmp_seq_ush->length();
-            if(tmp_seq_ush->release() == true)
+            if(tmp_seq_ush->release())
             {
                 tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
                 dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
@@ -1125,7 +1118,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_uch->maximum();
             len = tmp_seq_uch->length();
-            if(tmp_seq_uch->release() == true)
+            if(tmp_seq_uch->release())
             {
                 tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
                 dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
@@ -1149,7 +1142,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_ulo->maximum();
             len = tmp_seq_ulo->length();
-            if(tmp_seq_ulo->release() == true)
+            if(tmp_seq_ulo->release())
             {
                 tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
                 dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
@@ -1173,7 +1166,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_u64->maximum();
             len = tmp_seq_u64->length();
-            if(tmp_seq_u64->release() == true)
+            if(tmp_seq_u64->release())
             {
                 tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_u64))->get_buffer((CORBA::Boolean) true);
                 dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
@@ -1197,7 +1190,7 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
             }
             max = tmp_seq_state->maximum();
             len = tmp_seq_state->length();
-            if(tmp_seq_state->release() == true)
+            if(tmp_seq_state->release())
             {
                 tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
                 dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
@@ -1521,7 +1514,7 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 {
     omni_mutex_lock oml(lock_th_map);
 
-    if(host_ip_adrs.empty() == true)
+    if(host_ip_adrs.empty())
     {
 #ifndef _TG_WINDOWS_
         struct ifaddrs *ifaddr, *ifa;
@@ -1881,13 +1874,13 @@ AttributeInfoEx &AttributeInfoEx::operator=(const AttributeConfig_5 *att_5)
     }
     disp_level = att_5->level;
     root_attr_name = att_5->root_attr_name;
-    if(att_5->memorized == false)
+    if(!att_5->memorized)
     {
         memorized = NONE;
     }
     else
     {
-        if(att_5->mem_init == false)
+        if(!att_5->mem_init)
         {
             memorized = MEMORIZED;
         }
@@ -2015,7 +2008,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     o_str << "Attribute display level = " << p.disp_level << std::endl;
 
     o_str << "Attribute writable_attr_name = " << p.writable_attr_name << std::endl;
-    if(p.root_attr_name.empty() == false)
+    if(!p.root_attr_name.empty())
     {
         o_str << "Root attribute name = " << p.root_attr_name << std::endl;
     }
@@ -2035,27 +2028,27 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     }
 
     o_str << "Attribute alarm : min alarm = ";
-    p.alarms.min_alarm.empty() == true ? o_str << "Not specified" : o_str << p.alarms.min_alarm;
+    p.alarms.min_alarm.empty() ? o_str << "Not specified" : o_str << p.alarms.min_alarm;
     o_str << std::endl;
 
     o_str << "Attribute alarm : max alarm = ";
-    p.alarms.max_alarm.empty() == true ? o_str << "Not specified" : o_str << p.alarms.max_alarm;
+    p.alarms.max_alarm.empty() ? o_str << "Not specified" : o_str << p.alarms.max_alarm;
     o_str << std::endl;
 
     o_str << "Attribute warning alarm : min warning = ";
-    p.alarms.min_warning.empty() == true ? o_str << "Not specified" : o_str << p.alarms.min_warning;
+    p.alarms.min_warning.empty() ? o_str << "Not specified" : o_str << p.alarms.min_warning;
     o_str << std::endl;
 
     o_str << "Attribute warning alarm : max warning = ";
-    p.alarms.max_warning.empty() == true ? o_str << "Not specified" : o_str << p.alarms.max_warning;
+    p.alarms.max_warning.empty() ? o_str << "Not specified" : o_str << p.alarms.max_warning;
     o_str << std::endl;
 
     o_str << "Attribute rds alarm : delta time = ";
-    p.alarms.delta_t.empty() == true ? o_str << "Not specified" : o_str << p.alarms.delta_t;
+    p.alarms.delta_t.empty() ? o_str << "Not specified" : o_str << p.alarms.delta_t;
     o_str << std::endl;
 
     o_str << "Attribute rds alarm : delta value = ";
-    p.alarms.delta_val.empty() == true ? o_str << "Not specified" : o_str << p.alarms.delta_val;
+    p.alarms.delta_val.empty() ? o_str << "Not specified" : o_str << p.alarms.delta_val;
     o_str << std::endl;
 
     for(i = 0; i < p.alarms.extensions.size(); i++)
@@ -2064,11 +2057,11 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     }
 
     o_str << "Attribute event : change event absolute change = ";
-    p.events.ch_event.abs_change.empty() == true ? o_str << "Not specified" : o_str << p.events.ch_event.abs_change;
+    p.events.ch_event.abs_change.empty() ? o_str << "Not specified" : o_str << p.events.ch_event.abs_change;
     o_str << std::endl;
 
     o_str << "Attribute event : change event relative change = ";
-    p.events.ch_event.rel_change.empty() == true ? o_str << "Not specified" : o_str << p.events.ch_event.rel_change;
+    p.events.ch_event.rel_change.empty() ? o_str << "Not specified" : o_str << p.events.ch_event.rel_change;
     o_str << std::endl;
 
     for(i = 0; i < p.events.ch_event.extensions.size(); i++)
@@ -2078,7 +2071,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     }
 
     o_str << "Attribute event : periodic event period = ";
-    p.events.per_event.period.empty() == true ? o_str << "Not specified" : o_str << p.events.per_event.period;
+    p.events.per_event.period.empty() ? o_str << "Not specified" : o_str << p.events.per_event.period;
     o_str << std::endl;
 
     for(i = 0; i < p.events.per_event.extensions.size(); i++)
@@ -2088,18 +2081,17 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
     }
 
     o_str << "Attribute event : archive event absolute change = ";
-    p.events.arch_event.archive_abs_change.empty() == true ? o_str << "Not specified"
-                                                           : o_str << p.events.arch_event.archive_abs_change;
+    p.events.arch_event.archive_abs_change.empty() ? o_str << "Not specified"
+                                                   : o_str << p.events.arch_event.archive_abs_change;
     o_str << std::endl;
 
     o_str << "Attribute event : archive event relative change = ";
-    p.events.arch_event.archive_rel_change.empty() == true ? o_str << "Not specified"
-                                                           : o_str << p.events.arch_event.archive_rel_change;
+    p.events.arch_event.archive_rel_change.empty() ? o_str << "Not specified"
+                                                   : o_str << p.events.arch_event.archive_rel_change;
     o_str << std::endl;
 
     o_str << "Attribute event : archive event period = ";
-    p.events.arch_event.archive_period.empty() == true ? o_str << "Not specified"
-                                                       : o_str << p.events.arch_event.archive_period;
+    p.events.arch_event.archive_period.empty() ? o_str << "Not specified" : o_str << p.events.arch_event.archive_period;
     o_str << std::endl;
 
     for(i = 0; i < p.events.arch_event.extensions.size(); i++)

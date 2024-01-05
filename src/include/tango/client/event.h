@@ -612,14 +612,7 @@ class EventQueue
 
     bool is_empty()
     {
-        if(event_buffer.empty() == true)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return event_buffer.empty();
     }
 
     void get_events(EventDataList &event_list);

@@ -84,7 +84,7 @@ CORBA::Any *DevStatusCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::
 
     try
     {
-        if(device->is_alarm_state_forced() == true)
+        if(device->is_alarm_state_forced())
         {
             (*out_any) <<= device->DeviceImpl::dev_status();
         }
@@ -148,7 +148,7 @@ CORBA::Any *DevStateCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::A
 
     try
     {
-        if(device->is_alarm_state_forced() == true)
+        if(device->is_alarm_state_forced())
         {
             (*out_any) <<= device->DeviceImpl::dev_state();
         }
@@ -216,7 +216,7 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
         ev_client = event_supplier_zmq->any_dev_intr_client(device);
     }
 
-    if(device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client == true)
+    if(device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client)
     {
         di.get_interface(device);
         device->disable_intr_change_ev();
@@ -301,10 +301,10 @@ CORBA::Any *DevInitCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::An
     // Check if device interface has changed and eventually fire device interface change event
     //
 
-    if(device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client == true)
+    if(device->get_dev_idl_version() >= MIN_IDL_DEV_INTR && ev_client)
     {
         device->enable_intr_change_ev();
-        if(di.has_changed(device) == true)
+        if(di.has_changed(device))
         {
             Device_5Impl *dev_5 = static_cast<Device_5Impl *>(device);
             DevCmdInfoList_2 *cmds_list = dev_5->command_list_query_2();

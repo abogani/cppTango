@@ -53,7 +53,7 @@ void Attribute::set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data,
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    if(release == false)
+    if(!release)
     {
         enc_help.encoded_format = Tango::string_dup(*p_data_str);
         enc_help.encoded_data.replace(size, size, p_data, false);
@@ -95,7 +95,7 @@ void Attribute::set_value(Tango::EncodedAttribute *attr)
 
     set_value(f, d, size, false);
 
-    if(attr->get_exclusion() == true)
+    if(attr->get_exclusion())
     {
         set_user_attr_mutex(attr->get_mutex());
     }

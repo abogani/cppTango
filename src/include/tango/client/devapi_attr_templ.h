@@ -218,7 +218,7 @@ bool DeviceAttribute::operator>>(T &datum)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -253,7 +253,7 @@ bool DeviceAttribute::operator>>(std::vector<T> &datum)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -291,7 +291,7 @@ bool DeviceAttribute::extract_read(std::vector<T> &_data)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -330,7 +330,7 @@ bool DeviceAttribute::extract_set(std::vector<T> &_data)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }

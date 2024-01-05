@@ -67,7 +67,7 @@ Tango::DevVarStringArray *DServer::polled_device()
             long nb_dev = class_list[i]->get_device_list().size();
             for(long j = 0; j < nb_dev; j++)
             {
-                if((class_list[i]->get_device_list())[j]->is_polled() == true)
+                if((class_list[i]->get_device_list())[j]->is_polled())
                 {
                     dev_name.emplace_back((class_list[i]->get_device_list())[j]->get_name().c_str());
                 }
@@ -83,7 +83,7 @@ Tango::DevVarStringArray *DServer::polled_device()
     // Return an empty sequence if no devices are polled
     //
 
-    if(dev_name.empty() == true)
+    if(dev_name.empty())
     {
         auto *ret = new Tango::DevVarStringArray();
         ret->length(0);
@@ -194,16 +194,16 @@ Tango::DevVarStringArray *DServer::dev_poll_status(const std::string &dev_name)
     std::map<PollClock::duration, std::vector<std::string>> polled_together;
 
     bool poll_bef_9 = false;
-    if(polling_bef_9_def == true)
+    if(polling_bef_9_def)
     {
         poll_bef_9 = polling_bef_9;
     }
-    else if(tg->is_polling_bef_9_def() == true)
+    else if(tg->is_polling_bef_9_def())
     {
         poll_bef_9 = tg->get_polling_bef_9();
     }
 
-    if(poll_bef_9 == false)
+    if(!poll_bef_9)
     {
         for(i = 0; i < nb_poll_obj; i++)
         {
@@ -343,7 +343,7 @@ Tango::DevVarStringArray *DServer::dev_poll_status(const std::string &dev_name)
         // Add a message if the data ring is empty
         //
 
-        if(poll_list[i]->is_ring_empty() == true)
+        if(poll_list[i]->is_ring_empty())
         {
             returned_info = returned_info + "\nNo data recorded yet";
         }
@@ -509,7 +509,7 @@ Tango::DevVarStringArray *DServer::dev_poll_status(const std::string &dev_name)
                 {
                     last_err = poll_list[i]->is_last_an_error_i_3();
                 }
-                if(last_err == true)
+                if(last_err)
                 {
                     if(type == Tango::POLL_CMD)
                     {
@@ -551,7 +551,7 @@ Tango::DevVarStringArray *DServer::dev_poll_status(const std::string &dev_name)
             // of "attributes" by "command" in the returned string
             //
 
-            if(duplicate == true)
+            if(duplicate)
             {
                 std::string::size_type pos = returned_info.find("attribute");
                 while(pos != std::string::npos)
@@ -753,7 +753,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
     // Refuse to do the job for forwarded attribute
     //
 
-    if(obj_type == PollAttribute && attr_ptr->is_fwd_att() == true)
+    if(obj_type == PollAttribute && attr_ptr->is_fwd_att())
     {
         std::stringstream ss;
         ss << "Attribute " << obj_name << " is a forwarded attribute.\n";
@@ -798,11 +798,11 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
         TANGO_LOG_DEBUG << "POLLING: Creating a thread to poll device " << (argin->svalue)[0] << std::endl;
 
         bool poll_bef_9 = false;
-        if(polling_bef_9_def == true)
+        if(polling_bef_9_def)
         {
             poll_bef_9 = polling_bef_9;
         }
-        else if(tg->is_polling_bef_9_def() == true)
+        else if(tg->is_polling_bef_9_def())
         {
             poll_bef_9 = tg->get_polling_bef_9();
         }
@@ -828,7 +828,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
     if(th_id != poll_th_id)
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.cmd_pending == true)
+        if(shared_cmd.cmd_pending)
         {
             mon.wait();
         }
@@ -848,12 +848,12 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
 
         omni_thread *th = omni_thread::self();
         int th_id = th->id();
-        if(th_id != poll_th_id && local_request == false)
+        if(th_id != poll_th_id && !local_request)
         {
-            while(shared_cmd.cmd_pending == true)
+            while(shared_cmd.cmd_pending)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == 0))
+                if((shared_cmd.cmd_pending) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     delete poll_list.back();
@@ -896,7 +896,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
     // (it should not but...), only update its polling period
     //
 
-    if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
+    if((with_db_upd) && (Tango::Util::instance()->use_db()))
     {
         TangoSys_MemStream s;
         std::string upd_str;
@@ -920,7 +920,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
                     break;
                 }
             }
-            if(found == false)
+            if(!found)
             {
                 std::vector<std::string> &cmd_list = dev->get_polled_cmd();
                 for(i = 0; i < cmd_list.size(); i = i + 2)
@@ -954,7 +954,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
                     break;
                 }
             }
-            if(found == false)
+            if(!found)
             {
                 db_info.name = "polled_attr";
                 std::vector<std::string> &attr_list = dev->get_polled_attr();
@@ -1008,7 +1008,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
             conf_entry = conf_entry + ',' + dev_name;
         }
 
-        if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
+        if((with_db_upd) && (Tango::Util::instance()->use_db()))
         {
             DbData send_data;
             send_data.emplace_back("polling_threads_pool_conf");
@@ -1125,7 +1125,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << (argin->svalue)[0] << " is not polled" << std::ends;
@@ -1232,7 +1232,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
     if(th_id != poll_th_id)
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.cmd_pending == true)
+        if(shared_cmd.cmd_pending)
         {
             mon.wait();
         }
@@ -1268,7 +1268,7 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
     // Add object name and update period if the object is not known in the property
     //
 
-    if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
+    if((with_db_upd) && (Tango::Util::instance()->use_db()))
     {
         TangoSys_MemStream s;
         std::string upd_str;
@@ -1380,7 +1380,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << (*argin)[0] << " is not polled" << std::ends;
@@ -1443,7 +1443,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     // Find out which thread is in charge of the device.
     //
 
-    if(tg->is_svr_shutting_down() == false)
+    if(!tg->is_svr_shutting_down())
     {
         poll_th_id = tg->get_polling_thread_id_by_name((*argin)[0]);
         if(poll_th_id == 0)
@@ -1473,7 +1473,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
             if(th_id != poll_th_id)
             {
                 omni_mutex_lock sync(mon);
-                if(shared_cmd.cmd_pending == true)
+                if(shared_cmd.cmd_pending)
                 {
                     mon.wait();
                 }
@@ -1500,12 +1500,12 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
 
                 if(th_id != poll_th_id)
                 {
-                    if(local_request == false)
+                    if(!local_request)
                     {
-                        while(shared_cmd.cmd_pending == true)
+                        while(shared_cmd.cmd_pending)
                         {
                             int interupted = mon.wait(DEFAULT_TIMEOUT);
-                            if((shared_cmd.cmd_pending == true) && (interupted == 0))
+                            if((shared_cmd.cmd_pending) && (interupted == 0))
                             {
                                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1568,7 +1568,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     // Mark the device as non polled if this was the last polled object
     //
 
-    if(poll_list.empty() == true)
+    if(poll_list.empty())
     {
         dev->is_polled(false);
     }
@@ -1579,7 +1579,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     // Do this if possible and wanted.
     //
 
-    if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
+    if((with_db_upd) && (Tango::Util::instance()->use_db()))
     {
         DbData send_data;
         DbDatum db_info("polled_attr");
@@ -1601,7 +1601,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
                     break;
                 }
             }
-            if(update_needed == false)
+            if(!update_needed)
             {
                 std::vector<std::string> &non_auto_cmd = dev->get_non_auto_polled_cmd();
                 for(s_ite = non_auto_cmd.begin(); s_ite < non_auto_cmd.end(); ++s_ite)
@@ -1635,7 +1635,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
                     break;
                 }
             }
-            if(update_needed == false)
+            if(!update_needed)
             {
                 std::vector<std::string> &non_auto_attr = dev->get_non_auto_polled_attr();
                 for(s_ite = non_auto_attr.begin(); s_ite < non_auto_attr.end(); ++s_ite)
@@ -1655,7 +1655,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
             }
         }
 
-        if(update_needed == true)
+        if(update_needed)
         {
             DbData send_data;
             send_data.push_back(db_info);
@@ -1678,7 +1678,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     //
 
     bool kill_thread = false;
-    if(poll_list.empty() == true)
+    if(poll_list.empty())
     {
         int ind;
         std::string dev_name((*argin)[0]);
@@ -1721,7 +1721,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         // (case of a polled command which itself decide to stop its own polling)
         //
 
-        if(kill_thread == true && tg->is_svr_shutting_down() == false && th_id != poll_th_id)
+        if(kill_thread && !tg->is_svr_shutting_down() && th_id != poll_th_id)
         {
             TangoMonitor &mon = th_info->poll_mon;
             PollThCmd &shared_cmd = th_info->shared_data;
@@ -1746,7 +1746,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         // Update db
         //
 
-        if((with_db_upd == true) && (Tango::Util::instance()->use_db()))
+        if((with_db_upd) && (Tango::Util::instance()->use_db()))
         {
             DbData send_data;
             send_data.emplace_back("polling_threads_pool_conf");
@@ -1774,15 +1774,15 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         ss << "No event possible on attribute " << obj_name << ". Polling has just being stopped!";
         ex.errors[0].desc = Tango::string_dup(ss.str().c_str());
 
-        if(att.periodic_event_subscribed() == true)
+        if(att.periodic_event_subscribed())
         {
             att.fire_error_periodic_event(&ex);
         }
-        if(att.archive_event_subscribed() == true && att.is_archive_event() == false)
+        if(att.archive_event_subscribed() && !att.is_archive_event())
         {
             dev->push_archive_event(obj_name, &ex);
         }
-        if(att.change_event_subscribed() == true && att.is_change_event() == false)
+        if(att.change_event_subscribed() && !att.is_change_event())
         {
             dev->push_change_event(obj_name, &ex);
         }
@@ -1793,7 +1793,7 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
     // is done
     //
 
-    if(kill_thread == true && tg->is_svr_shutting_down() == false && th_id == poll_th_id && local_request == true)
+    if(kill_thread && !tg->is_svr_shutting_down() && th_id == poll_th_id && local_request)
     {
         tg->remove_polling_thread_info_by_id(poll_th_id);
 
@@ -1836,7 +1836,7 @@ void DServer::stop_polling()
 
         {
             omni_mutex_lock sync(mon);
-            if(shared_cmd.cmd_pending == true)
+            if(shared_cmd.cmd_pending)
             {
                 mon.wait();
             }
@@ -1845,11 +1845,11 @@ void DServer::stop_polling()
 
             mon.signal();
 
-            while(shared_cmd.cmd_pending == true)
+            while(shared_cmd.cmd_pending)
             {
                 interupted = mon.wait(DEFAULT_TIMEOUT);
 
-                if((shared_cmd.cmd_pending == true) && (interupted == 0))
+                if((shared_cmd.cmd_pending) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1899,7 +1899,7 @@ void DServer::start_polling()
 
         {
             omni_mutex_lock sync(mon);
-            if(shared_cmd.cmd_pending == true)
+            if(shared_cmd.cmd_pending)
             {
                 mon.wait();
             }
@@ -1908,11 +1908,11 @@ void DServer::start_polling()
 
             mon.signal();
 
-            while(shared_cmd.cmd_pending == true)
+            while(shared_cmd.cmd_pending)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-                if((shared_cmd.cmd_pending == true) && (interupted == 0))
+                if((shared_cmd.cmd_pending) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -1937,7 +1937,7 @@ void DServer::start_polling(PollingThreadInfo *th_info)
 
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.cmd_pending == true)
+        if(shared_cmd.cmd_pending)
         {
             mon.wait();
         }
@@ -1946,11 +1946,11 @@ void DServer::start_polling(PollingThreadInfo *th_info)
 
         mon.signal();
 
-        while(shared_cmd.cmd_pending == true)
+        while(shared_cmd.cmd_pending)
         {
             int interupted = mon.wait(DEFAULT_TIMEOUT);
 
-            if((shared_cmd.cmd_pending == true) && (interupted == 0))
+            if((shared_cmd.cmd_pending) && (interupted == 0))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut,
@@ -1988,7 +1988,7 @@ void DServer::add_event_heartbeat()
 
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.cmd_pending == true)
+        if(shared_cmd.cmd_pending)
         {
             mon.wait();
         }
@@ -2006,10 +2006,10 @@ void DServer::add_event_heartbeat()
         int th_id = omni_thread::self()->id();
         if(th_id != tg->get_heartbeat_thread_id())
         {
-            while(shared_cmd.cmd_pending == true)
+            while(shared_cmd.cmd_pending)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == 0))
+                if((shared_cmd.cmd_pending) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -2047,7 +2047,7 @@ void DServer::rem_event_heartbeat()
 
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.cmd_pending == true)
+        if(shared_cmd.cmd_pending)
         {
             mon.wait();
         }
@@ -2065,10 +2065,10 @@ void DServer::rem_event_heartbeat()
         int th_id = omni_thread::self()->id();
         if(th_id != tg->get_heartbeat_thread_id())
         {
-            while(shared_cmd.cmd_pending == true)
+            while(shared_cmd.cmd_pending)
             {
                 int interupted = mon.wait(DEFAULT_TIMEOUT);
-                if((shared_cmd.cmd_pending == true) && (interupted == 0))
+                if((shared_cmd.cmd_pending) && (interupted == 0))
                 {
                     TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                     TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");

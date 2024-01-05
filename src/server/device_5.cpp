@@ -129,7 +129,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
     // Record operation request in black box
     //
 
-    if(store_in_bb == true)
+    if(store_in_bb)
     {
         blackbox_ptr->insert_attr(names, cl_id, idl_version, source);
     }
@@ -226,13 +226,13 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
         Tango::DevVarStringArray local_names(nb_names);
         Tango::DevVarStringArray fwd_names(nb_names);
 
-        if(with_fwd_att == true)
+        if(with_fwd_att)
         {
             for(size_t loop = 0; loop < nb_names; loop++)
             {
                 Attribute &att = dev_attr->get_attr_by_name(real_names[loop]);
 
-                if(att.is_fwd_att() == true)
+                if(att.is_fwd_att())
                 {
                     size_t nb_fwd = 0;
                     fwd_att_in_call = true;
@@ -251,7 +251,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
             }
         }
 
-        if(fwd_att_in_call == false)
+        if(!fwd_att_in_call)
         {
             //
             // No fwd attributes in call, get values from local cache
@@ -427,7 +427,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     for(unsigned int loop = 0; loop < r_w_att.size(); ++loop)
     {
         Tango::Attribute &att = dev_attr->get_attr_by_name(values[loop].name);
-        if(att.is_fwd_att() == true)
+        if(att.is_fwd_att())
         {
             Tango::FwdAttribute &fwd_att = static_cast<FwdAttribute &>(att);
             fwd_att_root_dev_name.push_back(fwd_att.get_fwd_dev_name());
@@ -444,7 +444,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     Util *tg = Util::instance();
     RootAttRegistry &rar = tg->get_root_att_reg();
 
-    if(fwd_att_root_dev_name.empty() == false)
+    if(!fwd_att_root_dev_name.empty())
     {
         std::vector<std::string>::iterator ite;
         for(ite = fwd_att_root_dev_name.begin(); ite != fwd_att_root_dev_name.end(); ++ite)
@@ -479,7 +479,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     }
     catch(...)
     {
-        if(fwd_att_root_dev_name.empty() == false)
+        if(!fwd_att_root_dev_name.empty())
         {
             std::vector<std::string>::iterator ite;
             for(ite = fwd_att_root_dev_name.begin(); ite != fwd_att_root_dev_name.end(); ++ite)
@@ -496,7 +496,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     // Unlock devices (if case there are some due to forwarded attributes)
     //
 
-    if(fwd_att_root_dev_name.empty() == false)
+    if(!fwd_att_root_dev_name.empty())
     {
         std::vector<std::string>::iterator ite;
         for(ite = fwd_att_root_dev_name.begin(); ite != fwd_att_root_dev_name.end(); ++ite)
@@ -592,7 +592,7 @@ Tango::AttributeConfigList_5 *Device_5Impl::get_attribute_config_5(const Tango::
     {
         try
         {
-            if(all_attr == true)
+            if(all_attr)
             {
                 Attribute &attr = dev_attr->get_attr_by_ind(i);
                 attr.get_properties((*back)[i]);
@@ -663,7 +663,7 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     // Record operation request in black box
     //
 
-    if(from_fwd_cb == false)
+    if(!from_fwd_cb)
     {
         blackbox_ptr->insert_op(Op_Set_Attr_Config_5, cl_id);
     }
@@ -740,7 +740,7 @@ Tango::DevAttrHistory_5 *Device_5Impl::read_attribute_history_5(const char *name
             break;
         }
     }
-    if((polled_attr == nullptr) && (att.is_fwd_att() == false))
+    if((polled_attr == nullptr) && (!att.is_fwd_att()))
     {
         TangoSys_OMemStream o;
         o << "Attribute " << attr_str << " not polled" << std::ends;
@@ -751,7 +751,7 @@ Tango::DevAttrHistory_5 *Device_5Impl::read_attribute_history_5(const char *name
     // If it is a forwarded attribute, get data from the root attribute
     //
 
-    if(att.is_fwd_att() == true)
+    if(att.is_fwd_att())
     {
         try
         {
@@ -771,7 +771,7 @@ Tango::DevAttrHistory_5 *Device_5Impl::read_attribute_history_5(const char *name
         // Check that some data is available in cache
         //
 
-        if(polled_attr->is_ring_empty() == true)
+        if(polled_attr->is_ring_empty())
         {
             TangoSys_OMemStream o;
             o << "No data available in cache for attribute " << attr_str << std::ends;
@@ -897,7 +897,7 @@ Tango::PipeConfigList *Device_5Impl::get_pipe_config_5(const Tango::DevVarString
     {
         try
         {
-            if(all_pipe == true)
+            if(all_pipe)
             {
                 Pipe *pi_ptr = pipe_list[i];
                 (*back)[i].name = Tango::string_dup(pi_ptr->get_name().c_str());
@@ -1057,7 +1057,7 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
     // Record operation request in black box
     //
 
-    if(store_in_bb == true)
+    if(store_in_bb)
     {
         blackbox_ptr->insert_attr(name, cl_id, idl_version);
     }
@@ -1108,7 +1108,7 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
         // Call the is_allowed method
         //
 
-        if(pi.is_allowed(this, READ_REQ) == false)
+        if(!pi.is_allowed(this, READ_REQ))
         {
             std::stringstream o;
             o << "It is currently not allowed to read pipe " << name;
@@ -1177,7 +1177,7 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
         // Check that the wanted pipe set value has been updated
         //
 
-        if(pi.get_value_flag() == false)
+        if(!pi.get_value_flag())
         {
             if(pi.get_pipe_serial_model() == PIPE_BY_KERNEL)
             {
@@ -1287,7 +1287,7 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
     // Record operation in blackbox
     //
 
-    if(store_in_bb == true)
+    if(store_in_bb)
     {
         blackbox_ptr->insert_attr(pi_value, cl_id, 0);
     }
@@ -1345,7 +1345,7 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
         // Call the is_allowed method
         //
 
-        if(pi.is_allowed(this, WRITE_REQ) == false)
+        if(!pi.is_allowed(this, WRITE_REQ))
         {
             std::stringstream o;
             o << "It is currently not allowed to write pipe " << pipe_name;

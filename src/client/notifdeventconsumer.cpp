@@ -121,7 +121,7 @@ void *NotifdEventConsumer::run_undetached(void *arg)
     //
 
     ApiUtil *api_util_ptr = (ApiUtil *) arg;
-    if(api_util_ptr->in_server() == false)
+    if(!api_util_ptr->in_server())
     {
         CORBA::Object_var obj = orb_->resolve_initial_references("RootPOA");
         PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
@@ -602,7 +602,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
     }
 
     auto evt_it = channel_map.end();
-    if(reconnect == true)
+    if(reconnect)
     {
         evt_it = channel_map.find(channel_name);
         EventChannelStruct &evt_ch = evt_it->second;
@@ -786,7 +786,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
         // list. The first db server is the one used to create the entry in the map
         //
 
-        if(ipos == channel_map.end() && svr_send_tg_host == true)
+        if(ipos == channel_map.end() && svr_send_tg_host)
         {
             std::string svc_tango_host = event_type.substr(8, event_type.size() - 9);
             unsigned int i = 0;
@@ -869,7 +869,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
 
                 ipos = event_callback_map.find(attr_event_name);
 
-                if(ipos == event_callback_map.end() && svr_send_tg_host == true)
+                if(ipos == event_callback_map.end() && svr_send_tg_host)
                 {
                     std::string svc_tango_host = event_type.substr(8, event_type.size() - 9);
                     unsigned int i = 0;
@@ -1024,7 +1024,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                             map_modification_lock.readerOut();
                         }
 
-                        if((ev_attr_conf == false) && (ev_attr_ready == false))
+                        if((!ev_attr_conf) && (!ev_attr_ready))
                         {
                             EventData *event_data;
                             if(cb_ctr != cb_nb)
@@ -1068,7 +1068,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                                 ev_queue->insert_event(event_data);
                             }
                         }
-                        else if(ev_attr_ready == false)
+                        else if(!ev_attr_ready)
                         {
                             AttrConfEventData *event_data;
 
@@ -1145,11 +1145,11 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
                             map_modification_lock.readerOut();
                         }
 
-                        if((ev_attr_conf == false) && (ev_attr_ready == false))
+                        if((!ev_attr_conf) && (!ev_attr_ready))
                         {
                             delete dev_attr;
                         }
-                        else if(ev_attr_ready == false)
+                        else if(!ev_attr_ready)
                         {
                             delete attr_info_ex;
                         }
@@ -1159,7 +1159,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
             catch(...)
             {
                 // free the map lock if not already done
-                if(map_lock == true)
+                if(map_lock)
                 {
                     map_modification_lock.readerOut();
                 }

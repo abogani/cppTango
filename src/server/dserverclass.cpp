@@ -77,7 +77,7 @@ CORBA::Any *DevRestartCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
     //
 
     const char *tmp_name;
-    if((in_any >>= tmp_name) == false)
+    if((!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");
@@ -540,7 +540,7 @@ CORBA::Any *QueryWizardClassPropertyCmd::execute(DeviceImpl *device, const CORBA
     //
 
     const char *tmp_name;
-    if((in_any >>= tmp_name) == false)
+    if((!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");
@@ -608,7 +608,7 @@ CORBA::Any *QueryWizardDevPropertyCmd::execute(DeviceImpl *device, const CORBA::
     //
 
     const char *tmp_name;
-    if((in_any >>= tmp_name) == false)
+    if((!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");
@@ -1288,14 +1288,7 @@ DServerClass *DServerClass::_instance = nullptr;
 
 bool less_than_dserver(Command *a, Command *b)
 {
-    if(a->get_name() < b->get_name())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return a->get_name() < b->get_name();
 }
 
 DServerClass::DServerClass(const std::string &s) :
@@ -1343,7 +1336,7 @@ DServerClass::DServerClass(const std::string &s) :
         }
         command_list.clear();
 
-        if(device_list.empty() == false)
+        if(!device_list.empty())
         {
             for(unsigned long i = 0; i < device_list.size(); i++)
             {

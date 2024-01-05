@@ -83,7 +83,7 @@ void FileAppender::close()
 
 bool FileAppender::is_valid() const
 {
-    return (_fd < 0) ? false : true;
+    return _fd >= 0;
 }
 
 void FileAppender::set_append(bool append)

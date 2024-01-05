@@ -1050,14 +1050,7 @@ class Util
 
     bool is_server_event_loop_set()
     {
-        if(ev_loop_func != nullptr)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return ev_loop_func != nullptr;
     }
 
     void set_shutdown_server(bool val)
@@ -1336,7 +1329,7 @@ inline bool Util::is_device_restarting(const std::string &d_name)
 {
     bool ret = false;
 
-    if(restarting_devices.empty() == false)
+    if(!restarting_devices.empty())
     {
         std::vector<std::string>::iterator pos;
         pos = find(restarting_devices.begin(), restarting_devices.end(), d_name);

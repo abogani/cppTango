@@ -153,7 +153,7 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
     std::string canon_name;
     std::string specified_ip;
 
-    if(specified_name == true)
+    if(specified_name)
     {
         auto results = detail::resolve_hostname_address(specified_addr);
         specified_ip = results.front();
@@ -169,11 +169,11 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
         canon_name = h_name.substr(0, pos);
     }
 
-    if(specified_addr.empty() == false && (specified_addr != "localhost"))
+    if(!specified_addr.empty() && (specified_addr != "localhost"))
     {
         heartbeat_endpoint = heartbeat_endpoint + specified_ip + ':';
         ip_specified = true;
-        if(specified_name == true)
+        if(specified_name)
         {
             name_specified = true;
         }
@@ -208,7 +208,7 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
     // If needed, replace * by host IP address in endpoint string
     //
 
-    if(specified_ip.empty() == true)
+    if(specified_ip.empty())
     {
         ApiUtil *au = ApiUtil::instance();
         std::vector<std::string> adrs;
@@ -228,7 +228,7 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
                     continue;
                 }
 
-                if(first_set == false)
+                if(!first_set)
                 {
                     heartbeat_endpoint.replace(pos, 1, adrs[i]);
                     host_ip = adrs[i];
@@ -247,7 +247,7 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
             host_ip = adrs[0];
         }
     }
-    else if(specified_name == true)
+    else if(specified_name)
     {
         std::string::size_type start = heartbeat_endpoint.find("//");
         start = start + 2;
@@ -316,7 +316,7 @@ ZmqEventSupplier::ZmqEventSupplier(Util *tg) :
             }
         }
 
-        if(db_ds == false)
+        if(!db_ds)
         {
             heartbeat_event_name = heartbeat_event_name + MODIFIER_DBASE_NO;
         }
@@ -369,7 +369,7 @@ ZmqEventSupplier::~ZmqEventSupplier()
     delete heartbeat_pub_sock;
     delete event_pub_sock;
 
-    if(event_mcast.empty() == false)
+    if(!event_mcast.empty())
     {
         std::map<std::string, McastSocketPub>::iterator ite, ite_stop;
         ite = event_mcast.begin();
@@ -481,7 +481,7 @@ void ZmqEventSupplier::create_event_socket()
 
         event_endpoint = "tcp://";
 
-        if(ip_specified == true)
+        if(ip_specified)
         {
             event_endpoint = event_endpoint + user_ip + ':';
         }
@@ -528,10 +528,10 @@ void ZmqEventSupplier::create_event_socket()
         //
         auto port_str = detail::get_port_from_endpoint(event_endpoint);
 
-        if(ip_specified == false)
+        if(!ip_specified)
         {
             event_endpoint.replace(6, 1, host_ip);
-            if(alt_ip.empty() == false)
+            if(!alt_ip.empty())
             {
                 for(size_t loop = 0; loop < alt_ip.size(); loop++)
                 {
@@ -539,7 +539,7 @@ void ZmqEventSupplier::create_event_socket()
                 }
             }
         }
-        else if(name_specified == true)
+        else if(name_specified)
         {
             std::string::size_type start = event_endpoint.find("//");
             start = start + 2;
@@ -585,9 +585,9 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,
 
     if((ite = event_mcast.find(ev_name)) != event_mcast.end())
     {
-        if(local_call == true)
+        if(local_call)
         {
-            if(ite->second.local_client == false)
+            if(!ite->second.local_client)
             {
                 create_event_socket();
 
@@ -596,7 +596,7 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,
         }
         else
         {
-            if(ite->second.local_client == true && ite->second.pub_socket == nullptr)
+            if(ite->second.local_client && ite->second.pub_socket == nullptr)
             {
                 create_mcast_socket(mcast_data, rate, ite->second);
             }
@@ -612,7 +612,7 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,
         McastSocketPub ms;
         ms.double_send = true;
 
-        if(local_call == true)
+        if(local_call)
         {
             create_event_socket();
 
@@ -630,7 +630,7 @@ void ZmqEventSupplier::create_mcast_event_socket(const std::string &mcast_data,
         // Insert element in map
         //
 
-        if(event_mcast.insert(make_pair(ev_name, ms)).second == false)
+        if(!event_mcast.insert(make_pair(ev_name, ms)).second)
         {
             TangoSys_OMemStream o;
             o << "Can't insert multicast transport parameter for event ";
@@ -667,7 +667,7 @@ void ZmqEventSupplier::create_mcast_socket(const std::string &mcast_data, int ra
     ms.pub_socket = new zmq::socket_t(zmq_context, ZMQ_PUB);
 
     ms.endpoint = MCAST_PROT;
-    if(ip_specified == true)
+    if(ip_specified)
     {
         ms.endpoint = ms.endpoint + user_ip + ';';
     }
@@ -804,7 +804,7 @@ void ZmqEventSupplier::init_event_cptr(const std::string &event_name)
     pos = event_cptr.find(event_name);
     if(pos == event_cptr.end())
     {
-        if(event_cptr.insert(make_pair(event_name, 1)).second == false)
+        if(!event_cptr.insert(make_pair(event_name, 1)).second)
         {
             TangoSys_OMemStream o;
             o << "Can't insert event counter for event ";
@@ -857,7 +857,7 @@ void ZmqEventSupplier::push_heartbeat_event()
                         << heartbeat_event_name << std::endl;
         TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta _time " << delta_time << std::endl;
 
-        if(double_send_heartbeat == true)
+        if(double_send_heartbeat)
         {
             nb_event = 2;
             double_send_heartbeat = false;
@@ -955,11 +955,11 @@ void ZmqEventSupplier::push_heartbeat_event()
             catch(...)
             {
                 TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event() failed !\n";
-                if(endian_mess_sent == true)
+                if(endian_mess_sent)
                 {
                     endian_mess_heartbeat.copy(endian_mess_heartbeat_2);
                 }
-                if(call_mess_sent == true)
+                if(call_mess_sent)
                 {
                     heartbeat_call_mess.copy(heartbeat_call_mess_2);
                 }
@@ -1113,7 +1113,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     else
     {
         bool print = false;
-        if(intr_change == false && pipe_event == false)
+        if(!intr_change && !pipe_event)
         {
             Attribute &att = device_impl->get_device_attr()->get_attr_by_name(obj_name.c_str());
 
@@ -1164,7 +1164,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                 }
             }
         }
-        else if(pipe_event == true)
+        else if(pipe_event)
         {
             Pipe &pi =
                 device_impl->get_device_class()->get_pipe_by_name(obj_name.c_str(), device_impl->get_name_lower());
@@ -1181,7 +1181,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
             }
         }
 
-        if(print == true)
+        if(print)
         {
             TANGO_LOG_DEBUG << "-----> Can't find event counter for event " << event_name << " in map!!!!!!!!!!"
                             << std::endl;
@@ -1190,14 +1190,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
 
     ZmqCallInfo event_call;
     event_call.version = ZMQ_EVENT_PROT_VERSION;
-    if(except == nullptr)
-    {
-        event_call.call_is_except = false;
-    }
-    else
-    {
-        event_call.call_is_except = true;
-    }
+    event_call.call_is_except = except != nullptr;
     event_call.ctr = ev_ctr;
 
     cdrMemoryStream event_call_cdr;
@@ -1359,7 +1352,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
             except->errors >>= data_call_cdr;
         }
 
-        if(pipe_event == false)
+        if(!pipe_event)
         {
             mess_size = data_call_cdr.bufSize() - sizeof(CORBA::Long);
             mess_ptr = (char *) data_call_cdr.bufPtr() + sizeof(CORBA::Long);
@@ -1375,7 +1368,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         // zmq message with no-copy option
         //
 
-        if(large_data == true)
+        if(large_data)
         {
             std::promise<void> *large_message_promise = new std::promise<void>();
             large_message_future = large_message_promise->get_future();
@@ -1454,11 +1447,11 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         int local_double_send = double_send;
         bool mcast_event = false;
 
-        if(event_mcast.empty() == false)
+        if(!event_mcast.empty())
         {
             if((mcast_ite = event_mcast.find(event_name)) != mcast_ite_end)
             {
-                if(mcast_ite->second.local_client == false)
+                if(!mcast_ite->second.local_client)
                 {
                     pub = mcast_ite->second.pub_socket;
                 }
@@ -1470,7 +1463,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                         pub = mcast_ite->second.pub_socket;
                     }
                 }
-                if(mcast_ite->second.double_send == true)
+                if(mcast_ite->second.double_send)
                 {
                     local_double_send++;
                 }
@@ -1482,7 +1475,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         if(local_double_send > 0)
         {
             send_nb = 2;
-            if(mcast_event == false)
+            if(!mcast_event)
             {
                 double_send--;
             }
@@ -1542,13 +1535,13 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
             send_nb--;
             if(send_nb == 1)
             {
-                if((event_mcast.empty() == false) && (mcast_ite != mcast_ite_end))
+                if((!event_mcast.empty()) && (mcast_ite != mcast_ite_end))
                 {
                     //
                     // Case of multicast socket with a local client. Send the event also on the local socket
                     //
 
-                    if(mcast_ite->second.local_client == true)
+                    if(mcast_ite->second.local_client)
                     {
                         zmq::socket_t *old_pub = pub;
                         pub = event_pub_sock;
@@ -1591,7 +1584,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
         // Increment event counter if required
         //
 
-        if(ev_cptr_ite != event_cptr.end() && inc_cptr == true)
+        if(ev_cptr_ite != event_cptr.end() && inc_cptr)
         {
             ev_cptr_ite->second++;
         }
@@ -1613,7 +1606,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     catch(...)
     {
         TANGO_LOG_DEBUG << "ZmqEventSupplier::push_event() failed !!!!!!!!!!!\n";
-        if(endian_mess_sent == true)
+        if(endian_mess_sent)
         {
             endian_mess.copy(endian_mess_2);
         }
@@ -1648,7 +1641,7 @@ std::string ZmqEventSupplier::create_full_event_name(DeviceImpl *device_impl,
     }
 
     full_event_name = full_event_name + device_impl->get_name_lower();
-    if(intr_change == false)
+    if(!intr_change)
     {
         full_event_name = full_event_name + '/' + obj_name_lower;
     }
@@ -1808,7 +1801,7 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
                    inc_ctr);
 
         inc_ctr = false;
-        if(need_free == true)
+        if(need_free)
         {
             if(sent_value.attr_val_5 != nullptr)
             {
@@ -1827,7 +1820,7 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
                 delete sent_value.attr_val;
             }
         }
-        if(name_changed == true)
+        if(name_changed)
         {
             ev_name = EventName[event_type];
         }

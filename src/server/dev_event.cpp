@@ -386,11 +386,11 @@ void DeviceImpl::push_data_ready_event(const std::string &attr_name, Tango::DevL
     EventSupplier *event_supplier_nd = nullptr;
     EventSupplier *event_supplier_zmq = nullptr;
 
-    if(attr.use_notifd_event() == true)
+    if(attr.use_notifd_event())
     {
         event_supplier_nd = tg->get_notifd_event_supplier();
     }
-    if(attr.use_zmq_event() == true)
+    if(attr.use_zmq_event())
     {
         event_supplier_zmq = tg->get_zmq_event_supplier();
     }

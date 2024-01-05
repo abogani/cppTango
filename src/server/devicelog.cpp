@@ -222,7 +222,7 @@ void DeviceImpl::init_logger()
         }
         // set logging level (if not set from cmd line)
         std::string log_level_property;
-        if(!level_set_from_cmd_line && db_data[0].is_empty() == false)
+        if(!level_set_from_cmd_line && !db_data[0].is_empty())
         {
             db_data[0] >> log_level_property;
             // avoid case sensitive troubles
@@ -253,7 +253,7 @@ void DeviceImpl::init_logger()
         saved_log_level = the_logger->get_level();
         // get rolling threshold for file targets
         long rft_property = static_cast<long>(kDefaultRollingThreshold);
-        if(db_data[2].is_empty() == false)
+        if(!db_data[2].is_empty())
         {
             db_data[2] >> rft_property;
         }
@@ -261,7 +261,7 @@ void DeviceImpl::init_logger()
         rft = static_cast<size_t>(rft_property);
         // set logging targets
         std::vector<std::string> log_target_property;
-        if(db_data[1].is_empty() == false)
+        if(!db_data[1].is_empty())
         {
             db_data[1] >> log_target_property;
             // attach targets to logger

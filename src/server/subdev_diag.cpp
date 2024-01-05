@@ -154,7 +154,7 @@ void SubDevDiag::register_sub_device(std::string dev_name, std::string sub_dev_n
                 break;
             }
         }
-        if(found == false)
+        if(!found)
         {
             // name is not in the list, add the sub device
             ipos->second.sub_devices.push_back(sub_dev_name);
@@ -314,7 +314,7 @@ void SubDevDiag::store_sub_devices()
     for(ipos = sub_device_map.begin(); ipos != sub_device_map.end(); ++ipos)
     {
         // Check whether the list was modified
-        if(ipos->second.modified == true)
+        if(ipos->second.modified)
         {
             // Check whether for modifications compared to
             // the list read into db_cache during startup
@@ -336,14 +336,14 @@ void SubDevDiag::store_sub_devices()
                         }
                     }
 
-                    if(found == false)
+                    if(!found)
                     {
                         is_equal = false;
                         break;
                     }
                 }
 
-                if(is_equal == true)
+                if(is_equal)
                 {
                     // sub device names are equal to the names
                     // read from the database at server start-up.

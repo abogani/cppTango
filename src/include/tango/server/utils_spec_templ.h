@@ -64,7 +64,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -158,7 +158,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
             CORBA::Any::from_boolean tmp(*tmp_ptr);
             (*any_ptr) <<= tmp;
 
-            if((data.get_data())[i].release == true)
+            if((data.get_data())[i].release)
             {
                 delete tmp_ptr;
             }
@@ -173,7 +173,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
             auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
             auto when = make_poll_time(data.get_data()[i].tp);
             auto zero = PollClock::duration::zero();
-            if(cmd_failed == false)
+            if(!cmd_failed)
             {
                 (*ite)->insert_data(any_ptr, when, zero);
             }
@@ -184,7 +184,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
         }
         catch(Tango::DevFailed &)
         {
-            if(cmd_failed == false)
+            if(!cmd_failed)
             {
                 delete any_ptr;
             }
@@ -205,7 +205,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -299,7 +299,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
             CORBA::Any::from_octet tmp(*tmp_ptr);
             (*any_ptr) <<= tmp;
 
-            if((data.get_data())[i].release == true)
+            if((data.get_data())[i].release)
             {
                 delete tmp_ptr;
             }
@@ -314,7 +314,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
             auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
             auto when = make_poll_time(data.get_data()[i].tp);
             auto zero = PollClock::duration::zero();
-            if(cmd_failed == false)
+            if(!cmd_failed)
             {
                 (*ite)->insert_data(any_ptr, when, zero);
             }
@@ -325,7 +325,7 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
         }
         catch(Tango::DevFailed &)
         {
-            if(cmd_failed == false)
+            if(!cmd_failed)
             {
                 delete any_ptr;
             }

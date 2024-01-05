@@ -351,7 +351,7 @@ GroupCmdReply &GroupCmdReply::operator=(GroupCmdReply &&) = default;
 //-----------------------------------------------------------------------------
 /*const*/ DeviceData &GroupCmdReply::get_data()
 {
-    if(group_element_enabled_m == false && exception_enabled)
+    if(!group_element_enabled_m && exception_enabled)
     {
         Tango::DevErrorList errors(1);
         errors.length(1);
@@ -375,7 +375,7 @@ GroupCmdReply &GroupCmdReply::operator=(GroupCmdReply &&) = default;
 bool GroupCmdReply::extract(std::vector<DevLong> &vl, std::vector<std::string> &vs)
 {
     bool result = true;
-    if(group_element_enabled_m == false)
+    if(!group_element_enabled_m)
     {
         if(exception_enabled)
         {
@@ -390,7 +390,7 @@ bool GroupCmdReply::extract(std::vector<DevLong> &vl, std::vector<std::string> &
         }
         result = false;
     }
-    else if(has_failed_m == true)
+    else if(has_failed_m)
     {
         if(exception_enabled)
         {
@@ -439,7 +439,7 @@ bool GroupCmdReply::extract(std::vector<DevLong> &vl, std::vector<std::string> &
 bool GroupCmdReply::extract(std::vector<double> &vd, std::vector<std::string> &vs)
 {
     bool result = true;
-    if(group_element_enabled_m == false)
+    if(!group_element_enabled_m)
     {
         if(exception_enabled)
         {
@@ -454,7 +454,7 @@ bool GroupCmdReply::extract(std::vector<double> &vd, std::vector<std::string> &v
         }
         result = false;
     }
-    else if(has_failed_m == true)
+    else if(has_failed_m)
     {
         if(exception_enabled)
         {
@@ -561,7 +561,7 @@ GroupAttrReply &GroupAttrReply::operator=(GroupAttrReply &&) = default;
 //-----------------------------------------------------------------------------
 /*const*/ DeviceAttribute &GroupAttrReply::get_data()
 {
-    if(group_element_enabled_m == false && exception_enabled)
+    if(!group_element_enabled_m && exception_enabled)
     {
         Tango::DevErrorList errors(1);
         errors.length(1);
@@ -771,7 +771,7 @@ Group *Group::get_parent() const
 //-----------------------------------------------------------------------------
 bool Group::is_root_group() const
 {
-    return parent != nullptr ? false : true;
+    return parent == nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -793,7 +793,7 @@ std::vector<std::string> Group::get_device_list(bool fwd)
         else if(fwd)
         {
             sub_dl = (static_cast<Group *>(*it))->get_device_list(fwd);
-            if(sub_dl.empty() == false)
+            if(!sub_dl.empty())
             {
                 dl.insert(dl.end(), sub_dl.begin(), sub_dl.end());
             }
@@ -819,7 +819,7 @@ GroupElements Group::get_hiearchy()
         else
         {
             sub_te = (static_cast<Group *>(*it))->get_hiearchy();
-            if(sub_te.empty() == false)
+            if(!sub_te.empty())
             {
                 te.insert(te.end(), sub_te.begin(), sub_te.end());
             }
@@ -888,7 +888,7 @@ void Group::add(const std::string &p, int tmo_ms)
     GroupElements el = GroupElementFactory::instanciate(p, tmo_ms);
     for(unsigned int e = 0; e < el.size(); e++)
     {
-        if((el[e] != nullptr) && (add_i(el[e]) == false))
+        if((el[e] != nullptr) && (!add_i(el[e])))
         {
             GroupElement *te = find_i(el[e]->get_name());
             try
@@ -915,7 +915,7 @@ void Group::add(const std::vector<std::string> &pl, int tmo_ms)
         GroupElements el = GroupElementFactory::instanciate(pl[p], tmo_ms);
         for(unsigned int e = 0; e < el.size(); e++)
         {
-            if((el[e] != nullptr) && (add_i(el[e]) == false))
+            if((el[e] != nullptr) && (!add_i(el[e])))
             {
                 GroupElement *te = find_i(el[e]->get_name());
                 try
@@ -1068,14 +1068,14 @@ bool Group::contains(const std::string &n, bool fwd)
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
-    return (find_i(n, fwd) != nullptr) ? true : false;
+    return find_i(n, fwd) != nullptr;
 }
 
 //-----------------------------------------------------------------------------
 GroupElement *Group::find_i(const std::string &n, bool fwd)
 {
     std::string::size_type pos = n.find('*', 0);
-    bool is_pattern = (pos != std::string::npos) ? true : false;
+    bool is_pattern = pos != std::string::npos;
     if(is_pattern)
     {
         if(name_matches(n))
@@ -1208,7 +1208,7 @@ bool Group::ping(bool fwd)
     bool result = true;
     auto it = elements.begin();
     auto end = elements.end();
-    for(; it != end && result != false; ++it)
+    for(; it != end && result; ++it)
     {
         if((*it)->is_device_i() || fwd)
         {
@@ -1416,7 +1416,7 @@ GroupCmdReplyList Group::command_inout_reply_i(long ari, long tmo)
         if((*it)->is_device_i() || r->second)
         {
             sub_reply = (*it)->command_inout_reply_i(ari, tmo);
-            if(sub_reply.empty() == false)
+            if(!sub_reply.empty())
             {
                 reply.insert(reply.end(), sub_reply.begin(), sub_reply.end());
             }
@@ -1518,7 +1518,7 @@ GroupAttrReplyList Group::read_attribute_reply_i(long ari, long tmo)
         if((*it)->is_device_i() || r->second)
         {
             sub_reply = (*it)->read_attribute_reply_i(ari, tmo);
-            if(sub_reply.empty() == false)
+            if(!sub_reply.empty())
             {
                 reply.insert(reply.end(), sub_reply.begin(), sub_reply.end());
             }
@@ -1594,7 +1594,7 @@ GroupAttrReplyList Group::read_attributes_reply_i(long ari, long tmo)
         if((*it)->is_device_i() || r->second)
         {
             sub_reply = (*it)->read_attributes_reply_i(ari, tmo);
-            if(sub_reply.empty() == false)
+            if(!sub_reply.empty())
             {
                 reply.insert(reply.end(), sub_reply.begin(), sub_reply.end());
             }
@@ -1740,7 +1740,7 @@ GroupReplyList Group::write_attribute_reply_i(long ari, long tmo)
         if((*it)->is_device_i() || r->second)
         {
             sub_reply = (*it)->write_attribute_reply_i(ari, tmo);
-            if(sub_reply.empty() == false)
+            if(!sub_reply.empty())
             {
                 reply.insert(reply.end(), sub_reply.begin(), sub_reply.end());
             }

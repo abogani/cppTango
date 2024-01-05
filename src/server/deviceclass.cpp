@@ -55,14 +55,7 @@ static void lower_cmd_name(std::string &cmd)
 
 bool less_than_pipe(Pipe *a, Pipe *b)
 {
-    if(a->get_name() < b->get_name())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return a->get_name() < b->get_name();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -101,7 +94,7 @@ DeviceClass::DeviceClass(const std::string &s) :
     }
     catch(std::bad_alloc &)
     {
-        if(command_list.empty() == false)
+        if(!command_list.empty())
         {
             for(unsigned long i = 0; i < command_list.size(); i++)
             {
@@ -178,11 +171,11 @@ void DeviceClass::get_class_system_resource()
             TANGO_THROW_EXCEPTION(API_DatabaseAccess, o.str());
         }
 
-        if(db_data[1].is_empty() == false)
+        if(!db_data[1].is_empty())
         {
             db_data[1] >> cvs_tag;
         }
-        if(db_data[2].is_empty() == false)
+        if(!db_data[2].is_empty())
         {
             db_data[2] >> cvs_location;
         }
@@ -191,13 +184,13 @@ void DeviceClass::get_class_system_resource()
         // Init allowed commands vector (in lowercase letters)
         //
 
-        if(db_data[3].is_empty() == false)
+        if(!db_data[3].is_empty())
         {
             db_data[3] >> allowed_cmds;
             for_each(allowed_cmds.begin(), allowed_cmds.end(), lower_cmd_name);
         }
 
-        if(db_data[0].is_empty() == true)
+        if(db_data[0].is_empty())
         {
             TANGO_LOG_DEBUG << "doc_url property for class " << name << " is not defined in database" << std::endl;
             try
@@ -212,7 +205,7 @@ void DeviceClass::get_class_system_resource()
                 TANGO_THROW_EXCEPTION(API_DatabaseAccess, o.str());
             }
 
-            if(db_data[0].is_empty() == true)
+            if(db_data[0].is_empty())
             {
                 doc_url = DefaultDocUrl;
             }
@@ -226,11 +219,11 @@ void DeviceClass::get_class_system_resource()
             db_data[0] >> doc_url;
         }
 
-        if(db_data[4].is_empty() == false)
+        if(!db_data[4].is_empty())
         {
             db_data[4] >> svn_tag;
         }
-        if(db_data[5].is_empty() == false)
+        if(!db_data[5].is_empty())
         {
             db_data[5] >> svn_location;
         }
@@ -311,7 +304,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
     //
 
     unsigned long start, stop;
-    if(all == true)
+    if(all)
     {
         start = 0;
         stop = device_list.size();
@@ -345,7 +338,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
         {
             WAttribute &att = device_list[i]->get_device_attr()->get_w_attr_by_ind(att_list[j]);
 
-            if(att.is_memorized() == true)
+            if(att.is_memorized())
             {
                 std::string &mem_value = att.get_mem_value();
                 if(mem_value != MemNotUsed)
@@ -366,7 +359,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                     //
 
                     TangoSys_MemStream str;
-                    if(from_init == false)
+                    if(!from_init)
                     {
                         str << mem_value << std::ends;
                     }
@@ -377,7 +370,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                         {
                         case Tango::DEV_SHORT:
                         case Tango::DEV_ENUM:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> sh))
                                 {
@@ -395,7 +388,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_LONG:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> lg))
                                 {
@@ -413,7 +406,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_DOUBLE:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> db))
                                 {
@@ -431,7 +424,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_STRING:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 att.set_write_value(mem_value);
 
@@ -446,7 +439,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_FLOAT:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> fl))
                                 {
@@ -464,7 +457,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_BOOLEAN:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> std::boolalpha >> boo))
                                 {
@@ -482,7 +475,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_USHORT:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> ush))
                                 {
@@ -500,7 +493,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_UCHAR:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 short tmp_sh;
                                 if(!(str >> tmp_sh))
@@ -520,7 +513,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_ULONG:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> ulg))
                                 {
@@ -538,7 +531,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_LONG64:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> lg64))
                                 {
@@ -556,7 +549,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                             break;
 
                         case Tango::DEV_ULONG64:
-                            if(from_init == false)
+                            if(!from_init)
                             {
                                 if(!(str >> ulg64))
                                 {
@@ -580,7 +573,7 @@ void DeviceClass::set_memorized_values(bool all, long idx, bool from_init)
                         // attribute.
                         //
 
-                        if(att.is_memorized_init() == false)
+                        if(!att.is_memorized_init())
                         {
                             nb_wr--;
                             att_val.length(nb_wr);
@@ -876,7 +869,7 @@ void DeviceClass::delete_dev(long idx, Tango::Util *tg, PortableServer::POA_ptr 
     // If the polling thread is alive and if device is polled, ask polling thread to stop polling
     //
 
-    if((tg->get_polling_threads_info().empty() == false) && (device_list[idx]->is_polled() == true))
+    if((!tg->get_polling_threads_info().empty()) && (device_list[idx]->is_polled()))
     {
         device_list[idx]->stop_polling(false);
     }
@@ -887,7 +880,7 @@ void DeviceClass::delete_dev(long idx, Tango::Util *tg, PortableServer::POA_ptr 
 
     bool exported_device = device_list[idx]->get_exported_flag();
 
-    if(exported_device == true)
+    if(exported_device)
     {
         r_poa->deactivate_object(device_list[idx]->get_obj_id().in());
     }
@@ -896,7 +889,7 @@ void DeviceClass::delete_dev(long idx, Tango::Util *tg, PortableServer::POA_ptr 
     // Wait for CORBA to call the device dtor
     //
 
-    if(device_list[idx] != nullptr && exported_device == true)
+    if(device_list[idx] != nullptr && exported_device)
     {
         while(device_list[idx] != nullptr)
         {
@@ -1023,7 +1016,7 @@ void DeviceClass::export_device(DeviceImpl *dev, const char *corba_obj_name)
 
         std::string &dev_name = dev->get_name_lower();
         TANGO_LOG_DEBUG << "DeviceClass::export_device::dev_name=" << dev_name << std::endl;
-        if((get_device_factory_done() == false) && (dev_name.find("dserver") != 0))
+        if((!get_device_factory_done()) && (dev_name.find("dserver") != 0))
         {
             dev->get_dev_monitor().get_monitor();
         }
@@ -1176,7 +1169,7 @@ CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         std::vector<Command *> &dev_command_list = device->get_local_command_list();
         for(i_cmd = dev_command_list.begin(); i_cmd < dev_command_list.end(); ++i_cmd)
@@ -1189,7 +1182,7 @@ CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &
         }
     }
 
-    if(found == true)
+    if(found)
     {
         //
         // Call the always executed method
@@ -1201,7 +1194,7 @@ CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &
         // Check if command is allowed
         //
 
-        if((*i_cmd)->is_allowed(device, in_any) == false)
+        if(!(*i_cmd)->is_allowed(device, in_any))
         {
             TangoSys_OMemStream o;
             o << "Command " << command << " not allowed when the device is in "
@@ -1216,7 +1209,7 @@ CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &
         ret = (*i_cmd)->execute(device, in_any);
     }
 
-    if(found == false)
+    if(!found)
     {
         TANGO_LOG_DEBUG << "DeviceClass::command_handler(): command " << command << " not found in class/device command"
                         << std::endl;
@@ -1240,7 +1233,7 @@ CORBA::Any *DeviceClass::command_handler(DeviceImpl *device, const std::string &
             // Check if command is allowed
             //
 
-            if(def_cmd->is_allowed(device, in_any) == false)
+            if(!def_cmd->is_allowed(device, in_any))
             {
                 TangoSys_OMemStream o;
                 o << "Command " << command << " not allowed when the device is in "
@@ -1438,7 +1431,7 @@ void DeviceClass::device_destroyer(const std::string &dev_name)
     // Check if the device is polled. If yes, ask polling thread to stop polling it
     //
 
-    if(device_list[k]->is_polled() == true)
+    if(device_list[k]->is_polled())
     {
         device_list[k]->stop_polling();
     }
@@ -1519,7 +1512,7 @@ void DeviceClass::get_mcast_event(DServer *dserv)
         for(unsigned int j = 0; j < att_list.size(); ++j)
         {
             dserv->mcast_event_for_att(device_list[i]->get_name_lower(), att_list[j]->get_name_lower(), m_cast);
-            if(m_cast.empty() == false)
+            if(!m_cast.empty())
             {
                 att_list[j]->set_mcast_event(m_cast);
             }
@@ -1733,7 +1726,7 @@ void DeviceClass::create_device_pipe(DeviceClass *cl, DeviceImpl *dev)
 
     cl->pipe_factory();
 
-    if(ext->dev_pipe_list.empty() == true)
+    if(ext->dev_pipe_list.empty())
     {
         MultiClassPipe *c_pipe = get_class_pipe();
         c_pipe->init_class_pipe(this);

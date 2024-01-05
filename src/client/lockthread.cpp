@@ -161,9 +161,9 @@ LockCmdType LockThread::get_command()
     // Wait on monitor
     //
 
-    if(shared_cmd.cmd_pending == false)
+    if(!shared_cmd.cmd_pending)
     {
-        if(locked_devices.empty() == true)
+        if(locked_devices.empty())
         {
             p_mon.wait();
         }
@@ -180,7 +180,7 @@ LockCmdType LockThread::get_command()
     // Test if it is a new command. If yes, copy its data locally
     //
 
-    if(shared_cmd.cmd_pending == true)
+    if(shared_cmd.cmd_pending)
     {
         local_cmd = shared_cmd;
         ret = LOCK_COMMAND;
@@ -274,7 +274,7 @@ void LockThread::execute_cmd()
     {
         omni_mutex_lock sync(p_mon);
         shared_cmd.cmd_pending = false;
-        if(locked_devices.empty() == true)
+        if(locked_devices.empty())
         {
             shared_cmd.suicide = true;
         }
@@ -285,7 +285,7 @@ void LockThread::execute_cmd()
     // If the command was an exit one, do it now
     //
 
-    if(need_exit == true)
+    if(need_exit)
     {
         omni_thread::exit();
     }
@@ -294,7 +294,7 @@ void LockThread::execute_cmd()
     // If it is the last device, ask thread to exit buut delete the proxy first
     //
 
-    if(locked_devices.empty() == true)
+    if(locked_devices.empty())
     {
         omni_thread::exit();
     }
@@ -313,7 +313,7 @@ void LockThread::execute_cmd()
 void LockThread::one_more_lock()
 {
     DeviceData d_in;
-    if(re_lock_cmd_args.empty() == true)
+    if(re_lock_cmd_args.empty())
     {
         for(unsigned long loop = 0; loop < locked_devices.size(); ++loop)
         {
@@ -353,7 +353,7 @@ void LockThread::one_more_lock()
                         if(TG_strcasecmp(local_dev_name.c_str(), ite->dev_name.c_str()) == 0)
                         {
                             locked_devices.erase(ite);
-                            if(locked_devices.empty() == true)
+                            if(locked_devices.empty())
                             {
                                 local_cmd.cmd_code = LOCK_EXIT;
                                 execute_cmd();
@@ -379,7 +379,7 @@ void LockThread::one_more_lock()
 
 void LockThread::unlock_all_devs()
 {
-    if(locked_devices.empty() == false)
+    if(!locked_devices.empty())
     {
         std::string cmd("UnLockDevice");
         DeviceData din;
@@ -450,7 +450,7 @@ void LockThread::update_th_period()
 
 void LockThread::compute_sleep_time(bool cmd)
 {
-    if(cmd == false)
+    if(!cmd)
     {
         sleep = period;
         next_work = PollClock::now() + period;

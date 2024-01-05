@@ -102,10 +102,10 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
             // Special case for forwarded attributes
             //
 
-            if(attr.is_fwd_att() == true)
+            if(attr.is_fwd_att())
             {
                 FwdAttribute &fwd_attr = static_cast<FwdAttribute &>(attr);
-                if(fwd_cb == true)
+                if(fwd_cb)
                 {
                     fwd_attr.set_att_config(new_conf[i]);
                 }
@@ -124,7 +124,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
             // In case the attribute quality factor was set to ALARM, reset it to VALID
             //
 
-            if((attr.get_quality() == Tango::ATTR_ALARM) && (old_alarm == true) && (attr.is_alarmed().any() == false))
+            if((attr.get_quality() == Tango::ATTR_ALARM) && (old_alarm) && (!attr.is_alarmed().any()))
             {
                 attr.set_quality(Tango::ATTR_VALID);
             }
@@ -133,7 +133,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
             // Send the event
             //
 
-            if(attr.use_notifd_event() == true)
+            if(attr.use_notifd_event())
             {
                 event_supplier_nd = tg->get_notifd_event_supplier();
             }
@@ -142,7 +142,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                 event_supplier_nd = nullptr;
             }
 
-            if(attr.use_zmq_event() == true)
+            if(attr.use_zmq_event())
             {
                 event_supplier_zmq = tg->get_zmq_event_supplier();
             }
@@ -281,7 +281,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
         for(long j = 0; j < nb_dev_attr; j++)
         {
             Attribute &att = dev_attr->get_attr_by_ind(j);
-            if(att.is_alarmed().any() == true)
+            if(att.is_alarmed().any())
             {
                 if(att.get_writable() != Tango::WRITE)
                 {
@@ -321,7 +321,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
     {
         Tango::Attribute &attr = dev_attr->get_attr_by_ind(i);
         Tango::AttrWriteType w_type = attr.get_writable();
-        if(attr.is_alarmed().any() == true)
+        if(attr.is_alarmed().any())
         {
             if(w_type != Tango::WRITE)
             {

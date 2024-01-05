@@ -103,14 +103,7 @@ DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevSt
 
 bool less_than(Command *a, Command *b)
 {
-    if(a->get_name() < b->get_name())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return a->get_name() < b->get_name();
 }
 
 void DServer::init_device()
@@ -136,7 +129,7 @@ void DServer::init_device()
     // Destroy already registered classes
     //
 
-    if(class_list.empty() == false)
+    if(!class_list.empty())
     {
         delete_devices();
     }
@@ -174,7 +167,7 @@ void DServer::init_device()
         }
         class_factory_done = true;
 
-        if(class_list.empty() == false)
+        if(!class_list.empty())
         {
             //
             // Set the class list pointer in the Util class and add the DServer object class
@@ -308,12 +301,12 @@ void DServer::init_device()
                         tg->get_cmd_line_name_list(NoClass, list);
                     }
 
-                    if(list.empty() == true)
+                    if(list.empty())
                     {
                         class_list[i]->device_name_factory(list);
                     }
 
-                    if(list.empty() == true)
+                    if(list.empty())
                     {
                         dev_list_nodb->length(1);
                         (*dev_list_nodb)[0] = Tango::string_dup("NoName");
@@ -354,11 +347,11 @@ void DServer::init_device()
 
         TangoSys_OMemStream o;
 
-        if(class_factory_done == false)
+        if(!class_factory_done)
         {
             long class_err = class_list.size() + 1;
             o << "Can't allocate memory in server while creating class number " << class_err << std::ends;
-            if(class_list.empty() == false)
+            if(!class_list.empty())
             {
                 for(unsigned long j = 0; j < class_list.size(); j++)
                 {
@@ -390,9 +383,9 @@ void DServer::init_device()
         // error occurs during the command or device factories, erase only the following classes
         //
 
-        if(class_factory_done == false)
+        if(!class_factory_done)
         {
-            if(class_list.empty() == false)
+            if(!class_list.empty())
             {
                 for(unsigned long j = 0; j < class_list.size(); j++)
                 {
@@ -422,9 +415,9 @@ void DServer::init_device()
         // error occurs during the command or device factories, erase only the following classes
         //
 
-        if(class_factory_done == false)
+        if(!class_factory_done)
         {
-            if(class_list.empty() == false)
+            if(!class_list.empty())
             {
                 for(unsigned long j = 0; j < class_list.size(); j++)
                 {
@@ -489,7 +482,7 @@ DServer::~DServer()
     // Destroy already registered classes
     //
 
-    if(class_list.empty() == false)
+    if(!class_list.empty())
     {
         for(long i = class_list.size() - 1; i >= 0; i--)
         {
@@ -511,7 +504,7 @@ DServer::~DServer()
 
 void DServer::delete_devices()
 {
-    if(class_list.empty() == false)
+    if(!class_list.empty())
     {
         for(long i = class_list.size() - 1; i >= 0; i--)
         {
@@ -769,7 +762,7 @@ void DServer::restart(const std::string &d_name)
                 break;
             }
         }
-        if(found == true)
+        if(found)
         {
             break;
         }
@@ -807,7 +800,7 @@ void DServer::restart(const std::string &d_name)
             ev_client = event_supplier_zmq->any_dev_intr_client(dev_to_del);
         }
 
-        if(ev_client == true)
+        if(ev_client)
         {
             di.get_interface(dev_to_del);
         }
@@ -860,7 +853,7 @@ void DServer::restart(const std::string &d_name)
     time_t l_date = 0;
     DevLong l_ctr = 0, l_valid = 0;
 
-    if(dev_to_del->is_device_locked() == true)
+    if(dev_to_del->is_device_locked())
     {
         cl_addr = dev_to_del->get_locker();
         old_cl_addr = dev_to_del->get_old_locker();
@@ -874,7 +867,7 @@ void DServer::restart(const std::string &d_name)
     // If the device was polled, stop polling
     //
 
-    if(dev_pol.empty() == false)
+    if(!dev_pol.empty())
     {
         dev_to_del->stop_polling(false);
     }
@@ -887,7 +880,7 @@ void DServer::restart(const std::string &d_name)
     {
         tg->add_restarting_device(lower_d_name);
         PortableServer::POA_ptr r_poa = tg->get_poa();
-        if(dev_to_del->get_exported_flag() == true)
+        if(dev_to_del->get_exported_flag())
         {
             r_poa->deactivate_object(dev_to_del->get_obj_id().in());
         }
@@ -1028,7 +1021,7 @@ void DServer::restart(const std::string &d_name)
     for(unsigned int j = 0; j < att_list.size(); ++j)
     {
         mcast_event_for_att(new_dev->get_name_lower(), att_list[j]->get_name_lower(), m_cast);
-        if(m_cast.empty() == false)
+        if(!m_cast.empty())
         {
             att_list[j]->set_mcast_event(m_cast);
         }
@@ -1054,9 +1047,9 @@ void DServer::restart(const std::string &d_name)
     // Fire device interface change event if needed
     //
 
-    if(ev_client == true)
+    if(ev_client)
     {
-        if(di.has_changed(new_dev) == true)
+        if(di.has_changed(new_dev))
         {
             TANGO_LOG_DEBUG << "Device interface has changed !!!!!!!!!!!!!!!!!!!" << std::endl;
 
@@ -1538,7 +1531,7 @@ void DServer::get_dev_prop(Tango::Util *tg)
         // If the prop is not defined in db and if the user has defined it in the Util class, takes the user definition
         //
 
-        if(db_data[0].is_empty() == false)
+        if(!db_data[0].is_empty())
         {
             db_data[0] >> polling_th_pool_size;
         }
@@ -1551,7 +1544,7 @@ void DServer::get_dev_prop(Tango::Util *tg)
             }
         }
 
-        if(db_data[1].is_empty() == false)
+        if(!db_data[1].is_empty())
         {
             std::vector<std::string> tmp_vect;
             db_data[1] >> tmp_vect;
@@ -1581,7 +1574,7 @@ void DServer::get_dev_prop(Tango::Util *tg)
 
                 rebuilt_str = rebuilt_str + tmp_str;
 
-                if(ended == true)
+                if(ended)
                 {
                     polling_th_pool_conf.push_back(rebuilt_str);
                     rebuilt_str.clear();
@@ -1597,7 +1590,7 @@ void DServer::get_dev_prop(Tango::Util *tg)
         // Polling before 9 algorithm property
         //
 
-        if(db_data[2].is_empty() == false)
+        if(!db_data[2].is_empty())
         {
             polling_bef_9_def = true;
             db_data[2] >> polling_bef_9;
@@ -1627,12 +1620,12 @@ void DServer::get_dev_prop(Tango::Util *tg)
 
 void DServer::check_lock_owner(DeviceImpl *dev, const char *cmd_name, const char *dev_name)
 {
-    if(dev->is_device_locked() == true)
+    if(dev->is_device_locked())
     {
-        if(dev->valid_lock() == true)
+        if(dev->valid_lock())
         {
             client_addr *cl = get_client_ident();
-            if(cl->client_ident == true)
+            if(cl->client_ident)
             {
                 if(*cl != *(dev->get_locker()))
                 {
@@ -1704,7 +1697,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
 
             for(unsigned int i = 0; i < nb_elt; ++i)
             {
-                if(is_ip_address(mcast_event_prop[i]) == true)
+                if(is_ip_address(mcast_event_prop[i]))
                 {
                     //
                     // Check multicast address validity
@@ -1734,24 +1727,24 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
                         {
                             if(nb_elt > i + 4)
                             {
-                                if((is_event_name(mcast_event_prop[i + 2]) == false) &&
-                                   (is_event_name(mcast_event_prop[i + 3]) == false) &&
-                                   (is_event_name(mcast_event_prop[i + 4]) == false))
+                                if((!is_event_name(mcast_event_prop[i + 2])) &&
+                                   (!is_event_name(mcast_event_prop[i + 3])) &&
+                                   (!is_event_name(mcast_event_prop[i + 4])))
                                 {
                                     uncoherent = true;
                                 }
                             }
                             else if(nb_elt > i + 3)
                             {
-                                if((is_event_name(mcast_event_prop[i + 2]) == false) &&
-                                   (is_event_name(mcast_event_prop[i + 3]) == false))
+                                if((!is_event_name(mcast_event_prop[i + 2])) &&
+                                   (!is_event_name(mcast_event_prop[i + 3])))
                                 {
                                     uncoherent = true;
                                 }
                             }
                             else
                             {
-                                if(is_event_name(mcast_event_prop[i + 2]) == false)
+                                if(!is_event_name(mcast_event_prop[i + 2]))
                                 {
                                     uncoherent = true;
                                 }
@@ -1764,7 +1757,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
                     // case
                     //
 
-                    if(uncoherent == true)
+                    if(uncoherent)
                     {
                         std::cerr << "Database CtrlSystem/MulticastEvent property is uncoherent" << std::endl;
                         std::cerr << "Prop syntax = mcast ip adr (must be between 224.x.y.z and 239.x.y.z) - port - "
@@ -1797,7 +1790,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
             //
 
             mcast_hops = MCAST_HOPS;
-            if(db_data[1].is_empty() == false)
+            if(!db_data[1].is_empty())
             {
                 db_data[1] >> mcast_hops;
             }
@@ -1807,7 +1800,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
             //
 
             mcast_rate = PGM_RATE;
-            if(db_data[2].is_empty() == false)
+            if(!db_data[2].is_empty())
             {
                 db_data[2] >> mcast_rate;
                 mcast_rate = mcast_rate * 1024;
@@ -1818,7 +1811,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
             //
 
             mcast_ivl = PGM_IVL;
-            if(db_data[3].is_empty() == false)
+            if(!db_data[3].is_empty())
             {
                 db_data[3] >> mcast_ivl;
                 mcast_ivl = mcast_ivl * 1000;
@@ -1829,7 +1822,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
             //
 
             zmq_pub_event_hwm = PUB_HWM;
-            if(db_data[4].is_empty() == false)
+            if(!db_data[4].is_empty())
             {
                 db_data[4] >> zmq_pub_event_hwm;
             }
@@ -1839,7 +1832,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
             //
 
             zmq_sub_event_hwm = SUB_HWM;
-            if(db_data[5].is_empty() == false)
+            if(!db_data[5].is_empty())
             {
                 db_data[5] >> zmq_sub_event_hwm;
             }
@@ -1848,7 +1841,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
             // Nan allowed in writing attribute
             //
 
-            if(db_data[6].is_empty() == false)
+            if(!db_data[6].is_empty())
             {
                 bool new_val;
                 db_data[6] >> new_val;
@@ -1902,23 +1895,23 @@ void DServer::mcast_event_for_att(const std::string &dev_name,
 
     for(unsigned int i = 0; i < nb_elt; ++i)
     {
-        if(is_ip_address(mcast_event_prop[i]) == true)
+        if(is_ip_address(mcast_event_prop[i]))
         {
             ip_adr_ind = i;
             continue;
         }
 
-        if(is_event_name(mcast_event_prop[i]) == true)
+        if(is_event_name(mcast_event_prop[i]))
         {
             if(mcast_event_prop[i].find(full_att_name) == 0)
             {
                 std::string::size_type pos = mcast_event_prop[i].rfind('.');
                 std::string tmp = mcast_event_prop[i].substr(pos + 1);
                 tmp = tmp + ':' + mcast_event_prop[ip_adr_ind] + ':' + mcast_event_prop[ip_adr_ind + 1];
-                if(is_event_name(mcast_event_prop[ip_adr_ind + 2]) == false)
+                if(!is_event_name(mcast_event_prop[ip_adr_ind + 2]))
                 {
                     tmp = tmp + ':' + mcast_event_prop[ip_adr_ind + 2];
-                    if(is_event_name(mcast_event_prop[ip_adr_ind + 3]) == false)
+                    if(!is_event_name(mcast_event_prop[ip_adr_ind + 3]))
                     {
                         tmp = tmp + ':' + mcast_event_prop[ip_adr_ind + 3];
                     }
@@ -2011,7 +2004,7 @@ void DServer::mem_devices_interface(std::map<std::string, DevIntr> &_map)
 {
     ZmqEventSupplier *event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
 
-    if(class_list.empty() == false)
+    if(!class_list.empty())
     {
         for(long i = class_list.size() - 1; i >= 0; i--)
         {
@@ -2019,7 +2012,7 @@ void DServer::mem_devices_interface(std::map<std::string, DevIntr> &_map)
             size_t nb_dev = devs.size();
             for(size_t loop = 0; loop < nb_dev; loop++)
             {
-                if(event_supplier_zmq->any_dev_intr_client(devs[loop]) == true &&
+                if(event_supplier_zmq->any_dev_intr_client(devs[loop]) &&
                    devs[loop]->get_dev_idl_version() >= MIN_IDL_DEV_INTR)
                 {
                     TANGO_LOG_DEBUG << "Memorize dev interface for device " << devs[loop]->get_name() << std::endl;
@@ -2057,7 +2050,7 @@ void DServer::changed_devices_interface(std::map<std::string, DevIntr> &_map)
     for(pos = _map.begin(); pos != _map.end(); ++pos)
     {
         DeviceImpl *dev = tg->get_device_by_name(pos->first);
-        if(pos->second.has_changed(dev) == true)
+        if(pos->second.has_changed(dev))
         {
             TANGO_LOG_DEBUG << "Device interface for device " << dev->get_name() << " has changed !!!!!!!!!!!!!!!!!!!"
                             << std::endl;

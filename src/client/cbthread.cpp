@@ -57,7 +57,7 @@ namespace Tango
 
 void *CallBackThread::run_undetached(TANGO_UNUSED(void *ptr))
 {
-    while(shared_cmd.is_stopped() == false)
+    while(!shared_cmd.is_stopped())
     {
         try
         {

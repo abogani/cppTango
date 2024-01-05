@@ -291,7 +291,7 @@ inline void ZmqAttrValUnion::init_seq(char *base_ptr, CORBA::ULong &length, Tang
         ptr = (T *) (base_ptr + delta);
     }
 
-    if(_n.unmarshal_byte_swap() == true)
+    if(_n.unmarshal_byte_swap())
     {
         if(sizeof(T) == 2)
         {

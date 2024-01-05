@@ -157,7 +157,7 @@ void Connection::get_asynch_replies()
 
     try
     {
-        while(orb->poll_next_response() == true)
+        while(orb->poll_next_response())
         {
             CORBA::Request_ptr req;
             orb->get_next_response(req);
@@ -344,7 +344,7 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
             errors[nb_err].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
             errors[nb_err].reason = Tango::string_dup(API_CommandFailed);
         }
-        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (to_except == false))
+        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (!to_except))
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -592,7 +592,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
             errors[nb_err].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
             errors[nb_err].reason = Tango::string_dup(API_AttributeFailed);
         }
-        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (to_except == false))
+        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (!to_except))
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -664,14 +664,14 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
     long nb_attr = 0;
     if(version >= 4)
     {
-        if((*(nv->value()) >>= att_4) == true)
+        if((*(nv->value()) >>= att_4)
         {
             nb_attr = att_4->length();
         }
     }
     else
     {
-        if((*(nv->value()) >>= att) == true)
+        if((*(nv->value()) >>= att)
         {
             nb_attr = att->length();
         }
@@ -784,7 +784,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
             }
             else
             {
-                if((unk_ex->exception() >>= multi_serv_ex) == true)
+                if((unk_ex->exception() >>= multi_serv_ex)
                 {
                     m_ex = *multi_serv_ex;
                     err_3 = Tango::NamedDevFailedList(m_ex,
@@ -828,7 +828,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
                 }
             }
         }
-        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (to_except == false))
+        else if(((sys_ex = CORBA::SystemException::_downcast(ex_ptr)) != nullptr) && (!to_except))
         {
             set_connection_state(CONNECTION_NOTOK);
 
@@ -964,7 +964,7 @@ void Connection::get_asynch_replies(long call_timeout)
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                 nb--;
 
-                if(orb->poll_next_response() == true)
+                if(orb->poll_next_response())
                 {
                     orb->get_next_response(req);
 

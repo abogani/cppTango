@@ -51,7 +51,7 @@ DeviceData::DeviceData() :
     //
 
     ApiUtil *au = ApiUtil::instance();
-    if(au->is_orb_nil() == true)
+    if(au->is_orb_nil())
     {
         au->create_orb();
     }
@@ -202,7 +202,7 @@ int DeviceData::get_type()
 {
     int data_type = 0;
 
-    if(any_is_null() == true)
+    if(any_is_null())
     {
         return -1;
     }
@@ -374,7 +374,7 @@ bool DeviceData::operator>>(bool &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= CORBA::Any::to_boolean(datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -403,7 +403,7 @@ bool DeviceData::operator>>(short &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -432,7 +432,7 @@ bool DeviceData::operator>>(unsigned short &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -461,7 +461,7 @@ bool DeviceData::operator>>(DevLong &datum)
     ext->ext_state.reset();
 
     bool ret = (any >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -490,7 +490,7 @@ bool DeviceData::operator>>(DevULong &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -520,7 +520,7 @@ bool DeviceData::operator>>(DevLong64 &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -550,7 +550,7 @@ bool DeviceData::operator>>(DevULong64 &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -580,7 +580,7 @@ bool DeviceData::operator>>(float &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -609,7 +609,7 @@ bool DeviceData::operator>>(double &datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -639,7 +639,7 @@ bool DeviceData::operator>>(std::string &datum)
 
     const char *c_string = nullptr;
     bool ret = (any >>= c_string);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -672,7 +672,7 @@ bool DeviceData::operator>>(const char *&datum)
     ext->ext_state.reset();
 
     bool ret = any >>= datum;
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -701,7 +701,7 @@ bool DeviceData::operator>>(DevState &datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -784,7 +784,7 @@ bool DeviceData::operator>>(const DevVarBooleanArray *&datum)
 
     bool ret = (any.inout() >>= datum);
 
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -814,7 +814,7 @@ bool DeviceData::operator>>(std::vector<unsigned char> &datum)
 
     const DevVarCharArray *char_array = nullptr;
     bool ret = (any.inout() >>= char_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -860,7 +860,7 @@ bool DeviceData::operator>>(const DevVarCharArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -890,7 +890,7 @@ bool DeviceData::operator>>(std::vector<short> &datum)
 
     const DevVarShortArray *short_array = nullptr;
     bool ret = (any.inout() >>= short_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -937,7 +937,7 @@ bool DeviceData::operator>>(const DevVarShortArray *&datum)
 
     bool ret = (any.inout() >>= datum);
 
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -967,7 +967,7 @@ bool DeviceData::operator>>(std::vector<unsigned short> &datum)
 
     const DevVarUShortArray *ushort_array = nullptr;
     bool ret = (any.inout() >>= ushort_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1014,7 +1014,7 @@ bool DeviceData::operator>>(const DevVarUShortArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1045,7 +1045,7 @@ bool DeviceData::operator>>(std::vector<DevLong> &datum)
     const DevVarLongArray *long_array = nullptr;
 
     bool ret = (any.inout() >>= long_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1092,7 +1092,7 @@ bool DeviceData::operator>>(const DevVarLongArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1124,7 +1124,7 @@ bool DeviceData::operator>>(std::vector<DevULong> &datum)
     const DevVarULongArray *ulong_array = nullptr;
 
     bool ret = (any.inout() >>= ulong_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1171,7 +1171,7 @@ bool DeviceData::operator>>(const DevVarULongArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1201,7 +1201,7 @@ bool DeviceData::operator>>(const DevVarLong64Array *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1231,7 +1231,7 @@ bool DeviceData::operator>>(const DevVarULong64Array *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1262,7 +1262,7 @@ bool DeviceData::operator>>(std::vector<DevLong64> &datum)
 
     const DevVarLong64Array *ll_array = nullptr;
     bool ret = (any.inout() >>= ll_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1310,7 +1310,7 @@ bool DeviceData::operator>>(std::vector<DevULong64> &datum)
 
     const DevVarULong64Array *ull_array = nullptr;
     bool ret = (any.inout() >>= ull_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1358,7 +1358,7 @@ bool DeviceData::operator>>(std::vector<float> &datum)
 
     const DevVarFloatArray *float_array = nullptr;
     bool ret = (any.inout() >>= float_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1404,7 +1404,7 @@ bool DeviceData::operator>>(const DevVarFloatArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1435,7 +1435,7 @@ bool DeviceData::operator>>(std::vector<double> &datum)
     const DevVarDoubleArray *double_array = nullptr;
 
     bool ret = (any.inout() >>= double_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1481,7 +1481,7 @@ bool DeviceData::operator>>(const DevVarDoubleArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1512,7 +1512,7 @@ bool DeviceData::operator>>(std::vector<std::string> &datum)
     const DevVarStringArray *string_array = nullptr;
 
     bool ret = (any.inout() >>= string_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1558,7 +1558,7 @@ bool DeviceData::operator>>(const DevVarStringArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1588,7 +1588,7 @@ bool DeviceData::operator>>(const DevEncoded *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1619,7 +1619,7 @@ bool DeviceData::operator>>(DevEncoded &datum)
 
     const DevEncoded *tmp_enc = nullptr;
     bool ret = (any.inout() >>= tmp_enc);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1881,7 +1881,7 @@ bool DeviceData::extract(std::vector<DevLong> &long_datum, std::vector<std::stri
 
     const DevVarLongStringArray *long_string_array = nullptr;
     ret = (any.inout() >>= long_string_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1936,7 +1936,7 @@ bool DeviceData::operator>>(const DevVarLongStringArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -1995,7 +1995,7 @@ bool DeviceData::extract(std::vector<double> &double_datum, std::vector<std::str
 
     const DevVarDoubleStringArray *double_string_array = nullptr;
     ret = (any.inout() >>= double_string_array);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -2048,7 +2048,7 @@ bool DeviceData::operator>>(const DevVarDoubleStringArray *&datum)
     ext->ext_state.reset();
 
     bool ret = (any.inout() >>= datum);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -2130,7 +2130,7 @@ bool DeviceData::extract(const char *&str, const unsigned char *&data_ptr, unsig
 
     const DevEncoded *tmp_enc = nullptr;
     bool ret = (any.inout() >>= tmp_enc);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -2177,7 +2177,7 @@ bool DeviceData::extract(std::string &str, std::vector<unsigned char> &datum)
 
     const DevEncoded *tmp_enc = nullptr;
     bool ret = (any.inout() >>= tmp_enc);
-    if(ret == false)
+    if(!ret)
     {
         if(any_is_null())
         {
@@ -2223,7 +2223,7 @@ bool DeviceData::extract(std::string &str, std::vector<unsigned char> &datum)
 
 std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
 {
-    if(dd.any_is_null() == true)
+    if(dd.any_is_null())
     {
         o_str << "No data in DeviceData object";
     }
@@ -2240,7 +2240,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceData &dd)
         case CORBA::tk_boolean:
             bool bo_tmp;
             dd.any >>= CORBA::Any::to_boolean(bo_tmp);
-            if(bo_tmp == true)
+            if(bo_tmp)
             {
                 o_str << "true";
             }

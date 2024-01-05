@@ -60,7 +60,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -414,7 +414,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
         {
             auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_ATTR, obj_name);
 
-            if(attr_failed == false)
+            if(!attr_failed)
             {
                 if(idl_vers >= 5)
                 {
@@ -444,7 +444,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
         }
         catch(Tango::DevFailed &)
         {
-            if(attr_failed == false)
+            if(!attr_failed)
             {
                 if(idl_vers >= 5)
                 {
@@ -492,7 +492,7 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name, CmdHi
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -600,7 +600,7 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name, CmdHi
             auto ite = dev->get_polled_obj_by_type_name(Tango::POLL_CMD, obj_name);
             auto when = make_poll_time((data.get_data())[i].tp);
             auto zero = PollClock::duration::zero();
-            if(cmd_failed == false)
+            if(!cmd_failed)
             {
                 (*ite)->insert_data(any_ptr, when, zero);
             }
@@ -611,7 +611,7 @@ void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name, CmdHi
         }
         catch(Tango::DevFailed &)
         {
-            if(cmd_failed == false)
+            if(!cmd_failed)
             {
                 delete any_ptr;
             }

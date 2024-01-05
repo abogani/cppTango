@@ -299,7 +299,7 @@ void WAttribute::set_min_value(const T &new_min_value)
             db_data.push_back(prop_dd);
 
             bool retry = true;
-            while(retry == true)
+            while(retry)
             {
                 try
                 {
@@ -382,7 +382,7 @@ void WAttribute::get_min_value(T &min_val)
         TANGO_THROW_EXCEPTION(API_IncompatibleAttrDataType, err_msg.str().c_str());
     }
 
-    if(check_min_value == false)
+    if(!check_min_value)
     {
         TANGO_THROW_EXCEPTION(API_AttrNotAllowed, "Minimum value not defined for this attribute");
     }
@@ -516,7 +516,7 @@ void WAttribute::set_max_value(const T &new_max_value)
             db_data.push_back(prop_dd);
 
             bool retry = true;
-            while(retry == true)
+            while(retry)
             {
                 try
                 {
@@ -599,7 +599,7 @@ void WAttribute::get_max_value(T &max_val)
         TANGO_THROW_EXCEPTION(API_IncompatibleAttrDataType, err_msg.str().c_str());
     }
 
-    if(check_max_value == false)
+    if(!check_max_value)
     {
         TANGO_THROW_EXCEPTION(API_AttrNotAllowed, "Maximum value not defined for this attribute");
     }
@@ -702,7 +702,7 @@ void WAttribute::check_data_limits<Tango::DevEncoded>(const size_t nb_data,
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }

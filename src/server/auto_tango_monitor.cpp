@@ -52,7 +52,7 @@ AutoTangoMonitor::AutoTangoMonitor(Tango::DeviceImpl *dev, bool force)
     switch(ser)
     {
     case NO_SYNC:
-        if(force == true)
+        if(force)
         {
             mon = &(dev->only_one);
         }

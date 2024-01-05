@@ -366,7 +366,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
             result = control_sock->send(reply, zmq::send_flags::none);
             TANGO_ASSERT(result);
 
-            if(ret == true)
+            if(ret)
             {
                 delete heartbeat_sub_sock;
                 delete control_sock;
@@ -680,7 +680,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
 
         bool connect_heart = false;
 
-        if(connected_heartbeat.empty() == false)
+        if(!connected_heartbeat.empty())
         {
             if(force_connect == 1)
             {
@@ -701,7 +701,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
             connect_heart = true;
         }
 
-        if(connect_heart == true)
+        if(connect_heart)
         {
             heartbeat_sub_sock->connect(endpoint);
             if(force_connect == 0)
@@ -803,7 +803,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
 
         bool connect_pub = false;
 
-        if(connected_pub.empty() == false)
+        if(!connected_pub.empty())
         {
             if(force_connect == 1)
             {
@@ -824,7 +824,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
             connect_pub = true;
         }
 
-        if(connect_pub == true)
+        if(connect_pub)
         {
             set_socket_hwm((int) sub_hwm);
 
@@ -873,7 +873,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
         bool mcast = false;
 
         std::map<std::string, zmq::socket_t *>::iterator pos;
-        if(event_mcast.empty() != true)
+        if(!event_mcast.empty())
         {
             pos = event_mcast.find(ev_name);
             if(pos != event_mcast.end())
@@ -886,7 +886,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
         // Unsubscribe this event from the socket
         //
 
-        if(mcast == false)
+        if(!mcast)
         {
             event_sub_sock->set(zmq::sockopt::unsubscribe, event_name);
 
@@ -935,7 +935,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
         std::string ev_name(event_name);
         std::map<std::string, zmq::socket_t *>::iterator pos;
 
-        if(event_mcast.empty() == false)
+        if(!event_mcast.empty())
         {
             pos = event_mcast.find(ev_name);
             if(pos != event_mcast.end())
@@ -944,7 +944,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
             }
         }
 
-        if(created_sub == false)
+        if(!created_sub)
         {
             //
             // Check that we are not at the socket high limit
@@ -986,7 +986,7 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
             // Store socket in map
             //
 
-            if(event_mcast.insert(make_pair(ev_name, tmp_sock)).second == false)
+            if(!event_mcast.insert(make_pair(ev_name, tmp_sock)).second)
             {
                 delete tmp_sock;
                 print_error_message("Error while inserting pair<event name,mcast socket> in map!");
@@ -1230,7 +1230,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
         }
     }
 
-    if(found == false && db != nullptr)
+    if(!found && db != nullptr)
     {
         get_cs_tango_host(db);
     }
@@ -1260,7 +1260,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
 
             TANGO_LOG_DEBUG << "Trying alternate endpoint: " << endpoint << std::endl;
 
-            if(check_zmq_endpoint(endpoint) == true)
+            if(check_zmq_endpoint(endpoint))
             {
                 TANGO_LOG_DEBUG << "Plain IPv4 address and OK: " << endpoint << std::endl;
                 break;
@@ -1417,7 +1417,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
     // Init (or create) EventChannelStruct
     //
 
-    if(reconnect == true)
+    if(reconnect)
     {
         EventChannelStruct &evt_ch = event_channel_info->second;
         evt_ch.channel_monitor->set_name(event_channel_name.c_str());
@@ -1722,7 +1722,7 @@ void ZmqEventConsumer::connect_event_system(TANGO_UNUSED(const std::string &devi
         char buffer[1024];
         int length = 0;
 
-        if(mcast_transport == true)
+        if(mcast_transport)
         {
             buffer[length] = ZMQ_CONNECT_MCAST_EVENT;
         }
@@ -1756,7 +1756,7 @@ void ZmqEventConsumer::connect_event_system(TANGO_UNUSED(const std::string &devi
         // In case of multicasting, add rate and ivl parameters
         //
 
-        if(mcast_transport == true)
+        if(mcast_transport)
         {
             ::memcpy(&(buffer[length]), &(ev_svr_data->lvalue[3]), sizeof(Tango::DevLong));
             length = length + sizeof(Tango::DevLong);
@@ -1972,7 +1972,7 @@ void ZmqEventConsumer::push_zmq_event(
 
         std::string new_tango_host;
 
-        if(loop == 0 || no_db_dev == true)
+        if(loop == 0 || no_db_dev)
         {
             new_tango_host = ev_name;
         }
@@ -2029,7 +2029,7 @@ void ZmqEventConsumer::push_zmq_event(
             }
             else if(missed_event == 0)
             {
-                if(evt_cb.discarded_event == false)
+                if(!evt_cb.discarded_event)
                 {
                     evt_cb.discarded_event = true;
                     map_modification_lock.readerOut();
@@ -2100,7 +2100,7 @@ void ZmqEventConsumer::push_zmq_event(
             DevicePipe *dev_pipe = nullptr;
             bool no_unmarshalling = false;
 
-            if(evt_cb.fwd_att == true && data_type != ATT_CONF && error == false)
+            if(evt_cb.fwd_att && data_type != ATT_CONF && !error)
             {
                 no_unmarshalling = true;
             }
@@ -2158,9 +2158,9 @@ void ZmqEventConsumer::push_zmq_event(
                 {
                     data64 = true;
                 }
-                else if(data_type == ATT_VALUE && error == false)
+                else if(data_type == ATT_VALUE && !error)
                 {
-                    int disc = shift_zmq420 == true ? ((int *) data_ptr)[0] : ((int *) data_ptr)[1];
+                    int disc = shift_zmq420 ? ((int *) data_ptr)[0] : ((int *) data_ptr)[1];
                     if(endian == 0)
                     {
                         char first_byte = disc & 0xFF;
@@ -2177,7 +2177,7 @@ void ZmqEventConsumer::push_zmq_event(
                 }
 
                 bool buffer_aligned64 = false;
-                if(data64 == true)
+                if(data64)
                 {
                     if((reinterpret_cast<std::uintptr_t>(data_ptr) & 0x7) == 0)
                     {
@@ -2189,7 +2189,7 @@ void ZmqEventConsumer::push_zmq_event(
                 // Shift buffer if required
                 //
 
-                if(data_type == PIPE && data64 == true && buffer_aligned64 == false)
+                if(data_type == PIPE && data64 && !buffer_aligned64)
                 {
                     if(omniORB::trace(30) != 0)
                     {
@@ -2204,7 +2204,7 @@ void ZmqEventConsumer::push_zmq_event(
                     data_ptr = data_ptr + 4;
                     data_size = data_size - 4;
                 }
-                else if(data_type != PIPE && data64 == true && buffer_aligned64 == true && shift_zmq420 == false)
+                else if(data_type != PIPE && data64 && buffer_aligned64 && !shift_zmq420)
                 {
                     if(omniORB::trace(30) != 0)
                     {
@@ -2222,7 +2222,7 @@ void ZmqEventConsumer::push_zmq_event(
                 {
                     if(data_type == PIPE)
                     {
-                        if(shift_zmq420 == false)
+                        if(!shift_zmq420)
                         {
                             data_ptr = data_ptr + (sizeof(CORBA::Long) << 1);
                         }
@@ -2230,7 +2230,7 @@ void ZmqEventConsumer::push_zmq_event(
                     }
                     else
                     {
-                        if(shift_zmq420 == false)
+                        if(!shift_zmq420)
                         {
                             data_ptr = data_ptr + sizeof(CORBA::Long);
                         }
@@ -2245,7 +2245,7 @@ void ZmqEventConsumer::push_zmq_event(
                 // Unmarshall the data
                 //
 
-                if(error == true)
+                if(error)
                 {
                     switch(data_type)
                     {
@@ -2597,7 +2597,7 @@ void ZmqEventConsumer::push_zmq_event(
                 // behavior
                 //
 
-                if(err_missed_event == true)
+                if(err_missed_event)
                 {
                     DevErrorList missed_errors;
                     missed_errors.length(1);
@@ -2611,21 +2611,20 @@ void ZmqEventConsumer::push_zmq_event(
                     // set device proxy to the one corresponding to each callback.
                     DeviceProxy *const device = nullptr;
 
-                    if((ev_attr_conf == false) && (ev_attr_ready == false) && (ev_dev_intr == false) &&
-                       (pipe_event == false))
+                    if((!ev_attr_conf) && (!ev_attr_ready) && (!ev_dev_intr) && (!pipe_event))
                     {
                         missed_event_data = new FwdEventData(device, full_att_name, event_name, nullptr, missed_errors);
                     }
-                    else if(ev_attr_ready == false && ev_dev_intr == false && pipe_event == false)
+                    else if(!ev_attr_ready && !ev_dev_intr && !pipe_event)
                     {
                         missed_conf_event_data =
                             new FwdAttrConfEventData(device, full_att_name, event_name, nullptr, missed_errors);
                     }
-                    else if(ev_dev_intr == false && pipe_event == false)
+                    else if(!ev_dev_intr && !pipe_event)
                     {
                         missed_ready_event_data = new DataReadyEventData(device, nullptr, event_name, missed_errors);
                     }
-                    else if(ev_dev_intr == false)
+                    else if(!ev_dev_intr)
                     {
                         missed_dev_pipe_data =
                             new PipeEventData(device, full_att_name, event_name, nullptr, missed_errors);
@@ -2682,8 +2681,7 @@ void ZmqEventConsumer::push_zmq_event(
                         EventQueue *ev_queue;
                         ev_queue = esspos->ev_queue;
 
-                        if((ev_attr_conf == false) && (ev_attr_ready == false) && (ev_dev_intr == false) &&
-                           (pipe_event == false))
+                        if((!ev_attr_conf) && (!ev_attr_ready) && (!ev_dev_intr) && (!pipe_event))
                         {
                             FwdEventData *event_dat = newFwdEventData(event_data,
                                                                       esspos->device,
@@ -2704,7 +2702,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 try
                                 {
-                                    if(err_missed_event == true)
+                                    if(err_missed_event)
                                     {
                                         callback->push_event(missed_event_data);
                                     }
@@ -2748,7 +2746,7 @@ void ZmqEventConsumer::push_zmq_event(
 
                             else
                             {
-                                if(err_missed_event == true)
+                                if(err_missed_event)
                                 {
                                     EventData *missed_event_data_copy = new FwdEventData;
                                     *missed_event_data_copy = *missed_event_data;
@@ -2762,7 +2760,7 @@ void ZmqEventConsumer::push_zmq_event(
                                 }
                             }
                         }
-                        else if(ev_attr_ready == false && ev_dev_intr == false && pipe_event == false)
+                        else if(!ev_attr_ready && !ev_dev_intr && !pipe_event)
                         {
                             FwdAttrConfEventData *event_data_;
 
@@ -2792,7 +2790,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 try
                                 {
-                                    if(err_missed_event == true)
+                                    if(err_missed_event)
                                     {
                                         callback->push_event(missed_conf_event_data);
                                     }
@@ -2834,7 +2832,7 @@ void ZmqEventConsumer::push_zmq_event(
                             // into the event queue
                             else
                             {
-                                if(err_missed_event == true)
+                                if(err_missed_event)
                                 {
                                     auto *missed_conf_event_data_copy = new FwdAttrConfEventData;
                                     *missed_conf_event_data_copy = *missed_conf_event_data;
@@ -2844,7 +2842,7 @@ void ZmqEventConsumer::push_zmq_event(
                                 ev_queue->insert_event(event_data_);
                             }
                         }
-                        else if(ev_attr_ready == false && pipe_event == false)
+                        else if(!ev_attr_ready && !pipe_event)
                         {
                             auto *event_data_ = new DevIntrChangeEventData(esspos->device,
                                                                            event_name,
@@ -2858,7 +2856,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 try
                                 {
-                                    if(err_missed_event == true)
+                                    if(err_missed_event)
                                     {
                                         callback->push_event(missed_dev_intr_event_data);
                                     }
@@ -2899,7 +2897,7 @@ void ZmqEventConsumer::push_zmq_event(
                             // into the event queue
                             else
                             {
-                                if(err_missed_event == true)
+                                if(err_missed_event)
                                 {
                                     auto *missed_dev_intr_data_copy = new DevIntrChangeEventData;
                                     *missed_dev_intr_data_copy = *missed_dev_intr_event_data;
@@ -2909,7 +2907,7 @@ void ZmqEventConsumer::push_zmq_event(
                                 ev_queue->insert_event(event_data_);
                             }
                         }
-                        else if(ev_attr_ready == false)
+                        else if(!ev_attr_ready)
                         {
                             PipeEventData *event_data_;
 
@@ -2931,7 +2929,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 try
                                 {
-                                    if(err_missed_event == true)
+                                    if(err_missed_event)
                                     {
                                         callback->push_event(missed_dev_pipe_data);
                                     }
@@ -2972,7 +2970,7 @@ void ZmqEventConsumer::push_zmq_event(
                             // into the event queue
                             else
                             {
-                                if(err_missed_event == true)
+                                if(err_missed_event)
                                 {
                                     PipeEventData *missed_dev_pipe_data_copy = new PipeEventData;
                                     *missed_dev_pipe_data_copy = *missed_dev_pipe_data;
@@ -2991,7 +2989,7 @@ void ZmqEventConsumer::push_zmq_event(
                             {
                                 try
                                 {
-                                    if(err_missed_event == true)
+                                    if(err_missed_event)
                                     {
                                         callback->push_event(missed_ready_event_data);
                                     }
@@ -3032,7 +3030,7 @@ void ZmqEventConsumer::push_zmq_event(
                             // into the event queue
                             else
                             {
-                                if(err_missed_event == true)
+                                if(err_missed_event)
                                 {
                                     DataReadyEventData *missed_ready_event_data_copy = new DataReadyEventData;
                                     *missed_ready_event_data_copy = *missed_ready_event_data;
@@ -3066,7 +3064,7 @@ void ZmqEventConsumer::push_zmq_event(
                 delete missed_dev_pipe_data;
 
                 // free the map lock if not already done
-                if(map_lock == true)
+                if(map_lock)
                 {
                     map_modification_lock.readerOut();
                 }
@@ -3089,7 +3087,7 @@ void ZmqEventConsumer::push_zmq_event(
                 delete missed_dev_intr_event_data;
 
                 // free the map lock if not already done
-                if(map_lock == true)
+                if(map_lock)
                 {
                     map_modification_lock.readerOut();
                 }
@@ -3145,13 +3143,13 @@ FwdEventData *ZmqEventConsumer::newFwdEventData(zmq::message_t &event_data,
         if(dev_attr != nullptr || (callback == nullptr && vers >= 4))
         {
             dev_attr_copy = new DeviceAttribute();
-            if(no_unmarshalling == false)
+            if(!no_unmarshalling)
             {
                 dev_attr_copy->deep_copy(*dev_attr);
             }
         }
 
-        if(no_unmarshalling == false)
+        if(!no_unmarshalling)
         {
             return new FwdEventData(device, actual_full_att_name, event_name, dev_attr_copy, errors);
         }
@@ -3162,7 +3160,7 @@ FwdEventData *ZmqEventConsumer::newFwdEventData(zmq::message_t &event_data,
     }
     else
     {
-        if(no_unmarshalling == true)
+        if(no_unmarshalling)
         {
             DeviceAttribute *dummy = new DeviceAttribute();
             return new FwdEventData(device, actual_full_att_name, event_name, dummy, errors, &event_data);
@@ -3516,7 +3514,7 @@ bool ZmqEventConsumer::check_zmq_endpoint(const std::string &endpoint)
 
 void ZmqEventConsumer::get_subscribed_event_ids(DeviceProxy *_dev, std::vector<int> &_ids)
 {
-    if(_ids.empty() == false)
+    if(!_ids.empty())
     {
         _ids.clear();
     }
@@ -4057,7 +4055,7 @@ DelayEvent::DelayEvent(EventConsumer *ec)
             {
                 sender.connect(CTRL_SOCK_ENDPOINT);
 
-                if(eve_con->is_ctrl_sock_bound() == false)
+                if(!eve_con->is_ctrl_sock_bound())
                 {
 #ifndef _TG_WINDOWS_
                     std::this_thread::sleep_for(std::chrono::milliseconds(15));
@@ -4145,7 +4143,7 @@ DelayEvent::DelayEvent(EventConsumer *ec)
 
 DelayEvent::~DelayEvent()
 {
-    if(released == false)
+    if(!released)
     {
         release();
     }

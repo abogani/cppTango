@@ -74,7 +74,7 @@ void DServer::lock_device(const Tango::DevVarLongStringArray *in_data)
 
     TANGO_LOG_DEBUG << "Client identification = " << *cl << std::endl;
 
-    if(cl->client_ident == false)
+    if(!cl->client_ident)
     {
         TANGO_THROW_EXCEPTION(API_ClientTooOld,
                               "Your client cannot lock devices. You are using a too old Tango release. Please, update "
@@ -154,7 +154,7 @@ Tango::DevLong DServer::un_lock_device(const Tango::DevVarLongStringArray *in_da
 
     TANGO_LOG_DEBUG << "Client identification = " << *cl << std::endl;
 
-    if((cl->client_ident == false) && (in_data->lvalue[0] == 0))
+    if((!cl->client_ident) && (in_data->lvalue[0] == 0))
     {
         TANGO_THROW_EXCEPTION(API_ClientTooOld,
                               "Your client cannot un-lock devices. You are using a too old Tango release. Please, "
@@ -226,7 +226,7 @@ void DServer::re_lock_devices(const Tango::DevVarStringArray *dev_name_list)
 
     TANGO_LOG_DEBUG << "Client identification = " << *cl << std::endl;
 
-    if(cl->client_ident == false)
+    if(!cl->client_ident)
     {
         TANGO_THROW_EXCEPTION(API_ClientTooOld,
                               "Your client cannot re_lock devices. You are using a too old Tango release. Please, "

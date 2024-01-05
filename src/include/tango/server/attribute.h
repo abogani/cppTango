@@ -763,7 +763,7 @@ class Attribute
     {
         change_event_implmented = implemented;
         check_change_event_criteria = detect;
-        if(detect == false)
+        if(!detect)
         {
             prev_change_event.err = false;
             prev_change_event.quality = Tango::ATTR_VALID;
@@ -832,7 +832,7 @@ class Attribute
     {
         archive_event_implmented = implemented;
         check_archive_event_criteria = detect;
-        if(detect == false)
+        if(!detect)
         {
             prev_archive_event.err = false;
             prev_archive_event.quality = Tango::ATTR_VALID;
@@ -2092,7 +2092,7 @@ inline void Attribute::throw_startup_exception(const char *origin)
             }
             err_msg += "\nHint : Check also class level attribute properties";
         }
-        else if(event_exceptions.empty() == false)
+        else if(!event_exceptions.empty())
         {
             if(opt_exceptions.size() == 1)
             {

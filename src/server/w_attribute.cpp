@@ -131,7 +131,7 @@ WAttribute::WAttribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, con
     set_memorized(tmp_attr.get_memorized());
     set_memorized_init(tmp_attr.get_memorized_init());
 
-    if(is_memorized() == true)
+    if(is_memorized())
     {
         try
         {
@@ -889,7 +889,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
     switch(data_type)
     {
     case Tango::DEV_SHORT:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> sh_val;
@@ -940,7 +940,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_LONG:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> lg_val;
@@ -991,7 +991,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_LONG64:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> lg64_val;
@@ -1042,7 +1042,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_DOUBLE:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> db_val;
@@ -1093,7 +1093,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_FLOAT:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> fl_val;
@@ -1144,7 +1144,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_USHORT:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> ush_val;
@@ -1195,7 +1195,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_UCHAR:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> uch_val;
@@ -1246,7 +1246,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_ULONG:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> ulg_val;
@@ -1297,7 +1297,7 @@ bool WAttribute::mem_value_below_above(MinMaxValueCheck check_type, std::string 
         break;
 
     case Tango::DEV_ULONG64:
-        if(svr_starting == true)
+        if(svr_starting)
         {
             ss << mem_value;
             ss >> ulg64_val;

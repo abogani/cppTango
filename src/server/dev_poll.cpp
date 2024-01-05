@@ -68,7 +68,7 @@ void DeviceImpl::init_poll_no_db()
             ss << poll_period;
             polled_attr_list.push_back(ss.str());
 
-            if(old_set == false)
+            if(!old_set)
             {
                 set_poll_old_factor(DEFAULT_POLL_OLD_FACTOR);
                 old_set = true;
@@ -93,7 +93,7 @@ void DeviceImpl::init_poll_no_db()
             ss << poll_period;
             polled_cmd_list.push_back(ss.str());
 
-            if(old_set == false)
+            if(!old_set)
             {
                 set_poll_old_factor(DEFAULT_POLL_OLD_FACTOR);
                 old_set = true;
@@ -138,14 +138,7 @@ bool DeviceImpl::is_attribute_polled(const std::string &att_name)
             // mark the attribute as not polled! No events can be send by the polling thread!
             //
 
-            if(att_list[i + 1] == "0")
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return att_list[i + 1] != "0";
         }
     }
 
@@ -212,14 +205,7 @@ bool DeviceImpl::is_command_polled(const std::string &cmd_name)
             // mark the attribute as not polled! No events can be send by the polling thread!
             //
 
-            if(cmd_list[i + 1] == "0")
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return cmd_list[i + 1] != "0";
         }
     }
 
@@ -296,7 +282,7 @@ int DeviceImpl::get_attribute_poll_period(const std::string &att_name)
     // now check wether a polling period is set (for example by pogo)
     //
 
-    if(found == false)
+    if(!found)
     {
         Tango::Attribute &the_att = dev_attr->get_attr_by_name(att_name.c_str());
         per = the_att.get_polling_period();
@@ -351,7 +337,7 @@ int DeviceImpl::get_command_poll_period(const std::string &cmd_name)
     // now check wether a polling period is set (for example by pogo)
     //
 
-    if(found == false)
+    if(!found)
     {
         Tango::Command &the_cmd = device_class->get_cmd_by_name(cmd_name);
         per = the_cmd.get_polling_period();
@@ -420,14 +406,14 @@ void DeviceImpl::poll_object(const std::string &obj_name, int period, PollObjTyp
 {
     Tango::Util *tg = Tango::Util::instance();
 
-    if(tg->is_svr_shutting_down() == true)
+    if(tg->is_svr_shutting_down())
     {
         TANGO_THROW_EXCEPTION(
             API_NotSupported,
             "It's not supported to start polling on any device cmd/attr while the device is shutting down");
     }
 
-    if(tg->is_svr_starting() == true)
+    if(tg->is_svr_starting())
     {
         //
         // If server is starting, we rely on the Util::polling_configure method to effectively start the polling
@@ -490,7 +476,7 @@ void DeviceImpl::poll_object(const std::string &obj_name, int period, PollObjTyp
             }
         }
 
-        if(found == false)
+        if(!found)
         {
             std::stringstream ss;
             ss << -period;
@@ -538,7 +524,7 @@ void DeviceImpl::poll_object(const std::string &obj_name, int period, PollObjTyp
 
         if(type == POLL_CMD)
         {
-            if(is_command_polled(obj_name) == true)
+            if(is_command_polled(obj_name))
             {
                 if(get_command_poll_period(obj_name) != period)
                 {
@@ -552,7 +538,7 @@ void DeviceImpl::poll_object(const std::string &obj_name, int period, PollObjTyp
         }
         else
         {
-            if(is_attribute_polled(obj_name) == true)
+            if(is_attribute_polled(obj_name))
             {
                 if(get_attribute_poll_period(obj_name) != period)
                 {
@@ -625,7 +611,7 @@ void DeviceImpl::stop_poll_object(const std::string &obj_name, PollObjType type)
 {
     Tango::Util *tg = Tango::Util::instance();
 
-    if(tg->is_svr_starting() == true)
+    if(tg->is_svr_starting())
     {
         //
         // Just to be sure that the attribute/command exist
@@ -674,7 +660,7 @@ void DeviceImpl::stop_poll_object(const std::string &obj_name, PollObjType type)
     }
     else
     {
-        if(tg->is_device_restarting(device_name) == false)
+        if(!tg->is_device_restarting(device_name))
         {
             //
             // Ask the admin device to do the work (simulating the classical way to tune polling)

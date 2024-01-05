@@ -81,7 +81,7 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
         int db_num;
         ApiUtil *au = ApiUtil::instance();
 
-        if(get_from_env_var() == true)
+        if(get_from_env_var())
         {
             db_num = au->get_db_ind();
         }
@@ -101,7 +101,7 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
 
         std::string d_name = dev_name();
 
-        if(db->is_command_allowed(d_name, command) == false)
+        if(!db->is_command_allowed(d_name, command))
         {
             DevErrorList &e = db->get_access_except_errors();
             if(e.length() != 0)
@@ -160,7 +160,7 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
 
     long id = 0;
 
-    if(faf == false)
+    if(!faf)
     {
         id = add_asyn_request(request, TgRequest::CMD_INOUT);
         request->send_deferred();
@@ -233,7 +233,7 @@ DeviceData Connection::command_inout_reply(long id)
     // Reply arrived ? Throw exception if not yet arrived
     //
 
-    if(req.request->poll_response() == false)
+    if(!req.request->poll_response())
     {
         TangoSys_OMemStream desc;
         desc << "Device " << dev_name();
@@ -307,7 +307,7 @@ DeviceData Connection::command_inout_reply(long id)
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
                 bool need_reconnect = false;
-                if(ext->has_alt_adr == true)
+                if(ext->has_alt_adr)
                 {
                     try
                     {
@@ -330,7 +330,7 @@ DeviceData Connection::command_inout_reply(long id)
                 char cb_excep_mess[256];
                 Tango::Except::print_CORBA_SystemException_r(tra, cb_excep_mess);
 
-                if(need_reconnect == false)
+                if(!need_reconnect)
                 {
                     CORBA::NVList_ptr req_arg = req.request->arguments();
                     const char *cmd = nullptr;
@@ -500,7 +500,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
 
     if(call_timeout == 0)
     {
-        if(req.request->poll_response() == false)
+        if(!req.request->poll_response())
         {
             try
             {
@@ -518,7 +518,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
 
         for(i = 0; i < nb; i++)
         {
-            if(req.request->poll_response() == true)
+            if(req.request->poll_response())
             {
                 break;
             }
@@ -528,7 +528,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
 
         if(i == nb)
         {
-            if(req.request->poll_response() == false)
+            if(!req.request->poll_response())
             {
                 TangoSys_OMemStream desc;
                 desc << "Device " << dev_name();
@@ -606,7 +606,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
             if(tra->minor() == omni::TRANSIENT_CallTimedout)
             {
                 bool need_reconnect = false;
-                if(ext->has_alt_adr == true)
+                if(ext->has_alt_adr)
                 {
                     try
                     {
@@ -629,7 +629,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
                 char cb_excep_mess[256];
                 Tango::Except::print_CORBA_SystemException_r(tra, cb_excep_mess);
 
-                if(need_reconnect == false)
+                if(!need_reconnect)
                 {
                     CORBA::NVList_ptr req_arg = req.request->arguments();
                     const char *cmd = nullptr;
@@ -897,7 +897,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
     // Reply arrived ? Throw exception is not yet arrived
     //
 
-    if(req.request->poll_response() == false)
+    if(!req.request->poll_response())
     {
         TangoSys_OMemStream desc;
         desc << "Device " << dev_name();
@@ -1102,7 +1102,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
     // Reply arrived ? Throw exception is not yet arrived
     //
 
-    if(req.request->poll_response() == false)
+    if(!req.request->poll_response())
     {
         TangoSys_OMemStream desc;
         desc << "Device " << dev_name();
@@ -1305,7 +1305,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
 
     if(call_timeout == 0)
     {
-        if(req.request->poll_response() == false)
+        if(!req.request->poll_response())
         {
             try
             {
@@ -1323,7 +1323,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
 
         for(i = 0; i < nb; i++)
         {
-            if(req.request->poll_response() == true)
+            if(req.request->poll_response())
             {
                 break;
             }
@@ -1333,7 +1333,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
 
         if(i == nb)
         {
-            if(req.request->poll_response() == false)
+            if(!req.request->poll_response())
             {
                 TangoSys_OMemStream desc;
                 desc << "Device " << device_name;
@@ -1545,7 +1545,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 
     if(call_timeout == 0)
     {
-        if(req.request->poll_response() == false)
+        if(!req.request->poll_response())
         {
             try
             {
@@ -1563,7 +1563,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 
         for(i = 0; i < nb; i++)
         {
-            if(req.request->poll_response() == true)
+            if(req.request->poll_response())
             {
                 break;
             }
@@ -1573,7 +1573,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 
         if(i == nb)
         {
-            if(req.request->poll_response() == false)
+            if(!req.request->poll_response())
             {
                 TangoSys_OMemStream desc;
                 desc << "Device " << device_name;
@@ -1759,7 +1759,7 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req, long id, read_attr_ty
         if(tra->minor() == omni::TRANSIENT_CallTimedout)
         {
             bool need_reconnect = false;
-            if(ext->has_alt_adr == true)
+            if(ext->has_alt_adr)
             {
                 try
                 {
@@ -1792,7 +1792,7 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req, long id, read_attr_ty
                 meth = "DeviceProxy::read_attributes_reply()";
             }
 
-            if(need_reconnect == false)
+            if(!need_reconnect)
             {
                 CORBA::NVList_ptr req_arg = req->arguments();
                 const Tango::DevVarStringArray *names;
@@ -2159,7 +2159,7 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
 
     if(call_timeout == 0)
     {
-        if(req.request->poll_response() == false)
+        if(!req.request->poll_response())
         {
             try
             {
@@ -2177,7 +2177,7 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
 
         for(i = 0; i < nb; i++)
         {
-            if(req.request->poll_response() == true)
+            if(req.request->poll_response())
             {
                 break;
             }
@@ -2187,7 +2187,7 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
 
         if(i == nb)
         {
-            if(req.request->poll_response() == false)
+            if(!req.request->poll_response())
             {
                 TangoSys_OMemStream desc;
                 desc << "Device " << device_name;
@@ -2287,7 +2287,7 @@ void DeviceProxy::write_attributes_reply(long id)
     // Reply arrived ? Throw exception is not yet arrived
     //
 
-    if(req.request->poll_response() == false)
+    if(!req.request->poll_response())
     {
         TangoSys_OMemStream desc;
         desc << "Device " << dev_name();
@@ -2381,7 +2381,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
         if(tra->minor() == omni::TRANSIENT_CallTimedout)
         {
             bool need_reconnect = false;
-            if(ext->has_alt_adr == true)
+            if(ext->has_alt_adr)
             {
                 try
                 {
@@ -2404,7 +2404,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
             char cb_excep_mess[256];
             Tango::Except::print_CORBA_SystemException_r(tra, cb_excep_mess);
 
-            if(need_reconnect == false)
+            if(!need_reconnect)
             {
                 CORBA::NVList_ptr req_arg = req->arguments();
                 const Tango::AttributeValueList *att;
@@ -2414,14 +2414,14 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
 
                 if(version < 4)
                 {
-                    if((*(nv->value()) >>= att) == true)
+                    if((*(nv->value()) >>= att)
                     {
                         nb_att = att->length();
                     }
                 }
                 else
                 {
-                    if((*(nv->value()) >>= att_4) == true)
+                    if((*(nv->value()) >>= att_4)
                     {
                         nb_att = att_4->length();
                     }
@@ -2479,7 +2479,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
         }
         else
         {
-            if((unk_ex->exception() >>= multi_serv_ex) == true)
+            if((unk_ex->exception() >>= multi_serv_ex)
             {
                 m_ex = *multi_serv_ex;
             }
@@ -2498,14 +2498,14 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
 
         if(version < 4)
         {
-            if((*(nv->value()) >>= att) == true)
+            if((*(nv->value()) >>= att)
             {
                 nb_att = att->length();
             }
         }
         else
         {
-            if((*(nv->value()) >>= att_4) == true)
+            if((*(nv->value()) >>= att_4)
             {
                 nb_att = att_4->length();
             }
@@ -2581,14 +2581,14 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
         CORBA::NamedValue_ptr nv = req_arg->item(0);
         if(version < 4)
         {
-            if((*(nv->value()) >>= att) == true)
+            if((*(nv->value()) >>= att)
             {
                 nb_att = att->length();
             }
         }
         else
         {
-            if((*(nv->value()) >>= att_4) == true)
+            if((*(nv->value()) >>= att_4)
             {
                 nb_att = att_4->length();
             }
@@ -2923,7 +2923,7 @@ void Connection::cancel_all_polling_asynch_request()
 void Connection::omni420_timeout(int id, char *cb_excep_mess)
 {
     bool need_reconnect = false;
-    if(ext->has_alt_adr == true)
+    if(ext->has_alt_adr)
     {
         try
         {
@@ -2946,7 +2946,7 @@ void Connection::omni420_timeout(int id, char *cb_excep_mess)
     std::stringstream ss;
     remove_asyn_request(id);
 
-    if(need_reconnect == false)
+    if(!need_reconnect)
     {
         ss << "Timeout (" << timeout << " mS) exceeded on device " << dev_name();
         TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, cb_excep_mess, API_DeviceTimedOut, ss.str());
@@ -3002,7 +3002,7 @@ DeviceData Connection::omni420_except(int id, char *cb_excep_mess, TgRequest &re
 void DeviceProxy::omni420_timeout_attr(int id, char *cb_excep_mess, read_attr_type type)
 {
     bool need_reconnect = false;
-    if(ext->has_alt_adr == true)
+    if(ext->has_alt_adr)
     {
         try
         {
@@ -3035,7 +3035,7 @@ void DeviceProxy::omni420_timeout_attr(int id, char *cb_excep_mess, read_attr_ty
         meth = "DeviceProxy::read_attributes_reply()";
     }
 
-    if(need_reconnect == false)
+    if(!need_reconnect)
     {
         ss << "Timeout (" << timeout << " mS) exceeded on device " << dev_name();
         TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, cb_excep_mess, API_DeviceTimedOut, ss.str());
@@ -3086,7 +3086,7 @@ void DeviceProxy::omni420_except_attr(int id, char *cb_excep_mess, read_attr_typ
 void DeviceProxy::omni420_timeout_wattr(int id, char *cb_excep_mess)
 {
     bool need_reconnect = false;
-    if(ext->has_alt_adr == true)
+    if(ext->has_alt_adr)
     {
         try
         {
@@ -3109,7 +3109,7 @@ void DeviceProxy::omni420_timeout_wattr(int id, char *cb_excep_mess)
     std::stringstream ss;
     remove_asyn_request(id);
 
-    if(need_reconnect == false)
+    if(!need_reconnect)
     {
         ss << "Timeout (" << timeout << " mS) exceeded on device " << dev_name();
         TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, cb_excep_mess, API_DeviceTimedOut, ss.str());

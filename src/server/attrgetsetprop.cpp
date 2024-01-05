@@ -414,7 +414,7 @@ void Attribute::add_config_5_specific(AttributeConfig_5 &conf)
     // Root attribute
     //
 
-    if(is_fwd_att() == true)
+    if(is_fwd_att())
     {
         FwdAttribute *fwd = static_cast<FwdAttribute *>(this);
         std::string str(fwd->get_fwd_dev_name() + '/' + fwd->get_fwd_att_name());
@@ -445,7 +445,7 @@ void Attribute::add_config_5_specific(AttributeConfig_5 &conf)
     // Enum labels
     //
 
-    if(enum_labels.empty() == false)
+    if(!enum_labels.empty())
     {
         conf.enum_labels.length(enum_labels.size());
         for(size_t loop = 0; loop < enum_labels.size(); loop++)
@@ -487,7 +487,7 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
     // Check if the caller try to change "hard coded" properties. Throw exception in case of
     //
 
-    if(is_fwd_att() == true)
+    if(is_fwd_att())
     {
         set_hard_coded_properties(conf);
     }
@@ -549,7 +549,7 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
     bool alrm_set;
     set_one_alarm_prop(
         "min_alarm", conf.min_alarm, min_alarm_str, min_alarm, v_db, def_user_prop, def_class_prop, alrm_set);
-    if(alrm_set == false)
+    if(!alrm_set)
     {
         alarm_conf.reset(min_level);
     }
@@ -561,7 +561,7 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
 
     set_one_alarm_prop(
         "max_alarm", conf.max_alarm, max_alarm_str, max_alarm, v_db, def_user_prop, def_class_prop, alrm_set);
-    if(alrm_set == false)
+    if(!alrm_set)
     {
         alarm_conf.reset(max_level);
     }
@@ -610,7 +610,7 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
     // Display level is available only in AttributeConfig_3
     //
 
-    if(is_fwd_att() == true)
+    if(is_fwd_att())
     {
         set_hard_coded_properties(conf);
     }
@@ -645,18 +645,17 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
     Tango::DeviceClass *dev_class = get_att_device_class(dev_name);
     Tango::Attr *att_ptr;
 
-    if(state_or_status == false)
+    if(!state_or_status)
     {
         Tango::MultiClassAttribute *mca = dev_class->get_class_attr();
         att_ptr = &(mca->get_attr(name));
     }
 
     std::vector<AttrProperty> &def_user_prop =
-        state_or_status == false ? att_ptr->get_user_default_properties() : fake_attr_prop;
-    std::vector<AttrProperty> &def_class_prop =
-        state_or_status == false ? att_ptr->get_class_properties() : fake_attr_prop;
+        !state_or_status ? att_ptr->get_user_default_properties() : fake_attr_prop;
+    std::vector<AttrProperty> &def_class_prop = !state_or_status ? att_ptr->get_class_properties() : fake_attr_prop;
 
-    if((state_or_status == false) &&
+    if((!state_or_status) &&
        ((data_type != Tango::DEV_STRING) && (data_type != Tango::DEV_BOOLEAN) && (data_type != Tango::DEV_STATE)))
     {
         //
@@ -673,7 +672,7 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
                            def_user_prop,
                            def_class_prop,
                            alrm_set);
-        if(alrm_set == false)
+        if(!alrm_set)
         {
             alarm_conf.reset(min_warn);
         }
@@ -691,7 +690,7 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
                            def_user_prop,
                            def_class_prop,
                            alrm_set);
-        if(alrm_set == false)
+        if(!alrm_set)
         {
             alarm_conf.reset(max_warn);
         }
@@ -870,9 +869,9 @@ void Attribute::set_one_str_prop(const char *prop_name,
             att_conf = lib_def;
         }
 
-        if(old_val != att_conf || fmt_changed == true)
+        if(old_val != att_conf || fmt_changed)
         {
-            if(user_defaults == true || class_defaults == true)
+            if(user_defaults || class_defaults)
             {
                 apd.dba = UPD;
                 apd.db_value = att_conf;
@@ -895,7 +894,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
         std::string old_val = att_conf;
         bool fmt_changed = false;
 
-        if(user_defaults == true)
+        if(user_defaults)
         {
             att_conf = usr_def_val;
         }
@@ -915,9 +914,9 @@ void Attribute::set_one_str_prop(const char *prop_name,
             }
         }
 
-        if(old_val != att_conf || fmt_changed == true)
+        if(old_val != att_conf || fmt_changed)
         {
-            if(class_defaults == true)
+            if(class_defaults)
             {
                 apd.dba = UPD;
                 apd.db_value = att_conf;
@@ -939,11 +938,11 @@ void Attribute::set_one_str_prop(const char *prop_name,
         std::string old_val = att_conf;
         bool fmt_changed = false;
 
-        if(class_defaults == true)
+        if(class_defaults)
         {
             att_conf = class_def_val;
         }
-        else if(user_defaults == true)
+        else if(user_defaults)
         {
             att_conf = usr_def_val;
         }
@@ -963,7 +962,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
             }
         }
 
-        if(old_val != att_conf || fmt_changed == true)
+        if(old_val != att_conf || fmt_changed)
         {
             apd.dba = DEL;
             v_db.push_back(apd);
@@ -978,7 +977,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
         std::string old_val = att_conf;
         att_conf = conf_val;
 
-        if(user_defaults == true && att_conf == usr_def_val)
+        if(user_defaults && att_conf == usr_def_val)
         {
             //
             // Property value is the same than the user default value
@@ -986,7 +985,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
 
             if(old_val != att_conf)
             {
-                if(class_defaults == true)
+                if(class_defaults)
                 {
                     apd.dba = UPD;
                     apd.db_value = att_conf;
@@ -999,7 +998,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
                 }
             }
         }
-        else if(class_defaults == true && att_conf == class_def_val)
+        else if(class_defaults && att_conf == class_def_val)
         {
             //
             // Property value is the same than the class default value
@@ -1011,7 +1010,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
                 v_db.push_back(apd);
             }
         }
-        else if(class_defaults == false && TG_strcasecmp(att_conf.c_str(), lib_def) == 0)
+        else if(!class_defaults && TG_strcasecmp(att_conf.c_str(), lib_def) == 0)
         {
             //
             // Property value is the same than the lib default value
@@ -1023,7 +1022,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
                 v_db.push_back(apd);
             }
         }
-        else if(class_defaults == false && strcmp(prop_name, "label") == 0)
+        else if(!class_defaults && strcmp(prop_name, "label") == 0)
         {
             //
             // Property Label: Property value is the same than the lib default value
@@ -1044,7 +1043,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
                 }
             }
         }
-        else if(class_defaults == false && strcmp(prop_name, "format") == 0)
+        else if(!class_defaults && strcmp(prop_name, "format") == 0)
         {
             //
             // Property Format: Property value is the same than the lib default value
@@ -1052,7 +1051,7 @@ void Attribute::set_one_str_prop(const char *prop_name,
 
             if(old_val != att_conf)
             {
-                if(is_format_notspec(conf_val) == true)
+                if(is_format_notspec(conf_val))
                 {
                     apd.dba = DEL;
                     v_db.push_back(apd);
@@ -1167,7 +1166,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
 
         if(old_val != att_conf_str)
         {
-            if(user_defaults == true || class_defaults == true)
+            if(user_defaults || class_defaults)
             {
                 store_in_db = true;
                 avns = true;
@@ -1187,7 +1186,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
 
         std::string old_val = att_conf_str;
 
-        if(user_defaults == false)
+        if(!user_defaults)
         {
             att_conf_str = AlrmValueNotSpec;
         }
@@ -1202,7 +1201,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
 
         if(old_val != att_conf_str)
         {
-            if(class_defaults == true)
+            if(class_defaults)
             {
                 store_in_db = true;
                 if(user_defaults)
@@ -1226,9 +1225,9 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
 
         std::string old_val = att_conf_str;
 
-        if(class_defaults == false)
+        if(!class_defaults)
         {
-            if(user_defaults == false)
+            if(!user_defaults)
             {
                 att_conf_str = AlrmValueNotSpec;
             }
@@ -1273,7 +1272,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
             // Equal to user default?
             //
 
-            if(user_defaults == true)
+            if(user_defaults)
             {
                 std::stringstream ss1;
                 ss1 << usr_def_val;
@@ -1366,7 +1365,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
             // Equal to class default?
             //
 
-            if(class_defaults == true)
+            if(class_defaults)
             {
                 std::stringstream ss1;
                 ss1 << class_def_val;
@@ -1455,9 +1454,9 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
                 }
             }
 
-            if(user_defaults == true && equal_user_def == true)
+            if(user_defaults && equal_user_def)
             {
-                if(class_defaults == true)
+                if(class_defaults)
                 {
                     store_in_db = true;
                     user_val = true;
@@ -1467,7 +1466,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
                     del_from_db = true;
                 }
             }
-            else if(class_defaults == true && equal_class_def == true)
+            else if(class_defaults && equal_class_def)
             {
                 del_from_db = true;
             }
@@ -1503,14 +1502,14 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
             std::string mem_value;
             if(strcmp(prop_name, "min_value") == 0)
             {
-                if((w_att->is_memorized() == true) && (w_att->mem_value_below_above(MIN, mem_value) == true))
+                if((w_att->is_memorized()) && (w_att->mem_value_below_above(MIN, mem_value)))
                 {
                     throw_min_max_value(d_name, mem_value, MIN);
                 }
             }
             else if(strcmp(prop_name, "max_value") == 0)
             {
-                if((w_att->is_memorized() == true) && (w_att->mem_value_below_above(MAX, mem_value) == true))
+                if((w_att->is_memorized()) && (w_att->mem_value_below_above(MAX, mem_value)))
                 {
                     throw_min_max_value(d_name, mem_value, MAX);
                 }
@@ -1551,14 +1550,14 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
     // Get info to be stored in DB
     //
 
-    if(store_in_db == true)
+    if(store_in_db)
     {
         std::string tmp = conf_val.in();
-        if(user_val == true)
+        if(user_val)
         {
             tmp = usr_def_val.c_str();
         }
-        else if(avns == true)
+        else if(avns)
         {
             tmp = AlrmValueNotSpec;
         }
@@ -1627,7 +1626,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
         v_db.push_back(apd);
     }
 
-    if(del_from_db == true)
+    if(del_from_db)
     {
         apd.dba = DEL;
         v_db.push_back(apd);
@@ -1738,7 +1737,7 @@ void Attribute::set_rds_prop(const AttributeAlarm &att_alarm,
         break;
     }
 
-    if(old_delta_t != delta_t || delta_val_changed == true)
+    if(old_delta_t != delta_t || delta_val_changed)
     {
         set_rds_prop_db(att_alarm, v_db, def_user_prop, def_class_prop);
     }
@@ -1790,10 +1789,10 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         // set class default if defined, user default value if defined, otherwise use the library defaults
 
         class_defaults = prop_in_list("delta_val", delta_val_class_def, nb_class, def_class_prop);
-        if(class_defaults == false)
+        if(!class_defaults)
         {
             usr_defaults = prop_in_list("delta_val", delta_val_usr_def, nb_user, def_user_prop);
-            if(usr_defaults == false)
+            if(!usr_defaults)
             {
                 delta_val_str = AlrmValueNotSpec;
             }
@@ -1820,7 +1819,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         // set user default value if defined, otherwise use the library defaults
 
         usr_defaults = prop_in_list("delta_val", delta_val_usr_def, nb_user, def_user_prop);
-        if(usr_defaults == false)
+        if(!usr_defaults)
         {
             delta_val_str = AlrmValueNotSpec;
         }
@@ -1905,10 +1904,10 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         // set class default if defined, user default value if defined, otherwise use the library defaults
 
         class_defaults = prop_in_list("delta_t", delta_t_class_def, nb_class, def_class_prop);
-        if(class_defaults == false)
+        if(!class_defaults)
         {
             usr_defaults = prop_in_list("delta_t", delta_t_usr_def, nb_user, def_user_prop);
-            if(usr_defaults == false)
+            if(!usr_defaults)
             {
                 delta_t_str = "0";
             }
@@ -1935,7 +1934,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         // set user default value if defined, otherwise use the library defaults
 
         usr_defaults = prop_in_list("delta_t", delta_t_usr_def, nb_user, def_user_prop);
-        if(usr_defaults == false)
+        if(!usr_defaults)
         {
             delta_t_str = "0";
         }
@@ -2472,13 +2471,13 @@ void Attribute::set_one_event_prop(const char *prop_name,
 
     if(rel_change_class_def)
     {
-        if(rel_change_set_class_def[0] == true)
+        if(rel_change_set_class_def[0])
         {
             prop_val[0] = rel_change_class[0];
         }
         else if(rel_change_usr_def)
         {
-            if(rel_change_set_usr_def[0] == true)
+            if(rel_change_set_usr_def[0])
             {
                 prop_val[0] = rel_change_usr[0];
             }
@@ -2492,13 +2491,13 @@ void Attribute::set_one_event_prop(const char *prop_name,
             prop_val[0] = rel_change_tmp[0];
         }
 
-        if(rel_change_set_class_def[1] == true)
+        if(rel_change_set_class_def[1])
         {
             prop_val[1] = rel_change_class[1];
         }
         else if(rel_change_usr_def)
         {
-            if(rel_change_set_usr_def[1] == true)
+            if(rel_change_set_usr_def[1])
             {
                 prop_val[1] = rel_change_usr[1];
             }
@@ -2537,7 +2536,7 @@ void Attribute::set_one_event_prop(const char *prop_name,
         {
             if(prop_val[0] == INT_MAX)
             {
-                if(rel_change_usr_def == true || rel_change_class_def == true)
+                if(rel_change_usr_def || rel_change_class_def)
                 {
                     apd.dba = UPD_FROM_DB;
                     apd.db_value_db.clear();
@@ -2550,9 +2549,9 @@ void Attribute::set_one_event_prop(const char *prop_name,
                     v_db.push_back(apd);
                 }
             }
-            else if(rel_change_usr_def == true && prop_val[0] == fabs(rel_change_usr[0]))
+            else if(rel_change_usr_def && prop_val[0] == fabs(rel_change_usr[0]))
             {
-                if(rel_change_class_def == true)
+                if(rel_change_class_def)
                 {
                     apd.dba = UPD_FROM_DB;
                     apd.db_value_db.clear();
@@ -2565,7 +2564,7 @@ void Attribute::set_one_event_prop(const char *prop_name,
                     v_db.push_back(apd);
                 }
             }
-            else if(rel_change_class_def == true && prop_val[0] == fabs(rel_change_class[0]))
+            else if(rel_change_class_def && prop_val[0] == fabs(rel_change_class[0]))
             {
                 apd.dba = DEL;
                 v_db.push_back(apd);
@@ -2648,11 +2647,11 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
             TANGO_THROW_EXCEPTION(API_AttrOptProp, ss.str());
         }
 
-        if(from_ds == false)
+        if(!from_ds)
         {
-            if(!(conf.enum_labels.length() == 1 &&
-                 (TG_strcasecmp(conf.enum_labels[0], AlrmValueNotSpec) == 0 ||
-                  TG_strcasecmp(conf.enum_labels[0], NotANumber) == 0 || strlen(conf.enum_labels[0]) == 0)))
+            if(conf.enum_labels.length() != 1 ||
+               (TG_strcasecmp(conf.enum_labels[0], AlrmValueNotSpec) != 0 &&
+                TG_strcasecmp(conf.enum_labels[0], NotANumber) != 0 && strlen(conf.enum_labels[0]) != 0))
             {
                 if(conf.enum_labels.length() != enum_labels.size())
                 {
@@ -2709,7 +2708,7 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
         {
             // set user default value if defined, otherwise use the library defaults
 
-            if(usr_defaults == false)
+            if(!usr_defaults)
             {
                 std::stringstream ss;
                 ss << "Device " << dev_name << "-> Attribute : " << name;
@@ -2731,9 +2730,9 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
         {
             // set class default if defined, user default value if defined, otherwise use the library defaults
 
-            if(class_defaults == false)
+            if(!class_defaults)
             {
-                if(usr_defaults == false)
+                if(!usr_defaults)
                 {
                     std::stringstream ss;
                     ss << "Device " << dev_name << "-> Attribute : " << name;
@@ -2779,9 +2778,9 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
 
             if(enum_labels != old_labels)
             {
-                if(usr_defaults == true && labs == enum_labels_usr_def)
+                if(usr_defaults && labs == enum_labels_usr_def)
                 {
-                    if(class_defaults == true)
+                    if(class_defaults)
                     {
                         apd.dba = UPD_FROM_VECT_STR;
                         apd.db_value_v_str = enum_labels;
@@ -2792,7 +2791,7 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
                     }
                     v_db.push_back(apd);
                 }
-                else if(class_defaults == true && labs == enum_labels_class_def)
+                else if(class_defaults && labs == enum_labels_class_def)
                 {
                     apd.dba = DEL;
                     v_db.push_back(apd);
@@ -3167,7 +3166,7 @@ void Attribute::db_access(const Attribute::CheckOneStrProp &cosp, const std::str
         //
 
         bool retry = true;
-        while(retry == true)
+        while(retry)
         {
             try
             {
@@ -3196,7 +3195,7 @@ void Attribute::db_access(const Attribute::CheckOneStrProp &cosp, const std::str
         //
 
         bool retry = true;
-        while(retry == true)
+        while(retry)
         {
             try
             {
@@ -3522,9 +3521,9 @@ void Attribute::set_one_event_period(const char *prop_name,
     }
     else if(TG_strcasecmp(conf_val, NotANumber) == 0)
     {
-        if(class_defaults == false)
+        if(!class_defaults)
         {
-            if(user_defaults == false)
+            if(!user_defaults)
             {
                 prop_val = prop_def;
             }
@@ -3557,7 +3556,7 @@ void Attribute::set_one_event_period(const char *prop_name,
     else if(strlen(conf_val) == 0)
     {
         // set user default value if defined, otherwise use the library defaults
-        if(user_defaults == false)
+        if(!user_defaults)
         {
             prop_val = prop_def;
         }
@@ -3624,7 +3623,7 @@ void Attribute::set_one_event_period(const char *prop_name,
                 }
             }
             if((TG_strcasecmp(conf_val, NotANumber) == 0) || (strcmp(conf_val.in(), class_def_val.c_str()) == 0) ||
-               (input_equal_def == true))
+               (input_equal_def))
             {
                 store_in_db = false;
             }
@@ -3649,7 +3648,7 @@ void Attribute::set_one_event_period(const char *prop_name,
                 }
             }
             if((TG_strcasecmp(conf_val, NotANumber) == 0) || (strcmp(conf_val.in(), usr_def_val.c_str()) == 0) ||
-               (strlen(conf_val) == 0) || (input_equal_def == true))
+               (strlen(conf_val) == 0) || (input_equal_def))
             {
                 store_in_db = false;
             }
@@ -3670,7 +3669,7 @@ void Attribute::set_one_event_period(const char *prop_name,
             }
             if((TG_strcasecmp(conf_val, AlrmValueNotSpec) == 0) ||
                (TG_strcasecmp(conf_val, def_event_period.str().c_str()) == 0) ||
-               (TG_strcasecmp(conf_val, NotANumber) == 0) || (strlen(conf_val) == 0) || (input_equal_def == true))
+               (TG_strcasecmp(conf_val, NotANumber) == 0) || (strlen(conf_val) == 0) || (input_equal_def))
             {
                 store_in_db = false;
             }
@@ -3743,7 +3742,7 @@ void Attribute::check_hard_coded(const AttributeConfig_5 &user_conf)
     // Check root attribute name
     //
 
-    if(is_fwd_att() == true)
+    if(is_fwd_att())
     {
         FwdAttribute *fwd = static_cast<FwdAttribute *>(this);
         std::string root_attr_name(fwd->get_fwd_dev_name() + '/' + fwd->get_fwd_att_name());
@@ -3766,7 +3765,7 @@ void Attribute::check_hard_coded(const AttributeConfig_5 &user_conf)
         {
             throw_hard_coded_prop("memorized");
         }
-        if(watt->is_memorized() == true)
+        if(watt->is_memorized())
         {
             if(watt->is_memorized_init() != user_conf.mem_init)
             {

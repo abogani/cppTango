@@ -104,14 +104,7 @@ class PollRing
 
     bool is_empty()
     {
-        if(nb_elt == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return nb_elt == 0;
     }
 
     bool is_last_an_error();

@@ -638,14 +638,7 @@ class Attr
 
     bool is_assoc()
     {
-        if(assoc_name != AssocWritNotSpec)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return assoc_name != AssocWritNotSpec;
     }
 
     std::vector<AttrProperty> &get_class_properties()

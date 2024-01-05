@@ -267,7 +267,7 @@ void DServerSignal::register_class_signal(long signo, bool handler, DeviceClass 
     }
 
 #ifndef _TG_WINDOWS_
-    if((auto_signal(signo) == true) && (handler == true))
+    if((auto_signal(signo)) && (handler))
     {
         TangoSys_OMemStream o;
         o << "Signal " << sig_name[signo] << "is not authorized using your own handler" << std::ends;
@@ -279,9 +279,9 @@ void DServerSignal::register_class_signal(long signo, bool handler, DeviceClass 
     // If nothing is registered for this signal, install the OS signal handler
     //
 
-    if(auto_signal(signo) == false)
+    if(!auto_signal(signo))
     {
-        if((reg_sig[signo].registered_devices.empty() == true) && (reg_sig[signo].registered_classes.empty() == true))
+        if((reg_sig[signo].registered_devices.empty()) && (reg_sig[signo].registered_classes.empty()))
         {
 #ifdef _TG_WINDOWS_
             register_handler(signo);
@@ -369,7 +369,7 @@ void DServerSignal::register_dev_signal(long signo, bool handler, DeviceImpl *de
     }
 
 #ifndef _TG_WINDOWS_
-    if((auto_signal(signo) == true) && (handler == true))
+    if((auto_signal(signo)) && (handler))
     {
         TangoSys_OMemStream o;
         o << "Signal " << sig_name[signo] << "is not authorized using your own handler" << std::ends;
@@ -381,9 +381,9 @@ void DServerSignal::register_dev_signal(long signo, bool handler, DeviceImpl *de
     // If nothing is registered for this signal, install the OS signal handler
     //
 
-    if(auto_signal(signo) == false)
+    if(!auto_signal(signo))
     {
-        if((reg_sig[signo].registered_devices.empty() == true) && (reg_sig[signo].registered_classes.empty() == true))
+        if((reg_sig[signo].registered_devices.empty()) && (reg_sig[signo].registered_classes.empty()))
         {
 #ifdef _TG_WINDOWS_
             register_handler(signo);
@@ -486,9 +486,9 @@ void DServerSignal::unregister_class_signal(long signo, DeviceClass *cl_ptr)
     // If nothing is registered for this signal, unregister the OS signal handler and (eventually) the event handler
     //
 
-    if(auto_signal(signo) == false)
+    if(!auto_signal(signo))
     {
-        if((reg_sig[signo].registered_classes.empty() == true) && (reg_sig[signo].registered_devices.empty() == true))
+        if((reg_sig[signo].registered_classes.empty()) && (reg_sig[signo].registered_devices.empty()))
         {
             unregister_handler(signo);
         }
@@ -543,9 +543,9 @@ void DServerSignal::unregister_dev_signal(long signo, DeviceImpl *dev_ptr)
     // If nothing is registered for this signal, unregister the OS signal handler and eventually the event handler
     //
 
-    if(auto_signal(signo) == false)
+    if(!auto_signal(signo))
     {
-        if((reg_sig[signo].registered_classes.empty() == true) && (reg_sig[signo].registered_devices.empty() == true))
+        if((reg_sig[signo].registered_classes.empty()) && (reg_sig[signo].registered_devices.empty()))
         {
             unregister_handler(signo);
         }
@@ -591,9 +591,9 @@ void DServerSignal::unregister_dev_signal(DeviceImpl *dev_ptr)
         // If nothing is registered for this signal, unregister the OS signal handler
         //
 
-        if(auto_signal(i) == false)
+        if(!auto_signal(i))
         {
-            if((reg_sig[i].registered_classes.empty() == true) && (reg_sig[i].registered_devices.empty() == true))
+            if((reg_sig[i].registered_classes.empty()) && (reg_sig[i].registered_devices.empty()))
             {
                 unregister_handler(i);
             }
@@ -640,9 +640,9 @@ void DServerSignal::unregister_class_signal(DeviceClass *cl_ptr)
         // If nothing is registered for this signal, unregister the OS signal handler
         //
 
-        if(auto_signal(i) == false)
+        if(!auto_signal(i))
         {
-            if((reg_sig[i].registered_classes.empty() == true) && (reg_sig[i].registered_devices.empty() == true))
+            if((reg_sig[i].registered_classes.empty()) && (reg_sig[i].registered_devices.empty()))
             {
                 unregister_handler(i);
             }
@@ -680,7 +680,7 @@ void DServerSignal::register_handler(long signo, bool handler)
         TANGO_THROW_EXCEPTION(API_CantInstallSignal, o.str());
     }
 #else
-    if(handler == true)
+    if(handler)
     {
         sigset_t sigs_to_unblock;
         sigemptyset(&sigs_to_unblock);
@@ -710,7 +710,7 @@ void DServerSignal::register_handler(long signo, bool handler)
     {
         omni_mutex_lock sy(*this);
 
-        while(sig_to_install == true)
+        while(sig_to_install)
         {
             wait();
         }
@@ -749,7 +749,7 @@ void DServerSignal::unregister_handler(long signo)
         TANGO_THROW_EXCEPTION(API_CantInstallSignal, o.str());
     }
 #else
-    if(reg_sig[signo].own_handler == true)
+    if(reg_sig[signo].own_handler)
     {
         struct sigaction sa;
 
@@ -768,7 +768,7 @@ void DServerSignal::unregister_handler(long signo)
     {
         omni_mutex_lock sy(*this);
 
-        while(sig_to_remove == true)
+        while(sig_to_remove)
         {
             wait();
         }
@@ -819,7 +819,7 @@ void DServerSignal::main_sig_handler(int signo)
     // First, execute all the handlers installed at the class level
     //
 
-    if(act_ptr->registered_classes.empty() == false)
+    if(!act_ptr->registered_classes.empty())
     {
         long nb_class = act_ptr->registered_classes.size();
         for(long j = 0; j < nb_class; j++)
@@ -832,7 +832,7 @@ void DServerSignal::main_sig_handler(int signo)
     // Then, execute all the handlers installed at the device level
     //
 
-    if(act_ptr->registered_devices.empty() == false)
+    if(!act_ptr->registered_devices.empty())
     {
         long nb_dev = act_ptr->registered_devices.size();
         for(long j = 0; j < nb_dev; j++)

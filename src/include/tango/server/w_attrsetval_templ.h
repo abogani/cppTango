@@ -105,7 +105,7 @@ void WAttribute::check_type(const std::string &origin)
     bool short_enum = std::is_same<short, std::underlying_type_t<T>>::value;
     bool uns_int_enum = std::is_same<unsigned int, std::underlying_type_t<T>>::value;
 
-    if(short_enum == false && uns_int_enum == false)
+    if(!short_enum && !uns_int_enum)
     {
         std::stringstream ss;
         ss << "Invalid enumeration type. Supported types are C++11 scoped enum with short as underlying data type\n";
@@ -148,7 +148,7 @@ void WAttribute::check_type(const std::string &origin)
     Tango::MultiClassAttribute *mca = dev_class->get_class_attr();
     Tango::Attr &att = mca->get_attr(name);
 
-    if(att.same_type(typeid(T)) == false)
+    if(!att.same_type(typeid(T)))
     {
         std::stringstream ss;
         ss << "Invalid enumeration type. Requested enum type is " << att.get_enum_type();

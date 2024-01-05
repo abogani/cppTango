@@ -167,7 +167,7 @@ void Util::polling_configure()
                     upd = -upd;
                 }
 
-                if(first_loop == true)
+                if(first_loop)
                 {
                     smallest_upd = upd;
                     first_loop = false;
@@ -213,13 +213,13 @@ void Util::polling_configure()
                 }
 
                 Attribute &att = dev_list[j]->get_device_attr()->get_attr_by_name(poll_attr_list[k].c_str());
-                if(att.is_fwd_att() == true)
+                if(att.is_fwd_att())
                 {
                     v_poll_cmd_fwd.push_back(send);
                 }
                 else
                 {
-                    if(first_loop == true)
+                    if(first_loop)
                     {
                         smallest_upd = upd;
                         first_loop = false;
@@ -243,11 +243,11 @@ void Util::polling_configure()
             if(nb_cmd != 0)
             {
                 bool poll_bef_9 = false;
-                if(admin_dev->is_polling_bef_9_def() == true)
+                if(admin_dev->is_polling_bef_9_def())
                 {
                     poll_bef_9 = admin_dev->get_polling_bef_9();
                 }
-                else if(polling_bef_9_def == true)
+                else if(polling_bef_9_def)
                 {
                     poll_bef_9 = polling_bef_9;
                 }
@@ -323,7 +323,7 @@ void Util::polling_configure()
                     }
                 }
 
-                if(throw_ex == true)
+                if(throw_ex)
                 {
                     TangoSys_OMemStream o;
                     o << "Error when configuring polling for device "
@@ -390,7 +390,7 @@ void Util::polling_configure()
                 }
             }
 
-            if(throw_ex == true)
+            if(throw_ex)
             {
                 TangoSys_OMemStream o;
                 o << "Error when configuring polling for device " << v_poll_cmd_fwd[loop]->svalue[0].in();
@@ -422,7 +422,7 @@ void Util::polling_configure()
     // Property length cannot be longer than 256 characters
     //
 
-    if(poll_pool_conf.empty() == true)
+    if(poll_pool_conf.empty())
     {
         build_first_pool_conf(poll_pool_conf);
         conf_needs_db_upd = true;
@@ -438,7 +438,7 @@ void Util::polling_configure()
         }
     }
 
-    if(((dev_db_upd.empty() == false) || (conf_needs_db_upd == true)) && (_UseDb == true))
+    if(((!dev_db_upd.empty()) || (conf_needs_db_upd)) && (_UseDb))
     {
         upd_polling_prop(dev_db_upd, admin_dev);
     }
@@ -470,7 +470,7 @@ void Util::trigger_attr_polling(Tango::DeviceImpl *dev, const std::string &name)
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -529,7 +529,7 @@ void Util::trigger_attr_polling(Tango::DeviceImpl *dev, const std::string &name)
 
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.trigger == true)
+        if(shared_cmd.trigger)
         {
             mon.wait();
         }
@@ -549,7 +549,7 @@ void Util::trigger_attr_polling(Tango::DeviceImpl *dev, const std::string &name)
         TangoMonitor &dev_mon = dev->get_dev_monitor();
         omni_thread *th = omni_thread::self();
 
-        while(shared_cmd.trigger == true)
+        while(shared_cmd.trigger)
         {
             //
             // Warning: It's possible to have a deadlock here (experienced under
@@ -583,7 +583,7 @@ void Util::trigger_attr_polling(Tango::DeviceImpl *dev, const std::string &name)
             }
 
             int interupted = mon.wait(DEFAULT_TIMEOUT);
-            if(deadlock == true)
+            if(deadlock)
             {
                 for(long loop = 0; loop < lock_ctr; loop++)
                 {
@@ -591,7 +591,7 @@ void Util::trigger_attr_polling(Tango::DeviceImpl *dev, const std::string &name)
                 }
             }
 
-            if((shared_cmd.trigger == true) && (interupted == 0))
+            if((shared_cmd.trigger) && (interupted == 0))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -625,7 +625,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev, const std::string &name)
     // Check that the device is polled
     //
 
-    if(dev->is_polled() == false)
+    if(!dev->is_polled())
     {
         TangoSys_OMemStream o;
         o << "Device " << dev->get_name() << " is not polled" << std::ends;
@@ -684,7 +684,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev, const std::string &name)
 
     {
         omni_mutex_lock sync(mon);
-        if(shared_cmd.trigger == true)
+        if(shared_cmd.trigger)
         {
             mon.wait();
         }
@@ -704,7 +704,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev, const std::string &name)
         TangoMonitor &dev_mon = dev->get_dev_monitor();
         omni_thread *th = omni_thread::self();
 
-        while(shared_cmd.trigger == true)
+        while(shared_cmd.trigger)
         {
             //
             // Warning: It's possible to have a deadlock here (experienced under
@@ -738,7 +738,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev, const std::string &name)
             }
 
             int interupted = mon.wait(DEFAULT_TIMEOUT);
-            if(deadlock == true)
+            if(deadlock)
             {
                 for(long loop = 0; loop < lock_ctr; loop++)
                 {
@@ -746,7 +746,7 @@ void Util::trigger_cmd_polling(Tango::DeviceImpl *dev, const std::string &name)
                 }
             }
 
-            if((shared_cmd.trigger == true) && (interupted == 0))
+            if((shared_cmd.trigger) && (interupted == 0))
             {
                 TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                 TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Polling thread blocked !!!");
@@ -927,7 +927,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
         int ind;
         ind = get_th_polled_devs(local_dev_name, asso_devs);
 
-        if(asso_devs.empty() != true)
+        if(!asso_devs.empty())
         {
             std::vector<std::string>::iterator it;
 
@@ -973,7 +973,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
         }
         pti_ptr->poll_th = new PollThread(pti_ptr->shared_data, pti_ptr->poll_mon, false);
 
-        if(polling_9 == true)
+        if(polling_9)
         {
             pti_ptr->poll_th->set_polling_bef_9(true);
         }
@@ -998,7 +998,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
         int ind;
         ind = get_th_polled_devs(local_dev_name, asso_devs);
 
-        if(asso_devs.empty() != true)
+        if(!asso_devs.empty())
         {
             std::vector<std::string>::iterator it;
 
@@ -1078,7 +1078,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
 
         ind = get_dev_entry_in_pool_conf(d_name);
 
-        if((ind == -1) && (startup == false))
+        if((ind == -1) && (!startup))
         {
             TangoSys_OMemStream o;
 
@@ -1285,7 +1285,7 @@ void Util::check_pool_conf(DServer *admin_dev, unsigned long pool_size)
     // Simply returns if the conf. is empty
     //
 
-    if(poll_pool_conf.empty() == true)
+    if(poll_pool_conf.empty())
     {
         return;
     }
@@ -1321,7 +1321,7 @@ void Util::check_pool_conf(DServer *admin_dev, unsigned long pool_size)
             {
                 continue;
             }
-            else if(is_dev_already_in_pool_conf(*iter_entry, mod_conf, stop - 1) == true)
+            else if(is_dev_already_in_pool_conf(*iter_entry, mod_conf, stop - 1))
             {
                 continue;
             }
@@ -1371,7 +1371,7 @@ void Util::check_pool_conf(DServer *admin_dev, unsigned long pool_size)
                 std::vector<std::string> &poll_cmd_list = dev->get_polled_cmd();
                 std::vector<std::string> &poll_attr_list = dev->get_polled_attr();
 
-                if((poll_cmd_list.empty() == true) && (poll_attr_list.empty() == true))
+                if((poll_cmd_list.empty()) && (poll_attr_list.empty()))
                 {
                     TANGO_LOG << "WARNING: Device " << *iter_entry << " is used in polling threads pool configuration";
                     TANGO_LOG << " but it does not have any cmd/attr polled" << std::endl;
@@ -1379,7 +1379,7 @@ void Util::check_pool_conf(DServer *admin_dev, unsigned long pool_size)
                 }
                 else
                 {
-                    if(mod_entry.empty() == true)
+                    if(mod_entry.empty())
                     {
                         mod_entry = *iter_entry;
                     }
@@ -1395,7 +1395,7 @@ void Util::check_pool_conf(DServer *admin_dev, unsigned long pool_size)
         // Modify the conf. if some incoherencies have been found
         //
 
-        if(mod_entry.empty() == true)
+        if(mod_entry.empty())
         {
             iter = mod_conf.erase(iter);
             if(iter == mod_conf.end())
@@ -1655,7 +1655,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
 
         if((upd_devs[i].mod_prop == -1) || (upd_devs[i].mod_prop == -3))
         {
-            if(poll_cmd_list.empty() == true)
+            if(poll_cmd_list.empty())
             {
                 del_prop.emplace_back("polled_cmd");
             }
@@ -1668,7 +1668,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
 
         if((upd_devs[i].mod_prop == -2) || (upd_devs[i].mod_prop == -3))
         {
-            if(poll_attr_list.empty() == true)
+            if(poll_attr_list.empty())
             {
                 del_prop.emplace_back("polled_attr");
             }
@@ -1686,15 +1686,15 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
         bool retry = true;
         long db_retries = DB_START_PHASE_RETRIES;
 
-        while(retry == true)
+        while(retry)
         {
             try
             {
-                if(del_prop.empty() == false)
+                if(!del_prop.empty())
                 {
                     get_database()->delete_device_property(dev_list[upd_devs[i].dev_ind]->get_name(), del_prop);
                 }
-                if(upd_prop.empty() == false)
+                if(!upd_prop.empty())
                 {
                     get_database()->put_device_property(dev_list[upd_devs[i].dev_ind]->get_name(), upd_prop);
                 }
@@ -1702,7 +1702,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
             }
             catch(Tango::CommunicationFailed &)
             {
-                if(is_svr_starting() == true)
+                if(is_svr_starting())
                 {
                     db_retries--;
                     if(db_retries == 0)
@@ -1721,7 +1721,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
         // If now the device does not have any objects polled (no cmd, no attr), it must be removed from the pool conf.
         //
 
-        if((poll_attr_list.empty() == true) && (poll_cmd_list.empty() == true))
+        if((poll_attr_list.empty()) && (poll_cmd_list.empty()))
         {
             std::vector<std::string>::iterator iter;
 
@@ -1751,7 +1751,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
     // Update the polling pool conf if needed
     //
 
-    if(conf_needs_db_upd == true)
+    if(conf_needs_db_upd)
     {
         DbData upd_conf;
         upd_conf.emplace_back("polling_threads_pool_conf");
@@ -1759,11 +1759,11 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
         bool retry = true;
         long db_retries = DB_START_PHASE_RETRIES;
 
-        while(retry == true)
+        while(retry)
         {
             try
             {
-                if(poll_pool_conf.empty() == true)
+                if(poll_pool_conf.empty())
                 {
                     get_database()->delete_device_property(admin_dev->get_name(), upd_conf);
                 }
@@ -1812,7 +1812,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
             }
             catch(Tango::CommunicationFailed &)
             {
-                if(is_svr_starting() == true)
+                if(is_svr_starting())
                 {
                     db_retries--;
                     if(db_retries == 0)
