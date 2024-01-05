@@ -99,7 +99,7 @@ void Command::throw_bad_type(const char *type)
 
 void Command::extract(const CORBA::Any &in, Tango::DevBoolean &data)
 {
-    if((!(in >>= CORBA::Any::to_boolean(data)))
+    if(!(in >>= CORBA::Any::to_boolean(data)))
     {
         throw_bad_type("DevBoolean");
     }
@@ -107,7 +107,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevBoolean &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevShort &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevShort");
     }
@@ -115,7 +115,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevShort &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevLong &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevLong");
     }
@@ -123,7 +123,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevLong &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevLong64 &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevLong64");
     }
@@ -131,7 +131,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevLong64 &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevFloat &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevFloat");
     }
@@ -139,7 +139,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevFloat &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevDouble &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevDouble");
     }
@@ -147,7 +147,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevDouble &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevUShort &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevUShort");
     }
@@ -155,7 +155,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevUShort &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevULong &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevULong");
     }
@@ -163,7 +163,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevULong &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevULong64 &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevULong64");
     }
@@ -171,7 +171,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevULong64 &data)
 
 void Command::extract(const CORBA::Any &in, Tango::DevString &data)
 {
-    if((!(in >>= const_cast<const char *&>(data)))
+    if(!(in >>= const_cast<const char *&>(data)))
     {
         throw_bad_type("DevString");
     }
@@ -179,7 +179,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevString &data)
 
 void Command::extract(const CORBA::Any &in, const char *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("ConstDevString");
     }
@@ -187,7 +187,7 @@ void Command::extract(const CORBA::Any &in, const char *&data)
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarCharArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarCharArray");
     }
@@ -195,7 +195,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarCharArray *&data)
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarShortArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarShortArray");
     }
@@ -203,7 +203,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarShortArray *&data
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarLongArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarLongArray");
     }
@@ -211,7 +211,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarLongArray *&data)
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarLong64Array *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarLong64Array");
     }
@@ -219,7 +219,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarLong64Array *&dat
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarFloatArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarFloatArray");
     }
@@ -227,7 +227,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarFloatArray *&data
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarDoubleArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarDoubleArray");
     }
@@ -235,7 +235,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarDoubleArray *&dat
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarUShortArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarUShortArray");
     }
@@ -243,7 +243,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarUShortArray *&dat
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarULongArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarULongArray");
     }
@@ -251,7 +251,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarULongArray *&data
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarULong64Array *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarULong64Array");
     }
@@ -259,7 +259,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarULong64Array *&da
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarStringArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarStringArray");
     }
@@ -267,7 +267,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarStringArray *&dat
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarBooleanArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarBooleanArray");
     }
@@ -275,7 +275,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarBooleanArray *&da
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarLongStringArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarLongStringArray");
     }
@@ -283,7 +283,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarLongStringArray *
 
 void Command::extract(const CORBA::Any &in, const Tango::DevVarDoubleStringArray *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevVarDoubleStringArray");
     }
@@ -291,7 +291,7 @@ void Command::extract(const CORBA::Any &in, const Tango::DevVarDoubleStringArray
 
 void Command::extract(const CORBA::Any &in, Tango::DevState &data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevState");
     }
@@ -299,7 +299,7 @@ void Command::extract(const CORBA::Any &in, Tango::DevState &data)
 
 void Command::extract(const CORBA::Any &in, const Tango::DevEncoded *&data)
 {
-    if((!(in >>= data))
+    if(!(in >>= data))
     {
         throw_bad_type("DevEncoded");
     }

@@ -77,7 +77,7 @@ CORBA::Any *DevRestartCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
     //
 
     const char *tmp_name;
-    if((!(in_any >>= tmp_name))
+    if(!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");
@@ -540,7 +540,7 @@ CORBA::Any *QueryWizardClassPropertyCmd::execute(DeviceImpl *device, const CORBA
     //
 
     const char *tmp_name;
-    if((!(in_any >>= tmp_name))
+    if(!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");
@@ -608,7 +608,7 @@ CORBA::Any *QueryWizardDevPropertyCmd::execute(DeviceImpl *device, const CORBA::
     //
 
     const char *tmp_name;
-    if((!(in_any >>= tmp_name))
+    if(!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");

@@ -664,14 +664,14 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
     long nb_attr = 0;
     if(version >= 4)
     {
-        if((*(nv->value()) >>= att_4)
+        if(*(nv->value()) >>= att_4)
         {
             nb_attr = att_4->length();
         }
     }
     else
     {
-        if((*(nv->value()) >>= att)
+        if(*(nv->value()) >>= att)
         {
             nb_attr = att->length();
         }
@@ -784,7 +784,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
             }
             else
             {
-                if((unk_ex->exception() >>= multi_serv_ex)
+                if(unk_ex->exception() >>= multi_serv_ex)
                 {
                     m_ex = *multi_serv_ex;
                     err_3 = Tango::NamedDevFailedList(m_ex,

@@ -7560,7 +7560,7 @@ int DeviceProxy::get_logging_level()
     }
 
     long level;
-    if((!(dout >> level))
+    if(!(dout >> level))
     {
         const Tango::DevVarLongStringArray *lsarr;
         dout >> lsarr;

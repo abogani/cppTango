@@ -108,7 +108,7 @@ CORBA::Any *AddLoggingTarget::execute(DeviceImpl *device, const CORBA::Any &in_a
     // Extract the input data
     //
     const DevVarStringArray *targets;
-    if((!(in_any >>= targets))
+    if(!(in_any >>= targets))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarStringArray");
@@ -158,7 +158,7 @@ CORBA::Any *RemoveLoggingTarget::execute(DeviceImpl *device, const CORBA::Any &i
     // Extract the input data
     //
     const DevVarStringArray *targets;
-    if((!(in_any >>= targets))
+    if(!(in_any >>= targets))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarStringArray");
@@ -210,7 +210,7 @@ CORBA::Any *GetLoggingTarget::execute(DeviceImpl *device, const CORBA::Any &in_a
     // Extract the input data
     //
     const char *tmp_str;
-    if((!(in_any >>= tmp_str))
+    if(!(in_any >>= tmp_str))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevString");
@@ -254,7 +254,7 @@ CORBA::Any *SetLoggingLevel::execute(DeviceImpl *device, const CORBA::Any &in_an
     // Extract the input data
     //
     const DevVarLongStringArray *argin;
-    if((!(in_any >>= argin))
+    if(!(in_any >>= argin))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarLongStringArray");
@@ -306,7 +306,7 @@ CORBA::Any *GetLoggingLevel::execute(DeviceImpl *device, const CORBA::Any &in_an
     // Extract the input data
     //
     const DevVarStringArray *argin;
-    if((!(in_any >>= argin))
+    if(!(in_any >>= argin))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarStringArray");

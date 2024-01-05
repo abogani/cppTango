@@ -1898,7 +1898,7 @@ void Util::server_already_running()
             send <<= dev_name.c_str();
 
             received = db->get_dbase()->command_inout("DbImportDevice", send);
-            if((!(received.inout() >>= db_dev))
+            if(!(received.inout() >>= db_dev))
             {
                 TangoSys_OMemStream o;
                 o << "Database error while trying to import " << dev_name << std::ends;

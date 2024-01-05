@@ -111,7 +111,7 @@ CORBA::Any *DevPollStatusCmd::execute(DeviceImpl *device, const CORBA::Any &in_a
     //
 
     const char *tmp_name;
-    if((!(in_any >>= tmp_name))
+    if(!(in_any >>= tmp_name))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : string");
@@ -161,7 +161,7 @@ CORBA::Any *AddObjPollingCmd::execute(DeviceImpl *device, const CORBA::Any &in_a
     //
 
     const DevVarLongStringArray *tmp_data;
-    if((!(in_any >>= tmp_data))
+    if(!(in_any >>= tmp_data))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarLongStringArray");
@@ -216,7 +216,7 @@ CORBA::Any *UpdObjPollingPeriodCmd::execute(DeviceImpl *device, const CORBA::Any
     //
 
     const DevVarLongStringArray *tmp_data;
-    if((!(in_any >>= tmp_data))
+    if(!(in_any >>= tmp_data))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarLongStringArray");
@@ -271,7 +271,7 @@ CORBA::Any *RemObjPollingCmd::execute(DeviceImpl *device, const CORBA::Any &in_a
     //
 
     const DevVarStringArray *tmp_data;
-    if((!(in_any >>= tmp_data))
+    if(!(in_any >>= tmp_data))
     {
         TANGO_THROW_EXCEPTION(API_IncompatibleCmdArgumentType,
                               "Imcompatible command argument type, expected type is : DevVarStringArray");

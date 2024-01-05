@@ -1684,7 +1684,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     const DevVarLongStringArray *dvlsa;
     bool dd_extract_ok = true;
 
-    if((!(dd >> dvlsa))
+    if(!(dd >> dvlsa))
     {
         dd_extract_ok = false;
     }

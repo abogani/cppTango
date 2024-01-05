@@ -2414,14 +2414,14 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
 
                 if(version < 4)
                 {
-                    if((*(nv->value()) >>= att)
+                    if(*(nv->value()) >>= att)
                     {
                         nb_att = att->length();
                     }
                 }
                 else
                 {
-                    if((*(nv->value()) >>= att_4)
+                    if(*(nv->value()) >>= att_4)
                     {
                         nb_att = att_4->length();
                     }
@@ -2479,7 +2479,7 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
         }
         else
         {
-            if((unk_ex->exception() >>= multi_serv_ex)
+            if(unk_ex->exception() >>= multi_serv_ex)
             {
                 m_ex = *multi_serv_ex;
             }
@@ -2498,14 +2498,14 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
 
         if(version < 4)
         {
-            if((*(nv->value()) >>= att)
+            if(*(nv->value()) >>= att)
             {
                 nb_att = att->length();
             }
         }
         else
         {
-            if((*(nv->value()) >>= att_4)
+            if(*(nv->value()) >>= att_4)
             {
                 nb_att = att_4->length();
             }
@@ -2581,14 +2581,14 @@ void DeviceProxy::write_attr_except(CORBA::Request_ptr req, long id, TgRequest::
         CORBA::NamedValue_ptr nv = req_arg->item(0);
         if(version < 4)
         {
-            if((*(nv->value()) >>= att)
+            if(*(nv->value()) >>= att)
             {
                 nb_att = att->length();
             }
         }
         else
         {
-            if((*(nv->value()) >>= att_4)
+            if(*(nv->value()) >>= att_4)
             {
                 nb_att = att_4->length();
             }
