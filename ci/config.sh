@@ -64,6 +64,7 @@ cmake                                                                    \
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                               \
   -DCMAKE_VERBOSE_MAKEFILE=ON                                            \
   -Dcppzmq_ROOT=${INSTALL_DIR}                                           \
+  -DCatch2_ROOT=${INSTALL_DIR}                                           \
   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                 \
   -DCMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS} \
   -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                                     \
