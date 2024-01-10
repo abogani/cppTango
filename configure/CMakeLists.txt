@@ -115,6 +115,9 @@ if(TANGO_USE_PTHREAD)
     endif()
 endif()
 
+set(CPPZMQ_TRY_COMPILE_OUTPUT "" CACHE STRING "Compilation test for compatible cppzmq version")
+mark_as_advanced(CPPZMQ_TRY_COMPILE_OUTPUT)
+
 if(NOT DEFINED TANGO_CPPZMQ_USABLE_VERSION)
   try_compile(TANGO_CPPZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_cppzmq_features
               SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_cppzmq_features.cpp
@@ -134,6 +137,9 @@ endif()
 set(ZMQ_MIN_VER_MAJOR 4)
 set(ZMQ_MIN_VER_MINOR 0)
 set(ZMQ_MIN_VER_PATCH 5)
+
+set(ZMQ_TRY_COMPILE_OUTPUT "" CACHE STRING "Compilation test for compatible libzmq version")
+mark_as_advanced(ZMQ_TRY_COMPILE_OUTPUT)
 
 if(NOT DEFINED TANGO_ZMQ_USABLE_VERSION)
   try_compile(TANGO_ZMQ_USABLE_VERSION ${CMAKE_CURRENT_BINARY_DIR}/test_zmq_version
