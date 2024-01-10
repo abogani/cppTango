@@ -48,7 +48,7 @@ This repository uses git submodules.
 ## tango-idl
 
 ```bash
-git clone --depth 1 -b 6.0-alpha1 https://gitlab.com/tango-controls/tango-idl
+git clone --depth 1 -b 6.0-alpha2 https://gitlab.com/tango-controls/tango-idl
 cd tango-idl
 mkdir build
 cd build
