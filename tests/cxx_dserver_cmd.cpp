@@ -31,8 +31,8 @@ class DServerCmdTestSuite : public CxxTest::TestSuite
         dserver_name = "dserver/" + CxxTest::TangoPrinter::get_param("fulldsname");
         outpath = CxxTest::TangoPrinter::get_param("outpath");
         refpath = CxxTest::TangoPrinter::get_param("refpath");
-        loglevel = atoi(CxxTest::TangoPrinter::get_param("loglevel").c_str());
-        dsloglevel = atoi(CxxTest::TangoPrinter::get_param("dsloglevel").c_str());
+        TS_ASSERT_THROWS_NOTHING(loglevel = parse_as<int>(CxxTest::TangoPrinter::get_param("loglevel")));
+        TS_ASSERT_THROWS_NOTHING(dsloglevel = parse_as<int>(CxxTest::TangoPrinter::get_param("dsloglevel")));
 
         CxxTest::TangoPrinter::validate_args();
 

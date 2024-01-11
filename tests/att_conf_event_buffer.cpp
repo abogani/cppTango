@@ -253,8 +253,8 @@ int main(int argc, char **argv)
         AttrConfEventDataList::iterator vpos;
         for(vpos = event_list.begin(); vpos != event_list.end(); vpos++)
         {
-            double min_value = atof(((*vpos)->attr_conf->min_value).c_str());
-            double max_value = atof(((*vpos)->attr_conf->max_value).c_str());
+            double min_value = parse_as<double>(((*vpos)->attr_conf->min_value));
+            double max_value = parse_as<double>(((*vpos)->attr_conf->max_value));
 
             TEST_LOG << "min value = " << min_value << std::endl;
             TEST_LOG << "max value = " << max_value << std::endl;
@@ -335,8 +335,8 @@ int main(int argc, char **argv)
         ref_val = 55;
         for(vpos = event_list1.begin(); vpos != event_list1.end(); vpos++)
         {
-            double min_value = atof(((*vpos)->attr_conf->min_value).c_str());
-            double max_value = atof(((*vpos)->attr_conf->max_value).c_str());
+            double min_value = parse_as<double>(((*vpos)->attr_conf->min_value));
+            double max_value = parse_as<double>(((*vpos)->attr_conf->max_value));
 
             TEST_LOG << "min value = " << min_value << std::endl;
             TEST_LOG << "max value = " << max_value << std::endl;
@@ -347,8 +347,8 @@ int main(int argc, char **argv)
         ref_val = 55;
         for(vpos = event_list2.begin(); vpos != event_list2.end(); vpos++)
         {
-            double min_value = atof(((*vpos)->attr_conf->min_value).c_str());
-            double max_value = atof(((*vpos)->attr_conf->max_value).c_str());
+            double min_value = parse_as<double>(((*vpos)->attr_conf->min_value));
+            double max_value = parse_as<double>(((*vpos)->attr_conf->max_value));
 
             TEST_LOG << "min value = " << min_value << std::endl;
             TEST_LOG << "max value = " << max_value << std::endl;
@@ -359,8 +359,8 @@ int main(int argc, char **argv)
         ref_val = 55;
         for(vpos = event_list3.begin(); vpos != event_list3.end(); vpos++)
         {
-            double min_value = atof(((*vpos)->attr_conf->min_value).c_str());
-            double max_value = atof(((*vpos)->attr_conf->max_value).c_str());
+            double min_value = parse_as<double>(((*vpos)->attr_conf->min_value));
+            double max_value = parse_as<double>(((*vpos)->attr_conf->max_value));
 
             TEST_LOG << "min value = " << min_value << std::endl;
             TEST_LOG << "max value = " << max_value << std::endl;

@@ -31,8 +31,8 @@ class SignalTestSuite : public CxxTest::TestSuite
         dserver_name = "dserver/" + CxxTest::TangoPrinter::get_param("fulldsname");
         outpath = CxxTest::TangoPrinter::get_param("outpath");
         refpath = CxxTest::TangoPrinter::get_param("refpath");
-        loglevel = atoi(CxxTest::TangoPrinter::get_param("loglevel").c_str());
-        dsloglevel = atoi(CxxTest::TangoPrinter::get_param("dsloglevel").c_str());
+        TS_ASSERT_THROWS_NOTHING(loglevel = parse_as<int>(CxxTest::TangoPrinter::get_param("loglevel")));
+        TS_ASSERT_THROWS_NOTHING(dsloglevel = parse_as<int>(CxxTest::TangoPrinter::get_param("dsloglevel")));
         dbserver_name = CxxTest::TangoPrinter::get_param("dbserver");
 
         CxxTest::TangoPrinter::validate_args();
@@ -240,13 +240,13 @@ class SignalTestSuite : public CxxTest::TestSuite
         CxxTest::TangoPrinter::restore_set("logging_target_restored");
 
         // get device server PID and send signal
-        TangoSys_Pid pid;
+        TangoSys_Pid pid = 0;
         const DevVarLongStringArray *result;
         string query = "select pid from device where name='" + dserver_name + "'";
         din << query;
         TS_ASSERT_THROWS_NOTHING(dout = dbserver->command_inout("DbMySqlSelect", din));
         dout >> result;
-        pid = atoi((*result).svalue[0].in());
+        TS_ASSERT_THROWS_NOTHING(pid = parse_as<int>((*result).svalue[0].in()));
         if(pid > 0)
         {
             kill(pid, sig_num_int);

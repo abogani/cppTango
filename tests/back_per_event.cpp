@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     }
 
     std::string device_name = argv[1];
-    long sleeping_time = atol(argv[2]);
+    auto sleeping_time = parse_as<long>(argv[2]);
 
     try
     {
