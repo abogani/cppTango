@@ -38,6 +38,27 @@ message("HOST_NAME=${HOST_NAME}")
 
 add_subdirectory(environment)
 
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/check_from_chars_double.cpp [===[
+#include <charconv>
+
+int main()
+{
+    double value;
+    std::from_chars(nullptr, nullptr, value);
+    return 0;
+}
+
+]===])
+
+try_compile(
+    TANGO_HAS_FROM_CHARS_DOUBLE
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/check_from_chars_double.cpp)
+
+if(${TANGO_HAS_FROM_CHARS_DOUBLE})
+    list(APPEND COMMON_TEST_DEFS TANGO_HAS_FROM_CHARS_DOUBLE)
+endif()
+
 function(tango_add_test)
     cmake_parse_arguments(TT "" "NAME;COMMAND" "IDL6;IDL5" ${ARGN})
 

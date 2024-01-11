@@ -72,6 +72,11 @@ T parse_as(const std::string &str)
     return result;
 }
 
+#ifndef TANGO_HAS_FROM_CHARS_DOUBLE
+template <>
+double parse_as<double>(const std::string &str);
+#endif
+
 /**
  * Wrapper for unsetenv working on windows systems as well.
  * Unset environment variable var
