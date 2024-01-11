@@ -845,7 +845,7 @@ void WAttribute::_copy_any_data(const T &data)
         // do nothing
         break;
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 }
 
@@ -926,7 +926,7 @@ void WAttribute::_update_any_written_value(const T &any, std::size_t x, std::siz
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(data_type);
+        TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 }
 

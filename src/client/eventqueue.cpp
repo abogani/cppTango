@@ -542,7 +542,7 @@ TimeVal EventQueue::get_last_event_date()
                 TangoSys_OMemStream o;
                 o << "No new events available!\n";
                 o << "Cannot return any event date" << std::ends;
-                TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_EventQueues, o.str());
+                TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept, API_EventQueues, o.str());
             }
         }
     }
@@ -947,7 +947,7 @@ void EventQueue::get_events(CallBack *cb)
         TangoSys_OMemStream o;
         o << "No callback object given!\n";
         o << "Cannot return any event data" << std::ends;
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_EventQueues, o.str());
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept, API_EventQueues, o.str());
     }
 
     //

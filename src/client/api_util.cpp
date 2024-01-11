@@ -632,7 +632,7 @@ void ApiUtil::get_asynch_replies(long call_timeout)
             {
                 TangoSys_OMemStream desc;
                 desc << "Still some reply(ies) for asynchronous callback call(s) to be received" << std::ends;
-                TANGO_THROW_API_EXCEPTION(ApiAsynNotThereExcept, API_AsynReplyNotArrived, desc.str());
+                TANGO_THROW_DETAILED_EXCEPTION(ApiAsynNotThereExcept, API_AsynReplyNotArrived, desc.str());
             }
         }
         else
@@ -1211,7 +1211,10 @@ void ApiUtil::attr_to_device(const AttributeValue *attr_value,
 
         default:
             dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
-            TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+            TangoSys_OMemStream desc;
+            desc << (vers == 3 ? "'attr_value_3" : "'attr_value") << "->value' with unexpected sequence kind '"
+                 << ty_seq->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
     }
 }
@@ -1367,7 +1370,7 @@ void ApiUtil::device_to_attr(const DeviceAttribute &dev_attr, AttributeValue &at
         TangoSys_OMemStream desc;
         desc << "Device " << d_name;
         desc << " does not support DevEncoded data type" << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, desc.str());
     }
 }
 
@@ -1425,7 +1428,7 @@ void ApiUtil::AttributeInfoEx_to_AttributeConfig(const AttributeInfoEx *aie, Att
         break;
 
     default:
-        TANGO_THROW_ON_DEFAULT(aie->memorized);
+        TANGO_ASSERT_ON_DEFAULT(aie->memorized);
     }
     att_conf_5->enum_labels.length(aie->enum_labels.size());
     for(size_t j = 0; j < aie->enum_labels.size(); j++)
@@ -1979,7 +1982,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
         // do nothing
         break;
     default:
-        TANGO_THROW_ON_DEFAULT(p.data_format);
+        TANGO_ASSERT_ON_DEFAULT(p.data_format);
     }
 
     o_str << "Attribute writable type = " << p.writable << std::endl;
@@ -2005,7 +2008,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(p.data_format);
+            TANGO_ASSERT_ON_DEFAULT(p.data_format);
         }
     }
 

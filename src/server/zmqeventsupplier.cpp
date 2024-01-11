@@ -419,7 +419,7 @@ void ZmqEventSupplier::tango_bind(zmq::socket_t *sock, std::string &endpoint)
     }
     catch(...)
     {
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept, API_ZmqInitFailed, "Can't bind the ZMQ socket!");
+        TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept, API_ZmqInitFailed, "Can't bind the ZMQ socket!");
     }
 }
 
@@ -1986,8 +1986,15 @@ size_t ZmqEventSupplier::get_data_elt_data_nb(DevPipeDataElt &dvde)
         }
         break;
 
+        case DEVICE_STATE:
+            [[fallthrough]];
+        case ATT_NO_DATA:
+            TANGO_THROW_EXCEPTION(API_PipeWrongArg,
+                                  "Unsupported data type in data element! (ATT_NO_DATA, DEVICE_STATE)");
+            break;
+
         default:
-            TANGO_THROW_ON_DEFAULT(dvde.value._d());
+            TANGO_ASSERT_ON_DEFAULT(dvde.value._d());
         }
     }
 

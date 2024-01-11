@@ -251,9 +251,9 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
                                 << std::endl;
             }
 
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to import the EventChannelFactory from the Tango database");
+            TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                           API_NotificationServiceFailed,
+                                           "Failed to import the EventChannelFactory from the Tango database");
         }
 
         if(tg->get_db_cache() == nullptr)
@@ -280,9 +280,10 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
                 TANGO_LOG_DEBUG << "Notifd event will not be generated" << std::endl;
             }
 
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to import the EventChannelFactory from the Device Server property file");
+            TANGO_THROW_DETAILED_EXCEPTION(
+                EventSystemExcept,
+                API_NotificationServiceFailed,
+                "Failed to import the EventChannelFactory from the Device Server property file");
         }
 
         factory_ior = na.value_string[0];
@@ -324,9 +325,9 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         if(CORBA::is_nil(_eventChannelFactory))
         {
             std::cerr << factory_name << " is not an EventChannelFactory " << std::endl;
-            TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                      API_NotificationServiceFailed,
-                                      "Failed to import the EventChannelFactory from the Tango database");
+            TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                           API_NotificationServiceFailed,
+                                           "Failed to import the EventChannelFactory from the Tango database");
         }
     }
     catch(...)
@@ -363,7 +364,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
                             << std::endl;
         }
 
-        TANGO_THROW_API_EXCEPTION(
+        TANGO_THROW_DETAILED_EXCEPTION(
             EventSystemExcept,
             API_NotificationServiceFailed,
             "Failed to narrow the EventChannelFactory, make sure the notifd process is running on this host");
@@ -545,7 +546,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
             std::cerr << "Failed to create event channel - events will not be generated (hint: start the notifd daemon "
                          "on this host)"
                       << std::endl;
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 EventSystemExcept,
                 API_NotificationServiceFailed,
                 "Failed to create a new EventChannel, make sure the notifd process is running on this host");
@@ -555,7 +556,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
             std::cerr << "Failed to create event channel - events will not be generated (hint: start the notifd daemon "
                          "on this host)"
                       << std::endl;
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 EventSystemExcept,
                 API_NotificationServiceFailed,
                 "Failed to create a new EventChannel, make sure the notifd process is running on this host");
@@ -582,10 +583,11 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     if(CORBA::is_nil(_supplierAdmin))
     {
         std::cerr << "Could not get CosNotifyChannelAdmin::SupplierAdmin" << std::endl;
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Failed to get the default supplier admin from the notification daemon (hint: make "
-                                  "sure the notifd process is running on this host)");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            EventSystemExcept,
+            API_NotificationServiceFailed,
+            "Failed to get the default supplier admin from the notification daemon (hint: make "
+            "sure the notifd process is running on this host)");
     }
 
     //
@@ -641,7 +643,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         if(CORBA::is_nil(_proxyConsumer))
         {
             std::cerr << "Could not get CosNotifyChannelAdmin::ProxyConsumer" << std::endl;
-            TANGO_THROW_API_EXCEPTION(
+            TANGO_THROW_DETAILED_EXCEPTION(
                 EventSystemExcept,
                 API_NotificationServiceFailed,
                 "Failed to obtain a Notification push consumer, make sure the notifd process is running on this host");
@@ -652,10 +654,11 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
         std::cerr << "Failed to get push consumer from notification daemon - events will not be generated (hint: start "
                      "the notifd daemon on this host)"
                   << std::endl;
-        TANGO_THROW_API_EXCEPTION(EventSystemExcept,
-                                  API_NotificationServiceFailed,
-                                  "Failed to get push consumer from notification daemon (hint: make sure the notifd "
-                                  "process is running on this host)");
+        TANGO_THROW_DETAILED_EXCEPTION(
+            EventSystemExcept,
+            API_NotificationServiceFailed,
+            "Failed to get push consumer from notification daemon (hint: make sure the notifd "
+            "process is running on this host)");
     }
 
     CosNotifyChannelAdmin::StructuredProxyPushConsumer_var _structuredProxyPushConsumer =

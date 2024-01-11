@@ -271,7 +271,9 @@ void DeviceProxy::from_hist_2_AttHistory(const T &hist, std::vector<DeviceAttrib
             break;
 
         default:
-            TANGO_THROW_ON_DEFAULT(ty_seq->kind());
+            TangoSys_OMemStream desc;
+            desc << "'hist.value' with unexpected sequence kind '" << ty_seq->kind() << "'";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
     }
 }

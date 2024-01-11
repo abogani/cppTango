@@ -147,7 +147,7 @@ Tango::TgRequest &AsynReq::get_request(long req_id)
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous polling request ";
         desc << "with id = " << req_id << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
     }
 
     return pos->second;
@@ -178,7 +178,7 @@ Tango::TgRequest &AsynReq::get_request(CORBA::Request_ptr req)
     {
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous callback request ";
-        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsyn, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiAsynExcept, API_BadAsyn, desc.str());
     }
 
     return pos->second;
@@ -273,7 +273,7 @@ void AsynReq::remove_request(long req_id)
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous polling request ";
         desc << "with id = " << req_id << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
     }
     else
     {
@@ -385,7 +385,7 @@ void AsynReq::mark_as_cancelled(long req_id)
         TangoSys_OMemStream desc;
         desc << "Failed to find a asynchronous polling request ";
         desc << "with id = " << req_id << std::ends;
-        TANGO_THROW_API_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
+        TANGO_THROW_DETAILED_EXCEPTION(ApiAsynExcept, API_BadAsynPollId, desc.str());
     }
 }
 

@@ -19,8 +19,8 @@ namespace detail
 // @param [in] file Source file where assertion failed
 // @param [in] line Line number where assertion failed
 // @param [in] func Name of the function where assertion failed
-// @param [in] expr Asserted expression
-[[noreturn]] void assertion_failure(const char *file, int line, const char *func, const char *expr);
+// @param [in] msg  Message to display
+[[noreturn]] void assertion_failure(const char *file, int line, const char *func, const char *msg);
 } // namespace detail
 } // namespace Tango
 
@@ -37,10 +37,34 @@ namespace detail
  */
 
 #ifndef NDEBUG
-  #define TANGO_ASSERT(X) \
-      (X) ? static_cast<void>(0) : Tango::detail::assertion_failure(__FILE__, __LINE__, TANGO_CURRENT_FUNCTION, #X)
+  #define TANGO_ASSERT(X)        \
+      (X) ? static_cast<void>(0) \
+          : Tango::detail::assertion_failure(__FILE__, __LINE__, TANGO_CURRENT_FUNCTION, "Assertion '" #X "' failed")
 #else
   #define TANGO_ASSERT(X) static_cast<void>(X)
+#endif
+
+/**
+ * Abort on default branch of switch statement
+ *
+ * For debug builds aborts the program with a message printed to stderr
+ * explaining that we have reached an unexpected default branch of a
+ * switch statement.
+ *
+ * @param [in] switchValue Unhandled switch value
+ * @ingroup Macros
+ */
+
+#ifndef NDEBUG
+  #define TANGO_ASSERT_ON_DEFAULT(switchValue)                                                             \
+      do                                                                                                   \
+      {                                                                                                    \
+          std::stringstream msg;                                                                           \
+          msg << "Reached unexpected default branch with value '" << std::to_string(switchValue) << "'";   \
+          Tango::detail::assertion_failure(__FILE__, __LINE__, TANGO_CURRENT_FUNCTION, msg.str().c_str()); \
+      } while(false)
+#else
+  #define TANGO_ASSERT_ON_DEFAULT(switchValue) static_cast<void>(switchValue)
 #endif
 
 #endif

@@ -79,6 +79,90 @@ It might happen from time to time that an issue or an MR will have a significant
 
 Very very rarely it happens though, that we disagree and cannot find a common ground. Then Reynald Bourtembourg will have the final say as he is cppTango's long time leader.
 
+# Code guidelines
+
+## Error Handling
+
+There are two categories of errors that need to be handled in cppTango. These
+categories can be distinguished by who can handle them and thus who they should
+be reported too.
+
+1. Runtime errors -- the function failed to do what was advertised. To be
+   reported and handled by the calling code.  The preferred mechanism for reporting
+   these errors in cppTango is exceptions.  These are automatically
+   propagated over the network to calling processes by CORBA.
+2. Program bugs -- the program has reached a state that the code does not
+   expect.  This cannot be recovered from programmatically so should be
+   reported to a human by crashing the program via assertions.
+
+### Exceptions
+Exceptions should be used to raise runtime errors which are to be handled by the
+calling code.  Examples:
+- A user passed an invalid argument
+- A file does not exist
+- A connection timed out
+
+In most cases "handling the exception" might just mean reporting to the user
+that their request was invalid, or that something went wrong.  This has still
+been handled by the code.
+
+#### Guidelines
+
+- Prefer reporting exceptions using the `TANGO_THROW_DETAILED_EXCEPTION` macro with
+an appropriate `ExceptionClass`.  If no such appropriate `ExceptionClass` exists
+use the `TANGO_THROW_EXCEPTION` macro, which will through an exception of the
+`Tango::DevFailed` base class.
+- Document what exceptions a function can throw and under what circumstances
+- Mark functions which should never throw exceptions as `noexcept` (this
+effectively asserts that the function doesn't throw and thus should be thought
+of accordingly).
+- When calling a function which can throw make sure your function provides, at
+least, a weak exception guarantee.  If possible provide a strong exception
+guarantee.  Document what exception safety guarantee the function provides,
+this might depend on `ExceptionClass` thrown.
+- Exceptions will be propagated to other processes by CORBA, this is the
+mechanism used to inform the user that there request is invalid. With this in
+mind, provide a `desc` to help the user understand what when wrong.  Here are
+some prompts for what information to include in your description:
+    + What happened?
+    + What are the current circumstances? Provide the reason for this exception.
+    + What was expected to happen? Tell what the expected and normal situation is.
+    + If a value was involved:
+        * What was the expected value?
+        * What was the received value?
+    + What will the consequence of the abnormal situation be?
+    + Describe what will not be normal from now on.
+    + What will happen now?
+    + Will the current execution be aborted or
+    + Will the current execution continue?
+- Consider catching exceptions just to add more contextual information for the
+user.  Use `TANGO_RETHROW_DETAILED_EXCEPTION`/`TANGO_RETHROW_EXCEPTION` to rethrow
+the exception.
+
+### Assertions
+Assertions are checks in the code for situations that it is not prepared to
+handle.  Add assertions in the program to guard against bugs by reporting the
+problem as soon as it is detected. Remember that this reporting is done by
+crashing the program.
+
+A common place for invalid assumptions about the state of the program to occur
+is on the function call boundary.  This is because a function might have a
+"preconditions" which the author of the calling code is unaware of, e.g. a
+function expects non-null pointer arguments.  Authors of internal functions
+should use assertions to guard against these potential miss understandings.
+
+#### Guidelines
+
+- External functions should have wide contracts (i.e. no preconditions).  Raise
+an exception if called with invalid arguments.
+- For internal functions with narrow contracts (i.e. with preconditions):
+    + Document a functions preconditions and assert them at the start of the
+    function with `TANGO_ASSERT`
+    + If a function has a non-trivial precondition, provide a predicate function to
+    check it
+- Assert assumptions in the code using the `TANGO_ASSERT` macro to document your
+understanding of the program state at that point
+
 # Glossary
 
 - [co]:[Code Owners](https://gitlab.com/tango-controls/cppTango/-/blob/main/CODEOWNERS): The cppTango contributors who have a little bit more decision power than contributors. Usually they are the people who are either paid for working on cppTango or Tango Controls or they can just spend a significant amount of their time on cppTango or Tango Controls.

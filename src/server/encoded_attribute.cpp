@@ -267,9 +267,9 @@ void EncodedAttribute::decode_rgb32(DeviceAttribute *attr, int *width, int *heig
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
     if(encDataSeq.operator->() == nullptr)
     {
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                  API_IncompatibleAttrArgumentType,
-                                  "Cannot extract, data in DeviceAttribute object is not DevEncoded");
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                       API_IncompatibleAttrArgumentType,
+                                       "Cannot extract, data in DeviceAttribute object is not DevEncoded");
     }
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
@@ -345,9 +345,9 @@ void EncodedAttribute::decode_gray8(DeviceAttribute *attr, int *width, int *heig
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
     if(encDataSeq.operator->() == nullptr)
     {
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                  API_IncompatibleAttrArgumentType,
-                                  "Cannot extract, data in DeviceAttribute object is not DevEncoded");
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                       API_IncompatibleAttrArgumentType,
+                                       "Cannot extract, data in DeviceAttribute object is not DevEncoded");
     }
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
@@ -410,9 +410,9 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
     DevVarEncodedArray_var &encDataSeq = attr->get_Encoded_data();
     if(encDataSeq.operator->() == nullptr)
     {
-        TANGO_THROW_API_EXCEPTION(ApiDataExcept,
-                                  API_IncompatibleAttrArgumentType,
-                                  "Cannot extract, data in DeviceAttribute object is not DevEncoded");
+        TANGO_THROW_DETAILED_EXCEPTION(ApiDataExcept,
+                                       API_IncompatibleAttrArgumentType,
+                                       "Cannot extract, data in DeviceAttribute object is not DevEncoded");
     }
 
     std::string local_format(encDataSeq.in()[0].encoded_format);
@@ -553,7 +553,7 @@ void jpeg_encode_rgb(int width,
         cinfo.input_components = 4;
         cinfo.in_color_space = JCS_EXT_RGBA;
   #else
-        TANGO_THROW_API_EXCEPTION(
+        TANGO_THROW_DETAILED_EXCEPTION(
             ApiNonSuppExcept, API_UnsupportedFeature, "JPEG implementation does not support alpha channel");
   #endif
         break;
@@ -662,22 +662,22 @@ void EncodedAttribute::jpeg_decode(
 
 void EncodedAttribute::jpeg_encode_rgb32(int, int, unsigned char *, double, std::size_t *, unsigned char **)
 {
-    TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
+    TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
 }
 
 void EncodedAttribute::jpeg_encode_rgb24(int, int, unsigned char *, double, std::size_t *, unsigned char **)
 {
-    TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
+    TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
 }
 
 void EncodedAttribute::jpeg_encode_gray8(int, int, unsigned char *, double, std::size_t *, unsigned char **)
 {
-    TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
+    TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
 }
 
 void EncodedAttribute::jpeg_decode(std::size_t, unsigned char *, int *, int *, unsigned char *&)
 {
-    TANGO_THROW_API_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
+    TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
 }
 
 #endif // TANGO_USE_JPEG
