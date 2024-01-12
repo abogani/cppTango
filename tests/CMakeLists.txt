@@ -257,7 +257,7 @@ set(TESTS asyn_attr_cb
 # scan, back_ch_event, back_per_event, locked_device
 
 function(TEST_SUITE_ADD_TEST test)
-    add_executable(${test} ${test}.cpp)
+    add_executable(${test} ${test}.cpp common.cpp)
     target_compile_definitions(${test} PUBLIC ${COMMON_TEST_DEFS})
     target_link_libraries(${test} tango ${CMAKE_DL_LIBS} Threads::Threads)
     target_precompile_headers(${test} REUSE_FROM conf_devtest)
