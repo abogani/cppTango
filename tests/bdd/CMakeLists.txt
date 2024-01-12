@@ -16,7 +16,18 @@ else()
 endif()
 
 set(TANGO_BDD_LOG_DIR ${CMAKE_CURRENT_BINARY_DIR}/server_logs)
-add_custom_target(log_dir ALL COMMAND ${CMAKE_COMMAND} -E make_directory ${TANGO_BDD_LOG_DIR})
+
+add_test(NAME bdd::setup COMMAND
+    ${CMAKE_COMMAND}
+    "-DTANGO_BDD_LOG_DIR=${TANGO_BDD_LOG_DIR}"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/make_log_dir.cmake")
+add_test(NAME bdd::cleanup COMMAND
+    ${CMAKE_COMMAND}
+    "-DTANGO_BDD_LOG_DIR=${TANGO_BDD_LOG_DIR}"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/check_for_server_logs.cmake")
+
+set_tests_properties(bdd::setup PROPERTIES FIXTURES_SETUP BDD)
+set_tests_properties(bdd::cleanup PROPERTIES FIXTURES_CLEANUP BDD)
 
 add_library(bdd SHARED
     test_attr_manip.cpp

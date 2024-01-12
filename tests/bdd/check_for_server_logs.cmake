@@ -1,0 +1,21 @@
+message(STATUS "Checking for left over server logs in \"${TANGO_BDD_LOG_DIR}\"")
+
+file(GLOB logs "${TANGO_BDD_LOG_DIR}/*")
+
+if (logs)
+    list(LENGTH logs length)
+    if (${length} GREATER 1)
+        set(plural "s")
+    endif()
+    message(SEND_ERROR "Found ${length} left over server log${plural}")
+else()
+    message(STATUS "Found none")
+endif()
+
+foreach(f IN LISTS logs)
+    file(READ ${f} contents)
+    string(REGEX REPLACE "\n+$" "" contents ${contents})
+    string(REGEX REPLACE "\n" "\n    " contents ${contents})
+    get_filename_component(name ${f} NAME)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E echo "    === Found \"${name}\" ===\n    ${contents}")
+endforeach()
