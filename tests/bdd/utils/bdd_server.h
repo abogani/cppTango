@@ -1,12 +1,21 @@
 #ifndef TANGO_TESTS_BDD_UTILS_BDD_SERVER_H
 #define TANGO_TESTS_BDD_UTILS_BDD_SERVER_H
 
-#include <vector>
-#include <string>
 #include <chrono>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace TangoTest
 {
+
+class Logger
+{
+  public:
+    virtual void log(const std::string &) = 0;
+
+    virtual ~Logger() { }
+};
 
 /* RAII class for a BddServer process
  */
@@ -16,7 +25,7 @@ class BddServer
     constexpr static const int k_num_port_tries = 5;
     constexpr static const char *k_ready_string = "Ready to accept request";
     constexpr static const char *k_port_in_use_string = "INITIALIZE_TransportError";
-    constexpr static std::chrono::milliseconds k_timeout{5000};
+    constexpr static std::chrono::milliseconds k_default_timeout{5000};
 
     BddServer() = default;
 
@@ -38,14 +47,16 @@ class BddServer
      *  takes too long to output the ready string, or we fail to find a free port
      *  after a `num_port_tries` attempts.
      */
-    void start(const std::string &instance_name, std::vector<const char *> extra_args);
+    void start(const std::string &instance_name,
+               std::vector<const char *> extra_args,
+               std::chrono::milliseconds timeout = k_default_timeout);
 
     /** Stop the BddServer instance if it has been started.
      *
      *  If the instance has a non-zero exit status, then diagnostics will be
      *  output with the Catch2 WARN macro.
      */
-    void stop();
+    void stop(std::chrono::milliseconds timeout = k_default_timeout);
 
     ~BddServer();
 
@@ -62,6 +73,11 @@ class BddServer
     }
 
     struct Handle;
+
+    // We store the next port here so that it can be controlled from a test (for
+    // internal testing).
+    static int s_next_port;
+    static std::unique_ptr<Logger> s_logger;
 
   private:
     Handle *m_handle = nullptr;

@@ -21,6 +21,17 @@ namespace TangoTest
 namespace
 {
 
+class CatchLogger : public Logger
+{
+  public:
+    void log(const std::string &message) override
+    {
+        WARN(message);
+    }
+
+    ~CatchLogger() override { }
+};
+
 struct FilenameBuilder
 {
     // This is the limit on Linux and Windows
@@ -102,6 +113,12 @@ class PlatformListener : public Catch::EventListenerBase
     void testRunStarting(Catch::TestRunInfo const &) override
     {
         g_rng.seed(Catch::getSeed());
+        BddServer::s_logger = std::make_unique<CatchLogger>();
+
+        {
+            std::uniform_int_distribution dist{k_min_port, k_max_port};
+            BddServer::s_next_port = dist(g_rng);
+        }
 
         {
             constexpr const char k_base64[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -143,8 +160,14 @@ bool append_logs(std::istream &in, std::ostream &out)
 }
 
 } // namespace
+  //
 
-void BddServer::start(const std::string &instance_name, std::vector<const char *> extra_args)
+int BddServer::s_next_port;
+std::unique_ptr<Logger> BddServer::s_logger;
+
+void BddServer::start(const std::string &instance_name,
+                      std::vector<const char *> extra_args,
+                      std::chrono::milliseconds timeout)
 {
     using Kind = platform::StartServerResult::Kind;
 
@@ -173,10 +196,13 @@ void BddServer::start(const std::string &instance_name, std::vector<const char *
     {
         if(i != 0)
         {
-            WARN("Port " << m_port << " in use. Retrying...");
+            std::stringstream ss;
+            ss << "Port " << m_port << " in use. Retrying...";
+            s_logger->log(ss.str());
         }
 
         m_port = dist(g_rng);
+        std::swap(m_port, s_next_port);
 
         std::string end_point = [&]()
         {
@@ -186,7 +212,7 @@ void BddServer::start(const std::string &instance_name, std::vector<const char *
         }();
         *end_point_slot = end_point.c_str();
 
-        auto start_result = platform::start_server(args, m_redirect_file, k_ready_string, k_timeout);
+        auto start_result = platform::start_server(args, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
         {
@@ -203,7 +229,7 @@ void BddServer::start(const std::string &instance_name, std::vector<const char *
             append_logs(f, ss);
 
             m_handle = start_result.handle;
-            stop();
+            stop(timeout);
 
             throw std::runtime_error(ss.str());
         }
@@ -241,10 +267,10 @@ BddServer::~BddServer()
     }
 }
 
-void BddServer::stop()
+void BddServer::stop(std::chrono::milliseconds timeout)
 {
     using Kind = platform::StopServerResult::Kind;
-    auto stop_result = platform::stop_server(m_handle, k_timeout);
+    auto stop_result = platform::stop_server(m_handle, timeout);
 
     switch(stop_result.kind)
     {
@@ -255,7 +281,7 @@ void BddServer::stop()
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
-        WARN(ss.str());
+        s_logger->log(ss.str());
         break;
     }
     case Kind::ExitedEarly:
@@ -269,7 +295,7 @@ void BddServer::stop()
             std::ifstream f{m_redirect_file};
             append_logs(f, ss);
 
-            WARN(ss.str());
+            s_logger->log(ss.str());
         }
         break;
     }

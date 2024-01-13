@@ -18,6 +18,14 @@ CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
 
 namespace TangoTest
 {
+
+std::string make_nodb_fqtrl(int port, std::string_view device_name)
+{
+    std::stringstream ss;
+    ss << "tango://127.0.0.1:" << port << "/" << device_name << "#dbase=no";
+    return ss.str();
+}
+
 Context::Context(const std::string &instance_name, const std::string &tmpl_name, int idlversion)
 {
     std::string dlist_arg = [&]()
@@ -45,12 +53,7 @@ std::string Context::info()
 
 std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 {
-    std::string fqtrl = [this]()
-    {
-        std::stringstream ss;
-        ss << "tango://127.0.0.1:" << m_server.get_port() << "/BddServer/tests/1#dbase=no";
-        return ss.str();
-    }();
+    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "BddServer/tests/1");
 
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }

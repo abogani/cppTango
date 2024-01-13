@@ -15,6 +15,8 @@
 namespace TangoTest
 {
 
+std::string make_nodb_fqtrl(int port, std::string_view device_name);
+
 // TODO Multiple devices and/or multiple device servers
 class Context
 {

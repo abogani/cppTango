@@ -31,6 +31,7 @@ set_tests_properties(bdd::cleanup PROPERTIES FIXTURES_CLEANUP BDD)
 
 add_library(bdd SHARED
     test_attr_manip.cpp
+    test_bdd_server.cpp
     utils/auto_device_class.cpp
     utils/bdd_server.cpp
     utils/entry_points.cpp
