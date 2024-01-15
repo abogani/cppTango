@@ -56,6 +56,11 @@ class BddServer
         return m_port;
     }
 
+    const std::string &get_redirect_file() const
+    {
+        return m_redirect_file;
+    }
+
     struct Handle;
 
   private:

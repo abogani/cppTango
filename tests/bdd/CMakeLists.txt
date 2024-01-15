@@ -1,4 +1,5 @@
 find_package(Catch2 3 REQUIRED)
+include(Catch)
 
 set(PLATFORM_IMPL "")
 if(WIN32)
@@ -42,3 +43,5 @@ target_link_libraries(BddTests PRIVATE bdd)
 target_compile_definitions(bdd PRIVATE
     "-DTANGO_TEST_BDD_SERVER_BINARY_PATH=\"$<TARGET_FILE:BddServer>\""
     "-DTANGO_TEST_BDD_OUTPUT_DIRECTORY_PATH=\"${TANGO_BDD_LOG_DIR}\"")
+
+catch_discover_tests(BddTests TEST_PREFIX "bdd::" EXTRA_ARGS --warn NoAssertions PROPERTIES FIXTURES_REQUIRED BDD)

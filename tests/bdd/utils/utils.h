@@ -7,6 +7,33 @@
 #include "utils/auto_device_class.h"
 #include "utils/bdd_server.h"
 
+#include <tango/tango.h>
+
+#include <memory>
+
+namespace TangoTest
+{
+
+// TODO Multiple devices and/or multiple device servers
+class Context
+{
+  public:
+    Context(const std::string &instance_name, const std::string &tmpl_name);
+    Context(const Context &) = delete;
+    Context &operator=(Context &) = delete;
+
+    ~Context();
+
+    std::string info();
+
+    std::unique_ptr<Tango::DeviceProxy> get_proxy();
+
+  private:
+    BddServer m_server;
+};
+
+} // namespace TangoTest
+
 //+ Instantiate a TangoTest::AutoDeviceClass for template class DEVICE
 ///
 /// This macro expects that the DEVICE takes its base class as a template

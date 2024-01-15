@@ -4,8 +4,6 @@
 
 #include "utils/utils.h"
 
-// Hard code device name as we plan to not need this
-static constexpr const char *DEVICE_NAME = "tango://127.0.0.1:10000/attr_manip/test/1#dbase=no";
 static constexpr double SERVER_VALUE = 8.888;
 
 template <class Base>
@@ -37,9 +35,11 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrManipDev)
 
 SCENARIO("attribute formatting can be controlled")
 {
-    GIVEN("a device proxy")
+    GIVEN("a device proxy to a simple device")
     {
-        auto device = std::make_unique<Tango::DeviceProxy>(DEVICE_NAME);
+        TangoTest::Context ctx{"attr_manip", "AttrManipDev"};
+        INFO(ctx.info());
+        auto device = ctx.get_proxy();
 
         AND_GIVEN("an attribute name and configuration")
         {
