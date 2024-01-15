@@ -5,6 +5,7 @@
 #include <catch2/generators/catch_generators.hpp>
 
 #include "utils/auto_device_class.h"
+#include "utils/bdd_server.h"
 
 //+ Instantiate a TangoTest::AutoDeviceClass for template class DEVICE
 ///
