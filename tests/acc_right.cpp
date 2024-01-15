@@ -290,7 +290,7 @@ int main(int argc, char **argv)
     string cmd_line("export MYSQL_USER=root;export MYSQL_PASSWORD=root;export "
                     "SUPER_TANGO=true;/home/taurel/tango/cppserver/TangoAccessControl/bin/ubuntu810/TangoAccessControl "
                     "1 2>/dev/null 1>/dev/null &");
-    system(cmd_line.c_str());
+    assert(system(cmd_line.c_str()) == 0);
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
     ApiUtil::cleanup();
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
 
     try
     {
-        system(cmd_stream.str().c_str());
+        assert(system(cmd_stream.str().c_str()) == 0);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -426,7 +426,7 @@ int main(int argc, char **argv)
 
     try
     {
-        system(cmd_stream.str().c_str());
+        assert(system(cmd_stream.str().c_str()) == 0);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -506,7 +506,7 @@ int main(int argc, char **argv)
         cmd_stream << "kill -9 " << ca_pid;
         TEST_LOG << "Third kill cmd = " << cmd_stream.str() << endl;
 
-        system(cmd_stream.str().c_str());
+        assert(system(cmd_stream.str().c_str()) == 0);
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         check_device_access(dev_dp, true, false);
