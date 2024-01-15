@@ -87,6 +87,24 @@ Once you have installed docker, you can run the tests from `build/` via:
 ctest
 ```
 
+#### Excluding IDL5 tests
+
+All of our test executables are run against two versions of the device servers.
+The default "IDL6 servers", where device classes inherit from
+`Tango::Device_6Impl` and the "IDL5 servers", where device classes inherit from
+`Tango::Device_5Impl`.
+
+There are two copies of each test registered with `ctest`:  One with the
+`idl5::` prefix, which runs against the IDL5 servers; and, one without the
+prefix, which runs against the IDL6 servers.
+
+To avoid running the IDL5 versions of the tests, pass `-E "idl5::"` to ctest to
+exclude these tests:
+
+```bash
+ctest -E "idl5::"
+```
+
 #### Run individual tests
 
 For debugging a single test execute the following:
@@ -109,10 +127,29 @@ manually, from `build/` directory run:
 source ./tests/environment/setup_database.sh  # source to get TANGO_HOST
 ./tests/environment/setup_devices.sh
 # attach the debugger or perform some additional configuration
-TANGO_TEST_CASE_SKIP_FIXTURE=1 ctest -V -R ds_cache
+TANGO_TEST_CASE_SKIP_FIXTURE=1 ctest -V -R ds_cache -E "idl5::"
 killall DevTest FwdTest
 docker stop tango_cs mysql_db
 ```
+
+The above starts the latest IDL version (i.e. IDL6) of the servers and, in
+general, the "idl5::" versions of the tests will fail against these servers. So,
+we pass `-E "idl5::"` to `ctest` to avoid running these tests.
+
+To start IDL5 versions of the servers run `./tests/environment/setup_devices.sh`
+with `IDL_SUFFIX=_IDL5` set:
+
+```bash
+source ./tests/environment/setup_database.sh  # source to get TANGO_HOST
+IDL_SUFFIX=_IDL5 ./tests/environment/setup_devices.sh
+# attach the debugger or perform some additional configuration
+TANGO_TEST_CASE_SKIP_FIXTURE=1 ctest -V -R ds_cache -R "idl5::"
+killall DevTest FwdTest
+docker stop tango_cs mysql_db
+```
+
+Here the IDL6 versions of the tests will fail, so we must exclude them by
+passing `-R "idl5::" to `ctest`.
 
 #### Execucting gitlab CI jobs locally
 

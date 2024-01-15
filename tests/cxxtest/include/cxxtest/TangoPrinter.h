@@ -27,8 +27,17 @@
 #include <string>
 #include <string.h>
 #include <map>
+#include <vector>
 #include <config.h>
 #include <cstdlib>
+
+#ifdef WIN32
+// On Windows system() returns "the value that is returned by the command
+// interpreter"[1], so the exit status is just the return value from system().
+//
+// [1] https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/system-wsystem?view=msvc-170
+#define WEXITSTATUS(X) X
+#endif
 
 // Tango exceptions handling
 //#undef _TS_CATCH_ABORT
@@ -786,14 +795,49 @@ public:
         return params_tmp;
     }
 
-        static void start_server(const std::string& instance){
-            std::string command = Tango::kStartServerCmd;
-            command += instance;
-            system(command.c_str());
+
+        // env should be strings in the form "VAR=VAL"
+        static void start_server(const std::string& instance, const std::vector<std::string>& env = {}){
+            std::string device_server_name = get_param("fulldsname");
+            size_t exec_part_end = device_server_name.find("/");
+            std::string device_server_exec = device_server_name.substr(0, exec_part_end);
+
+            std::stringstream command;
+            command << "/usr/bin/env ";
+
+            for(const auto& variable: env) {
+                command << variable << " ";
+            }
+
+
+            command << Tango::kStartServerCmd;
+            command << " " << instance;
+
+            command << " " << device_server_exec;
+
+            int ret = system(command.str().c_str());
+            if (ret == -1) {
+                std::stringstream ss;
+                ss << "system() failed with errno=" << errno << " (" << strerror(errno) << ")";
+                throw std::runtime_error(ss.str());
+            } else if (WEXITSTATUS(ret) != 0) {
+                std::stringstream ss;
+                ss << "\"" << command.str() << "\" failed with exit status " << WEXITSTATUS(ret);
+                throw std::runtime_error(ss.str());
+            }
         }
 
         static void kill_server() {
-            system(Tango::kKillServerCmd.c_str());
+            int ret = system(Tango::kKillServerCmd.c_str());
+            if (ret == -1) {
+                std::stringstream ss;
+                ss << "system() failed with errno=" << errno << " (" << strerror(errno) << ")";
+                throw std::runtime_error(ss.str());
+            } else if (WEXITSTATUS(ret) != 0) {
+                std::stringstream ss;
+                ss << "\"" << Tango::kKillServerCmd << "\" failed with exit status " << WEXITSTATUS(ret);
+                throw std::runtime_error(ss.str());
+            }
         }
 
 private:

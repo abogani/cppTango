@@ -8,9 +8,9 @@ int main(int argc, char **argv)
 {
     DeviceProxy *device;
 
-    if(argc != 3)
+    if(argc != 4)
     {
-        TEST_LOG << "usage: " << argv[0] << " <device> <full ds name>" << endl;
+        TEST_LOG << "usage: " << argv[0] << " <device> <full ds name> <idlver>" << endl;
         exit(-1);
     }
 
@@ -18,6 +18,7 @@ int main(int argc, char **argv)
     string ds_name = argv[2];
     string admin_device("dserver/");
     admin_device = admin_device + ds_name;
+    int idlver = parse_as<int>(argv[3]);
 
     try
     {
@@ -311,7 +312,7 @@ int main(int argc, char **argv)
 
 #ifndef COMPAT
         int vers = device->get_idl_version();
-        assert(vers == 6);
+        assert(vers == idlver);
 
         TEST_LOG << "   Get IDL version --> OK" << endl;
 #endif

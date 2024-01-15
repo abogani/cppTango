@@ -26,7 +26,7 @@ class MiscTestSuite : public CxxTest::TestSuite
         full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
         dserver_name = "dserver/" + CxxTest::TangoPrinter::get_param("fulldsname");
         server_host = CxxTest::TangoPrinter::get_param("serverhost");
-        server_version = atoi(CxxTest::TangoPrinter::get_param("serverversion").c_str());
+        TS_ASSERT_THROWS_NOTHING(server_version = parse_as<int>(CxxTest::TangoPrinter::get_param("serverversion")));
         doc_url = CxxTest::TangoPrinter::get_param("docurl");
         dev_type = CxxTest::TangoPrinter::get_param("devtype");
 

@@ -5,7 +5,8 @@ export SHELLOPTS
 set -o errexit
 set -o nounset
 
-export pids=$(tr '\n' ' ' <"${TANGO_TEST_CASE_DIRECTORY}/server_pids")
+export server_pids="${TANGO_TEST_CASE_DIRECTORY}/server_pids"
+export pids=$(sed -e "/dead/d" "${server_pids}" | tr '\n' ' ')
 
 function wait_pids() {
     local dead=
@@ -13,6 +14,7 @@ function wait_pids() {
         dead=
         for pid in $pids; do
             if ! ps --pid $pid &>/dev/null; then
+                sed -i "/$pid/ s/$/ dead/" ${server_pids}
                 dead="$dead $pid"
             fi
         done

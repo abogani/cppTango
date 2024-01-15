@@ -55,11 +55,25 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     virtual ~SUITE_NAME()
     {
         // Cleanup servers if necessary
-        CxxTest::TangoPrinter::kill_server();
+        try
+        {
+            CxxTest::TangoPrinter::kill_server();
+        }
+        catch(const std::runtime_error &ex)
+        {
+            std::cerr << "kill_server failed during teardown: \"" << ex.what() << "\"\n";
+        }
 
         // make sure that device1 is actually running as it expected
         // by subsequent tests
-        CxxTest::TangoPrinter::start_server(device1_instance_name);
+        try
+        {
+            CxxTest::TangoPrinter::start_server(device1_instance_name);
+        }
+        catch(const std::runtime_error &ex)
+        {
+            std::cerr << "start_server failed during teardown: \"" << ex.what() << "\"\n";
+        }
     }
 
     static SUITE_NAME *createSuite()
@@ -77,26 +91,29 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     {
         TEST_LOG << endl << "cxx_server_configure_zmq_ports: setup" << endl;
         // Stop any previously running server first
-        CxxTest::TangoPrinter::kill_server();
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::kill_server());
     }
 
     // startup device server with optional fixed ports
     void start_server_with_ports(std::string event_port, std::string heartbeat_port)
     {
-        std::string env = "/usr/bin/env ";
+        std::vector<std::string> env;
         if(!event_port.empty())
         {
-            env = env + " TANGO_ZMQ_EVENT_PORT=" + event_port + " ";
+            env.push_back("TANGO_ZMQ_EVENT_PORT=" + event_port);
         }
-        if(!event_port.empty())
+        if(!heartbeat_port.empty())
         {
-            env = env + " TANGO_ZMQ_HEARTBEAT_PORT=" + heartbeat_port + " ";
+            env.push_back("TANGO_ZMQ_HEARTBEAT_PORT=" + heartbeat_port);
         }
         // Restart the test server with env vars for the fixed ports
-        TEST_LOG << endl
-                 << "cxx_server_configure_zmq_ports: relaunching DevTest/test with port specification - "
-                 << env + Tango::kStartServerCmd + device1_instance_name << endl;
-        TS_ASSERT_THROWS_NOTHING(system((env + Tango::kStartServerCmd + device1_instance_name).c_str()););
+        TEST_LOG << "\ncxx_server_configure_zmq_ports: relaunching DevTest/test with port specification:\n";
+        for(const auto &variable : env)
+        {
+            TEST_LOG << variable << "\n";
+        }
+        TEST_LOG << "instance name = " << device1_instance_name << endl;
+        CxxTest::TangoPrinter::start_server(device1_instance_name, env);
         CxxTest::TangoPrinter::restore_set("test/debian8/10 started.");
 
         // wait a bit for the server to properly start
@@ -181,7 +198,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     {
         // Stop any previously running server first
 
-        start_server_with_ports(string(""), string(""));
+        TS_ASSERT_THROWS_NOTHING(start_server_with_ports(string(""), string("")));
 
         DeviceProxy *device1 = create_and_check_device1_proxy();
         DeviceProxy *dserver = create_and_check_admin_device_proxy();
@@ -226,7 +243,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     //
     void test_02_device_server_zmq_event_port_configured(void)
     {
-        start_server_with_ports(event_port, heartbeat_port);
+        TS_ASSERT_THROWS_NOTHING(start_server_with_ports(event_port, heartbeat_port));
 
         DeviceProxy *device1 = create_and_check_device1_proxy();
         DeviceProxy *dserver = create_and_check_admin_device_proxy();
@@ -267,7 +284,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     void test_03_device_server_zmq_event_invalid_event_port_configured(void)
     {
         std::string bogus_event_port("XXXX");
-        start_server_with_ports(bogus_event_port, heartbeat_port);
+        TS_ASSERT_THROWS_NOTHING(start_server_with_ports(bogus_event_port, heartbeat_port));
 
         DeviceProxy *device1 = create_and_check_device1_proxy();
         DeviceProxy *dserver = create_and_check_admin_device_proxy();
@@ -312,7 +329,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
     {
         DeviceProxy *device1;
 
-        start_server_with_ports(event_port, string("YYYY"));
+        TS_ASSERT_THROWS(start_server_with_ports(event_port, string("YYYY")), std::runtime_error & e);
 
         // try and ping the device - this should fail because of bad heartbeat config
         device1 = new DeviceProxy(device1_name);

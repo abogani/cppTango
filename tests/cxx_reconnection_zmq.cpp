@@ -41,7 +41,7 @@ class RecoZmqTestSuite : public CxxTest::TestSuite
             device2 = new DeviceProxy(device2_name);
 
             // TODO start server 2 and set fallback point
-            CxxTest::TangoPrinter::start_server(device2_instance_name);
+            TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::start_server(device2_instance_name));
             CxxTest::TangoPrinter::restore_set("test2/debian8/20 started.");
 
             // sleep 18 &&  start_server "@INST_NAME@" &
@@ -49,7 +49,14 @@ class RecoZmqTestSuite : public CxxTest::TestSuite
                 [this]()
                 {
                     std::this_thread::sleep_for(std::chrono::seconds(18));
-                    CxxTest::TangoPrinter::start_server(device1_instance_name);
+                    try
+                    {
+                        CxxTest::TangoPrinter::start_server(device1_instance_name);
+                    }
+                    catch(const std::runtime_error &ex)
+                    {
+                        std::cerr << "start_server failed in background thread: \"" << ex.what() << "\"\n";
+                    }
                 })
                 .detach();
 
@@ -58,7 +65,14 @@ class RecoZmqTestSuite : public CxxTest::TestSuite
                 [this]()
                 {
                     std::this_thread::sleep_for(std::chrono::seconds(62));
-                    CxxTest::TangoPrinter::start_server(device1_instance_name);
+                    try
+                    {
+                        CxxTest::TangoPrinter::start_server(device1_instance_name);
+                    }
+                    catch(const std::runtime_error &ex)
+                    {
+                        std::cerr << "start_server failed in background thread: \"" << ex.what() << "\"\n";
+                    }
                 })
                 .detach();
         }
@@ -73,10 +87,24 @@ class RecoZmqTestSuite : public CxxTest::TestSuite
     {
         if(CxxTest::TangoPrinter::is_restore_set("test2/debian8/20 started."))
         {
-            CxxTest::TangoPrinter::kill_server();
+            try
+            {
+                CxxTest::TangoPrinter::kill_server();
+            }
+            catch(const std::runtime_error &ex)
+            {
+                std::cerr << "kill_server failed during teardown: \"" << ex.what() << "\"\n";
+            }
         }
 
-        CxxTest::TangoPrinter::start_server(device1_instance_name);
+        try
+        {
+            CxxTest::TangoPrinter::start_server(device1_instance_name);
+        }
+        catch(const std::runtime_error &ex)
+        {
+            std::cerr << "start_server failed during teardown: \"" << ex.what() << "\"\n";
+        }
 
         delete device1;
         delete device2;

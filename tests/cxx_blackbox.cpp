@@ -29,7 +29,7 @@ class BlackboxTestSuite : public CxxTest::TestSuite
         device3_name = CxxTest::TangoPrinter::get_param("device3");
         dserver_name = "dserver/" + CxxTest::TangoPrinter::get_param("fulldsname");
         client_host = CxxTest::TangoPrinter::get_param("clienthost");
-        server_version = atoi(CxxTest::TangoPrinter::get_param("serverversion").c_str());
+        TS_ASSERT_THROWS_NOTHING(server_version = parse_as<int>(CxxTest::TangoPrinter::get_param("serverversion")));
         dbserver_name = CxxTest::TangoPrinter::get_param("dbserver");
 
         CxxTest::TangoPrinter::validate_args();

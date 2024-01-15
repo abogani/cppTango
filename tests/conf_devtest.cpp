@@ -6,7 +6,7 @@ using namespace Tango;
 
 #define CLASS_NAME "DevTest"
 
-void print_changes(std::string &desc, std::string &server, DbData &db_data)
+void print_changes(const std::string &desc, const std::string &server, DbData &db_data)
 {
     TEST_LOG << desc << " -> " << server << " : " << std::endl;
 
@@ -26,12 +26,6 @@ void print_changes(std::string &desc, std::string &server, DbData &db_data)
     TEST_LOG << std::endl;
 }
 
-void print_changes(const char *desc, const char *server, DbData &db_data)
-{
-    std::string desc_str(desc), server_str(server);
-    print_changes(desc_str, server_str, db_data);
-}
-
 /*
  * This is a utility that configures properties of test device servers provided as
  * command line parameters. Attribute values, their ranges and other properties are
@@ -39,15 +33,25 @@ void print_changes(const char *desc, const char *server, DbData &db_data)
  */
 int main(int argc, char **argv)
 {
-    if(argc < 7)
+    if(argc != 11)
     {
         TEST_LOG << "usage: " << argv[0]
-                 << " dserver device1 device2 device3 device1_alias attribute_alias fwd_device device20" << std::endl;
+                 << " dserver dserver2 fwd_dserver device1 device2 device3 device1_alias "
+                    "attribute_alias fwd_device device20"
+                 << std::endl;
         exit(-1);
     }
 
-    std::string dserver_name = argv[1], device1_name = argv[2], device2_name = argv[3], device3_name = argv[4],
-                device1_alias = argv[5], attribute_alias = argv[6], fwd_dev_name = argv[7], device20_name = argv[8];
+    std::string dserver_name = argv[1];
+    std::string dserver2_name = argv[2];
+    std::string fwd_dserver_name = argv[3];
+    std::string device1_name = argv[4];
+    std::string device2_name = argv[5];
+    std::string device3_name = argv[6];
+    std::string device1_alias = argv[7];
+    std::string attribute_alias = argv[8];
+    std::string fwd_dev_name = argv[9];
+    std::string device20_name = argv[10];
 
     Database *db = new Database();
     DbData db_data;
@@ -89,7 +93,7 @@ int main(int argc, char **argv)
 
     db_dev_infos.clear();
 
-    str = "DevTest/test2"; // TODO pass as arg
+    str = dserver2_name;
     DbDevInfo device20Info;
     device20Info.name = device20_name;
     device20Info._class = CLASS_NAME;
@@ -112,7 +116,7 @@ int main(int argc, char **argv)
     }
 
     // Define device server
-    str = "FwdTest/test"; // TODO pass as arg
+    str = fwd_dserver_name;
     DbDevInfo fwdTestInfo;
     fwdTestInfo.name = fwd_dev_name;
     fwdTestInfo._class = "FwdTest";

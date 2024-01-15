@@ -26,6 +26,15 @@ class CompareTest
   public:
     //+-------------------------------------------------------------------------
     //
+    // method :            make_filename_unique
+    //
+    // description :    Returns a filename from `base` which is guaranteed to be
+    //                  unique among all the running copies of this program.
+    // argument : in :    - base : basename for the file
+    static std::string make_filename_unique(std::string base);
+
+    //+-------------------------------------------------------------------------
+    //
     // method :            out_set_event_properties
     //
     // description :    Scans the output file seeking log4j:event tags and replaces

@@ -62,10 +62,9 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
             {
                 CxxTest::TangoPrinter::start_server(device1_instance_name);
             }
-            catch(DevFailed &e)
+            catch(const std::runtime_error &ex)
             {
-                TEST_LOG << endl << "Exception in suite tearDown():" << endl;
-                Except::print_exception(e);
+                std::cerr << "start_server failed: \"" << ex.what() << "\"\n";
             }
         }
 
@@ -144,10 +143,10 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
 
     void test_TestWriteAttributeAsynchAfterReconnection()
     {
-        CxxTest::TangoPrinter::kill_server();
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::kill_server());
         CxxTest::TangoPrinter::restore_set("Server_Killed");
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        CxxTest::TangoPrinter::start_server(device1_instance_name);
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::start_server(device1_instance_name));
         std::this_thread::sleep_for(std::chrono::seconds(1));
         CxxTest::TangoPrinter::restore_unset("Server_Killed");
         try

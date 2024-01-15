@@ -24,6 +24,58 @@ using namespace Tango;
 #include <mutex>
 #include <condition_variable>
 #include <chrono>
+#include <charconv>
+#include <sstream>
+
+// We have a struct here so that if parse_as is used with an unsupported type it
+// will produce an error.
+template <typename T>
+struct type_name_impl;
+
+template <typename T>
+constexpr const char *type_name = type_name_impl<T>::value;
+
+#define SPECIALIZE_TYPE_NAME(t)                  \
+    template <>                                  \
+    struct type_name_impl<t>                     \
+    {                                            \
+        constexpr static const char *value = #t; \
+    }
+
+// Add as required
+SPECIALIZE_TYPE_NAME(int);
+SPECIALIZE_TYPE_NAME(long);
+SPECIALIZE_TYPE_NAME(double);
+
+#undef SPECIALIZE_TYPE_NAME
+
+/**
+ * Parse a string as the given type.
+ *
+ * Throws a std::runtime_error if the string cannot be entirely parsed to the type T
+ */
+template <typename T>
+T parse_as(const std::string &str)
+{
+    T result{};
+    auto first = str.data();
+    auto last = str.data() + str.size();
+    auto [ptr, ec] = std::from_chars(first, last, result);
+
+    if(ec != std::errc{} || ptr != last)
+    {
+        std::stringstream ss;
+        ss << "\"" << str << "\" cannot be entirely parsed into " << type_name<T>;
+        throw std::runtime_error{ss.str()};
+    }
+
+    return result;
+}
+
+#ifndef TANGO_HAS_FROM_CHARS_DOUBLE
+template <>
+double parse_as<double>(const std::string &str);
+#endif
 
 /**
  * Wrapper for unsetenv working on windows systems as well.

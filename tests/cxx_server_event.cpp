@@ -13,7 +13,7 @@ class ServerEventTestSuite : public CxxTest::TestSuite
 {
   protected:
     DeviceProxy *device1, *device2;
-    string device1_name, device2_name, device1_instance_name, device2_instance_name;
+    string device1_name, device2_name, device1_instance_name, device2_instance_name, full_ds_name;
     DevLong eve_id;
 
   public:
@@ -27,6 +27,7 @@ class ServerEventTestSuite : public CxxTest::TestSuite
 
         device1_name = CxxTest::TangoPrinter::get_param("device1");
         device2_name = CxxTest::TangoPrinter::get_param("device20");
+        full_ds_name = CxxTest::TangoPrinter::get_param("fulldsname");
 
         CxxTest::TangoPrinter::validate_args();
 
@@ -43,6 +44,10 @@ class ServerEventTestSuite : public CxxTest::TestSuite
             CxxTest::TangoPrinter::start_server(device2_instance_name);
             CxxTest::TangoPrinter::restore_set("test2/debian8/20 started.");
         }
+        catch(std::runtime_error &ex)
+        {
+            std::cerr << "start_server failed: \"" << ex.what() << "\"\n";
+        }
         catch(CORBA::Exception &e)
         {
             Except::print_exception(e);
@@ -54,10 +59,24 @@ class ServerEventTestSuite : public CxxTest::TestSuite
     {
         if(CxxTest::TangoPrinter::is_restore_set("test2/debian8/20 started."))
         {
-            CxxTest::TangoPrinter::kill_server();
+            try
+            {
+                CxxTest::TangoPrinter::kill_server();
+            }
+            catch(const std::runtime_error &ex)
+            {
+                std::cerr << "kill_server failed during teardown: \"" << ex.what() << "\"\n";
+            }
         }
 
-        CxxTest::TangoPrinter::start_server(device1_instance_name);
+        try
+        {
+            CxxTest::TangoPrinter::start_server(device1_instance_name);
+        }
+        catch(const std::runtime_error &ex)
+        {
+            std::cerr << "start_server failed during teardown: \"" << ex.what() << "\"\n";
+        }
 
         delete device1;
         delete device2;
@@ -141,8 +160,11 @@ class ServerEventTestSuite : public CxxTest::TestSuite
     void test_reconnection_after_ds_instance_rename()
     {
         const std::string new_instance_name = "renamed_ds";
-        const std::string new_ds_name = "DevTest/" + new_instance_name;
-        const std::string old_ds_name = "DevTest/" + device1_instance_name;
+        const std::string old_ds_name = full_ds_name;
+
+        size_t exec_part_end = full_ds_name.find("/");
+        std::string new_ds_name = full_ds_name.substr(0, exec_part_end + 1);
+        new_ds_name += new_instance_name;
 
         const std::string attribute_name = "event_change_tst";
 
@@ -156,12 +178,12 @@ class ServerEventTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(2, callback.invocation_count());
         TS_ASSERT_EQUALS(0, callback.error_count());
 
-        CxxTest::TangoPrinter::kill_server();
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::kill_server());
 
         Database db{};
         db.rename_server(old_ds_name, new_ds_name);
 
-        CxxTest::TangoPrinter::start_server(new_instance_name);
+        TS_ASSERT_THROWS_NOTHING(CxxTest::TangoPrinter::start_server(new_instance_name));
         // std::this_thread::sleep_for(std::chrono::seconds(EVENT_HEARTBEAT_PERIOD)); // Wait for reconnection
 
         callback.wait_for([&]() { return callback.invocation_count() >= 5; });

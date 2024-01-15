@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     }
 
     string device_name = argv[1];
-    long loop = atol(argv[2]);
+    long loop = parse_as<long>(argv[2]);
 
     try
     {
