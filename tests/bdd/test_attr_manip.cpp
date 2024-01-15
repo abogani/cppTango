@@ -31,15 +31,18 @@ class AttrManipDev : public Base
     Tango::DevDouble attr_dq_double;
 };
 
-TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrManipDev)
+TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrManipDev, 3)
 
 SCENARIO("attribute formatting can be controlled")
 {
-    GIVEN("a device proxy to a simple device")
+    int idlver = GENERATE(range(3, 7));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
-        TangoTest::Context ctx{"attr_manip", "AttrManipDev"};
+        TangoTest::Context ctx{"attr_manip", "AttrManipDev", idlver};
         INFO(ctx.info());
         auto device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
 
         AND_GIVEN("an attribute name and configuration")
         {

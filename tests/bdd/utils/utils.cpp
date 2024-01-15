@@ -18,12 +18,12 @@ CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
 
 namespace TangoTest
 {
-Context::Context(const std::string &instance_name, const std::string &tmpl_name)
+Context::Context(const std::string &instance_name, const std::string &tmpl_name, int idlversion)
 {
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
-        ss << tmpl_name << "::BddServer/tests/1";
+        ss << tmpl_name << "_" << idlversion << "::BddServer/tests/1";
         return ss.str();
     }();
 
