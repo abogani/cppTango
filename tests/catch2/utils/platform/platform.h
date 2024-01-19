@@ -1,7 +1,7 @@
-#ifndef TANGO_TESTS_BDD_PLATFORM_IMPL_COMMON_H
-#define TANGO_TESTS_BDD_PLATFORM_IMPL_COMMON_H
+#ifndef TANGO_TESTS_CATCH2_PLATFORM_IMPL_COMMON_H
+#define TANGO_TESTS_CATCH2_PLATFORM_IMPL_COMMON_H
 
-#include "utils/bdd_server.h"
+#include "utils/test_server.h"
 
 #include <vector>
 #include <string>
@@ -10,8 +10,8 @@
 namespace TangoTest::platform
 {
 
-constexpr static const char *k_bdd_server_binary_path = TANGO_TEST_BDD_SERVER_BINARY_PATH;
-constexpr static const char *k_output_directory_path = TANGO_TEST_BDD_OUTPUT_DIRECTORY_PATH;
+constexpr static const char *k_test_server_binary_path = TANGO_TEST_CATCH2_SERVER_BINARY_PATH;
+constexpr static const char *k_output_directory_path = TANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH;
 
 /** Called when the test run starts to do any setup required by the platform
  */
@@ -33,7 +33,7 @@ struct StartServerResult
 
     union
     {
-        BddServer::Handle *handle;
+        TestServer::Handle *handle;
         int exit_status;
     };
 };
@@ -68,7 +68,7 @@ struct StopServerResult
 /** Stop the server specified by handle.
  *
  */
-StopServerResult stop_server(BddServer::Handle *handle, std::chrono::milliseconds timeout);
+StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout);
 
 } // namespace TangoTest::platform
 

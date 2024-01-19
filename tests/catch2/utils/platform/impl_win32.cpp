@@ -12,7 +12,7 @@ StartServerResult start_server([[maybe_unused]] const std::vector<const char *> 
     return StartServerResult{};
 }
 
-StopServerResult stop_server([[maybe_unused]] BddServer::Handle *handle,
+StopServerResult stop_server([[maybe_unused]] TestServer::Handle *handle,
                              [[maybe_unused]] std::chrono::milliseconds timeout)
 {
     return StopServerResult{};

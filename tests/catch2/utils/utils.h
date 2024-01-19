@@ -1,12 +1,12 @@
-#ifndef TANGO_TESTS_BDD_UTILS_UTILS_H
-#define TANGO_TESTS_BDD_UTILS_UTILS_H
+#ifndef TANGO_TESTS_CATCH2_UTILS_UTILS_H
+#define TANGO_TESTS_CATCH2_UTILS_UTILS_H
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/generators/catch_generators_range.hpp>
 
 #include "utils/auto_device_class.h"
-#include "utils/bdd_server.h"
+#include "utils/test_server.h"
 
 #include <tango/tango.h>
 
@@ -32,7 +32,7 @@ class Context
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
 
   private:
-    BddServer m_server;
+    TestServer m_server;
 };
 
 } // namespace TangoTest

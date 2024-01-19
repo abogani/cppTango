@@ -156,7 +156,7 @@ StartServerResult start_server(const std::vector<const char *> &args,
 
         unix::kill_self_on_parent_death(ppid);
 
-        if(execv(k_bdd_server_binary_path, (char *const *) args.data()) == -1)
+        if(execv(k_test_server_binary_path, (char *const *) args.data()) == -1)
         {
             perror("execv()");
             exit(1);
@@ -218,7 +218,7 @@ StartServerResult start_server(const std::vector<const char *> &args,
             else if(ready == 0)
             {
                 result.kind = Kind::Timeout;
-                result.handle = reinterpret_cast<BddServer::Handle *>(pid);
+                result.handle = reinterpret_cast<TestServer::Handle *>(pid);
                 return result;
             }
             else
@@ -248,7 +248,7 @@ StartServerResult start_server(const std::vector<const char *> &args,
                     if(line.find(ready_string) != std::string::npos)
                     {
                         result.kind = Kind::Started;
-                        result.handle = reinterpret_cast<BddServer::Handle *>(pid);
+                        result.handle = reinterpret_cast<TestServer::Handle *>(pid);
                         return result;
                     }
                 }
@@ -258,7 +258,7 @@ StartServerResult start_server(const std::vector<const char *> &args,
     }
 }
 
-StopServerResult stop_server(BddServer::Handle *handle, std::chrono::milliseconds timeout)
+StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout)
 {
     using std::chrono::steady_clock;
     using Kind = StopServerResult::Kind;

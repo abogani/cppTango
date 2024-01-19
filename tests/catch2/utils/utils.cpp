@@ -31,7 +31,7 @@ Context::Context(const std::string &instance_name, const std::string &tmpl_name,
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
-        ss << tmpl_name << "_" << idlversion << "::BddServer/tests/1";
+        ss << tmpl_name << "_" << idlversion << "::TestServer/tests/1";
         return ss.str();
     }();
 
@@ -53,7 +53,7 @@ std::string Context::info()
 
 std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 {
-    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "BddServer/tests/1");
+    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "TestServer/tests/1");
 
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }

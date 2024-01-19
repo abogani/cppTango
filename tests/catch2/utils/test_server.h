@@ -1,5 +1,5 @@
-#ifndef TANGO_TESTS_BDD_UTILS_BDD_SERVER_H
-#define TANGO_TESTS_BDD_UTILS_BDD_SERVER_H
+#ifndef TANGO_TESTS_CATCH2_UTILS_TEST_SERVER_H
+#define TANGO_TESTS_CATCH2_UTILS_TEST_SERVER_H
 
 #include <chrono>
 #include <memory>
@@ -17,9 +17,9 @@ class Logger
     virtual ~Logger() { }
 };
 
-/* RAII class for a BddServer process
+/* RAII class for a TestServer process
  */
-class BddServer
+class TestServer
 {
   public:
     constexpr static const int k_num_port_tries = 5;
@@ -27,14 +27,14 @@ class BddServer
     constexpr static const char *k_port_in_use_string = "INITIALIZE_TransportError";
     constexpr static std::chrono::milliseconds k_default_timeout{5000};
 
-    BddServer() = default;
+    TestServer() = default;
 
-    BddServer(const BddServer &) = delete;
-    BddServer &operator=(BddServer &) = delete;
+    TestServer(const TestServer &) = delete;
+    TestServer &operator=(TestServer &) = delete;
 
     // TODO: Run with TangoDB?
 
-    /** Starts a BddServer instance with a single device of the specified class.
+    /** Starts a TestServer instance with a single device of the specified class.
      *
      *  The ctor only finishes after the ready string ("Ready to accept request")
      *  has been output.
@@ -51,14 +51,14 @@ class BddServer
                std::vector<const char *> extra_args,
                std::chrono::milliseconds timeout = k_default_timeout);
 
-    /** Stop the BddServer instance if it has been started.
+    /** Stop the TestServer instance if it has been started.
      *
      *  If the instance has a non-zero exit status, then diagnostics will be
      *  output with the Catch2 WARN macro.
      */
     void stop(std::chrono::milliseconds timeout = k_default_timeout);
 
-    ~BddServer();
+    ~TestServer();
 
     /** Return the port that the server is connected to.
      */

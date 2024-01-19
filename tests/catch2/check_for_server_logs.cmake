@@ -1,6 +1,6 @@
-message(STATUS "Checking for left over server logs in \"${TANGO_BDD_LOG_DIR}\"")
+message(STATUS "Checking for left over server logs in \"${TANGO_CATCH2_LOG_DIR}\"")
 
-file(GLOB logs "${TANGO_BDD_LOG_DIR}/*")
+file(GLOB logs "${TANGO_CATCH2_LOG_DIR}/*")
 
 if (logs)
     list(LENGTH logs length)

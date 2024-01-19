@@ -1,4 +1,4 @@
-#include "utils/bdd_server.h"
+#include "utils/test_server.h"
 
 #include "utils/platform/platform.h"
 
@@ -113,11 +113,11 @@ class PlatformListener : public Catch::EventListenerBase
     void testRunStarting(Catch::TestRunInfo const &) override
     {
         g_rng.seed(Catch::getSeed());
-        BddServer::s_logger = std::make_unique<CatchLogger>();
+        TestServer::s_logger = std::make_unique<CatchLogger>();
 
         {
             std::uniform_int_distribution dist{k_min_port, k_max_port};
-            BddServer::s_next_port = dist(g_rng);
+            TestServer::s_next_port = dist(g_rng);
         }
 
         {
@@ -162,19 +162,19 @@ bool append_logs(std::istream &in, std::ostream &out)
 } // namespace
   //
 
-int BddServer::s_next_port;
-std::unique_ptr<Logger> BddServer::s_logger;
+int TestServer::s_next_port;
+std::unique_ptr<Logger> TestServer::s_logger;
 
-void BddServer::start(const std::string &instance_name,
-                      std::vector<const char *> extra_args,
-                      std::chrono::milliseconds timeout)
+void TestServer::start(const std::string &instance_name,
+                       std::vector<const char *> extra_args,
+                       std::chrono::milliseconds timeout)
 {
     using Kind = platform::StartServerResult::Kind;
 
     m_redirect_file = g_filename_builder.build();
 
     std::vector<const char *> args{
-        "BddServer",
+        "TestServer",
         instance_name.c_str(),
         "-nodb",
         "-ORBendPoint",
@@ -224,7 +224,7 @@ void BddServer::start(const std::string &instance_name,
         case Kind::Timeout:
         {
             std::stringstream ss;
-            ss << "Timeout waiting for BddServer to start. Server output:\n";
+            ss << "Timeout waiting for TestServer to start. Server output:\n";
             std::ifstream f{m_redirect_file};
             append_logs(f, ss);
 
@@ -236,7 +236,7 @@ void BddServer::start(const std::string &instance_name,
         case Kind::Exited:
         {
             std::stringstream ss;
-            ss << "BddServer exited with exit status " << start_result.exit_status << ". Server output:\n";
+            ss << "TestServer exited with exit status " << start_result.exit_status << ". Server output:\n";
             std::ifstream f{m_redirect_file};
             bool port_in_use = false;
             for(std::string line; std::getline(f, line);)
@@ -259,7 +259,7 @@ void BddServer::start(const std::string &instance_name,
     }
 }
 
-BddServer::~BddServer()
+TestServer::~TestServer()
 {
     if(m_handle)
     {
@@ -267,7 +267,7 @@ BddServer::~BddServer()
     }
 }
 
-void BddServer::stop(std::chrono::milliseconds timeout)
+void TestServer::stop(std::chrono::milliseconds timeout)
 {
     using Kind = platform::StopServerResult::Kind;
     auto stop_result = platform::stop_server(m_handle, timeout);
@@ -277,7 +277,7 @@ void BddServer::stop(std::chrono::milliseconds timeout)
     case Kind::Timeout:
     {
         std::stringstream ss;
-        ss << "Timeout waiting for BddServer to exit. Server output:";
+        ss << "Timeout waiting for TestServer to exit. Server output:";
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
@@ -291,7 +291,8 @@ void BddServer::stop(std::chrono::milliseconds timeout)
         if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
         {
             std::stringstream ss;
-            ss << "BddServer exited with exit status " << stop_result.exit_status << " during the test. Server output:";
+            ss << "TestServer exited with exit status " << stop_result.exit_status
+               << " during the test. Server output:";
             std::ifstream f{m_redirect_file};
             append_logs(f, ss);
 

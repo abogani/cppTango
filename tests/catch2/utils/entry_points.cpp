@@ -1,4 +1,4 @@
-#include "utils/bdd_server.h"
+#include "utils/test_server.h"
 
 #include <tango/tango.h>
 #include <catch2/catch_session.hpp>
@@ -20,7 +20,7 @@ int server_main(int argc, const char *argv[])
     {
         auto *tg = Tango::Util::init(argc, (char **) argv);
         tg->server_init();
-        std::cout << BddServer::k_ready_string << '\n' << std::flush;
+        std::cout << TestServer::k_ready_string << '\n' << std::flush;
         tg->server_run();
         tg->server_cleanup();
     }
@@ -66,11 +66,11 @@ int main(int argc, const char *argv[])
 {
     std::string name{argv[0]};
 
-    if(ends_with(name, "BddServer"))
+    if(ends_with(name, "TestServer"))
     {
         return TangoTest::server_main(argc, argv);
     }
-    else if(ends_with(name, "BddTests"))
+    else if(ends_with(name, "Catch2Tests"))
     {
         return TangoTest::test_main(argc, argv);
     }

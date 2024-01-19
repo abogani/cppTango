@@ -41,12 +41,12 @@ struct LoggerSwapper
     LoggerSwapper()
     {
         logger = std::make_unique<TestLogger>();
-        std::swap(TangoTest::BddServer::s_logger, logger);
+        std::swap(TangoTest::TestServer::s_logger, logger);
     }
 
     ~LoggerSwapper()
     {
-        std::swap(TangoTest::BddServer::s_logger, logger);
+        std::swap(TangoTest::TestServer::s_logger, logger);
     }
 
     std::unique_ptr<TangoTest::Logger> logger;
@@ -69,21 +69,21 @@ TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(Empty<TANGO_BASE_CLASS>, Empty)
 
 SCENARIO("test servers can be started and stopped")
 {
-    using BddServer = TangoTest::BddServer;
+    using TestServer = TangoTest::TestServer;
     LoggerSwapper ls;
-    auto logger = static_cast<TestLogger *>(BddServer::s_logger.get());
+    auto logger = static_cast<TestLogger *>(TestServer::s_logger.get());
 
     GIVEN("a server started with basic device class")
     {
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "Empty::BddServer/tests/1"};
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "Empty::TestServer/tests/1"};
 
-        BddServer server;
+        TestServer server;
         server.start("self_test", extra_args);
         INFO("server port is " << server.get_port() << " and redirect file is " << server.get_redirect_file());
 
         WHEN("we create a DeviceProxy to the device")
         {
-            std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "BddServer/tests/1");
+            std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
 
             auto dp = std::make_unique<Tango::DeviceProxy>(fqtrl);
 
@@ -102,8 +102,8 @@ SCENARIO("test servers can be started and stopped")
 
         WHEN("we start another sever with the same port")
         {
-            BddServer::s_next_port = server.get_port();
-            BddServer server2;
+            TestServer::s_next_port = server.get_port();
+            TestServer server2;
 
             // Reset the logs in case there were any from the initial server
             // starting
@@ -114,7 +114,7 @@ SCENARIO("test servers can be started and stopped")
             {
                 for(int port : {server.get_port(), server2.get_port()})
                 {
-                    std::string fqtrl = TangoTest::make_nodb_fqtrl(port, "BddServer/tests/1");
+                    std::string fqtrl = TangoTest::make_nodb_fqtrl(port, "TestServer/tests/1");
                     auto dp = std::make_unique<Tango::DeviceProxy>(fqtrl);
                     REQUIRE_NOTHROW(dp->ping());
                 }
@@ -254,14 +254,14 @@ TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(ExitTimeout<TANGO_BASE_CLASS>, ExitTimeout
 
 SCENARIO("test server crashes and timeouts are reported")
 {
-    using BddServer = TangoTest::BddServer;
+    using TestServer = TangoTest::TestServer;
     LoggerSwapper ls;
-    auto logger = static_cast<TestLogger *>(BddServer::s_logger.get());
+    auto logger = static_cast<TestLogger *>(TestServer::s_logger.get());
 
     GIVEN("a server that crashes on start")
     {
-        BddServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitCrash::BddServer/tests/1"};
+        TestServer server;
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitCrash::TestServer/tests/1"};
 
         WHEN("we start the server")
         {
@@ -294,13 +294,13 @@ SCENARIO("test server crashes and timeouts are reported")
 
     GIVEN("a server that crashes on during a test")
     {
-        BddServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "DuringCrash::BddServer/tests/1"};
+        TestServer server;
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "DuringCrash::TestServer/tests/1"};
         server.start("self_test", extra_args);
 
         WHEN("we run the test that crashes the device server")
         {
-            std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "BddServer/tests/1");
+            std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
 
             auto dp = std::make_unique<Tango::DeviceProxy>(fqtrl);
             Tango::DeviceAttribute da;
@@ -326,8 +326,8 @@ SCENARIO("test server crashes and timeouts are reported")
 
     GIVEN("a server that crashes on exit")
     {
-        BddServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitCrash::BddServer/tests/1"};
+        TestServer server;
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitCrash::TestServer/tests/1"};
         server.start("self_test", extra_args);
 
         WHEN("we stop the server")
@@ -349,8 +349,8 @@ SCENARIO("test server crashes and timeouts are reported")
 
     GIVEN("a server that times out on startup")
     {
-        BddServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitTimeout::BddServer/tests/1"};
+        TestServer server;
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitTimeout::TestServer/tests/1"};
 
         WHEN("we start the server")
         {
@@ -369,7 +369,7 @@ SCENARIO("test server crashes and timeouts are reported")
             {
                 using Catch::Matchers::ContainsSubstring;
                 REQUIRE(what);
-                REQUIRE_THAT(*what, ContainsSubstring("Timeout waiting for BddServer to start"));
+                REQUIRE_THAT(*what, ContainsSubstring("Timeout waiting for TestServer to start"));
                 REQUIRE_THAT(*what, ContainsSubstring(k_helpful_message));
             }
 
@@ -384,8 +384,8 @@ SCENARIO("test server crashes and timeouts are reported")
 
     GIVEN("a sever that times out on exit")
     {
-        BddServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitTimeout::BddServer/tests/1"};
+        TestServer server;
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
         server.start("self_test", extra_args);
 
         WHEN("we stop the server")
@@ -400,7 +400,7 @@ SCENARIO("test server crashes and timeouts are reported")
 
                 logger->remove_port_in_use_logs();
                 REQUIRE_THAT(logger->logs, SizeIs(1));
-                REQUIRE_THAT(logger->logs[0], ContainsSubstring("Timeout waiting for BddServer to exit"));
+                REQUIRE_THAT(logger->logs[0], ContainsSubstring("Timeout waiting for TestServer to exit"));
                 REQUIRE_THAT(logger->logs[0], ContainsSubstring(k_helpful_message));
             }
         }

@@ -291,7 +291,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         COMPILE_FLAGS -Wno-stringop-overflow)
 endif()
 
-add_subdirectory(bdd)
+add_subdirectory(catch2)
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
 target_include_directories(lock PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
