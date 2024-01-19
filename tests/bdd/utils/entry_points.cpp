@@ -1,10 +1,9 @@
-#include "utils/entry_points.h"
-
 #include "utils/bdd_server.h"
 
 #include <tango/tango.h>
 #include <catch2/catch_session.hpp>
 
+#include <string_view>
 #include <iostream>
 
 namespace TangoTest
@@ -45,3 +44,37 @@ int server_main(int argc, const char *argv[])
 }
 
 } // namespace TangoTest
+
+namespace
+{
+// Returns true if `string` ends with `suffix`
+bool ends_with(std::string_view string, std::string_view suffix)
+{
+    size_t size = string.size();
+    size_t suffix_size = suffix.size();
+    if(size < suffix_size)
+    {
+        return false;
+    }
+
+    std::string_view ending = string.substr(size - suffix_size);
+    return ending == suffix;
+}
+} // namespace
+
+int main(int argc, const char *argv[])
+{
+    std::string name{argv[0]};
+
+    if(ends_with(name, "BddServer"))
+    {
+        return TangoTest::server_main(argc, argv);
+    }
+    else if(ends_with(name, "BddTests"))
+    {
+        return TangoTest::test_main(argc, argv);
+    }
+
+    std::cout << "Unexpected argv[0] " << name << "\n";
+    return 1;
+}

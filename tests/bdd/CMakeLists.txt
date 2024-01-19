@@ -29,7 +29,7 @@ add_test(NAME bdd::cleanup COMMAND
 set_tests_properties(bdd::setup PROPERTIES FIXTURES_SETUP BDD)
 set_tests_properties(bdd::cleanup PROPERTIES FIXTURES_CLEANUP BDD)
 
-add_library(bdd SHARED
+add_executable(BddTests
     test_attr_manip.cpp
     test_bdd_server.cpp
     utils/auto_device_class.cpp
@@ -38,22 +38,17 @@ add_library(bdd SHARED
     utils/utils.cpp
     ${PLATFORM_IMPL})
 
-target_link_libraries(bdd PUBLIC tango Catch2::Catch2)
-target_include_directories(bdd PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(BddTests PUBLIC tango Catch2::Catch2)
+target_include_directories(BddTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(BddServer
-    main_server.cpp)
-
-target_link_libraries(BddServer PRIVATE bdd)
-
-add_executable(BddTests
-    main_test.cpp)
-
-target_link_libraries(BddTests PRIVATE bdd)
+add_custom_target(BddServer ALL
+    COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:BddTests> BddServer
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
 
 # TODO: configure_file instead?
-target_compile_definitions(bdd PRIVATE
-    "-DTANGO_TEST_BDD_SERVER_BINARY_PATH=\"$<TARGET_FILE:BddServer>\""
+target_compile_definitions(BddTests PRIVATE
+    "-DTANGO_TEST_BDD_SERVER_BINARY_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/BddServer\""
     "-DTANGO_TEST_BDD_OUTPUT_DIRECTORY_PATH=\"${TANGO_BDD_LOG_DIR}\"")
 
 catch_discover_tests(BddTests TEST_PREFIX "bdd::" EXTRA_ARGS --warn NoAssertions PROPERTIES FIXTURES_REQUIRED BDD)
