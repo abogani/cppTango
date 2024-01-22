@@ -32,6 +32,7 @@ set_tests_properties(catch2::cleanup PROPERTIES FIXTURES_CLEANUP CATCH2)
 add_executable(Catch2Tests
     test_attr_manip.cpp
     test_test_server.cpp
+    test_auto_command.cpp
     utils/auto_device_class.cpp
     utils/test_server.cpp
     utils/entry_points.cpp
