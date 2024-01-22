@@ -40,6 +40,12 @@ constexpr bool has_command_factory_v = has_command_factory<T>::value;
 template <typename F>
 struct member_fn_traits;
 
+template <>
+struct member_fn_traits<std::nullptr_t>
+{
+    using class_type = void;
+};
+
 template <typename C, typename R, typename... Args>
 struct member_fn_traits<R (C::*)(Args... args)>
 {
@@ -51,14 +57,13 @@ struct member_fn_traits<R (C::*)(Args... args)>
 };
 } // namespace detail
 
-// TODO: Support commands
-
 //+ Class template to automatically generate a Tango::DeviceClass from a
 /// Tango::Device.
 ///
 /// The template expects the following static member functions to be defined:
 ///
-///   - static void attribute_factory(std::vector<Tango::Attr *> attrs);
+///   - static void attribute_factory(std::vector<Tango::Attr *> &attrs);
+///   - static void command_factory(std::vector<Tango::Command *> &cmds)
 ///
 /// Use the TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE macro (in a single
 /// implementation file per Device) to instantiate the static members
@@ -142,7 +147,6 @@ class AutoDeviceClass : public Tango::DeviceClass
     static AutoDeviceClass *_instance;
 };
 
-// TODO: AutoCommand ?
 template <auto cmd_fn>
 class AutoCommand : public Tango::Command
 {
@@ -172,13 +176,13 @@ class AutoCommand : public Tango::Command
         }
         else if constexpr(std::is_same_v<void, typename traits::return_type>)
         {
-            typename traits::argument_type<0> arg;
+            typename traits::template argument_type<0> arg;
             in_any >>= arg;
             std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
         }
         else
         {
-            typename traits::argument_type<0> arg;
+            typename traits::template argument_type<0> arg;
             in_any >>= arg;
             auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
             *out_any <<= ret;
@@ -212,19 +216,34 @@ class AutoCommand : public Tango::Command
     }
 };
 
-// TODO: Add write function
-template <auto read_fn>
+template <auto read_fn, auto write_fn = nullptr>
 class AutoAttr : public Tango::Attr
 {
   public:
-    using Device = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
+    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
     using Tango::Attr::Attr;
+
+    // do we care about other possible parameters to Tango::Attr()?
+    AutoAttr(const char *name, long data_type) :
+        Tango::Attr(name, data_type, has_write_fn ? Tango::READ_WRITE : Tango::READ)
+    {
+    }
 
     ~AutoAttr() override { }
 
     void read(Tango::DeviceImpl *dev, Tango::Attribute &att) override
     {
-        std::invoke(read_fn, static_cast<Device *>(dev), att);
+        std::invoke(read_fn, static_cast<ReadDevice *>(dev), att);
+    }
+
+    void write(Tango::DeviceImpl *dev, Tango::WAttribute &att) override
+    {
+        if constexpr(has_write_fn)
+        {
+            std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
+        }
     }
 };
 
