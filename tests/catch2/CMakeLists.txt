@@ -33,6 +33,7 @@ add_executable(Catch2Tests
     test_attr_manip.cpp
     test_test_server.cpp
     test_auto_command.cpp
+    test_auto_attr.cpp
     utils/auto_device_class.cpp
     utils/test_server.cpp
     utils/entry_points.cpp
