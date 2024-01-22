@@ -24,17 +24,31 @@ struct has_attribute_factory<T, std::void_t<decltype(T::attribute_factory)>> : s
 template <typename T>
 constexpr bool has_attribute_factory_v = has_attribute_factory<T>::value;
 
-template <typename F>
-struct member_fn_class;
-
-template <typename C, typename R, typename... Args>
-struct member_fn_class<R (C::*)(Args... args)>
+template <typename T, typename = std::void_t<>>
+struct has_command_factory : std::false_type
 {
-    using type = C;
 };
 
+template <typename T>
+struct has_command_factory<T, std::void_t<decltype(T::command_factory)>> : std::true_type
+{
+};
+
+template <typename T>
+constexpr bool has_command_factory_v = has_command_factory<T>::value;
+
 template <typename F>
-using member_fn_class_t = typename member_fn_class<F>::type;
+struct member_fn_traits;
+
+template <typename C, typename R, typename... Args>
+struct member_fn_traits<R (C::*)(Args... args)>
+{
+    using class_type = C;
+    using return_type = R;
+    constexpr static int arity = std::tuple_size<std::tuple<Args...>>();
+    template <int N>
+    using argument_type = std::tuple_element_t<N, std::tuple<Args...>>;
+};
 } // namespace detail
 
 // TODO: Support commands
@@ -109,7 +123,13 @@ class AutoDeviceClass : public Tango::DeviceClass
     }
 
   protected:
-    void command_factory() override { }
+    void command_factory() override
+    {
+        if constexpr(detail::has_command_factory_v<Device>)
+        {
+            Device::command_factory(command_list);
+        }
+    }
 
     void attribute_factory(std::vector<Tango::Attr *> &attrs) override
     {
@@ -123,13 +143,81 @@ class AutoDeviceClass : public Tango::DeviceClass
 };
 
 // TODO: AutoCommand ?
+template <auto cmd_fn>
+class AutoCommand : public Tango::Command
+{
+  public:
+    using traits = detail::member_fn_traits<decltype(cmd_fn)>;
+    using Device = typename traits::class_type;
+    using Tango::Command::Command;
+
+    AutoCommand(const std::string &name) :
+        Tango::Command(name, type_in(), type_out())
+    {
+    }
+
+    ~AutoCommand() override { }
+
+    CORBA::Any *execute(Tango::DeviceImpl *dev, const CORBA::Any &in_any) override
+    {
+        CORBA::Any *out_any = new CORBA::Any();
+        if constexpr(traits::arity == 0 && std::is_same_v<void, typename traits::return_type>)
+        {
+            std::invoke(cmd_fn, static_cast<Device *>(dev));
+        }
+        else if constexpr(traits::arity == 0)
+        {
+            auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev));
+            *out_any <<= ret;
+        }
+        else if constexpr(std::is_same_v<void, typename traits::return_type>)
+        {
+            typename traits::argument_type<0> arg;
+            in_any >>= arg;
+            std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+        }
+        else
+        {
+            typename traits::argument_type<0> arg;
+            in_any >>= arg;
+            auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+            *out_any <<= ret;
+        }
+        return out_any;
+    }
+
+  private:
+    constexpr static Tango::CmdArgType type_out()
+    {
+        if constexpr(std::is_same_v<void, typename traits::return_type>)
+        {
+            return Tango::DEV_VOID;
+        }
+        else
+        {
+            return Tango::tango_type_traits<typename traits::return_type>::type_value();
+        }
+    }
+
+    constexpr static Tango::CmdArgType type_in()
+    {
+        if constexpr(traits::arity == 0)
+        {
+            return Tango::DEV_VOID;
+        }
+        else
+        {
+            return Tango::tango_type_traits<typename traits::template argument_type<0>>::type_value();
+        }
+    }
+};
 
 // TODO: Add write function
 template <auto read_fn>
 class AutoAttr : public Tango::Attr
 {
   public:
-    using Device = detail::member_fn_class_t<decltype(read_fn)>;
+    using Device = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using Tango::Attr::Attr;
 
     ~AutoAttr() override { }
