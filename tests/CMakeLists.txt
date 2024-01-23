@@ -10,12 +10,6 @@ if(NOT Python3_EXECUTABLE)
   message(FATAL_ERROR "Could not find python 3.")
 endif()
 
-if(MSVC)
-    set(CMAKE_CXX_FLAGS_RELEASE "/Od /DEBUG")
-else()
-    set(CMAKE_CXX_FLAGS_RELEASE "-O0 -g")
-endif()
-
 #TODO different OS
 set(SERV_NAME "DevTest")
 set(FWD_SERV_NAME "FwdTest")
@@ -31,7 +25,7 @@ set(TEST_CPPTANGO_1022_DEV2 "${INST_NAME}/cpptango-1022/2")
 set(TEST_CPPTANGO_1022_SERV_NAME "TestCppTango1022")
 set(DEV1_ALIAS "debian8_alias")
 set(ATTR_ALIAS "debian8_attr_alias")
-set(COMMON_TEST_DEFS _REENTRANT TANGO_HAS_DLL)
+set(COMMON_TEST_DEFS TANGO_HAS_DLL)
 cmake_host_system_information(RESULT HOST_NAME QUERY FQDN)
 string(TOLOWER ${HOST_NAME} HOST_NAME)
 message("HOST_NAME=${HOST_NAME}")
@@ -289,6 +283,13 @@ endfunction()
 foreach(TEST ${TESTS})
     TEST_SUITE_ADD_TEST(${TEST})
 endforeach(TEST)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set_source_files_properties(
+        cxx_encoded.cpp cmd_types.cpp helper.cpp
+        PROPERTIES
+        COMPILE_FLAGS -Wno-stringop-overflow)
+endif()
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
 target_include_directories(lock PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

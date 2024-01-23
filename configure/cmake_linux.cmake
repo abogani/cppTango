@@ -5,7 +5,6 @@ set_target_properties(
 
 if(BUILD_SHARED_LIBS)
   target_compile_options(tango PRIVATE -fPIC)
-  target_compile_definitions(tango PUBLIC _REENTRANT)
   set_target_properties(tango PROPERTIES
                         VERSION ${LIBRARY_VERSION}
                         SOVERSION ${SO_VERSION})
