@@ -88,12 +88,7 @@ if(BUILD_TESTING)
       message(WARNING "The tests can not be run as docker is missing.")
   endif()
 
-  if(BUILD_SHARED_LIBS)
-    add_subdirectory("tests")
-  else()
-    message(WARNING "Not building the tests, because that is currently supported only when BUILD_SHARED_LIBS is ON")
-    set(BUILD_TESTING OFF)
-  endif()
+  add_subdirectory("tests")
 endif()
 
 

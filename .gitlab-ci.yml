@@ -194,7 +194,7 @@ coverage:
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
 
 debian12-static:
-  <<: *job-template-no-test-run
+  <<: *job-template-with-tests
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
