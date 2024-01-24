@@ -72,7 +72,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
 
     virtual ~SUITE_NAME()
     {
-        time_t ti = time(NULL);
+        time_t ti = Tango::get_current_system_datetime();
         TEST_LOG << "Destroying suite at " << ctime(&ti) << endl;
         DevLong lg;
         DeviceData din;
@@ -257,7 +257,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
                 device1->set_timeout_millis(25*def_timeout);
                 CxxTest::TangoPrinter::restore_set("timeout");
 
-        time_t ti = time(NULL);
+        time_t ti = Tango::get_current_system_datetime();
         TEST_LOG << "Calling SetGetProperties at " << ctime(&ti) << endl;
         struct timeval start,stop;
         gettimeofday(&start,NULL);

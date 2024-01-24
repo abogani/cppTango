@@ -2065,7 +2065,7 @@ inline void DeviceImpl::set_state(const Tango::DevState &new_state)
     device_state = new_state;
     if(new_state == Tango::ALARM)
     {
-        ext->alarm_state_user = time(nullptr);
+        ext->alarm_state_user = Tango::get_current_system_datetime();
     }
     else
     {

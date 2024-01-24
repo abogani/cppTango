@@ -124,7 +124,7 @@ void LockThread::run(TANGO_UNUSED(void *ptr))
         {
             std::cerr << "OUPS !! A omni thread fatal exception !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(nullptr);
+            time_t t = Tango::get_current_system_datetime();
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;

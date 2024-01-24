@@ -837,7 +837,7 @@ void ZmqEventSupplier::push_heartbeat_event()
 
     Tango::Util *tg = Tango::Util::instance();
     DServer *adm_dev = tg->get_dserver_device();
-    now_time = time(nullptr);
+    now_time = Tango::get_current_system_datetime();
     delta_time = now_time - adm_dev->last_heartbeat_zmq;
     TANGO_LOG_DEBUG << "ZmqEventSupplier::push_heartbeat_event(): delta time since last heartbeat " << delta_time
                     << std::endl;

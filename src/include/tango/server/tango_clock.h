@@ -117,6 +117,15 @@ double constexpr duration_ms(std::chrono::duration<Rep, Period> dur)
 }
 
 //
+// Retrieves the current date and time as a std::time_t value.
+//
+inline std::time_t get_current_system_datetime()
+{
+    auto now = std::chrono::system_clock::now();
+    return std::chrono::system_clock::to_time_t(now);
+}
+
+//
 // Converts given time since epoch as time_t value into calendar time, expressed in local time.
 // The expression is thread safe.
 //

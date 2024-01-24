@@ -1659,7 +1659,7 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 
 void ApiUtil::print_error_message(const char *mess)
 {
-    std::tm tm = Tango_localtime(time(nullptr));
+    std::tm tm = Tango_localtime(Tango::get_current_system_datetime());
     std::cerr << std::put_time(&tm, "%c") << ": " << mess << std::endl;
 }
 

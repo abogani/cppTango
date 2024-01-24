@@ -836,7 +836,7 @@ void Pipe::fire_event(DeviceImpl *dev, DevicePipeBlob *p_data, const TangoTimest
 
 bool Pipe::is_pipe_event_subscribed() const
 {
-    const auto now = time(nullptr);
+    const auto now = Tango::get_current_system_datetime();
     const auto delta_subscription = now - event_subscription;
 
     return delta_subscription < EVENT_RESUBSCRIBE_PERIOD;
