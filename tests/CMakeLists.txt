@@ -186,6 +186,7 @@ CXX_GENERATE_TEST(cxx_server_event)
 CXX_GENERATE_TEST(cxx_signal)#TODO Windows
 CXX_GENERATE_TEST(cxx_stateless_subscription)
 CXX_GENERATE_TEST(cxx_syntax)
+CXX_GENERATE_TEST(cxx_telemetry TRUE)
 CXX_GENERATE_TEST(cxx_templ_cmd)
 CXX_GENERATE_TEST(cxx_test_state_on)
 CXX_GENERATE_TEST(cxx_write_attr_hard)

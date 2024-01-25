@@ -51,8 +51,9 @@ endif()
 
 # telemetry
 option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" OFF)
-option(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
-option(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
+include(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry)" ON "TANGO_USE_TELEMETRY" OFF)
+CMAKE_DEPENDENT_OPTION(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry)" ON "TANGO_USE_TELEMETRY" OFF)
 
 #need to define the version of the library
 set(MAJOR_VERSION "10")
@@ -104,38 +105,7 @@ add_library(tango $<TARGET_OBJECTS:log4tango_objects>
                   $<TARGET_OBJECTS:idl_objects>
                   $<TARGET_OBJECTS:server_objects>)
 
-target_link_libraries(tango
-    PUBLIC
-        ${CMAKE_DL_LIBS}
-        omniORB4::omniORB4
-        omniORB4::COS4
-        omniORB4::Dynamic4
-        cppzmq::cppzmq
-    )
-
-target_include_directories(tango PUBLIC
-    ${cppzmq_INCLUDE_DIR}
-    ${omniORB4_INCLUDE_DIR}
-)
-
-if(TANGO_USE_JPEG)
-    target_link_libraries(tango PUBLIC JPEG::JPEG)
-endif()
-
-if (TANGO_USE_TELEMETRY)
-    if(NOT TANGO_TELEMETRY_USE_HTTP AND NOT TANGO_TELEMETRY_USE_GRPC)
-        message(FATAL_ERROR 
-        "neither TANGO_TELEMETRY_USE_HTTP nor TANGO_TELEMETRY_USE_GRPC is defined!\n"
-        "use TANGO_TELEMETRY_USE_HTTP and/or TANGO_TELEMETRY_USE_GRPC to select the suported protocol(s).")
-    endif()
-    target_link_libraries(tango PUBLIC opentelemetry-cpp::trace)
-    if (TANGO_TELEMETRY_USE_HTTP)
-        target_link_libraries(tango PUBLIC opentelemetry-cpp::otlp_http_exporter)
-    endif()
-    if (TANGO_TELEMETRY_USE_GRPC)
-        target_link_libraries(tango PUBLIC opentelemetry-cpp::otlp_grpc_exporter)
-    endif()
-endif()
+set_cflags_and_include(tango)
 
 if(WIN32)
     include(configure/cmake_win.cmake)

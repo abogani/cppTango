@@ -10,25 +10,6 @@
   #undef SUITE_NAME
   #define SUITE_NAME AttrMiscTestSuite
 
-#if defined(TANGO_USE_TELEMETRY)
-  #include <opentelemetry/context/context.h>
-  #include <opentelemetry/sdk/version/version.h>
-  #include <opentelemetry/trace/provider.h>
-  #include <opentelemetry/trace/noop.h>
-  #include <opentelemetry/sdk/version/version.h>
-  #include <opentelemetry/context/propagation/global_propagator.h>
-  #include <opentelemetry/trace/propagation/http_trace_context.h>
-  #include <opentelemetry/trace/context.h>
-  #include <opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h>
-  #include <opentelemetry/sdk/resource/resource.h>
-  #include <opentelemetry/sdk/trace/processor.h>
-  #include <opentelemetry/sdk/trace/simple_processor_factory.h>
-  #include <opentelemetry/sdk/trace/tracer_provider.h>
-  #include <opentelemetry/sdk/trace/tracer_provider_factory.h>
-  #include <opentelemetry/trace/span_context.h>
-  #include <opentelemetry/trace/provider.h>
-#endif
-
 class AttrMiscTestSuite : public CxxTest::TestSuite
 {
   protected:
@@ -1225,75 +1206,6 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_THROWS_ASSERT(result = device1->get_device()->read_attributes(attribute_names),
                                 Tango::DevFailed & e,
                                 TS_ASSERT(std::string(e.errors[0].reason.in()) == API_AttrValueNotSet));
-    }
-
-    void test_telemetry_noop_tracer()
-    {
-#if defined(TANGO_USE_TELEMETRY)
-        // noop tracer
-        auto noop_tracer =
-            opentelemetry::nostd::shared_ptr<opentelemetry::trace::NoopTracer>(new opentelemetry::trace::NoopTracer);
-
-        {
-            // a span
-            auto span = noop_tracer->StartSpan("test_telemetry_noop_tracer_span",
-                                               opentelemetry::common::NoopKeyValueIterable(),
-                                               opentelemetry::trace::NullSpanContext(),
-                                               {});
-
-            // a scope that makes the span the active one (RAII)
-            auto scope = opentelemetry::trace::Scope(span);
-        }
-#else
-        std::cout << "TANGO_USE_TELEMETRY is set to FALSE (noop test)" << std::endl;
-#endif
-    }
-
-    void test_telemetry_tracer()
-    {
-#if defined(TANGO_USE_TELEMETRY)
-        // span exporter
-        opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;
-        opts.endpoint = "localhost:4317";
-        opts.use_ssl_credentials = false;
-        auto exporter = opentelemetry::exporter::otlp::OtlpGrpcExporterFactory::Create(opts);
-
-        // span processor
-        auto processor = opentelemetry::sdk::trace::SimpleSpanProcessorFactory::Create(std::move(exporter));
-
-        // provider's resource (common to all span create using any tracer provided by the associated provider)
-        auto resource_attributes = opentelemetry::sdk::resource::ResourceAttributes{{"server.namespace", "cpptango"},
-                                                                                    {"service.name", "cxx_attr_misc"},
-                                                                                    { "service.instance.id",
-                                                                                      "1" }};
-        auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
-
-        // tracer provider
-        auto provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
-
-        // tracer
-        auto tracer = provider->GetTracer("test_telemetry_tracer", OPENTELEMETRY_SDK_VERSION);
-
-        {
-            // a span
-            auto span = tracer->StartSpan("test_telemetry_noop_tracer");
-            // a scope that makes the span the active one (RAII)
-            auto scope = opentelemetry::trace::Scope(span);
-        }
-#else
-        std::cout << "TANGO_USE_TELEMETRY is set to FALSE (noop test)" << std::endl;
-#endif
-    }
-
-    void test_telemetry_propagator()
-    {
-#if defined(TANGO_USE_TELEMETRY)
-        opentelemetry::context::propagation::GlobalTextMapPropagator::SetGlobalPropagator(
-            opentelemetry::nostd::shared_ptr<opentelemetry::context::propagation::TextMapPropagator>(
-                new opentelemetry::trace::propagation::HttpTraceContext()));
-#else
-        std::cout << "TANGO_USE_TELEMETRY is set to FALSE (noop test)" << std::endl;
-#endif
     }
 };
 #endif // AttrMiscTestSuite_h

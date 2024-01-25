@@ -21,7 +21,6 @@ set(SOURCES attrdesc.cpp
             device_6.cpp
             deviceclass.cpp
             devicelog.cpp
-            devicetelemetry.cpp
             devintr.cpp
             dintrthread.cpp
             dserver.cpp

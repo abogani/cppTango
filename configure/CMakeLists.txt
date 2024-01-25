@@ -2,9 +2,6 @@ include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
 option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
-option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" OFF)
-option(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
-option(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry) - requires TANGO_USE_TELEMETRY to be ON" OFF)
 
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
@@ -57,10 +54,19 @@ find_package(tangoidl REQUIRED)
 find_package(omniORB4 REQUIRED)
 
 if (TANGO_USE_TELEMETRY)
-    find_package(protobuf REQUIRED)
+    # workaround gRPC cmake bug fixed in
+    # 5c9e4050 ([Build] fix `gRPCConfig.cmake` (#33361), 2023-09-06)
+    include(CMakeFindDependencyMacro)
+
     find_package(gRPC REQUIRED)
     message(STATUS "Tango telemetry (OpenTelemetry) enabled")
     find_package(opentelemetry-cpp REQUIRED)
+
+    if(WIN32)
+      find_package(CURL REQUIRED)
+      find_package(nlohmann_json REQUIRED)
+      find_package(OpenSSL REQUIRED)
+    endif()
 else()
     message(STATUS "Tango telemetry (OpenTelemetry) disabled")
 endif()

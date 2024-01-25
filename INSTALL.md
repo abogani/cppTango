@@ -98,30 +98,34 @@ the dependencies we need are:
  * pthread (optional, windows only)
  * tangoidl
  * ZeroMQ
+ * opentelemetry-cpp, protobuf, grpc, abseil, libcurl, c-ares, libre2 (optional)
 
 The following variable can be passed to cmake to tweak compilation. The general syntax is `-D$var=$value`.
 
 <!-- Keep the variable list sorted -->
 
-| Variable name                      |  Default value                         | Description
-|------------------------------------|----------------------------------------|--------------------------------------------------------------------------------------------------
-| `BUILD_SHARED_LIBS`                | `ON`                                   | Build tango as shared library, `OFF` creates a static library
-| `BUILD_TESTING`                    | `ON`                                   | Build the test suite
-| `CMAKE_BUILD_TYPE`                 | `Release`                              | Compilation type, can be `Release`, `Debug` or `RelWithDebInfo/MinSizeRel` (Linux only)
-| `CMAKE_DISABLE_PRECOMPILE_HEADERS` | `OFF`                                  | Precompiled headers (makes compilation much faster)
-| `CMAKE_INSTALL_PREFIX`             | `/usr/local` or `C:/Program Files`     | Desired install path
-| `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                  | Allows to increase the verbosity level with `ON`
-| `TANGO_CLANG_FORMAT`               | `OFF`                                  | Adds a target `clang-format` for automatic C++ source code formatting
-| `TANGO_ENABLE_COVERAGE`            | `OFF`                                  | Instrument code for coverage analysis
-| `TANGO_ENABLE_SANITIZER`           | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
+| Variable name                      |  Default value                                  | Description
+|------------------------------------|-------------------------------------------------|--------------------------------------------------------------------------------------------------
+| `BUILD_SHARED_LIBS`                | `ON`                                            | Build tango as shared library, `OFF` creates a static library
+| `BUILD_TESTING`                    | `ON`                                            | Build the test suite
+| `CMAKE_BUILD_TYPE`                 | `Release`                                       | Compilation type, can be `Release`, `Debug` or `RelWithDebInfo/MinSizeRel` (Linux only)
+| `CMAKE_DISABLE_PRECOMPILE_HEADERS` | `OFF`                                           | Precompiled headers (makes compilation much faster)
+| `CMAKE_INSTALL_PREFIX`             | `/usr/local` or `C:/Program Files`              | Desired install path
+| `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                           | Allows to increase the verbosity level with `ON`
+| `TANGO_CLANG_FORMAT`               | `OFF`                                           | Adds a target `clang-format` for automatic C++ source code formatting
+| `TANGO_ENABLE_COVERAGE`            | `OFF`                                           | Instrument code for coverage analysis
+| `TANGO_ENABLE_SANITIZER`           | *empty*                                         | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
 | `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
-| `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                  | Install dependencies of tango as well (Windows only)
-| `TANGO_OMNIIDL_PATH`               |                                        | omniORB4 search path for omniidl
-| `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                  | Do not check the version of omniORB.  Enable this at your own risk.
-| `TANGO_USE_JPEG`                   | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
-| `TANGO_USE_LIBCPP`                 | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires Clang)
-| `TANGO_USE_PTHREAD`                | `OFF`                                  | On windows platforms, build with pthread library.
-| `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                  | Treat compiler warnings as errors
+| `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                           | Install dependencies of tango as well (Windows only)
+| `TANGO_OMNIIDL_PATH`               |                                                 | omniORB4 search path for omniidl
+| `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                           | Do not check the version of omniORB.  Enable this at your own risk.
+| `TANGO_USE_JPEG`                   | `ON`                                            | Build with jpeg support, in this case a jpeg library implementation is needed.
+| `TANGO_USE_LIBCPP`                 | `OFF`                                           | Compile against libc++ instead of stdlibc++ (Requires Clang)
+| `TANGO_USE_PTHREAD`                | `OFF`                                           | On windows platforms, build with pthread library.
+| `TANGO_USE_TELEMETRY`              | `OFF`                                           | Enable tracing for servers and clients
+| `TANGO_TELEMETRY_USE_GRPC`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable GRPC exporter for tracing
+| `TANGO_TELEMETRY_USE_HTTP`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable HTTP exporter for tracing
+| `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                           | Treat compiler warnings as errors
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
@@ -220,6 +224,12 @@ cd omniORB-4.3.0
 make [-j NUMBER_OF_CPUS]
 sudo make install
 ```
+
+## opentelemetry with dependencies
+
+The steps are too involved to post here. Please see the files
+`install_opentelemetry.sh` and `install_opentelemetry_deps.sh`
+[in this repository](https://gitlab.com/tango-controls/docker/ci/cpptango/scripts).
 
 Now with all these dependencies installed the cmake invocation to compile cppTango looks like
 
