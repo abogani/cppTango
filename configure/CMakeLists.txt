@@ -82,20 +82,24 @@ endif()
 # These define a semi-open "[min, max)" range of allowed omniORB versions
 set(OMNIORB_VERSION_MINIMUM 4.3.0)
 set(OMNIORB_VERSION_MAXIMUM 4.4.0)
-set(OMNIORB_VERSION_MINIMUM_APPLE_ARM 4.3.1)
+if (CMAKE_OSX_ARCHITECTURES MATCHES "arm64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(OMNIORB_VERSION_MINIMUM 4.3.1)
+endif()
 
-if (OMNIORB_VERSION)
-    if (OMNIORB_VERSION VERSION_LESS OMNIORB_VERSION_MINIMUM OR
-        OMNIORB_VERSION VERSION_GREATER_EQUAL OMNIORB_VERSION_MAXIMUM)
-        message(FATAL_ERROR "Found omniORB version (${OMNIORB_VERSION}) outside of allowed range [${OMNIORB_VERSION_MINIMUM}, ${OMNIORB_VERSION_MAXIMUM})")
-      elseif((CMAKE_OSX_ARCHITECTURES MATCHES "arm64" OR
-              CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
-             AND OMNIORB_VERSION VERSION_LESS OMNIORB_VERSION_MINIMUM_APPLE_ARM)
-        message(FATAL_ERROR "Found omniORB version (${OMNIORB_VERSION}) outside of allowed range [${OMNIORB_VERSION_MINIMUM_APPLE_ARM}, ${OMNIORB_VERSION_MAXIMUM})")
+set(TANGO_SKIP_OMNIORB_VERSION_CHECK OFF CACHE BOOL "If set, skip the omniORB version check")
+mark_as_advanced(TANGO_SKIP_OMNIORB_VERSION_CHECK)
+if (NOT TANGO_SKIP_OMNIORB_VERSION_CHECK)
+    if (OMNIORB_VERSION)
+        if (OMNIORB_VERSION VERSION_LESS OMNIORB_VERSION_MINIMUM OR
+            OMNIORB_VERSION VERSION_GREATER_EQUAL OMNIORB_VERSION_MAXIMUM)
+            message(FATAL_ERROR
+                "Found omniORB version (${OMNIORB_VERSION}) outside of supported range [${OMNIORB_VERSION_MINIMUM}, ${OMNIORB_VERSION_MAXIMUM}).\n"
+                "Set -DTANGO_SKIP_OMNIORB_VERSION_CHECK=ON to disable this check (at your own risk).")
+        endif()
+        message(STATUS "Found OMNIORB_VERSION=${OMNIORB_VERSION}")
+    else()
+        message(WARNING "omniORB version not found")
     endif()
-    message(STATUS "Found OMNIORB_VERSION=${OMNIORB_VERSION}")
-else()
-    message(WARNING "omniORB version not found")
 endif()
 
 include(configure/check_omniidl.cmake)
