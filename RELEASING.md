@@ -7,6 +7,12 @@ To document the progress it is easiest to copy everything below into an issue.
 
 <!-- start of issue -->
 
+### When the previous release branch is created:
+
+- [ ] Raise the library version (`MAJOR_VERSION`/`MINOR_VERSION`/`PATCH_VERSION`
+in CMakeLists.txt) on `main`
+- [ ] Tag the commit where the library version is raised as `$major.$minor.$patch-dev`
+
 ### At the beginning of the 6 month release cycle:
 
 - [ ] Appoint a release manager who is responsible for the release process
@@ -14,7 +20,6 @@ To document the progress it is easiest to copy everything below into an issue.
       the `start of issue`/`end of issue` comments
 - [ ] Create a milestone with due date
 - [ ] Fill the milestone with issues
-- [ ] Raise the library version (`MAJOR_VERSION`/`MINOR_VERSION`/`PATCH_VERSION` in CMakeLists.txt)
 - [ ] If the next release is a major release and will break API/ABI make the
       responsible CI job non-fatal, see fd8cbddf (.gitlab-ci.yml: Allow failures
       for the ABI-API check, 2023-05-25) for an example
