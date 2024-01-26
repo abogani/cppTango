@@ -2475,7 +2475,7 @@ bool EventSupplier::any_dev_intr_client(const DeviceImpl *device_impl) const
 {
     bool ret = false;
 
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
     time_t dev_intr_subscription = now - device_impl->get_event_intr_change_subscription();
 
     if(dev_intr_subscription < EVENT_RESUBSCRIBE_PERIOD)

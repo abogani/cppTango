@@ -4954,7 +4954,7 @@ void DeviceImpl::basic_unlock(bool forced)
 
 bool DeviceImpl::valid_lock()
 {
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
     return now <= (locking_date + lock_validity);
 }
 

@@ -873,7 +873,7 @@ void EventConsumerKeepAliveThread::fwd_not_conected_event(ZmqEventConsumer *even
 
     if(!event_consumer->event_not_connected.empty())
     {
-        time_t now = Tango::get_current_system_datetime();
+        const time_t now = Tango::get_current_system_datetime();
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_consumer->event_not_connected.begin(); vpos != event_consumer->event_not_connected.end();
             /*vpos++*/)
@@ -985,7 +985,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
 
                     ipos->second.adm_device_proxy->command_inout("EventSubscriptionChange", subscriber_in);
 
-                    time_t ti = Tango::get_current_system_datetime();
+                    const time_t ti = Tango::get_current_system_datetime();
                     ipos->second.last_subscribed = ti;
                     epos->second.last_subscribed = ti;
                 }
@@ -1007,7 +1007,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
 
             ipos->second.adm_device_proxy->command_inout("EventConfirmSubscription", sub_cmd_in);
 
-            time_t ti = Tango::get_current_system_datetime();
+            const time_t ti = Tango::get_current_system_datetime();
             ipos->second.last_subscribed = ti;
             for(unsigned int loop = 0; loop < vd.size(); ++loop)
             {
@@ -1029,7 +1029,7 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
                 // Send confirmation the old way
                 //
 
-                time_t ti = Tango::get_current_system_datetime();
+                const time_t ti = Tango::get_current_system_datetime();
                 ipos->second.last_subscribed = ti;
 
                 for(unsigned int loop = 0; loop < vd.size(); ++loop)

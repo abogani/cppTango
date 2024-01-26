@@ -6145,7 +6145,7 @@ void Attribute::def_format_in_dbdatum(DbDatum &db)
 bool Attribute::change_event_subscribed()
 {
     bool ret = false;
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
 
     if(event_change5_subscription != 0)
     {
@@ -6173,7 +6173,7 @@ bool Attribute::change_event_subscribed()
 bool Attribute::periodic_event_subscribed()
 {
     bool ret = false;
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
 
     if(event_periodic5_subscription != 0)
     {
@@ -6201,7 +6201,7 @@ bool Attribute::periodic_event_subscribed()
 bool Attribute::archive_event_subscribed()
 {
     bool ret = false;
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
 
     if(event_archive5_subscription != 0)
     {
@@ -6232,7 +6232,7 @@ bool Attribute::quality_event_subscribed()
 
     if(event_quality_subscription != 0)
     {
-        time_t now = Tango::get_current_system_datetime();
+        const time_t now = Tango::get_current_system_datetime();
         ret = now - event_quality_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
@@ -6242,7 +6242,7 @@ bool Attribute::quality_event_subscribed()
 bool Attribute::user_event_subscribed()
 {
     bool ret = false;
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
 
     if(event_user5_subscription != 0)
     {
@@ -6273,7 +6273,7 @@ bool Attribute::attr_conf_event_subscribed()
 
     if(event_attr_conf5_subscription != 0)
     {
-        time_t now = Tango::get_current_system_datetime();
+        const time_t now = Tango::get_current_system_datetime();
         ret = now - event_attr_conf5_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 
@@ -6281,7 +6281,7 @@ bool Attribute::attr_conf_event_subscribed()
     {
         if(event_attr_conf_subscription != 0)
         {
-            time_t now = Tango::get_current_system_datetime();
+            const time_t now = Tango::get_current_system_datetime();
             ret = now - event_attr_conf_subscription <= EVENT_RESUBSCRIBE_PERIOD;
         }
     }
@@ -6294,7 +6294,7 @@ bool Attribute::data_ready_event_subscribed()
 
     if(event_data_ready_subscription != 0)
     {
-        time_t now = Tango::get_current_system_datetime();
+        const time_t now = Tango::get_current_system_datetime();
         ret = now - event_data_ready_subscription <= EVENT_RESUBSCRIBE_PERIOD;
     }
 

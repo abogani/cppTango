@@ -1299,7 +1299,7 @@ void RootAttRegistry::auto_unsub()
     // A loop on each events
     //
 
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
 
     {
         WriterLock wl(id_user_lock);

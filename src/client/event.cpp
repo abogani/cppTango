@@ -1359,7 +1359,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         event_not_connected.push_back(conn_params);
 
         auto vpos = event_not_connected.end() - 1;
-        time_t now = Tango::get_current_system_datetime();
+        const time_t now = Tango::get_current_system_datetime();
         keep_alive_thread->stateless_subscription_failed(vpos, e, now);
         return subscribe_event_id;
     }
@@ -2318,7 +2318,7 @@ void EventConsumer::add_not_connected_event(DevFailed &e, EventNotConnected &not
     event_not_connected.push_back(not_con);
 
     auto vpos = event_not_connected.end() - 1;
-    time_t now = Tango::get_current_system_datetime();
+    const time_t now = Tango::get_current_system_datetime();
     keep_alive_thread->stateless_subscription_failed(vpos, e, now);
 }
 
