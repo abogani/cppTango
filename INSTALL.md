@@ -121,6 +121,7 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `TANGO_USE_PTHREAD`                | `OFF`                                  | On windows platforms, build with pthread library.
 | `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                  | Treat compiler warnings as errors
 | `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                  | Do not check the version of omniORB.  Enable this at your own risk.
+| `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
