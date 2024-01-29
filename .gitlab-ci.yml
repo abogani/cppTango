@@ -231,6 +231,15 @@ debian12:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
 
+debian12-no-submodule-init:
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
+  script:
+    - git submodule deinit TangoCMakeModules
+    - ci/config.sh
+
 debian12-no-jpeg:
   <<: *job-template-with-tests
   variables:
