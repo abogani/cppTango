@@ -14,10 +14,17 @@
 #include <cstdlib>
 #include <cstdio>
 
-CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
+CATCH_TRANSLATE_EXCEPTION(const CORBA::Exception &ex)
 {
     std::stringstream ss;
     Tango::Except::print_exception(ex, ss);
+    return ss.str();
+}
+
+CATCH_TRANSLATE_EXCEPTION(const omni_thread_fatal &ex)
+{
+    std::stringstream ss;
+    ss << "omni_thread_fatal error: " << strerror(ex.error) << " (" << ex.error << ")";
     return ss.str();
 }
 
