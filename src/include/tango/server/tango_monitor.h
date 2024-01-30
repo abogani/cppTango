@@ -69,6 +69,9 @@ class TangoMonitor : public omni_mutex
 
     ~TangoMonitor() { }
 
+    // Returned by get_locking_thread_id if no thread has the lock.
+    static constexpr const int NO_LOCKING_THREAD_ID = -1;
+
     void get_monitor();
     void rel_monitor();
 
@@ -131,7 +134,7 @@ inline int TangoMonitor::get_locking_thread_id()
     }
     else
     {
-        return 0;
+        return NO_LOCKING_THREAD_ID;
     }
 }
 
