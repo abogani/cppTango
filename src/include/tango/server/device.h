@@ -96,51 +96,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     /**@name Constructors
      * Miscellaneous constructors */
     //@{
-    /**
-     * Constructs a newly allocated DeviceImpl object from its name.
-     *
-     * The device description field is set to <i>A Tango device</i>. The device
-     * state is set to unknown and the device status is set to
-     * <b>Not Initialised</b>
-     *
-     * @param     device_class    Pointer to the device class object
-     * @param    dev_name    The device name
-     *
-     */
-    DeviceImpl(DeviceClass *device_class, const std::string &dev_name);
 
-    /**
-     * Constructs a newly allocated DeviceImpl object from its name and its description.
-     *
-     * The device
-     * state is set to unknown and the device status is set to
-     * <i>Not Initialised</i>
-     *
-     * @param     device_class    Pointer to the device class object
-     * @param    dev_name    The device name
-     * @param    desc    The device description
-     *
-     */
-    DeviceImpl(DeviceClass *device_class, const std::string &dev_name, const std::string &desc);
-    /**
-     * Constructs a newly allocated DeviceImpl object from all its creation
-     * parameters.
-     *
-     * The device is constructed from its name, its description, an original state
-     * and status
-     *
-     * @param     device_class    Pointer to the device class object
-     * @param    dev_name    The device name
-     * @param    desc     The device description
-     * @param    dev_state     The device initial state
-     * @param    dev_status    The device initial status
-     *
-     */
-    DeviceImpl(DeviceClass *device_class,
-               const std::string &dev_name,
-               const std::string &desc,
-               Tango::DevState dev_state,
-               const std::string &dev_status);
     /**
      * Constructs a newly allocated DeviceImpl object from all its creation
      * parameters with some default values.
@@ -159,12 +115,11 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      */
 
-    DeviceImpl(DeviceClass *device_class,
-               const char *dev_name,
-               const char *desc = "A TANGO device",
+    DeviceImpl(DeviceClass *device_calss,
+               std::string_view dev_name,
+               std::string_view desc = "A TANGO device",
                Tango::DevState dev_state = Tango::UNKNOWN,
-               const char *dev_status = StatusNotSet);
-
+               std::string_view dev_status = StatusNotSet);
     //@}
 
     /**@name Destructor
