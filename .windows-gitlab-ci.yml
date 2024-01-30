@@ -29,6 +29,7 @@ windows-build:
     PTHREAD_VERSION: 2.9.1
     CATCH_VERSION: 3.5.1
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
+    OTEL_VERSION: v3
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 16 2019"
     TANGO_JPEG_ROOT: dependencies/libjpeg
@@ -41,6 +42,7 @@ windows-build:
     TANGO_CATCH_ROOT: dependencies/catch
     TANGO_CATCH_SOURCE: dependencies/source/Catch2-${CATCH_VERSION}
     PTHREAD_ROOT: dependencies/pthread
+    OTEL_ROOT: dependencies/otel
     WIX_TOOLSET_LOCATION: dependencies/wix
     PYTHON_LOCATION: dependencies/python
     TANGO_WARNINGS_AS_ERRORS: "ON"
@@ -60,6 +62,7 @@ windows-build:
     # VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
     # CMAKE_BUILD_TYPE: "Release"
     # BUILD_SHARED_LIBS: "ON"
+    # TANGO_USE_TELEMETRY: "ON"
     # END local testing
   parallel:
     matrix:
@@ -72,17 +75,25 @@ windows-build:
         ARCHITECTURE:
         - "x64"
         - "win32"
+        TANGO_USE_TELEMETRY:
+        - "ON"
+        - "OFF"
   rules:
+    - if: '$TANGO_USE_TELEMETRY == "ON" && $BUILD_SHARED_LIBS == "ON"'
+      # currently not supported
+      when: never
     - if: '$ARCHITECTURE == "x64"'
       variables:
         NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win64/nasm-${NASM_VERSION}-installer-x64.exe"
         VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
         PY_ARCH: "amd64"
+      when: on_success
     - if: '$ARCHITECTURE == "win32"'
       variables:
         NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-installer-x86.exe"
         VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
         PY_ARCH: "${ARCHITECTURE}"
+      when: on_success
   script:
     - $CMAKE_BUILD_PARALLEL_LEVEL=$env:NUMBER_OF_PROCESSORS
     # avoid cmake warning about unknown escape sequences
@@ -123,6 +134,16 @@ windows-build:
         --build "${TANGO_JPEG_SOURCE}/build"
         --target install
         --config "${CMAKE_BUILD_TYPE}"
+    # opentelemetry with dependencies
+    - $FILENAME="opentelemetry-with-deps-static-${ARCHITECTURE}.zip"
+    - curl.exe -JOL "https://gitlab.com/api/v4/projects/54003303/packages/generic/opentelemetry/${OTEL_VERSION}/${FILENAME}"
+    - md -Force ${OTEL_ROOT}
+    - Expand-Archive -Path ${FILENAME} -DestinationPath ${OTEL_ROOT}
+    - mv ${OTEL_ROOT}/opentelemetry-cpp*/* ${OTEL_ROOT}
+    - rm -Recurse ${OTEL_ROOT}/opentelemetry-cpp*
+    - $ZLIB_NG_ROOT="${OTEL_ROOT}/zlib-ng"
+    - $LIBCURL_ROOT="${OTEL_ROOT}/libcurl"
+    - $OPENSSL_ROOT="${LIBCURL_ROOT}"
     # tango idl
     - md -Force "${TANGO_IDL_SOURCE}"
     - git clone -b ${TANGO_IDL_TAG} --depth 1 --quiet https://gitlab.com/tango-controls/tango-idl ${TANGO_IDL_SOURCE}
@@ -186,6 +207,17 @@ windows-build:
         -DTANGO_USE_JPEG=ON
         -DJPEG_DEBUG_POSTFIX=d
         -DBUILD_TESTING="${BUILD_TESTING}"
+        -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}"
+        -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake"
+        -DCMAKE_MODULE_PATH="${LIBCURL_ROOT}"
+        -DZLIB_INCLUDE_DIR="${cwd}/${ZLIB_NG_ROOT}/include"
+        -DZLIB_LIBRARY="${cwd}/${ZLIB_NG_ROOT}/lib/zlib.lib"
+        -DCURL_INCLUDE_DIR="${cwd}/${LIBCURL_ROOT}/include"
+        -DCURL_LIBRARY="${cwd}/${LIBCURL_ROOT}/lib/libcurl.a"
+        -DOPENSSL_USE_STATIC_LIBS=TRUE
+        -DOPENSSL_MSVC_STATIC_RT="ON"
+        -DOPENSSL_ROOT_DIR="${cwd}/${OPENSSL_ROOT}"
+        -DTANGO_OTEL_ROOT="${cwd}/${OTEL_ROOT}"
     - cmake
         --build build
         --config "${CMAKE_BUILD_TYPE}"
