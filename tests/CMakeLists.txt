@@ -302,6 +302,7 @@ tango_catch2_tests_create(
     catch2_jpeg_encoding.cpp
     catch2_nodb_connection.cpp
     $<$<BOOL:${TANGO_USE_TELEMETRY}>:${CMAKE_CURRENT_SOURCE_DIR}/catch2_telemetry.cpp>
+    catch2_tango_monitor.cpp
     )
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
