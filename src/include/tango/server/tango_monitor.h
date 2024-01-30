@@ -49,21 +49,9 @@ namespace Tango
 class TangoMonitor : public omni_mutex
 {
   public:
-    TangoMonitor(const char *na) :
-        _timeout(DEFAULT_TIMEOUT),
+    TangoMonitor(std::string_view na = "unknown") :
         cond(this),
-        locking_thread(nullptr),
-        locked_ctr(0),
         name(na)
-    {
-    }
-
-    TangoMonitor() :
-        _timeout(DEFAULT_TIMEOUT),
-        cond(this),
-        locking_thread(nullptr),
-        locked_ctr(0),
-        name("unknown")
     {
     }
 
@@ -111,10 +99,10 @@ class TangoMonitor : public omni_mutex
     }
 
   private:
-    long _timeout;
+    long _timeout{DEFAULT_TIMEOUT};
     omni_condition cond;
-    omni_thread *locking_thread;
-    long locked_ctr;
+    omni_thread *locking_thread{};
+    long locked_ctr{};
     std::string name;
 };
 
