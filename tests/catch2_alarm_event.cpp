@@ -808,9 +808,11 @@ SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
             {
                 THEN("the subscription fails")
                 {
+                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, false),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                                           FirstErrorMatches(Reason(Tango::API_AttributePollingNotStarted)));
                 }
             }
 
@@ -915,9 +917,11 @@ SCENARIO("Auto alarm on change events can be disabled")
             {
                 THEN("the subscription fails")
                 {
+                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                                           FirstErrorMatches(Reason(Tango::API_AttributePollingNotStarted)));
                 }
             }
         }
@@ -941,9 +945,11 @@ SCENARIO("Subscribing to alarm events from a missing attribute fails")
             {
                 THEN("the subscription fails")
                 {
+                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_AttrNotFound));
+                                           FirstErrorMatches(Reason(Tango::API_AttrNotFound)));
                 }
             }
         }

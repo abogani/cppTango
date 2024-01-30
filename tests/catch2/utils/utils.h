@@ -113,24 +113,6 @@ class Context
     std::vector<std::string> m_extra_env;
 };
 
-class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase
-{
-  public:
-    DevFailedReasonMatcher(const std::string &e);
-
-    bool match(const Tango::DevFailed &exception) const;
-
-    std::string describe() const override;
-
-  private:
-    const std::string reason;
-};
-
-inline DevFailedReasonMatcher DevFailedReasonEquals(std::string const &message)
-{
-    return DevFailedReasonMatcher(message);
-}
-
 namespace detail
 {
 // Setup a log appender to the file specified in the environment variable
