@@ -179,8 +179,11 @@ inline void TangoMonitor::get_monitor()
             if(interupted == 0)
             {
                 TANGO_LOG_DEBUG << "TIME OUT for thread " << th->id() << std::endl;
-                TANGO_THROW_EXCEPTION(API_CommandTimedOut,
-                                      "Not able to acquire serialization (dev, class or process) monitor");
+                std::stringstream ss;
+                ss << "Thread " << th->id();
+                ss << " is not able to acquire serialization monitor \"" << name << "\", ";
+                ss << " it is currently held by thread " << get_locking_thread_id() << ".";
+                TANGO_THROW_EXCEPTION(API_CommandTimedOut, ss.str());
             }
         }
         locking_thread = th;
