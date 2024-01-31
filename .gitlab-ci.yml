@@ -419,6 +419,7 @@ cmake-with-locations-and-min-versions-PKGCONFIG:
       -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
+      -DTANGO_USE_JPEG=ON
       -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
     - ci/build.sh
 
