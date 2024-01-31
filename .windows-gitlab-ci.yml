@@ -32,6 +32,7 @@ windows-build:
     OTEL_VERSION: v3
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 16 2019"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_JPEG_ROOT: dependencies/libjpeg
     TANGO_JPEG_SOURCE: dependencies/source/libjpeg-turbo-${JPEG_VERSION}
     TANGO_ZMQ_ROOT: dependencies/zeromq
@@ -192,6 +193,7 @@ windows-build:
         -G "${CMAKE_GENERATOR}"
         -A "${ARCHITECTURE}"
         -DCMAKE_VERBOSE_MAKEFILE=ON
+        -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
         -DBUILD_SHARED_LIBS="${BUILD_SHARED_LIBS}"
         -DTANGO_WARNINGS_AS_ERRORS="${TANGO_WARNINGS_AS_ERRORS}"
         -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
