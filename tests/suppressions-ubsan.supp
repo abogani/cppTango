@@ -1,4 +1,5 @@
 # False positive in libstdc++ std::bitset<i>::set: "UINT64_MAX << i"
 shift-base:std::_Sanitize<5ul>::_S_do_sanitize
+shift-base:std::_Sanitize<4ul>::_S_do_sanitize
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81749
 unsigned-integer-overflow:std::align
