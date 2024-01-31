@@ -114,14 +114,14 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `TANGO_CLANG_FORMAT`               | `OFF`                                  | Adds a target `clang-format` for automatic C++ source code formatting
 | `TANGO_ENABLE_COVERAGE`            | `OFF`                                  | Instrument code for coverage analysis
 | `TANGO_ENABLE_SANITIZER`           | *empty*                                | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
+| `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
 | `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                  | Install dependencies of tango as well (Windows only)
 | `TANGO_OMNIIDL_PATH`               |                                        | omniORB4 search path for omniidl
+| `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                  | Do not check the version of omniORB.  Enable this at your own risk.
 | `TANGO_USE_JPEG`                   | `ON`                                   | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                  | Compile against libc++ instead of stdlibc++ (Requires Clang)
 | `TANGO_USE_PTHREAD`                | `OFF`                                  | On windows platforms, build with pthread library.
 | `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                  | Treat compiler warnings as errors
-| `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                  | Do not check the version of omniORB.  Enable this at your own risk.
-| `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
 
 cppTango supports unity builds to speed up the compilation. Please see the
 [related CMake documentation](https://cmake.org/cmake/help/latest/prop_tgt/UNITY_BUILD.html)
