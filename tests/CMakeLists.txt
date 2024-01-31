@@ -25,7 +25,8 @@ set(TEST_CPPTANGO_1022_DEV2 "${INST_NAME}/cpptango-1022/2")
 set(TEST_CPPTANGO_1022_SERV_NAME "TestCppTango1022")
 set(DEV1_ALIAS "debian8_alias")
 set(ATTR_ALIAS "debian8_attr_alias")
-set(COMMON_TEST_DEFS $<$<BOOL:${BUILD_SHARED_LIBS}>:TANGO_HAS_DLL>
+set(COMMON_TEST_DEFS _REENTRANT
+                     $<$<BOOL:${BUILD_SHARED_LIBS}>:TANGO_HAS_DLL>
                      $<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:_WINSTATIC>)
 cmake_host_system_information(RESULT HOST_NAME QUERY FQDN)
 string(TOLOWER ${HOST_NAME} HOST_NAME)
