@@ -4,6 +4,8 @@
 #include <csignal>
 #include <thread>
 
+#include <tango/tango.h>
+
 #ifdef _TG_WINDOWS_
   #include <windows.h>
 
@@ -14,8 +16,6 @@ static inline void sleep(DWORD seconds)
 #else
   #include <sys/wait.h>
 #endif
-
-#include <tango/tango.h>
 
 // Define a simple device server
 #ifndef COMPAT

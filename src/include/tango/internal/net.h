@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include <tango/tango.h>
+
 #ifndef _TG_WINDOWS_
   #include <unistd.h>
 #endif
