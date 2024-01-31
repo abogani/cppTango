@@ -71,8 +71,8 @@ windows-build:
         - "Release"
         - "Debug"
         BUILD_SHARED_LIBS:
-        - "On"
-        - "Off"
+        - "ON"
+        - "OFF"
         ARCHITECTURE:
         - "x64"
         - "win32"
