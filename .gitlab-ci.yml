@@ -448,18 +448,18 @@ sanitizer:
       halt_on_error=1,\
       suppressions=$CI_PROJECT_DIR/tests/suppressions-ubsan.supp"
     SKIP_TESTS: "(event::per_event|old_tests::ring_depth)"
-  # Failures are temporarily allowed until sanitizer issues are fixed.
-  allow_failure: true
   # Increase timeout, this is required by UBSAN job.
   timeout: 2h
   parallel:
     matrix:
       - TANGO_ENABLE_SANITIZER: [ASAN, TSAN, UBSAN]
   rules:
-    - if: '$CI_JOB_NAME == "tango_enable_sanitizer: [UBSAN]"'
+    - if: '$CI_JOB_NAME == "sanitizer: [UBSAN]"'
       allow_failure: false
       when: on_success
-    - when: on_success
+    # Failures are temporarily allowed until TSAN and ASAN sanitizer issues are fixed.
+    - allow_failure: true
+      when: on_success
 
 # Trigger conda dev package build for the default branch
 build-conda-dev-package:
