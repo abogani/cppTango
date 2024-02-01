@@ -14,6 +14,10 @@ In this case a jpeg implementation must be present:
 
 - [libjpeg-turbo](https://www.libjpeg-turbo.org/), 1.5.2 or newer
 
+Building the tests requires:
+
+- [Catch2](https://github.com/catchorg/Catch2/), 3.1.1 or newer
+
 In the following we assume a linux-based system, see [here](#building-on-windows) for building on Windows.
 
 On current debian systems only some dependencies are available. Most notably tango-idl and omniORB are missing.
