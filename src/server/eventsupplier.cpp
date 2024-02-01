@@ -94,7 +94,7 @@ std::string EventSupplier::fqdn_prefix;
 EventSupplier::EventSupplier(Util *tg)
 
 {
-    if(fqdn_prefix.empty() == true)
+    if(fqdn_prefix.empty())
     {
         fqdn_prefix = "tango://";
         if(!tg->use_db() || tg->use_file_db())
@@ -207,9 +207,9 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
         }
     }
 
-    if(client_libs.empty() == false)
+    if(!client_libs.empty())
     {
-        if(detect_and_push_change_event(device_impl, attr_value, attr, attr_name, except) == true)
+        if(detect_and_push_change_event(device_impl, attr_value, attr, attr_name, except))
         {
             ret.change = true;
         }
@@ -256,9 +256,9 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
         }
     }
 
-    if(client_libs.empty() == false)
+    if(!client_libs.empty())
     {
-        if(detect_and_push_periodic_event(device_impl, attr_value, attr, attr_name, except, time_bef_attr) == true)
+        if(detect_and_push_periodic_event(device_impl, attr_value, attr, attr_name, except, time_bef_attr))
         {
             ret.periodic = true;
         }
@@ -306,9 +306,9 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
         }
     }
 
-    if(client_libs.empty() == false)
+    if(!client_libs.empty())
     {
-        if(detect_and_push_archive_event(device_impl, attr_value, attr, attr_name, except, time_bef_attr) == true)
+        if(detect_and_push_archive_event(device_impl, attr_value, attr, attr_name, except, time_bef_attr))
         {
             ret.archive = true;
         }
@@ -382,7 +382,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
     // if no attribute of this name is registered with change then insert the current value
     //
 
-    if(attr.prev_change_event.inited == false)
+    if(!attr.prev_change_event.inited)
     {
         attr.prev_change_event.store(
             attr_value.attr_val_5, attr_value.attr_val_4, attr_value.attr_val_3, attr_value.attr_val, except);
@@ -431,7 +431,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
         filterable_data.push_back(delta_change_abs);
 
         filterable_names.emplace_back("forced_event");
-        if(force_change == true)
+        if(force_change)
         {
             filterable_data.push_back((double) 1.0);
         }
@@ -441,7 +441,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
         }
 
         filterable_names.emplace_back("quality");
-        if(quality_change == true)
+        if(quality_change)
         {
             filterable_data.push_back((double) 1.0);
         }
@@ -499,7 +499,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
                        inc_ctr);
 
             inc_ctr = false;
-            if(need_free == true)
+            if(need_free)
             {
                 if(sent_value.attr_val_5 != nullptr)
                 {
@@ -518,7 +518,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
                     delete sent_value.attr_val;
                 }
             }
-            if(name_changed == true)
+            if(name_changed)
             {
                 ev_name = EventName[CHANGE_EVENT];
             }
@@ -623,7 +623,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
                         << ", arch_period = " << std::fixed << duration_ms(arch_period) << " ms"
                         << ", attr.prev_archive_event.inited = " << attr.prev_archive_event.inited << std::endl;
 
-        if((ms_since_last_periodic > arch_period) && (attr.prev_archive_event.inited == true))
+        if((ms_since_last_periodic > arch_period) && (attr.prev_archive_event.inited))
         {
             is_change = true;
             period_change = true;
@@ -634,7 +634,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
     // If no attribute of this name is registered with change then insert the current value
     //
 
-    if(attr.prev_archive_event.inited == false)
+    if(!attr.prev_archive_event.inited)
     {
         attr.prev_archive_event.store(
             attr_value.attr_val_5, attr_value.attr_val_4, attr_value.attr_val_3, attr_value.attr_val, except);
@@ -649,7 +649,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         // determine delta_change in percent compared with previous event sent
         //
 
-        if(is_change == false)
+        if(!is_change)
         {
             is_change = detect_change(
                 attr, attr_value, true, delta_change_rel, delta_change_abs, except, force_change, device_impl);
@@ -683,7 +683,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         //
 
         filterable_names_lg.emplace_back("counter");
-        if(period_change == true)
+        if(period_change)
         {
             attr.archive_periodic_counter++;
             attr.archive_last_periodic = time_bef_attr;
@@ -699,7 +699,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         filterable_names.emplace_back("delta_change_abs");
         filterable_data.push_back(delta_change_abs);
         filterable_names.emplace_back("forced_event");
-        if(force_change == true)
+        if(force_change)
         {
             filterable_data.push_back((double) 1.0);
         }
@@ -709,7 +709,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         }
 
         filterable_names.emplace_back("quality");
-        if(quality_change == true)
+        if(quality_change)
         {
             filterable_data.push_back((double) 1.0);
         }
@@ -773,7 +773,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
                        inc_ctr);
 
             inc_ctr = false;
-            if(need_free == true)
+            if(need_free)
             {
                 if(sent_value.attr_val_5 != nullptr)
                 {
@@ -792,7 +792,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
                     delete sent_value.attr_val;
                 }
             }
-            if(name_changed == true)
+            if(name_changed)
             {
                 ev_name = EventName[ARCHIVE_EVENT];
             }
@@ -936,7 +936,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
                        inc_ctr);
 
             inc_ctr = false;
-            if(need_free == true)
+            if(need_free)
             {
                 if(sent_value.attr_val_5 != nullptr)
                 {
@@ -955,7 +955,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
                     delete sent_value.attr_val;
                 }
             }
-            if(name_changed == true)
+            if(name_changed)
             {
                 ev_name = EventName[PERIODIC_EVENT];
             }
@@ -1029,7 +1029,7 @@ bool EventSupplier::detect_change(Attribute &attr,
     // failure. Same thing if the attribute quality factor changes to INVALID
     //
 
-    if(archive == true)
+    if(archive)
     {
         //
         // force an event only when the last reading was not returning an exception or not returning the same exception
@@ -1037,9 +1037,9 @@ bool EventSupplier::detect_change(Attribute &attr,
 
         if(except != nullptr)
         {
-            if(attr.prev_archive_event.err == true)
+            if(attr.prev_archive_event.err)
             {
-                if(Except::compare_exception(*except, attr.prev_archive_event.except) == true)
+                if(Except::compare_exception(*except, attr.prev_archive_event.except))
                 {
                     force_change = false;
                     return false;
@@ -1054,7 +1054,7 @@ bool EventSupplier::detect_change(Attribute &attr,
         // force an archive event when the last reading was still returning an exception
         //
 
-        if((except == nullptr) && (attr.prev_archive_event.err == true))
+        if((except == nullptr) && (attr.prev_archive_event.err))
         {
             force_change = true;
             return true;
@@ -1094,9 +1094,9 @@ bool EventSupplier::detect_change(Attribute &attr,
 
         if(except != nullptr)
         {
-            if(attr.prev_change_event.err == true)
+            if(attr.prev_change_event.err)
             {
-                if(Except::compare_exception(*except, attr.prev_change_event.except) == true)
+                if(Except::compare_exception(*except, attr.prev_change_event.except))
                 {
                     force_change = false;
                     return false;
@@ -1111,7 +1111,7 @@ bool EventSupplier::detect_change(Attribute &attr,
         // force an change event when the last reding was still returning an exception
         //
 
-        if((except == nullptr) && (attr.prev_change_event.err == true))
+        if((except == nullptr) && (attr.prev_change_event.err))
         {
             force_change = true;
             return true;
@@ -1194,7 +1194,7 @@ bool EventSupplier::detect_change(Attribute &attr,
 
     if(inited)
     {
-        if(enable_check == true)
+        if(enable_check)
         {
             unsigned int curr_seq_nb, prev_seq_nb;
             unsigned int i;
@@ -1230,7 +1230,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 curr_encoded_format = (*un_seq)[0].encoded_format.in();
                 curr_data_ptr = &((*un_seq)[0].encoded_data);
 
-                if(archive == true)
+                if(archive)
                 {
                     DevVarEncodedArray &union_seq = attr.prev_archive_event.value_4.encoded_att_value();
                     prev_seq_nb = union_seq[0].encoded_data.length();
@@ -1310,7 +1310,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     dev_state_type = true;
                     curr_sta = attr_value.attr_val_5->value.dev_state_att();
-                    if(archive == true)
+                    if(archive)
                     {
                         prev_sta = attr.prev_archive_event.value_4.dev_state_att();
                     }
@@ -1323,7 +1323,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     dev_state_type = true;
                     curr_sta = attr_value.attr_val_4->value.dev_state_att();
-                    if(archive == true)
+                    if(archive)
                     {
                         prev_sta = attr.prev_archive_event.value_4.dev_state_att();
                     }
@@ -1336,7 +1336,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     dev_state_type = true;
                     *the_new_any >>= curr_sta;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_sta;
                     }
@@ -1346,7 +1346,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(dev_state_type == true)
+                if(dev_state_type)
                 {
                     if(curr_sta != prev_sta)
                     {
@@ -1383,7 +1383,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     long_type = true;
                     *the_new_any >>= curr_seq_lo;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_lo;
                     }
@@ -1393,7 +1393,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(long_type == true)
+                if(long_type)
                 {
                     curr_seq_nb = curr_seq_lo->length();
                     prev_seq_nb = prev_seq_lo->length();
@@ -1456,7 +1456,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     long_long_type = true;
                     *the_new_any >>= curr_seq_64;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_64;
                     }
@@ -1466,7 +1466,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(long_long_type == true)
+                if(long_long_type)
                 {
                     curr_seq_nb = curr_seq_64->length();
                     prev_seq_nb = prev_seq_64->length();
@@ -1529,7 +1529,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     short_type = true;
                     *the_new_any >>= curr_seq_sh;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_sh;
                     }
@@ -1539,7 +1539,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(short_type == true)
+                if(short_type)
                 {
                     curr_seq_nb = curr_seq_sh->length();
                     prev_seq_nb = prev_seq_sh->length();
@@ -1618,7 +1618,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     double_type = true;
                     *the_new_any >>= curr_seq_db;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_db;
                     }
@@ -1628,7 +1628,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(double_type == true)
+                if(double_type)
                 {
                     curr_seq_nb = curr_seq_db->length();
                     prev_seq_nb = prev_seq_db->length();
@@ -1710,7 +1710,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     string_type = true;
                     *the_new_any >>= curr_seq_str;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_str;
                     }
@@ -1720,7 +1720,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(string_type == true)
+                if(string_type)
                 {
                     curr_seq_nb = curr_seq_str->length();
                     prev_seq_nb = prev_seq_str->length();
@@ -1759,7 +1759,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     float_type = true;
                     *the_new_any >>= curr_seq_fl;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_fl;
                     }
@@ -1769,7 +1769,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(float_type == true)
+                if(float_type)
                 {
                     curr_seq_nb = curr_seq_fl->length();
                     prev_seq_nb = prev_seq_fl->length();
@@ -1850,7 +1850,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     unsigned_short_type = true;
                     *the_new_any >>= curr_seq_ush;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_ush;
                     }
@@ -1860,7 +1860,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(unsigned_short_type == true)
+                if(unsigned_short_type)
                 {
                     curr_seq_nb = curr_seq_ush->length();
                     prev_seq_nb = prev_seq_ush->length();
@@ -1922,7 +1922,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     boolean_type = true;
                     *the_new_any >>= curr_seq_bo;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_bo;
                     }
@@ -1932,7 +1932,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(boolean_type == true)
+                if(boolean_type)
                 {
                     curr_seq_nb = curr_seq_bo->length();
                     prev_seq_nb = prev_seq_bo->length();
@@ -1971,7 +1971,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     char_type = true;
                     *the_new_any >>= curr_seq_uch;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_uch;
                     }
@@ -1981,7 +1981,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(char_type == true)
+                if(char_type)
                 {
                     curr_seq_nb = curr_seq_uch->length();
                     prev_seq_nb = prev_seq_uch->length();
@@ -2043,7 +2043,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     unsigned_long_type = true;
                     *the_new_any >>= curr_seq_ulo;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_ulo;
                     }
@@ -2053,7 +2053,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(unsigned_long_type == true)
+                if(unsigned_long_type)
                 {
                     curr_seq_nb = curr_seq_ulo->length();
                     prev_seq_nb = prev_seq_ulo->length();
@@ -2115,7 +2115,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     unsigned_64_type = true;
                     *the_new_any >>= curr_seq_u64;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_u64;
                     }
@@ -2125,7 +2125,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(unsigned_64_type == true)
+                if(unsigned_64_type)
                 {
                     curr_seq_nb = curr_seq_u64->length();
                     prev_seq_nb = prev_seq_u64->length();
@@ -2188,7 +2188,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                 {
                     state_type = true;
                     *the_new_any >>= curr_seq_state;
-                    if(archive == true)
+                    if(archive)
                     {
                         attr.prev_archive_event.value >>= prev_seq_state;
                     }
@@ -2198,7 +2198,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     }
                 }
 
-                if(state_type == true)
+                if(state_type)
                 {
                     curr_seq_nb = curr_seq_state->length();
                     prev_seq_nb = prev_seq_state->length();

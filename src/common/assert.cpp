@@ -5,9 +5,7 @@
 #include <iostream>
 #include <exception>
 
-namespace Tango
-{
-namespace detail
+namespace Tango::detail
 {
 void assertion_failure(const char *file, int line, const char *func, const char *msg)
 {
@@ -45,5 +43,4 @@ void assertion_failure(const char *file, int line, const char *func, const char 
 
     std::terminate();
 }
-} // namespace detail
-} // namespace Tango
+} // namespace Tango::detail

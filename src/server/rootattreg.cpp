@@ -60,7 +60,7 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
         // TANGO_LOG << "Event name = " << ev->event << std::endl;
         // TANGO_LOG << "Error flag = " << std::boolalpha << ev->err << std::endl;
 
-        if(ev->err == false)
+        if(!ev->err)
         {
             std::string att_name = ev->attr_name;
 
@@ -111,7 +111,7 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
 
                                 conf_list[0].name = ite->second.local_att_name.c_str();
                                 conf_list[0].root_attr_name = ite->first.c_str();
-                                if(ite->second.local_label.empty() == false)
+                                if(!ite->second.local_label.empty())
                                 {
                                     conf_list[0].label = ite->second.local_label.c_str();
                                 }
@@ -152,9 +152,9 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
                                 bool rel_ok = rar->check_root_dev_release(root_dev_name);
 
                                 Device_5Impl *the_dev = static_cast<Device_5Impl *>(ite3->second);
-                                if(rel_ok == true)
+                                if(rel_ok)
                                 {
-                                    if(ite->second.local_label.empty() == false)
+                                    if(!ite->second.local_label.empty())
                                     {
                                         ev->attr_conf->label = ite->second.local_label;
                                     }
@@ -283,7 +283,7 @@ void RootAttRegistry::RootAttUserCallBack::push_event(Tango::EventData *ev)
 
         std::string event_name = EVENT_COMPAT_IDL5 + ev->event;
 
-        if(ev->err == true)
+        if(ev->err)
         {
             DevFailed df(ev->errors);
             zes->push_event(dev, event_name, dummy_vs, dummy_vd, dummy_vs, dummy_vl, ad, local_att_name, &df, true);
@@ -348,7 +348,7 @@ void RootAttRegistry::RootAttUserCallBack::push_event(Tango::DataReadyEventData 
         EventSupplier::SuppliedEventData ad;
         ::memset(&ad, 0, sizeof(ad));
 
-        if(ev->err == true)
+        if(ev->err)
         {
             DevFailed df(ev->errors);
             zes->push_event(dev, ev->event, dummy_vs, dummy_vd, dummy_vs, dummy_vl, ad, local_att_name, &df, true);
@@ -483,7 +483,7 @@ void RootAttRegistry::RootAttConfCallBack::remove_att(const std::string &root_at
         // corresponding DeviceImpl entry
         //
 
-        if(used_elsewhere == false)
+        if(!used_elsewhere)
         {
             auto ite_dp = local_dis.find(local_dev_name);
             local_dis.erase(ite_dp);
@@ -751,7 +751,7 @@ void RootAttRegistry::add_root_att(const std::string &device_name,
 
     std::string a_name = device_name + '/' + att_name;
     bool already_there = cbp.is_root_att_in_map(a_name);
-    if(already_there == false)
+    if(!already_there)
     {
         cbp.add_att(a_name, local_dev_name, local_att_name, attdesc, dev);
         int event_id;
@@ -766,7 +766,7 @@ void RootAttRegistry::add_root_att(const std::string &device_name,
             if(::strcmp(e.errors[0].reason.in(), API_AttrNotFound) == 0)
             {
                 bool loop = check_loop(device_name, att_name, local_dev_name, local_att_name);
-                if(loop == true)
+                if(loop)
                 {
                     attdesc->set_err_kind(FWD_CONF_LOOP);
                 }
@@ -808,7 +808,7 @@ void RootAttRegistry::add_root_att(const std::string &device_name,
     else
     {
         Tango::Util *tg = Util::instance();
-        if(tg->is_device_restarting(local_dev_name) == false)
+        if(!tg->is_device_restarting(local_dev_name))
         {
             attdesc->set_err_kind(FWD_DOUBLE_USED);
             cbp.update_err_kind(a_name, attdesc->get_err_kind());
@@ -1267,7 +1267,7 @@ void RootAttRegistry::unsubscribe_user_event(const std::string &dev_name, const 
             }
         }
 
-        if(v_ue.empty() == true)
+        if(v_ue.empty())
         {
             map_event_id_user.erase(pos);
         }
@@ -1290,7 +1290,7 @@ void RootAttRegistry::auto_unsub()
     // Return immediately if there is no user events
     //
 
-    if(map_event_id_user.empty() == true)
+    if(map_event_id_user.empty())
     {
         return;
     }
@@ -1392,7 +1392,7 @@ void RootAttRegistry::auto_unsub()
             // Remove entry in map if no more events on this forwarded attribute
             //
 
-            if(ite->second.empty() == true)
+            if(ite->second.empty())
             {
                 map_event_id_user.erase(ite);
             }
@@ -1487,7 +1487,7 @@ bool RootAttRegistry::check_loop(const std::string &device_name,
             // equal, it is a loop!
             //
 
-            if(prop_found == true)
+            if(prop_found)
             {
                 std::transform(new_root_att.begin(), new_root_att.end(), new_root_att.begin(), ::tolower);
                 std::string full_local_att_name = local_dev_name + '/' + local_att_name;

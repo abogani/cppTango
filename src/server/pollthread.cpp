@@ -93,7 +93,7 @@ PollThread::PollThread(PollThCmd &cmd, TangoMonitor &m, bool heartbeat) :
     previous_nb_late = 0;
     polling_bef_9 = false;
 
-    if(heartbeat == true)
+    if(heartbeat)
     {
         polling_stop = false;
     }
@@ -126,7 +126,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
     // Declare a work item to check the for new sub devices regularly.
     //
 
-    if(send_heartbeat == true)
+    if(send_heartbeat)
     {
         WorkItem wo;
 
@@ -174,7 +174,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
             if(tune_ctr <= 0)
             {
                 tune_list(true);
-                if(need_two_tuning == true)
+                if(need_two_tuning)
                 {
                     unsigned long nb_works = works.size();
                     tune_ctr = (nb_works << 2);
@@ -270,9 +270,9 @@ PollCmdType PollThread::get_command()
     // Wait on monitor
     //
 
-    if((shared_cmd.cmd_pending == false) && (shared_cmd.trigger == false))
+    if((!shared_cmd.cmd_pending) && (!shared_cmd.trigger))
     {
-        if(works.empty() == true)
+        if(works.empty())
         {
             p_mon.wait();
         }
@@ -289,12 +289,12 @@ PollCmdType PollThread::get_command()
     // Test if it is a new command. If yes, copy its data locally
     //
 
-    if(shared_cmd.cmd_pending == true)
+    if(shared_cmd.cmd_pending)
     {
         local_cmd = shared_cmd;
         ret = POLL_COMMAND;
     }
-    else if(shared_cmd.trigger == true)
+    else if(shared_cmd.trigger)
     {
         local_cmd = shared_cmd;
         ret = POLL_TRIGGER;
@@ -348,7 +348,7 @@ void PollThread::execute_cmd()
         PollObjType new_type = (*wo.poll_list)[local_cmd.index]->get_type();
 
         bool found = false;
-        if(new_type == POLL_ATTR && wo.dev->get_dev_idl_version() >= 4 && polling_bef_9 == false)
+        if(new_type == POLL_ATTR && wo.dev->get_dev_idl_version() >= 4 && !polling_bef_9)
         {
             ite = find_if(works.begin(),
                           works.end(),
@@ -361,7 +361,7 @@ void PollThread::execute_cmd()
             }
         }
 
-        if(found == false)
+        if(!found)
         {
             wo.type = new_type;
             wo.update = new_upd;
@@ -418,7 +418,7 @@ void PollThread::execute_cmd()
                         if(*ite_str == PollThread::name_to_del)
                         {
                             ite->name.erase(ite_str);
-                            if(ite->name.empty() == true)
+                            if(ite->name.empty())
                             {
                                 works.erase(ite);
                             }
@@ -426,7 +426,7 @@ void PollThread::execute_cmd()
                             break;
                         }
                     }
-                    if(found == true)
+                    if(found)
                     {
                         break;
                     }
@@ -555,7 +555,7 @@ void PollThread::execute_cmd()
                                 if(*ite_str == PollThread::name_to_del)
                                 {
                                     ite->name.erase(ite_str);
-                                    if(ite->name.empty() == true)
+                                    if(ite->name.empty())
                                     {
                                         works.erase(ite);
                                     }
@@ -566,7 +566,7 @@ void PollThread::execute_cmd()
                                 }
                             }
 
-                            if(found == true)
+                            if(found)
                             {
                                 break;
                             }
@@ -587,7 +587,7 @@ void PollThread::execute_cmd()
                 tune_ctr = 0;
                 found_in_work_list = true;
 
-                if(found == false)
+                if(!found)
                 {
                     rem_upd.emplace_back(local_cmd.new_upd, PollThread::name_to_del);
                 }
@@ -615,7 +615,7 @@ void PollThread::execute_cmd()
                             if(*ite_str == PollThread::name_to_del)
                             {
                                 ite->name.erase(ite_str);
-                                if(ite->name.empty() == true)
+                                if(ite->name.empty())
                                 {
                                     works.erase(ite);
                                 }
@@ -624,7 +624,7 @@ void PollThread::execute_cmd()
                                 break;
                             }
                         }
-                        if(found == true)
+                        if(found)
                         {
                             break;
                         }
@@ -649,7 +649,7 @@ void PollThread::execute_cmd()
         // case 2-2 as described above (polling thread itself updating polling period of the object it actually polls)
         //
 
-        if(found_in_work_list == false)
+        if(!found_in_work_list)
         {
             bool found = false;
             for(et_ite = ext_trig_works.begin(); et_ite != ext_trig_works.end(); ++et_ite)
@@ -668,7 +668,7 @@ void PollThread::execute_cmd()
                 }
             }
 
-            if(found == true)
+            if(found)
             {
                 wo.dev = local_cmd.dev;
                 wo.poll_list = &(wo.dev->get_poll_obj_list());
@@ -782,7 +782,7 @@ void PollThread::one_more_poll()
     WorkItem tmp = works.front();
     works.pop_front();
 
-    if(polling_stop == false)
+    if(!polling_stop)
     {
         switch(tmp.type)
         {
@@ -813,7 +813,7 @@ void PollThread::one_more_poll()
     // For case where the polling thread itself modify the polling period of the object it already polls
     //
 
-    if(auto_upd.empty() == false)
+    if(!auto_upd.empty())
     {
         for(const auto &entry : auto_upd)
         {
@@ -821,7 +821,7 @@ void PollThread::one_more_poll()
             tmp.name.erase(pos, tmp.name.end());
         }
 
-        if(tmp.name.empty() == false)
+        if(!tmp.name.empty())
         {
             tmp.wake_up_date += tmp.update;
             insert_in_list(tmp);
@@ -845,7 +845,7 @@ void PollThread::one_more_poll()
                 ++ite;
             }
 
-            if(found == false)
+            if(!found)
             {
                 WorkItem new_tmp;
                 new_tmp.update = entry.first;
@@ -869,7 +869,7 @@ void PollThread::one_more_poll()
 
     else
     {
-        if(rem_upd.empty() == false)
+        if(!rem_upd.empty())
         {
             for(const auto &entry : rem_upd)
             {
@@ -877,7 +877,7 @@ void PollThread::one_more_poll()
                 tmp.name.erase(pos, tmp.name.end());
             }
 
-            if(tmp.name.empty() == false)
+            if(!tmp.name.empty())
             {
                 tmp.wake_up_date += tmp.update;
                 insert_in_list(tmp);
@@ -953,7 +953,7 @@ void PollThread::one_more_trigg()
     //
 
     WorkItem tmp = *et_ite;
-    if(polling_stop == false)
+    if(!polling_stop)
     {
         if(tmp.type == Tango::POLL_CMD)
         {
@@ -1085,7 +1085,7 @@ void PollThread::insert_in_list(WorkItem &new_work)
 
 void PollThread::add_insert_in_list(WorkItem &new_work)
 {
-    if(new_work.type == POLL_ATTR && new_work.dev->get_dev_idl_version() >= 4 && polling_bef_9 == false)
+    if(new_work.type == POLL_ATTR && new_work.dev->get_dev_idl_version() >= 4 && !polling_bef_9)
     {
         std::list<WorkItem>::iterator ite;
         ite = find_if(works.begin(),
@@ -1144,7 +1144,7 @@ void PollThread::tune_list(bool from_needed)
     // update period
     //
 
-    if(from_needed == true)
+    if(from_needed)
     {
         PollClock::duration needed_sum = PollClock::duration::zero();
         PollClock::duration min_upd = PollClock::duration::zero();
@@ -1278,12 +1278,12 @@ void PollThread::compute_sleep_time()
 {
     print_list();
 
-    if(works.empty() == false)
+    if(!works.empty())
     {
         bool discard = false;
         unsigned int nb_late = 0;
 
-        if(polling_bef_9 == false)
+        if(!polling_bef_9)
         {
             //
             // Compute for how many items the polling thread is late
@@ -1348,7 +1348,7 @@ void PollThread::compute_sleep_time()
         //
 
         //        TANGO_LOG_DEBUG << "discard = " << boolalpha << discard << std::endl;
-        if(nb_late == 0 || discard == true)
+        if(nb_late == 0 || discard)
         {
             previous_nb_late = 0;
 
@@ -1434,11 +1434,11 @@ void PollThread::err_out_of_sync(WorkItem &to_do)
     {
         Attribute &att = to_do.dev->get_device_attr()->get_attr_by_name(to_do.name[ctr].c_str());
 
-        if(att.use_notifd_event() == true && event_supplier_nd == nullptr)
+        if(att.use_notifd_event() && event_supplier_nd == nullptr)
         {
             event_supplier_nd = Util::instance()->get_notifd_event_supplier();
         }
-        if(att.use_zmq_event() == true && event_supplier_zmq == nullptr)
+        if(att.use_zmq_event() && event_supplier_zmq == nullptr)
         {
             event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
         }
@@ -1496,17 +1496,17 @@ void PollThread::err_out_of_sync(WorkItem &to_do)
                     std::vector<std::string> f_names_lg;
                     std::vector<long> f_data_lg;
 
-                    if(send_event.change == true)
+                    if(send_event.change)
                     {
                         event_supplier_zmq->push_event_loop(
                             to_do.dev, CHANGE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, &except);
                     }
-                    if(send_event.archive == true)
+                    if(send_event.archive)
                     {
                         event_supplier_zmq->push_event_loop(
                             to_do.dev, ARCHIVE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, &except);
                     }
-                    if(send_event.periodic == true)
+                    if(send_event.periodic)
                     {
                         event_supplier_zmq->push_event_loop(
                             to_do.dev, PERIODIC_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, &except);
@@ -1572,7 +1572,7 @@ void PollThread::poll_cmd(WorkItem &to_do)
     {
         to_do.dev->get_poll_monitor().get_monitor();
         ite = to_do.dev->get_polled_obj_by_type_name(to_do.type, to_do.name[0]);
-        if(cmd_failed == false)
+        if(!cmd_failed)
         {
             (*ite)->insert_data(argout, before_cmd, needed_time);
         }
@@ -1584,7 +1584,7 @@ void PollThread::poll_cmd(WorkItem &to_do)
     }
     catch(Tango::DevFailed &)
     {
-        if(cmd_failed == false)
+        if(!cmd_failed)
         {
             delete argout;
         }
@@ -1685,7 +1685,7 @@ void PollThread::poll_attr(WorkItem &to_do)
         {
             if(nb_obj == 1)
             {
-                if((attr_failed == false) && ((*argout_5)[0].err_list.length() != 0))
+                if((!attr_failed) && ((*argout_5)[0].err_list.length() != 0))
                 {
                     attr_failed = true;
                     save_except = new Tango::DevFailed((*argout_5)[0].err_list);
@@ -1696,7 +1696,7 @@ void PollThread::poll_attr(WorkItem &to_do)
             {
                 for(size_t ctr = 0; ctr < nb_obj; ctr++)
                 {
-                    if((attr_failed == false) && ((*argout_5)[ctr].err_list.length() != 0))
+                    if((!attr_failed) && ((*argout_5)[ctr].err_list.length() != 0))
                     {
                         Tango::DevFailed *tmp_except = new Tango::DevFailed((*argout_5)[ctr].err_list);
                         map_except.insert(std::pair<size_t, Tango::DevFailed *>(ctr, tmp_except));
@@ -1708,7 +1708,7 @@ void PollThread::poll_attr(WorkItem &to_do)
         {
             if(nb_obj == 1)
             {
-                if((attr_failed == false) && ((*argout_4)[0].err_list.length() != 0))
+                if((!attr_failed) && ((*argout_4)[0].err_list.length() != 0))
                 {
                     attr_failed = true;
                     save_except = new Tango::DevFailed((*argout_4)[0].err_list);
@@ -1719,7 +1719,7 @@ void PollThread::poll_attr(WorkItem &to_do)
             {
                 for(size_t ctr = 0; ctr < nb_obj; ctr++)
                 {
-                    if((attr_failed == false) && ((*argout_4)[ctr].err_list.length() != 0))
+                    if((!attr_failed) && ((*argout_4)[ctr].err_list.length() != 0))
                     {
                         Tango::DevFailed *tmp_except = new Tango::DevFailed((*argout_4)[ctr].err_list);
                         map_except.insert(std::pair<size_t, Tango::DevFailed *>(ctr, tmp_except));
@@ -1729,7 +1729,7 @@ void PollThread::poll_attr(WorkItem &to_do)
         }
         else
         {
-            if((attr_failed == false) && ((*argout_3)[0].err_list.length() != 0))
+            if((!attr_failed) && ((*argout_3)[0].err_list.length() != 0))
             {
                 attr_failed = true;
                 save_except = new Tango::DevFailed((*argout_3)[0].err_list);
@@ -1752,18 +1752,18 @@ void PollThread::poll_attr(WorkItem &to_do)
     {
         Attribute &att = to_do.dev->get_device_attr()->get_attr_by_name(to_do.name[ctr].c_str());
 
-        if(att.use_notifd_event() == true && event_supplier_nd == nullptr)
+        if(att.use_notifd_event() && event_supplier_nd == nullptr)
         {
             event_supplier_nd = Util::instance()->get_notifd_event_supplier();
         }
-        if(att.use_zmq_event() == true && event_supplier_zmq == nullptr)
+        if(att.use_zmq_event() && event_supplier_zmq == nullptr)
         {
             event_supplier_zmq = Util::instance()->get_zmq_event_supplier();
         }
 
         if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
         {
-            if(attr_failed == true)
+            if(attr_failed)
             {
                 struct EventSupplier::SuppliedEventData ad;
                 ::memset(&ad, 0, sizeof(ad));
@@ -1806,17 +1806,17 @@ void PollThread::poll_attr(WorkItem &to_do)
                         std::vector<std::string> f_names_lg;
                         std::vector<long> f_data_lg;
 
-                        if(send_event.change == true)
+                        if(send_event.change)
                         {
                             event_supplier_zmq->push_event_loop(
                                 to_do.dev, CHANGE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, save_except);
                         }
-                        if(send_event.archive == true)
+                        if(send_event.archive)
                         {
                             event_supplier_zmq->push_event_loop(
                                 to_do.dev, ARCHIVE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, save_except);
                         }
-                        if(send_event.periodic == true)
+                        if(send_event.periodic)
                         {
                             event_supplier_zmq->push_event_loop(to_do.dev,
                                                                 PERIODIC_EVENT,
@@ -1891,17 +1891,17 @@ void PollThread::poll_attr(WorkItem &to_do)
                         std::vector<std::string> f_names_lg;
                         std::vector<long> f_data_lg;
 
-                        if(send_event.change == true)
+                        if(send_event.change)
                         {
                             event_supplier_zmq->push_event_loop(
                                 to_do.dev, CHANGE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, tmp_except);
                         }
-                        if(send_event.periodic == true)
+                        if(send_event.periodic)
                         {
                             event_supplier_zmq->push_event_loop(
                                 to_do.dev, PERIODIC_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, tmp_except);
                         }
-                        if(send_event.archive == true)
+                        if(send_event.archive)
                         {
                             event_supplier_zmq->push_event_loop(
                                 to_do.dev, ARCHIVE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, att, tmp_except);
@@ -1934,7 +1934,7 @@ void PollThread::poll_attr(WorkItem &to_do)
         for(size_t ctr = 0; ctr < nb_obj; ctr++)
         {
             ite = to_do.dev->get_polled_obj_by_type_name(to_do.type, to_do.name[ctr]);
-            if(attr_failed == false)
+            if(!attr_failed)
             {
                 if(nb_obj == 1)
                 {
@@ -2015,7 +2015,7 @@ void PollThread::poll_attr(WorkItem &to_do)
             }
         }
 
-        if(nb_obj != 1 && attr_failed == false)
+        if(nb_obj != 1 && !attr_failed)
         {
             if(idl_vers >= 5)
             {
@@ -2031,7 +2031,7 @@ void PollThread::poll_attr(WorkItem &to_do)
     }
     catch(Tango::DevFailed &)
     {
-        if(attr_failed == false)
+        if(!attr_failed)
         {
             if(idl_vers >= 5)
             {
@@ -2075,13 +2075,13 @@ void PollThread::eve_heartbeat()
 
     EventSupplier *event_supplier;
     event_supplier = Util::instance()->get_zmq_event_supplier();
-    if((event_supplier != nullptr) && (send_heartbeat == true) && (event_supplier->get_one_subscription_cmd() == true))
+    if((event_supplier != nullptr) && (send_heartbeat) && (event_supplier->get_one_subscription_cmd()))
     {
         event_supplier->push_heartbeat_event();
     }
 
     event_supplier = Util::instance()->get_notifd_event_supplier();
-    if((event_supplier != nullptr) && (send_heartbeat == true) && (event_supplier->get_one_subscription_cmd() == true))
+    if((event_supplier != nullptr) && (send_heartbeat) && (event_supplier->get_one_subscription_cmd()))
     {
         event_supplier->push_heartbeat_event();
     }

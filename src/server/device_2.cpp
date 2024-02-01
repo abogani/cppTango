@@ -136,7 +136,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
     // is already done
     //
 
-    if(store_in_bb == true)
+    if(store_in_bb)
     {
         blackbox_ptr->insert_cmd(in_cmd, idl_version, source);
 
@@ -155,7 +155,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
         // If the lock is not valid any more, clear it
         //
 
-        if(state_status_cmd == false)
+        if(!state_status_cmd)
         {
             check_lock("command_inout2", in_cmd);
         }
@@ -218,7 +218,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
             {
                 if(poll_list[i]->get_name() == cmd_str)
                 {
-                    if((state_cmd == true) || (status_cmd == true))
+                    if((state_cmd) || (status_cmd))
                     {
                         if(poll_list[i]->get_type() == Tango::POLL_ATTR)
                         {
@@ -241,7 +241,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
             // Throw exception if the command is not polled
             //
 
-            if(found == false)
+            if(!found)
             {
                 TangoSys_OMemStream o;
                 o << "Command " << in_cmd << " not polled" << std::ends;
@@ -318,7 +318,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
             // Check that some data is available in cache
             //
 
-            if(polled_cmd->is_ring_empty() == true)
+            if(polled_cmd->is_ring_empty())
             {
                 TangoSys_OMemStream o;
                 o << "No data available in cache for command " << in_cmd << std::ends;
@@ -361,7 +361,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
         if(source == Tango::CACHE)
         {
             TANGO_LOG_DEBUG << "Device_2Impl: Returning data from polling buffer" << std::endl;
-            if((state_cmd == true) || (status_cmd == true))
+            if((state_cmd) || (status_cmd))
             {
                 long vers = get_dev_idl_version();
                 omni_mutex_lock sync(*polled_cmd);
@@ -388,10 +388,10 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
         }
         else
         {
-            if(polling_failed == false)
+            if(!polling_failed)
             {
                 TANGO_LOG_DEBUG << "Device_2Impl: Returning data from polling buffer" << std::endl;
-                if((state_cmd == true) || (status_cmd == true))
+                if((state_cmd) || (status_cmd))
                 {
                     long vers = get_dev_idl_version();
                     omni_mutex_lock sync(*polled_cmd);
@@ -419,7 +419,7 @@ CORBA::Any *Device_2Impl::command_inout_2(const char *in_cmd, const CORBA::Any &
         }
     }
 
-    if((source != Tango::CACHE) && (polling_failed == true))
+    if((source != Tango::CACHE) && (polling_failed))
     {
         AutoTangoMonitor sync(this);
         store_in_bb = false;
@@ -530,7 +530,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
                 // Check that device supports the wanted attribute
                 //
 
-                if(all_attr == false)
+                if(!all_attr)
                 {
                     for(i = 0; i < real_names.length(); i++)
                     {
@@ -544,7 +544,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
                 //
 
                 std::vector<long> non_polled;
-                if(all_attr == false)
+                if(!all_attr)
                 {
                     for(i = 0; i < real_names.length(); i++)
                     {
@@ -570,7 +570,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
 
                 bool found;
                 std::vector<long> poll_period;
-                if(non_polled.empty() == false)
+                if(!non_polled.empty())
                 {
                     //
                     // Check that it is possible to start polling for the non polled attribute
@@ -599,7 +599,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
                                 }
                             }
 
-                            if(found == true)
+                            if(found)
                             {
                                 TangoSys_OMemStream o;
                                 o << "Attribute " << real_names[non_polled[i]] << " not polled" << std::ends;
@@ -679,7 +679,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
                     // Check that some data is available in cache
                     //
 
-                    if(polled_attr->is_ring_empty() == true)
+                    if(polled_attr->is_ring_empty())
                     {
                         delete back;
                         back = nullptr;
@@ -867,7 +867,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
                 {
                     throw;
                 }
-                if(att_in_fault == true)
+                if(att_in_fault)
                 {
                     throw;
                 }
@@ -880,7 +880,7 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
         // attribute from device
         //
 
-        if((source == Tango::CACHE_DEV) && (polling_failed == true))
+        if((source == Tango::CACHE_DEV) && (polling_failed))
         {
             delete back;
 
@@ -1092,7 +1092,7 @@ Tango::DevCmdInfo_2 *Device_2Impl::command_query_2(const char *command)
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         nb_cmd = get_local_command_list().size();
         for(i = 0; i < nb_cmd; i++)
@@ -1106,7 +1106,7 @@ Tango::DevCmdInfo_2 *Device_2Impl::command_query_2(const char *command)
         }
     }
 
-    if(found == true)
+    if(found)
     {
         back->cmd_name = Tango::string_dup(cmd_ptr->get_name().c_str());
         back->cmd_tag = 0;
@@ -1251,7 +1251,7 @@ Tango::AttributeConfigList_2 *Device_2Impl::get_attribute_config_2(const Tango::
     {
         try
         {
-            if(all_attr == true)
+            if(all_attr)
             {
                 Attribute &attr = dev_attr->get_attr_by_ind(i);
                 attr.get_properties((*back)[i]);
@@ -1345,7 +1345,7 @@ Tango::DevCmdHistoryList *Device_2Impl::command_inout_history_2(const char *comm
     {
         if(poll_list[i]->get_name() == cmd_str)
         {
-            if((state_cmd == true) || (status_cmd == true))
+            if((state_cmd) || (status_cmd))
             {
                 if(poll_list[i]->get_type() == Tango::POLL_ATTR)
                 {
@@ -1373,7 +1373,7 @@ Tango::DevCmdHistoryList *Device_2Impl::command_inout_history_2(const char *comm
     // Check that some data is available in cache
     //
 
-    if(polled_cmd->is_ring_empty() == true)
+    if(polled_cmd->is_ring_empty())
     {
         TangoSys_OMemStream o;
         o << "No data available in cache for command " << cmd_str << std::ends;
@@ -1411,7 +1411,7 @@ Tango::DevCmdHistoryList *Device_2Impl::command_inout_history_2(const char *comm
     // retrieved the history as attributes and transfer this as command
     //
 
-    if((state_cmd == true) || (status_cmd == true))
+    if((state_cmd) || (status_cmd))
     {
         Tango::DevAttrHistoryList_3 *back_attr = nullptr;
         try
@@ -1424,7 +1424,7 @@ Tango::DevCmdHistoryList *Device_2Impl::command_inout_history_2(const char *comm
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
         }
 
-        if(status_cmd == true)
+        if(status_cmd)
         {
             if(vers >= 4)
             {
@@ -1461,7 +1461,7 @@ Tango::DevCmdHistoryList *Device_2Impl::command_inout_history_2(const char *comm
                 (*back)[k].time = (*back_attr)[k].value.time;
                 (*back)[k].cmd_failed = (*back_attr)[k].attr_failed;
                 (*back)[k].errors = (*back_attr)[k].value.err_list;
-                if((*back)[k].cmd_failed == false)
+                if(!(*back)[k].cmd_failed)
                 {
                     Tango::DevState sta;
                     (*back_attr)[k].value.value >>= sta;
@@ -1549,7 +1549,7 @@ Tango::DevAttrHistoryList *Device_2Impl::read_attribute_history_2(const char *na
     // Check that some data is available in cache
     //
 
-    if(polled_attr->is_ring_empty() == true)
+    if(polled_attr->is_ring_empty())
     {
         TangoSys_OMemStream o;
         o << "No data available in cache for attribute " << attr_str << std::ends;
@@ -1624,13 +1624,13 @@ Tango::DevAttrHistoryList *Device_2Impl::read_attribute_history_2(const char *na
 CORBA::Any *Device_2Impl::attr2cmd(AttributeValue_3 &att_val, bool state, bool status)
 {
     CORBA::Any *any = new CORBA::Any();
-    if(state == true)
+    if(state)
     {
         Tango::DevState sta;
         att_val.value >>= sta;
         (*any) <<= sta;
     }
-    else if(status == true)
+    else if(status)
     {
         Tango::DevVarStringArray *dvsa;
         att_val.value >>= dvsa;
@@ -1643,12 +1643,12 @@ CORBA::Any *Device_2Impl::attr2cmd(AttributeValue_3 &att_val, bool state, bool s
 CORBA::Any *Device_2Impl::attr2cmd(AttributeValue_4 &att_val, bool state, bool status)
 {
     CORBA::Any *any = new CORBA::Any();
-    if(state == true)
+    if(state)
     {
         const Tango::DevState &sta = att_val.value.dev_state_att();
         (*any) <<= sta;
     }
-    else if(status == true)
+    else if(status)
     {
         Tango::DevVarStringArray &dvsa = att_val.value.string_att_value();
         (*any) <<= dvsa[0];
@@ -1660,12 +1660,12 @@ CORBA::Any *Device_2Impl::attr2cmd(AttributeValue_4 &att_val, bool state, bool s
 CORBA::Any *Device_2Impl::attr2cmd(AttributeValue_5 &att_val, bool state, bool status)
 {
     CORBA::Any *any = new CORBA::Any();
-    if(state == true)
+    if(state)
     {
         const Tango::DevState &sta = att_val.value.dev_state_att();
         (*any) <<= sta;
     }
-    else if(status == true)
+    else if(status)
     {
         Tango::DevVarStringArray &dvsa = att_val.value.string_att_value();
         (*any) <<= dvsa[0];

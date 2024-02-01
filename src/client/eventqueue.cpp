@@ -174,7 +174,7 @@ void EventQueue::insert_event(EventData *new_event)
     else
     {
         // allocate ring buffer when not yet done
-        if(event_buffer.empty() == true)
+        if(event_buffer.empty())
         {
             event_buffer.resize(max_elt, nullptr);
         }
@@ -228,7 +228,7 @@ void EventQueue::insert_event(AttrConfEventData *new_event)
     else
     {
         // allocate ring buffer when not yet done
-        if(conf_event_buffer.empty() == true)
+        if(conf_event_buffer.empty())
         {
             conf_event_buffer.resize(max_elt, nullptr);
         }
@@ -282,7 +282,7 @@ void EventQueue::insert_event(DataReadyEventData *new_event)
     else
     {
         // allocate ring buffer when not yet done
-        if(ready_event_buffer.empty() == true)
+        if(ready_event_buffer.empty())
         {
             ready_event_buffer.resize(max_elt, nullptr);
         }
@@ -348,7 +348,7 @@ void EventQueue::insert_event(DevIntrChangeEventData *new_event)
         // allocate ring buffer when not yet done
         //
 
-        if(dev_inter_event_buffer.empty() == true)
+        if(dev_inter_event_buffer.empty())
         {
             dev_inter_event_buffer.resize(max_elt, nullptr);
         }
@@ -411,7 +411,7 @@ void EventQueue::insert_event(PipeEventData *new_event)
     else
     {
         // allocate ring buffer when not yet done
-        if(pipe_event_buffer.empty() == true)
+        if(pipe_event_buffer.empty())
         {
             pipe_event_buffer.resize(max_elt, nullptr);
         }
@@ -500,7 +500,7 @@ TimeVal EventQueue::get_last_event_date()
     // lock the event queue
     omni_mutex_lock l(modification_mutex);
 
-    if(event_buffer.empty() == false)
+    if(!event_buffer.empty())
     {
         if(insert_elt == 0)
         {
@@ -513,7 +513,7 @@ TimeVal EventQueue::get_last_event_date()
     }
     else
     {
-        if(conf_event_buffer.empty() == false)
+        if(!conf_event_buffer.empty())
         {
             if(insert_elt == 0)
             {
@@ -526,7 +526,7 @@ TimeVal EventQueue::get_last_event_date()
         }
         else
         {
-            if(ready_event_buffer.empty() == false)
+            if(!ready_event_buffer.empty())
             {
                 if(insert_elt == 0)
                 {
@@ -954,7 +954,7 @@ void EventQueue::get_events(CallBack *cb)
     // Check the event type
     //
 
-    if(event_buffer.empty() == false)
+    if(!event_buffer.empty())
     {
         //
         // Get event data for a local data copy. The event reception should not be blocked in case of a problem in the
@@ -986,7 +986,7 @@ void EventQueue::get_events(CallBack *cb)
             }
         }
     }
-    else if(conf_event_buffer.empty() == false)
+    else if(!conf_event_buffer.empty())
     {
         //
         // Get event data for a local data copy. The event reception should not be blocked in case of a problem in the
@@ -1017,7 +1017,7 @@ void EventQueue::get_events(CallBack *cb)
             }
         }
     }
-    else if(dev_inter_event_buffer.empty() == false)
+    else if(!dev_inter_event_buffer.empty())
     {
         //
         // Get event data for a local data copy. The event reception should not be blocked in case of a problem in the

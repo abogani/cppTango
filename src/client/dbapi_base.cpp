@@ -482,10 +482,10 @@ void Database::check_access_and_get()
         ReaderLock guard(con_to_mon);
         local_access_checked = access_checked;
     }
-    if(local_access_checked == false)
+    if(!local_access_checked)
     {
         WriterLock guard(con_to_mon);
-        if(access_checked == false)
+        if(!access_checked)
         {
             check_access();
         }
@@ -667,7 +667,7 @@ void Database::build_connection()
 std::string Database::get_corba_name(TANGO_UNUSED(bool ch_acc))
 {
     std::string db_corbaloc;
-    if(db_multi_svc == true)
+    if(db_multi_svc)
     {
         db_corbaloc = "corbaloc:iiop:1.2@";
         int nb_host = multi_db_host.size();
@@ -685,7 +685,7 @@ std::string Database::get_corba_name(TANGO_UNUSED(bool ch_acc))
     else
     {
         db_corbaloc = "corbaloc:iiop:";
-        if(tango_host_localhost == true)
+        if(tango_host_localhost)
         {
             db_corbaloc = db_corbaloc + "localhost:";
         }
@@ -798,7 +798,7 @@ DbDevImportInfo Database::import_device(const std::string &dev)
                 //
 
                 ApiUtil *au = ApiUtil::instance();
-                if(au->in_server() == true)
+                if(au->in_server())
                 {
                     if(db_tg != nullptr)
                     {
@@ -817,7 +817,7 @@ DbDevImportInfo Database::import_device(const std::string &dev)
                     }
                 }
 
-                if(imported_from_cache == false)
+                if(!imported_from_cache)
                 {
                     DeviceData send_name;
                     send_name << dev;
@@ -853,7 +853,7 @@ DbDevImportInfo Database::import_device(const std::string &dev)
                 std::string dev_class((dev_import_list->svalue)[5]);
                 std::pair<std::map<std::string, std::string>::iterator, bool> status;
                 status = dev_class_cache.insert(std::make_pair(dev, dev_class));
-                if(status.second == false)
+                if(!status.second)
                 {
                     TangoSys_OMemStream o;
                     o << "Can't insert device class for device " << dev << " in device class cache" << std::ends;
@@ -1571,7 +1571,7 @@ void Database::put_device_attribute_property(std::string dev, const DbData &db_d
 
     check_access_and_get();
 
-    while(retry == true)
+    while(retry)
     {
         DevVarStringArray *property_values = new DevVarStringArray;
         property_values->length(2);
@@ -2154,7 +2154,7 @@ void Database::put_class_attribute_property(std::string device_class, const DbDa
 
     check_access_and_get();
 
-    while(retry == true)
+    while(retry)
     {
         DevVarStringArray *property_values = new DevVarStringArray;
         property_values->length(2);
@@ -2582,7 +2582,7 @@ void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_
     {
         WriterLock guard(con_to_mon);
 
-        if((access == ACCESS_READ) && (access_checked == false))
+        if((access == ACCESS_READ) && (!access_checked))
         {
             check_access();
         }
@@ -3514,7 +3514,7 @@ std::string Database::get_class_for_device(const std::string &devname)
             std::pair<std::map<std::string, std::string>::iterator, bool> status;
 
             status = dev_class_cache.insert(std::make_pair(devname, ret_str));
-            if(status.second == false)
+            if(!status.second)
             {
                 TangoSys_OMemStream o;
                 o << "Can't insert device class for device " << devname << " in device class cache" << std::ends;
@@ -3963,9 +3963,9 @@ DbDatum Database::get_services(const std::string &servname, const std::string &i
 
     ApiUtil *au = ApiUtil::instance();
     DbServerCache *dsc;
-    if(au->in_server() == true)
+    if(au->in_server())
     {
-        if(from_env_var == false)
+        if(!from_env_var)
         {
             dsc = nullptr;
         }
@@ -4056,9 +4056,9 @@ DbDatum Database::get_device_service_list(const std::string &servname)
 
     ApiUtil *au = ApiUtil::instance();
     DbServerCache *dsc;
-    if(au->in_server() == true)
+    if(au->in_server())
     {
-        if(from_env_var == false)
+        if(!from_env_var)
         {
             dsc = nullptr;
         }
@@ -4484,7 +4484,7 @@ void Database::delete_all_device_attribute_property(std::string dev_name, const 
 
 void Database::check_access()
 {
-    if((check_acc == true) && (access_checked == false))
+    if((check_acc) && (!access_checked))
     {
         access = check_access_control(db_device_name);
         access_checked = true;
@@ -4503,7 +4503,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
     // For DB device
     //
 
-    if((access_checked == true) && (devname == db_device_name))
+    if((access_checked) && (devname == db_device_name))
     {
         return access;
     }
@@ -4512,7 +4512,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
 
     try
     {
-        if((access_checked == false) && (access_proxy == nullptr))
+        if((!access_checked) && (access_proxy == nullptr))
         {
             //
             // Try to get Access Service device name from an environment
@@ -4530,7 +4530,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
                 DbDatum db_serv = get_services(service_name, service_inst_name);
                 std::vector<std::string> serv_dev_list;
                 db_serv >> serv_dev_list;
-                if(serv_dev_list.empty() == false)
+                if(!serv_dev_list.empty())
                 {
                     access_devname_str = serv_dev_list[0];
                     access_service_defined = true;
@@ -4556,7 +4556,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
             // device name
             //
 
-            if(from_env_var == false)
+            if(!from_env_var)
             {
                 int num = 0;
                 num = count(access_devname_str.begin(), access_devname_str.end(), '/');
@@ -4581,7 +4581,7 @@ AccessControlType Database::check_access_control(const std::string &devname)
         }
         else
         {
-            if(access_service_defined == false)
+            if(!access_service_defined)
             {
                 local_access = ACCESS_WRITE;
             }
@@ -4630,14 +4630,7 @@ bool Database::is_command_allowed(const std::string &devname, const std::string 
         if(access_proxy == nullptr)
         {
             //            ret = !check_acc;
-            if(acc == ACCESS_READ)
-            {
-                ret = false;
-            }
-            else
-            {
-                ret = true;
-            }
+            ret = acc != ACCESS_READ;
             return ret;
         }
         else
@@ -5429,7 +5422,7 @@ void Database::put_class_pipe_property(std::string device_class, const DbData &d
 
     check_access_and_get();
 
-    while(retry == true)
+    while(retry)
     {
         DevVarStringArray *property_values = new DevVarStringArray;
         property_values->length(2);
@@ -5517,7 +5510,7 @@ void Database::put_device_pipe_property(std::string dev, const DbData &db_data)
 
     check_access_and_get();
 
-    while(retry == true)
+    while(retry)
     {
         DevVarStringArray *property_values = new DevVarStringArray;
         property_values->length(2);

@@ -135,7 +135,7 @@ std::optional<std::string> get_omniorb_variable(int argc, char *argv[], const st
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         Tango::DummyDeviceProxy d;
         std::string env_var;
@@ -146,7 +146,7 @@ std::optional<std::string> get_omniorb_variable(int argc, char *argv[], const st
         }
     }
 
-    if(found == false)
+    if(!found)
     {
         fname = Tango::DEFAULT_OMNI_CONF_FILE;
     }
@@ -297,7 +297,7 @@ Util *Util::instance(bool exit)
 {
     if(_instance == nullptr)
     {
-        if(exit == true)
+        if(exit)
         {
             Util::print_err_message("Tango is not initialised !!!\nExiting");
         }
@@ -424,7 +424,7 @@ void Util::effective_job(int argc, char *argv[])
         ApiUtil *au = Tango::ApiUtil::instance();
         CORBA::ORB_var orb_clnt = au->get_orb();
         bool log_client_orb_deleted = false;
-        if(CORBA::is_nil(orb_clnt) == false)
+        if(!CORBA::is_nil(orb_clnt))
         {
             log_client_orb_deleted = true;
             orb_clnt->destroy();
@@ -460,7 +460,7 @@ void Util::effective_job(int argc, char *argv[])
         }
 #endif
 
-        if(get_endpoint_specified() == true)
+        if(get_endpoint_specified())
         {
             const char *options[][2] = {{"clientCallTimeOutPeriod", CLNT_TIMEOUT_STR},
                                         {"serverCallTimeOutPeriod", "5000"},
@@ -513,7 +513,7 @@ void Util::effective_job(int argc, char *argv[])
         // Connect to the database
         //
 
-        if(_UseDb == true)
+        if(_UseDb)
         {
             connect_db();
 
@@ -523,7 +523,7 @@ void Util::effective_job(int argc, char *argv[])
             // display_help_message() method
             //
 
-            if(display_help == true)
+            if(display_help)
             {
                 display_help_message();
             }
@@ -561,7 +561,7 @@ void Util::effective_job(int argc, char *argv[])
         // Check if the server is not already running somewhere else
         //
 
-        if((_UseDb == true) && (_FileDb == false))
+        if((_UseDb) && (!_FileDb))
         {
             server_already_running();
         }
@@ -679,7 +679,7 @@ void Util::create_CORBA_objects()
     //
 
     PortableServer::POA_var nodb_poa;
-    if((_UseDb == false) || (_FileDb == true))
+    if((!_UseDb) || (_FileDb))
     {
         CORBA::Object_var poaInsObj = orb->resolve_initial_references("omniINSPOA");
         nodb_poa = PortableServer::POA::_narrow(poaInsObj);
@@ -689,11 +689,11 @@ void Util::create_CORBA_objects()
     // Store POA. This is the same test but inverted
     //
 
-    if((_UseDb == true) && (_FileDb == false))
+    if((_UseDb) && (!_FileDb))
     {
         _poa = PortableServer::POA::_duplicate(root_poa);
     }
-    else if((_UseDb == false) || (_FileDb == true))
+    else if((!_UseDb) || (_FileDb))
     {
         _poa = PortableServer::POA::_duplicate(nodb_poa);
     }
@@ -808,7 +808,7 @@ void Util::check_args(int argc, char *argv[])
     std::string first_arg(argv[1]);
     display_help = false;
 
-    if((argc == 2) && (_UseDb == true))
+    if((argc == 2) && (_UseDb))
     {
         if((first_arg == "-?") || (first_arg == "-help") || (first_arg == "-h"))
         {
@@ -816,7 +816,7 @@ void Util::check_args(int argc, char *argv[])
         }
     }
 
-    if((display_help == false) && (argv[1][0] == '-'))
+    if((!display_help) && (argv[1][0] == '-'))
     {
         print_usage(argv[0]);
     }
@@ -990,7 +990,7 @@ void Util::check_args(int argc, char *argv[])
                     }
                     else
                     {
-                        if(_UseDb == true)
+                        if(_UseDb)
                         {
                             print_usage(argv[0]);
                         }
@@ -1077,7 +1077,7 @@ void Util::check_args(int argc, char *argv[])
     // nodb option), we need its port
     //
 
-    if((_UseDb == false) && (svr_port_num.empty() == true))
+    if((!_UseDb) && (svr_port_num.empty()))
     {
         check_orb_endpoint(argc, argv);
     }
@@ -1308,7 +1308,7 @@ void Util::connect_db()
     // Try to create the Database object
     //
 
-    if(_daemon == true)
+    if(_daemon)
     {
         bool connected = false;
         while(!connected)
@@ -1332,7 +1332,7 @@ void Util::connect_db()
                     }
                 }
 #else
-                if(_FileDb == false)
+                if(!_FileDb)
                 {
                     db = new Database(orb.in());
                 }
@@ -1384,7 +1384,7 @@ void Util::connect_db()
                 }
             }
 #else
-            if(_FileDb == false)
+            if(!_FileDb)
             {
                 db = new Database(orb.in());
             }
@@ -1425,7 +1425,7 @@ void Util::connect_db()
         }
     }
 
-    if(CORBA::is_nil(db->get_dbase()) && _FileDb != true)
+    if(CORBA::is_nil(db->get_dbase()) && !_FileDb)
     {
         TangoSys_OMemStream o;
 
@@ -1437,7 +1437,7 @@ void Util::connect_db()
     // Set a timeout on the database device
     //
 
-    if(_FileDb == false)
+    if(!_FileDb)
     {
         db->set_timeout_millis(DB_TIMEOUT);
     }
@@ -1462,7 +1462,7 @@ void Util::connect_db()
     // Therefore, change DB device timeout to execute this command
     //
 
-    if(_FileDb == false)
+    if(!_FileDb)
     {
         std::string &inst_name = get_ds_inst_name();
         if(inst_name != "-?")
@@ -1662,7 +1662,7 @@ void Util::init_host_name()
 
             if(host_names.size() != 0)
             {
-                if(get_endpoint_specified() == false)
+                if(!get_endpoint_specified())
                 {
                     bool found = false;
                     for(size_t loop = 0; loop < host_names.size(); loop++)
@@ -1677,7 +1677,7 @@ void Util::init_host_name()
                         }
                     }
 
-                    if(found == false)
+                    if(!found)
                     {
                         hostname = host_names[0];
                     }
@@ -1685,7 +1685,7 @@ void Util::init_host_name()
                 else
                 {
                     std::string &spec_ip = get_specified_ip();
-                    if(spec_ip.empty() == true)
+                    if(spec_ip.empty())
                     {
                         bool found = false;
                         for(size_t loop = 0; loop < host_names.size(); loop++)
@@ -1700,7 +1700,7 @@ void Util::init_host_name()
                             }
                         }
 
-                        if(found == false)
+                        if(!found)
                         {
                             hostname = host_names[0];
                         }
@@ -1772,7 +1772,7 @@ void Util::init_host_name()
 
 void Util::create_notifd_event_supplier()
 {
-    if(_UseDb == true)
+    if(_UseDb)
     {
         try
         {
@@ -1782,7 +1782,7 @@ void Util::create_notifd_event_supplier()
         catch(...)
         {
             nd_event_supplier = nullptr;
-            if(_FileDb == true)
+            if(_FileDb)
             {
                 std::cerr << "Can't create notifd event supplier. Notifd event not available" << std::endl;
             }
@@ -1813,7 +1813,7 @@ void Util::create_zmq_event_supplier()
     catch(...)
     {
         zmq_event_supplier = nullptr;
-        if(_FileDb == true)
+        if(_FileDb)
         {
             std::cerr << "Can't create zmq event supplier. Zmq event not available" << std::endl;
         }
@@ -1898,7 +1898,7 @@ void Util::server_already_running()
             send <<= dev_name.c_str();
 
             received = db->get_dbase()->command_inout("DbImportDevice", send);
-            if((received.inout() >>= db_dev) == false)
+            if(!(received.inout() >>= db_dev))
             {
                 TangoSys_OMemStream o;
                 o << "Database error while trying to import " << dev_name << std::ends;
@@ -2106,7 +2106,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
         //
 
         RootAttRegistry &rar = get_root_att_reg();
-        if(rar.empty() == false && rar.is_root_dev_not_started_err() == true)
+        if(!rar.empty() && rar.is_root_dev_not_started_err())
         {
             if(EventConsumer::keep_alive_thread != nullptr)
             {
@@ -2140,9 +2140,9 @@ void Util::server_perform_work()
 
         bool user_shutdown_server;
 
-        while(shutdown_server == false)
+        while(!shutdown_server)
         {
-            if(is_svr_shutting_down() == false)
+            if(!is_svr_shutting_down())
             {
                 if(orb->work_pending())
                 {
@@ -2150,7 +2150,7 @@ void Util::server_perform_work()
                 }
 
                 user_shutdown_server = (*ev_loop_func)();
-                if(user_shutdown_server == true)
+                if(user_shutdown_server)
                 {
                     shutdown_ds();
                     shutdown_server = true;
@@ -2286,7 +2286,7 @@ void Util::server_cleanup()
     //
     // Destroy the ORB
     //
-    if(_constructed == true)
+    if(_constructed)
     {
         orb->destroy();
         // JM : 8.9.2005 : mark as already destroyed
@@ -2304,7 +2304,7 @@ void Util::server_cleanup()
     }
 #endif
 
-    if(_dummy_thread == true)
+    if(_dummy_thread)
     {
         omni_thread::release_dummy();
     }
@@ -2420,7 +2420,7 @@ DeviceImpl *Util::get_device_by_name(const std::string &dev_name)
     {
         std::string d_name;
 
-        if(_UseDb == true)
+        if(_UseDb)
         {
             try
             {
@@ -2509,7 +2509,7 @@ DeviceImpl *Util::find_device_name_core(const std::string &dev_name)
                 }
             }
         }
-        if(found == true)
+        if(found)
         {
             break;
         }
@@ -2519,7 +2519,7 @@ DeviceImpl *Util::find_device_name_core(const std::string &dev_name)
     // Check also the dserver device
     //
 
-    if(found == false && dev_name.find("dserver/") == 0)
+    if(!found && dev_name.find("dserver/") == 0)
     {
         DServerClass *ds_class = DServerClass::instance();
         std::vector<DeviceImpl *> &devlist = ds_class->get_device_list();
@@ -2730,7 +2730,7 @@ void Util::unregister_server()
     // Mark all the devices belonging to this server as unexported
     //
 
-    if((_UseDb == true) && (_FileDb == false))
+    if((_UseDb) && (!_FileDb))
     {
         try
         {
@@ -2918,7 +2918,7 @@ void Util::validate_cmd_line_classes()
             }
         }
 
-        if(found == false)
+        if(!found)
         {
             std::stringstream ss;
             ss << "Class name " << pos->first

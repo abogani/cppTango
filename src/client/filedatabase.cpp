@@ -1132,13 +1132,9 @@ void FileDatabase ::write_file()
         f << endl;
         f << "# CLASS " << (*it)->name << " attribute properties" << endl;
         f << endl;
-        for(vector<t_attribute_property *>::const_iterator itap = (*it)->attribute_properties.begin();
-            itap != (*it)->attribute_properties.end();
-            ++itap)
+        for(auto itap = (*it)->attribute_properties.begin(); itap != (*it)->attribute_properties.end(); ++itap)
         {
-            for(vector<t_property *>::const_iterator itp = (*itap)->properties.begin();
-                itp != (*itap)->properties.end();
-                ++itp)
+            for(auto itp = (*itap)->properties.begin(); itp != (*itap)->properties.end(); ++itp)
             {
                 f << "CLASS/" << (*it)->name << "/" << (*itap)->attribute_name << "->" << (*itp)->name << ": ";
                 int margin = 6 + (*it)->name.size() + 1 + (*itap)->attribute_name.size() + 2 + (*itp)->name.size() + 2;
@@ -1161,11 +1157,10 @@ void FileDatabase ::write_file()
         f << endl;
     }
     f << endl;
-    for(vector<t_device *>::const_iterator ite = m_server.devices.begin(); ite != m_server.devices.end(); ++ite)
+    for(auto ite = m_server.devices.begin(); ite != m_server.devices.end(); ++ite)
     {
         f << "# DEVICE " << (*ite)->name << " properties " << endl << endl;
-        for(vector<t_property *>::const_iterator itp = (*ite)->properties.begin(); itp != (*ite)->properties.end();
-            ++itp)
+        for(auto itp = (*ite)->properties.begin(); itp != (*ite)->properties.end(); ++itp)
         {
             f << (*ite)->name << "->" << (*itp)->name << ": ";
             auto iterator_s = (*itp)->value.begin();
@@ -1186,13 +1181,9 @@ void FileDatabase ::write_file()
         }
         f << endl;
         f << "# DEVICE " << (*ite)->name << " attribute properties" << endl << endl;
-        for(vector<t_attribute_property *>::const_iterator itap = (*ite)->attribute_properties.begin();
-            itap != (*ite)->attribute_properties.end();
-            ++itap)
+        for(auto itap = (*ite)->attribute_properties.begin(); itap != (*ite)->attribute_properties.end(); ++itap)
         {
-            for(vector<t_property *>::const_iterator itp = (*itap)->properties.begin();
-                itp != (*itap)->properties.end();
-                ++itp)
+            for(auto itp = (*itap)->properties.begin(); itp != (*itap)->properties.end(); ++itp)
             {
                 f << (*ite)->name << "/" << (*itap)->attribute_name << "->" << (*itp)->name << ": ";
                 int margin = (*ite)->name.size() + 1 + (*itap)->attribute_name.size() + 2 + (*itp)->name.size() + 2;

@@ -83,7 +83,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarBooleanArray &tmp_seq = attr_value->value.bool_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_boo = (const_cast<DevVarBooleanArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
@@ -102,7 +102,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarShortArray &tmp_seq = attr_value->value.short_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_sh = (const_cast<DevVarShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
@@ -121,7 +121,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarLongArray &tmp_seq = attr_value->value.long_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_lo = (const_cast<DevVarLongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
@@ -140,7 +140,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarLong64Array &tmp_seq = attr_value->value.long64_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_lolo = (const_cast<DevVarLong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
@@ -159,7 +159,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarFloatArray &tmp_seq = attr_value->value.float_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_fl = (const_cast<DevVarFloatArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
@@ -178,7 +178,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarDoubleArray &tmp_seq = attr_value->value.double_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_db = (const_cast<DevVarDoubleArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
@@ -197,7 +197,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarCharArray &tmp_seq = attr_value->value.uchar_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_uch = (const_cast<DevVarCharArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
@@ -216,7 +216,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarUShortArray &tmp_seq = attr_value->value.ushort_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_ush = (const_cast<DevVarUShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
@@ -235,7 +235,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarULongArray &tmp_seq = attr_value->value.ulong_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_ulo = (const_cast<DevVarULongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
@@ -254,7 +254,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarULong64Array &tmp_seq = attr_value->value.ulong64_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_ulolo = (const_cast<DevVarULong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
@@ -273,7 +273,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarStringArray &tmp_seq = attr_value->value.string_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_str = (const_cast<DevVarStringArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
@@ -292,7 +292,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarStateArray &tmp_seq = attr_value->value.state_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_state = (const_cast<DevVarStateArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
@@ -319,7 +319,7 @@ inline void ApiUtil::attr_to_device_base(const T *attr_value, DeviceAttribute *d
             const DevVarEncodedArray &tmp_seq = attr_value->value.encoded_att_value();
             max = tmp_seq.maximum();
             len = tmp_seq.length();
-            if(tmp_seq.release() == true)
+            if(tmp_seq.release())
             {
                 tmp_enc = (const_cast<DevVarEncodedArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
                 dev_attr->EncodedSeq = new DevVarEncodedArray(max, len, tmp_enc, true);

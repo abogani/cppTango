@@ -6,9 +6,7 @@
 /** @defgroup Macros Common macros
  */
 
-namespace Tango
-{
-namespace detail
+namespace Tango::detail
 {
 ///@privatesection
 
@@ -21,8 +19,7 @@ namespace detail
 // @param [in] func Name of the function where assertion failed
 // @param [in] msg  Message to display
 [[noreturn]] void assertion_failure(const char *file, int line, const char *func, const char *msg);
-} // namespace detail
-} // namespace Tango
+} // namespace Tango::detail
 
 /**
  * Assert condition \a X holds

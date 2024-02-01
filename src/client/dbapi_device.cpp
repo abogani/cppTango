@@ -120,7 +120,7 @@ DbDevice::~DbDevice() { }
 
 Database *DbDevice::get_dbase()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         return dbase;
     }
@@ -143,7 +143,7 @@ Database *DbDevice::get_dbase()
 
 DbDevImportInfo DbDevice::import_device()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         return dbase->import_device(name);
     }
@@ -166,7 +166,7 @@ DbDevImportInfo DbDevice::import_device()
 
 void DbDevice::export_device(const DbDevExportInfo &dev_export)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->export_device(dev_export);
     }
@@ -191,7 +191,7 @@ void DbDevice::get_property(DbData &db_data)
 {
     ApiUtil *au = ApiUtil::instance();
     DbServerCache *dsc;
-    if(au->in_server() == true)
+    if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();
         dsc = tg->get_db_cache();
@@ -201,7 +201,7 @@ void DbDevice::get_property(DbData &db_data)
         dsc = nullptr;
     }
 
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_device_property(name, db_data, dsc);
     }
@@ -223,7 +223,7 @@ void DbDevice::get_property(DbData &db_data)
 
 void DbDevice::put_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->put_device_property(name, db_data);
     }
@@ -246,7 +246,7 @@ void DbDevice::put_property(const DbData &db_data)
 
 void DbDevice::delete_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_device_property(name, db_data);
     }
@@ -269,7 +269,7 @@ void DbDevice::delete_property(const DbData &db_data)
 
 void DbDevice::get_attribute_property(DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_device_attribute_property(name, db_data);
     }
@@ -292,7 +292,7 @@ void DbDevice::get_attribute_property(DbData &db_data)
 
 void DbDevice::put_attribute_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->put_device_attribute_property(name, db_data);
     }
@@ -315,7 +315,7 @@ void DbDevice::put_attribute_property(const DbData &db_data)
 
 void DbDevice::delete_attribute_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_device_attribute_property(name, db_data);
     }
@@ -338,7 +338,7 @@ void DbDevice::delete_attribute_property(const DbData &db_data)
 
 void DbDevice::get_pipe_property(DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_device_pipe_property(name, db_data);
     }
@@ -361,7 +361,7 @@ void DbDevice::get_pipe_property(DbData &db_data)
 
 void DbDevice::put_pipe_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->put_device_pipe_property(name, db_data);
     }
@@ -384,7 +384,7 @@ void DbDevice::put_pipe_property(const DbData &db_data)
 
 void DbDevice::delete_pipe_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_device_pipe_property(name, db_data);
     }
@@ -407,7 +407,7 @@ void DbDevice::delete_pipe_property(const DbData &db_data)
 
 AccessControlType DbDevice::check_access_control()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         return dbase->check_access_control(name);
     }
@@ -432,7 +432,7 @@ AccessControlType DbDevice::check_access_control()
 
 void DbDevice::clear_access_except_errors()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->clear_access_except_errors();
     }
@@ -457,7 +457,7 @@ void DbDevice::get_property_list(const std::string &wildcard, std::vector<std::s
 {
     ApiUtil *au = ApiUtil::instance();
     DbServerCache *dsc;
-    if(au->in_server() == true)
+    if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();
         dsc = tg->get_db_cache();
@@ -467,7 +467,7 @@ void DbDevice::get_property_list(const std::string &wildcard, std::vector<std::s
         dsc = nullptr;
     }
 
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_device_property_list(name, wildcard, prop_list, dsc);
     }

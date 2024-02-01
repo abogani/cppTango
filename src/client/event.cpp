@@ -81,7 +81,7 @@ void leavefunc()
 
     Tango::ApiUtil *au = ApiUtil::instance();
 
-    if(au->need_reset_already_flag() == true)
+    if(au->need_reset_already_flag())
     {
         already_executed = false;
     }
@@ -90,7 +90,7 @@ void leavefunc()
     // Kill locking threads (if any)
     //
 
-    if(already_executed == false)
+    if(!already_executed)
     {
         au->clean_locking_threads();
     }
@@ -101,7 +101,7 @@ void leavefunc()
 
     NotifdEventConsumer *notifd_ec = au->get_notifd_event_consumer();
 
-    if(notifd_ec != nullptr && already_executed == false)
+    if(notifd_ec != nullptr && !already_executed)
     {
         notifd_ec->shutdown();
 
@@ -116,7 +116,7 @@ void leavefunc()
 
     ZmqEventConsumer *zmq_ec = au->get_zmq_event_consumer();
 
-    if(zmq_ec != nullptr && already_executed == false)
+    if(zmq_ec != nullptr && !already_executed)
     {
         zmq_ec->shutdown();
     }
@@ -125,7 +125,7 @@ void leavefunc()
     // Shutdown and destroy the ORB
     //
 
-    if(already_executed == false)
+    if(!already_executed)
     {
         if(notifd_ec == nullptr)
         {
@@ -154,7 +154,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
     // Build and store the fqdn prefix for devices in the TANGO_HOST environment variable (in lower case letters)
     //
 
-    if(env_var_fqdn_prefix.empty() == true)
+    if(env_var_fqdn_prefix.empty())
     {
         try
         {
@@ -162,7 +162,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
             std::string prefix = "tango://" + db->get_db_host() + ':' + db->get_db_port() + '/';
             env_var_fqdn_prefix.push_back(prefix);
 
-            if(db->is_multi_tango_host() == true)
+            if(db->is_multi_tango_host())
             {
                 std::vector<std::string> &tango_hosts = db->get_multi_host();
                 std::vector<std::string> &tango_ports = db->get_multi_port();
@@ -210,7 +210,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
     //
 
 #ifndef _USRDLL
-    if((api_ptr->in_server() == false) && (api_ptr->is_lock_exit_installed() == false))
+    if((!api_ptr->in_server()) && (!api_ptr->is_lock_exit_installed()))
     {
         atexit(leavefunc);
         api_ptr->set_sig_handler();
@@ -283,7 +283,7 @@ void EventConsumer::get_cs_tango_host(Database *db)
             std::string tg_host(db->get_orig_tango_host());
             std::transform(tg_host.begin(), tg_host.end(), tg_host.begin(), ::tolower);
 
-            if(tg_host.empty() == false && lower_vs != tg_host)
+            if(!tg_host.empty() && lower_vs != tg_host)
             {
                 if(alias_map.find(tg_host) == alias_map.end())
                 {
@@ -303,17 +303,7 @@ void EventConsumer::get_cs_tango_host(Database *db)
             std::transform(vs[i].begin(), vs[i].end(), vs[i].begin(), ::tolower);
             pos = find_if(env_var_fqdn_prefix.begin(),
                           env_var_fqdn_prefix.end(),
-                          [&](std::string str) -> bool
-                          {
-                              if(str.find(vs[i]) != std::string::npos)
-                              {
-                                  return true;
-                              }
-                              else
-                              {
-                                  return false;
-                              }
-                          });
+                          [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
 
             if(pos == env_var_fqdn_prefix.end())
             {
@@ -545,7 +535,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_lo->maximum();
                 len = tmp_seq_lo->length();
-                if(tmp_seq_lo->release() == true)
+                if(tmp_seq_lo->release())
                 {
                     tmp_lo = (const_cast<DevVarLongArray *>(tmp_seq_lo))->get_buffer((CORBA::Boolean) true);
                     dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
@@ -569,7 +559,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_64->maximum();
                 len = tmp_seq_64->length();
-                if(tmp_seq_64->release() == true)
+                if(tmp_seq_64->release())
                 {
                     tmp_64 = (const_cast<DevVarLong64Array *>(tmp_seq_64))->get_buffer((CORBA::Boolean) true);
                     dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_64, true);
@@ -593,7 +583,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_sh->maximum();
                 len = tmp_seq_sh->length();
-                if(tmp_seq_sh->release() == true)
+                if(tmp_seq_sh->release())
                 {
                     tmp_sh = (const_cast<DevVarShortArray *>(tmp_seq_sh))->get_buffer((CORBA::Boolean) true);
                     dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
@@ -617,7 +607,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_db->maximum();
                 len = tmp_seq_db->length();
-                if(tmp_seq_db->release() == true)
+                if(tmp_seq_db->release())
                 {
                     tmp_db = (const_cast<DevVarDoubleArray *>(tmp_seq_db))->get_buffer((CORBA::Boolean) true);
                     dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
@@ -641,7 +631,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_str->maximum();
                 len = tmp_seq_str->length();
-                if(tmp_seq_str->release() == true)
+                if(tmp_seq_str->release())
                 {
                     tmp_str = (const_cast<DevVarStringArray *>(tmp_seq_str))->get_buffer((CORBA::Boolean) true);
                     dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
@@ -665,7 +655,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_fl->maximum();
                 len = tmp_seq_fl->length();
-                if(tmp_seq_fl->release() == true)
+                if(tmp_seq_fl->release())
                 {
                     tmp_fl = (const_cast<DevVarFloatArray *>(tmp_seq_fl))->get_buffer((CORBA::Boolean) true);
                     dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
@@ -689,7 +679,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_boo->maximum();
                 len = tmp_seq_boo->length();
-                if(tmp_seq_boo->release() == true)
+                if(tmp_seq_boo->release())
                 {
                     tmp_boo = (const_cast<DevVarBooleanArray *>(tmp_seq_boo))->get_buffer((CORBA::Boolean) true);
                     dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
@@ -713,7 +703,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_ush->maximum();
                 len = tmp_seq_ush->length();
-                if(tmp_seq_ush->release() == true)
+                if(tmp_seq_ush->release())
                 {
                     tmp_ush = (const_cast<DevVarUShortArray *>(tmp_seq_ush))->get_buffer((CORBA::Boolean) true);
                     dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
@@ -737,7 +727,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_uch->maximum();
                 len = tmp_seq_uch->length();
-                if(tmp_seq_uch->release() == true)
+                if(tmp_seq_uch->release())
                 {
                     tmp_uch = (const_cast<DevVarCharArray *>(tmp_seq_uch))->get_buffer((CORBA::Boolean) true);
                     dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
@@ -761,7 +751,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_ulo->maximum();
                 len = tmp_seq_ulo->length();
-                if(tmp_seq_ulo->release() == true)
+                if(tmp_seq_ulo->release())
                 {
                     tmp_ulo = (const_cast<DevVarULongArray *>(tmp_seq_ulo))->get_buffer((CORBA::Boolean) true);
                     dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
@@ -785,7 +775,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_u64->maximum();
                 len = tmp_seq_u64->length();
-                if(tmp_seq_u64->release() == true)
+                if(tmp_seq_u64->release())
                 {
                     tmp_ulolo = (const_cast<DevVarULong64Array *>(tmp_seq_u64))->get_buffer((CORBA::Boolean) true);
                     dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
@@ -809,7 +799,7 @@ void EventConsumer::attr_to_device(const AttributeValue *attr_value,
                 }
                 max = tmp_seq_state->maximum();
                 len = tmp_seq_state->length();
-                if(tmp_seq_state->release() == true)
+                if(tmp_seq_state->release())
                 {
                     tmp_state = (const_cast<DevVarStateArray *>(tmp_seq_state))->get_buffer((CORBA::Boolean) true);
                     dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
@@ -904,7 +894,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarBooleanArray &tmp_seq = union_ptr->bool_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_boo = (const_cast<DevVarBooleanArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->BooleanSeq = new DevVarBooleanArray(max, len, tmp_boo, true);
@@ -923,7 +913,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarShortArray &tmp_seq = union_ptr->short_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_sh = (const_cast<DevVarShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->ShortSeq = new DevVarShortArray(max, len, tmp_sh, true);
@@ -942,7 +932,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarLongArray &tmp_seq = union_ptr->long_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_lo = (const_cast<DevVarLongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->LongSeq = new DevVarLongArray(max, len, tmp_lo, true);
@@ -961,7 +951,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarLong64Array &tmp_seq = union_ptr->long64_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_lolo = (const_cast<DevVarLong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->Long64Seq = new DevVarLong64Array(max, len, tmp_lolo, true);
@@ -980,7 +970,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarFloatArray &tmp_seq = union_ptr->float_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_fl = (const_cast<DevVarFloatArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->FloatSeq = new DevVarFloatArray(max, len, tmp_fl, true);
@@ -999,7 +989,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarDoubleArray &tmp_seq = union_ptr->double_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_db = (const_cast<DevVarDoubleArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->DoubleSeq = new DevVarDoubleArray(max, len, tmp_db, true);
@@ -1018,7 +1008,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarCharArray &tmp_seq = union_ptr->uchar_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_uch = (const_cast<DevVarCharArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->UCharSeq = new DevVarCharArray(max, len, tmp_uch, true);
@@ -1037,7 +1027,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarUShortArray &tmp_seq = union_ptr->ushort_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_ush = (const_cast<DevVarUShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->UShortSeq = new DevVarUShortArray(max, len, tmp_ush, true);
@@ -1056,7 +1046,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarULongArray &tmp_seq = union_ptr->ulong_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_ulo = (const_cast<DevVarULongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->ULongSeq = new DevVarULongArray(max, len, tmp_ulo, true);
@@ -1075,7 +1065,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarULong64Array &tmp_seq = union_ptr->ulong64_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_ulolo = (const_cast<DevVarULong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->ULong64Seq = new DevVarULong64Array(max, len, tmp_ulolo, true);
@@ -1094,7 +1084,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarStringArray &tmp_seq = union_ptr->string_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_str = (const_cast<DevVarStringArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->StringSeq = new DevVarStringArray(max, len, tmp_str, true);
@@ -1113,7 +1103,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarStateArray &tmp_seq = union_ptr->state_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_state = (const_cast<DevVarStateArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->StateSeq = new DevVarStateArray(max, len, tmp_state, true);
@@ -1147,7 +1137,7 @@ void EventConsumer::att_union_to_device(const AttrValUnion *union_ptr, DeviceAtt
         const DevVarEncodedArray &tmp_seq = union_ptr->encoded_att_value();
         max = tmp_seq.maximum();
         len = tmp_seq.length();
-        if(tmp_seq.release() == true)
+        if(tmp_seq.release())
         {
             tmp_enc = (const_cast<DevVarEncodedArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
             dev_attr->EncodedSeq = new DevVarEncodedArray(max, len, tmp_enc, true);
@@ -1300,7 +1290,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         omni_thread::ensure_self se;
         if(omni_thread::self()->id() == thread_id)
         {
-            if(stateless == false)
+            if(!stateless)
             {
                 TANGO_THROW_DETAILED_EXCEPTION(
                     EventSystemExcept,
@@ -1338,7 +1328,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
     {
         std::string reason(e.errors[0].reason.in());
         // if the stateless flag is not true, rethrow the exception
-        if((stateless == false) || (reason == API_CommandNotFound))
+        if((!stateless) || (reason == API_CommandNotFound))
         {
             throw;
         }
@@ -1356,7 +1346,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         conn_params.ev_queue = ev_queue;
         conn_params.filters = filters;
         conn_params.last_heartbeat = time(nullptr);
-        if(env_var_fqdn_prefix.empty() == false)
+        if(!env_var_fqdn_prefix.empty())
         {
             conn_params.prefix = env_var_fqdn_prefix[0];
         }
@@ -1491,10 +1481,10 @@ int EventConsumer::connect_event(DeviceProxy *device,
     //
 
     std::string local_device_name(device_name);
-    if(device->get_from_env_var() == false)
+    if(!device->get_from_env_var())
     {
         std::string prot("tango://");
-        if(device->is_dbase_used() == false)
+        if(!device->is_dbase_used())
         {
             std::string &ho = device->get_dev_host();
             if(ho.find('.') == std::string::npos)
@@ -1508,7 +1498,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
             prot = prot + device->get_db_host() + ':' + device->get_db_port() + '/';
         }
         device_name.insert(0, prot);
-        if(device->is_dbase_used() == false)
+        if(!device->is_dbase_used())
         {
             device_name = device_name + MODIFIER_DBASE_NO;
         }
@@ -1527,7 +1517,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     std::string::size_type pos;
     if((pos = local_callback_key.find('#')) == std::string::npos)
     {
-        if(inter_event == true)
+        if(inter_event)
         {
             local_callback_key = local_callback_key + "." + event_name;
         }
@@ -1539,7 +1529,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     else
     {
         local_callback_key.erase(pos);
-        if(inter_event == true)
+        if(inter_event)
         {
             local_callback_key = local_callback_key + MODIFIER_DBASE_NO + '.' + event_name;
         }
@@ -1643,9 +1633,9 @@ int EventConsumer::connect_event(DeviceProxy *device,
         // defined by the TANGO_HOST env. variable
         //
 
-        if(dd.is_empty() == true)
+        if(dd.is_empty())
         {
-            if(device->get_from_env_var() == false)
+            if(!device->get_from_env_var())
             {
                 std::string::size_type pos = device_name.find("://");
                 pos = pos + 3;
@@ -1667,7 +1657,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     }
     catch(Tango::DevFailed &e)
     {
-        if(allocated == true)
+        if(allocated)
         {
             delete adm_dev;
         }
@@ -1694,12 +1684,12 @@ int EventConsumer::connect_event(DeviceProxy *device,
     const DevVarLongStringArray *dvlsa;
     bool dd_extract_ok = true;
 
-    if((dd >> dvlsa) == false)
+    if(!(dd >> dvlsa))
     {
         dd_extract_ok = false;
     }
 
-    if(dd_extract_ok == true && add_compat_info == true && dvlsa->lvalue[1] >= MIN_IDL_CONF5)
+    if(dd_extract_ok && add_compat_info && dvlsa->lvalue[1] >= MIN_IDL_CONF5)
     {
         event_name = EVENT_COMPAT_IDL5 + event_name;
         std::string::size_type pos = local_callback_key.rfind('.');
@@ -1716,7 +1706,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     auto iter = event_callback_map.find(received_from_admin.event_name);
 
-    if(iter == event_callback_map.end() && add_compat_info == true)
+    if(iter == event_callback_map.end() && add_compat_info)
     {
         for(int i = 0; i < ATT_CONF_REL_NB; i++)
         {
@@ -1761,7 +1751,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         }
         catch(Tango::DevFailed &)
         {
-            if(allocated == true)
+            if(allocated)
             {
                 delete adm_dev;
             }
@@ -1771,7 +1761,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         ipos = device_channel_map.find(device_name);
         if(ipos == device_channel_map.end())
         {
-            if(allocated == true)
+            if(allocated)
             {
                 delete adm_dev;
             }
@@ -1788,7 +1778,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
             evt_it->second.last_subscribed = time(nullptr);
             valid_endpoint_nb = evt_it->second.valid_endpoint;
 
-            if(new_entry_in_channel_map == true)
+            if(new_entry_in_channel_map)
             {
                 AutoTangoMonitor _mon(evt_it->second.channel_monitor);
                 evt_it->second.adm_device_proxy = adm_dev;
@@ -1828,7 +1818,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     new_event_callback.alias_used = false;
     new_event_callback.client_attribute_name = get_client_attribute_name(local_callback_key, filters);
 
-    if(inter_event == true)
+    if(inter_event)
     {
         new_event_callback.fully_qualified_event_name = device_name + '.' + event_name;
     }
@@ -1837,7 +1827,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         new_event_callback.fully_qualified_event_name = device_name + '/' + obj_name_lower + '.' + event_name;
     }
 
-    if(dd_extract_ok == false)
+    if(!dd_extract_ok)
     {
         new_event_callback.device_idl = 0;
     }
@@ -1854,7 +1844,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     }
     new_event_callback.ctr = 0;
     new_event_callback.discarded_event = false;
-    if(zmq_used == true)
+    if(zmq_used)
     {
         new_event_callback.endpoint = dvlsa->svalue[(valid_endpoint_nb << 1) + 1].in();
     }
@@ -1871,16 +1861,16 @@ int EventConsumer::connect_event(DeviceProxy *device,
     //
 
     new_event_callback.fwd_att = false;
-    if(inter_event == false && pipe_event == false)
+    if(!inter_event && !pipe_event)
     {
         ApiUtil *au = ApiUtil::instance();
-        if(au->in_server() == true)
+        if(au->in_server())
         {
             RootAttRegistry &rar = Util::instance()->get_root_att_reg();
 
             std::string root_att_name = device_name;
             root_att_name = root_att_name + '/' + obj_name_lower;
-            if(rar.is_root_attribute(root_att_name) == true)
+            if(rar.is_root_attribute(root_att_name))
             {
                 new_event_callback.fwd_att = true;
             }
@@ -2076,7 +2066,7 @@ void EventConsumer::unsubscribe_event(int event_id)
                 // If the callback list is empty
                 //
 
-                if(evt_cb.callback_list.empty() == true)
+                if(evt_cb.callback_list.empty())
                 {
                     auto evt_it = channel_map.find(evt_cb.channel_name);
                     EventChannelStruct &evt_ch = evt_it->second;
@@ -2129,7 +2119,7 @@ void EventConsumer::unsubscribe_event(int event_id)
                     // This channel is not used anymore in the app, remove its entry in the channel maps
                     //
 
-                    if(channel_used_elsewhere == false)
+                    if(!channel_used_elsewhere)
                     {
                         std::map<std::string, EventChannelStruct>::iterator chan_pos;
                         for(chan_pos = channel_map.begin(); chan_pos != channel_map.end(); ++chan_pos)
@@ -2216,7 +2206,7 @@ void EventConsumer::unsubscribe_event(int event_id)
 
     // check also the vector of not yet connected events
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2320,7 +2310,7 @@ void DelayedEventSubThread::run(TANGO_UNUSED(void *ptr))
 
 void EventConsumer::add_not_connected_event(DevFailed &e, EventNotConnected &not_con)
 {
-    if(env_var_fqdn_prefix.empty() == false)
+    if(!env_var_fqdn_prefix.empty())
     {
         not_con.prefix = env_var_fqdn_prefix[0];
     }
@@ -2393,7 +2383,7 @@ void EventConsumer::get_events(int event_id, EventDataList &event_list)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2487,7 +2477,7 @@ void EventConsumer::get_events(int event_id, AttrConfEventDataList &event_list)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2581,7 +2571,7 @@ void EventConsumer::get_events(int event_id, DataReadyEventDataList &event_list)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2675,7 +2665,7 @@ void EventConsumer::get_events(int event_id, DevIntrChangeEventDataList &event_l
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2769,7 +2759,7 @@ void EventConsumer::get_events(int event_id, PipeEventDataList &event_list)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2863,7 +2853,7 @@ void EventConsumer::get_events(int event_id, CallBack *cb)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -2952,7 +2942,7 @@ int EventConsumer::event_queue_size(int event_id)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -3045,7 +3035,7 @@ bool EventConsumer::is_event_queue_empty(int event_id)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -3138,7 +3128,7 @@ TimeVal EventConsumer::get_last_event_date(int event_id)
     // check also the vector of not yet connected events
     //
 
-    if(event_not_connected.empty() == false)
+    if(!event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -3283,7 +3273,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
 
         try
         {
-            if(cb.fwd_att == true)
+            if(cb.fwd_att)
             {
                 device->read_attribute(obj_name.c_str(), av_5);
                 if(av_5->err_list.length() != 0)
@@ -3296,7 +3286,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             {
                 da = new DeviceAttribute();
                 *da = device->read_attribute(obj_name.c_str());
-                if(da->has_failed() == true)
+                if(da->has_failed())
                 {
                     err = da->get_err_stack();
                     err.length(err.length() - 1);
@@ -3316,7 +3306,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         }
         std::string local_domain_name = cb.get_client_attribute_name();
 
-        if(cb.fwd_att == true)
+        if(cb.fwd_att)
         {
             da = new DeviceAttribute();
             event_data = new FwdEventData(device, local_domain_name, local_event_name, da, err);
@@ -3346,7 +3336,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             }
 
             delete event_data;
-            if(cb.fwd_att == true)
+            if(cb.fwd_att)
             {
                 delete[] av_5;
             }
@@ -3591,7 +3581,7 @@ ChannelType EventConsumer::get_event_system_for_event_id(int event_id)
                 ret = evt_ch.channel_type;
                 break;
             }
-            if(found == true)
+            if(found)
             {
                 break;
             }
@@ -3602,7 +3592,7 @@ ChannelType EventConsumer::get_event_system_for_event_id(int event_id)
     // Also search in the not connected event vector. The returned value in this case is not relevant
     //
 
-    if(found == false && event_not_connected.empty() == false)
+    if(!found && !event_not_connected.empty())
     {
         std::vector<EventNotConnected>::iterator vpos;
         for(vpos = event_not_connected.begin(); vpos != event_not_connected.end(); ++vpos)
@@ -3619,7 +3609,7 @@ ChannelType EventConsumer::get_event_system_for_event_id(int event_id)
     // Throw exception if the event_id has not been found in maps
     //
 
-    if(found == false)
+    if(!found)
     {
         TANGO_THROW_DETAILED_EXCEPTION(
             EventSystemExcept,
@@ -3654,14 +3644,7 @@ EventData::EventData(DeviceProxy *dev,
     attr_value(attr_value_in),
     errors(errors_in)
 {
-    if(errors.length() == 0)
-    {
-        err = false;
-    }
-    else
-    {
-        err = true;
-    }
+    err = errors.length() != 0;
 
     set_time();
 }
@@ -3824,14 +3807,7 @@ AttrConfEventData::AttrConfEventData(DeviceProxy *dev,
     attr_conf(attr_conf_in),
     errors(errors_in)
 {
-    if(errors.length() == 0)
-    {
-        err = false;
-    }
-    else
-    {
-        err = true;
-    }
+    err = errors.length() != 0;
 
     set_time();
 }
@@ -3967,14 +3943,7 @@ DataReadyEventData::DataReadyEventData(DeviceProxy *dev,
         ctr = -1;
     }
 
-    if(errors.length() == 0)
-    {
-        err = false;
-    }
-    else
-    {
-        err = true;
-    }
+    err = errors.length() != 0;
 }
 
 //+----------------------------------------------------------------------
@@ -4062,16 +4031,9 @@ DevIntrChangeEventData::DevIntrChangeEventData(DeviceProxy *dev,
 {
     device = dev;
 
-    if(errors.length() == 0)
-    {
-        err = false;
-    }
-    else
-    {
-        err = true;
-    }
+    err = errors.length() != 0;
 
-    if(err == false)
+    if(!err)
     {
         //
         // Convert first command list and then attribute list
@@ -4104,13 +4066,13 @@ DevIntrChangeEventData::DevIntrChangeEventData(DeviceProxy *dev,
             att_list[i].min_alarm = (*a_list)[i].att_alarm.min_alarm;
             att_list[i].max_alarm = (*a_list)[i].att_alarm.max_alarm;
             att_list[i].root_attr_name = (*a_list)[i].root_attr_name;
-            if((*a_list)[i].memorized == false)
+            if(!(*a_list)[i].memorized)
             {
                 att_list[i].memorized = NONE;
             }
             else
             {
-                if((*a_list)[i].mem_init == false)
+                if(!(*a_list)[i].mem_init)
                 {
                     att_list[i].memorized = MEMORIZED;
                 }
@@ -4143,16 +4105,9 @@ DevIntrChangeEventData::DevIntrChangeEventData(DeviceProxy *dev,
 {
     device = dev;
 
-    if(errors.length() == 0)
-    {
-        err = false;
-    }
-    else
-    {
-        err = true;
-    }
+    err = errors.length() != 0;
 
-    if(err == false)
+    if(!err)
     {
         cmd_list = *c_list;
         att_list = *a_list;
@@ -4242,14 +4197,7 @@ PipeEventData::PipeEventData(DeviceProxy *dev,
     pipe_value(pipe_value_in),
     errors(errors_in)
 {
-    if(errors.length() == 0)
-    {
-        err = false;
-    }
-    else
-    {
-        err = true;
-    }
+    err = errors.length() != 0;
 
     set_time();
 }

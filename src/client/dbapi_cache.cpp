@@ -507,7 +507,7 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param, PropEltIdx &obj, b
         {
             int old_length = ret_length;
             ret_length = ret_length + 2;
-            if(dev_prop == true)
+            if(dev_prop)
             {
                 ret_length++;
             }
@@ -515,7 +515,7 @@ void DbServerCache::get_obj_prop(DevVarStringArray *in_param, PropEltIdx &obj, b
             ret_obj_prop.length(ret_length);
             ret_obj_prop[old_length] = Tango::string_dup((*in_param)[loop + 1]);
             ret_obj_prop[old_length + 1] = Tango::string_dup("0");
-            if(dev_prop == true)
+            if(dev_prop)
             {
                 ret_obj_prop[old_length + 2] = Tango::string_dup(" ");
             }
@@ -1316,11 +1316,11 @@ void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param, PropEltIdx &o
         //
 
         bool store = false;
-        if(wildcard_used == true)
+        if(wildcard_used)
         {
-            if(before == false)
+            if(!before)
             {
-                if(after == false)
+                if(!after)
                 {
                     store = true;
                 }
@@ -1341,7 +1341,7 @@ void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param, PropEltIdx &o
                 std::string tmp_name((*data_list)[obj.props_idx[lo]]);
                 std::transform(tmp_name.begin(), tmp_name.end(), tmp_name.begin(), ::tolower);
 
-                if(after == false)
+                if(!after)
                 {
                     pos_before = tmp_name.find(before_str);
                     if((pos_before != std::string::npos) && (pos_before == 0))
@@ -1376,7 +1376,7 @@ void DbServerCache::get_obj_prop_list(DevVarStringArray *in_param, PropEltIdx &o
         // Store the property name if decided
         //
 
-        if(store == true)
+        if(store)
         {
             ret_prop_list.length(ret_length);
             ret_prop_list[ret_length - 1] = Tango::string_dup((*data_list)[obj.props_idx[lo]]);

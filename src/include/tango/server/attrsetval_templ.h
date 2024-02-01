@@ -60,8 +60,7 @@ namespace Tango
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-template <class T,
-          typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type *>
+template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 {
     //
@@ -79,10 +78,10 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    bool short_enum = std::is_same<short, typename std::underlying_type<T>::type>::value;
-    bool uns_int_enum = std::is_same<unsigned int, typename std::underlying_type<T>::type>::value;
+    bool short_enum = std::is_same<short, std::underlying_type_t<T>>::value;
+    bool uns_int_enum = std::is_same<unsigned int, std::underlying_type_t<T>>::value;
 
-    if(short_enum == false && uns_int_enum == false)
+    if(!short_enum && !uns_int_enum)
     {
         delete_data_if_needed(enum_ptr, release);
 
@@ -127,7 +126,7 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     Tango::MultiClassAttribute *mca = dev_class->get_class_attr();
     Tango::Attr &att = mca->get_attr(name);
 
-    if(att.same_type(typeid(T)) == false)
+    if(!att.same_type(typeid(T)))
     {
         delete_data_if_needed(enum_ptr, release);
 
@@ -207,13 +206,13 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 
     delete_data_if_needed(enum_ptr, release);
 
-    if(date == false)
+    if(!date)
     {
         value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
     }
     else
     {
-        if((is_writ_associated() == true))
+        if((is_writ_associated()))
         {
             if(data_format == Tango::SCALAR)
             {
@@ -228,7 +227,7 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         }
         else
         {
-            if((data_format == Tango::SCALAR) && (release == true))
+            if((data_format == Tango::SCALAR) && (release))
             {
                 value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
             }
@@ -253,8 +252,7 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     set_time();
 }
 
-template <class T,
-          typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type *>
+template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *p_data, long x, long y, bool release)
 {
     using ArrayType = typename tango_type_traits<T>::ArrayType;
@@ -316,14 +314,14 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
     // back to the caller)
     //
 
-    if(date == false)
+    if(!date)
     {
         auto *tmp = get_value_storage<ArrayType>();
         *tmp = new ArrayType(data_size, data_size, p_data, release);
     }
     else
     {
-        if((is_writ_associated() == true))
+        if((is_writ_associated()))
         {
             if(data_format == Tango::SCALAR)
             {
@@ -336,7 +334,7 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
                 *tmp = new ArrayType(data_size);
                 (*tmp)->length(data_size);
                 ::memcpy((*tmp)->get_buffer(false), p_data, data_size * sizeof(T));
-                if(release == true)
+                if(release)
                 {
                     delete[] p_data;
                 }
@@ -344,13 +342,13 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
         }
         else
         {
-            if((data_format == Tango::SCALAR) && (release == true))
+            if((data_format == Tango::SCALAR) && (release))
             {
                 T *tmp_ptr = new T[1];
                 *tmp_ptr = *p_data;
                 auto *tmp = get_value_storage<ArrayType>();
                 *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
-                if(is_fwd_att() == true)
+                if(is_fwd_att())
                 {
                     delete[] p_data;
                 }
@@ -391,7 +389,7 @@ inline void
 
     if(qual == Tango::ATTR_INVALID)
     {
-        if(!((is_writ_associated() == true) && (data_format == Tango::SCALAR)))
+        if(!(is_writ_associated()) || (data_format != Tango::SCALAR))
         {
             delete_seq();
         }
@@ -408,7 +406,7 @@ inline void Attribute::set_value_date_quality(
 
     if(qual == Tango::ATTR_INVALID)
     {
-        if(!((is_writ_associated() == true) && (data_format == Tango::SCALAR)))
+        if(!(is_writ_associated()) || (data_format != Tango::SCALAR))
         {
             delete_seq();
         }
@@ -520,13 +518,13 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     // back to the caller)
     //
 
-    if(date == false)
+    if(!date)
     {
         value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
     }
     else
     {
-        if((is_writ_associated() == true))
+        if((is_writ_associated()))
         {
             if(data_format == Tango::SCALAR)
             {
@@ -538,7 +536,7 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
                 value.sh_seq = new Tango::DevVarShortArray(data_size);
                 value.sh_seq->length(data_size);
                 ::memcpy(value.sh_seq->get_buffer(false), p_data, data_size * sizeof(Tango::DevShort));
-                if(release == true)
+                if(release)
                 {
                     delete[] p_data;
                 }
@@ -546,12 +544,12 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
         }
         else
         {
-            if((data_format == Tango::SCALAR) && (release == true))
+            if((data_format == Tango::SCALAR) && (release))
             {
                 Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
                 *tmp_ptr = *p_data;
                 value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, tmp_ptr, release);
-                if(is_fwd_att() == true)
+                if(is_fwd_att())
                 {
                     delete[] p_data;
                 }
@@ -641,9 +639,9 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
     // back to the caller)
     //
 
-    if(date == false)
+    if(!date)
     {
-        if(release == true)
+        if(release)
         {
             char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
             for(std::uint32_t i = 0; i < data_size; i++)
@@ -660,7 +658,7 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
     }
     else
     {
-        if((is_writ_associated() == true))
+        if((is_writ_associated()))
         {
             if(data_format == Tango::SCALAR)
             {
@@ -676,9 +674,9 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
                 {
                     (*value.str_seq)[k] = Tango::string_dup(p_data[k]);
                 }
-                if(release == true)
+                if(release)
                 {
-                    if(is_fwd_att() == true)
+                    if(is_fwd_att())
                     {
                         Tango::DevVarStringArray::freebuf(p_data);
                     }
@@ -695,10 +693,10 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
         }
         else
         {
-            if(release == true)
+            if(release)
             {
                 char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
-                if(is_fwd_att() == true)
+                if(is_fwd_att())
                 {
                     for(std::uint32_t i = 0; i < data_size; i++)
                     {
@@ -715,7 +713,7 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
                 value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
                 if(data_format == Tango::SCALAR)
                 {
-                    if(is_fwd_att() == true)
+                    if(is_fwd_att())
                     {
                         Tango::DevVarStringArray::freebuf(p_data);
                     }
@@ -804,20 +802,20 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
     // back to the caller)
     //
 
-    if(date == false)
+    if(!date)
     {
         value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
     }
     else
     {
-        if((is_writ_associated() == true))
+        if((is_writ_associated()))
         {
             tmp_enc[0] = *p_data;
             delete_data_if_needed(p_data, release);
         }
         else
         {
-            if(release == true)
+            if(release)
             {
                 DevEncoded *tmp_ptr = new DevEncoded[1];
 

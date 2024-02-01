@@ -136,7 +136,7 @@ void Logging::init(const std::string &ds_name, // dserver name
         // instantiate the logger
         log4tango::Logger *logger = new log4tango::Logger(dserver_dev_name);
         // is logging level set from cmd line?
-        bool level_set_from_cmd_line = (cmd_line_level >= kTANGO_CORE_CMD_LINE_LEVEL) ? true : false;
+        bool level_set_from_cmd_line = cmd_line_level >= kTANGO_CORE_CMD_LINE_LEVEL;
         _VERBOSE(("\tcmd line logging level is %d\n", cmd_line_level));
         // set logger's effective level
         if(level_set_from_cmd_line)
@@ -149,7 +149,7 @@ void Logging::init(const std::string &ds_name, // dserver name
         }
         // core-logger's targets
         std::vector<std::string> targets;
-        if(use_db == true)
+        if(use_db)
         {
             // get logging properties from database
             try
@@ -167,14 +167,14 @@ void Logging::init(const std::string &ds_name, // dserver name
                 db.get_device_property(dserver_dev_name, db_data, tg->get_db_cache());
                 // set logging path
                 std::string level_str("WARN");
-                if(db_data[0].is_empty() == false)
+                if(!db_data[0].is_empty())
                 {
                     db_data[0] >> Logging::_log_path;
                     _VERBOSE(("\tLogging::_log_path is %s (set from db)\n", Logging::_log_path.c_str()));
                 }
                 Logging::_rft = kDefaultRollingThreshold;
                 // set rolling file threshold
-                if(db_data[1].is_empty() == false)
+                if(!db_data[1].is_empty())
                 {
                     unsigned long rtf = 0;
                     db_data[1] >> rtf;
@@ -193,7 +193,7 @@ void Logging::init(const std::string &ds_name, // dserver name
                 if(!level_set_from_cmd_line)
                 {
                     std::string level_str("WARN");
-                    if(db_data[2].is_empty() == false)
+                    if(!db_data[2].is_empty())
                     {
                         db_data[2] >> level_str;
                     }
@@ -203,7 +203,7 @@ void Logging::init(const std::string &ds_name, // dserver name
                     logger->set_level(level);
                 }
                 // get logging targets
-                if(db_data[3].is_empty() == false)
+                if(!db_data[3].is_empty())
                 {
                     db_data[3] >> targets;
                 }
@@ -473,7 +473,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                     }
                     break;
                 }
-                if(appender->is_valid() == false)
+                if(!appender->is_valid())
                 {
                     delete appender;
                     appender = nullptr;
@@ -514,7 +514,7 @@ void Logging::add_logging_target(log4tango::Logger *logger, const std::string &i
                     }
                     break;
                 }
-                if(appender->is_valid() == false)
+                if(!appender->is_valid())
                 {
                     delete appender;
                     appender = nullptr;
@@ -986,7 +986,7 @@ void Logging::kill_zombie_appenders()
             // for each appender in <al>
             for(j = 0; j < al.size(); j++)
             {
-                if(al[j]->is_valid() == false)
+                if(!al[j]->is_valid())
                 {
                     TANGO_LOG_DEBUG << "Removing zombie appender " << dl[i]->get_name() << "::" << al[j]->get_name()
                                     << std::endl;
@@ -1064,7 +1064,7 @@ log4tango::Level::Value Logging::tango_to_log4tango_level(Tango::LogLevel tango_
         log4tango_level = log4tango::Level::DEBUG;
         break;
     default:
-        if(throw_exception == true)
+        if(throw_exception)
         {
             TangoSys_OMemStream o;
             o << "Invalid logging level specified" << std::ends;
@@ -1108,7 +1108,7 @@ log4tango::Level::Value Logging::tango_to_log4tango_level(const std::string &tan
     }
     else
     {
-        if(throw_exception == true)
+        if(throw_exception)
         {
             TangoSys_OMemStream o;
             o << "Invalid logging level specified" << std::ends;

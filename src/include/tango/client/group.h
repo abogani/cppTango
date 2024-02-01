@@ -1847,7 +1847,7 @@ template <typename T>
 bool GroupCmdReply::operator>>(T &dest)
 {
     bool result = true;
-    if(GroupReply::group_element_enabled_m == false)
+    if(!GroupReply::group_element_enabled_m)
     {
         if(exception_enabled)
         {
@@ -1862,7 +1862,7 @@ bool GroupCmdReply::operator>>(T &dest)
         }
         result = false;
     }
-    else if(GroupReply::has_failed_m == true)
+    else if(GroupReply::has_failed_m)
     {
         if(exception_enabled)
         {
@@ -1914,7 +1914,7 @@ template <typename T>
 bool GroupAttrReply::operator>>(T &dest)
 {
     bool result = true;
-    if(GroupReply::group_element_enabled_m == false)
+    if(!GroupReply::group_element_enabled_m)
     {
         if(exception_enabled)
         {
@@ -1929,7 +1929,7 @@ bool GroupAttrReply::operator>>(T &dest)
         }
         result = false;
     }
-    else if(GroupReply::has_failed_m == true)
+    else if(GroupReply::has_failed_m)
     {
         if(exception_enabled)
         {
@@ -2035,7 +2035,7 @@ long Group::command_inout_asynch_i(const std::string &c, /*const*/ std::vector<T
         }
     }
 
-    if(fgt == false)
+    if(!fgt)
     {
         push_async_request(ari, fwd);
     }

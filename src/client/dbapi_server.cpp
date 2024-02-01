@@ -84,7 +84,7 @@ DbServer::~DbServer() { }
 
 void DbServer::add_server(DbDevInfos &dev_infos)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->add_server(name, dev_infos);
     }
@@ -104,7 +104,7 @@ void DbServer::add_server(DbDevInfos &dev_infos)
 
 void DbServer::export_server(DbDevExportInfos &dev_export)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->export_server(dev_export);
     }
@@ -124,7 +124,7 @@ void DbServer::export_server(DbDevExportInfos &dev_export)
 
 void DbServer::unexport_server()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->unexport_server(name);
     }
@@ -144,7 +144,7 @@ void DbServer::unexport_server()
 
 void DbServer::delete_server()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_server(name);
     }
@@ -163,7 +163,7 @@ void DbServer::delete_server()
 
 DbServerInfo DbServer::get_server_info()
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         return dbase->get_server_info(name);
     }

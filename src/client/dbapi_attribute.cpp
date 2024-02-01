@@ -112,7 +112,7 @@ DbAttribute::~DbAttribute() { }
 
 void DbAttribute::get_property(DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_device_attribute_property(device_name, db_data);
     }
@@ -131,7 +131,7 @@ void DbAttribute::get_property(DbData &db_data)
 
 void DbAttribute::put_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->put_device_attribute_property(device_name, db_data);
     }
@@ -150,7 +150,7 @@ void DbAttribute::put_property(const DbData &db_data)
 
 void DbAttribute::delete_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_device_attribute_property(device_name, db_data);
     }

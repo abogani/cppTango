@@ -212,13 +212,13 @@ std::ostream &operator<<(std::ostream &o_str, const _CommandInfo &ci)
     o_str << "Command name = " << ci.cmd_name << std::endl;
 
     o_str << "Command input parameter data type = Tango::" << data_type_to_string(ci.in_type) << std::endl;
-    if(ci.in_type_desc.empty() == false)
+    if(!ci.in_type_desc.empty())
     {
         o_str << "Command input parameter description = " << ci.in_type_desc << std::endl;
     }
 
     o_str << "Command output parameter data type = Tango::" << data_type_to_string(ci.out_type) << std::endl;
-    if(ci.out_type_desc.empty() == false)
+    if(!ci.out_type_desc.empty())
     {
         o_str << "Command output parameter description = " << ci.out_type_desc;
     }

@@ -52,10 +52,10 @@ struct CheckEnumCompatibleType
 };
 
 template <typename T>
-struct CheckEnumCompatibleType<T, typename std::enable_if<std::is_enum<T>::value>::type>
+struct CheckEnumCompatibleType<T, std::enable_if_t<std::is_enum_v<T>>>
 {
-    using UT = typename std::underlying_type<T>::type;
-    static constexpr bool value = std::is_same<DevShort, UT>::value;
+    using UT = std::underlying_type_t<T>;
+    static constexpr bool value = std::is_same_v<DevShort, UT>;
 };
 
 } // namespace detail
@@ -218,7 +218,7 @@ bool DeviceAttribute::operator>>(T &datum)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -253,7 +253,7 @@ bool DeviceAttribute::operator>>(std::vector<T> &datum)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -291,7 +291,7 @@ bool DeviceAttribute::extract_read(std::vector<T> &_data)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -330,7 +330,7 @@ bool DeviceAttribute::extract_set(std::vector<T> &_data)
     //
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }

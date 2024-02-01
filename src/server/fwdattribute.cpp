@@ -259,7 +259,7 @@ void FwdAttribute::set_att_config(const Tango::AttributeConfig_5 &conf)
         delta_t_defined = true;
     }
 
-    if(delta_t_defined == true && delta_val_defined == true)
+    if(delta_t_defined && delta_val_defined)
     {
         alarm_conf.set(rds);
     }
@@ -490,7 +490,7 @@ void FwdAttribute::set_att_config(AttributeInfoEx *aie_ptr)
         delta_t_defined = true;
     }
 
-    if(delta_t_defined == true && delta_val_defined == true)
+    if(delta_t_defined && delta_val_defined)
     {
         alarm_conf.set(rds);
     }
@@ -646,7 +646,7 @@ void FwdAttribute::upd_att_config(const Tango::AttributeConfig_5 &conf)
     // Send new config to root attribute if received configuration if different than the one we already have
     //
 
-    if(new_att_conf(nullptr, &conf) == true)
+    if(new_att_conf(nullptr, &conf))
     {
         AttributeInfoListEx aile;
         AttributeInfoEx aie;
@@ -674,7 +674,7 @@ void FwdAttribute::upd_att_config(const Tango::AttributeConfig_3 &conf)
     // Send new config to root attribute if received configuration if different than the one we already have
     //
 
-    if(new_att_conf(&conf, nullptr) == true)
+    if(new_att_conf(&conf, nullptr))
     {
         AttributeInfoListEx aile;
         AttributeInfoEx aie;
@@ -720,13 +720,13 @@ bool FwdAttribute::new_att_conf(const Tango::AttributeConfig_3 *conf3, const Tan
     else
     {
         ret = new_att_conf_base(*conf5);
-        if(ret == false)
+        if(!ret)
         {
             if(conf5->memorized != is_memorized())
             {
                 ret = true;
             }
-            else if(conf5->memorized == true)
+            else if(conf5->memorized)
             {
                 if(conf5->mem_init != is_memorized_init())
                 {
@@ -792,11 +792,11 @@ void FwdAttribute::upd_att_label(const char *new_label)
         // set class default value if defined, otherwise use the user default or library defaults
 
         bool found = prop_in_list("label", label, nb_class, def_class_prop);
-        if(found == false)
+        if(!found)
         {
             found = prop_in_list("label", label, nb_user, def_user_prop);
             remove_db = true;
-            if(found == false)
+            if(!found)
             {
                 label = name;
             }
@@ -808,7 +808,7 @@ void FwdAttribute::upd_att_label(const char *new_label)
 
         bool found = prop_in_list("label", label, nb_user, def_user_prop);
         remove_db = true;
-        if(found == false)
+        if(!found)
         {
             label = name;
         }
@@ -831,7 +831,7 @@ void FwdAttribute::upd_att_label(const char *new_label)
     // Store new value in DB
     //
 
-    if(store_db == true)
+    if(store_db)
     {
         DbDatum db_prop(name);
         DbDatum db_lab("label");
@@ -859,7 +859,7 @@ void FwdAttribute::upd_att_label(const char *new_label)
     // Remove value from DB because label is now the default one (class, user or lib)
     //
 
-    if(remove_db == true)
+    if(remove_db)
     {
         DbData db_data;
         db_data.emplace_back(name);

@@ -211,7 +211,7 @@ void Attr::check_type()
         unsuported = false;
     }
 
-    if(unsuported == true)
+    if(unsuported)
     {
         TANGO_LOG_DEBUG << "Attr::check_type throwing exception" << std::endl;
         TangoSys_OMemStream o;
@@ -254,46 +254,43 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
 
     std::bitset<num_ranges> ranges;
 
-    if((prop_list.label.empty() == false) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
+    if((!prop_list.label.empty()) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.label.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("label", prop_list.label);
     }
 
-    if(prop_list.description.empty() == false &&
-       (TG_strcasecmp(prop_list.description.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.description.empty() && (TG_strcasecmp(prop_list.description.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.description.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("description", prop_list.description);
     }
 
-    if(prop_list.unit.empty() == false && (TG_strcasecmp(prop_list.unit.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.unit.empty() && (TG_strcasecmp(prop_list.unit.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.unit.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("unit", prop_list.unit);
     }
 
-    if(prop_list.standard_unit.empty() == false &&
-       (TG_strcasecmp(prop_list.standard_unit.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.standard_unit.empty() && (TG_strcasecmp(prop_list.standard_unit.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.standard_unit.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("standard_unit", prop_list.standard_unit);
     }
 
-    if(prop_list.display_unit.empty() == false &&
-       (TG_strcasecmp(prop_list.display_unit.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.display_unit.empty() && (TG_strcasecmp(prop_list.display_unit.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.display_unit.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("display_unit", prop_list.display_unit);
     }
 
-    if(prop_list.format.empty() == false && (TG_strcasecmp(prop_list.format.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.format.empty() && (TG_strcasecmp(prop_list.format.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.format.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("format", prop_list.format);
     }
 
-    if(prop_list.min_value.empty() == false && (TG_strcasecmp(prop_list.min_value.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.min_value.empty() && (TG_strcasecmp(prop_list.min_value.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.min_value.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.min_value, "min_value");
@@ -301,7 +298,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(min_value);
     }
 
-    if(prop_list.max_value.empty() == false && (TG_strcasecmp(prop_list.max_value.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.max_value.empty() && (TG_strcasecmp(prop_list.max_value.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.max_value.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.max_value, "max_value");
@@ -309,7 +306,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(max_value);
     }
 
-    if(prop_list.min_alarm.empty() == false && (TG_strcasecmp(prop_list.min_alarm.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.min_alarm.empty() && (TG_strcasecmp(prop_list.min_alarm.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.min_alarm.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.min_alarm, "min_alarm");
@@ -317,7 +314,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(min_alarm);
     }
 
-    if(prop_list.max_alarm.empty() == false && (TG_strcasecmp(prop_list.max_alarm.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.max_alarm.empty() && (TG_strcasecmp(prop_list.max_alarm.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.max_alarm.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.max_alarm, "max_alarm");
@@ -325,8 +322,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(max_alarm);
     }
 
-    if(prop_list.min_warning.empty() == false &&
-       (TG_strcasecmp(prop_list.min_warning.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.min_warning.empty() && (TG_strcasecmp(prop_list.min_warning.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.min_warning.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.min_warning, "min_warning");
@@ -334,8 +330,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(min_warning);
     }
 
-    if(prop_list.max_warning.empty() == false &&
-       (TG_strcasecmp(prop_list.max_warning.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.max_warning.empty() && (TG_strcasecmp(prop_list.max_warning.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.max_warning.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.max_warning, "max_warning");
@@ -343,7 +338,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(max_warning);
     }
 
-    if(prop_list.delta_val.empty() == false && (TG_strcasecmp(prop_list.delta_val.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.delta_val.empty() && (TG_strcasecmp(prop_list.delta_val.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.delta_val.c_str(), NotANumber) != 0))
     {
         validate_def_prop(prop_list.delta_val, "delta_val");
@@ -351,7 +346,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(delta_val);
     }
 
-    if(prop_list.delta_t.empty() == false && (TG_strcasecmp(prop_list.delta_t.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.delta_t.empty() && (TG_strcasecmp(prop_list.delta_t.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.delta_t.c_str(), "0") != 0) &&
        (TG_strcasecmp(prop_list.delta_t.c_str(), NotANumber) != 0))
     {
@@ -367,14 +362,14 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         ranges.set(delta_t);
     }
 
-    if(prop_list.abs_change.empty() == false && (TG_strcasecmp(prop_list.abs_change.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.abs_change.empty() && (TG_strcasecmp(prop_list.abs_change.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.abs_change.c_str(), NotANumber) != 0))
     {
         validate_def_change_prop(prop_list.abs_change, "abs_change");
         user_default_properties.emplace_back("abs_change", prop_list.abs_change);
     }
 
-    if(prop_list.rel_change.empty() == false && (TG_strcasecmp(prop_list.rel_change.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.rel_change.empty() && (TG_strcasecmp(prop_list.rel_change.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.rel_change.c_str(), NotANumber) != 0))
     {
         validate_def_change_prop(prop_list.rel_change, "rel_change");
@@ -383,7 +378,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
 
     TangoSys_MemStream def_event_period;
     def_event_period << (int) (DEFAULT_EVENT_PERIOD);
-    if(prop_list.period.empty() == false && (TG_strcasecmp(prop_list.period.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.period.empty() && (TG_strcasecmp(prop_list.period.c_str(), AlrmValueNotSpec) != 0) &&
        (prop_list.period != def_event_period.str()) && (TG_strcasecmp(prop_list.period.c_str(), NotANumber) != 0))
     {
         TangoSys_MemStream str;
@@ -397,7 +392,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         user_default_properties.emplace_back("event_period", prop_list.period);
     }
 
-    if(prop_list.archive_abs_change.empty() == false &&
+    if(!prop_list.archive_abs_change.empty() &&
        (TG_strcasecmp(prop_list.archive_abs_change.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.archive_abs_change.c_str(), NotANumber) != 0))
     {
@@ -405,7 +400,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         user_default_properties.emplace_back("archive_abs_change", prop_list.archive_abs_change);
     }
 
-    if(prop_list.archive_rel_change.empty() == false &&
+    if(!prop_list.archive_rel_change.empty() &&
        (TG_strcasecmp(prop_list.archive_rel_change.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.archive_rel_change.c_str(), NotANumber) != 0))
     {
@@ -415,8 +410,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
 
     TangoSys_MemStream def_archive_period;
     def_archive_period << (int) (INT_MAX);
-    if(prop_list.archive_period.empty() == false &&
-       (TG_strcasecmp(prop_list.archive_period.c_str(), AlrmValueNotSpec) != 0) &&
+    if(!prop_list.archive_period.empty() && (TG_strcasecmp(prop_list.archive_period.c_str(), AlrmValueNotSpec) != 0) &&
        (prop_list.archive_period != def_archive_period.str()) &&
        (TG_strcasecmp(prop_list.archive_period.c_str(), NotANumber) != 0))
     {
@@ -431,7 +425,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
         user_default_properties.emplace_back("archive_period", prop_list.archive_period);
     }
 
-    if(prop_list.enum_labels.empty() == false)
+    if(!prop_list.enum_labels.empty())
     {
         user_default_properties.emplace_back("enum_labels", prop_list.enum_labels);
     }

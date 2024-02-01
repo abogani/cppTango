@@ -35,20 +35,18 @@ namespace Tango
 
 namespace
 {
-template <class T, class U, typename std::enable_if<std::is_same<T, U>::value, T>::type * = nullptr>
+template <class T, class U, std::enable_if_t<std::is_same_v<T, U>, T> * = nullptr>
 CORBA::Any *create_any(const U *, size_t, size_t);
-template <class T, class U, typename std::enable_if<!std::is_same<T, U>::value, T>::type * = nullptr>
+template <class T, class U, std::enable_if_t<!std::is_same_v<T, U>, T> * = nullptr>
 CORBA::Any *create_any(const U *, size_t, size_t);
 
-template <class T, class U, typename std::enable_if<std::is_same<T, U>::value, T>::type *>
+template <class T, class U, std::enable_if_t<std::is_same_v<T, U>, T> *>
 CORBA::Any *create_any(const U *tmp, const size_t base, const size_t data_length)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
 
     const auto *c_seq_buff = tmp->get_buffer();
-    auto *seq_buff =
-        const_cast<typename std::remove_const<typename std::remove_pointer<decltype(c_seq_buff)>::type>::type *>(
-            c_seq_buff);
+    auto *seq_buff = const_cast<std::remove_const_t<std::remove_pointer_t<decltype(c_seq_buff)>> *>(c_seq_buff);
 
     T tmp_data = T(data_length, data_length, &(seq_buff[base - data_length]), false);
 
@@ -57,7 +55,7 @@ CORBA::Any *create_any(const U *tmp, const size_t base, const size_t data_length
     return any_ptr;
 }
 
-template <class T, class U, typename std::enable_if<!std::is_same<T, U>::value, T>::type *>
+template <class T, class U, std::enable_if_t<!std::is_same_v<T, U>, T> *>
 CORBA::Any *create_any(const U *tmp, const size_t base, const size_t)
 {
     CORBA::Any *any_ptr = new CORBA::Any();

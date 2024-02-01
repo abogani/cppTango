@@ -214,7 +214,7 @@ void PollRing::insert_data(Tango::AttributeValueList_4 *attr_val, PollClock::tim
     // Release attribute mutexes because the data are now copied
     //
 
-    if(unlock == true)
+    if(unlock)
     {
         for(unsigned int loop = 0; loop < attr_val->length(); loop++)
         {
@@ -249,7 +249,7 @@ void PollRing::insert_data(Tango::AttributeValueList_5 *attr_val, PollClock::tim
     // Release attribute mutexes because the data are now copied
     //
 
-    if(unlock == true)
+    if(unlock)
     {
         for(unsigned int loop = 0; loop < attr_val->length(); loop++)
         {
@@ -447,25 +447,11 @@ bool PollRing::is_last_an_error()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except == nullptr)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return ring[max_elt - 1].except != nullptr;
     }
     else
     {
-        if(ring[insert_elt - 1].except == nullptr)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return ring[insert_elt - 1].except != nullptr;
     }
 }
 
@@ -473,25 +459,11 @@ bool PollRing::is_last_cmd_an_error()
 {
     if(insert_elt == 0)
     {
-        if(ring[max_elt - 1].except != nullptr)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return ring[max_elt - 1].except != nullptr;
     }
     else
     {
-        if(ring[insert_elt - 1].except != nullptr)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return ring[insert_elt - 1].except != nullptr;
     }
 }
 
@@ -507,36 +479,15 @@ bool PollRing::is_last_attr_an_error()
         {
             if(ring[max_elt - 1].attr_value_3 != nullptr)
             {
-                if((*(ring[max_elt - 1].attr_value_3))[0].err_list.length() != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (*(ring[max_elt - 1].attr_value_3))[0].err_list.length() != 0;
             }
             else if(ring[max_elt - 1].attr_value_4 != nullptr)
             {
-                if((*(ring[max_elt - 1].attr_value_4))[0].err_list.length() != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (*(ring[max_elt - 1].attr_value_4))[0].err_list.length() != 0;
             }
             else
             {
-                if((*(ring[max_elt - 1].attr_value_5))[0].err_list.length() != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (*(ring[max_elt - 1].attr_value_5))[0].err_list.length() != 0;
             }
         }
     }
@@ -550,36 +501,15 @@ bool PollRing::is_last_attr_an_error()
         {
             if(ring[insert_elt - 1].attr_value_3 != nullptr)
             {
-                if((*(ring[insert_elt - 1].attr_value_3))[0].err_list.length() != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (*(ring[insert_elt - 1].attr_value_3))[0].err_list.length() != 0;
             }
             else if(ring[insert_elt - 1].attr_value_4 != nullptr)
             {
-                if((*(ring[insert_elt - 1].attr_value_4))[0].err_list.length() != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (*(ring[insert_elt - 1].attr_value_4))[0].err_list.length() != 0;
             }
             else
             {
-                if((*(ring[insert_elt - 1].attr_value_5))[0].err_list.length() != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (*(ring[insert_elt - 1].attr_value_5))[0].err_list.length() != 0;
             }
         }
     }
@@ -1110,7 +1040,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
         {
             bool new_err = false;
 
-            if(previous_no_data == true)
+            if(previous_no_data)
             {
                 if(ring[index].except->errors.length() != last_err_list.length())
                 {
@@ -1148,7 +1078,7 @@ void PollRing::get_cmd_history(long n, Tango::DevCmdHistory_4 *ptr, Tango::CmdAr
                 new_err = true;
             }
 
-            if(new_err == true)
+            if(new_err)
             {
                 if(ptr->errors.length() == 0)
                 {

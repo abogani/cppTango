@@ -105,9 +105,9 @@ Connection::Connection(CORBA::ORB_var orb_in) :
     //
 
     ApiUtil *au = ApiUtil::instance();
-    if((CORBA::is_nil(orb_in)) && (au->is_orb_nil() == true))
+    if((CORBA::is_nil(orb_in)) && (au->is_orb_nil()))
     {
-        if(au->in_server() == true)
+        if(au->in_server())
         {
             ApiUtil::instance()->set_orb(Util::instance()->get_orb());
         }
@@ -393,7 +393,7 @@ void Connection::connect(const std::string &corba_name)
     long db_retries = DB_START_PHASE_RETRIES;
     bool connect_to_db = false;
 
-    while(retry == true)
+    while(retry)
     {
         try
         {
@@ -420,7 +420,7 @@ void Connection::connect(const std::string &corba_name)
                 connect_to_db = true;
             }
 
-            if(connect_to_db == false)
+            if(!connect_to_db)
             {
                 if(user_connect_timeout != -1)
                 {
@@ -626,7 +626,7 @@ void Connection::connect(const std::string &corba_name)
                 }
             }
 
-            if(db_connect == false)
+            if(!db_connect)
             {
                 TANGO_RETHROW_DETAILED_EXCEPTION(ApiConnExcept, ce, reason.str(), desc.str());
             }
@@ -739,14 +739,14 @@ void Connection::reconnect(bool db_used)
         std::string corba_name;
         if(connection_state != CONNECTION_OK)
         {
-            if(db_used == true)
+            if(db_used)
             {
                 corba_name = get_corba_name(check_acc);
-                if(check_acc == false)
+                if(!check_acc)
                 {
                     ApiUtil *au = ApiUtil::instance();
                     int db_num;
-                    if(get_from_env_var() == true)
+                    if(get_from_env_var())
                     {
                         db_num = au->get_db_ind();
                     }
@@ -1119,7 +1119,7 @@ void Connection::get_fqdn(std::string &the_host)
     // If we are running on local host, get IP address(es) from NIC board
     //
 
-    if(local_host == true)
+    if(local_host)
     {
         ApiUtil *au = ApiUtil::instance();
         au->get_ip_from_if(ip_list);
@@ -1168,7 +1168,7 @@ void Connection::get_fqdn(std::string &the_host)
             }
             freeaddrinfo(info);
 
-            if(host_found == false && nb_loop == 1 && i == (ip_list.size() - 1))
+            if(!host_found && nb_loop == 1 && i == (ip_list.size() - 1))
             {
                 the_host = myhost;
             }
@@ -1295,7 +1295,7 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
 
                 std::vector<Database *> &v_d = au->get_db_vect();
                 Database *db;
-                if(v_d.empty() == true)
+                if(v_d.empty())
                 {
                     db = static_cast<Database *>(this);
                 }
@@ -1303,7 +1303,7 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
                 {
                     int db_num;
 
-                    if(get_from_env_var() == true)
+                    if(get_from_env_var())
                     {
                         db_num = au->get_db_ind();
                     }
@@ -1327,7 +1327,7 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
 
                 std::string d_name = dev_name();
 
-                if(db->is_command_allowed(d_name, command) == false)
+                if(!db->is_command_allowed(d_name, command))
                 {
                     try
                     {
@@ -1497,7 +1497,7 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
 
                 std::vector<Database *> &v_d = au->get_db_vect();
                 Database *db;
-                if(v_d.empty() == true)
+                if(v_d.empty())
                 {
                     db = static_cast<Database *>(this);
                 }
@@ -1505,7 +1505,7 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
                 {
                     int db_num;
 
-                    if(get_from_env_var() == true)
+                    if(get_from_env_var())
                     {
                         db_num = au->get_db_ind();
                     }
@@ -1528,7 +1528,7 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
                 //
 
                 std::string d_name = dev_name();
-                if(db->is_command_allowed(d_name, command) == false)
+                if(!db->is_command_allowed(d_name, command))
                 {
                     try
                     {
@@ -1726,11 +1726,11 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     std::string corba_name;
     bool exported = true;
 
-    if(dbase_used == true)
+    if(dbase_used)
     {
         try
         {
-            if(from_env_var == true)
+            if(from_env_var)
             {
                 ApiUtil *ui = ApiUtil::instance();
                 db_dev = new DbDevice(device_name);
@@ -1742,11 +1742,11 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
             else
             {
                 db_dev = new DbDevice(device_name, db_host, db_port);
-                if(ext_proxy->nethost_alias == true)
+                if(ext_proxy->nethost_alias)
                 {
                     Database *tmp_db = db_dev->get_dbase();
                     const std::string &orig = tmp_db->get_orig_tango_host();
-                    if(orig.empty() == true)
+                    if(orig.empty())
                     {
                         std::string orig_tg_host = ext_proxy->orig_tango_host;
                         if(orig_tg_host.find('.') == std::string::npos)
@@ -1805,14 +1805,14 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
 
     try
     {
-        if(exported == true)
+        if(exported)
         {
             // we now use reconnect instead of connect
             // it allows us to know more about the device we are talking to
             // see Connection::reconnect for details
             reconnect(dbase_used);
 
-            if(is_alias == true)
+            if(is_alias)
             {
                 CORBA::String_var real_name = device->name();
                 device_name = real_name.in();
@@ -1824,7 +1824,7 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     catch(Tango::ConnectionFailed &dfe)
     {
         set_connection_state(CONNECTION_NOTOK);
-        if(dbase_used == false)
+        if(!dbase_used)
         {
             if(strcmp(dfe.errors[1].reason, API_DeviceNotDefined) == 0)
             {
@@ -1835,7 +1835,7 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     catch(CORBA::SystemException &)
     {
         set_connection_state(CONNECTION_NOTOK);
-        if(dbase_used == false)
+        if(!dbase_used)
         {
             throw;
         }
@@ -1846,7 +1846,7 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     // the device is not defined
     //
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         try
         {
@@ -1869,7 +1869,7 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     try
     {
         ApiUtil *ui = ApiUtil::instance();
-        if(ui->in_server() == true)
+        if(ui->in_server())
         {
             Tango::Util *tg = Tango::Util::instance(false);
             tg->get_sub_dev_diag().register_sub_device(tg->get_sub_dev_diag().get_associated_device(), name);
@@ -1904,12 +1904,12 @@ DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
     adm_dev_name = sou.adm_dev_name;
     lock_ctr = sou.lock_ctr;
 
-    if(dbase_used == true)
+    if(dbase_used)
     {
-        if(from_env_var == true)
+        if(from_env_var)
         {
             ApiUtil *ui = ApiUtil::instance();
-            if(ui->in_server() == true)
+            if(ui->in_server())
             {
                 db_dev = new DbDevice(device_name, Tango::Util::instance()->get_database());
             }
@@ -1972,12 +1972,12 @@ DeviceProxy &DeviceProxy::operator=(const DeviceProxy &rval)
         lock_valid = rval.lock_valid;
 
         delete db_dev;
-        if(dbase_used == true)
+        if(dbase_used)
         {
-            if(from_env_var == true)
+            if(from_env_var)
             {
                 ApiUtil *ui = ApiUtil::instance();
-                if(ui->in_server() == true)
+                if(ui->in_server())
                 {
                     db_dev = new DbDevice(device_name, Tango::Util::instance()->get_database());
                 }
@@ -2036,7 +2036,7 @@ void DeviceProxy::parse_name(const std::string &full_name)
     // Error of the string is empty
     //
 
-    if(full_name.empty() == true)
+    if(full_name.empty())
     {
         TangoSys_OMemStream desc;
         desc << "The given name is an empty string!!! " << full_name << std::endl;
@@ -2129,7 +2129,7 @@ void DeviceProxy::parse_name(const std::string &full_name)
         dbase_used = true;
     }
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         //
         // Extract host name and port number
@@ -2308,7 +2308,7 @@ void DeviceProxy::parse_name(const std::string &full_name)
                     }
                 }
 
-                if(alias_used == true)
+                if(alias_used)
                 {
                     ext_proxy->nethost_alias = true;
                     ext_proxy->orig_tango_host = safe_tmp_host;
@@ -2419,7 +2419,7 @@ std::string DeviceProxy::get_corba_name(bool need_check_acc)
     //
 
     std::string local_ior;
-    if(ApiUtil::instance()->in_server() == true)
+    if(ApiUtil::instance()->in_server())
     {
         local_import(local_ior);
     }
@@ -2449,7 +2449,7 @@ std::string DeviceProxy::get_corba_name(bool need_check_acc)
     // Get device access right
     //
 
-    if(need_check_acc == true)
+    if(need_check_acc)
     {
         access = db_dev->check_access_control();
     }
@@ -2499,7 +2499,7 @@ void DeviceProxy::reconnect(bool db_used)
 
     if(connection_state == CONNECTION_OK)
     {
-        if(is_alias == true)
+        if(is_alias)
         {
             CORBA::String_var real_name = device->name();
             device_name = real_name.in();
@@ -2519,7 +2519,7 @@ DbDevImportInfo DeviceProxy::import_info()
 {
     DbDevImportInfo import_info;
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -2544,7 +2544,7 @@ DbDevImportInfo DeviceProxy::import_info()
 
 DeviceProxy::~DeviceProxy()
 {
-    if(dbase_used == true)
+    if(dbase_used)
     {
         delete db_dev;
     }
@@ -2558,7 +2558,7 @@ DeviceProxy::~DeviceProxy()
     // If the device is locked, unlock it whatever the lock counter is
     //
 
-    if(ApiUtil::_is_instance_null() == false)
+    if(!ApiUtil::_is_instance_null())
     {
         if(lock_ctr > 0)
         {
@@ -2924,7 +2924,7 @@ std::string DeviceProxy::adm_name()
             ctr = 2;
             adm_name_str = st;
 
-            if(dbase_used == false)
+            if(!dbase_used)
             {
                 std::string prot("tango://");
                 if(host.find('.') == std::string::npos)
@@ -2935,7 +2935,7 @@ std::string DeviceProxy::adm_name()
                 adm_name_str.insert(0, prot);
                 adm_name_str.append(MODIFIER_DBASE_NO);
             }
-            else if(from_env_var == false)
+            else if(!from_env_var)
             {
                 std::string prot("tango://");
                 prot = prot + db_host + ':' + db_port + '/';
@@ -3495,7 +3495,7 @@ std::vector<std::string> *DeviceProxy::get_command_list()
 
 void DeviceProxy::get_property(const std::string &property_name, DbData &db_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3521,7 +3521,7 @@ void DeviceProxy::get_property(const std::string &property_name, DbData &db_data
 
 void DeviceProxy::get_property(const std::vector<std::string> &property_names, DbData &db_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3550,7 +3550,7 @@ void DeviceProxy::get_property(const std::vector<std::string> &property_names, D
 
 void DeviceProxy::get_property(DbData &db_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3573,7 +3573,7 @@ void DeviceProxy::get_property(DbData &db_data)
 
 void DeviceProxy::put_property(const DbData &db_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3596,7 +3596,7 @@ void DeviceProxy::put_property(const DbData &db_data)
 
 void DeviceProxy::delete_property(const std::string &property_name)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3623,7 +3623,7 @@ void DeviceProxy::delete_property(const std::string &property_name)
 
 void DeviceProxy::delete_property(const std::vector<std::string> &property_names)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3653,7 +3653,7 @@ void DeviceProxy::delete_property(const std::vector<std::string> &property_names
 
 void DeviceProxy::delete_property(const DbData &db_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -3676,7 +3676,7 @@ void DeviceProxy::delete_property(const DbData &db_data)
 
 void DeviceProxy::get_property_list(const std::string &wildcard, std::vector<std::string> &prop_list)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for device ";
@@ -4005,13 +4005,13 @@ AttributeInfoListEx *DeviceProxy::get_attribute_config_ex(const std::vector<std:
                     (*dev_attr_config)[i].min_alarm = attr_config_list_5[i].att_alarm.min_alarm;
                     (*dev_attr_config)[i].max_alarm = attr_config_list_5[i].att_alarm.max_alarm;
                     (*dev_attr_config)[i].root_attr_name = attr_config_list_5[i].root_attr_name;
-                    if(attr_config_list_5[i].memorized == false)
+                    if(!attr_config_list_5[i].memorized)
                     {
                         (*dev_attr_config)[i].memorized = NONE;
                     }
                     else
                     {
-                        if(attr_config_list_5[i].mem_init == false)
+                        if(!attr_config_list_5[i].mem_init)
                         {
                             (*dev_attr_config)[i].memorized = MEMORIZED;
                         }
@@ -4131,7 +4131,7 @@ void DeviceProxy::get_remaining_param(AttributeInfoListEx *dev_attr_config)
     // If device does not use db, simply retruns
     //
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         return;
     }
@@ -4141,7 +4141,7 @@ void DeviceProxy::get_remaining_param(AttributeInfoListEx *dev_attr_config)
         // First get device class (if not already done)
         //
 
-        if(_info.dev_class.empty() == true)
+        if(_info.dev_class.empty())
         {
             this->info();
         }
@@ -6838,7 +6838,7 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
 
         for(unsigned int i = 0; i < hist->length(); i++)
         {
-            ddh->push_back(DeviceDataHistory(i, ctr_ptr, hist));
+            ddh->emplace_back(i, ctr_ptr, hist);
         }
     }
     else
@@ -6846,7 +6846,7 @@ std::vector<DeviceDataHistory> *DeviceProxy::command_history(const std::string &
         ddh->reserve(hist_4->dates.length());
         for(unsigned int i = 0; i < hist_4->dates.length(); i++)
         {
-            ddh->push_back(DeviceDataHistory());
+            ddh->emplace_back();
         }
         from_hist4_2_DataHistory(hist_4, ddh);
     }
@@ -6957,7 +6957,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist_5->dates.length());
         for(unsigned int i = 0; i < hist_5->dates.length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory());
+            ddh->emplace_back();
         }
         from_hist_2_AttHistory(hist_5, ddh);
         for(unsigned int i = 0; i < hist_5->dates.length(); i++)
@@ -6970,7 +6970,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist_4->dates.length());
         for(unsigned int i = 0; i < hist_4->dates.length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory());
+            ddh->emplace_back();
         }
         from_hist_2_AttHistory(hist_4, ddh);
     }
@@ -6979,7 +6979,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist_3->length());
         for(unsigned int i = 0; i < hist_3->length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory(i, hist_3));
+            ddh->emplace_back(i, hist_3);
         }
     }
     else
@@ -6987,7 +6987,7 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
         ddh->reserve(hist->length());
         for(unsigned int i = 0; i < hist->length(); i++)
         {
-            ddh->push_back(DeviceAttributeHistory(i, hist));
+            ddh->emplace_back(i, hist);
         }
     }
 
@@ -7065,7 +7065,7 @@ bool DeviceProxy::is_polled(polled_object obj, const std::string &obj_name, std:
     std::vector<std::string> *poll_str;
 
     poll_str = polling_status();
-    if(poll_str->empty() == true)
+    if(poll_str->empty())
     {
         delete poll_str;
         return ret;
@@ -7154,7 +7154,7 @@ int DeviceProxy::get_command_poll_period(const std::string &cmd_name)
     bool poll = is_polled(Cmd, cmd_name, poll_per);
 
     int ret;
-    if(poll == true)
+    if(poll)
     {
         TangoSys_MemStream stream;
 
@@ -7182,7 +7182,7 @@ int DeviceProxy::get_attribute_poll_period(const std::string &attr_name)
     bool poll = is_polled(Attr, attr_name, poll_per);
 
     int ret;
-    if(poll == true)
+    if(poll)
     {
         TangoSys_MemStream stream;
 
@@ -7219,7 +7219,7 @@ void DeviceProxy::poll_command(const std::string &cmd_name, int period)
     in.svalue[2] = CORBA::string_dup(cmd_name.c_str());
     in.lvalue[0] = period;
 
-    if(poll == true)
+    if(poll)
     {
         //
         // If object is polled and the polling period is the same, simply retruns
@@ -7297,7 +7297,7 @@ void DeviceProxy::poll_attribute(const std::string &attr_name, int period)
     in.svalue[2] = CORBA::string_dup(attr_name.c_str());
     in.lvalue[0] = period;
 
-    if(poll == true)
+    if(poll)
     {
         //
         // If object is polled and the polling period is the same, simply returns
@@ -7560,7 +7560,7 @@ int DeviceProxy::get_logging_level()
     }
 
     long level;
-    if((dout >> level) == false)
+    if(!(dout >> level))
     {
         const Tango::DevVarLongStringArray *lsarr;
         dout >> lsarr;
@@ -8217,7 +8217,7 @@ Database *DeviceProxy::get_device_db()
 
 void clean_lock()
 {
-    if(ApiUtil::_is_instance_null() == false)
+    if(!ApiUtil::_is_instance_null())
     {
         ApiUtil *au = ApiUtil::instance();
         au->clean_locking_threads();
@@ -8236,7 +8236,7 @@ void DeviceProxy::lock(int lock_validity)
     // Feature unavailable for device without database
     //
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Feature not available for device ";
@@ -8279,7 +8279,7 @@ void DeviceProxy::lock(int lock_validity)
     //
 
     Tango::ApiUtil *au = ApiUtil::instance();
-    if(au->is_lock_exit_installed() == false)
+    if(!au->is_lock_exit_installed())
     {
         atexit(clean_lock);
         au->set_sig_handler();
@@ -8342,7 +8342,7 @@ void DeviceProxy::lock(int lock_validity)
                 local_suicide = pos->second.shared->suicide;
             }
 
-            if(local_suicide == true)
+            if(local_suicide)
             {
                 delete pos->second.shared;
                 delete pos->second.mon;
@@ -8355,11 +8355,11 @@ void DeviceProxy::lock(int lock_validity)
                 int interupted;
 
                 omni_mutex_lock sync(*(pos->second.mon));
-                if(pos->second.shared->cmd_pending == true)
+                if(pos->second.shared->cmd_pending)
                 {
                     interupted = pos->second.mon->wait(DEFAULT_TIMEOUT);
 
-                    if((pos->second.shared->cmd_pending == true) && (interupted == 0))
+                    if((pos->second.shared->cmd_pending) && (interupted == 0))
                     {
                         TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                         TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Locking thread blocked !!!");
@@ -8377,11 +8377,11 @@ void DeviceProxy::lock(int lock_validity)
 
                 TANGO_LOG_DEBUG << "Cmd sent to locking thread" << std::endl;
 
-                while(pos->second.shared->cmd_pending == true)
+                while(pos->second.shared->cmd_pending)
                 {
                     interupted = pos->second.mon->wait(DEFAULT_TIMEOUT);
 
-                    if((pos->second.shared->cmd_pending == true) && (interupted == 0))
+                    if((pos->second.shared->cmd_pending) && (interupted == 0))
                     {
                         TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                         TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Locking thread blocked !!!");
@@ -8404,7 +8404,7 @@ void DeviceProxy::unlock(bool force)
     // Feature unavailable for device without database
     //
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Feature not available for device ";
@@ -8426,7 +8426,7 @@ void DeviceProxy::unlock(bool force)
     sent_data.svalue.length(1);
     sent_data.svalue[0] = CORBA::string_dup(device_name.c_str());
     sent_data.lvalue.length(1);
-    if(force == true)
+    if(force)
     {
         sent_data.lvalue[0] = 1;
     }
@@ -8469,7 +8469,7 @@ void DeviceProxy::unlock(bool force)
     // Ask the thread to remove the device to its list of locked devices
     //
 
-    if((local_lock_ctr == 0) || (force == true))
+    if((local_lock_ctr == 0) || (force))
     {
         Tango::ApiUtil *au = Tango::ApiUtil::instance();
 
@@ -8485,7 +8485,7 @@ void DeviceProxy::unlock(bool force)
             }
             else
             {
-                if(pos->second.shared->suicide == true)
+                if(pos->second.shared->suicide)
                 {
                     delete pos->second.shared;
                     delete pos->second.mon;
@@ -8496,11 +8496,11 @@ void DeviceProxy::unlock(bool force)
                     int interupted;
 
                     omni_mutex_lock sync(*(pos->second.mon));
-                    if(pos->second.shared->cmd_pending == true)
+                    if(pos->second.shared->cmd_pending)
                     {
                         interupted = pos->second.mon->wait(DEFAULT_TIMEOUT);
 
-                        if((pos->second.shared->cmd_pending == true) && (interupted == 0))
+                        if((pos->second.shared->cmd_pending) && (interupted == 0))
                         {
                             TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                             TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Locking thread blocked !!!");
@@ -8514,11 +8514,11 @@ void DeviceProxy::unlock(bool force)
 
                     TANGO_LOG_DEBUG << "Cmd sent to locking thread" << std::endl;
 
-                    while(pos->second.shared->cmd_pending == true)
+                    while(pos->second.shared->cmd_pending)
                     {
                         interupted = pos->second.mon->wait(DEFAULT_TIMEOUT);
 
-                        if((pos->second.shared->cmd_pending == true) && (interupted == 0))
+                        if((pos->second.shared->cmd_pending) && (interupted == 0))
                         {
                             TANGO_LOG_DEBUG << "TIME OUT" << std::endl;
                             TANGO_THROW_EXCEPTION(API_CommandTimedOut, "Locking thread blocked !!!");
@@ -8545,7 +8545,7 @@ void DeviceProxy::create_locking_thread(ApiUtil *au, std::chrono::seconds dl)
 
     std::pair<std::map<std::string, LockingThread>::iterator, bool> status;
     status = au->lock_threads.insert(std::make_pair(adm_dev_name, lt));
-    if(status.second == false)
+    if(!status.second)
     {
         TangoSys_OMemStream o;
         o << "Can't create the locking thread for device " << device_name << " and admin device " << adm_dev_name
@@ -8784,7 +8784,7 @@ void DeviceProxy::ask_locking_status(std::vector<std::string> &v_str, std::vecto
     // Feature unavailable for device without database
     //
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Feature not available for device ";
@@ -8854,7 +8854,7 @@ void DeviceProxy::get_locker_host(const std::string &f_addr, std::string &ip_add
         }
         pos++;
 
-        if(ipv6 == true)
+        if(ipv6)
         {
             pos = pos + 3;
             if((pos = f_addr.find(':', pos)) == std::string::npos)
@@ -9586,11 +9586,11 @@ int DeviceProxy::get_tango_lib_version()
                 zesc = true;
             }
         }
-        if(ecs == true)
+        if(ecs)
         {
             ret = 810;
         }
-        else if(zesc == true)
+        else if(zesc)
         {
             ret = 800;
         }

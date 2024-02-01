@@ -211,7 +211,7 @@ CORBA::Any *PollObj::get_last_cmd_result()
 
 Tango::AttributeValue &PollObj::get_last_attr_value(bool lock)
 {
-    if(lock == true)
+    if(lock)
     {
         omni_mutex_lock sync(*this);
     }
@@ -221,7 +221,7 @@ Tango::AttributeValue &PollObj::get_last_attr_value(bool lock)
 
 Tango::AttributeValue_3 &PollObj::get_last_attr_value_3(bool lock)
 {
-    if(lock == true)
+    if(lock)
     {
         omni_mutex_lock sync(*this);
     }
@@ -231,7 +231,7 @@ Tango::AttributeValue_3 &PollObj::get_last_attr_value_3(bool lock)
 
 Tango::AttributeValue_4 &PollObj::get_last_attr_value_4(bool lock)
 {
-    if(lock == true)
+    if(lock)
     {
         omni_mutex_lock sync(*this);
     }
@@ -241,7 +241,7 @@ Tango::AttributeValue_4 &PollObj::get_last_attr_value_4(bool lock)
 
 Tango::AttributeValue_5 &PollObj::get_last_attr_value_5(bool lock)
 {
-    if(lock == true)
+    if(lock)
     {
         omni_mutex_lock sync(*this);
     }
@@ -334,7 +334,7 @@ void PollObj::get_attr_history(long n, Tango::DevAttrHistoryList_3 *ptr, long at
 
     for(long i = 0; i < n; i++)
     {
-        if((*ptr)[i].attr_failed == true)
+        if((*ptr)[i].attr_failed)
         {
             (*ptr)[i].value.name = Tango::string_dup(name.c_str());
         }

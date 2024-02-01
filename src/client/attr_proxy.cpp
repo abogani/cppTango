@@ -75,17 +75,17 @@ void AttributeProxy::real_constructor(std::string &name)
     // Create the associated DeviceProxy object
     //
 
-    if(dbase_used == true)
+    if(dbase_used)
     {
-        if(from_env_var == true)
+        if(from_env_var)
         {
             ApiUtil *ui = ApiUtil::instance();
             dev_proxy = new DeviceProxy(device_name);
-            if(alias_name.empty() == false && dev_proxy != nullptr)
+            if(!alias_name.empty() && dev_proxy != nullptr)
             {
                 device_name = dev_proxy->dev_name();
             }
-            if(ui->in_server() == true)
+            if(ui->in_server())
             {
                 db_attr = new DbAttribute(attr_name, device_name, Tango::Util::instance()->get_database());
             }
@@ -177,12 +177,12 @@ void AttributeProxy::ctor_from_dp(const DeviceProxy *dev_ptr, const std::string 
 
     device_name = dev_proxy->device_name;
 
-    if(dbase_used == true)
+    if(dbase_used)
     {
-        if(from_env_var == true)
+        if(from_env_var)
         {
             ApiUtil *ui = ApiUtil::instance();
-            if(ui->in_server() == true)
+            if(ui->in_server())
             {
                 db_attr = new DbAttribute(attr_name, device_name, Tango::Util::instance()->get_database());
             }
@@ -267,12 +267,12 @@ AttributeProxy::AttributeProxy(const AttributeProxy &prev) :
     device_name = prev.device_name;
     alias_name = prev.alias_name;
 
-    if(dbase_used == true)
+    if(dbase_used)
     {
-        if(from_env_var == true)
+        if(from_env_var)
         {
             ApiUtil *ui = ApiUtil::instance();
-            if(ui->in_server() == true)
+            if(ui->in_server())
             {
                 db_attr = new DbAttribute(attr_name, device_name, Tango::Util::instance()->get_database());
                 dev_proxy = new DeviceProxy(device_name);
@@ -312,7 +312,7 @@ AttributeProxy &AttributeProxy::operator=(const AttributeProxy &rval)
         // First Connection call members
         //
 
-        if(dbase_used == true)
+        if(dbase_used)
         {
             delete db_attr;
         }
@@ -333,12 +333,12 @@ AttributeProxy &AttributeProxy::operator=(const AttributeProxy &rval)
         device_name = rval.device_name;
         alias_name = rval.alias_name;
 
-        if(dbase_used == true)
+        if(dbase_used)
         {
-            if(from_env_var == true)
+            if(from_env_var)
             {
                 ApiUtil *ui = ApiUtil::instance();
-                if(ui->in_server() == true)
+                if(ui->in_server())
                 {
                     db_attr = new DbAttribute(attr_name, device_name, Tango::Util::instance()->get_database());
                     dev_proxy = new DeviceProxy(device_name);
@@ -467,7 +467,7 @@ void AttributeProxy::parse_name(std::string &full_name)
         dbase_used = true;
     }
 
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         //
         // Extract host name and port number
@@ -589,7 +589,7 @@ void AttributeProxy::parse_name(std::string &full_name)
 
     if(n_sep == 0)
     {
-        if(dbase_used == false)
+        if(!dbase_used)
         {
             TANGO_THROW_DETAILED_EXCEPTION(ApiWrongNameExcept,
                                            API_WrongAttributeNameSyntax,
@@ -620,9 +620,9 @@ void AttributeProxy::parse_name(std::string &full_name)
 
         ApiUtil *ui = ApiUtil::instance();
         std::string db_attr_name;
-        if(from_env_var == true)
+        if(from_env_var)
         {
-            if(ui->in_server() == true)
+            if(ui->in_server())
             {
                 try
                 {
@@ -736,7 +736,7 @@ void AttributeProxy::parse_name(std::string &full_name)
                                                "Can't use device or attribute alias without database");
             }
 
-            if(from_env_var == false)
+            if(!from_env_var)
             {
                 pos = name_wo_db_mod.rfind(DEVICE_SEP);
                 device_name = name_wo_db_mod.substr(0, pos);
@@ -766,7 +766,7 @@ void AttributeProxy::parse_name(std::string &full_name)
 
 AttributeProxy::~AttributeProxy()
 {
-    if(dbase_used == true)
+    if(dbase_used)
     {
         delete db_attr;
     }
@@ -838,7 +838,7 @@ bool AttributeProxy::get_transparency_reconnection()
 
 void AttributeProxy::get_property(const std::string &property_name, DbData &user_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to ";
@@ -886,7 +886,7 @@ void AttributeProxy::get_property(const std::string &property_name, DbData &user
 
 void AttributeProxy::get_property(const std::vector<std::string> &property_names, DbData &user_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to device ";
@@ -937,7 +937,7 @@ void AttributeProxy::get_property(const std::vector<std::string> &property_names
 
 void AttributeProxy::get_property(DbData &user_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to device ";
@@ -984,7 +984,7 @@ void AttributeProxy::get_property(DbData &user_data)
 
 void AttributeProxy::put_property(const DbData &user_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to device ";
@@ -1017,7 +1017,7 @@ void AttributeProxy::put_property(const DbData &user_data)
 
 void AttributeProxy::delete_property(const std::string &property_name)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to device ";
@@ -1046,7 +1046,7 @@ void AttributeProxy::delete_property(const std::string &property_name)
 
 void AttributeProxy::delete_property(const std::vector<std::string> &property_names)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to device ";
@@ -1078,7 +1078,7 @@ void AttributeProxy::delete_property(const std::vector<std::string> &property_na
 
 void AttributeProxy::delete_property(const DbData &user_data)
 {
-    if(dbase_used == false)
+    if(!dbase_used)
     {
         TangoSys_OMemStream desc;
         desc << "Method not available for attribute belonging to device ";

@@ -351,7 +351,7 @@ void DbServerData::remove(const std::string &tg_host)
         {
             std::string all("*");
             DbDatum dev_list = db_ptr->get_device_name(all, classes[loop].name);
-            if(dev_list.value_string.empty() == true)
+            if(dev_list.value_string.empty())
             {
                 classes[loop].remove_properties(db_ptr);
             }
@@ -406,14 +406,14 @@ DbServerData::TangoDevice::TangoDevice(const std::string &na) :
     std::vector<std::string> prop_list;
     get_property_list("*", prop_list);
 
-    if(prop_list.empty() == false)
+    if(!prop_list.empty())
     {
         DbData prop_val;
         get_property(prop_list, prop_val);
 
         for(size_t loop = 0; loop < prop_list.size(); loop++)
         {
-            if(prop_val[loop].is_empty() == false)
+            if(!prop_val[loop].is_empty())
             {
                 TangoProperty tp(prop_list[loop], prop_val[loop].value_string);
                 properties.push_back(tp);
@@ -439,7 +439,7 @@ DbServerData::TangoDevice::TangoDevice(const std::string &na) :
         db->get_device_attribute_property(na, db_data);
         for(size_t lo = 1; lo < db_data.size(); lo++)
         {
-            if(db_data[lo].is_empty() == false)
+            if(!db_data[lo].is_empty())
             {
                 TangoAttribute ta(att_list[loop]);
                 ta.push_back(TangoProperty(db_data[lo].name, db_data[lo].value_string));
@@ -464,7 +464,7 @@ DbServerData::TangoDevice::TangoDevice(const std::string &na) :
             db->get_device_pipe_property(na, db_data);
             for(size_t lo = 1; lo < db_data.size(); lo++)
             {
-                if(db_data[lo].is_empty() == false)
+                if(!db_data[lo].is_empty())
                 {
                     TangoPipe ta(pipe_list[loop]);
                     ta.push_back(TangoProperty(db_data[lo].name, db_data[lo].value_string));
@@ -499,7 +499,7 @@ DbServerData::TangoDevice::TangoDevice(const std::string &na) :
 
 void DbServerData::TangoDevice::put_properties(Database *db_ptr)
 {
-    if(properties.empty() == false)
+    if(!properties.empty())
     {
         DbData db_data;
         for(size_t ctr = 0; ctr < properties.size(); ctr++)
@@ -528,12 +528,12 @@ void DbServerData::TangoDevice::put_properties(Database *db_ptr)
 
 void DbServerData::TangoDevice::put_attribute_properties(Database *db_ptr)
 {
-    if(attributes.empty() == false)
+    if(!attributes.empty())
     {
         DbData db_data;
         for(size_t loop = 0; loop < attributes.size(); loop++)
         {
-            if(attributes[loop].empty() == false)
+            if(!attributes[loop].empty())
             {
                 DbDatum db_d(attributes[loop].name);
                 db_d << (DevLong) attributes[loop].size();
@@ -567,12 +567,12 @@ void DbServerData::TangoDevice::put_attribute_properties(Database *db_ptr)
 
 void DbServerData::TangoDevice::put_pipe_properties(Database *db_ptr)
 {
-    if(pipes.empty() == false)
+    if(!pipes.empty())
     {
         DbData db_data;
         for(size_t loop = 0; loop < pipes.size(); loop++)
         {
-            if(pipes[loop].empty() == false)
+            if(!pipes[loop].empty())
             {
                 DbDatum db_d(pipes[loop].name);
                 db_d << (DevLong) pipes[loop].size();
@@ -615,7 +615,7 @@ DbServerData::TangoClass::TangoClass(const std::string &na, const std::string &f
     //
 
     DbDatum cl_prop = db->get_class_property_list(name);
-    if(cl_prop.is_empty() == false)
+    if(!cl_prop.is_empty())
     {
         std::vector<std::string> vs;
         cl_prop >> vs;
@@ -640,7 +640,7 @@ DbServerData::TangoClass::TangoClass(const std::string &na, const std::string &f
 
     std::string all("*");
     DbDatum cl_att_list = db->get_class_attribute_list(name, all);
-    if(cl_att_list.is_empty() == false)
+    if(!cl_att_list.is_empty())
     {
         std::vector<std::string> vs;
         cl_att_list >> vs;
@@ -665,7 +665,7 @@ DbServerData::TangoClass::TangoClass(const std::string &na, const std::string &f
     try
     {
         DbDatum cl_pipe_list = db->get_class_pipe_list(name, all);
-        if(cl_pipe_list.is_empty() == false)
+        if(!cl_pipe_list.is_empty())
         {
             std::vector<std::string> vs;
             cl_pipe_list >> vs;
@@ -721,7 +721,7 @@ DbServerData::TangoClass::TangoClass(const std::string &na, const std::string &f
 
 void DbServerData::TangoClass::put_properties(Database *db_ptr)
 {
-    if(properties.empty() == false)
+    if(!properties.empty())
     {
         DbData db_data;
         for(size_t ctr = 0; ctr < properties.size(); ctr++)
@@ -750,12 +750,12 @@ void DbServerData::TangoClass::put_properties(Database *db_ptr)
 
 void DbServerData::TangoClass::put_attribute_properties(Database *db_ptr)
 {
-    if(attributes.empty() == false)
+    if(!attributes.empty())
     {
         DbData db_data;
         for(size_t loop = 0; loop < attributes.size(); loop++)
         {
-            if(attributes[loop].empty() == false)
+            if(!attributes[loop].empty())
             {
                 DbDatum db_d(attributes[loop].name);
                 db_d << (DevLong) attributes[loop].size();
@@ -789,12 +789,12 @@ void DbServerData::TangoClass::put_attribute_properties(Database *db_ptr)
 
 void DbServerData::TangoClass::put_pipe_properties(Database *db_ptr)
 {
-    if(pipes.empty() == false)
+    if(!pipes.empty())
     {
         DbData db_data;
         for(size_t loop = 0; loop < pipes.size(); loop++)
         {
-            if(pipes[loop].empty() == false)
+            if(!pipes[loop].empty())
             {
                 DbDatum db_d(pipes[loop].name);
                 db_d << (DevLong) pipes[loop].size();
@@ -832,7 +832,7 @@ void DbServerData::TangoClass::remove_properties(Database *db_ptr)
     // Delete class properties if any
     //
 
-    if(properties.empty() == false)
+    if(!properties.empty())
     {
         DbData props;
         for(size_t loop = 0; loop < properties.size(); loop++)
@@ -847,11 +847,11 @@ void DbServerData::TangoClass::remove_properties(Database *db_ptr)
     // Delete class attribute properties if any
     //
 
-    if(attributes.empty() == false)
+    if(!attributes.empty())
     {
         for(size_t loop = 0; loop < attributes.size(); loop++)
         {
-            if(attributes[loop].empty() == false)
+            if(!attributes[loop].empty())
             {
                 DbData db_data;
                 db_data.emplace_back(attributes[loop].name);
@@ -868,11 +868,11 @@ void DbServerData::TangoClass::remove_properties(Database *db_ptr)
     // Delete class pipe properties if any
     //
 
-    if(pipes.empty() == false)
+    if(!pipes.empty())
     {
         for(size_t loop = 0; loop < pipes.size(); loop++)
         {
-            if(pipes[loop].empty() == false)
+            if(!pipes[loop].empty())
             {
                 DbData db_data;
                 db_data.emplace_back(pipes[loop].name);

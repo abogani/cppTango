@@ -80,11 +80,7 @@ Appender *AppenderAttachable::get_appender(const std::string &name)
 bool AppenderAttachable::is_attached(Appender *appender)
 {
     Guard guard(_appendersMutex);
-    if((appender != nullptr) && _appenders.find(appender->get_name()) != _appenders.end())
-    {
-        return true;
-    }
-    return false;
+    return (appender != nullptr) && _appenders.find(appender->get_name()) != _appenders.end();
 }
 
 void AppenderAttachable::remove_all_appenders()

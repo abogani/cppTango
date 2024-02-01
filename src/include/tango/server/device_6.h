@@ -153,7 +153,7 @@ class Device_6Impl : public virtual POA_Tango::Device_6, public Device_5Impl
     /**
      * The device desctructor.
      */
-    virtual ~Device_6Impl() { }
+    ~Device_6Impl() override { }
 
     //@}
 

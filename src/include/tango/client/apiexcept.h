@@ -105,14 +105,7 @@ class NamedDevFailedList : public Tango::DevFailed
      */
     bool call_failed()
     {
-        if((err_list.empty() == true) && (errors.length() != 0))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (err_list.empty()) && (errors.length() != 0);
     }
 
     std::vector<NamedDevFailed>

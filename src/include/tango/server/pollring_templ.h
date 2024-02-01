@@ -239,14 +239,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
     long error_nb = 0;
 
     bool idl_version_5_or_later;
-    if(ring[index].attr_value_4 == nullptr)
-    {
-        idl_version_5_or_later = true;
-    }
-    else
-    {
-        idl_version_5_or_later = false;
-    }
+    idl_version_5_or_later = ring[index].attr_value_4 == nullptr;
 
     for(i = 0; i < n; i++)
     {
@@ -443,7 +436,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
                 }
             }
 
-            if(check == true)
+            if(check)
             {
                 ptr->r_dims_array[read_dims_length - 2].nb_elt++;
             }
@@ -488,7 +481,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
                 }
             }
 
-            if(check == true)
+            if(check)
             {
                 ptr->w_dims_array[write_dims_length - 2].nb_elt++;
             }
@@ -523,7 +516,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
         {
             bool new_err = false;
 
-            if(previous_no_data == true)
+            if(previous_no_data)
             {
                 if(ring[index].except->errors.length() != last_err_list.length())
                 {
@@ -561,7 +554,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
                 new_err = true;
             }
 
-            if(new_err == true)
+            if(new_err)
             {
                 if(ptr->errors.length() == 0)
                 {
@@ -643,7 +636,7 @@ void PollRing::get_attr_history(long n, T *ptr, long type)
         // Now, the data themselves
         //
 
-        if(no_data == false)
+        if(!no_data)
         {
             //
             // Trick: The state when read as an attribute is not store within the Any as a sequence

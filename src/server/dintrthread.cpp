@@ -77,7 +77,7 @@ void DevIntrThread::run(TANGO_UNUSED(void *ptr))
 
     try
     {
-        while(exit == false)
+        while(!exit)
         {
             DevIntrCmdType received = get_command(DEV_INTR_THREAD_SLEEP_TIME);
 
@@ -144,7 +144,7 @@ DevIntrCmdType DevIntrThread::get_command(DevLong tout)
     // Wait on monitor
     //
 
-    if(shared_data.cmd_pending == false)
+    if(!shared_data.cmd_pending)
     {
         TANGO_LOG_DEBUG << "DevIntrThread:: Going to wait on monitor" << std::endl;
         p_mon.wait(tout);
@@ -154,7 +154,7 @@ DevIntrCmdType DevIntrThread::get_command(DevLong tout)
     // Test if it is a new command. If yes, copy its data locally
     //
 
-    if(shared_data.cmd_pending == true)
+    if(shared_data.cmd_pending)
     {
         local_cmd = shared_data;
         ret = DEV_INTR_COMMAND;
@@ -215,7 +215,7 @@ void DevIntrThread::execute_cmd()
     // If the command was an exit one, do it now
     //
 
-    if(need_exit == true)
+    if(need_exit)
     {
         {
             omni_mutex_lock sync(p_mon);
@@ -241,7 +241,7 @@ void DevIntrThread::push_event()
 
     AutoTangoMonitor sync(dev, true);
 
-    if(shared_data.interface.has_changed(dev) == true)
+    if(shared_data.interface.has_changed(dev))
     {
         TANGO_LOG_DEBUG << "Device interface has changed" << std::endl;
 

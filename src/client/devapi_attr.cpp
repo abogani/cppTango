@@ -1502,7 +1502,7 @@ bool DeviceAttribute::is_empty() const
         }
     }
 
-    if(d_state_filled == true)
+    if(d_state_filled)
     {
         return false;
     }
@@ -1557,7 +1557,7 @@ bool DeviceAttribute::operator>>(short &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -1620,7 +1620,7 @@ bool DeviceAttribute::operator>>(DevLong &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -1680,7 +1680,7 @@ bool DeviceAttribute::operator>>(DevLong64 &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -1740,7 +1740,7 @@ bool DeviceAttribute::operator>>(double &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -1799,7 +1799,7 @@ bool DeviceAttribute::operator>>(std::string &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -1894,7 +1894,7 @@ bool DeviceAttribute::operator>>(float &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -1953,7 +1953,7 @@ bool DeviceAttribute::operator>>(bool &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2012,7 +2012,7 @@ bool DeviceAttribute::operator>>(unsigned short &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2071,7 +2071,7 @@ bool DeviceAttribute::operator>>(unsigned char &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2130,7 +2130,7 @@ bool DeviceAttribute::operator>>(DevULong &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2190,7 +2190,7 @@ bool DeviceAttribute::operator>>(DevULong64 &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2251,12 +2251,12 @@ bool DeviceAttribute::operator>>(DevState &datum)
 
     bool ret = check_for_data();
 
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
 
-    if(d_state_filled == true)
+    if(d_state_filled)
     {
         datum = d_state;
 
@@ -2318,7 +2318,7 @@ bool DeviceAttribute::operator>>(DevEncoded &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2493,7 +2493,7 @@ bool DeviceAttribute::operator>>(std::vector<std::string> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2571,7 +2571,7 @@ bool DeviceAttribute::operator>>(std::vector<short> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2645,7 +2645,7 @@ bool DeviceAttribute::operator>>(std::vector<DevLong> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2719,7 +2719,7 @@ bool DeviceAttribute::operator>>(std::vector<DevLong64> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2793,7 +2793,7 @@ bool DeviceAttribute::operator>>(std::vector<double> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2867,7 +2867,7 @@ bool DeviceAttribute::operator>>(std::vector<float> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -2941,7 +2941,7 @@ bool DeviceAttribute::operator>>(std::vector<bool> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3015,7 +3015,7 @@ bool DeviceAttribute::operator>>(std::vector<unsigned short> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3089,7 +3089,7 @@ bool DeviceAttribute::operator>>(std::vector<unsigned char> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3163,7 +3163,7 @@ bool DeviceAttribute::operator>>(std::vector<DevULong> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3237,7 +3237,7 @@ bool DeviceAttribute::operator>>(std::vector<DevULong64> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3311,7 +3311,7 @@ bool DeviceAttribute::operator>>(std::vector<DevState> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3359,7 +3359,7 @@ bool DeviceAttribute::operator>>(DevVarShortArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3395,7 +3395,7 @@ bool DeviceAttribute::operator>>(DevVarLongArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3431,7 +3431,7 @@ bool DeviceAttribute::operator>>(DevVarDoubleArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3467,7 +3467,7 @@ bool DeviceAttribute::operator>>(DevVarStringArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3503,7 +3503,7 @@ bool DeviceAttribute::operator>>(DevVarFloatArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3539,7 +3539,7 @@ bool DeviceAttribute::operator>>(DevVarBooleanArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3575,7 +3575,7 @@ bool DeviceAttribute::operator>>(DevVarUShortArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3611,7 +3611,7 @@ bool DeviceAttribute::operator>>(DevVarCharArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3647,7 +3647,7 @@ bool DeviceAttribute::operator>>(DevVarLong64Array *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3683,7 +3683,7 @@ bool DeviceAttribute::operator>>(DevVarULongArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3719,7 +3719,7 @@ bool DeviceAttribute::operator>>(DevVarULong64Array *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3755,7 +3755,7 @@ bool DeviceAttribute::operator>>(DevVarStateArray *&datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -3813,7 +3813,7 @@ bool DeviceAttribute::operator>>(DevVarEncodedArray *&datum)
         }
     }
 
-    if(is_empty() == true)
+    if(is_empty())
     {
         return false;
     }
@@ -4626,7 +4626,7 @@ bool DeviceAttribute::extract(char *&str, unsigned char *&data_ptr, unsigned int
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4687,7 +4687,7 @@ bool DeviceAttribute::extract_read(std::string &datum_str, std::vector<unsigned 
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4735,7 +4735,7 @@ bool DeviceAttribute::extract_set(std::string &datum_str, std::vector<unsigned c
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4780,7 +4780,7 @@ bool DeviceAttribute::extract_read(std::vector<std::string> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4825,7 +4825,7 @@ bool DeviceAttribute::extract_set(std::vector<std::string> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4871,7 +4871,7 @@ bool DeviceAttribute::extract_read(std::vector<short> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4916,7 +4916,7 @@ bool DeviceAttribute::extract_set(std::vector<short> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -4962,7 +4962,7 @@ bool DeviceAttribute::extract_read(std::vector<DevLong> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5007,7 +5007,7 @@ bool DeviceAttribute::extract_set(std::vector<DevLong> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5053,7 +5053,7 @@ bool DeviceAttribute::extract_read(std::vector<double> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5098,7 +5098,7 @@ bool DeviceAttribute::extract_set(std::vector<double> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5144,7 +5144,7 @@ bool DeviceAttribute::extract_read(std::vector<float> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5189,7 +5189,7 @@ bool DeviceAttribute::extract_set(std::vector<float> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5235,7 +5235,7 @@ bool DeviceAttribute::extract_read(std::vector<bool> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5280,7 +5280,7 @@ bool DeviceAttribute::extract_set(std::vector<bool> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5326,7 +5326,7 @@ bool DeviceAttribute::extract_read(std::vector<unsigned short> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5371,7 +5371,7 @@ bool DeviceAttribute::extract_set(std::vector<unsigned short> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5417,7 +5417,7 @@ bool DeviceAttribute::extract_read(std::vector<unsigned char> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5462,7 +5462,7 @@ bool DeviceAttribute::extract_set(std::vector<unsigned char> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5508,7 +5508,7 @@ bool DeviceAttribute::extract_read(std::vector<DevLong64> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5553,7 +5553,7 @@ bool DeviceAttribute::extract_set(std::vector<DevLong64> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5599,7 +5599,7 @@ bool DeviceAttribute::extract_read(std::vector<DevULong64> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5644,7 +5644,7 @@ bool DeviceAttribute::extract_set(std::vector<DevULong64> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5690,7 +5690,7 @@ bool DeviceAttribute::extract_read(std::vector<DevULong> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5735,7 +5735,7 @@ bool DeviceAttribute::extract_set(std::vector<DevULong> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5781,7 +5781,7 @@ bool DeviceAttribute::extract_read(std::vector<DevState> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5826,7 +5826,7 @@ bool DeviceAttribute::extract_set(std::vector<DevState> &datum)
     // check for available data
 
     bool ret = check_for_data();
-    if(ret == false)
+    if(!ret)
     {
         return false;
     }
@@ -5892,7 +5892,7 @@ bool DeviceAttribute::check_for_data()
         }
     }
 
-    if(is_empty() == true)
+    if(is_empty())
     {
         return false;
     }
@@ -6057,7 +6057,7 @@ void DeviceAttribute::del_mem(int _data_type)
 
 std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
 {
-    if(da.has_failed() == true)
+    if(da.has_failed())
     {
         o_str << "Exception stored in DeviceAttribute object" << std::endl;
         Except::print_error_stack(da.err_list);

@@ -227,7 +227,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -280,7 +280,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
             db_data.push_back(prop_dd);
 
             bool retry = true;
-            while(retry == true)
+            while(retry)
             {
                 try
                 {
@@ -323,7 +323,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
     // Push a att conf event
     //
 
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         get_att_device()->push_att_conf_event(this);
     }
@@ -454,7 +454,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -507,7 +507,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
             db_data.push_back(prop_dd);
 
             bool retry = true;
-            while(retry == true)
+            while(retry)
             {
                 try
                 {
@@ -550,7 +550,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
     // Push a att conf event
     //
 
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         get_att_device()->push_att_conf_event(this);
     }
@@ -681,7 +681,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -734,7 +734,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
             db_data.push_back(prop_dd);
 
             bool retry = true;
-            while(retry == true)
+            while(retry)
             {
                 try
                 {
@@ -777,7 +777,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
     // Push a att conf event
     //
 
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         get_att_device()->push_att_conf_event(this);
     }
@@ -908,7 +908,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -961,7 +961,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
             db_data.push_back(prop_dd);
 
             bool retry = true;
-            while(retry == true)
+            while(retry)
             {
                 try
                 {
@@ -1004,7 +1004,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
     // Push a att conf event
     //
 
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         get_att_device()->push_att_conf_event(this);
     }
@@ -1098,7 +1098,7 @@ void Attribute::get_properties(Tango::MultiAttrProp<T> &props)
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -1225,7 +1225,7 @@ void Attribute::set_properties(Tango::MultiAttrProp<T> &props)
 
     Tango::Util *tg = Tango::Util::instance();
     Tango::TangoMonitor *mon_ptr = nullptr;
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         mon_ptr = &(get_att_device()->get_att_conf_monitor());
     }
@@ -1270,7 +1270,7 @@ void Attribute::set_properties(Tango::MultiAttrProp<T> &props)
     // Set properties and update database
     //
 
-    if(is_fwd_att() == true)
+    if(is_fwd_att())
     {
         FwdAttribute *fwd_attr = static_cast<FwdAttribute *>(this);
         fwd_attr->upd_att_config_base(conf.label.in());
@@ -1285,7 +1285,7 @@ void Attribute::set_properties(Tango::MultiAttrProp<T> &props)
     // Push a att conf event
     //
 
-    if(tg->is_svr_starting() == false && tg->is_device_restarting(d_name) == false)
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
     {
         get_att_device()->push_att_conf_event(this);
     }
@@ -1315,7 +1315,7 @@ void Attribute::set_upd_properties(const T &conf, const std::string &dev_name, b
     //
 
     T old_conf;
-    if(is_fwd_att() == false)
+    if(!is_fwd_att())
     {
         get_properties(old_conf);
     }
@@ -1325,7 +1325,7 @@ void Attribute::set_upd_properties(const T &conf, const std::string &dev_name, b
     //
 
     bool is_startup_exception = check_startup_exceptions;
-    if(is_startup_exception == true)
+    if(is_startup_exception)
     {
         startup_exceptions_clear = false;
     }
@@ -1395,7 +1395,7 @@ void Attribute::set_upd_properties(const T &conf, const std::string &dev_name, b
         // configuration is correct
         //
 
-        if(is_startup_exception == false && startup_exceptions_clear == true && is_fwd_att() == false)
+        if(!is_startup_exception && startup_exceptions_clear && !is_fwd_att())
         {
             std::vector<AttPropDb> v_db;
             set_properties(old_conf, dev_name, true, v_db);
@@ -1464,7 +1464,7 @@ void Attribute::Attribute_2_AttributeValue_base(T *ptr, Tango::DeviceImpl *d)
             }
 
             // check for alarms to position the data quality value.
-            if(is_alarmed().any() == true)
+            if(is_alarmed().any())
             {
                 check_alarm();
             }

@@ -10,9 +10,7 @@
   #include <netinet/in.h>
 #endif /* _TG_WINDOWS_ */
 
-namespace Tango
-{
-namespace detail
+namespace Tango::detail
 {
 
 bool is_ip_address(const std::string &endpoint)
@@ -202,5 +200,4 @@ std::string parse_hostname_from_CORBA_URI(const std::string &input)
     return ret;
 }
 
-} // namespace detail
-} // namespace Tango
+} // namespace Tango::detail

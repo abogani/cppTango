@@ -97,7 +97,7 @@ void DbClass::get_property(DbData &db_data)
 
     ApiUtil *au = ApiUtil::instance();
     DbServerCache *dsc;
-    if(au->in_server() == true)
+    if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();
         dsc = tg->get_db_cache();
@@ -111,7 +111,7 @@ void DbClass::get_property(DbData &db_data)
     // Call DB (or cache)
     //
 
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_class_property(name, db_data, dsc);
     }
@@ -139,10 +139,10 @@ void DbClass::put_property(const DbData &db_data)
 
     ApiUtil *au = ApiUtil::instance();
     bool forget_except = false;
-    if(au->in_server() == true)
+    if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();
-        if(tg->is_svr_starting() == true)
+        if(tg->is_svr_starting())
         {
             if(db_data.size() >= 2)
             {
@@ -160,7 +160,7 @@ void DbClass::put_property(const DbData &db_data)
 
     try
     {
-        if(ext_dbase == true)
+        if(ext_dbase)
         {
             dbase->put_class_property(name, db_data);
         }
@@ -171,7 +171,7 @@ void DbClass::put_property(const DbData &db_data)
     }
     catch(Tango::DevFailed &)
     {
-        if(forget_except == false)
+        if(!forget_except)
         {
             throw;
         }
@@ -190,7 +190,7 @@ void DbClass::put_property(const DbData &db_data)
 
 void DbClass::delete_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_class_property(name, db_data);
     }
@@ -213,7 +213,7 @@ void DbClass::delete_property(const DbData &db_data)
 
 void DbClass::get_attribute_property(DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_class_attribute_property(name, db_data);
     }
@@ -236,7 +236,7 @@ void DbClass::get_attribute_property(DbData &db_data)
 
 void DbClass::put_attribute_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->put_class_attribute_property(name, db_data);
     }
@@ -259,7 +259,7 @@ void DbClass::put_attribute_property(const DbData &db_data)
 
 void DbClass::delete_attribute_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_class_attribute_property(name, db_data);
     }
@@ -282,7 +282,7 @@ void DbClass::delete_attribute_property(const DbData &db_data)
 
 void DbClass::get_pipe_property(DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->get_class_pipe_property(name, db_data);
     }
@@ -305,7 +305,7 @@ void DbClass::get_pipe_property(DbData &db_data)
 
 void DbClass::put_pipe_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->put_class_pipe_property(name, db_data);
     }
@@ -328,7 +328,7 @@ void DbClass::put_pipe_property(const DbData &db_data)
 
 void DbClass::delete_pipe_property(const DbData &db_data)
 {
-    if(ext_dbase == true)
+    if(ext_dbase)
     {
         dbase->delete_class_pipe_property(name, db_data);
     }

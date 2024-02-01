@@ -52,7 +52,7 @@ TangoRollingFileAppender::~TangoRollingFileAppender()
 
 bool TangoRollingFileAppender::isValid() const
 {
-    return (_fd < 0) ? false : true;
+    return _fd >= 0;
 }
 
 } // namespace Tango

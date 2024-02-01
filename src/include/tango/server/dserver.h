@@ -312,11 +312,7 @@ inline bool DServer::is_event_name(const std::string &str)
 
 inline bool DServer::is_ip_address(const std::string &str)
 {
-    if(count(str.begin(), str.end(), '.') != 3)
-    {
-        return false;
-    }
-    return true;
+    return count(str.begin(), str.end(), '.') == 3;
 }
 
 } // End of namespace Tango

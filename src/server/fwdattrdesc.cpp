@@ -237,7 +237,7 @@ bool FwdAttr::validate_fwd_att(std::vector<AttrProperty> &prop_list, const std::
             ret = false;
         }
 
-        if(ret == true)
+        if(ret)
         {
             std::string::size_type pos = full_root_att.find_last_of('/');
             fwd_root_att = full_root_att.substr(pos + 1);
@@ -638,7 +638,7 @@ void FwdAttr::init_conf(AttrConfEventData *ev_data)
     }
 
     UserDefaultAttrProp udap;
-    if(local_label.empty() == false)
+    if(!local_label.empty())
     {
         udap.set_label(local_label.c_str());
     }
@@ -681,7 +681,7 @@ void FwdAttr::init_conf(AttrConfEventData *ev_data)
 
 void FwdAttr::set_default_properties(UserDefaultFwdAttrProp &prop_list)
 {
-    if((prop_list.label.empty() == false) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
+    if((!prop_list.label.empty()) && (TG_strcasecmp(prop_list.label.c_str(), AlrmValueNotSpec) != 0) &&
        (TG_strcasecmp(prop_list.label.c_str(), NotANumber) != 0))
     {
         user_default_properties.emplace_back("label", prop_list.label);
@@ -752,7 +752,7 @@ void FwdAttr::remove_useless_prop(std::vector<AttrProperty> &prop_list,
             continue;
         }
 
-        if(m_attr->is_opt_prop(ite->get_name()) == true)
+        if(m_attr->is_opt_prop(ite->get_name()))
         {
             std::cerr << "Warning: The forwarded attribute " << get_name() << " belonging to device " << dev_name;
             std::cerr << "  has the property " << ite->get_name() << " defined in DB.\n";

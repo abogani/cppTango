@@ -218,7 +218,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
             bool fwd_ok = true;
             concat(dev_prop, class_prop, prop_list);
 
-            if(attr.is_fwd() == false)
+            if(!attr.is_fwd())
             {
                 add_user_default(prop_list, def_user_prop);
                 add_default(prop_list, dev_name, attr.get_name(), attr.get_type());
@@ -228,7 +228,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
                 FwdAttr &fwdattr = static_cast<FwdAttr &>(attr);
                 fwd_ok = fwdattr.validate_fwd_att(prop_list, dev_name);
                 dev->set_with_fwd_att(true);
-                if(fwd_ok == true)
+                if(fwd_ok)
                 {
                     try
                     {
@@ -273,11 +273,11 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
             // Create an Attribute instance
             //
 
-            if(fwd_ok == true)
+            if(fwd_ok)
             {
                 if((attr.get_writable() == Tango::WRITE) || (attr.get_writable() == Tango::READ_WRITE))
                 {
-                    if(attr.is_fwd() == true)
+                    if(attr.is_fwd())
                     {
                         Attribute *new_attr = new FwdAttribute(prop_list, attr, dev_name, i);
                         add_attr(new_attr);
@@ -290,7 +290,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
                 }
                 else
                 {
-                    if(attr.is_fwd() == true)
+                    if(attr.is_fwd())
                     {
                         Attribute *new_attr = new FwdAttribute(prop_list, attr, dev_name, i);
                         add_attr(new_attr);
@@ -316,7 +316,7 @@ MultiAttribute::MultiAttribute(const std::string &dev_name, DeviceClass *dev_cla
                 // If one of the alarm properties is defined, add it to the alarmed attribute list
                 //
 
-                if(attr_list[i - sub]->is_alarmed().any() == true)
+                if(attr_list[i - sub]->is_alarmed().any())
                 {
                     if(w_type != Tango::WRITE)
                     {
@@ -672,10 +672,10 @@ void MultiAttribute::check_idl_release(DeviceImpl *dev)
         // root attribute registry
         //
 
-        if(attr_list[i]->is_fwd_att() == true && detail::IDLVersionIsTooOld(idl_version, 5))
+        if(attr_list[i]->is_fwd_att() && detail::IDLVersionIsTooOld(idl_version, 5))
         {
             std::vector<DeviceImpl::FwdWrongConf> &fwd_wrong_conf = dev->get_fwd_att_wrong_conf();
-            if(vector_cleared == false)
+            if(!vector_cleared)
             {
                 fwd_wrong_conf.clear();
                 vector_cleared = true;
@@ -813,7 +813,7 @@ void MultiAttribute::add_attribute(const std::string &dev_name, DeviceClass *dev
 
     if((attr.get_writable() == Tango::WRITE) || (attr.get_writable() == Tango::READ_WRITE))
     {
-        if(idl_3 == false)
+        if(!idl_3)
         {
             Attribute *new_attr = new WAttribute(prop_list, attr, dev_name, index);
             add_attr(new_attr);
@@ -830,7 +830,7 @@ void MultiAttribute::add_attribute(const std::string &dev_name, DeviceClass *dev
     }
     else
     {
-        if(idl_3 == false)
+        if(!idl_3)
         {
             Attribute *new_attr = new Attribute(prop_list, attr, dev_name, index);
             add_attr(new_attr);
@@ -860,7 +860,7 @@ void MultiAttribute::add_attribute(const std::string &dev_name, DeviceClass *dev
     // If one of the alarm properties is defined, add it to the alarmed attribute list
     //
 
-    if(attr_list[index]->is_alarmed().any() == true)
+    if(attr_list[index]->is_alarmed().any())
     {
         if(w_type != Tango::WRITE)
         {
@@ -925,7 +925,7 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,
     //
     // Validate and register the root attribute configuration
     //
-    if(new_attr->is_fwd() == true)
+    if(new_attr->is_fwd())
     {
         Tango::FwdAttr *fwd_attr = (Tango::FwdAttr *) new_attr;
         // If forwarded attribute is dynamically created and was constructed without specifying
@@ -997,7 +997,7 @@ void MultiAttribute::add_fwd_attribute(const std::string &dev_name,
     // If one of the alarm properties is defined, add it to the alarmed attribute list
     //
 
-    if(attr_list[index]->is_alarmed().any() == true)
+    if(attr_list[index]->is_alarmed().any())
     {
         if(w_type != Tango::WRITE)
         {
@@ -1063,7 +1063,7 @@ void MultiAttribute::remove_attribute(const std::string &attr_name, bool update_
         ext->attr_map[attr_name_lower].att_index_in_vector--;
     }
 
-    if(update_idx == true)
+    if(update_idx)
     {
         // This attribute has been removed from the class attributes list
         // In devices attributes lists for this class, update all the indexes to
@@ -1128,7 +1128,7 @@ void MultiAttribute::remove_attribute(const std::string &attr_name, bool update_
     alarm_attr_list.clear();
     for(unsigned long i = 0; i < attr_list.size(); i++)
     {
-        if(attr_list[i]->is_alarmed().any() == true)
+        if(attr_list[i]->is_alarmed().any())
         {
             Tango::AttrWriteType w_type = attr_list[i]->get_writable();
             if(w_type != Tango::WRITE)
@@ -1295,7 +1295,7 @@ bool MultiAttribute::check_alarm()
     for(i = 0; i < alarm_attr_list.size(); i++)
     {
         Tango::AttrQuality qua = (get_attr_by_ind(alarm_attr_list[i])).get_quality();
-        if(ret == false)
+        if(!ret)
         {
             if(qua == Tango::ATTR_ALARM)
             {
@@ -1310,10 +1310,10 @@ bool MultiAttribute::check_alarm()
             //
 
             Attribute &att = get_attr_by_ind(alarm_attr_list[i]);
-            if(att.is_polled() == false)
+            if(!att.is_polled())
             {
                 tmp_ret = check_alarm(alarm_attr_list[i]);
-                if(tmp_ret == true)
+                if(tmp_ret)
                 {
                     ret = true;
                 }
@@ -1350,7 +1350,7 @@ void MultiAttribute::read_alarm(std::string &status)
         // Add a message for low level alarm
         //
 
-        if(att.is_min_alarm() == true)
+        if(att.is_min_alarm())
         {
             std::string &attr_label = att.get_label();
             std::string str;
@@ -1371,7 +1371,7 @@ void MultiAttribute::read_alarm(std::string &status)
         // Add a message for high level alarm
         //
 
-        else if(att.is_max_alarm() == true)
+        else if(att.is_max_alarm())
         {
             std::string &attr_label = att.get_label();
             std::string str;
@@ -1392,7 +1392,7 @@ void MultiAttribute::read_alarm(std::string &status)
         // Add a message for rds alarm
         //
 
-        if(att.is_rds_alarm() == true)
+        if(att.is_rds_alarm())
         {
             std::string &attr_label = att.get_label();
             std::string str;
@@ -1413,7 +1413,7 @@ void MultiAttribute::read_alarm(std::string &status)
         // Add a message for min warning
         //
 
-        if(att.is_min_warning() == true)
+        if(att.is_min_warning())
         {
             std::string &attr_label = att.get_label();
             std::string str;
@@ -1434,7 +1434,7 @@ void MultiAttribute::read_alarm(std::string &status)
         // Add a message for max warning
         //
 
-        else if(att.is_max_warning() == true)
+        else if(att.is_max_warning())
         {
             std::string &attr_label = att.get_label();
             std::string str;
@@ -1762,7 +1762,7 @@ void MultiAttribute::add_alarmed_quality_factor(std::string &status)
                 break;
             }
         }
-        if(found == true)
+        if(found)
         {
             continue;
         }
@@ -1858,7 +1858,7 @@ void MultiAttribute::update(const Attribute &att, const std::string &dev_name)
     // If one of the alarm properties is defined, add it to the alarmed attribute list
     //
 
-    if(att.is_alarmed().any() == true)
+    if(att.is_alarmed().any())
     {
         if(w_type != Tango::WRITE)
         {

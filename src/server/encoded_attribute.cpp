@@ -79,7 +79,7 @@ EncodedAttribute::EncodedAttribute(int si, bool excl) :
     index = 0;
     buf_elt_nb = si;
 
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array = new omni_mutex[si];
     }
@@ -106,7 +106,7 @@ EncodedAttribute::~EncodedAttribute()
 
 void EncodedAttribute::encode_jpeg_gray8(unsigned char *gray8, int width, int height, double quality)
 {
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array[index].lock();
     }
@@ -122,7 +122,7 @@ void EncodedAttribute::encode_jpeg_gray8(unsigned char *gray8, int width, int he
 
 void EncodedAttribute::encode_jpeg_rgb32(unsigned char *rgb32, int width, int height, double quality)
 {
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array[index].lock();
     }
@@ -138,7 +138,7 @@ void EncodedAttribute::encode_jpeg_rgb32(unsigned char *rgb32, int width, int he
 
 void EncodedAttribute::encode_jpeg_rgb24(unsigned char *rgb24, int width, int height, double quality)
 {
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array[index].lock();
     }
@@ -156,7 +156,7 @@ void EncodedAttribute::encode_gray8(const unsigned char *gray8, int width, int h
 {
     long unsigned int newSize = width * height + 4;
 
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array[index].lock();
     }
@@ -188,7 +188,7 @@ void EncodedAttribute::encode_gray16(const unsigned short *gray16, int width, in
 {
     long unsigned int newSize = width * height * 2 + 4;
 
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array[index].lock();
     }
@@ -230,7 +230,7 @@ void EncodedAttribute::encode_rgb24(const unsigned char *rgb24, int width, int h
 {
     long unsigned int newSize = width * height * 3 + 4;
 
-    if(manage_exclusion == true)
+    if(manage_exclusion)
     {
         mutex_array[index].lock();
     }

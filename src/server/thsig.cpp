@@ -114,7 +114,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
             {
                 bool job_done = false;
 
-                if(ds->sig_to_install == true)
+                if(ds->sig_to_install)
                 {
                     ds->sig_to_install = false;
                     sigaddset(&sigs_to_catch, ds->inst_sig);
@@ -126,7 +126,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
                 // Remove a signal from the catched one
                 //
 
-                if(ds->sig_to_remove == true)
+                if(ds->sig_to_remove)
                 {
                     ds->sig_to_remove = false;
                     sigdelset(&sigs_to_catch, ds->rem_sig);
@@ -134,7 +134,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
                     job_done = true;
                 }
 
-                if(job_done == true)
+                if(job_done)
                 {
                     ds->signal();
                     continue;
@@ -149,7 +149,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         // First, execute all the handlers installed at the class level
         //
 
-        if(act_ptr->registered_classes.empty() == false)
+        if(!act_ptr->registered_classes.empty())
         {
             long nb_class = act_ptr->registered_classes.size();
             for(long j = 0; j < nb_class; j++)
@@ -162,7 +162,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         // Then, execute all the handlers installed at the device level
         //
 
-        if(act_ptr->registered_devices.empty() == false)
+        if(!act_ptr->registered_devices.empty())
         {
             long nb_dev = act_ptr->registered_devices.size();
             for(long j = 0; j < nb_dev; j++)
@@ -176,7 +176,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         // destroy the ORB and exit
         //
 
-        if(auto_signal(signo) == true)
+        if(auto_signal(signo))
         {
             Tango::Util *tg = Tango::Util::instance();
             if(tg != nullptr)

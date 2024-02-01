@@ -180,7 +180,7 @@ Tango::DevAttrHistory_4 *Device_4Impl::read_attribute_history_4(const char *name
     // Check that some data is available in cache
     //
 
-    if(polled_attr->is_ring_empty() == true)
+    if(polled_attr->is_ring_empty())
     {
         TangoSys_OMemStream o;
         o << "No data available in cache for attribute " << attr_str << std::ends;
@@ -303,7 +303,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
     {
         if(poll_list[i]->get_name() == cmd_str)
         {
-            if((state_cmd == true) || (status_cmd == true))
+            if((state_cmd) || (status_cmd))
             {
                 if(poll_list[i]->get_type() == Tango::POLL_ATTR)
                 {
@@ -331,7 +331,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
     // Check that some data is available in cache
     //
 
-    if(polled_cmd->is_ring_empty() == true)
+    if(polled_cmd->is_ring_empty())
     {
         TangoSys_OMemStream o;
         o << "No data available in cache for command " << cmd_str << std::ends;
@@ -369,7 +369,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
     // retrieved the history as attributes and transfer this as command
     //
 
-    if((state_cmd == true) || (status_cmd == true))
+    if((state_cmd) || (status_cmd))
     {
         Tango::DevAttrHistory_4 *back_attr = nullptr;
         try
@@ -382,7 +382,7 @@ Tango::DevCmdHistory_4 *Device_4Impl::command_inout_history_4(const char *comman
             TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
         }
 
-        if(status_cmd == true)
+        if(status_cmd)
         {
             polled_cmd->get_attr_history(n, back_attr, Tango::DEV_STRING, SCALAR);
 
@@ -479,7 +479,7 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
     // If the lock is not valid any more, clear it
     //
 
-    if(state_status_cmd == false)
+    if(!state_status_cmd)
     {
         check_lock("command_inout4", in_cmd);
     }
@@ -512,7 +512,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
     // Record operation request in black box
     //
 
-    if(store_in_bb == true)
+    if(store_in_bb)
     {
         blackbox_ptr->insert_attr(names, cl_id, idl_version, source);
     }
@@ -611,13 +611,13 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
         Tango::DevVarStringArray local_names(nb_names);
         Tango::DevVarStringArray fwd_names(nb_names);
 
-        if(with_fwd_att == true)
+        if(with_fwd_att)
         {
             for(size_t loop = 0; loop < nb_names; loop++)
             {
                 Attribute &att = dev_attr->get_attr_by_name(real_names[loop]);
 
-                if(att.is_fwd_att() == true)
+                if(att.is_fwd_att())
                 {
                     size_t nb_fwd = 0;
                     fwd_att_in_call = true;
@@ -636,7 +636,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
             }
         }
 
-        if(fwd_att_in_call == false)
+        if(!fwd_att_in_call)
         {
             //
             // No fwd attributes in call, get values from local cache
@@ -771,7 +771,7 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
     // Record operation request in black box
     //
 
-    if(store_in_bb == true)
+    if(store_in_bb)
     {
         blackbox_ptr->insert_attr(values, cl_id, idl_version);
     }

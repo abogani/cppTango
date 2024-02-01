@@ -95,7 +95,7 @@ void AccessProxy::real_ctor()
     //    Build device proxy and check if present.
     //
 
-    if(forced == false)
+    if(!forced)
     {
         ping();
     }
@@ -123,7 +123,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
 
     omni_mutex_lock oml(only_one);
 
-    while(two_tries == false)
+    while(!two_tries)
     {
         try
         {
@@ -133,7 +133,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
             // to change the effective user id and therefore to take someone else rights
             //
 
-            if(user.empty() == true)
+            if(user.empty())
             {
 #ifndef _TG_WINDOWS_
                 uid_t user_id = geteuid();
@@ -182,7 +182,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
             //    If not already done, get host address
             //
 
-            if(host_ips.empty() == true)
+            if(host_ips.empty())
             {
                 ApiUtil *au = ApiUtil::instance();
                 std::vector<std::string> adrs;
@@ -216,7 +216,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
                         }
                     }
 
-                    if(host_ips.empty() == true)
+                    if(host_ips.empty())
                     {
                         host_ips.push_back(at_least_one);
                     }
@@ -237,7 +237,7 @@ AccessControlType AccessProxy::check_access_control(const std::string &devname)
             DeviceData din, dout;
             DevVarStringArray dvsa;
 
-            if(multi_ip == true)
+            if(multi_ip)
             {
                 dvsa.length(2 + host_ips.size());
                 dvsa[0] = Tango::string_dup(user.c_str());
@@ -332,7 +332,7 @@ bool AccessProxy::is_command_allowed(std::string &classname, const std::string &
     //    If no cmd allowed returns false
     //
 
-    if(allowed.empty() == true)
+    if(allowed.empty())
     {
         ret = false;
     }

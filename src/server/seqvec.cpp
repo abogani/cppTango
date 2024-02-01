@@ -143,7 +143,7 @@ std::ostream &operator<<(std::ostream &o, const DevVarBooleanArray &v)
     for(long i = 0; i < nb_elt; i++)
     {
         o << "Element number [" << i << "] = ";
-        if(v[i] == true)
+        if(v[i])
         {
             o << "true";
         }

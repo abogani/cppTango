@@ -78,14 +78,7 @@ class CmdDoneEvent
         argout(arg),
         errors(err_in)
     {
-        if(errors.length() == 0)
-        {
-            err = false;
-        }
-        else
-        {
-            err = true;
-        }
+        err = errors.length() != 0;
     }
 
     ///@publicsection
@@ -135,14 +128,7 @@ class AttrReadEvent
         argout(arg),
         errors(err_in)
     {
-        if(errors.length() == 0)
-        {
-            err = false;
-        }
-        else
-        {
-            err = true;
-        }
+        err = errors.length() != 0;
     }
 
     ///@publicsection

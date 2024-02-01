@@ -266,7 +266,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceDataHistory &dh)
     // Print data or error stack
     //
 
-    if(dh.fail == true)
+    if(dh.fail)
     {
         unsigned int nb_err = dh.err.in().length();
         for(unsigned long i = 0; i < nb_err; i++)
@@ -362,7 +362,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_var &se
 
     CORBA::ULong max, len;
 
-    if((fail == false) && (quality != Tango::ATTR_INVALID))
+    if((!fail) && (quality != Tango::ATTR_INVALID))
     {
         CORBA::TypeCode_var ty = seq[n].value.value.type();
         CORBA::TypeCode_var ty_alias = ty->content_type();
@@ -514,7 +514,7 @@ DeviceAttributeHistory::DeviceAttributeHistory(int n, DevAttrHistoryList_3_var &
 
     CORBA::ULong max, len;
 
-    if((fail == false) && (quality != Tango::ATTR_INVALID))
+    if((!fail) && (quality != Tango::ATTR_INVALID))
     {
         CORBA::TypeCode_var ty = seq[n].value.value.type();
         CORBA::TypeCode_var ty_alias = ty->content_type();
@@ -792,7 +792,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
     // Print data (if valid) or error stack
     //
 
-    if(dah.fail == true)
+    if(dah.fail)
     {
         unsigned int nb_err = dah.err_list.in().length();
         for(unsigned long i = 0; i < nb_err; i++)
@@ -831,7 +831,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
     {
         if(dah.quality != Tango::ATTR_INVALID)
         {
-            if(dah.is_empty_noexcept() == true)
+            if(dah.is_empty_noexcept())
             {
                 o_str << "No data in DeviceData object";
             }

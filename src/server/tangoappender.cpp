@@ -54,7 +54,7 @@ TangoAppender::TangoAppender(const std::string &src_name,
 
 {
     _req_ctr = 0;
-    if(open_connection == true)
+    if(open_connection)
     {
         reopen();
     }

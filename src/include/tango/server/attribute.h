@@ -703,9 +703,7 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <class T,
-              typename std::enable_if<std::is_enum<T>::value && !std::is_same<T, Tango::DevState>::value, T>::type * =
-                  nullptr>
+    template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> * = nullptr>
     void set_value(T *, long x = 1, long y = 0, bool release = false);
 
     /**
@@ -720,9 +718,7 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <class T,
-              typename std::enable_if<!std::is_enum<T>::value || std::is_same<T, Tango::DevState>::value, T>::type * =
-                  nullptr>
+    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
     void set_value(T *, long x = 1, long y = 0, bool release = false);
     //---------------------------------------------------------------------------
 
@@ -767,7 +763,7 @@ class Attribute
     {
         change_event_implmented = implemented;
         check_change_event_criteria = detect;
-        if(detect == false)
+        if(!detect)
         {
             prev_change_event.err = false;
             prev_change_event.quality = Tango::ATTR_VALID;
@@ -836,7 +832,7 @@ class Attribute
     {
         archive_event_implmented = implemented;
         check_archive_event_criteria = detect;
-        if(detect == false)
+        if(!detect)
         {
             prev_archive_event.err = false;
             prev_archive_event.quality = Tango::ATTR_VALID;
@@ -2056,9 +2052,7 @@ inline void Attribute::throw_startup_exception(const char *origin)
         std::string err_msg;
         std::vector<std::string> event_exceptions;
         std::vector<std::string> opt_exceptions;
-        for(std::map<std::string, DevFailed>::const_iterator it = startup_exceptions.begin();
-            it != startup_exceptions.end();
-            ++it)
+        for(auto it = startup_exceptions.begin(); it != startup_exceptions.end(); ++it)
         {
             if(it->first == "event_period" || it->first == "archive_period" || it->first == "rel_change" ||
                it->first == "abs_change" || it->first == "archive_rel_change" || it->first == "archive_abs_change")
@@ -2098,7 +2092,7 @@ inline void Attribute::throw_startup_exception(const char *origin)
             }
             err_msg += "\nHint : Check also class level attribute properties";
         }
-        else if(event_exceptions.empty() == false)
+        else if(!event_exceptions.empty())
         {
             if(opt_exceptions.size() == 1)
             {

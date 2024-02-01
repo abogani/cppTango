@@ -12,6 +12,9 @@ Checks: >
     -modernize-use-trailing-return-type,
     -readability-named-parameter,
 
+WarningsAsErrors: >
+    -clang-analyzer-*,
+
 CheckOptions:
   - key: >-
       misc-non-private-member-variables-in-classes

@@ -429,7 +429,7 @@ void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
     break;
     case Tango::JAVA_6:
     {
-        Tango::JavaClntIdent_6 eci = cl_ident.java_clnt_6();
+        const Tango::JavaClntIdent_6 &eci = cl_ident.java_clnt_6();
         Tango::JavaClntIdent jci = eci.java_clnt;
         cl_addr->java_main_class = jci.MainClass;
         cl_addr->java_ident[0] = jci.uuid[0];
@@ -696,7 +696,7 @@ void BlackBox::insert_attr(const Tango::DevVarStringArray &names, const ClntIden
     // If request is executed due to polling or from a user thread, simply return
     //
 
-    if(poll_user == true)
+    if(poll_user)
     {
         sync.unlock();
         return;
@@ -765,7 +765,7 @@ void BlackBox::insert_attr(const char *name, const ClntIdent &cl_id, TANGO_UNUSE
     // Add client ident info into the client_addr instance and into the box
     //
 
-    if(poll_user == false)
+    if(!poll_user)
     {
         omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
         add_cl_ident(cl_id, static_cast<client_addr *>(ip));
@@ -833,7 +833,7 @@ void BlackBox::insert_attr(const Tango::DevPipeData &pipe_val, const ClntIdent &
     // Add client ident info into the client_addr instance and into the box
     //
 
-    if(poll_user == false)
+    if(!poll_user)
     {
         omni_thread::value_t *ip = omni_thread::self()->get_value(Util::get_tssk_client_info());
         add_cl_ident(cl_id, static_cast<client_addr *>(ip));
@@ -1109,7 +1109,7 @@ void BlackBox::get_client_host()
         std::vector<PollingThreadInfo *> &poll_ths = tg->get_polling_threads_info();
 
         bool found_thread = false;
-        if(poll_ths.empty() == false)
+        if(!poll_ths.empty())
         {
             int this_thread_id = th_id->id();
             size_t nb_poll_th = poll_ths.size();
@@ -1124,9 +1124,9 @@ void BlackBox::get_client_host()
             }
         }
 
-        if(tg->is_svr_starting() == true)
+        if(tg->is_svr_starting())
         {
-            if(found_thread == true)
+            if(found_thread)
             {
                 strcpy(box[insert_elt].host_ip_str, "polling");
             }
@@ -1137,7 +1137,7 @@ void BlackBox::get_client_host()
         }
         else
         {
-            if(found_thread == true)
+            if(found_thread)
             {
                 strcpy(box[insert_elt].host_ip_str, "polling");
             }
@@ -1564,7 +1564,7 @@ void BlackBox::build_info_as_str(long index)
         }
 
         std::string full_ip_str;
-        if(ipv6 == false)
+        if(!ipv6)
         {
             if((pos = ip_str.find(':')) == std::string::npos)
             {
@@ -1659,7 +1659,7 @@ void BlackBox::build_info_as_str(long index)
         // Add client identification if available
         //
 
-        if(box[index].client_ident == true)
+        if(box[index].client_ident)
         {
             if(box[index].client_lang == Tango::CPP || box[index].client_lang == Tango::CPP_6)
             {
@@ -1684,7 +1684,7 @@ void BlackBox::build_info_as_str(long index)
         // Add client identification if available
         //
 
-        if(box[index].client_ident == true)
+        if(box[index].client_ident)
         {
             if(box[index].client_lang == Tango::CPP || box[index].client_lang == Tango::CPP_6)
             {
@@ -2166,7 +2166,7 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
 
 std::ostream &operator<<(std::ostream &o_str, const client_addr &ca)
 {
-    if(ca.client_ident == false)
+    if(!ca.client_ident)
     {
         o_str << "Client identification not available";
     }
