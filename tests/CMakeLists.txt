@@ -291,7 +291,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         COMPILE_FLAGS -Wno-stringop-overflow)
 endif()
 
-add_subdirectory(catch2)
+include(catch2/tango_catch2_tests.cmake)
+
+tango_catch2_tests_create(catch2_attr_manip.cpp)
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
 target_include_directories(lock PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
