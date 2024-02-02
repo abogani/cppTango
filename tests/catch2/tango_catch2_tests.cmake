@@ -22,10 +22,13 @@ function(tango_catch2_tests_create)
 
     set(TANGO_CATCH2_LOG_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_server_logs)
 
+    add_custom_target(Catch2ServerLogs ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_LOG_DIR}")
+
     add_test(NAME catch2::setup COMMAND
         ${CMAKE_COMMAND}
         "-DTANGO_CATCH2_LOG_DIR=${TANGO_CATCH2_LOG_DIR}"
-        -P "${TANGO_CATCH2_TESTS_DIR}/make_log_dir.cmake")
+        -P "${TANGO_CATCH2_TESTS_DIR}/clean_log_dir.cmake")
     add_test(NAME catch2::cleanup COMMAND
         ${CMAKE_COMMAND}
         "-DTANGO_CATCH2_LOG_DIR=${TANGO_CATCH2_LOG_DIR}"
