@@ -108,7 +108,7 @@ class Logging
     /**
      * Initializes the Tango Logging service (TLS)
      **/
-    static void init(const std::string &ds_name, int cmd_line_level, bool use_tango_db, Database &db, Util *tg);
+    static void init(const std::string &ds_name, int cmd_line_level, bool use_db, Database *db, Util *tg);
     /**
      * Shutdown the Tango Logging service
      **/
