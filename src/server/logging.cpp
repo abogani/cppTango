@@ -89,7 +89,7 @@ int Logging::_cmd_line_level = 0;
 void Logging::init(const std::string &ds_name, // dserver name
                    int cmd_line_level,         // cmd. line verbose level
                    bool use_db,                // true if using the TANGO-db
-                   Database &db,               // Db object or null
+                   Database *db,               // Db object or null
                    Util *tg)                   // Tango::Util object
 {
     // logging path env. var. name
@@ -164,7 +164,7 @@ void Logging::init(const std::string &ds_name, // dserver name
                 // the core-logger's logging target list
                 db_data.emplace_back("logging_target");
                 // get properties from TANGO-db
-                db.get_device_property(dserver_dev_name, db_data, tg->get_db_cache());
+                db->get_device_property(dserver_dev_name, db_data, tg->get_db_cache());
                 // set logging path
                 std::string level_str("WARN");
                 if(!db_data[0].is_empty())

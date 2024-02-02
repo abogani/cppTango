@@ -544,7 +544,7 @@ void Util::effective_job(int argc, char *argv[])
         //
         // Initialize logging stuffs
         //
-        Logging::init(ds_name, (int) _tracelevel, ((!_FileDb) && _UseDb), *db, this);
+        Logging::init(ds_name, (int) _tracelevel, ((!_FileDb) && _UseDb), db, this);
 
         if(log_client_orb_deleted)
         {

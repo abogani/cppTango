@@ -20,6 +20,7 @@ windows-build:
     ZMQ_VERSION: 4.0.5-2
     OMNI_VERSION: 4.3.0
     PTHREAD_VERSION: 2.9.1
+    CATCH_VERSION: 3.5.1
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -30,6 +31,8 @@ windows-build:
     TANGO_OMNI_ROOT: dependencies/omniORB
     TANGO_IDL_SOURCE: dependencies/source/tango-idl
     TANGO_IDL_ROOT: dependencies/tango-idl
+    TANGO_CATCH_ROOT: dependencies/catch
+    TANGO_CATCH_SOURCE: dependencies/source/Catch2-${CATCH_VERSION}
     PTHREAD_ROOT: dependencies/pthread
     WIX_TOOLSET_LOCATION: dependencies/wix
     PYTHON_LOCATION: dependencies/python
@@ -125,6 +128,24 @@ windows-build:
         --build "${TANGO_IDL_SOURCE}/build"
         --target install
         --config "${CMAKE_BUILD_TYPE}"
+    # catch
+    - $FILENAME = catch-${CATCH_VERSION}.zip
+    - curl.exe -L https://github.com/catchorg/Catch2/archive/refs/tags/v${CATCH_VERSION}.zip -o ${FILENAME}
+    - md -Force ${TANGO_CATCH_SOURCE}/..
+    - Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_CATCH_SOURCE}/..
+    - cmake
+        -S "${TANGO_CATCH_SOURCE}"
+        -B "${TANGO_CATCH_SOURCE}/build"
+        -G "${CMAKE_GENERATOR}"
+        -A "${ARCHITECTURE}"
+        -DCMAKE_INSTALL_PREFIX="${TANGO_CATCH_ROOT}"
+        -DCATCH_INSTALL_DOCS=OFF
+        -DCATCH_BUILD_TESTING=OFF
+        -DCATCH_ENABLE_WERROR=OFF
+    - cmake
+        --build "${TANGO_CATCH_SOURCE}/build"
+        --target install
+        --config "${CMAKE_BUILD_TYPE}"
     # wix toolset
     - $FILENAME="wix311-binaries.zip"
     - curl.exe -JOL https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/${FILENAME}
@@ -152,6 +173,7 @@ windows-build:
         -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}"
         -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}"
         -Dpthread_ROOT="${PTHREAD_ROOT}"
+        -DCatch2_ROOT="${cwd}/${TANGO_CATCH_ROOT}"
         -DTANGO_USE_PTHREAD=ON
         -DTANGO_USE_JPEG=ON
         -DJPEG_DEBUG_POSTFIX=d

@@ -1,0 +1,312 @@
+#include "utils/test_server.h"
+
+#include "utils/platform/platform.h"
+
+#include <catch2/catch_get_random_seed.hpp>
+#include <catch2/catch_test_case_info.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/reporters/catch_reporter_event_listener.hpp>
+#include <catch2/reporters/catch_reporter_registrars.hpp>
+
+#include <algorithm>
+#include <cstdio>
+#include <fstream>
+#include <iterator>
+#include <random>
+#include <sstream>
+
+namespace TangoTest
+{
+
+namespace
+{
+
+class CatchLogger : public Logger
+{
+  public:
+    void log(const std::string &message) override
+    {
+        WARN(message);
+    }
+
+    ~CatchLogger() override { }
+};
+
+struct FilenameBuilder
+{
+    // This is the limit on Linux and Windows
+    constexpr static size_t k_max_filename_length = 255;
+
+    constexpr static size_t k_prefix_length = 4;
+    // Random prefix to make filenames unique between invocations
+    char prefix[k_prefix_length];
+    // The current test case we are running
+    std::string current_test_case_name;
+    // The current test case part that we are running
+    uint64_t current_part_number;
+    // Number of servers launch for this part
+    uint64_t server_count;
+
+    std::string build()
+    {
+        std::string suffix = [this]()
+        {
+            std::stringstream ss;
+            ss << "_prt" << current_part_number;
+            ss << "_srv" << server_count;
+            return ss.str();
+        }();
+        server_count += 1;
+
+        std::string test_case_name = current_test_case_name;
+
+        // We use `k_prefix_length` here because the prefix includes the
+        // randomly generated characters and an '_', which is the same length as
+        // `prefix` which stores the randomly generated characters and a '\0'.
+        size_t max_length = k_max_filename_length - k_prefix_length - suffix.size();
+
+        if(test_case_name.size() > max_length)
+        {
+            test_case_name.resize(max_length);
+        }
+
+        std::string filename = [&, this]()
+        {
+            std::stringstream ss;
+            ss << prefix << "_";
+            std::transform(test_case_name.begin(),
+                           test_case_name.end(),
+                           std::ostream_iterator<char>(ss),
+                           [](char c)
+                           {
+                               if(c == ' ')
+                               {
+                                   return '_';
+                               }
+                               return c;
+                           });
+            ss << suffix;
+            return ss.str();
+        }();
+
+        std::string path = [&]()
+        {
+            std::stringstream ss;
+            ss << TangoTest::platform::k_output_directory_path << "/" << filename;
+            return ss.str();
+        }();
+
+        return path;
+    }
+};
+
+constexpr int k_min_port = 10000;
+constexpr int k_max_port = 20000;
+
+static std::minstd_rand g_rng;
+static FilenameBuilder g_filename_builder;
+
+class PlatformListener : public Catch::EventListenerBase
+{
+    using Catch::EventListenerBase::EventListenerBase;
+
+    void testRunStarting(Catch::TestRunInfo const &) override
+    {
+        g_rng.seed(Catch::getSeed());
+        TestServer::s_logger = std::make_unique<CatchLogger>();
+
+        {
+            std::uniform_int_distribution dist{k_min_port, k_max_port};
+            TestServer::s_next_port = dist(g_rng);
+        }
+
+        {
+            constexpr const char k_base64[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            static_assert(sizeof(k_base64) - 1 == 62); // - 1 for \0
+
+            char prefix[FilenameBuilder::k_prefix_length];
+            std::uniform_int_distribution dist{0, 61};
+            for(size_t i = 0; i < FilenameBuilder::k_prefix_length - 1; ++i)
+            {
+                prefix[i] = k_base64[dist(g_rng)];
+            }
+            prefix[FilenameBuilder::k_prefix_length - 1] = '\0';
+            memcpy(g_filename_builder.prefix, prefix, 4);
+        }
+
+        platform::init();
+    }
+
+    void testCasePartialStarting(Catch::TestCaseInfo const &info, uint64_t part_number) override
+    {
+        g_filename_builder.current_test_case_name = info.name;
+        g_filename_builder.current_part_number = part_number;
+        g_filename_builder.server_count = 0;
+    }
+};
+
+CATCH_REGISTER_LISTENER(PlatformListener)
+
+/** Append the logs from the in stream to the out stream
+ */
+bool append_logs(std::istream &in, std::ostream &out)
+{
+    for(std::string line; std::getline(in, line);)
+    {
+        out << "\t" << line << "\n";
+    }
+
+    return false;
+}
+
+} // namespace
+  //
+
+int TestServer::s_next_port;
+std::unique_ptr<Logger> TestServer::s_logger;
+
+void TestServer::start(const std::string &instance_name,
+                       std::vector<const char *> extra_args,
+                       std::chrono::milliseconds timeout)
+{
+    using Kind = platform::StartServerResult::Kind;
+
+    m_redirect_file = g_filename_builder.build();
+
+    std::vector<const char *> args{
+        "TestServer",
+        instance_name.c_str(),
+        "-nodb",
+        "-ORBendPoint",
+        nullptr, // filled in later
+    };
+
+    for(auto arg : extra_args)
+    {
+        args.push_back(arg);
+    }
+
+    args.push_back(nullptr);
+
+    // This will point to the slot after "-ORBendPoint"
+    auto end_point_slot = std::find(args.begin(), args.end(), nullptr);
+
+    std::uniform_int_distribution dist{k_min_port, k_max_port};
+    for(int i = 0; i < k_num_port_tries; ++i)
+    {
+        if(i != 0)
+        {
+            std::stringstream ss;
+            ss << "Port " << m_port << " in use. Retrying...";
+            s_logger->log(ss.str());
+        }
+
+        m_port = dist(g_rng);
+        std::swap(m_port, s_next_port);
+
+        std::string end_point = [&]()
+        {
+            std::stringstream ss;
+            ss << "giop:tcp::" << m_port;
+            return ss.str();
+        }();
+        *end_point_slot = end_point.c_str();
+
+        auto start_result = platform::start_server(args, m_redirect_file, k_ready_string, timeout);
+
+        switch(start_result.kind)
+        {
+        case Kind::Started:
+        {
+            m_handle = start_result.handle;
+            return;
+        }
+        case Kind::Timeout:
+        {
+            std::stringstream ss;
+            ss << "Timeout waiting for TestServer to start. Server output:\n";
+            std::ifstream f{m_redirect_file};
+            append_logs(f, ss);
+
+            m_handle = start_result.handle;
+            stop(timeout);
+
+            throw std::runtime_error(ss.str());
+        }
+        case Kind::Exited:
+        {
+            std::stringstream ss;
+            ss << "TestServer exited with exit status " << start_result.exit_status << ". Server output:\n";
+            std::ifstream f{m_redirect_file};
+            bool port_in_use = false;
+            for(std::string line; std::getline(f, line);)
+            {
+                if(line.find(k_port_in_use_string) != std::string::npos)
+                {
+                    port_in_use = true;
+                    break;
+                }
+                ss << "\t" << line << "\n";
+            }
+
+            std::remove(m_redirect_file.c_str());
+            if(!port_in_use)
+            {
+                throw std::runtime_error(ss.str());
+            }
+        }
+        }
+    }
+}
+
+TestServer::~TestServer()
+{
+    if(m_handle)
+    {
+        stop();
+    }
+}
+
+void TestServer::stop(std::chrono::milliseconds timeout)
+{
+    using Kind = platform::StopServerResult::Kind;
+    auto stop_result = platform::stop_server(m_handle, timeout);
+
+    switch(stop_result.kind)
+    {
+    case Kind::Timeout:
+    {
+        std::stringstream ss;
+        ss << "Timeout waiting for TestServer to exit. Server output:";
+        std::ifstream f{m_redirect_file};
+        append_logs(f, ss);
+
+        s_logger->log(ss.str());
+        break;
+    }
+    case Kind::ExitedEarly:
+        [[fallthrough]];
+    case Kind::Exited:
+    {
+        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        {
+            std::stringstream ss;
+            ss << "TestServer exited with exit status " << stop_result.exit_status
+               << " during the test. Server output:";
+            std::ifstream f{m_redirect_file};
+            append_logs(f, ss);
+
+            s_logger->log(ss.str());
+        }
+        break;
+    }
+    }
+
+    std::remove(m_redirect_file.c_str());
+
+    m_handle = nullptr;
+    m_port = -1;
+    m_redirect_file = "";
+}
+
+} // namespace TangoTest

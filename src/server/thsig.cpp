@@ -179,7 +179,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         if(auto_signal(signo))
         {
             Tango::Util *tg = Tango::Util::instance();
-            if(tg != nullptr)
+            if(tg != nullptr && !tg->is_svr_shutting_down())
             {
                 try
                 {
