@@ -1341,7 +1341,7 @@ void RootAttRegistry::auto_unsub()
                         break;
 
                     case ALARM_EVENT:
-                        delta_t = now - att.get_alarm5_event_sub();
+                        delta_t = now - att.get_alarm6_event_sub();
                         break;
 
                     case PERIODIC_EVENT:

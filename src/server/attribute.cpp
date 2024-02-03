@@ -689,7 +689,7 @@ void Attribute::init_event_prop(std::vector<AttrProperty> &prop_list, const std:
     event_change4_subscription = 0;
     event_change5_subscription = 0;
 
-    event_alarm5_subscription = 0;
+    event_alarm6_subscription = 0;
 
     event_archive3_subscription = 0;
     event_archive4_subscription = 0;
@@ -4540,10 +4540,10 @@ void Attribute::fire_alarm_event(DevFailed *except)
     Tango::AttributeValue_5 *send_attr_5 = nullptr;
     try
     {
-        time_t alarm5_subscription, now{::time(nullptr)};
+        time_t alarm6_subscription, now{::time(nullptr)};
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            alarm5_subscription = now - event_alarm5_subscription;
+            alarm6_subscription = now - event_alarm6_subscription;
         }
 
         // Get the event supplier
@@ -4572,11 +4572,11 @@ void Attribute::fire_alarm_event(DevFailed *except)
         {
             switch(*ite)
             {
-            // No subscriptions for client versions earlier than 5.
-            case 5:
-                if(alarm5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                // No subscriptions for client versions earlier than 6.
+            case 6:
+                if(alarm6_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
-                    remove_client_lib(5, std::string(EventName[ALARM_EVENT]));
+                    remove_client_lib(6, std::string(EventName[ALARM_EVENT]));
                 }
                 break;
             default:
@@ -6539,10 +6539,10 @@ bool Attribute::change_event_subscribed()
  **/
 bool Attribute::alarm_event_subscribed()
 {
-    if(event_alarm5_subscription != 0)
+    if(event_alarm6_subscription != 0)
     {
         const auto now{::time(nullptr)};
-        if((now - event_alarm5_subscription) <= EVENT_RESUBSCRIBE_PERIOD)
+        if((now - event_alarm6_subscription) <= EVENT_RESUBSCRIBE_PERIOD)
         {
             return true;
         }

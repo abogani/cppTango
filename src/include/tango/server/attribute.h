@@ -1594,9 +1594,9 @@ class Attribute
 
     void set_alarm_event_sub(int);
 
-    time_t get_alarm5_event_sub()
+    time_t get_alarm6_event_sub()
     {
-        return event_alarm5_subscription;
+        return event_alarm6_subscription;
     }
 
     void set_periodic_event_sub(int);
@@ -1988,7 +1988,7 @@ class Attribute
     time_t event_change3_subscription; // Last time() a subscription was made
     time_t event_change4_subscription;
     time_t event_change5_subscription;
-    time_t event_alarm5_subscription;    // Last time an alarm subscription was made.
+    time_t event_alarm6_subscription;    // Last time an alarm subscription was made.
     time_t event_quality_subscription;   // Last time() a subscription was made
     time_t event_periodic3_subscription; // Last time() a subscription was made
     time_t event_periodic4_subscription;
@@ -2228,13 +2228,13 @@ inline void Attribute::set_alarm_event_sub(int cl_lib)
 {
     switch(cl_lib)
     {
-    case 5:
-        event_alarm5_subscription = ::time(nullptr);
+    case 6:
+        event_alarm6_subscription = ::time(nullptr);
         break;
 
     default:
         TANGO_THROW_EXCEPTION(API_ClientTooOld,
-                              "Alarm events are only supported from client library version 5 onwards.");
+                              "Alarm events are only supported from client library version 6 onwards.");
         break;
     }
 }

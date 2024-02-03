@@ -140,7 +140,7 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     time_t now, change3_subscription, periodic3_subscription, archive3_subscription;
     time_t change4_subscription, periodic4_subscription, archive4_subscription;
     time_t change5_subscription, periodic5_subscription, archive5_subscription;
-    time_t alarm5_subscription;
+    time_t alarm6_subscription;
     SendEventType ret;
     TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_events(): called for attribute " << attr_name << std::endl;
 
@@ -162,12 +162,14 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
         change5_subscription = now - attr.event_change5_subscription;
         periodic5_subscription = now - attr.event_periodic5_subscription;
         archive5_subscription = now - attr.event_archive5_subscription;
-        alarm5_subscription = now - attr.event_alarm5_subscription;
+
+        alarm6_subscription = now - attr.event_alarm6_subscription;
     }
 
-    TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_events(): last subscription for change5 " << change5_subscription
-                    << " periodic5 " << periodic5_subscription << " archive5 " << archive5_subscription << "alarm5 "
-                    << alarm5_subscription << std::endl;
+    TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_events(): last "
+                       "subscription for change5 "
+                    << change5_subscription << " periodic5 " << periodic5_subscription << " archive5 "
+                    << archive5_subscription << " alarm6 " << alarm6_subscription << std::endl;
 
     //
     // For change event
@@ -231,11 +233,11 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     {
         switch(*ite)
         {
-        // Alarm events are only supported for client version 5 onwards.
-        case 5:
-            if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+        // Alarm events are only supported for client version 6 onwards.
+        case 6:
+            if(alarm6_subscription >= EVENT_RESUBSCRIBE_PERIOD)
             {
-                attr.remove_client_lib(5, std::string(EventName[ALARM_EVENT]));
+                attr.remove_client_lib(6, std::string(EventName[ALARM_EVENT]));
             }
             break;
 
@@ -658,6 +660,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
 
             switch(*ite)
             {
+            case 6:
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
