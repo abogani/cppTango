@@ -37,6 +37,8 @@
 #include <tango/server/fwdattrdesc.h>
 #include <tango/server/encoded_attribute.h>
 #include <tango/server/tango_clock.h>
+#include <tango/client/apiexcept.h>
+#include <tango/server/exception_reason_consts.h>
 
 #include <functional>
 #include <iterator>
@@ -792,6 +794,22 @@ class Attribute
     }
 
     /**
+     * Fire an alarm event for the attribute value. The event is pushed to ZMQ.
+     *
+     * The attribute data must be set with one of the Attribute::set_value or
+     * Attribute::setvalue_date_quality methods before firing the event.
+     * ATTENTION: The couple set_value() and fire_alarm_event() needs to be
+     * protected against concurrent accesses to the same attribute. Such an access
+     * might happen during a synchronous read or by a reading from the polling
+     * thread.
+     * Inside all methods reading or writing commands and attributes this protection is automatically done by the Tango
+     * serialisation monitor.
+     *
+     * @param except A pointer to a DevFailed exception to be thrown as alarm event.
+     */
+    void fire_alarm_event(DevFailed *except = nullptr);
+
+    /**
      * Fire an archive event for the attribute value. The event is pushed to the notification
      * daemon.
      * The attribute data must be set with one of the Attribute::set_value or
@@ -1545,6 +1563,7 @@ class Attribute
     }
 
     bool change_event_subscribed();
+    bool alarm_event_subscribed();
     bool periodic_event_subscribed();
     bool archive_event_subscribed();
     bool quality_event_subscribed();
@@ -1571,6 +1590,13 @@ class Attribute
     time_t get_change5_event_sub()
     {
         return event_change5_subscription;
+    }
+
+    void set_alarm_event_sub(int);
+
+    time_t get_alarm5_event_sub()
+    {
+        return event_alarm5_subscription;
     }
 
     void set_periodic_event_sub(int);
@@ -1951,6 +1977,7 @@ class Attribute
     long periodic_counter{0};         // Number of periodic events sent so far
     long archive_periodic_counter{0}; // Number of periodic events sent so far
     LastAttrValue prev_change_event;  // Last change attribute
+    LastAttrValue prev_alarm_event;   // Last alarm event attribute
     LastAttrValue prev_quality_event; // Last quality attribute
     LastAttrValue prev_archive_event; // Last archive attribute
 
@@ -1961,6 +1988,7 @@ class Attribute
     time_t event_change3_subscription; // Last time() a subscription was made
     time_t event_change4_subscription;
     time_t event_change5_subscription;
+    time_t event_alarm5_subscription;    // Last time an alarm subscription was made.
     time_t event_quality_subscription;   // Last time() a subscription was made
     time_t event_periodic3_subscription; // Last time() a subscription was made
     time_t event_periodic4_subscription;
@@ -2192,6 +2220,21 @@ inline void Attribute::set_change_event_sub(int cl_lib)
 
     default:
         event_change3_subscription = Tango::get_current_system_datetime();
+        break;
+    }
+}
+
+inline void Attribute::set_alarm_event_sub(int cl_lib)
+{
+    switch(cl_lib)
+    {
+    case 5:
+        event_alarm5_subscription = ::time(nullptr);
+        break;
+
+    default:
+        TANGO_THROW_EXCEPTION(API_ClientTooOld,
+                              "Alarm events are only supported from client library version 5 onwards.");
         break;
     }
 }

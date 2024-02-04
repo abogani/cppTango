@@ -33,6 +33,8 @@
 
 #include <tango/tango.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/client/apiexcept.h>
+#include <tango/server/exception_reason_consts.h>
 
 #ifdef _TG_WINDOWS_
   #include <float.h>
@@ -138,6 +140,7 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
     time_t now, change3_subscription, periodic3_subscription, archive3_subscription;
     time_t change4_subscription, periodic4_subscription, archive4_subscription;
     time_t change5_subscription, periodic5_subscription, archive5_subscription;
+    time_t alarm5_subscription;
     SendEventType ret;
     TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_events(): called for attribute " << attr_name << std::endl;
 
@@ -159,10 +162,12 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
         change5_subscription = now - attr.event_change5_subscription;
         periodic5_subscription = now - attr.event_periodic5_subscription;
         archive5_subscription = now - attr.event_archive5_subscription;
+        alarm5_subscription = now - attr.event_alarm5_subscription;
     }
 
     TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_events(): last subscription for change5 " << change5_subscription
-                    << " periodic5 " << periodic5_subscription << " archive5 " << archive5_subscription << std::endl;
+                    << " periodic5 " << periodic5_subscription << " archive5 " << archive5_subscription << "alarm5 "
+                    << alarm5_subscription << std::endl;
 
     //
     // For change event
@@ -213,6 +218,35 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
         {
             ret.change = true;
         }
+    }
+
+    //
+    // For alarm events
+    //
+    ret.alarm = false;
+    client_libs.clear();
+    client_libs = attr.get_client_lib(Tango::ALARM_EVENT); // We want a copy
+
+    for(ite = client_libs.begin(); ite != client_libs.end(); ++ite)
+    {
+        switch(*ite)
+        {
+        // Alarm events are only supported for client version 5 onwards.
+        case 5:
+            if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+            {
+                attr.remove_client_lib(5, std::string(EventName[ALARM_EVENT]));
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    if(!client_libs.empty())
+    {
+        ret.alarm = detect_and_push_alarm_event(device_impl, attr_value, attr, attr_name, except);
     }
 
     //
@@ -528,6 +562,173 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
 
     TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_change_event(): leaving for attribute " << attr_name
                     << std::endl;
+    return ret;
+}
+
+/**
+ * @brief Method to detect if it is necessary to push an alarm event.
+ * @name EventSupplier::detect_and_push_alarm_event()
+ * @arg in:
+ *      - device_impl: The device
+ *      - attr_value: The attribute value
+ *      - attr: The attribute object
+ *      - attr_name: The attribute name
+ *      - except: The exception thrown during the last attribute reading. NULL
+ *                  if no exception.
+ *      - user_push : Flag set to true if it is a user push. Note that this
+ *                  flag is ignored because alarm events cannot be manually
+ *                  pushed by users.
+ **/
+bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
+                                                struct SuppliedEventData &attr_value,
+                                                Attribute &attr,
+                                                std::string &attr_name,
+                                                DevFailed *except,
+                                                TANGO_UNUSED(bool user_push))
+{
+    TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(): called for attribute " << attr_name << std::endl;
+
+    Tango::AttrQuality the_quality{};
+    if(attr_value.attr_val_5 != nullptr)
+    {
+        the_quality = attr_value.attr_val_5->quality;
+    }
+    else if(attr_value.attr_val_4 != nullptr)
+    {
+        the_quality = attr_value.attr_val_4->quality;
+    }
+    else if(attr_value.attr_val_3 != nullptr)
+    {
+        the_quality = attr_value.attr_val_3->quality;
+    }
+    else
+    {
+        the_quality = attr_value.attr_val->quality;
+    }
+
+    // get the mutex to synchronize the sending of events
+    omni_mutex_lock l(event_mutex);
+
+    // if no attribute of this name is registered for an alarm event,
+    // then store the current value to start with.
+    bool is_alarm{false}, is_change{false}, force_change{false};
+    std::string event;
+    double delta_change_rel{}, delta_change_abs{};
+    if(attr.prev_alarm_event.inited == false)
+    {
+        attr.prev_alarm_event.store(
+            attr_value.attr_val_5, attr_value.attr_val_4, attr_value.attr_val_3, attr_value.attr_val, except);
+        is_alarm = true;
+    }
+    else
+    {
+        // Determine delta_change in percent compared with previous event sent
+        is_change = detect_change(
+            attr, attr_value, false, delta_change_rel, delta_change_abs, except, force_change, device_impl);
+        TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(...): rel_change = " << delta_change_rel
+                        << ", abs_change = " << delta_change_abs << ", is_change = " << is_change << std::endl;
+    }
+
+    // Check whether the data quality has changed. Fire event on a quality
+    // change if the quality was previously ALARM and is now not ALARM or the
+    // quality was not ALARM but is now ALARM.
+    if((!except) && (attr.prev_alarm_event.quality != the_quality) &&
+       ((attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM)))
+    {
+        is_alarm = true;
+    }
+
+    bool ret{false};
+    if(is_alarm)
+    {
+        attr.prev_alarm_event.store(
+            attr_value.attr_val_5, attr_value.attr_val_4, attr_value.attr_val_3, attr_value.attr_val, except);
+
+        // Prepare to push the event
+        std::vector<int> &client_libs{attr.get_client_lib(ALARM_EVENT)};
+        std::string ev_name{EventName[ALARM_EVENT]};
+        bool inc_ctr{true};
+        for(std::vector<int>::iterator ite{client_libs.begin()}; ite != client_libs.end(); ++ite)
+        {
+            bool need_free{false}, name_changed{false};
+
+            struct SuppliedEventData sent_value
+            {
+            };
+
+            switch(*ite)
+            {
+            case 5:
+            {
+                convert_att_event_to_5(attr_value, sent_value, need_free, attr);
+                ev_name = EVENT_COMPAT_IDL5 + ev_name;
+                name_changed = true;
+            }
+            break;
+
+            case 4:
+            {
+                convert_att_event_to_4(attr_value, sent_value, need_free, attr);
+            }
+            break;
+
+            default:
+            {
+                convert_att_event_to_3(attr_value, sent_value, need_free, attr);
+            }
+            }
+
+            // The parameters filterable_names, filterable_names_lg,
+            // filterable_data and filterable_data_lg are unused. Therefore
+            // create dummies and pass those.
+            const std::vector<std::string> filterable_names_dummy;
+            const std::vector<double> filterable_data_dummy;
+            const std::vector<long> filterable_data_lg_dummy;
+            push_event(device_impl,
+                       ev_name,
+                       filterable_names_dummy,
+                       filterable_data_dummy,
+                       filterable_names_dummy,
+                       filterable_data_lg_dummy,
+                       sent_value,
+                       attr_name,
+                       except,
+                       inc_ctr);
+
+            inc_ctr = false;
+            if(need_free == true)
+            {
+                if(sent_value.attr_val_5 != nullptr)
+                {
+                    delete sent_value.attr_val_5;
+                    sent_value.attr_val_5 = nullptr;
+                }
+                else if(sent_value.attr_val_4 != nullptr)
+                {
+                    delete sent_value.attr_val_4;
+                    sent_value.attr_val_4 = nullptr;
+                }
+                else if(sent_value.attr_val_3 != nullptr)
+                {
+                    delete sent_value.attr_val_3;
+                    sent_value.attr_val_3 = nullptr;
+                }
+                else if(sent_value.attr_val != nullptr)
+                {
+                    delete sent_value.attr_val;
+                    sent_value.attr_val = nullptr;
+                }
+            }
+            if(name_changed == true)
+            {
+                ev_name = EventName[ALARM_EVENT];
+            }
+        }
+
+        ret = true;
+    }
+
+    TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(): leaving for attribute " << attr_name << std::endl;
     return ret;
 }
 

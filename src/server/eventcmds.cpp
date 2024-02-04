@@ -533,6 +533,12 @@ void DServer::store_subscribed_client_info(DeviceImpl &device,
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             attribute.set_change_event_sub(client_lib_version);
         }
+        else if(event_name == "alarm")
+        {
+            TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update alarm subscription\n";
+            omni_mutex_lock oml(EventSupplier::get_event_mutex());
+            attribute.set_alarm_event_sub(client_lib_version);
+        }
         else if(event_name == "quality")
         {
             TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update quality_change subscription\n";

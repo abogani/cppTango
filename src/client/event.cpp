@@ -1544,8 +1544,8 @@ int EventConsumer::connect_event(DeviceProxy *device,
     //
 
     bool add_compat_info = false;
-    if(event == ATTR_CONF_EVENT || event == CHANGE_EVENT || event == PERIODIC_EVENT || event == ARCHIVE_EVENT ||
-       event == USER_EVENT)
+    if(event == ATTR_CONF_EVENT || event == CHANGE_EVENT || event == ALARM_EVENT || event == PERIODIC_EVENT ||
+       event == ARCHIVE_EVENT || event == USER_EVENT)
     {
         add_compat_info = true;
     }
@@ -3247,8 +3247,8 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
     std::this_thread::sleep_for(std::chrono::milliseconds(25));
 #endif
 
-    if((event == CHANGE_EVENT) || (event == QUALITY_EVENT) || (event == ARCHIVE_EVENT) || (event == USER_EVENT) ||
-       (event == PERIODIC_EVENT))
+    if((event == CHANGE_EVENT) || (event == ALARM_EVENT) || (event == QUALITY_EVENT) || (event == ARCHIVE_EVENT) ||
+       (event == USER_EVENT) || (event == PERIODIC_EVENT))
     {
         DevErrorList err;
         err.length(0);

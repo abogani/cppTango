@@ -1481,6 +1481,12 @@ AttributeEventSubscriptionStates MultiAttribute::get_event_subscription_states()
             filled = true;
         }
 
+        if(att.alarm_event_subscribed())
+        {
+            events.alarm_event_clients = att.get_client_lib(ALARM_EVENT);
+            filled = true;
+        }
+
         if(att.quality_event_subscribed())
         {
             events.has_quality_event_clients = true;
@@ -1555,6 +1561,12 @@ void MultiAttribute::set_event_subscription_states(const AttributeEventSubscript
         {
             att.set_change_event_sub(client_version);
             att.set_client_lib(client_version, CHANGE_EVENT);
+        }
+
+        for(const auto &client_version : events.alarm_event_clients)
+        {
+            att.set_alarm_event_sub(client_version);
+            att.set_client_lib(client_version, ALARM_EVENT);
         }
 
         for(const auto &client_version : events.periodic_event_clients)
