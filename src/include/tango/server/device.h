@@ -2108,16 +2108,16 @@ class DeviceImpl : public virtual POA_Tango::Device
     // Ported from the extension class
     //
 
-    log4tango::Logger *logger;
-    log4tango::Level::Value saved_log_level;
+    log4tango::Logger *logger{nullptr};
+    log4tango::Level::Value saved_log_level{log4tango::Level::WARN};
     size_t rft;
 
-    long poll_old_factor;
-    long idl_version;
+    long poll_old_factor{0};
+    long idl_version{1};
 
-    bool exported;
-    bool polled;
-    long poll_ring_depth;
+    bool exported{false};
+    bool polled{false};
+    long poll_ring_depth{0};
     std::vector<std::string> polled_cmd;
     std::vector<std::string> polled_attr;
     std::vector<std::string> non_auto_polled_cmd;
@@ -2131,43 +2131,43 @@ class DeviceImpl : public virtual POA_Tango::Device
     std::vector<std::string> cmd_poll_ring_depth;
     std::vector<std::string> attr_poll_ring_depth;
 
-    bool store_in_bb;
+    bool store_in_bb{true};
     TangoMonitor poll_mon;      // Polling list monitor
     TangoMonitor att_conf_mon;  // Attribute config monitor
     TangoMonitor pipe_conf_mon; // Pipe config monitor
-    bool state_from_read;
+    bool state_from_read{false};
     std::vector<long> alrmd_not_read;
 
     bool py_device;
     std::string alias_name_lower; // Alias name (if any)
 
-    bool device_locked;
-    client_addr *locker_client;
-    client_addr *old_locker_client;
+    bool device_locked{false};
+    client_addr *locker_client{nullptr};
+    client_addr *old_locker_client{nullptr};
     DevLong lock_validity;
     time_t locking_date;
     std::string lock_stat;
-    DevLong lock_ctr;
+    DevLong lock_ctr{0};
 
-    long min_poll_period;
+    long min_poll_period{0};
     std::vector<std::string> cmd_min_poll_period;
     std::vector<std::string> attr_min_poll_period;
 
-    bool run_att_conf_loop;
-    bool force_alarm_state;
+    bool run_att_conf_loop{true};
+    bool force_alarm_state{false};
     std::vector<std::string> att_wrong_db_conf;
     std::vector<std::string> att_mem_failed;
     std::vector<FwdWrongConf> fwd_att_wrong_conf;
-    bool with_fwd_att;
+    bool with_fwd_att{false};
     DevSource call_source;
 
     std::vector<Command *> command_list;
-    time_t event_intr_change_subscription;
-    bool intr_change_ev;
+    time_t event_intr_change_subscription{0};
+    bool intr_change_ev{false};
 
     TangoMonitor devintr_mon;
     ShDevIntrTh devintr_shared;
-    DevIntrThread *devintr_thread;
+    DevIntrThread *devintr_thread{nullptr};
 
     std::vector<int> client_lib; // Dev Intr change event client(s) IDL
 

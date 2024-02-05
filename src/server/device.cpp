@@ -406,30 +406,10 @@ DeviceImpl::DeviceImpl(
     device_state(st),
     device_class(cl_ptr),
     ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
     rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
     only_one(d_name),
-    store_in_bb(true),
     poll_mon(std::string{d_name} + " cache"),
-    att_conf_mon(std::string{d_name} + " att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
+    att_conf_mon(std::string{d_name} + " att_config")
 {
     real_ctor();
 }
