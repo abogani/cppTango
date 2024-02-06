@@ -7,6 +7,7 @@
 
 #include "utils/auto_device_class.h"
 #include "utils/test_server.h"
+#include "utils/callback_mock.h"
 
 #include <tango/tango.h>
 
