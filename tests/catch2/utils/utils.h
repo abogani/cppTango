@@ -27,7 +27,7 @@ class Context
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
 
-    ~Context();
+    ~Context() = default;
 
     std::string info();
 
