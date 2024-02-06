@@ -892,92 +892,78 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
     th_info->nb_polled_objects++;
 
     //
-    // Update polling parameters in database (if wanted and possible). If the property is already there
+    // Update the polling parameters for the device. If the property is already there
     // (it should not but...), only update its polling period
     //
 
-    if((with_db_upd) && (Tango::Util::instance()->use_db()))
     {
         TangoSys_MemStream s;
         std::string upd_str;
         s << upd;
         s >> upd_str;
-        bool found = false;
 
-        DbDatum db_info("polled_cmd");
-        if(type == Tango::POLL_CMD)
+        std::vector<std::string> &non_auto_list =
+            type == Tango::POLL_CMD ? dev->get_non_auto_polled_cmd() : dev->get_non_auto_polled_attr();
+
+        auto end = non_auto_list.end();
+        auto it = std::remove_if(non_auto_list.begin(),
+                                 end,
+                                 [&](const std::string &other)
+                                 { return TG_strcasecmp(other.c_str(), obj_name.c_str()) == 0; });
+        bool found_in_non_auto = it != end;
+
+        non_auto_list.erase(it, end);
+
+        std::vector<std::string> &obj_list = type == Tango::POLL_CMD ? dev->get_polled_cmd() : dev->get_polled_attr();
+
+        if(!found_in_non_auto)
         {
-            std::vector<std::string> &non_auto_list = dev->get_non_auto_polled_cmd();
-            std::vector<std::string>::iterator ite;
-            for(ite = non_auto_list.begin(); ite < non_auto_list.end(); ++ite)
+            for(i = 0; i < obj_list.size(); i = i + 2)
             {
-                if(TG_strcasecmp((*ite).c_str(), obj_name.c_str()) == 0)
+                if(TG_strcasecmp(obj_list[i].c_str(), obj_name.c_str()) == 0)
                 {
-                    non_auto_list.erase(ite);
-                    db_info.name = "non_auto_polled_cmd";
-                    db_info << non_auto_list;
-                    found = true;
+                    obj_list[i + 1] = upd_str;
                     break;
                 }
             }
-            if(!found)
+            if(i == obj_list.size())
             {
-                std::vector<std::string> &cmd_list = dev->get_polled_cmd();
-                for(i = 0; i < cmd_list.size(); i = i + 2)
-                {
-                    if(TG_strcasecmp(cmd_list[i].c_str(), obj_name.c_str()) == 0)
-                    {
-                        cmd_list[i + 1] = upd_str;
-                        break;
-                    }
-                }
-                if(i == cmd_list.size())
-                {
-                    cmd_list.push_back(obj_name);
-                    cmd_list.push_back(upd_str);
-                }
-                db_info << cmd_list;
+                obj_list.push_back(obj_name);
+                obj_list.push_back(upd_str);
             }
         }
-        else
+
+        //
+        // Update polling parameters in database (if wanted and possible).
+
+        if((with_db_upd) && (Tango::Util::instance()->use_db()))
         {
-            std::vector<std::string> &non_auto_list = dev->get_non_auto_polled_attr();
-            std::vector<std::string>::iterator ite;
-            for(ite = non_auto_list.begin(); ite < non_auto_list.end(); ++ite)
+            DbDatum db_info;
+            if(type == Tango::POLL_CMD && found_in_non_auto)
             {
-                if(TG_strcasecmp((*ite).c_str(), obj_name.c_str()) == 0)
-                {
-                    non_auto_list.erase(ite);
-                    db_info.name = "non_auto_polled_attr";
-                    db_info << non_auto_list;
-                    found = true;
-                    break;
-                }
+                db_info.name = "non_auto_polled_cmd";
+                db_info << non_auto_list;
             }
-            if(!found)
+            else if(type == Tango::POLL_CMD)
+            {
+                db_info.name = "polled_cmd";
+                db_info << obj_list;
+            }
+            else if(found_in_non_auto)
+            {
+                db_info.name = "non_auto_polled_cmd";
+                db_info << non_auto_list;
+            }
+            else
             {
                 db_info.name = "polled_attr";
-                std::vector<std::string> &attr_list = dev->get_polled_attr();
-                for(i = 0; i < attr_list.size(); i = i + 2)
-                {
-                    if(TG_strcasecmp(attr_list[i].c_str(), obj_name.c_str()) == 0)
-                    {
-                        attr_list[i + 1] = upd_str;
-                        break;
-                    }
-                }
-                if(i == attr_list.size())
-                {
-                    attr_list.push_back(obj_name);
-                    attr_list.push_back(upd_str);
-                }
-                db_info << attr_list;
+                db_info << obj_list;
             }
-        }
 
-        DbData send_data;
-        send_data.push_back(db_info);
-        dev->get_db_device()->put_property(send_data);
+            DbData send_data;
+            send_data.push_back(db_info);
+            dev->get_db_device()->put_property(send_data);
+        }
     }
 
     //
