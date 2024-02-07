@@ -7,6 +7,7 @@
 static constexpr double ATTR_INIT_VALUE = 0.0;
 static constexpr double ATTR_MIN_ALARM = -1.0;
 static constexpr double ATTR_MAX_ALARM = 1.0;
+static constexpr double ATTR_PUSH_VALUE = 10.0;
 
 // Test device class
 template <class Base>
@@ -33,6 +34,12 @@ class AlarmEventDev : public Base
         attr_quality = Tango::ATTR_VALID;
     }
 
+    void push_alarm()
+    {
+        Tango::DevDouble v{ATTR_PUSH_VALUE};
+        this->push_alarm_event("attr_push", &v);
+    }
+
     void read_attribute(Tango::Attribute &att)
     {
         att.set_value_date_quality(&attr_value, std::chrono::system_clock::now(), attr_quality);
@@ -49,14 +56,20 @@ class AlarmEventDev : public Base
             "attr_test", Tango::DEV_DOUBLE);
         // TODO: for now polling has to be enabled by server
         attr_test->set_polling_period(100);
-
         attrs.push_back(attr_test);
+
+        // attribute which pushes alarm events from code
+        auto attr_push = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
+            "attr_push", Tango::DEV_DOUBLE);
+        attr_push->set_alarm_event(true, false);
+        attrs.push_back(attr_push);
     }
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
     {
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_alarm>("set_alarm"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_valid>("set_valid"));
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_alarm>("push_alarm"));
     }
 
   private:
@@ -237,6 +250,40 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                     THEN("an alarm event is generated")
                     {
                         REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_VALID));
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Alarm events can be pushed from code manually")
+{
+    int idlver = GENERATE(range(6, 7));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("an attribute which pushes events from code")
+        {
+            std::string att{"attr_push"};
+
+            AND_GIVEN("an alarm event subscription")
+            {
+                EvCb callback;
+                int evid;
+                REQUIRE_NOTHROW(evid = device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                WHEN("we push an alarm event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_PUSH_VALUE, Tango::ATTR_VALID));
                     }
                 }
             }

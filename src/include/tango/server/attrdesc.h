@@ -515,6 +515,43 @@ class Attr
     }
 
     /**
+     * Set a flag to indicate that the server fires alarm events manually without
+     * the polling to be started for the attribute.
+     * If the detect parameter is set to true, the criteria specified for the alarm
+     * event are verified and the event is only pushed if they are fulfilled.
+     * If detect is set to false the event is fired without checking!
+     *
+     * @param implemented True when the server fires alarm events manually.
+     * @param detect Triggers the verification of the alarm event properties when set to true.
+     */
+    void set_alarm_event(bool implemented, bool detect)
+    {
+        fire_alarm_event = implemented;
+        check_alarm_event = detect;
+    }
+
+    /**
+     * Check if the alarm event is fired manually for this attribute.
+     *
+     * @return A boolean set to true if a manual fire alarm event is implemented.
+     */
+    bool is_alarm_event()
+    {
+        return fire_alarm_event;
+    }
+
+    /**
+     * Check if the alarm event criteria should be checked when firing
+     * the event manually.
+     *
+     * @return A boolean set to true if a alarm event criteria will be checked.
+     */
+    bool is_check_alarm_criteria()
+    {
+        return check_alarm_event;
+    }
+
+    /**
      * Set a flag to indicate that the server fires archive events manually without
      * the polling to be started for the attribute
      * If the detect parameter is set to true, the criteria specified for the archive
@@ -700,8 +737,10 @@ class Attr
     long poll_period;            // Polling period
 
     bool fire_change_event;
+    bool fire_alarm_event;
     bool fire_archive_event;
     bool check_change_event;
+    bool check_alarm_event;
     bool check_archive_event;
     bool fire_dr_event;
 

@@ -810,6 +810,48 @@ class Attribute
     void fire_alarm_event(DevFailed *except = nullptr);
 
     /**
+     * Set a flag to indicate that the server fires alarm events manually, without
+     * the polling to be started for the attribute.
+     * If the detect parameter is set to true, the criteria specified for the alarm
+     * event are verified and the event is only pushed if they are fulfilled.
+     * If detect is set to false the event is fired without any value checking!
+     *
+     * @param implemented True when the server fires alarm events manually.
+     * @param detect Triggers the verification of the alarm event properties when set to true.
+     */
+    void set_alarm_event(bool implemented, bool detect = true)
+    {
+        alarm_event_implmented = implemented;
+        check_alarm_event_criteria = detect;
+        if(!detect)
+        {
+            prev_alarm_event.err = false;
+            prev_alarm_event.quality = Tango::ATTR_VALID;
+        }
+    }
+
+    /**
+     * Check if the alarm event is fired manually (without polling) for this attribute.
+     *
+     * @return A boolean set to true if a manual fire alarm event is implemented.
+     */
+    bool is_alarm_event()
+    {
+        return alarm_event_implmented;
+    }
+
+    /**
+     * Check if the alarm event criteria should be checked when firing
+     * the event manually.
+     *
+     * @return A boolean set to true if an alarm event criteria will be checked.
+     */
+    bool is_check_alarm_criteria()
+    {
+        return check_alarm_event_criteria;
+    }
+
+    /**
      * Fire an archive event for the attribute value. The event is pushed to the notification
      * daemon.
      * The attribute data must be set with one of the Attribute::set_value or
@@ -2007,8 +2049,10 @@ class Attribute
     std::string d_name;                      // The device name
     DeviceImpl *dev{nullptr};                // The device object
     bool change_event_implmented{false};     // Flag true if a manual fire change event is implemented.
+    bool alarm_event_implmented{false};      // Flag true if a manual fire alarm event is implemented.
     bool archive_event_implmented{false};    // Flag true if a manual fire archive event is implemented.
     bool check_change_event_criteria{true};  // True if change event criteria should be checked when sending the event
+    bool check_alarm_event_criteria{true};   // True if alarm event criteria should be checked when sending the event
     bool check_archive_event_criteria{true}; // True if change event criteria should be checked when sending the event
     Tango::DevLong64 tmp_lo64[2];
     Tango::DevULong tmp_ulo[2];

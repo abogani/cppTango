@@ -55,8 +55,10 @@ Attr::Attr(const char *att_name, long att_type, AttrWriteType att_writable, cons
     mem_init(true),
     poll_period(0),
     fire_change_event(false),
+    fire_alarm_event(false),
     fire_archive_event(false),
     check_change_event(false),
+    check_alarm_event(false),
     check_archive_event(false),
     fire_dr_event(false),
     ext(new AttrExt),
@@ -68,6 +70,8 @@ Attr::Attr(const char *att_name, long att_type, AttrWriteType att_writable, cons
 
     fire_change_event = false;
     check_change_event = true;
+    fire_alarm_event = false;
+    check_alarm_event = true;
     fire_archive_event = false;
     check_archive_event = true;
     fire_dr_event = false;
@@ -118,6 +122,8 @@ Attr::Attr(const char *att_name, long att_type, DispLevel level, AttrWriteType a
 
     fire_change_event = false;
     check_change_event = true;
+    fire_alarm_event = false;
+    check_alarm_event = true;
     fire_archive_event = false;
     check_archive_event = true;
     fire_dr_event = false;
@@ -162,6 +168,8 @@ Attr::Attr(const char *att_name, Tango::DispLevel disp) :
 {
     fire_change_event = false;
     check_change_event = true;
+    fire_alarm_event = false;
+    check_alarm_event = true;
     fire_archive_event = false;
     check_archive_event = true;
     fire_dr_event = false;
@@ -179,8 +187,10 @@ Attr::Attr(const Attr &sou)
     disp_level = sou.disp_level;
     poll_period = sou.poll_period;
     fire_change_event = sou.fire_change_event;
+    fire_alarm_event = sou.fire_alarm_event;
     fire_archive_event = sou.fire_archive_event;
     check_change_event = sou.check_change_event;
+    check_alarm_event = sou.check_alarm_event;
     check_archive_event = sou.check_archive_event;
     fire_dr_event = sou.fire_dr_event;
     class_properties = sou.class_properties;

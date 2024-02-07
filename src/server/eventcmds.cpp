@@ -272,6 +272,13 @@ void DServer::event_subscription(DeviceImpl &device,
                     TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
                 }
             }
+            else if(event == "alarm")
+            {
+                if(!attribute.is_fwd_att() && !attribute.is_alarm_event())
+                {
+                    TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
+                }
+            }
             else if(event == "archive")
             {
                 if(!attribute.is_fwd_att() && !attribute.is_archive_event())

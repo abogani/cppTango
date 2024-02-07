@@ -173,6 +173,8 @@ Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const
 
     change_event_implmented = tmp_attr.is_change_event();
     check_change_event_criteria = tmp_attr.is_check_change_criteria();
+    alarm_event_implmented = tmp_attr.is_alarm_event();
+    check_alarm_event_criteria = tmp_attr.is_check_alarm_criteria();
     archive_event_implmented = tmp_attr.is_archive_event();
     check_archive_event_criteria = tmp_attr.is_check_archive_criteria();
     dr_event_implmented = tmp_attr.is_data_ready_event();
@@ -4702,7 +4704,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
         EventSupplier::SuppliedEventData ad{};
 
         // Fire event
-        if(is_check_change_criteria() == true)
+        if(is_check_alarm_criteria() == true)
         {
             if(send_attr_5 != nullptr)
             {
@@ -4722,7 +4724,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
             // is detected.
             if((event_supplier_zmq != nullptr) && (pub_socket_created == true))
             {
-                event_supplier_zmq->detect_and_push_change_event(dev, ad, *this, name, except, true);
+                event_supplier_zmq->detect_and_push_alarm_event(dev, ad, *this, name, except, true);
             }
         }
         else

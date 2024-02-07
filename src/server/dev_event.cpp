@@ -232,6 +232,101 @@ void DeviceImpl::push_change_event(const std::string &attr_name,
     attr.fire_change_event();
 }
 
+//////////////////// Push alarm event methods!!! //////////////////////////////////////
+
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        DeviceImpl::set_alarm_event
+//
+// description :
+//        Set a flag to indicate that the server pushes alrm events manually, without the polling to be started for
+//        the attribute. If the detect parameter is set to true, the criteria specified for the alarm event are
+//        verified and the event is only pushed if they are fulfilled. If detect is set to false the event is fired
+//        without any value checking!
+//
+//    args :
+//        in :
+//          - implemented  : True when the server fires alarm events manually.
+//          - detect : Triggers the verification of the alarm event properties when set to true.
+//
+//-----------------------------------------------------------------------------------------------------------------
+
+void DeviceImpl::set_alarm_event(const std::string &attr_name, bool implemented, bool detect)
+{
+    // search the attribute from the attribute list
+    Tango::MultiAttribute *attr_list = get_device_attr();
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
+
+    attr.set_alarm_event(implemented, detect);
+}
+
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        DeviceImpl::push_alarm_event
+//
+// description :
+//        Push an attribute alarm event to the Notification service. Should be used to push alarm events for the
+//        state and status attributes as well as pushing an exception as alarm event.
+//
+// args :
+//        in :
+//             - attr_name : name of the attribute
+//            - except   : Tango exception to be pushed as an alarm event for the attribute.
+//
+//------------------------------------------------------------------------------------------------------------------
+
+void DeviceImpl::push_alarm_event(const std::string &attr_name, DevFailed *except)
+{
+    // get the tango synchroisation monitor
+    Tango::AutoTangoMonitor synch(this);
+
+    // search the attribute from the attribute list
+    Tango::MultiAttribute *attr_list = get_device_attr();
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
+
+    // push the event
+    attr.fire_alarm_event(except);
+}
+
+void DeviceImpl::push_alarm_event(
+    const std::string &attr_name, Tango::DevString *p_str_data, Tango::DevUChar *p_data, long size, bool release)
+{
+    // get the tango synchroisation monitor
+    Tango::AutoTangoMonitor synch(this);
+
+    // search the attribute from the attribute list
+    Tango::MultiAttribute *attr_list = get_device_attr();
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
+
+    // set the attribute value
+    attr.set_value(p_str_data, p_data, size, release);
+    // push the event
+    attr.fire_alarm_event();
+}
+
+void DeviceImpl::push_alarm_event(const std::string &attr_name,
+                                  Tango::DevString *p_str_data,
+                                  Tango::DevUChar *p_data,
+                                  long size,
+                                  const TangoTimestamp &t,
+                                  Tango::AttrQuality qual,
+                                  bool release)
+{
+    // get the tango synchroisation monitor
+    Tango::AutoTangoMonitor synch(this);
+
+    // search the attribute from the attribute list
+    Tango::MultiAttribute *attr_list = get_device_attr();
+    Tango::Attribute &attr = attr_list->get_attr_by_name(attr_name.c_str());
+
+    // set the attribute value
+    attr.set_value_date_quality(p_str_data, p_data, size, t, qual, release);
+    // push the event
+    attr.fire_alarm_event();
+}
+
 //////////////////// Push change archive methods!!! //////////////////////////////////////
 
 //+---------------------------------------------------------------------------------------------------------------
