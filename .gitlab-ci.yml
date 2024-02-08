@@ -533,3 +533,13 @@ cmake-superproject:
     - cd tests/superproject
     - ../../ci/config.sh
     - ../../ci/build.sh
+
+cmake-config:
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
+  script: # override
+    - ci/config.sh
+    - ci/build.sh
+    - cmake --find-package -DCMAKE_MODULE_PATH=TangoCMakeModules -DCMAKE_PREFIX_PATH=build/tango -DNAME=tango -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST
