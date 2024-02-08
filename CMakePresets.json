@@ -1,0 +1,118 @@
+{
+  "$schema" : "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+  "version": 8,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+   {
+    "name": "default",
+    "hidden": true,
+    "description": "Default build using Ninja generator",
+    "generator": "Ninja",
+    "binaryDir": "${sourceDir}/build/default",
+    "cacheVariables": {
+      "BUILD_TESTING": "ON"
+    },
+    "errors" :
+    {
+      "dev": true,
+      "deprecated": true
+    }
+   },
+   {
+    "name": "ci-rel-linux",
+    "inherits": ["default"],
+    "binaryDir": "${sourceDir}/build/relwithdebinfo",
+    "cacheVariables": {
+      "CMAKE_BUILD_TYPE": {
+        "type": "STRING",
+        "value": "RelWithDebInfo"
+     }
+    }
+   },
+   {
+    "name": "ci-debug-linux",
+    "inherits": ["default"],
+    "binaryDir": "${sourceDir}/build/debug",
+    "cacheVariables": {
+      "CMAKE_BUILD_TYPE": {
+        "type": "STRING",
+        "value": "Debug"
+     }
+    }
+   }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "hidden": true
+    },
+    {
+      "name": "ci-debug-linux",
+      "inherits" : ["default"],
+      "configurePreset": "ci-debug-linux"
+    },
+    {
+      "name": "ci-rel-linux",
+      "inherits" : ["default"],
+      "configurePreset": "ci-rel-linux"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "hidden": true,
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+    },
+    {
+      "name" : "ci-debug-linux",
+      "inherits" : ["default"],
+      "configurePreset": "ci-debug-linux"
+    },
+    {
+      "name" : "ci-rel-linux",
+      "inherits" : ["default"],
+      "configurePreset": "ci-rel-linux"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "ci-debug-linux",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug-linux"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug-linux"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-linux"
+        }
+      ]
+    },
+    {
+      "name": "ci-rel-linux",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-rel-linux"
+        },
+        {
+          "type": "build",
+          "name": "ci-rel-linux"
+        },
+        {
+          "type": "test",
+          "name": "ci-rel-linux"
+        }
+      ]
+    }
+  ]
+}

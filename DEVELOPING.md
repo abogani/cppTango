@@ -89,3 +89,84 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
 For special cases code formatting can be turned off inline, see
 [here](https://clang.llvm.org/docs/ClangFormatStyleOptions.html#disabling-formatting-on-a-piece-of-code)
 for details.
+
+## CMake Presets
+
+We have a CMakePresets.json file with configure, build, test, workflow
+configurations, see [here](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) for the
+relevant cmake documentation.
+
+The presets file requires at least cmake 3.28.0 and ninja. The ninja generator
+uses all CPU cores by default.
+
+### Examples
+
+Configuring, building and executing the tests in debug mode:
+
+```sh
+cmake --workflow --preset=ci-debug-linux
+```
+
+Or in single steps:
+
+```sh
+cmake --preset=ci-debug-linux
+cmake --build --preset=ci-debug-linux
+ctest --preset=ci-debug-linux
+```
+
+### CMakeUserPresets.json
+
+Every developer can add her own presets in the file `CMakeUserPresets.json`.
+The following is an example which adds the preset `abcd`:
+
+```json
+{
+  "version": 8,
+  "configurePresets": [
+   {
+     "name": "abcd",
+     "inherits": ["default"],
+     "cacheVariables": {
+       "CMAKE_BUILD_TYPE": {
+         "type": "STRING",
+         "value": "Release"
+       }
+     }
+   }
+  ],
+  "buildPresets": [
+    {
+      "name": "abcd",
+      "inherits" : ["default"],
+      "configurePreset": "abcd"
+    }
+  ],
+  "testPresets": [
+    {
+      "name" : "abcd",
+      "inherits" : ["default"],
+      "configurePreset": "abcd"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "abcd",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "abcd"
+        },
+        {
+          "type": "build",
+          "name": "abcd"
+        },
+        {
+          "type": "test",
+          "name": "abcd"
+        }
+      ]
+    }
+  ]
+}
+```
