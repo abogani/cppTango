@@ -487,6 +487,7 @@ sanitizer:
       halt_on_error=1,\
       suppressions=$CI_PROJECT_DIR/tests/suppressions-ubsan.supp"
     SKIP_TESTS: "(event::per_event|old_tests::ring_depth)"
+    CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
   # Increase timeout, this is required by UBSAN job.
   timeout: 2h
   parallel:
