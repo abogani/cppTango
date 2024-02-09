@@ -103,8 +103,8 @@ struct FilenameBuilder
 constexpr int k_min_port = 10000;
 constexpr int k_max_port = 20000;
 
-static std::minstd_rand g_rng;
-static FilenameBuilder g_filename_builder;
+std::minstd_rand g_rng;
+FilenameBuilder g_filename_builder;
 
 class PlatformListener : public Catch::EventListenerBase
 {
@@ -181,7 +181,7 @@ void TestServer::start(const std::string &instance_name,
         nullptr, // filled in later
     };
 
-    for(auto arg : extra_args)
+    for(const auto *arg : extra_args)
     {
         args.push_back(arg);
     }
@@ -261,7 +261,7 @@ void TestServer::start(const std::string &instance_name,
 
 TestServer::~TestServer()
 {
-    if(m_handle)
+    if(m_handle != nullptr)
     {
         stop();
     }
