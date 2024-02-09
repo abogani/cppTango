@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef WriteAttrHardware_h
-#define WriteAttrHardware_h
+  #define WriteAttrHardware_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME WriteAttrHardware
+  #undef SUITE_NAME
+  #define SUITE_NAME WriteAttrHardware
 
 class WriteAttrHardware : public CxxTest::TestSuite
 {
@@ -279,3 +281,5 @@ class WriteAttrHardware : public CxxTest::TestSuite
 };
 
 #endif // WriteAttrHardware_h
+
+// NOLINTEND(*)

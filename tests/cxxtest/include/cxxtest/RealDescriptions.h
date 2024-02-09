@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__RealDescriptions_h__
 #define __cxxtest__RealDescriptions_h__
 
@@ -220,3 +222,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__RealDescriptions_h__
+
+ // NOLINTEND(*)

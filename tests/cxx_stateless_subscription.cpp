@@ -1,15 +1,17 @@
+// NOLINTBEGIN(*)
+
 //
 // Created by ingvord on 12/14/16.
 //
 #ifndef StatelessSubTestSuite_h
-#define StatelessSubTestSuite_h
+  #define StatelessSubTestSuite_h
 
-#include <thread>
+  #include <thread>
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME StatelessSubTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME StatelessSubTestSuite
 
 class EventCallback : public Tango::CallBack
 {
@@ -175,3 +177,5 @@ class StatelessSubTestSuite : public CxxTest::TestSuite
 };
 
 #endif // StatelessSubTestSuite_h
+
+// NOLINTEND(*)

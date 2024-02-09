@@ -1,13 +1,15 @@
+// NOLINTBEGIN(*)
+
 #ifndef CommonMiscTestSuite_h
-#define CommonMiscTestSuite_h
+  #define CommonMiscTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#include <tango/internal/net.h>
+  #include <tango/internal/net.h>
 using namespace Tango::detail;
 
-#undef SUITE_NAME
-#define SUITE_NAME CommonMiscTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME CommonMiscTestSuite
 
 class SUITE_NAME : public CxxTest::TestSuite
 {
@@ -212,3 +214,5 @@ class SUITE_NAME : public CxxTest::TestSuite
 };
 
 #endif // CommonMiscTestSuite_h
+
+// NOLINTEND(*)

@@ -1,12 +1,14 @@
+// NOLINTBEGIN(*)
+
 #ifndef DServerCmdTestSuite_h
-#define DServerCmdTestSuite_h
+  #define DServerCmdTestSuite_h
 
-#include "compare_test.h"
+  #include "compare_test.h"
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME DServerCmdTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME DServerCmdTestSuite
 
 class DServerCmdTestSuite : public CxxTest::TestSuite
 {
@@ -338,3 +340,5 @@ class DServerCmdTestSuite : public CxxTest::TestSuite
 };
 
 #endif // DServerCmdTestSuite_h
+
+// NOLINTEND(*)

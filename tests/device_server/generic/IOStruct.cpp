@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOStruct.h"
 
 //+----------------------------------------------------------------------------
@@ -90,3 +92,5 @@ CORBA::Any *IOStruct::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNU
         throw;
     }
 }
+
+// NOLINTEND(*)

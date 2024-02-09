@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "SigThrow.h"
 
 //+----------------------------------------------------------------------------
@@ -449,3 +451,5 @@ CORBA::Any *IOUnregSig::execute(Tango::DeviceImpl *device, const CORBA::Any &in_
         throw;
     }
 }
+
+// NOLINTEND(*)

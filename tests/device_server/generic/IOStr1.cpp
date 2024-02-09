@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOStr1.h"
 
 //+----------------------------------------------------------------------------
@@ -181,3 +183,5 @@ CORBA::Any *IOPollStr1::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_U
         throw;
     }
 }
+
+// NOLINTEND(*)

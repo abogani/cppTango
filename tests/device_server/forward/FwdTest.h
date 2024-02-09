@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(FwdTest.h) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -32,14 +34,14 @@
 //=============================================================================
 
 #ifndef FwdTest_H
-#define FwdTest_H
+  #define FwdTest_H
 
-#include <tango/tango.h>
+  #include <tango/tango.h>
 
-#ifdef TANGO_TEST_BASE_CLASS
-  #undef TANGO_BASE_CLASS
-  #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
-#endif
+  #ifdef TANGO_TEST_BASE_CLASS
+    #undef TANGO_BASE_CLASS
+    #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
+  #endif
 
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest.h
@@ -183,3 +185,5 @@ public:
 }	//	End of namespace
 
 #endif   //	FwdTest_H
+
+ // NOLINTEND(*)

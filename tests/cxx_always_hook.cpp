@@ -1,11 +1,13 @@
+// NOLINTBEGIN(*)
+
 #ifndef AlwaysHookTestSuite_h
-#define AlwaysHookTestSuite_h
+  #define AlwaysHookTestSuite_h
 
-#include "compare_test.h"
-#include "cxx_common.h"
+  #include "compare_test.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME AlwaysHookTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME AlwaysHookTestSuite
 
 class AlwaysHookTestSuite : public CxxTest::TestSuite
 {
@@ -241,3 +243,5 @@ class AlwaysHookTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // AlwaysHookTestSuite_h
+
+// NOLINTEND(*)

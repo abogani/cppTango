@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__TangoPrinter_h__
 #define __cxxtest__TangoPrinter_h__
 
@@ -905,3 +907,5 @@ set<string> TangoPrinter::restore_points = set<string>();
 }
 
 #endif // __cxxtest__TangoPrinter_h__
+
+ // NOLINTEND(*)

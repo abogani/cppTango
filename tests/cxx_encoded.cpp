@@ -1,12 +1,14 @@
+// NOLINTBEGIN(*)
+
 #ifndef EncodedTestSuite_h
-#define EncodedTestSuite_h
+  #define EncodedTestSuite_h
 
-#include <ctime>
+  #include <ctime>
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME EncodedTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME EncodedTestSuite
 
 class EncodedTestSuite : public CxxTest::TestSuite
 {
@@ -220,3 +222,5 @@ class EncodedTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // EncodedTestSuite_h
+
+// NOLINTEND(*)

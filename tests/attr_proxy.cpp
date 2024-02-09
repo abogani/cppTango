@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifdef WIN32
   #include <process.h>
 #else
@@ -333,3 +335,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+// NOLINTEND(*)

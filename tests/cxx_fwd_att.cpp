@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef FwdTestSuite_h
-#define FwdTestSuite_h
+  #define FwdTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME FwdAttTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME FwdAttTestSuite
 
 class FwdAttTestSuite : public CxxTest::TestSuite
 {
@@ -845,3 +847,5 @@ void FwdAttTestSuite::EventCallBack::push_event(Tango::EventData *event_data)
 }
 
 #endif // FwdTestSuite_h
+
+// NOLINTEND(*)

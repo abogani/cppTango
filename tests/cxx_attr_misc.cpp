@@ -1,12 +1,14 @@
+// NOLINTBEGIN(*)
+
 #ifndef AttrMiscTestSuite_h
-#define AttrMiscTestSuite_h
+  #define AttrMiscTestSuite_h
 
-#include <tango/server/tango_current_function.h>
+  #include <tango/server/tango_current_function.h>
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME AttrMiscTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME AttrMiscTestSuite
 
 class AttrMiscTestSuite : public CxxTest::TestSuite
 {
@@ -1106,7 +1108,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TSM_ASSERT_EQUALS(message, expected, state);
     }
 
-#define assert_dev_state(expected) __assert_dev_state(expected, TANGO_FILE_AND_LINE)
+  #define assert_dev_state(expected) __assert_dev_state(expected, TANGO_FILE_AND_LINE)
 
     // Verifies that device state is set correctly when alarm is configured for an attribute
     // but no value is provided for this attribute in user callback (e.g. an exception is thrown).
@@ -1128,7 +1130,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         assert_dev_state(Tango::ON);
     }
 
-#undef assert_dev_state
+  #undef assert_dev_state
 
     /*
      * Test for changing alarm treshold to value lower than currently read from
@@ -1207,3 +1209,5 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // AttrMiscTestSuite_h
+
+// NOLINTEND(*)

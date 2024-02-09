@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "compare_test.h"
 #include <stdio.h>
 #include <algorithm>
@@ -751,3 +753,5 @@ void CmpTst::CompareTest::print_output(string out, bool show_line_numbers)
 }
 
 #undef TMP_SUFFIX
+
+// NOLINTEND(*)

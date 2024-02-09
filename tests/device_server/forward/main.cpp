@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(FwdTest::main.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -82,3 +84,5 @@ int main(int argc, char *argv[])
 
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::main.cpp
+
+ // NOLINTEND(*)

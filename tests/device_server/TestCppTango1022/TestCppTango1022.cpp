@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -282,3 +284,5 @@ void TestCppTango1022::add_dynamic_commands()
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::namespace_ending
 } //	namespace
+
+ // NOLINTEND(*)

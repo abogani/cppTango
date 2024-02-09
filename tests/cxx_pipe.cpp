@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef PipeTestSuite_h
-#define PipeTestSuite_h
+  #define PipeTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME PipeTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME PipeTestSuite
 
 class PipeTestSuite : public CxxTest::TestSuite
 {
@@ -704,3 +706,5 @@ class PipeTestSuite : public CxxTest::TestSuite
 };
 
 #endif // PipeTestSuite_h
+
+// NOLINTEND(*)

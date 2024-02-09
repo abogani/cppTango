@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef McastSimpleTestSuite_h
-#define McastSimpleTestSuite_h
+  #define McastSimpleTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME McastSimpleTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME McastSimpleTestSuite
 
 // In this test, the client subscribes to two multicast events
 // One event comes from a device running in the same host than the client
@@ -269,3 +271,5 @@ void McastSimpleTestSuite::EventCallBack::push_event(Tango::EventData *event_dat
 }
 
 #endif // McastSimpleTestSuite_h
+
+// NOLINTEND(*)

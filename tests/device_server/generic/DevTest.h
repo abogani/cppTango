@@ -1,6 +1,8 @@
+// NOLINTBEGIN(*)
+
 #ifndef _DEV_TEST_H
-#define _DEV_TEST_H
-#include <tango/tango.h>
+  #define _DEV_TEST_H
+  #include <tango/tango.h>
 
 class EventCallBack : public Tango::CallBack
 {
@@ -21,18 +23,18 @@ enum _CardinalPoints
 
 typedef _CardinalPoints CardinalPoints;
 
-#ifdef TANGO_TEST_BASE_CLASS
-  #undef TANGO_BASE_CLASS
-  #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
-#endif
+  #ifdef TANGO_TEST_BASE_CLASS
+    #undef TANGO_BASE_CLASS
+    #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
+  #endif
 
-#ifndef COMPAT
+  #ifndef COMPAT
 class DevTest : public TANGO_BASE_CLASS
 {
-#else
+  #else
 class DevTest : public Tango::Device_3Impl
 {
-#endif
+  #endif
   public:
     DevTest(Tango::DeviceClass *, std::string &);
     DevTest(Tango::DeviceClass *, const char *);
@@ -375,13 +377,13 @@ class DevTest : public Tango::Device_3Impl
 
     Tango::DevShort wattr_throw;
 
-#ifndef COMPAT
+  #ifndef COMPAT
     Tango::EncodedAttribute jpeg;
     Tango::DevEncoded enc_attr;
     Tango::DevEncoded *enc_attr_ptr;
     Tango::DevString enc_format;
     unsigned char enc_data[10];
-#endif
+  #endif
 
     Tango::DevLong att_conf;
     CardinalPoints cp;
@@ -416,3 +418,5 @@ class DevTest : public Tango::Device_3Impl
 };
 
 #endif
+
+// NOLINTEND(*)

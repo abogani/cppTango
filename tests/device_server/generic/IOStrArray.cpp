@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOStrArray.h"
 
 //+----------------------------------------------------------------------------
@@ -84,3 +86,5 @@ CORBA::Any *IOStrArray::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_U
         throw;
     }
 }
+
+// NOLINTEND(*)

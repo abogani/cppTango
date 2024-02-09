@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 
 class IOVoid : public Tango::Command
@@ -320,3 +322,5 @@ class OEncoded : public Tango::Command
 
     Tango::DevLong encoded_cmd_ctr;
 };
+
+// NOLINTEND(*)

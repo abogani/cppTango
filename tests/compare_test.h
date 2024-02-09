@@ -1,12 +1,14 @@
-#ifndef CompareTest_h
-#define CompareTest_h
+// NOLINTBEGIN(*)
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
-#include <map>
-#include <vector>
+#ifndef CompareTest_h
+  #define CompareTest_h
+
+  #include <iostream>
+  #include <fstream>
+  #include <sstream>
+  #include <stdexcept>
+  #include <map>
+  #include <vector>
 
 namespace CmpTst
 {
@@ -258,3 +260,5 @@ class CompareTestException : public std::runtime_error
 };
 } // namespace CmpTst
 #endif // CompareTest_h
+
+// NOLINTEND(*)

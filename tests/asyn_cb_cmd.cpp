@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 class MyCallBack : public CallBack
@@ -332,3 +334,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+// NOLINTEND(*)

@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 #include <tango/client/helpers/DeviceProxyHelper.h>
@@ -420,3 +422,5 @@ int main(int argc, char **argv)
         exit(1);
     }
 }
+
+// NOLINTEND(*)

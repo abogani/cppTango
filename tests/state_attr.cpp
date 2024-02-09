@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifdef WIN32
   #include <process.h>
 #endif
@@ -739,3 +741,5 @@ int message_in_file(string &f_name, string &mess, vector<string> &mess_occur)
     inFile.close();
     return ret;
 }
+
+// NOLINTEND(*)

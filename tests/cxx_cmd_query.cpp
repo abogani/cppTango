@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef CmdQueryTestSuite_h
-#define CmdQueryTestSuite_h
+  #define CmdQueryTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME CmdQueryTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME CmdQueryTestSuite
 
 class CmdQueryTestSuite : public CxxTest::TestSuite
 {
@@ -548,3 +550,5 @@ class CmdQueryTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // CmdQueryTestSuite_h
+
+// NOLINTEND(*)

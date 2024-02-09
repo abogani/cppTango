@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__X11Gui_h__
 #define __cxxtest__X11Gui_h__
 
@@ -325,3 +327,5 @@ namespace CxxTest
 };
 
 #endif //__cxxtest__X11Gui_h__
+
+ // NOLINTEND(*)

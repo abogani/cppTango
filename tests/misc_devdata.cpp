@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 int main()
@@ -108,3 +110,5 @@ int main()
 
     return 0;
 }
+
+// NOLINTEND(*)

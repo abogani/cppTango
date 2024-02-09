@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOMisc.h"
 #include "DevTest.h"
 
@@ -4384,3 +4386,5 @@ CORBA::Any *GetEnumWriteValue::execute(Tango::DeviceImpl *device, TANGO_UNUSED(c
     attr.get_write_value(w_val);
     return insert((short) w_val);
 }
+
+// NOLINTEND(*)

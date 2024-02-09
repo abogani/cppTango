@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest_StdHeaders_h__
 #define __cxxtest_StdHeaders_h__
 
@@ -23,3 +25,5 @@
 #endif // _MSC_VER
 
 #endif // __cxxtest_StdHeaders_h__
+
+ // NOLINTEND(*)

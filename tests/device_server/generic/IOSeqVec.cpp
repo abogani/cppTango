@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOSeqVec.h"
 
 #ifdef WIN32
@@ -317,3 +319,5 @@ CORBA::Any *IOSeqVecString::execute(TANGO_UNUSED(Tango::DeviceImpl *device), con
     (*theOutputArray) << v1;
     return insert(theOutputArray);
 }
+
+// NOLINTEND(*)

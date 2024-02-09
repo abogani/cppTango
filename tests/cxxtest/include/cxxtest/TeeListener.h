@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__TeeListener_h__
 #define __cxxtest__TeeListener_h__
 
@@ -180,3 +182,5 @@ namespace CxxTest
 
 
 #endif // __cxxtest__TeeListener_h__
+
+ // NOLINTEND(*)

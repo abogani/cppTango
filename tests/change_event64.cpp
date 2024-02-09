@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 class EventCallBack : public Tango::CallBack
@@ -280,3 +282,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+// NOLINTEND(*)

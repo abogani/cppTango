@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <condition_variable>
 #include <csignal>
 #include <thread>
@@ -316,3 +318,5 @@ int main()
 
     return 0;
 }
+
+// NOLINTEND(*)

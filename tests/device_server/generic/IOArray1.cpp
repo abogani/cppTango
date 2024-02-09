@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOArray1.h"
 
 //+----------------------------------------------------------------------------
@@ -87,3 +89,5 @@ CORBA::Any *IOArray1::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNU
         throw;
     }
 }
+
+// NOLINTEND(*)

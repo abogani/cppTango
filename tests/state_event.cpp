@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <thread>
 #include <chrono>
 
@@ -297,3 +299,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+// NOLINTEND(*)

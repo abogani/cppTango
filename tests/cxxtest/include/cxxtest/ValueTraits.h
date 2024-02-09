@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__ValueTraits_h__
 #define __cxxtest__ValueTraits_h__
 
@@ -384,3 +386,5 @@ namespace CxxTest
 #endif
 
 #endif // __cxxtest__ValueTraits_h__
+
+ // NOLINTEND(*)

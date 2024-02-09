@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOArray2.h"
 #include "DevTest.h"
 
@@ -196,3 +198,5 @@ CORBA::Any *IOPollArray2::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         throw;
     }
 }
+
+// NOLINTEND(*)

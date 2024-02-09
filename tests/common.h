@@ -1,31 +1,33 @@
+// NOLINTBEGIN(*)
+
 #ifndef Common_H
-#define Common_H
+  #define Common_H
 
-#include <iostream>
-#include <tango/tango.h>
+  #include <iostream>
+  #include <tango/tango.h>
 
-#ifndef TS_ASSERT
-  #include <cassert>
-#else
-  #undef assert
-#endif
+  #ifndef TS_ASSERT
+    #include <cassert>
+  #else
+    #undef assert
+  #endif
 
-#ifdef WIN32
-  #include <process.h>
-#else
-  #include <unistd.h>
-#endif
+  #ifdef WIN32
+    #include <process.h>
+  #else
+    #include <unistd.h>
+  #endif
 
 using namespace std;
 using namespace Tango;
 
-#include "logging.h"
+  #include "logging.h"
 
-#include <mutex>
-#include <condition_variable>
-#include <chrono>
-#include <charconv>
-#include <sstream>
+  #include <mutex>
+  #include <condition_variable>
+  #include <chrono>
+  #include <charconv>
+  #include <sstream>
 
 // We have a struct here so that if parse_as is used with an unsupported type it
 // will produce an error.
@@ -35,19 +37,19 @@ struct type_name_impl;
 template <typename T>
 constexpr const char *type_name = type_name_impl<T>::value;
 
-#define SPECIALIZE_TYPE_NAME(t)                  \
-    template <>                                  \
-    struct type_name_impl<t>                     \
-    {                                            \
-        constexpr static const char *value = #t; \
-    }
+  #define SPECIALIZE_TYPE_NAME(t)                    \
+        template <>                                  \
+        struct type_name_impl<t>                     \
+        {                                            \
+            constexpr static const char *value = #t; \
+        }
 
 // Add as required
 SPECIALIZE_TYPE_NAME(int);
 SPECIALIZE_TYPE_NAME(long);
 SPECIALIZE_TYPE_NAME(double);
 
-#undef SPECIALIZE_TYPE_NAME
+  #undef SPECIALIZE_TYPE_NAME
 
 /**
  * Parse a string as the given type.
@@ -72,10 +74,10 @@ T parse_as(const std::string &str)
     return result;
 }
 
-#ifndef TANGO_HAS_FROM_CHARS_DOUBLE
+  #ifndef TANGO_HAS_FROM_CHARS_DOUBLE
 template <>
 double parse_as<double>(const std::string &str);
-#endif
+  #endif
 
 /**
  * Wrapper for unsetenv working on windows systems as well.
@@ -229,3 +231,5 @@ class CountingCallBack : public Tango::CallBack
 };
 
 #endif // Common_H
+
+// NOLINTEND(*)

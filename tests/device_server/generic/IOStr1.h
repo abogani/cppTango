@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 
 //
@@ -27,3 +29,5 @@ class IOPollStr1 : public Tango::Command
 
     long num;
 };
+
+// NOLINTEND(*)

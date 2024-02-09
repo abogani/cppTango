@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 int main()
@@ -177,3 +179,5 @@ int main()
     delete dbase;
     return 0;
 }
+
+// NOLINTEND(*)

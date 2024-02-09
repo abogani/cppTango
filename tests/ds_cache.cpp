@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 const int8_t kBase = 75;
@@ -245,3 +247,5 @@ int main(int, char **)
 
     return 0;
 }
+
+// NOLINTEND(*)

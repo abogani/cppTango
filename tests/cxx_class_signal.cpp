@@ -1,13 +1,15 @@
+// NOLINTBEGIN(*)
+
 #ifndef ClassSignalTestSuite_h
-#define ClassSignalTestSuite_h
+  #define ClassSignalTestSuite_h
 
-#include <signal.h>
-#include "compare_test.h"
+  #include <signal.h>
+  #include "compare_test.h"
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME ClassSignalTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME ClassSignalTestSuite
 
 class ClassSignalTestSuite : public CxxTest::TestSuite
 {
@@ -190,11 +192,11 @@ class ClassSignalTestSuite : public CxxTest::TestSuite
 
     void test_class_signal_handling(void)
     {
-// Test signal handling
-// This does not make sense on Windows since there is no SIGALARM signal
-// Keep the definition but the test does nothing, as code calling it
-// is generated on windows anyway
-#ifndef _TG_WINDOWS_
+  // Test signal handling
+  // This does not make sense on Windows since there is no SIGALARM signal
+  // Keep the definition but the test does nothing, as code calling it
+  // is generated on windows anyway
+  #ifndef _TG_WINDOWS_
         DeviceData din, dout;
         DevLong sig_num = 14;
         int sig_num_int = 14;
@@ -277,7 +279,7 @@ class ClassSignalTestSuite : public CxxTest::TestSuite
         din << sig_num;
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOUnregClassSig", din));
         CxxTest::TangoPrinter::restore_unset("class_signal_unregistered");
-#endif
+  #endif
     }
 
     // Test comparing input with output
@@ -327,3 +329,5 @@ class ClassSignalTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // ClassSignalTestSuite_h
+
+// NOLINTEND(*)

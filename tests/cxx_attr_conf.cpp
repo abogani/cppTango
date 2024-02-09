@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef AttrConfTestSuite_h
-#define AttrConfTestSuite_h
+  #define AttrConfTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME AttrConfTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME AttrConfTestSuite
 
 class AttrConfTestSuite : public CxxTest::TestSuite
 {
@@ -342,3 +344,5 @@ class AttrConfTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // AttrConfTestSuite_h
+
+// NOLINTEND(*)

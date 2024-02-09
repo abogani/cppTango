@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "TypeCmds.h"
 
 //+----------------------------------------------------------------------------
@@ -1709,3 +1711,5 @@ CORBA::Any *OEncoded::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNU
     }
 }
 #endif
+
+// NOLINTEND(*)

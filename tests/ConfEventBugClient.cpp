@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 // Testprogram to demonstrate a server internal data update problem in 7.0.2-bugfix (snapshot: 24.7.2009)
 //
@@ -181,3 +183,5 @@ georg@taco10:/home/projekte/tango/Tests/ConfEventBug> ConfEventBugClient
 
 georg@taco10:/home/projekte/tango/Tests/ConfEventBug>
 */
+
+// NOLINTEND(*)

@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__Root_cpp__
 #define __cxxtest__Root_cpp__
 
@@ -16,3 +18,5 @@
 #include <cxxtest/ValueTraits.cpp>
 
 #endif // __cxxtest__Root_cpp__
+
+ // NOLINTEND(*)

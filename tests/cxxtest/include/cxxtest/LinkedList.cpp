@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__LinkedList_cpp__
 #define __cxxtest__LinkedList_cpp__
 
@@ -170,3 +172,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__LinkedList_cpp__
+
+ // NOLINTEND(*)
