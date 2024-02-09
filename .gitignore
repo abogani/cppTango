@@ -1,3 +1,5 @@
 
 # Preferred CMake build directory
 build/
+
+CMakeUserPresets.json
