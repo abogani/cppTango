@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 class EventCallBack : public CountingCallBack<Tango::PipeEventData>
@@ -250,3 +252,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+// NOLINTEND(*)

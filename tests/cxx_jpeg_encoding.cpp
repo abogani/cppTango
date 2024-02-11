@@ -1,21 +1,23 @@
+// NOLINTBEGIN(*)
+
 #ifndef JPEGEncodedTestSuite_h
-#define JPEGEncodedTestSuite_h
+  #define JPEGEncodedTestSuite_h
 
-#include <ctime>
-#include <cstdio>
-#include <iterator>
-#include <memory>
-#include <vector>
+  #include <ctime>
+  #include <cstdio>
+  #include <iterator>
+  #include <memory>
+  #include <vector>
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#ifdef TANGO_USE_JPEG
-  // Needed to get the JCS_EXTENSIONS define
-  #include <jpeglib.h>
-#endif
+  #ifdef TANGO_USE_JPEG
+    // Needed to get the JCS_EXTENSIONS define
+    #include <jpeglib.h>
+  #endif
 
-#undef SUITE_NAME
-#define SUITE_NAME JPEGEncodedTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME JPEGEncodedTestSuite
 
 // On those tests we encode and decode images from and to raw and jpeg formats.
 // These transformations are dependant on the jpeg implementation used.
@@ -87,11 +89,11 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
         raw_24bits = load_file(resource_path + "/peppers.data");
         raw_32bits = load_file(resource_path + "/peppers_alpha.data");
         raw_8bits = load_file(resource_path + "/peppers_gray.data");
-#ifdef JCS_EXTENSIONS
+  #ifdef JCS_EXTENSIONS
         jpeg_rgb = load_file(resource_path + "/peppers.jpeg");
-#else
+  #else
         jpeg_rgb = load_file(resource_path + "/peppers-9.jpeg");
-#endif
+  #endif
         jpeg_gray = load_file(resource_path + "/peppers_gray.jpeg");
 
         encoder = std::make_unique<Tango::EncodedAttribute>();
@@ -120,7 +122,7 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
     // Check the encoding functions
     void test_jpeg_encoding()
     {
-#ifdef TANGO_USE_JPEG
+  #ifdef TANGO_USE_JPEG
         TS_ASSERT_THROWS_NOTHING(encoder->encode_jpeg_gray8(raw_8bits.data(), 512, 512, 100));
         std::size_t offset = find_jpeg_start(encoder->get_data(), encoder->get_size());
         TS_ASSERT_DIFFERS(offset, zero);
@@ -130,16 +132,16 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
         offset = find_jpeg_start(encoder->get_data(), encoder->get_size());
         TS_ASSERT_DIFFERS(offset, zero);
 
-  #ifdef JCS_EXTENSIONS
+    #ifdef JCS_EXTENSIONS
         TS_ASSERT_THROWS_NOTHING(encoder->encode_jpeg_rgb32(raw_32bits.data(), 512, 512, 100));
 
         offset = find_jpeg_start(encoder->get_data(), encoder->get_size());
         TS_ASSERT_DIFFERS(offset, zero);
-  #else
+    #else
         TS_ASSERT_THROWS_ASSERT(encoder->encode_jpeg_rgb32(raw_32bits.data(), 512, 512, 100),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), Tango::API_UnsupportedFeature));
-  #endif
+    #endif
         // Check if it throws errors
         TS_ASSERT_THROWS_ASSERT(encoder->encode_jpeg_gray8(raw_8bits.data(), 0, 0, 100),
                                 Tango::DevFailed & e,
@@ -147,13 +149,13 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
         TS_ASSERT_THROWS_ASSERT(encoder->encode_jpeg_rgb24(raw_8bits.data(), 0, 0, 100),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), Tango::API_EncodeErr));
-  #ifdef JCS_EXTENSIONS
+    #ifdef JCS_EXTENSIONS
         TS_ASSERT_THROWS_ASSERT(encoder->encode_jpeg_rgb32(raw_8bits.data(), 0, 0, 100),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), Tango::API_EncodeErr));
-  #endif
+    #endif
 
-#else
+  #else
 
         TS_ASSERT_THROWS_ASSERT(encoder->encode_jpeg_gray8(raw_8bits.data(), 512, 512, 100),
                                 Tango::DevFailed & e,
@@ -164,7 +166,7 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
         TS_ASSERT_THROWS_ASSERT(encoder->encode_jpeg_rgb32(raw_32bits.data(), 512, 512, 100),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(std::string(e.errors[0].reason.in()), Tango::API_UnsupportedFeature));
-#endif
+  #endif
     }
 
     // Check the decoding functions
@@ -195,7 +197,7 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
 
         da_error << att_de_error;
 
-#ifdef TANGO_USE_JPEG
+  #ifdef TANGO_USE_JPEG
         // Decode jpeg images
         TS_ASSERT_THROWS_NOTHING(encoder->decode_rgb32(&da_rgb, &width, &height, &color_buffer));
 
@@ -214,16 +216,18 @@ class JPEGEncodedTestSuite : public CxxTest::TestSuite
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), Tango::API_WrongFormat));
 
-#else
+  #else
         TS_ASSERT_THROWS_ASSERT(encoder->decode_rgb32(&da_rgb, &width, &height, &color_buffer),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), Tango::API_UnsupportedFeature));
         TS_ASSERT_THROWS_ASSERT(encoder->decode_gray8(&da_gray, &width, &height, &gray_buffer),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), Tango::API_UnsupportedFeature));
-#endif
+  #endif
         delete[] color_buffer;
         delete[] gray_buffer;
     }
 };
 #endif // JPEGEncodedTestSuite_h
+
+// NOLINTEND(*)

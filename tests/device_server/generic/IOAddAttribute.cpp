@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOAddAttribute.h"
 #include "DevTest.h"
 
@@ -471,3 +473,5 @@ CORBA::Any *IORemoveCommand::execute(Tango::DeviceImpl *device, TANGO_UNUSED(con
         throw;
     }
 }
+
+// NOLINTEND(*)

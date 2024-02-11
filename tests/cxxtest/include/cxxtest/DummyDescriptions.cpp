@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <cxxtest/DummyDescriptions.h>
 
 namespace CxxTest
@@ -46,3 +48,5 @@ namespace CxxTest
     bool DummyWorldDescription::setUp() { return true;}
     bool DummyWorldDescription::tearDown() { return true;}
 }
+
+ // NOLINTEND(*)

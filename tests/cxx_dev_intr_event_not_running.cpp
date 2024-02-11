@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef DevIntrNR_h
-#define DevIntrNR_h
+  #define DevIntrNR_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME DevIntrNotRunningTest
+  #undef SUITE_NAME
+  #define SUITE_NAME DevIntrNotRunningTest
 
 class EventCallBack : public CountingCallBack<Tango::DevIntrChangeEventData>
 {
@@ -73,3 +75,5 @@ class DevIntrNotRunningTest : public CxxTest::TestSuite
 };
 
 #endif // DevIntrNR_h
+
+// NOLINTEND(*)

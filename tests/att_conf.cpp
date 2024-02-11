@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 // BUG Report:
 // a change of the attribute configuration setting to "Not specified"
 // is lost if a DevRestart or ServerRestart is done.
@@ -276,3 +278,5 @@ void reset_to_default(Tango::AttributeInfoEx &ai, string &att_name)
 }
 
 // eof
+
+// NOLINTEND(*)

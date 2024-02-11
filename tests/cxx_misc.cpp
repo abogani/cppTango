@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef MiscTestSuite_h
-#define MiscTestSuite_h
+  #define MiscTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME MiscTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME MiscTestSuite
 
 class MiscTestSuite : public CxxTest::TestSuite
 {
@@ -160,3 +162,5 @@ class MiscTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // MiscTestSuite_h
+
+// NOLINTEND(*)

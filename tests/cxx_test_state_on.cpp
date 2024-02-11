@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef TestStateOnTestSuite_h
-#define TestStateOnTestSuite_h
+  #define TestStateOnTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME TestStateOnTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME TestStateOnTestSuite
 
 class TestStateOnTestSuite : public CxxTest::TestSuite
 {
@@ -68,3 +70,5 @@ class TestStateOnTestSuite : public CxxTest::TestSuite
 };
 
 #endif // TestStateOnTestSuite_h
+
+// NOLINTEND(*)

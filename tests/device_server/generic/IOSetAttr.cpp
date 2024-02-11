@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "IOSetAttr.h"
 #include "DevTest.h"
 
@@ -84,3 +86,5 @@ CORBA::Any *IOSetAttr::execute(Tango::DeviceImpl *device, const CORBA::Any &in_a
         throw;
     }
 }
+
+// NOLINTEND(*)

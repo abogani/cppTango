@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__StdioPrinter_h__
 #define __cxxtest__StdioPrinter_h__
 
@@ -20,3 +22,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__StdioPrinter_h__
+
+ // NOLINTEND(*)

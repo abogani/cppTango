@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 
 using namespace std;
@@ -32,3 +34,5 @@ int main(int argc, char *argv[])
         Tango::Except::print_exception(e);
     }
 }
+
+// NOLINTEND(*)

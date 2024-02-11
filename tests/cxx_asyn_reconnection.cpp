@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef AsynReconnectionTestSuite_h
-#define AsynReconnectionTestSuite_h
+  #define AsynReconnectionTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME AsynReconnectionTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME AsynReconnectionTestSuite
 
 class AsynReconnectionTestSuite : public CxxTest::TestSuite
 {
@@ -235,3 +237,5 @@ class AsynReconnectionTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // AsynReconnectionTestSuite_h
+
+// NOLINTEND(*)

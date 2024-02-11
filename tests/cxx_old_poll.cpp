@@ -1,16 +1,18 @@
+// NOLINTBEGIN(*)
+
 #ifndef PollTestSuite_h
-#define PollTestSuite_h
+  #define PollTestSuite_h
 
-#include <thread>
-#include <chrono>
+  #include <thread>
+  #include <chrono>
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#define BASIC_NB_POLL 16u
-#define TEST_CLASS "devTest"
+  #define BASIC_NB_POLL 16u
+  #define TEST_CLASS "devTest"
 
-#undef SUITE_NAME
-#define SUITE_NAME OldPollTestSuite__loop
+  #undef SUITE_NAME
+  #define SUITE_NAME OldPollTestSuite__loop
 
 typedef enum
 {
@@ -977,21 +979,21 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
         //  and cmd_min_poll_period set to IOExcept,500
         //
 
-#if defined(__GNUC__) && !defined(__clang__)
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wcatch-value"
-#endif
+  #if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcatch-value"
+  #endif
 
-#undef _TS_LAST_CATCH
-#define _TS_LAST_CATCH(b) _TS_CATCH_TYPE((...), b)
+  #undef _TS_LAST_CATCH
+  #define _TS_LAST_CATCH(b) _TS_CATCH_TYPE((...), b)
 
         TS_ASSERT_THROWS(device->poll_command("IOExcept", 300), Tango::DevFailed);
 
         TS_ASSERT_THROWS(device->poll_command("IOExcept", 100), Tango::DevFailed);
 
-#if defined(__GNUC__) && !defined(__clang__)
-  #pragma GCC diagnostic pop
-#endif
+  #if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+  #endif
 
         TS_ASSERT_THROWS_NOTHING(device->poll_command("IOExcept", 500));
 
@@ -1429,3 +1431,5 @@ void del_device_no_error(Database &db, string &d_name)
 }
 
 #endif // PollTestSuite_h
+
+// NOLINTEND(*)

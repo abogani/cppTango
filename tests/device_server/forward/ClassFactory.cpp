@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(FwdTest::ClassFactory.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -51,3 +53,5 @@ void Tango::DServer::class_factory()
 
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::ClassFactory.cpp
+
+ // NOLINTEND(*)

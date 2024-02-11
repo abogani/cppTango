@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 #ifdef _TG_WINDOWS_
@@ -1021,3 +1023,5 @@ TangoSys_Pid start_ds(const std::string &path, const std::string &name, const st
 #endif
     return pi;
 }
+
+// NOLINTEND(*)

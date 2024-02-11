@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(FwdTestClass.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -510,3 +512,5 @@ Tango::Attr *FwdTestClass::get_attr_object_by_name(std::vector<Tango::Attr *> &a
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass::Additional Methods
 } //	namespace
+
+ // NOLINTEND(*)

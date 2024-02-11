@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(FwdTest.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -242,3 +244,5 @@ void FwdTest::add_dynamic_commands()
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTest::namespace_ending
 } //	namespace
+
+ // NOLINTEND(*)

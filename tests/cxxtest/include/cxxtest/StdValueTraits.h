@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest_StdValueTraits_h__
 #define __cxxtest_StdValueTraits_h__
 
@@ -227,3 +229,5 @@ namespace CxxTest
 #endif // CXXTEST_USER_VALUE_TRAITS
 
 #endif // __cxxtest_StdValueTraits_h__
+
+ // NOLINTEND(*)

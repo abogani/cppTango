@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef TemplateCmdTestSuite_h
-#define TemplateCmdTestSuite_h
+  #define TemplateCmdTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME TemplateCmdTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME TemplateCmdTestSuite
 
 class TemplateCmdTestSuite : public CxxTest::TestSuite
 {
@@ -257,3 +259,5 @@ class TemplateCmdTestSuite : public CxxTest::TestSuite
 };
 
 #endif // TemplateCmdTestSuite_h
+
+// NOLINTEND(*)

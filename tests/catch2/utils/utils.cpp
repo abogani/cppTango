@@ -5,10 +5,6 @@
 
 #include <sstream>
 
-#include <tango/tango.h>
-
-#include <sstream>
-
 CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
 {
     std::stringstream ss;

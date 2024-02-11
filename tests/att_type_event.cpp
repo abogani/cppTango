@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 void check_attribute_data_type(DeviceProxy *, std::string &, const char *);
@@ -211,3 +213,5 @@ void check_attribute_data_type(DeviceProxy *device, std::string &att_name, const
     device->unsubscribe_event(eve_id);
     device->stop_poll_attribute(att_name);
 }
+
+// NOLINTEND(*)

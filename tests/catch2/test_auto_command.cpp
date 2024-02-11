@@ -24,13 +24,13 @@ class AutoCmdDev : public Base
     }
 
     // a command that doesn't accept arguments and doesn't return anything
-    void cmd_void_void(void)
+    void cmd_void_void()
     {
         cmd_run = true;
     }
 
     // a command that returns a value and doesn't accept arguments
-    double cmd_ret_void(void)
+    double cmd_ret_void()
     {
         return CMD_RET_VOID_RETURN_VALUE;
     }

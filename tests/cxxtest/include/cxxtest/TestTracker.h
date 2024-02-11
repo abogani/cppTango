@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__TestTracker_h__
 #define __cxxtest__TestTracker_h__
 
@@ -112,3 +114,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__TestTracker_h__
+
+ // NOLINTEND(*)

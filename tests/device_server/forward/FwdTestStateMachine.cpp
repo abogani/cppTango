@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(FwdTestStateMachine.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -60,3 +62,5 @@ namespace FwdTest_ns
 /*----- PROTECTED REGION END -----*/	//	FwdTest::FwdTestStateAllowed.AdditionalMethods
 
 }	//	End of namespace
+
+ // NOLINTEND(*)

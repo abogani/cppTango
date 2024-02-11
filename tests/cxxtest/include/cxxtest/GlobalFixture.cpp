@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__GlobalFixture_cpp__
 #define __cxxtest__GlobalFixture_cpp__
 
@@ -20,3 +22,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__GlobalFixture_cpp__
+
+ // NOLINTEND(*)

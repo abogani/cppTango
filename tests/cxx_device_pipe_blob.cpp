@@ -1,16 +1,18 @@
+// NOLINTBEGIN(*)
+
 #ifndef DevicePipeBlobTestSuite_h
-#define DevicePipeBlobTestSuite_h
+  #define DevicePipeBlobTestSuite_h
 
-#include <ctime>
-#include <cstdio>
-#include <iterator>
-#include <memory>
-#include <vector>
+  #include <ctime>
+  #include <cstdio>
+  #include <iterator>
+  #include <memory>
+  #include <vector>
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME DevicePipeBlobTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME DevicePipeBlobTestSuite
 
 class DevicePipeBlobTestSuite : public CxxTest::TestSuite
 {
@@ -79,3 +81,5 @@ class DevicePipeBlobTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // DevicePipeBlobTestSuite_h
+
+// NOLINTEND(*)

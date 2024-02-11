@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef SeqVecTestSuite_h
-#define SeqVecTestSuite_h
+  #define SeqVecTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME SeqVecTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME SeqVecTestSuite
 
 class SeqVecTestSuite : public CxxTest::TestSuite
 {
@@ -237,3 +239,5 @@ class SeqVecTestSuite : public CxxTest::TestSuite
 };
 
 #endif // SeqVecTestSuite_h
+
+// NOLINTEND(*)

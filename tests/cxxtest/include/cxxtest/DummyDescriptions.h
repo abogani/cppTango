@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__DummyDescriptions_h__
 #define __cxxtest__DummyDescriptions_h__
 
@@ -73,3 +75,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__DummyDescriptions_h__
+
+ // NOLINTEND(*)

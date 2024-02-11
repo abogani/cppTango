@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__Flags_h__
 #define __cxxtest__Flags_h__
 
@@ -119,3 +121,5 @@
 #endif
 
 #endif // __cxxtest__Flags_h__
+
+ // NOLINTEND(*)

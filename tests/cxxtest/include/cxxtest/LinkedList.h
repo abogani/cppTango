@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__LinkedList_h__
 #define __cxxtest__LinkedList_h__
 
@@ -62,3 +64,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__LinkedList_h__
+
+ // NOLINTEND(*)

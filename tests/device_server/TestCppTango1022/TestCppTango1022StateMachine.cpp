@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022StateMachine.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -86,3 +88,5 @@ bool TestCppTango1022::is_DoubleAttr_allowed(TANGO_UNUSED(Tango::AttReqType type
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::TestCppTango1022StateAllowed.AdditionalMethods
 
 }	//	End of namespace
+
+ // NOLINTEND(*)

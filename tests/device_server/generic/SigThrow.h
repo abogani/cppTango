@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 
 //
@@ -93,3 +95,5 @@ class IOUnregSig : public Tango::Command
     virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
     virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
 };
+
+// NOLINTEND(*)

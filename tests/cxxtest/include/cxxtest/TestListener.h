@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__TestListener_h__
 #define __cxxtest__TestListener_h__
 
@@ -68,3 +70,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__TestListener_h__
+
+ // NOLINTEND(*)

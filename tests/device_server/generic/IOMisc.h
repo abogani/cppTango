@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 
 //
@@ -532,3 +534,5 @@ class ReynaldPollThread : public omni_thread
     void run(void *arg);
     Tango::DeviceImpl *dev;
 };
+
+// NOLINTEND(*)

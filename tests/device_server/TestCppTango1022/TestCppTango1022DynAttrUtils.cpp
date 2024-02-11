@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022::DynAttrUtils.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -155,3 +157,5 @@ Tango::DevDouble *TestCppTango1022::get_DoubleAttr_data_ptr(std::string &name)
 
 
 } //	namespace
+
+ // NOLINTEND(*)

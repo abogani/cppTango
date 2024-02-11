@@ -253,7 +253,7 @@ struct ClassRegistrarBase
 {
     ClassRegistrarBase()
     {
-        if(!registrars)
+        if(registrars == nullptr)
         {
             registrars = new std::vector<ClassRegistrarBase *>();
         }

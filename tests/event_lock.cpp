@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 // Testprogram to demonstrate a tango exit crash problem:
@@ -266,3 +268,5 @@ georg@taco10:/home/projekte/tango/Tests/ExitCrashProblem>
 georg@taco10:/home/projekte/tango/Tests/ExitCrashProblem>
 
 */
+
+// NOLINTEND(*)

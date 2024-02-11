@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef ExceptionTestSuite_h
-#define ExceptionTestSuite_h
+  #define ExceptionTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME ExceptionTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME ExceptionTestSuite
 
 class ExceptionTestSuite : public CxxTest::TestSuite
 {
@@ -160,3 +162,5 @@ class ExceptionTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // ExceptionTestSuite_h
+
+// NOLINTEND(*)

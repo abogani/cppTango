@@ -1,13 +1,15 @@
+// NOLINTBEGIN(*)
+
 #ifndef MemAttrTestSuite_h
-#define MemAttrTestSuite_h
+  #define MemAttrTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#define STATUS_MEM_FAILED "Memorized attribute Short_attr_w has failed during device startup sequence"
-#define STATUS_ON "The device is in ON state."
+  #define STATUS_MEM_FAILED "Memorized attribute Short_attr_w has failed during device startup sequence"
+  #define STATUS_ON "The device is in ON state."
 
-#undef SUITE_NAME
-#define SUITE_NAME MemAttrTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME MemAttrTestSuite
 
 class MemAttrTestSuite : public CxxTest::TestSuite
 {
@@ -216,3 +218,5 @@ class MemAttrTestSuite : public CxxTest::TestSuite
 };
 
 #endif // MemAttrTestSuite_h
+
+// NOLINTEND(*)

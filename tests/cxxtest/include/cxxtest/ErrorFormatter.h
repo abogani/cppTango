@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__ErrorFormatter_h__
 #define __cxxtest__ErrorFormatter_h__
 
@@ -279,3 +281,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__ErrorFormatter_h__
+
+ // NOLINTEND(*)

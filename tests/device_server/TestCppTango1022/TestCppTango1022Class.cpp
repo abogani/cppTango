@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022Class.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -470,3 +472,5 @@ Tango::Attr *TestCppTango1022Class::get_attr_object_by_name(std::vector<Tango::A
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::Additional Methods
 } //	namespace
+
+ // NOLINTEND(*)

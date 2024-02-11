@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__Descriptions_cpp__
 #define __cxxtest__Descriptions_cpp__
 
@@ -56,3 +58,5 @@ namespace CxxTest
 }
 
 #endif // __cxxtest__Descriptions_cpp__
+
+ // NOLINTEND(*)

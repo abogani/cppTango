@@ -71,7 +71,7 @@ SCENARIO("test servers can be started and stopped")
 {
     using TestServer = TangoTest::TestServer;
     LoggerSwapper ls;
-    auto logger = static_cast<TestLogger *>(TestServer::s_logger.get());
+    auto *logger = static_cast<TestLogger *>(TestServer::s_logger.get());
 
     GIVEN("a server started with basic device class")
     {
@@ -256,7 +256,7 @@ SCENARIO("test server crashes and timeouts are reported")
 {
     using TestServer = TangoTest::TestServer;
     LoggerSwapper ls;
-    auto logger = static_cast<TestLogger *>(TestServer::s_logger.get());
+    auto *logger = static_cast<TestLogger *>(TestServer::s_logger.get());
 
     GIVEN("a server that crashes on start")
     {

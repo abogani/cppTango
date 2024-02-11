@@ -1,8 +1,10 @@
-#ifndef _DEV_TESTCLASS_H
-#define _DEV_TESTCLASS_H
+// NOLINTBEGIN(*)
 
-#include <tango/tango.h>
-#include "DevTest.h"
+#ifndef _DEV_TESTCLASS_H
+  #define _DEV_TESTCLASS_H
+
+  #include <tango/tango.h>
+  #include "DevTest.h"
 
 //
 // Attributes related classes
@@ -639,7 +641,7 @@ class Short_attr_w2Attr : public Tango::Attr
     }
 };
 
-#ifndef COMPAT
+  #ifndef COMPAT
 class Encoded_attr_rwAttr : public Tango::Attr
 {
   public:
@@ -676,7 +678,7 @@ class Encoded_attr_image : public Tango::Attr
         (static_cast<DevTest *>(dev))->read_Encoded_attr_image(att);
     }
 };
-#endif
+  #endif
 
 //  --------------------------------------------------------------------------------
 
@@ -1985,3 +1987,5 @@ class DevTestClass : public Tango::DeviceClass
 };
 
 #endif // _DEV_TESTCLASS_H
+
+// NOLINTEND(*)

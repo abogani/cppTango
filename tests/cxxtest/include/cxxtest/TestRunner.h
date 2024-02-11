@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest_TestRunner_h__
 #define __cxxtest_TestRunner_h__
 
@@ -123,3 +125,5 @@ namespace CxxTest
 
 
 #endif // __cxxtest_TestRunner_h__
+
+ // NOLINTEND(*)

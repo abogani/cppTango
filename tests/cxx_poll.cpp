@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef PollTestSuite_h
-#define PollTestSuite_h
+  #define PollTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME PollTestSuite__loop
+  #undef SUITE_NAME
+  #define SUITE_NAME PollTestSuite__loop
 
 class PollTestSuite__loop : public CxxTest::TestSuite
 {
@@ -442,3 +444,5 @@ class PollTestSuite__loop : public CxxTest::TestSuite
 };
 
 #endif // PollTestSuite_h
+
+// NOLINTEND(*)

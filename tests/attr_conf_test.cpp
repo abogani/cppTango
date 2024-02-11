@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <time.h>
 
 #include "common.h"
@@ -1015,3 +1017,5 @@ void check_delta_val_value(Tango::DeviceProxy &dev,
         aie = dev.get_attribute_config(att);
         assert (aie.alarms.delta_val == class_desc); */
 }
+
+// NOLINTEND(*)

@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 int main(int argc, char **argv)
@@ -200,3 +202,5 @@ int main(int argc, char **argv)
 
     TEST_LOG << "   Delete device attribute property --> OK" << std::endl;
 }
+
+// NOLINTEND(*)

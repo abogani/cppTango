@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 
 #include "DevTest.h"
@@ -672,3 +674,5 @@ void DevTestClass::pipe_factory()
     RPipeDEClass *pRPipeDE = new RPipeDEClass("RPipeDE", Tango::OPERATOR);
     pipe_list.push_back(pRPipeDE);
 }
+
+// NOLINTEND(*)

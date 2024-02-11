@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022::main.cpp) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -90,3 +92,5 @@ int main(int argc, char *argv[])
 
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::main.cpp
+
+ // NOLINTEND(*)

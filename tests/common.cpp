@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include "common.h"
 
 #include <stdlib.h>
@@ -39,3 +41,5 @@ double parse_as<double>(const std::string &str)
     return result;
 }
 #endif
+
+// NOLINTEND(*)

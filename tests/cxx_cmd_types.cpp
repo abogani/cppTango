@@ -1,10 +1,12 @@
+// NOLINTBEGIN(*)
+
 #ifndef CmdTypesTestSuite_h
-#define CmdTypesTestSuite_h
+  #define CmdTypesTestSuite_h
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME CmdTypesTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME CmdTypesTestSuite
 
 class CmdTypesTestSuite : public CxxTest::TestSuite
 {
@@ -77,9 +79,9 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     void test_Scalar_Short(void)
     {
         DeviceAttribute da;
-#ifndef COMPAT
+  #ifndef COMPAT
         TS_ASSERT_EQUALS(da.get_data_format(), Tango::FMT_UNKNOWN);
-#endif
+  #endif
 
         try
         {
@@ -105,10 +107,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         da >> sh;
         TS_ASSERT_EQUALS(sh, 12);
         TS_ASSERT_EQUALS(data_type, Tango::DEV_SHORT);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-#endif
+  #endif
         //        TEST_LOG << "   Scalar short --> OK" << endl;
     }
 
@@ -117,9 +119,9 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     void test_Scalar_Short_DevEncoded_2__loop(void)
     {
         DeviceAttribute da;
-#ifndef COMPAT
+  #ifndef COMPAT
         TS_ASSERT_EQUALS(da.get_data_format(), Tango::FMT_UNKNOWN);
-#endif
+  #endif
 
         try
         {
@@ -135,10 +137,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         da >> sh;
         TS_ASSERT_EQUALS(sh, 12);
         TS_ASSERT_EQUALS(data_type, Tango::DEV_SHORT);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-#endif
+  #endif
         //        TEST_LOG << "   Scalar short --> OK" << endl;
     }
 
@@ -147,9 +149,9 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     void test_Scalar_Long__loop(void)
     {
         DeviceAttribute da;
-#ifndef COMPAT
+  #ifndef COMPAT
         TS_ASSERT_EQUALS(da.get_data_format(), Tango::FMT_UNKNOWN);
-#endif
+  #endif
         try
         {
             da = device1->read_attribute("Long_attr");
@@ -164,10 +166,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         int data_type = da.get_type();
         TS_ASSERT_EQUALS(lo, 1246);
         TS_ASSERT_EQUALS(data_type, Tango::DEV_LONG);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-#endif
+  #endif
     }
 
     // Test SCALAR double
@@ -304,10 +306,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
 
         TS_ASSERT_EQUALS(lo, 0x800000000LL);
         TS_ASSERT_EQUALS(data_type, Tango::DEV_LONG64);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-#endif
+  #endif
     }
 
     // Test SCALAR unsigned long
@@ -357,9 +359,9 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     void test_Scalar_State__loop(void)
     {
         DeviceAttribute da;
-#ifndef COMPAT
+  #ifndef COMPAT
         TS_ASSERT_EQUALS(da.get_data_format(), Tango::FMT_UNKNOWN);
-#endif
+  #endif
         try
         {
             da = device1->read_attribute("State_attr_rw");
@@ -375,15 +377,15 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
 
         TS_ASSERT_EQUALS(lo, Tango::FAULT);
         TS_ASSERT_EQUALS(data_type, Tango::DEV_STATE);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-#endif
+  #endif
     }
 
     // Test SCALAR DevEncoded
 
-#ifndef COMPAT
+  #ifndef COMPAT
     void test_Scalar_DevEncoded__loop(void)
     {
         DeviceAttribute da;
@@ -402,10 +404,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
 
         TS_ASSERT_EQUALS(std::string(lo.encoded_format.in()), "Which format?");
         TS_ASSERT_EQUALS(data_type, Tango::DEV_ENCODED);
-  #ifndef COMPAT
+    #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SCALAR);
-  #endif
+    #endif
         TS_ASSERT_EQUALS(lo.encoded_data.length(), 4u);
         TS_ASSERT_EQUALS(lo.encoded_data[0], 97);
         TS_ASSERT_EQUALS(lo.encoded_data[1], 98);
@@ -421,7 +423,7 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         EncodedAttribute att;
         int width, height;
         unsigned char *gray8;
-  #ifdef TANGO_USE_JPEG
+    #ifdef TANGO_USE_JPEG
         try
         {
             da = device1->read_attribute("Encoded_image");
@@ -440,14 +442,14 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         TS_ASSERT_LESS_THAN_EQUALS(gray8[128 + 128 * 256], 132);
 
         delete[] gray8;
-  #else
+    #else
         da = device1->read_attribute("Encoded_image");
         TS_ASSERT_THROWS_ASSERT(att.decode_gray8(&da, &width, &height, &gray8),
                                 Tango::DevFailed & e,
                                 TS_ASSERT_EQUALS(string(e.errors[0].reason.in()), API_EmptyDeviceAttribute));
-  #endif
+    #endif
     }
-#endif
+  #endif
 
     // Thirteen in one go
 
@@ -466,11 +468,11 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         names.push_back("ULong_attr_rw");
         names.push_back("ULong64_attr_rw");
         names.push_back("State_attr_rw");
-#ifndef COMPAT
+  #ifndef COMPAT
         names.push_back("Encoded_attr");
 
         DevEncoded enc;
-#endif
+  #endif
 
         vector<DeviceAttribute> *received;
 
@@ -520,11 +522,11 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(ulo64, 0xC000000000000000LL);
         (*received)[11] >> sta;
         TS_ASSERT_EQUALS(sta, Tango::FAULT);
-#ifndef COMPAT
+  #ifndef COMPAT
         (*received)[12] >> enc;
         TS_ASSERT_EQUALS(enc.encoded_data.length(), 4u);
         TS_ASSERT_EQUALS(std::string(enc.encoded_format.in()), "Which format?");
-#endif
+  #endif
 
         delete received;
     }
@@ -551,10 +553,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         bool ret = (da >> sh);
 
         TS_ASSERT(ret);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SPECTRUM);
-#endif
+  #endif
         TS_ASSERT_EQUALS(sh[0], 10);
         TS_ASSERT_EQUALS(sh[1], 20);
         TS_ASSERT_EQUALS(sh[2], 30);
@@ -579,10 +581,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         bool ret = (da >> lo);
 
         TS_ASSERT(ret);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SPECTRUM);
-#endif
+  #endif
         TS_ASSERT_EQUALS(lo[0], 0);
         TS_ASSERT_EQUALS(lo[1], 1);
         TS_ASSERT_EQUALS(lo[2], 2);
@@ -677,10 +679,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         bool ret = (da >> sh);
 
         TS_ASSERT(ret);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SPECTRUM);
-#endif
+  #endif
         TS_ASSERT(sh[0]);
         TS_ASSERT(sh[1]);
         TS_ASSERT(!sh[2]);
@@ -1121,10 +1123,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         DevVarStateArray *lo;
         bool ret = (da >> lo);
         TS_ASSERT(ret);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::SPECTRUM);
-#endif
+  #endif
         TS_ASSERT_EQUALS((*lo)[0], Tango::ON);
         TS_ASSERT_EQUALS((*lo)[1], Tango::OFF);
         TS_ASSERT_EQUALS((*lo)[2], Tango::UNKNOWN);
@@ -1150,10 +1152,10 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         bool ret = (da >> lo);
 
         TS_ASSERT(ret);
-#ifndef COMPAT
+  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         TS_ASSERT_EQUALS(data_format, Tango::IMAGE);
-#endif
+  #endif
 
         delete lo;
     }
@@ -1164,7 +1166,7 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     {
         bool except = false;
         DeviceAttribute db;
-#ifndef COMPAT
+  #ifndef COMPAT
         db.set_exceptions(DeviceAttribute::unknown_format_flag);
 
         try
@@ -1182,7 +1184,7 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
         AttrDataFormat df = db.get_data_format();
         TS_ASSERT_EQUALS(df, Tango::FMT_UNKNOWN);
 
-#endif
+  #endif
     }
 
     // Test DeviceAttribute get_type method after constructor call
@@ -1277,3 +1279,5 @@ class CmdTypesTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // CmdTypesTestSuite_h
+
+// NOLINTEND(*)

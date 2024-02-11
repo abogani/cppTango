@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 //+=============================================================================
 //
 // file :               ClassFactory.cpp
@@ -30,3 +32,5 @@ void Tango::DServer::class_factory()
 
     add_class(DevTestClass::init("DevTest"));
 }
+
+// NOLINTEND(*)

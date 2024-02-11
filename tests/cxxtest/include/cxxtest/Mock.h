@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__Mock_h__
 #define __cxxtest__Mock_h__
 
@@ -348,3 +350,5 @@ __CXXTEST_MOCK__TRAITS;
     }
 
 #endif // __cxxtest__Mock_h__
+
+ // NOLINTEND(*)

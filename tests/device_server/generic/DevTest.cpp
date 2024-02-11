@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #include <tango/tango.h>
 #include "DevTest.h"
 #include <tango/server/tango_clock.h>
@@ -2670,3 +2672,5 @@ void DevTest::cmd_push_state_status_event()
     set_change_event("State", false, false);
     set_change_event("Status", false, false);
 }
+
+// NOLINTEND(*)

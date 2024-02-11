@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 #ifndef __cxxtest__QtGui_h__
 #define __cxxtest__QtGui_h__
 
@@ -269,3 +271,5 @@ namespace CxxTest
 };
 
 #endif // __cxxtest__QtGui_h__
+
+ // NOLINTEND(*)

@@ -1,14 +1,16 @@
+// NOLINTBEGIN(*)
+
 #ifndef BlackboxTestSuite_h
-#define BlackboxTestSuite_h
+  #define BlackboxTestSuite_h
 
-#ifdef _TG_WINDOWS_
-  #include <process.h> // needed to obtain process id
-#endif                 // _TG_WINDOWS_
+  #ifdef _TG_WINDOWS_
+    #include <process.h> // needed to obtain process id
+  #endif                 // _TG_WINDOWS_
 
-#include "cxx_common.h"
+  #include "cxx_common.h"
 
-#undef SUITE_NAME
-#define SUITE_NAME BlackboxTestSuite
+  #undef SUITE_NAME
+  #define SUITE_NAME BlackboxTestSuite
 
 class BlackboxTestSuite : public CxxTest::TestSuite
 {
@@ -145,11 +147,11 @@ class BlackboxTestSuite : public CxxTest::TestSuite
             TS_FAIL("Unexpected default");
         }
 
-#ifdef _TG_WINDOWS_
+  #ifdef _TG_WINDOWS_
         int pid = _getpid();
-#else
+  #else
         pid_t pid = getpid();
-#endif // _TG_WINDOWS_
+  #endif // _TG_WINDOWS_
 
         stringstream ss;
         ss << pid;
@@ -302,3 +304,5 @@ class BlackboxTestSuite : public CxxTest::TestSuite
     }
 };
 #endif // BlackboxTestSuite_h
+
+// NOLINTEND(*)

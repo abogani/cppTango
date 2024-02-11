@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022Class.h) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -39,10 +41,10 @@
 //=============================================================================
 
 #ifndef TestCppTango1022Class_H
-#define TestCppTango1022Class_H
+  #define TestCppTango1022Class_H
 
-#include <tango/tango.h>
-#include "TestCppTango1022.h"
+  #include <tango/tango.h>
+  #include "TestCppTango1022.h"
 
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class.h
@@ -123,3 +125,5 @@ class TestCppTango1022Class : public Tango::DeviceClass
 }	//	End of namespace
 
 #endif   //	TestCppTango1022_H
+
+ // NOLINTEND(*)

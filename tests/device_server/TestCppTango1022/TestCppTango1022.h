@@ -1,3 +1,5 @@
+// NOLINTBEGIN(*)
+
 /*----- PROTECTED REGION ID(TestCppTango1022.h) ENABLED START -----*/
 /* clang-format on */
 //=============================================================================
@@ -35,14 +37,14 @@
 //=============================================================================
 
 #ifndef TestCppTango1022_H
-#define TestCppTango1022_H
+  #define TestCppTango1022_H
 
-#include <tango/tango.h>
+  #include <tango/tango.h>
 
-#ifdef TANGO_TEST_BASE_CLASS
-  #undef TANGO_BASE_CLASS
-  #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
-#endif
+  #ifdef TANGO_TEST_BASE_CLASS
+    #undef TANGO_BASE_CLASS
+    #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
+  #endif
 
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022.h
@@ -195,3 +197,5 @@ public:
 }	//	End of namespace
 
 #endif   //	TestCppTango1022_H
+
+ // NOLINTEND(*)
