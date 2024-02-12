@@ -604,16 +604,16 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
     bool is_alarm{false};
     if(attr.prev_alarm_event.inited == false)
     {
-        attr.prev_alarm_event.store(
-            attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
+        attr.prev_alarm_event.store(attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
         is_alarm = true;
     }
 
     // Check whether the data quality has changed. Fire event on a quality
-    // change if the quality was previously ALARM or WARNING and is now not ALARM or the
-    // quality was not ALARM but is now ALARM.
+    // change if the quality was previously ALARM and is now not ALARM or the
+    // quality was not ALARM but is now ALARM. Do the same for WARNING.
     if((!except) && (attr.prev_alarm_event.quality != the_quality) &&
-       ((attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM)))
+       (((attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM)) ||
+        ((attr.prev_alarm_event.quality == Tango::ATTR_WARNING) || (the_quality == Tango::ATTR_WARNING))))
     {
         is_alarm = true;
     }
@@ -621,8 +621,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
     bool ret{false};
     if(is_alarm)
     {
-        attr.prev_alarm_event.store(
-            attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
+        attr.prev_alarm_event.store(attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
 
         // Prepare to push the event
         std::vector<int> &client_libs{attr.get_client_lib(ALARM_EVENT)};

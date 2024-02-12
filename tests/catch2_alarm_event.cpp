@@ -5,8 +5,10 @@
 #include "utils/utils.h"
 
 static constexpr double ATTR_INIT_VALUE = 0.0;
-static constexpr double ATTR_MIN_ALARM = -1.0;
-static constexpr double ATTR_MAX_ALARM = 1.0;
+static constexpr double ATTR_MIN_WARNING = -1.0;
+static constexpr double ATTR_MAX_WARNING = 1.0;
+static constexpr double ATTR_MIN_ALARM = -5.0;
+static constexpr double ATTR_MAX_ALARM = 5.0;
 static constexpr double ATTR_PUSH_VALUE = 10.0;
 
 // Test device class
@@ -27,6 +29,11 @@ class AlarmEventDev : public Base
     void set_alarm()
     {
         attr_quality = Tango::ATTR_ALARM;
+    }
+
+    void set_warning()
+    {
+        attr_quality = Tango::ATTR_WARNING;
     }
 
     void set_valid()
@@ -56,9 +63,15 @@ class AlarmEventDev : public Base
             "attr_test", Tango::DEV_DOUBLE);
         // TODO: for now polling has to be enabled by server
         attr_test->set_polling_period(100);
+        Tango::UserDefaultAttrProp props;
+        props.set_min_warning(std::to_string(ATTR_MIN_WARNING).c_str());
+        props.set_max_warning(std::to_string(ATTR_MAX_WARNING).c_str());
+        props.set_min_alarm(std::to_string(ATTR_MIN_ALARM).c_str());
+        props.set_max_alarm(std::to_string(ATTR_MAX_ALARM).c_str());
+        attr_test->set_default_properties(props);
         attrs.push_back(attr_test);
 
-        // attribute which pushes alarm events from code
+        // attribute which pushes alarm events from code without checking criteria
         auto attr_push = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
             "attr_push", Tango::DEV_DOUBLE);
         attr_push->set_alarm_event(true, false);
@@ -67,6 +80,7 @@ class AlarmEventDev : public Base
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
     {
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_warning>("set_warning"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_alarm>("set_alarm"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_valid>("set_valid"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_alarm>("push_alarm"));
@@ -96,20 +110,26 @@ class EvCb : public Tango::CallBack
                   << "; last_event_value=" << last_event_value << "; last_event_quality=" << last_event_quality << "\n";
     }
 
+    bool test_event_received()
+    {
+        if(event_received)
+        {
+            event_received = false;
+            return true;
+        }
+        return false;
+    }
+
     bool test_last_event(std::string expected_event_type,
                          Tango::DevDouble expected_value,
                          Tango::AttrQuality expected_quality)
     {
         std::cout << "test: event_received=" << event_received << "; last_event_type=" << last_event_type
                   << "; last_event_value=" << last_event_value << "; last_event_quality=" << last_event_quality << "\n";
-        if(event_received)
+        if(test_event_received())
         {
-            if(last_event_type == expected_event_type && last_event_value == expected_value &&
-               last_event_quality == expected_quality)
-            {
-                event_received = false;
-                return true;
-            }
+            return ((last_event_type == expected_event_type) && (last_event_value == expected_value) &&
+                    (last_event_quality == expected_quality));
         }
         return false;
     }
@@ -134,18 +154,9 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 
         REQUIRE(idlver == device->get_idl_version());
 
-        AND_GIVEN("a polled attribute name and configuration")
+        AND_GIVEN("a polled attribute name")
         {
             std::string att{"attr_test"};
-
-            // configure min and max alarms
-            Tango::AttributeInfo ai;
-            Tango::AttributeInfoList ai_list;
-            REQUIRE_NOTHROW(ai = device->get_attribute_config(att));
-            ai.min_alarm = std::to_string(ATTR_MIN_ALARM);
-            ai.max_alarm = std::to_string(ATTR_MAX_ALARM);
-            ai_list.push_back(ai);
-            REQUIRE_NOTHROW(device->set_attribute_config(ai_list));
 
             REQUIRE(device->is_attribute_polled(att));
 
@@ -155,7 +166,20 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                 int evid;
                 REQUIRE_NOTHROW(evid = device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                WHEN("we set the attribute value above max alarm")
+                WHEN("we set the attribute value above max warning (VALID -> WARNING)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MAX_WARNING + 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_MAX_WARNING + 1, Tango::ATTR_WARNING));
+                    }
+                }
+
+                WHEN("we set the attribute value above max alarm (WARNING -> ALARM)")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);
@@ -164,11 +188,25 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 
                     THEN("an alarm event is generated")
                     {
+                        sleep(1);
                         REQUIRE(callback.test_last_event("alarm", ATTR_MAX_ALARM + 1, Tango::ATTR_ALARM));
                     }
                 }
 
-                WHEN("we set the attribute value back below max alarm")
+                WHEN("we set the attribute value back below max alarm (ALARM -> WARNING)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MAX_WARNING + 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_MAX_WARNING + 1, Tango::ATTR_WARNING));
+                    }
+                }
+
+                WHEN("we set the attribute value back below max warning (WARNING -> VALID)")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);
@@ -181,7 +219,20 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                     }
                 }
 
-                WHEN("we set the attribute value below min alarm")
+                WHEN("we set the attribute value below min warning (VALID -> WARNING)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MIN_WARNING - 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_MIN_WARNING - 1, Tango::ATTR_WARNING));
+                    }
+                }
+
+                WHEN("we set the attribute value below min alarm (WARNING -> ALARM)")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);
@@ -194,7 +245,72 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                     }
                 }
 
-                WHEN("we set the attribute value back above min alarm")
+                WHEN("we set the attribute value back above min alarm (ALARM -> WARNING)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MIN_WARNING - 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_MIN_WARNING - 1, Tango::ATTR_WARNING));
+                    }
+                }
+
+                WHEN("we set the attribute value back above min warning (WARNING -> VALID)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_INIT_VALUE;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_VALID));
+                    }
+                }
+
+                WHEN("we set the attribute value above max alarm (VALID -> ALARM)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MAX_ALARM + 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_MAX_ALARM + 1, Tango::ATTR_ALARM));
+                    }
+                }
+
+                WHEN("we set the attribute value back below max alarm (ALARM -> VALID)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_INIT_VALUE;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_VALID));
+                    }
+                }
+
+                WHEN("we set the attribute value below min alarm (VALID -> ALARM)")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MIN_ALARM - 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_MIN_ALARM - 1, Tango::ATTR_ALARM));
+                    }
+                }
+
+                WHEN("we set the attribute value back above min alarm (ALARM -> VALID)")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);
@@ -233,7 +349,17 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                 int evid;
                 REQUIRE_NOTHROW(evid = device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                WHEN("we set the attribute quality to ATTR_ALARM")
+                WHEN("we set the attribute quality to ATTR_WARNING (VALID -> WARNING)")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("set_warning"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_WARNING));
+                    }
+                }
+
+                WHEN("we set the attribute quality to ATTR_ALARM (WARNING -> ALARM)")
                 {
                     REQUIRE_NOTHROW(device->command_inout("set_alarm"));
 
@@ -243,7 +369,37 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                     }
                 }
 
-                WHEN("we set the attribute quality back to ATTR_VALID")
+                WHEN("we set the attribute quality to ATTR_WARNING (ALARM -> WARNING)")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("set_warning"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_WARNING));
+                    }
+                }
+
+                WHEN("we set the attribute quality back to ATTR_VALID (WARNING -> VALID)")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("set_valid"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_VALID));
+                    }
+                }
+
+                WHEN("we set the attribute quality to ATTR_ALARM (VALID -> ALARM)")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("set_alarm"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, Tango::ATTR_ALARM));
+                    }
+                }
+
+                WHEN("we set the attribute quality back to ATTR_VALID (ALARM -> VALID)")
                 {
                     REQUIRE_NOTHROW(device->command_inout("set_valid"));
 
@@ -267,7 +423,7 @@ SCENARIO("Alarm events can be pushed from code manually")
 
         REQUIRE(idlver == device->get_idl_version());
 
-        AND_GIVEN("an attribute which pushes events from code")
+        AND_GIVEN("an attribute which pushes events from code without checking criteria")
         {
             std::string att{"attr_push"};
 
