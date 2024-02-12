@@ -44,7 +44,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AutoAttrDev, 3)
 
 SCENARIO("AutoAttr can be read and written")
 {
-    int idlver = GENERATE(range(3, 7));
+    int idlver = GENERATE(range(3, TangoTest::IDL_MAX));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"auto_attr", "AutoAttrDev", idlver};
