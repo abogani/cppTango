@@ -4537,8 +4537,6 @@ void Attribute::fire_alarm_event(DevFailed *except)
     }
 
     // Check if it is needed to send an event
-    Tango::AttributeValue_3 *send_attr = nullptr;
-    Tango::AttributeValue_4 *send_attr_4 = nullptr;
     Tango::AttributeValue_5 *send_attr_5 = nullptr;
     try
     {
@@ -4661,21 +4659,13 @@ void Attribute::fire_alarm_event(DevFailed *except)
             }
         }
 
-        // Build one AttributeValue_3, AttributeValue_4 or AttributeValue_5 object
+        // Build one AttributeValue_5 object
         long vers = dev->get_dev_idl_version();
         try
         {
-            if(vers >= 4)
+            if(vers >= 6)
             {
                 send_attr_5 = new Tango::AttributeValue_5{ZeroInitialize<Tango::AttributeValue_5>().value};
-            }
-            else if(vers == 4)
-            {
-                send_attr_4 = new Tango::AttributeValue_4{ZeroInitialize<Tango::AttributeValue_4>().value};
-            }
-            else
-            {
-                send_attr = new Tango::AttributeValue_3{ZeroInitialize<Tango::AttributeValue_3>().value};
             }
         }
         catch(std::bad_alloc &)
@@ -4690,39 +4680,26 @@ void Attribute::fire_alarm_event(DevFailed *except)
             {
                 Attribute_2_AttributeValue(send_attr_5, dev);
             }
-            else if(send_attr_4 != NULL)
-            {
-                Attribute_2_AttributeValue(send_attr_4, dev);
-            }
-            else
-            {
-                Attribute_2_AttributeValue(send_attr, dev);
-            }
         }
 
         // Create the structure used to send data to event system
         EventSupplier::SuppliedEventData ad{};
 
         // Fire event
-        if(is_check_alarm_criteria() == true)
+        if(is_check_alarm_criteria())
         {
             if(send_attr_5 != nullptr)
             {
                 ad.attr_val_5 = send_attr_5;
             }
-            else if(send_attr_4 != nullptr)
-            {
-                ad.attr_val_4 = send_attr_4;
-            }
-            else
-            {
-                ad.attr_val_3 = send_attr;
-            }
 
+            //
             // Eventually push the event (if detected)
             // The detect_and_push_events() method returns true if the event
             // is detected.
-            if((event_supplier_zmq != nullptr) && (pub_socket_created == true))
+            //
+
+            if(event_supplier_zmq != nullptr && pub_socket_created)
             {
                 event_supplier_zmq->detect_and_push_alarm_event(dev, ad, *this, name, except, true);
             }
@@ -4736,6 +4713,8 @@ void Attribute::fire_alarm_event(DevFailed *except)
             //
             // This is done only to be able to set-up the same filters with events
             // comming with the standard mechanism or coming from a manual fire event call.
+            //
+
             bool force_alarm = false;
             bool quality_change = false;
             {
@@ -4749,7 +4728,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
                     force_alarm = true;
                 }
 
-                prev_alarm_event.store(send_attr_5, send_attr_4, send_attr, nullptr, except);
+                prev_alarm_event.store(send_attr_5, nullptr, nullptr, nullptr, except);
 
                 quality_change = (old_quality != prev_change_event.quality);
             }
@@ -4759,8 +4738,8 @@ void Attribute::fire_alarm_event(DevFailed *except)
             std::vector<std::string> filterable_names_lg;
             std::vector<long> filterable_data_lg;
 
-            filterable_names.push_back("forced_event");
-            if(force_alarm == true)
+            filterable_names.emplace_back("forced_event");
+            if(force_alarm)
             {
                 filterable_data.push_back((double) 1.0);
             }
@@ -4769,8 +4748,8 @@ void Attribute::fire_alarm_event(DevFailed *except)
                 filterable_data.push_back((double) 0.0);
             }
 
-            filterable_names.push_back("quality");
-            if(quality_change == true)
+            filterable_names.emplace_back("quality");
+            if(quality_change)
             {
                 filterable_data.push_back((double) 1.0);
             }
@@ -4783,17 +4762,12 @@ void Attribute::fire_alarm_event(DevFailed *except)
             {
                 ad.attr_val_5 = send_attr_5;
             }
-            else if(send_attr_4 != nullptr)
-            {
-                ad.attr_val_4 = send_attr_4;
-            }
-            else
-            {
-                ad.attr_val_3 = send_attr;
-            }
 
-            // Finally push the event
-            if((event_supplier_zmq != nullptr) && (pub_socket_created == true))
+            //
+            // Finally push the event(s)
+            //
+
+            if(event_supplier_zmq != nullptr && pub_socket_created)
             {
                 event_supplier_zmq->push_event_loop(dev,
                                                     ALARM_EVENT,
@@ -4812,16 +4786,6 @@ void Attribute::fire_alarm_event(DevFailed *except)
         {
             delete send_attr_5;
             send_attr_5 = nullptr;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            delete send_attr_4;
-            send_attr_4 = nullptr;
-        }
-        else if(send_attr != nullptr)
-        {
-            delete send_attr;
-            send_attr = nullptr;
         }
 
         // Delete the data values allocated in the attribute
@@ -4843,14 +4807,6 @@ void Attribute::fire_alarm_event(DevFailed *except)
         if(send_attr_5 != nullptr)
         {
             delete send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            delete send_attr_4;
-        }
-        else if(send_attr != nullptr)
-        {
-            delete send_attr;
         }
 
         if((name_lower != "state") && (name_lower != "status"))

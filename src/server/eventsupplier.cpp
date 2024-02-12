@@ -595,44 +595,22 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
     {
         the_quality = attr_value.attr_val_5->quality;
     }
-    else if(attr_value.attr_val_4 != nullptr)
-    {
-        the_quality = attr_value.attr_val_4->quality;
-    }
-    else if(attr_value.attr_val_3 != nullptr)
-    {
-        the_quality = attr_value.attr_val_3->quality;
-    }
-    else
-    {
-        the_quality = attr_value.attr_val->quality;
-    }
 
     // get the mutex to synchronize the sending of events
     omni_mutex_lock l(event_mutex);
 
     // if no attribute of this name is registered for an alarm event,
     // then store the current value to start with.
-    bool is_alarm{false}, is_change{false}, force_change{false};
-    std::string event;
-    double delta_change_rel{}, delta_change_abs{};
+    bool is_alarm{false};
     if(attr.prev_alarm_event.inited == false)
     {
         attr.prev_alarm_event.store(
-            attr_value.attr_val_5, attr_value.attr_val_4, attr_value.attr_val_3, attr_value.attr_val, except);
+            attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
         is_alarm = true;
-    }
-    else
-    {
-        // Determine delta_change in percent compared with previous event sent
-        is_change = detect_change(
-            attr, attr_value, false, delta_change_rel, delta_change_abs, except, force_change, device_impl);
-        TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(...): rel_change = " << delta_change_rel
-                        << ", abs_change = " << delta_change_abs << ", is_change = " << is_change << std::endl;
     }
 
     // Check whether the data quality has changed. Fire event on a quality
-    // change if the quality was previously ALARM and is now not ALARM or the
+    // change if the quality was previously ALARM or WARNING and is now not ALARM or the
     // quality was not ALARM but is now ALARM.
     if((!except) && (attr.prev_alarm_event.quality != the_quality) &&
        ((attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM)))
@@ -644,7 +622,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
     if(is_alarm)
     {
         attr.prev_alarm_event.store(
-            attr_value.attr_val_5, attr_value.attr_val_4, attr_value.attr_val_3, attr_value.attr_val, except);
+            attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
 
         // Prepare to push the event
         std::vector<int> &client_libs{attr.get_client_lib(ALARM_EVENT)};
@@ -661,7 +639,6 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
             switch(*ite)
             {
             case 6:
-            case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
                 ev_name = EVENT_COMPAT_IDL5 + ev_name;
@@ -669,15 +646,9 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
             }
             break;
 
-            case 4:
-            {
-                convert_att_event_to_4(attr_value, sent_value, need_free, attr);
-            }
-            break;
-
             default:
             {
-                convert_att_event_to_3(attr_value, sent_value, need_free, attr);
+                TANGO_ASSERT_ON_DEFAULT(*ite);
             }
             }
 
@@ -705,21 +676,6 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
                 {
                     delete sent_value.attr_val_5;
                     sent_value.attr_val_5 = nullptr;
-                }
-                else if(sent_value.attr_val_4 != nullptr)
-                {
-                    delete sent_value.attr_val_4;
-                    sent_value.attr_val_4 = nullptr;
-                }
-                else if(sent_value.attr_val_3 != nullptr)
-                {
-                    delete sent_value.attr_val_3;
-                    sent_value.attr_val_3 = nullptr;
-                }
-                else if(sent_value.attr_val != nullptr)
-                {
-                    delete sent_value.attr_val;
-                    sent_value.attr_val = nullptr;
                 }
             }
             if(name_changed == true)
