@@ -41,7 +41,9 @@ Context::Context(const std::string &instance_name, const std::string &tmpl_name,
 std::string Context::info()
 {
     std::stringstream ss;
-    ss << "Started server on port " << m_server.get_port() << " redirected to \n" << m_server.get_redirect_file();
+    const std::string &filename = m_server.get_redirect_file();
+    size_t sep = filename.find_last_of("/\\");
+    ss << "Started server on port " << m_server.get_port() << " redirected to " << filename.substr(sep + 1);
     return ss.str();
 }
 
