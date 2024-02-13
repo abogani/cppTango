@@ -168,30 +168,30 @@ class AutoCommand : public Tango::Command
 
     CORBA::Any *execute(Tango::DeviceImpl *dev, const CORBA::Any &in_any) override
     {
-        CORBA::Any *out_any = new CORBA::Any();
         if constexpr(traits::arity == 0 && std::is_same_v<void, typename traits::return_type>)
         {
             std::invoke(cmd_fn, static_cast<Device *>(dev));
+            return insert();
         }
         else if constexpr(traits::arity == 0)
         {
             auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev));
-            *out_any <<= ret;
+            return insert(ret);
         }
         else if constexpr(std::is_same_v<void, typename traits::return_type>)
         {
             typename traits::template argument_type<0> arg;
-            in_any >>= arg;
+            extract(in_any, arg);
             std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+            return insert();
         }
         else
         {
             typename traits::template argument_type<0> arg;
-            in_any >>= arg;
+            extract(in_any, arg);
             auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
-            *out_any <<= ret;
+            return insert(ret);
         }
-        return out_any;
     }
 
   private:
