@@ -296,11 +296,25 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         [[fallthrough]];
     case Kind::Exited:
     {
-        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        // `test_has_failed == true` if we are currently stopping the server
+        // in some dtor while there is an uncaught exception in flight.  This
+        // means either:
+        //  - the code under test has throw an exception; or
+        //  - some assertion has failed (where Catch2 will throw an exception)
+        // In either case the test has failed.
+        bool test_has_failed = std::uncaught_exceptions() > 0;
+        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0 || test_has_failed)
         {
             std::stringstream ss;
-            ss << "TestServer exited with exit status " << stop_result.exit_status
-               << " during the test. Server output:";
+            if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+            {
+                ss << "TestServer exited with exit status " << stop_result.exit_status
+                   << " during the test. Server output:\n";
+            }
+            else
+            {
+                ss << "Detected that test failed. Server output:\n";
+            }
             std::ifstream f{m_redirect_file};
             append_logs(f, ss);
 
