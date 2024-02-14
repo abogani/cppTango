@@ -57,29 +57,33 @@ struct member_fn_traits<R (C::*)(Args... args)>
 };
 } // namespace detail
 
-//+ Class template to automatically generate a Tango::DeviceClass from a
-/// Tango::Device.
-///
-/// The template expects the following static member functions to be defined:
-///
-///   - static void attribute_factory(std::vector<Tango::Attr *> &attrs);
-///   - static void command_factory(std::vector<Tango::Command *> &cmds)
-///
-/// Use the TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE macro (in a single
-/// implementation file per Device) to instantiate the static members
-/// AutoDeviceClass and to register the device class with Tango.
-///
-/// Example:
-///
-///  class MyDevice : public Tango::Device
-///  {
-///      static void attribute_factory(std::vector<Tango::Attr *> attrs)
-///      {
-///          // ... Add attributes here
-///      }
-///  };
-///
-///  TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(MyDevice)
+/** @brief Automatically generate a Tango::DeviceClass from a Tango::Device.
+ *
+ * If the following static member functions are defined then they will be called
+ * during device instantiation:
+ *
+ *   - static void attribute_factory(std::vector<Tango::Attr *> &attrs);
+ *   - static void command_factory(std::vector<Tango::Command *> &cmds)
+ *
+ * Use the TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE macro (in a single
+ * implementation file per Device) to instantiate AutoDeviceClass's static
+ * members and to register the device class with Tango.
+ *
+ * Example:
+ *
+ *  class MyDevice : public Tango::Device
+ *  {
+ *    static void attribute_factory(std::vector<Tango::Attr *> attrs)
+ *    {
+ *      // ... Add attributes here
+ *    }
+ *  };
+ *
+ *  TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(MyDevice)
+ *
+ * @tparam Device C++ class for Tango device
+ * @param s name of device class
+ */
 template <typename Device>
 class AutoDeviceClass : public Tango::DeviceClass
 {
@@ -287,12 +291,17 @@ struct ClassRegistrar : ClassRegistrarBase
 
 } // namespace TangoTest
 
-//+ Instantiate a TangoTest::AutoDeviceClass for DEVICE.
-///
-/// For each DEVICE, this macro must be used in a single implementation file to
-/// instantiate static data members.
-///
-/// The device class will be registered with Tango with the name #DEVICE.
+/**
+ * @brief Instantiate a TangoTest::AutoDeviceClass for DEVICE.
+ *
+ * For each DEVICE, this macro must be used in a single implementation file to
+ * instantiate static data members.
+ *
+ * The device class will be registered with Tango with the name #DEVICE.
+ *
+ * @param DEVICE class
+ * @param NAME name of class
+ */
 #define TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(DEVICE, NAME)                                        \
     template <>                                                                                    \
     TangoTest::AutoDeviceClass<DEVICE> *TangoTest::AutoDeviceClass<DEVICE>::_instance = nullptr;   \
