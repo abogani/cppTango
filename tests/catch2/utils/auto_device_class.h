@@ -6,36 +6,24 @@
 #include <functional>
 #include <type_traits>
 
+#include "utils/type_traits.h"
+
 namespace TangoTest
 {
 
 namespace detail
 {
-template <typename T, typename = std::void_t<>>
-struct has_attribute_factory : std::false_type
-{
-};
+template <typename T>
+using attribute_factory_t = decltype(T::attribute_factory);
 
 template <typename T>
-struct has_attribute_factory<T, std::void_t<decltype(T::attribute_factory)>> : std::true_type
-{
-};
+constexpr bool has_attribute_factory = is_detected_v<attribute_factory_t, T>;
 
 template <typename T>
-constexpr bool has_attribute_factory_v = has_attribute_factory<T>::value;
-
-template <typename T, typename = std::void_t<>>
-struct has_command_factory : std::false_type
-{
-};
+using command_factory_t = decltype(T::command_factory);
 
 template <typename T>
-struct has_command_factory<T, std::void_t<decltype(T::command_factory)>> : std::true_type
-{
-};
-
-template <typename T>
-constexpr bool has_command_factory_v = has_command_factory<T>::value;
+constexpr bool has_command_factory = is_detected_v<command_factory_t, T>;
 
 template <typename F>
 struct member_fn_traits;
@@ -134,7 +122,7 @@ class AutoDeviceClass : public Tango::DeviceClass
   protected:
     void command_factory() override
     {
-        if constexpr(detail::has_command_factory_v<Device>)
+        if constexpr(detail::has_command_factory<Device>)
         {
             Device::command_factory(command_list);
         }
@@ -142,7 +130,7 @@ class AutoDeviceClass : public Tango::DeviceClass
 
     void attribute_factory(std::vector<Tango::Attr *> &attrs) override
     {
-        if constexpr(detail::has_attribute_factory_v<Device>)
+        if constexpr(detail::has_attribute_factory<Device>)
         {
             Device::attribute_factory(attrs);
         }
