@@ -131,6 +131,8 @@ class EventSupplier
 
     bool detect_and_push_alarm_event(
         DeviceImpl *, struct SuppliedEventData &, Attribute &, std::string &, DevFailed *, bool user_push = false);
+    bool do_detect_and_push_alarm_event(
+        DeviceImpl *, struct SuppliedEventData &, Attribute &, std::string &, DevFailed *, bool user_push = false);
 
     //------------------ Detect, push archive event --------------
 

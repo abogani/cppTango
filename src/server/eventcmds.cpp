@@ -274,7 +274,8 @@ void DServer::event_subscription(DeviceImpl &device,
             }
             else if(event == "alarm")
             {
-                if(!attribute.is_fwd_att() && !attribute.is_alarm_event())
+                // allow subscribing to alarm events without polling if change events are pushed
+                if(!attribute.is_fwd_att() && !(attribute.is_alarm_event() || attribute.is_change_event()))
                 {
                     TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
                 }

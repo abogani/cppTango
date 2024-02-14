@@ -559,6 +559,14 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
                 ev_name = EventName[CHANGE_EVENT];
             }
         }
+
+        // If we're handling change events manually and alarm_event_implemented is not set
+        // evaluate and push alarm event as well
+        if(attr.is_change_event() && !attr.is_alarm_event())
+        {
+            do_detect_and_push_alarm_event(device_impl, attr_value, attr, attr_name, except, user_push);
+        }
+
         ret = true;
     }
 
@@ -590,14 +598,32 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
 {
     TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(): called for attribute " << attr_name << std::endl;
 
+    // get the mutex to synchronize the sending of events
+    omni_mutex_lock l(event_mutex);
+
+    // perfortm the actual detection
+    bool ret = do_detect_and_push_alarm_event(device_impl, attr_value, attr, attr_name, except, user_push);
+
+    TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(): leaving for attribute " << attr_name << std::endl;
+    return ret;
+}
+
+// Perform the actual check and push alarm event action assuming the event_mutex is locked
+bool EventSupplier::do_detect_and_push_alarm_event(DeviceImpl *device_impl,
+                                                   struct SuppliedEventData &attr_value,
+                                                   Attribute &attr,
+                                                   std::string &attr_name,
+                                                   DevFailed *except,
+                                                   TANGO_UNUSED(bool user_push))
+{
+    TANGO_LOG_DEBUG << "EventSupplier::do_detect_and_push_alarm_event(): called for attribute " << attr_name
+                    << std::endl;
+
     Tango::AttrQuality the_quality{};
     if(attr_value.attr_val_5 != nullptr)
     {
         the_quality = attr_value.attr_val_5->quality;
     }
-
-    // get the mutex to synchronize the sending of events
-    omni_mutex_lock l(event_mutex);
 
     // if no attribute of this name is registered for an alarm event,
     // then store the current value to start with.
@@ -686,7 +712,8 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
         ret = true;
     }
 
-    TANGO_LOG_DEBUG << "EventSupplier::detect_and_push_alarm_event(): leaving for attribute " << attr_name << std::endl;
+    TANGO_LOG_DEBUG << "EventSupplier::do_detect_and_push_alarm_event(): leaving for attribute " << attr_name
+                    << std::endl;
     return ret;
 }
 

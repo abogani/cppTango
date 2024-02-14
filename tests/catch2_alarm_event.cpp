@@ -9,7 +9,7 @@ static constexpr double ATTR_MIN_WARNING = -1.0;
 static constexpr double ATTR_MAX_WARNING = 1.0;
 static constexpr double ATTR_MIN_ALARM = -5.0;
 static constexpr double ATTR_MAX_ALARM = 5.0;
-static constexpr double ATTR_PUSH_VALUE = 10.0;
+static constexpr double ATTR_PUSH_ALARM_VALUE = 10.0;
 
 // Test device class
 template <class Base>
@@ -43,8 +43,15 @@ class AlarmEventDev : public Base
 
     void push_alarm()
     {
-        Tango::DevDouble v{ATTR_PUSH_VALUE};
+        Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
         this->push_alarm_event("attr_push", &v);
+    }
+
+    void push_change()
+    {
+        Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
+        this->push_change_event("attr_change", &v);
+        this->push_change_event("attr_change_alarm", &v);
     }
 
     void read_attribute(Tango::Attribute &att)
@@ -59,15 +66,15 @@ class AlarmEventDev : public Base
 
     static void attribute_factory(std::vector<Tango::Attr *> &attrs)
     {
-        auto attr_test = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
-            "attr_test", Tango::DEV_DOUBLE);
-        // TODO: for now polling has to be enabled by server
-        attr_test->set_polling_period(100);
         Tango::UserDefaultAttrProp props;
         props.set_min_warning(std::to_string(ATTR_MIN_WARNING).c_str());
         props.set_max_warning(std::to_string(ATTR_MAX_WARNING).c_str());
         props.set_min_alarm(std::to_string(ATTR_MIN_ALARM).c_str());
         props.set_max_alarm(std::to_string(ATTR_MAX_ALARM).c_str());
+
+        auto attr_test = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
+            "attr_test", Tango::DEV_DOUBLE);
+        attr_test->set_polling_period(100);
         attr_test->set_default_properties(props);
         attrs.push_back(attr_test);
 
@@ -76,6 +83,22 @@ class AlarmEventDev : public Base
             "attr_push", Tango::DEV_DOUBLE);
         attr_push->set_alarm_event(true, false);
         attrs.push_back(attr_push);
+        // attribute which pushes change events from code
+        auto attr_change = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
+            "attr_change", Tango::DEV_DOUBLE);
+        props.set_event_abs_change("0.1");
+        attr_change->set_default_properties(props);
+        attr_change->set_change_event(true, true);
+        attrs.push_back(attr_change);
+
+        // attribute which pushes change and alarm events from code
+        auto attr_change_alarm =
+            new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
+                "attr_change_alarm", Tango::DEV_DOUBLE);
+        attr_change_alarm->set_default_properties(props);
+        attr_change_alarm->set_change_event(true, true);
+        attr_change_alarm->set_alarm_event(true, true);
+        attrs.push_back(attr_change_alarm);
     }
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
@@ -84,6 +107,7 @@ class AlarmEventDev : public Base
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_alarm>("set_alarm"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_valid>("set_valid"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_alarm>("push_alarm"));
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_change>("push_change"));
     }
 
   private:
@@ -132,6 +156,11 @@ class EvCb : public Tango::CallBack
                     (last_event_quality == expected_quality));
         }
         return false;
+    }
+
+    void clear_event_flag()
+    {
+        event_received = false;
     }
 
   private:
@@ -439,7 +468,77 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                     THEN("an alarm event is generated")
                     {
-                        REQUIRE(callback.test_last_event("alarm", ATTR_PUSH_VALUE, Tango::ATTR_VALID));
+                        REQUIRE(callback.test_last_event("alarm", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_VALID));
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Alarm events are pushed together with manual change events")
+{
+    int idlver = GENERATE(range(6, 7));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("an attribute which pushes change events from code")
+        {
+            std::string att{"attr_change"};
+
+            EvCb change_cb, alarm_cb;
+            int change_evid, alarm_evid;
+
+            WHEN("we subscribe to change and alarm events (no polling on attribute)")
+            {
+                THEN("the subscription succeeds")
+                {
+                    REQUIRE_NOTHROW(change_evid = device->subscribe_event(att, Tango::CHANGE_EVENT, &change_cb));
+                    REQUIRE_NOTHROW(alarm_evid = device->subscribe_event(att, Tango::ALARM_EVENT, &alarm_cb));
+
+                    WHEN("we push a change event from code")
+                    {
+                        REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                        THEN("a change and alarm events are generated")
+                        {
+                            REQUIRE(change_cb.test_last_event("change", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_ALARM));
+                            REQUIRE(alarm_cb.test_last_event("alarm", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_ALARM));
+                        }
+                    }
+                }
+            }
+        }
+
+        AND_GIVEN("an attribute which pushes change and alarm events from code")
+        {
+            std::string att{"attr_change_alarm"};
+
+            EvCb change_cb, alarm_cb;
+            int change_evid, alarm_evid;
+
+            WHEN("we subscribe to change and alarm events")
+            {
+                THEN("the subscription succeeds")
+                {
+                    REQUIRE_NOTHROW(change_evid = device->subscribe_event(att, Tango::CHANGE_EVENT, &change_cb));
+                    REQUIRE_NOTHROW(alarm_evid = device->subscribe_event(att, Tango::ALARM_EVENT, &alarm_cb));
+
+                    WHEN("we push a change event from code")
+                    {
+                        // clear event received on subscription
+                        alarm_cb.clear_event_flag();
+                        REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                        THEN("a change event is generated but alarm event is not")
+                        {
+                            REQUIRE(change_cb.test_last_event("change", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_ALARM));
+                            REQUIRE(!alarm_cb.test_event_received());
+                        }
                     }
                 }
             }
