@@ -105,6 +105,7 @@ constexpr int k_max_port = 20000;
 
 std::minstd_rand g_rng;
 FilenameBuilder g_filename_builder;
+std::vector<int> g_used_ports; // Work around for #1230
 
 class PlatformListener : public Catch::EventListenerBase
 {
@@ -201,8 +202,14 @@ void TestServer::start(const std::string &instance_name,
             s_logger->log(ss.str());
         }
 
-        m_port = dist(g_rng);
-        std::swap(m_port, s_next_port);
+        // We cannot reuse a port that the ORB has already connected to due to
+        // #1230.
+
+        do
+        {
+            m_port = dist(g_rng);
+            std::swap(m_port, s_next_port);
+        } while(std::find(g_used_ports.begin(), g_used_ports.end(), m_port) != g_used_ports.end());
 
         std::string end_point = [&]()
         {
@@ -270,6 +277,7 @@ TestServer::~TestServer()
 void TestServer::stop(std::chrono::milliseconds timeout)
 {
     using Kind = platform::StopServerResult::Kind;
+    g_used_ports.push_back(m_port);
     auto stop_result = platform::stop_server(m_handle, timeout);
 
     switch(stop_result.kind)
