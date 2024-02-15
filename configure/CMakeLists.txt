@@ -51,11 +51,28 @@ message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
 find_package(cppzmq REQUIRED)
 find_package(tangoidl REQUIRED)
-
 find_package(omniORB4 REQUIRED)
 
+if (TANGO_USE_TELEMETRY)
+    # workaround gRPC cmake bug fixed in
+    # 5c9e4050 ([Build] fix `gRPCConfig.cmake` (#33361), 2023-09-06)
+    include(CMakeFindDependencyMacro)
+
+    find_package(gRPC REQUIRED)
+    message(STATUS "Tango telemetry (OpenTelemetry) enabled")
+    find_package(opentelemetry-cpp REQUIRED)
+
+    if(WIN32)
+      find_package(CURL REQUIRED)
+      find_package(nlohmann_json REQUIRED)
+      find_package(OpenSSL REQUIRED)
+    endif()
+else()
+    message(STATUS "Tango telemetry (OpenTelemetry) disabled")
+endif()
+
 if(NOT OMNIIDL)
-  message(FATAL_ERROR "Could not find a usable omniidl")
+    message(FATAL_ERROR "Could not find a usable omniidl")
 endif()
 
 function(tango_find_omniorb_version)
@@ -224,6 +241,7 @@ if(NOT WIN32)
         if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             add_compile_options(-stdlib=libc++)
             add_link_options(-stdlib=libc++)
+            add_link_options(-fuse-ld=lld)
         else()
             message(WARNING "TANGO_USE_LIBCPP=ON is only supported with clang.")
         endif()
