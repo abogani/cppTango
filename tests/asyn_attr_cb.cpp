@@ -45,7 +45,7 @@ void MyCallBack::attr_read(AttrReadEvent *att)
         catch(DevFailed &e)
         {
             long nb_err = e.errors.length();
-            if(strcmp(e.errors[nb_err - 1].reason, API_AttributeFailed) == 0)
+            if(strcmp(e.errors[nb_err - 1].reason, API_AttributeFailed) == 0 && att->err)
             {
                 attr_failed = true;
                 TEST_LOG << "Read attributes failed error" << std::endl;
