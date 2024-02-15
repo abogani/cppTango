@@ -82,7 +82,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AutoCmdDev, 3)
 
 SCENARIO("AutoCommand executes correctly")
 {
-    int idlver = GENERATE(range(3, 7));
+    int idlver = GENERATE(range(3, TangoTest::IDL_MAX));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"auto_command", "AutoCmdDev", idlver};
