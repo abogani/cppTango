@@ -192,7 +192,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
         {
             std::cerr << "OUPS !! A omni thread fatal exception received by a polling thread !!!!!!!!" << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(nullptr);
+            const time_t t = Tango::get_current_system_datetime();
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -202,7 +202,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
             std::cerr << "OUPS !! A Tango::DevFailed exception received by a polling thread !!!!!!!!" << std::endl;
             Tango::Except::print_exception(e);
 #ifndef _TG_WINDOWS_
-            time_t t = time(nullptr);
+            const time_t t = Tango::get_current_system_datetime();
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -212,7 +212,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
             std::cerr << "OUPS !! A CORBA::Exception exception received by a polling thread !!!!!!!!" << std::endl;
             Tango::Except::print_exception(e);
 #ifndef _TG_WINDOWS_
-            time_t t = time(nullptr);
+            const time_t t = Tango::get_current_system_datetime();
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;
@@ -223,7 +223,7 @@ void *PollThread::run_undetached(TANGO_UNUSED(void *ptr))
                       << std::endl;
             std::cerr << ex.what() << std::endl;
 #ifndef _TG_WINDOWS_
-            time_t t = time(nullptr);
+            const time_t t = Tango::get_current_system_datetime();
             std::cerr << ctime(&t);
 #endif
             std::cerr << "Trying to re-enter the main loop" << std::endl;

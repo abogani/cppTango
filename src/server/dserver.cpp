@@ -93,7 +93,7 @@ DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevSt
         fqdn = "dserver/" + full_name;
     }
 
-    last_heartbeat = time(nullptr);
+    last_heartbeat = Tango::get_current_system_datetime();
     last_heartbeat_zmq = last_heartbeat;
     heartbeat_started = false;
 

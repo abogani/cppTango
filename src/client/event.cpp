@@ -1345,7 +1345,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         conn_params.callback = callback;
         conn_params.ev_queue = ev_queue;
         conn_params.filters = filters;
-        conn_params.last_heartbeat = time(nullptr);
+        conn_params.last_heartbeat = Tango::get_current_system_datetime();
         if(!env_var_fqdn_prefix.empty())
         {
             conn_params.prefix = env_var_fqdn_prefix[0];
@@ -1359,7 +1359,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         event_not_connected.push_back(conn_params);
 
         auto vpos = event_not_connected.end() - 1;
-        time_t now = time(nullptr);
+        const time_t now = Tango::get_current_system_datetime();
         keep_alive_thread->stateless_subscription_failed(vpos, e, now);
         return subscribe_event_id;
     }
@@ -1775,7 +1775,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         if(evt_it == channel_map.end())
         {
             evt_it = channel_map.find(ipos->second);
-            evt_it->second.last_subscribed = time(nullptr);
+            evt_it->second.last_subscribed = Tango::get_current_system_datetime();
             valid_endpoint_nb = evt_it->second.valid_endpoint;
 
             if(new_entry_in_channel_map)
@@ -2284,7 +2284,7 @@ void DelayedEventSubThread::run(TANGO_UNUSED(void *ptr))
         conn_params.callback = callback;
         conn_params.ev_queue = ev_queue;
         conn_params.filters = v_s;
-        conn_params.last_heartbeat = time(nullptr);
+        conn_params.last_heartbeat = Tango::get_current_system_datetime();
         conn_params.event_id = ev_id;
 
         ev_cons->add_not_connected_event(e, conn_params);
@@ -2318,7 +2318,7 @@ void EventConsumer::add_not_connected_event(DevFailed &e, EventNotConnected &not
     event_not_connected.push_back(not_con);
 
     auto vpos = event_not_connected.end() - 1;
-    time_t now = time(nullptr);
+    const time_t now = Tango::get_current_system_datetime();
     keep_alive_thread->stateless_subscription_failed(vpos, e, now);
 }
 

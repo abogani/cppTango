@@ -1658,7 +1658,7 @@ Tango::DevState DeviceImpl::dev_state()
                     if(device_state != Tango::ALARM)
                     {
                         device_state = Tango::ALARM;
-                        ext->alarm_state_kernel = time(nullptr);
+                        ext->alarm_state_kernel = Tango::get_current_system_datetime();
                     }
                 }
                 else
@@ -1715,7 +1715,7 @@ Tango::DevState DeviceImpl::dev_state()
                     if(device_state != Tango::ALARM)
                     {
                         device_state = Tango::ALARM;
-                        ext->alarm_state_kernel = time(nullptr);
+                        ext->alarm_state_kernel = Tango::get_current_system_datetime();
                     }
                 }
                 else
@@ -4786,7 +4786,7 @@ void DeviceImpl::lock(client_addr *cl, int validity)
         locker_client = new client_addr(*cl);
     }
 
-    locking_date = time(nullptr);
+    locking_date = Tango::get_current_system_datetime();
     lock_validity = validity;
     lock_ctr++;
 
@@ -4834,7 +4834,7 @@ void DeviceImpl::relock(client_addr *cl)
             }
 
             device_locked = true;
-            locking_date = time(nullptr);
+            locking_date = Tango::get_current_system_datetime();
         }
         else
         {
@@ -4954,7 +4954,7 @@ void DeviceImpl::basic_unlock(bool forced)
 
 bool DeviceImpl::valid_lock()
 {
-    time_t now = time(nullptr);
+    const time_t now = Tango::get_current_system_datetime();
     return now <= (locking_date + lock_validity);
 }
 
@@ -6116,7 +6116,7 @@ void DeviceImpl::set_event_subscription_state(const DeviceEventSubscriptionState
 {
     if(events.has_dev_intr_change_event_clients)
     {
-        set_event_intr_change_subscription(time(nullptr));
+        set_event_intr_change_subscription(Tango::get_current_system_datetime());
     }
 
     dev_attr->set_event_subscription_states(events.attribute_events);
@@ -6467,7 +6467,7 @@ void DeviceImpl::set_pipe_event_subscription_states(const PipeEventSubscriptionS
         auto &pipe = device_class->get_pipe_by_name(pipe_events.pipe_name, device_name_lower);
         if(pipe_events.has_pipe_event_clients)
         {
-            const auto now = time(nullptr);
+            const auto now = Tango::get_current_system_datetime();
             pipe.set_event_subscription(now);
         }
     }

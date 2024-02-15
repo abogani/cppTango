@@ -143,7 +143,7 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
 
     Attribute &attr = device_impl->dev_attr->get_attr_by_name(attr_name.c_str());
 
-    now = time(nullptr);
+    now = Tango::get_current_system_datetime();
 
     {
         omni_mutex_lock oml(event_mutex);
@@ -2334,7 +2334,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
         return;
     }
 
-    now = time(nullptr);
+    now = Tango::get_current_system_datetime();
     att_conf_subscription = now - attr_sub;
 
     TANGO_LOG_DEBUG << "EventSupplier::push_att_conf_events(): delta since last subscription " << att_conf_subscription
@@ -2410,7 +2410,7 @@ void EventSupplier::push_dev_intr_change_event(DeviceImpl *device_impl,
     // If no client, do not send event
     //
 
-    now = time(nullptr);
+    now = Tango::get_current_system_datetime();
     dev_intr_subscription = now - device_impl->get_event_intr_change_subscription();
 
     TANGO_LOG_DEBUG << "EventSupplier::push_dev_intr_event(): delta since last subscription " << dev_intr_subscription
@@ -2475,7 +2475,7 @@ bool EventSupplier::any_dev_intr_client(const DeviceImpl *device_impl) const
 {
     bool ret = false;
 
-    time_t now = time(nullptr);
+    const time_t now = Tango::get_current_system_datetime();
     time_t dev_intr_subscription = now - device_impl->get_event_intr_change_subscription();
 
     if(dev_intr_subscription < EVENT_RESUBSCRIBE_PERIOD)

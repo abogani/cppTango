@@ -1589,7 +1589,7 @@ class Attribute
 
     void set_quality_event_sub()
     {
-        event_quality_subscription = time(nullptr);
+        event_quality_subscription = Tango::get_current_system_datetime();
     }
 
     time_t get_quality_event_sub()
@@ -1608,7 +1608,7 @@ class Attribute
 
     void set_data_ready_event_sub()
     {
-        event_data_ready_subscription = time(nullptr);
+        event_data_ready_subscription = Tango::get_current_system_datetime();
     }
 
     time_t get_data_ready_event_sub()
@@ -2183,15 +2183,15 @@ inline void Attribute::set_change_event_sub(int cl_lib)
     {
     case 6:
     case 5:
-        event_change5_subscription = time(nullptr);
+        event_change5_subscription = Tango::get_current_system_datetime();
         break;
 
     case 4:
-        event_change4_subscription = time(nullptr);
+        event_change4_subscription = Tango::get_current_system_datetime();
         break;
 
     default:
-        event_change3_subscription = time(nullptr);
+        event_change3_subscription = Tango::get_current_system_datetime();
         break;
     }
 }
@@ -2202,15 +2202,15 @@ inline void Attribute::set_periodic_event_sub(int cl_lib)
     {
     case 6:
     case 5:
-        event_periodic5_subscription = time(nullptr);
+        event_periodic5_subscription = Tango::get_current_system_datetime();
         break;
 
     case 4:
-        event_periodic4_subscription = time(nullptr);
+        event_periodic4_subscription = Tango::get_current_system_datetime();
         break;
 
     default:
-        event_periodic3_subscription = time(nullptr);
+        event_periodic3_subscription = Tango::get_current_system_datetime();
         break;
     }
 }
@@ -2221,15 +2221,15 @@ inline void Attribute::set_archive_event_sub(int cl_lib)
     {
     case 6:
     case 5:
-        event_archive5_subscription = time(nullptr);
+        event_archive5_subscription = Tango::get_current_system_datetime();
         break;
 
     case 4:
-        event_archive4_subscription = time(nullptr);
+        event_archive4_subscription = Tango::get_current_system_datetime();
         break;
 
     default:
-        event_archive3_subscription = time(nullptr);
+        event_archive3_subscription = Tango::get_current_system_datetime();
         break;
     }
 }
@@ -2240,15 +2240,15 @@ inline void Attribute::set_user_event_sub(int cl_lib)
     {
     case 6:
     case 5:
-        event_user5_subscription = time(nullptr);
+        event_user5_subscription = Tango::get_current_system_datetime();
         break;
 
     case 4:
-        event_user4_subscription = time(nullptr);
+        event_user4_subscription = Tango::get_current_system_datetime();
         break;
 
     default:
-        event_user3_subscription = time(nullptr);
+        event_user3_subscription = Tango::get_current_system_datetime();
         break;
     }
 }
@@ -2259,11 +2259,11 @@ inline void Attribute::set_att_conf_event_sub(int cl_lib)
     {
     case 6:
     case 5:
-        event_attr_conf5_subscription = time(nullptr);
+        event_attr_conf5_subscription = Tango::get_current_system_datetime();
         break;
 
     default:
-        event_attr_conf_subscription = time(nullptr);
+        event_attr_conf_subscription = Tango::get_current_system_datetime();
         break;
     }
 }

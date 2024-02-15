@@ -449,7 +449,7 @@ void DevTest::IOFillPollBuffAttr()
     main_array[2] = array_3;
 
     ahs.clear();
-    time_t when = time(NULL);
+    time_t when = Tango::get_current_system_datetime();
     for(int k = 0; k < 3; k++)
     {
         Tango::TimedAttrData<Tango::DevString> tad(main_array[k], 2, 2, Tango::ATTR_VALID, true, when);
@@ -460,7 +460,7 @@ void DevTest::IOFillPollBuffAttr()
 
     ahs.clear();
     att_name = "Poll_buffRW";
-    when = time(NULL);
+    when = Tango::get_current_system_datetime();
 
     Tango::DevString *rd_array_1 = new Tango::DevString[4];
     Tango::DevString *wr_array_1 = new Tango::DevString[2];
@@ -527,7 +527,7 @@ void DevTest::IOFillPollBuffEncodedAttr()
     the_enc.encoded_data[0] = 22;
     the_enc.encoded_data[1] = 33;
 
-    time_t when = time(NULL);
+    time_t when = Tango::get_current_system_datetime();
     Tango::TimedAttrData<Tango::DevEncoded> tad(&the_enc, when);
     ahs.push(tad);
 
@@ -536,7 +536,7 @@ void DevTest::IOFillPollBuffEncodedAttr()
     the_enc1.encoded_data[0] = 33;
     the_enc1.encoded_data[1] = 44;
 
-    when = time(NULL);
+    when = Tango::get_current_system_datetime();
     Tango::TimedAttrData<Tango::DevEncoded> tad1(&the_enc1, when);
     ahs.push(tad1);
 
@@ -545,7 +545,7 @@ void DevTest::IOFillPollBuffEncodedAttr()
     the_enc2.encoded_data[0] = 44;
     the_enc2.encoded_data[1] = 55;
 
-    when = time(NULL);
+    when = Tango::get_current_system_datetime();
     Tango::TimedAttrData<Tango::DevEncoded> tad2(&the_enc2, when);
     ahs.push(tad2);
 
@@ -574,7 +574,7 @@ void DevTest::IOFillPollBuffCmd()
     }
 
     chs.clear();
-    time_t when = time(NULL);
+    time_t when = Tango::get_current_system_datetime();
     for(int k = 0; k < 3; k++)
     {
         Tango::TimedCmdData<Tango::DevVarLongArray> tad(&dvla_array[k], when);

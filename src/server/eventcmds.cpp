@@ -491,13 +491,13 @@ void DServer::store_subscribed_client_info(DeviceImpl &device,
 
         TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update pipe subscription\n";
         omni_mutex_lock oml(EventSupplier::get_event_mutex());
-        pipe.set_event_subscription(time(nullptr));
+        pipe.set_event_subscription(Tango::get_current_system_datetime());
     }
     else if(event_name == EventName[INTERFACE_CHANGE_EVENT])
     {
         TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update device interface_change subscription\n";
         omni_mutex_lock oml(EventSupplier::get_event_mutex());
-        device.set_event_intr_change_subscription(time(nullptr));
+        device.set_event_intr_change_subscription(Tango::get_current_system_datetime());
 
         if(client_lib_version != 0)
         {

@@ -1421,7 +1421,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
     {
         EventChannelStruct &evt_ch = event_channel_info->second;
         evt_ch.channel_monitor->set_name(event_channel_name.c_str());
-        evt_ch.last_heartbeat = time(nullptr);
+        evt_ch.last_heartbeat = Tango::get_current_system_datetime();
         evt_ch.heartbeat_skipped = false;
         evt_ch.event_system_failed = false;
         evt_ch.endpoint = ev_svr_data->svalue[valid_endpoint << 1].in();
@@ -1435,7 +1435,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
     {
         EventChannelStruct new_event_channel_struct;
 
-        new_event_channel_struct.last_heartbeat = time(nullptr);
+        new_event_channel_struct.last_heartbeat = Tango::get_current_system_datetime();
         new_event_channel_struct.heartbeat_skipped = false;
         new_event_channel_struct.adm_device_proxy = nullptr;
         // create a channel monitor
@@ -1851,7 +1851,7 @@ void ZmqEventConsumer::push_heartbeat_event(std::string &ev_name)
         try
         {
             AutoTangoMonitor _mon(evt_ch.channel_monitor);
-            evt_ch.last_heartbeat = time(nullptr);
+            evt_ch.last_heartbeat = Tango::get_current_system_datetime();
         }
         catch(...)
         {
@@ -1885,7 +1885,7 @@ void ZmqEventConsumer::push_heartbeat_event(std::string &ev_name)
                         try
                         {
                             AutoTangoMonitor _mon(evt_ch.channel_monitor);
-                            evt_ch.last_heartbeat = time(nullptr);
+                            evt_ch.last_heartbeat = Tango::get_current_system_datetime();
                         }
                         catch(...)
                         {

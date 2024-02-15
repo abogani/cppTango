@@ -608,7 +608,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         EventChannelStruct &evt_ch = evt_it->second;
         evt_ch.eventChannel = eventChannel;
         evt_ch.structuredProxyPushSupplier = structuredProxyPushSupplier;
-        evt_ch.last_heartbeat = time(nullptr);
+        evt_ch.last_heartbeat = Tango::get_current_system_datetime();
         evt_ch.heartbeat_skipped = false;
         evt_ch.notifyd_host = hostname;
         evt_ch.event_system_failed = false;
@@ -619,7 +619,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         EventChannelStruct new_event_channel_struct;
         new_event_channel_struct.eventChannel = eventChannel;
         new_event_channel_struct.structuredProxyPushSupplier = structuredProxyPushSupplier;
-        new_event_channel_struct.last_heartbeat = time(nullptr);
+        new_event_channel_struct.last_heartbeat = Tango::get_current_system_datetime();
         new_event_channel_struct.heartbeat_skipped = false;
         new_event_channel_struct.adm_device_proxy = nullptr;
         // create a channel monitor
@@ -811,7 +811,7 @@ void NotifdEventConsumer::push_structured_event(const CosNotification::Structure
             try
             {
                 AutoTangoMonitor _mon(evt_ch.channel_monitor);
-                evt_ch.last_heartbeat = time(nullptr);
+                evt_ch.last_heartbeat = Tango::get_current_system_datetime();
             }
             catch(...)
             {
