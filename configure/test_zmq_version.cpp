@@ -6,10 +6,10 @@
 #define FOUND_VERSION ZMQ_MAKE_VERSION(ZMQ_VERSION_MAJOR, ZMQ_VERSION_MINOR, ZMQ_VERSION_PATCH)
 
 #if FOUND_VERSION < MINIMUM_VERSION
-#error "Old version"
+  #error "Old version"
 #endif
 
-int main(int, char**)
+int main(int, char **)
 {
     return 0;
 }
