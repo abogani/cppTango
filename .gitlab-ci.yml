@@ -47,28 +47,15 @@ pre-commit:
     - docker, linux, amd64
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
-  script:
-    - pre-commit run --all-files --show-diff-on-failure
-  cache:
-    paths:
-      - ${PRE_COMMIT_HOME}
-
-code-format:
-  image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${LLVM_LATEST_IMAGE}
-  services: []
-  tags:
-    - docker, linux, amd64
-  variables:
     PATCH_FILE: clang-format.patch
-    TANGO_CLANG_FORMAT: "ON"
-    TANGO_MAKE_TARGET: "clang-format"
   script:
-    - git config --global --add safe.directory '*'
-    - ci/config.sh
-    - ci/build.sh
+    - pre-commit run --all-files --show-diff-on-failure || true
     - git diff > ${PATCH_FILE}
       # fail job if the patch file is not empty
     - '! test -s ${PATCH_FILE}'
+  cache:
+    paths:
+      - ${PRE_COMMIT_HOME}
   artifacts:
     when: always
     paths:
@@ -82,8 +69,6 @@ code-format:
   needs:
     - job: pre-commit
       artifacts: false
-    - job: code-format
-      artifacts: false
   script:
     - ci/config.sh
     - ci/build.sh
@@ -96,8 +81,6 @@ code-format:
     - dind, skao, docker, linux, amd64
   needs:
     - job: pre-commit
-      artifacts: false
-    - job: code-format
       artifacts: false
   script:
     - ci/config.sh

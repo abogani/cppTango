@@ -18,8 +18,6 @@ windows-build:
   needs:
     - job: pre-commit
       artifacts: false
-    - job: code-format
-      artifacts: false
   variables:
     JPEG_VERSION: 2.0.3
     NASM_VERSION: 2.15.05
