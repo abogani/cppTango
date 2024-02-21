@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <string_view>
 #include <chrono>
 
 namespace TangoTest::platform
@@ -12,6 +13,7 @@ namespace TangoTest::platform
 
 constexpr static const char *k_test_server_binary_path = TANGO_TEST_CATCH2_SERVER_BINARY_PATH;
 constexpr static const char *k_output_directory_path = TANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH;
+constexpr static const std::string_view k_resource_path = TANGO_TEST_CATCH2_RESOURCE_PATH;
 
 /** Called when the test run starts to do any setup required by the platform
  */
