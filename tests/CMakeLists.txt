@@ -170,7 +170,6 @@ CXX_GENERATE_TEST(cxx_exception)
 CXX_GENERATE_TEST(cxx_filedatabase TRUE)
 CXX_GENERATE_TEST(cxx_fwd_att)
 CXX_GENERATE_TEST(cxx_group)
-CXX_GENERATE_TEST(cxx_jpeg_encoding TRUE)
 CXX_GENERATE_TEST(cxx_mem_attr)
 CXX_GENERATE_TEST(cxx_misc)
 CXX_GENERATE_TEST(cxx_misc_util)
@@ -299,6 +298,7 @@ tango_catch2_tests_create(
     catch2_attr_manip.cpp
     catch2_attr_polling.cpp
     catch2_cmd_polling.cpp
+    catch2_jpeg_encoding.cpp
     )
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
