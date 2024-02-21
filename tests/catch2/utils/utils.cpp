@@ -15,6 +15,14 @@ CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
     return ss.str();
 }
 
+namespace
+{
+std::string reason(const Tango::DevFailed &e)
+{
+    return std::string(e.errors[0].reason.in());
+}
+} // namespace
+
 namespace TangoTest
 {
 
@@ -66,5 +74,20 @@ class TangoListener : public Catch::EventListenerBase
 };
 
 CATCH_REGISTER_LISTENER(TangoListener)
+
+DevFailedReasonMatcher::DevFailedReasonMatcher(const std::string &msg) :
+    reason{msg}
+{
+}
+
+bool DevFailedReasonMatcher::match(const Tango::DevFailed &exception) const
+{
+    return reason == ::reason(exception);
+}
+
+std::string DevFailedReasonMatcher::describe() const
+{
+    return "Exception reason is: " + reason;
+}
 
 } // namespace TangoTest
