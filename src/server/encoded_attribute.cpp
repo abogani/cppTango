@@ -463,9 +463,32 @@ void EncodedAttribute::decode_gray16(DeviceAttribute *attr, int *width, int *hei
     }
 }
 
-#ifdef TANGO_USE_JPEG
 namespace
 {
+template <EncodedAttribute::Feature f>
+constexpr bool is_feature_supported();
+
+template <>
+constexpr bool is_feature_supported<EncodedAttribute::Feature::JPEG>()
+{
+#ifdef TANGO_USE_JPEG
+    return true;
+#else
+    return false;
+#endif
+}
+
+template <>
+constexpr bool is_feature_supported<EncodedAttribute::Feature::JPEG_WITH_ALPHA>()
+{
+#ifdef JCS_EXTENSIONS
+    return true;
+#else
+    return false;
+#endif
+}
+
+#ifdef TANGO_USE_JPEG
 enum class color_space
 {
     RGB,
@@ -587,10 +610,28 @@ void jpeg_encode_rgb(int width,
     // Depending on the implementation, if done before it will return 4096 all the time
     *jpegSize = size;
 }
+#endif // TANGO_USE_JPEG
 } // namespace
 
 // --------------------------------------------------------------------------
 
+bool EncodedAttribute::is_feature_supported(const Feature &feat) const noexcept
+{
+    switch(feat)
+    {
+    case Feature::JPEG:
+        return ::is_feature_supported<Feature::JPEG>();
+        break;
+    case Feature::JPEG_WITH_ALPHA:
+        return ::is_feature_supported<Feature::JPEG_WITH_ALPHA>();
+        break;
+    default:
+        return false;
+        break;
+    }
+}
+
+#ifdef TANGO_USE_JPEG
 void EncodedAttribute::jpeg_encode_rgb32(
     int width, int height, unsigned char *rgb32, double quality, std::size_t *jpegSize, unsigned char **jpegData)
 {
@@ -657,9 +698,7 @@ void EncodedAttribute::jpeg_decode(
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
 }
-
 #else
-
 void EncodedAttribute::jpeg_encode_rgb32(int, int, unsigned char *, double, std::size_t *, unsigned char **)
 {
     TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
@@ -679,5 +718,4 @@ void EncodedAttribute::jpeg_decode(std::size_t, unsigned char *, int *, int *, u
 {
     TANGO_THROW_DETAILED_EXCEPTION(ApiNonSuppExcept, API_UnsupportedFeature, "Tango was built without jpeg support");
 }
-
 #endif // TANGO_USE_JPEG
