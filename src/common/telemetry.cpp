@@ -735,9 +735,7 @@ class InterfaceImplementation final
         //- the tracer name is the 'instrumentation library' - here, it's simply the cpp version of tango
         std::string tracer_name = "tango.cpp";
         //- the tracer version is the cppTango version
-        std::stringstream tango_version;
-        tango_version << TANGO_VERSION_MAJOR << "." << TANGO_VERSION_MINOR << "." << TANGO_VERSION_PATCH;
-        std::string tracer_version = tango_version.str();
+        std::string tracer_version = TgLibVers;
 
         // check interface configuration kind
         if(cfg.is_a(Configuration::Kind::Server))
@@ -769,7 +767,7 @@ class InterfaceImplementation final
 
         provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
 
-        tracer = provider->GetTracer(tracer_name, tango_version.str());
+        tracer = provider->GetTracer(tracer_name, tracer_version);
 
         noop_tracer =
             opentelemetry::nostd::shared_ptr<opentelemetry::trace::NoopTracer>(new opentelemetry::trace::NoopTracer);
@@ -1064,9 +1062,7 @@ class Appender : public log4tango::Appender
         //- the tracer name is the 'instrumentation library' - here, it's simply the cpp version of tango
         std::string tracer_name = "tango.cpp";
         //- the tracer version is the cppTango version
-        std::stringstream tango_version;
-        tango_version << TANGO_VERSION_MAJOR << "." << TANGO_VERSION_MINOR << "." << TANGO_VERSION_PATCH;
-        std::string tracer_version = tango_version.str();
+        std::string tracer_version = TgLibVers;
 
         // check interface configuration kind
         if(interface->cfg.is_a(Configuration::Kind::Server))
@@ -1123,7 +1119,7 @@ class Appender : public log4tango::Appender
     inline opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> get_logger()
     {
         auto provider = opentelemetry::logs::Provider::GetLoggerProvider();
-        return provider->GetLogger(logger_name, "cppTango", "10.0.0");
+        return provider->GetLogger(logger_name, "cppTango", TgLibVers);
     }
 
     //-------------------------------------------------------------------------------------
