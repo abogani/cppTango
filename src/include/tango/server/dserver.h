@@ -44,6 +44,15 @@
 namespace Tango
 {
 
+void call_delete(DeviceClass *dev_class_ptr);
+
+typedef void (*DeviceClassDeleter)(DeviceClass *);
+
+// Function pointer to a delete utility function
+// in CppTango it wraps simply the delete operator
+// It can be redefined by PyTango to allow better memory management
+extern DeviceClassDeleter wrapper_compatible_delete;
+
 struct MulticastParameters
 {
     std::string endpoint;

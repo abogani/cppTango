@@ -51,6 +51,14 @@
 namespace Tango
 {
 
+void call_delete(DeviceClass *dev_class_ptr)
+{
+    TANGO_LOG_DEBUG << "Tango::call_delete" << std::endl;
+    delete dev_class_ptr;
+}
+
+DeviceClassDeleter wrapper_compatible_delete = call_delete;
+
 ClassFactoryFuncPtr DServer::class_factory_func_ptr = nullptr;
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -360,7 +368,7 @@ void DServer::init_device()
                 for(unsigned long j = 0; j < class_list.size(); j++)
                 {
                     class_list[j]->release_devices_mon();
-                    delete class_list[j];
+                    wrapper_compatible_delete(class_list[j]);
                 }
                 class_list.clear();
             }
@@ -372,7 +380,7 @@ void DServer::init_device()
             for(unsigned long j = i; j < class_list.size(); j++)
             {
                 class_list[j]->release_devices_mon();
-                delete class_list[j];
+                wrapper_compatible_delete(class_list[j]);
             }
             class_list.erase(class_list.begin() + i, class_list.end());
         }
@@ -394,7 +402,7 @@ void DServer::init_device()
                 for(unsigned long j = 0; j < class_list.size(); j++)
                 {
                     class_list[j]->release_devices_mon();
-                    delete class_list[j];
+                    wrapper_compatible_delete(class_list[j]);
                 }
                 class_list.clear();
             }
@@ -404,7 +412,7 @@ void DServer::init_device()
             for(unsigned long j = i; j < class_list.size(); j++)
             {
                 class_list[j]->release_devices_mon();
-                delete class_list[j];
+                wrapper_compatible_delete(class_list[j]);
             }
             class_list.erase(class_list.begin() + i, class_list.end());
         }
@@ -425,7 +433,7 @@ void DServer::init_device()
             {
                 for(unsigned long j = 0; j < class_list.size(); j++)
                 {
-                    delete class_list[j];
+                    wrapper_compatible_delete(class_list[j]);
                 }
                 class_list.clear();
             }
@@ -434,7 +442,7 @@ void DServer::init_device()
         {
             for(unsigned long j = i; j < class_list.size(); j++)
             {
-                delete class_list[j];
+                wrapper_compatible_delete(class_list[j]);
             }
             class_list.erase(class_list.begin() + i, class_list.end());
         }
@@ -490,7 +498,7 @@ DServer::~DServer()
     {
         for(long i = class_list.size() - 1; i >= 0; i--)
         {
-            delete class_list[i];
+            wrapper_compatible_delete(class_list[i]);
         }
         class_list.clear();
     }
@@ -563,7 +571,7 @@ void DServer::delete_devices()
             devs.clear();
             CORBA::release(r_poa);
 
-            delete class_list[i];
+            wrapper_compatible_delete(class_list[i]);
 
             class_list.pop_back();
         }
