@@ -74,6 +74,8 @@ ClassFactoryFuncPtr DServer::class_factory_func_ptr = nullptr;
 DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevState s, const char *st) :
     TANGO_BASE_CLASS(cl_ptr, n, d, s, st)
 {
+    TANGO_LOG_DEBUG << "Entering DServer::DServer constructor" << std::endl;
+
     process_name = Tango::Util::instance()->get_ds_exec_name();
     instance_name = Tango::Util::instance()->get_ds_inst_name();
 
@@ -99,6 +101,8 @@ DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevSt
 
     polling_th_pool_size = DEFAULT_POLLING_THREADS_POOL_SIZE;
     optimize_pool_usage = true;
+
+    TANGO_LOG_DEBUG << "Leaving DServer::DServer constructor" << std::endl;
 }
 
 bool less_than(Command *a, Command *b)

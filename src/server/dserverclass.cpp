@@ -1294,6 +1294,7 @@ bool less_than_dserver(Command *a, Command *b)
 DServerClass::DServerClass(const std::string &s) :
     DeviceClass(s)
 {
+    TANGO_LOG_DEBUG << "Entering DServerClass::DServerClass() for class " << s << std::endl;
     try
     {
         //
@@ -1347,6 +1348,7 @@ DServerClass::DServerClass(const std::string &s) :
         std::cerr << "Can't allocate memory while building the DServerClass object" << std::endl;
         throw;
     }
+    TANGO_LOG_DEBUG << "Leaving DServerClass::DServerClass() for class " << s << std::endl;
 }
 
 //+----------------------------------------------------------------------------
@@ -1529,6 +1531,7 @@ void DServerClass::command_factory()
 
 void DServerClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
 {
+    TANGO_LOG_DEBUG << "Entering DServerClass::device_factory()" << std::endl;
     Tango::Util *tg = Tango::Util::instance();
 
     for(unsigned long i = 0; i < devlist_ptr->length(); i++)
@@ -1570,6 +1573,7 @@ void DServerClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
             db->set_timeout_millis(CLNT_TIMEOUT);
         }
     }
+    TANGO_LOG_DEBUG << "Leaving DServerClass::device_factory()" << std::endl;
 }
 
 } // namespace Tango
