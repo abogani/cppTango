@@ -1254,55 +1254,46 @@ void DServer::upd_obj_polling_period(const Tango::DevVarLongStringArray *argin, 
     // Add object name and update period if the object is not known in the property
     //
 
-    if((with_db_upd) && (Tango::Util::instance()->use_db()))
     {
         TangoSys_MemStream s;
         std::string upd_str;
         s << (argin->lvalue)[0] << std::ends;
         s >> upd_str;
 
-        DbDatum db_info("polled_attr");
-        if(type == Tango::POLL_CMD)
+        std::vector<std::string> &obj_list = type == Tango::POLL_CMD ? dev->get_polled_cmd() : dev->get_polled_attr();
+
+        for(i = 0; i < obj_list.size(); i = i + 2)
         {
-            db_info.name = "polled_cmd";
-            std::vector<std::string> &cmd_list = dev->get_polled_cmd();
-            for(i = 0; i < cmd_list.size(); i = i + 2)
+            if(TG_strcasecmp(obj_list[i].c_str(), obj_name.c_str()) == 0)
             {
-                if(TG_strcasecmp(cmd_list[i].c_str(), obj_name.c_str()) == 0)
-                {
-                    cmd_list[i + 1] = upd_str;
-                    break;
-                }
+                obj_list[i + 1] = upd_str;
+                break;
             }
-            if(i == cmd_list.size())
-            {
-                cmd_list.push_back(obj_name);
-                cmd_list.push_back(upd_str);
-            }
-            db_info << cmd_list;
         }
-        else
+        if(i == obj_list.size())
         {
-            std::vector<std::string> &attr_list = dev->get_polled_attr();
-            for(i = 0; i < attr_list.size(); i = i + 2)
-            {
-                if(TG_strcasecmp(attr_list[i].c_str(), obj_name.c_str()) == 0)
-                {
-                    attr_list[i + 1] = upd_str;
-                    break;
-                }
-            }
-            if(i == attr_list.size())
-            {
-                attr_list.push_back(obj_name);
-                attr_list.push_back(upd_str);
-            }
-            db_info << attr_list;
+            obj_list.push_back(obj_name);
+            obj_list.push_back(upd_str);
         }
 
-        DbData send_data;
-        send_data.push_back(db_info);
-        dev->get_db_device()->put_property(send_data);
+        if((with_db_upd) && (Tango::Util::instance()->use_db()))
+        {
+            DbDatum db_info;
+            if(type == Tango::POLL_CMD)
+            {
+                db_info.name = "polled_cmd";
+                db_info << obj_list;
+            }
+            else
+            {
+                db_info.name = "polled_attr";
+                db_info << obj_list;
+            }
+
+            DbData send_data;
+            send_data.push_back(db_info);
+            dev->get_db_device()->put_property(send_data);
+        }
     }
 }
 
