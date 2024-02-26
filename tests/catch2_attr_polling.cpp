@@ -3,7 +3,10 @@
 #include "utils/utils.h"
 
 constexpr static Tango::DevBoolean k_initial_value = false;
+constexpr static Tango::DevBoolean k_new_value = true;
 constexpr static Tango::DevLong k_polling_period = 100; // 100 ms
+constexpr static const char *k_test_reason = "Test_Reason";
+constexpr static const char *k_a_helpful_desc = "A helpful description";
 
 template <class Base>
 class AttrPollingCfg : public Base
@@ -167,6 +170,167 @@ SCENARIO("Attribute polling can be disabled")
                         in << attr;
                         REQUIRE_NOTHROW(out = device->command_inout("IsAttrPolled", in));
                         REQUIRE_THAT(out, TangoTest::AnyLikeContains(false));
+                    }
+                }
+            }
+        }
+    }
+}
+
+template <class Base>
+class AttrPollingEvents : public Base
+{
+  public:
+    using Base::Base;
+
+    ~AttrPollingEvents() override { }
+
+    void init_device() override
+    {
+        value = k_initial_value;
+    }
+
+    void read_attribute(Tango::Attribute &att)
+    {
+        if(throw_next)
+        {
+            throw_next = false;
+            TANGO_THROW_EXCEPTION(k_test_reason, k_a_helpful_desc);
+        }
+
+        att.set_value(&value);
+    }
+
+    void update_value()
+    {
+        value = k_new_value;
+    }
+
+    void throw_on_next_read()
+    {
+        throw_next = true;
+    }
+
+    static void attribute_factory(std::vector<Tango::Attr *> &attrs)
+    {
+        using Attr = TangoTest::AutoAttr<&AttrPollingEvents::read_attribute>;
+
+        attrs.push_back(new Attr("attr", Tango::DEV_BOOLEAN));
+        attrs.back()->set_polling_period(k_polling_period);
+    }
+
+    static void command_factory(std::vector<Tango::Command *> &cmds)
+    {
+        cmds.push_back(new TangoTest::AutoCommand<&AttrPollingEvents::throw_on_next_read>("ThrowOnNextRead"));
+        cmds.push_back(new TangoTest::AutoCommand<&AttrPollingEvents::update_value>("UpdateValue"));
+    }
+
+  private:
+    Tango::DevBoolean value;
+
+    bool throw_next = false;
+};
+
+TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrPollingEvents, 4)
+
+SCENARIO("Polled attributes generate change events")
+{
+    int idlver = GENERATE(range(4, 7));
+    GIVEN("a device proxy to a IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"attr_polling", "AttrPollingEvents", idlver};
+        INFO(ctx.info());
+        auto device = ctx.get_proxy();
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("an attribute with polling enabled")
+        {
+            std::string attr{"attr"};
+
+            WHEN("we subscribe to change events for the attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event(attr, Tango::CHANGE_EVENT, &callback));
+
+                THEN("we receive some events with the initial value")
+                {
+                    // We get the following three initial events:
+                    //
+                    // 1. In `subscribe_event` we do a `read_attribute` to
+                    // generate the first event
+                    // 2. Because we are the first subscriber to `"attr"`, the
+                    // polling loop starts and sends an event because it is the
+                    // first time it has read the attribute
+                    // 3. As a side effect of the fix for #359 the first client
+                    // gets this event sent again on the next polling loop.
+
+                    auto maybe_initial_event = callback.pop_next_event();
+                    REQUIRE(maybe_initial_event.has_value());
+                    REQUIRE(!maybe_initial_event->err);
+                    REQUIRE(maybe_initial_event->attr_value != nullptr);
+                    REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
+
+                    maybe_initial_event = callback.pop_next_event();
+                    REQUIRE(maybe_initial_event.has_value());
+                    REQUIRE(!maybe_initial_event->err);
+                    REQUIRE(maybe_initial_event->attr_value != nullptr);
+                    REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
+
+                    maybe_initial_event = callback.pop_next_event();
+                    REQUIRE(maybe_initial_event.has_value());
+                    REQUIRE(!maybe_initial_event->err);
+                    REQUIRE(maybe_initial_event->attr_value != nullptr);
+                    REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
+
+                    maybe_initial_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                    REQUIRE(!maybe_initial_event.has_value());
+
+                    AND_WHEN("we write to the attribute")
+                    {
+                        device->command_inout("UpdateValue");
+
+                        THEN("we receive an event with the new value")
+                        {
+                            auto maybe_new_event = callback.pop_next_event();
+
+                            REQUIRE(maybe_new_event.has_value());
+                            REQUIRE(!maybe_new_event->err);
+                            REQUIRE(maybe_new_event->attr_value != nullptr);
+                            REQUIRE_THAT(*maybe_new_event->attr_value, TangoTest::AnyLikeContains(k_new_value));
+
+                            maybe_new_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                            REQUIRE(!maybe_new_event.has_value());
+                        }
+                    }
+
+                    AND_WHEN("the attribute read throws an exception")
+                    {
+                        device->command_inout("ThrowOnNextRead");
+
+                        THEN("we recieve an event with information about the exception")
+                        {
+                            auto maybe_ex_event = callback.pop_next_event();
+
+                            REQUIRE(maybe_ex_event.has_value());
+                            REQUIRE(maybe_ex_event->err);
+                            REQUIRE(maybe_ex_event->errors.length() == 1);
+                            REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
+                            REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+
+                            AND_THEN("we recieve a good event when the next read succeeds")
+                            {
+                                auto maybe_good_event = callback.pop_next_event();
+
+                                REQUIRE(maybe_good_event.has_value());
+                                REQUIRE(!maybe_good_event->err);
+                                REQUIRE(maybe_good_event->attr_value != nullptr);
+                                REQUIRE_THAT(*maybe_good_event->attr_value,
+                                             TangoTest::AnyLikeContains(k_initial_value));
+
+                                maybe_good_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                                REQUIRE(!maybe_good_event.has_value());
+                            }
+                        }
                     }
                 }
             }
