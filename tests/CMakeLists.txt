@@ -298,6 +298,7 @@ include(catch2/tango_catch2_tests.cmake)
 tango_catch2_tests_create(
     catch2_attr_manip.cpp
     catch2_attr_polling.cpp
+    catch2_cmd_polling.cpp
     )
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
