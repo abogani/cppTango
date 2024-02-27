@@ -64,6 +64,15 @@ install(
     ${ConfigPackageLocation}
 )
 
+# install the cmake find modules
+install(
+  DIRECTORY
+    "${CMAKE_CURRENT_SOURCE_DIR}/${TANGO_FIND_MODULES_PATH}"
+  DESTINATION
+    ${ConfigPackageLocation}
+  FILES_MATCHING PATTERN "*.cmake"
+  PATTERN "FindTango.cmake" EXCLUDE
+)
 
 configure_file(tango.pc.cmake tango.pc @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tango.pc"
