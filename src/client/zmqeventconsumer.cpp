@@ -2013,7 +2013,7 @@ void ZmqEventConsumer::push_zmq_event(
             //
 
             bool err_missed_event = false;
-            if(ds_ctr != 1 && evt_cb.ctr == 0)
+            if(ds_ctr > 1 && evt_cb.ctr == 0)
             {
                 evt_cb.ctr = ds_ctr - 1;
             }
