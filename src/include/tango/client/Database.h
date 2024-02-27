@@ -1968,7 +1968,7 @@ class Database : public Tango::Connection
     // device methods
     //
 
-    DbDatum get_device_name(const std::string &, const std::string &, DbServerCache *dsc);
+    DbDatum get_device_name(const std::string &, const std::string &, std::shared_ptr<DbServerCache> dsc);
 
     //
     // server methods
@@ -1982,21 +1982,21 @@ class Database : public Tango::Connection
     // property methods
     //
 
-    void get_property(std::string, DbData &, DbServerCache *dsc);
-    void get_property_forced(std::string, DbData &, DbServerCache *dsc = nullptr);
-    void get_device_property(std::string, DbData &, DbServerCache *dsc);
+    void get_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
+    void get_property_forced(std::string, DbData &, std::shared_ptr<DbServerCache> dsc = nullptr);
+    void get_device_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
     DbDatum get_device_property_list(const std::string &, const std::string &);
     void get_device_property_list(std::string &,
                                   const std::string &,
                                   std::vector<std::string> &,
-                                  DbServerCache *dsc = nullptr);
-    void get_device_attribute_property(std::string, DbData &, DbServerCache *dsc);
-    void get_device_pipe_property(std::string, DbData &, DbServerCache *dsc);
+                                  std::shared_ptr<DbServerCache> dsc = nullptr);
+    void get_device_attribute_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
+    void get_device_pipe_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
     void delete_all_device_attribute_property(std::string, const DbData &);
     void delete_all_device_pipe_property(std::string, const DbData &);
-    void get_class_property(std::string, DbData &, DbServerCache *dsc);
-    void get_class_attribute_property(std::string, DbData &, DbServerCache *dsc);
-    void get_class_pipe_property(std::string, DbData &, DbServerCache *dsc);
+    void get_class_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
+    void get_class_attribute_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
+    void get_class_pipe_property(std::string, DbData &, std::shared_ptr<DbServerCache> dsc);
 
     //
     // event methods

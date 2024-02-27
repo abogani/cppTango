@@ -191,7 +191,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     {
         try
         {
-            if(tg->get_db_cache() != nullptr)
+            if(tg->get_db_cache())
             {
                 dev_import_list = tg->get_db_cache()->import_notifd_event();
             }
@@ -256,7 +256,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
                                            "Failed to import the EventChannelFactory from the Tango database");
         }
 
-        if(tg->get_db_cache() == nullptr)
+        if(!tg->get_db_cache())
         {
             received.inout() >>= dev_import_list;
         }
@@ -382,7 +382,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
     {
         try
         {
-            if(tg->get_db_cache() != nullptr)
+            if(tg->get_db_cache())
             {
                 dev_import_list = tg->get_db_cache()->DbServerCache::import_adm_event();
             }
@@ -407,7 +407,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
 
         if(channel_exported != 0)
         {
-            if(tg->get_db_cache() == nullptr)
+            if(!tg->get_db_cache())
             {
                 received.inout() >>= dev_import_list;
             }

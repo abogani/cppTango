@@ -804,8 +804,8 @@ DbDevImportInfo Database::import_device(const std::string &dev)
                     {
                         try
                         {
-                            DbServerCache *dsc = db_tg->get_db_cache();
-                            if(dsc != nullptr)
+                            std::shared_ptr<DbServerCache> dsc = db_tg->get_db_cache();
+                            if(dsc)
                             {
                                 dev_import_list = dsc->import_tac_dev(dev);
                                 imported_from_cache = true;
@@ -1155,7 +1155,7 @@ DbServerInfo Database::get_server_info(const std::string &server)
 //
 //-----------------------------------------------------------------------------
 
-void Database::get_device_property(std::string dev, DbData &db_data, DbServerCache *db_cache)
+void Database::get_device_property(std::string dev, DbData &db_data, std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i;
     Any_var received;
@@ -1171,7 +1171,7 @@ void Database::get_device_property(std::string dev, DbData &db_data, DbServerCac
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         //
         // Get property(ies) from DB server
@@ -1368,7 +1368,7 @@ void Database::delete_device_property(std::string dev, const DbData &db_data)
 //
 //-----------------------------------------------------------------------------
 
-void Database::get_device_attribute_property(std::string dev, DbData &db_data, DbServerCache *db_cache)
+void Database::get_device_attribute_property(std::string dev, DbData &db_data, std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i, j;
     Any_var received;
@@ -1384,7 +1384,7 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, D
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         //
         // Get propery(ies) from DB server
@@ -1739,7 +1739,7 @@ void Database::delete_device_attribute_property(std::string dev, const DbData &d
 //
 //-----------------------------------------------------------------------------
 
-void Database::get_class_property(std::string device_class, DbData &db_data, DbServerCache *db_cache)
+void Database::get_class_property(std::string device_class, DbData &db_data, std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i;
     const DevVarStringArray *property_values = nullptr;
@@ -1762,7 +1762,7 @@ void Database::get_class_property(std::string device_class, DbData &db_data, DbS
     // Call db server or get data from cache
     //
 
-    if(db_cache != nullptr)
+    if(db_cache)
     {
         //
         // Try to get property(ies) from cache
@@ -1954,7 +1954,9 @@ void Database::delete_class_property(std::string device_class, const DbData &db_
 //
 //-----------------------------------------------------------------------------
 
-void Database::get_class_attribute_property(std::string device_class, DbData &db_data, DbServerCache *db_cache)
+void Database::get_class_attribute_property(std::string device_class,
+                                            DbData &db_data,
+                                            std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i;
     Any_var received;
@@ -1970,7 +1972,7 @@ void Database::get_class_attribute_property(std::string device_class, DbData &db
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         //
         // Get property(ies) from DB server
@@ -2322,7 +2324,7 @@ DbDatum Database::get_device_name(const std::string &d_server, const std::string
 
 DbDatum Database::get_device_name(const std::string &device_server,
                                   const std::string &device_class,
-                                  DbServerCache *db_cache)
+                                  std::shared_ptr<DbServerCache> db_cache)
 {
     Any_var received;
     const DevVarStringArray *device_names = nullptr;
@@ -2334,7 +2336,7 @@ DbDatum Database::get_device_name(const std::string &device_server,
     (*device_server_class)[0] = string_dup(device_server.c_str());
     (*device_server_class)[1] = string_dup(device_class.c_str());
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         Any send;
         AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
@@ -2557,7 +2559,7 @@ DbDatum Database::get_device_domain(const std::string &wildcard)
 //
 //-----------------------------------------------------------------------------
 
-void Database::get_property_forced(std::string obj, DbData &db_data, DbServerCache *dsc)
+void Database::get_property_forced(std::string obj, DbData &db_data, std::shared_ptr<DbServerCache> dsc)
 {
     WriterLock guard(con_to_mon);
 
@@ -2573,7 +2575,7 @@ void Database::get_property_forced(std::string obj, DbData &db_data, DbServerCac
     access = tmp_access;
 }
 
-void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_cache)
+void Database::get_property(std::string obj, DbData &db_data, std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i;
     Any_var received;
@@ -2596,7 +2598,7 @@ void Database::get_property(std::string obj, DbData &db_data, DbServerCache *db_
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
         Any send;
@@ -3035,9 +3037,9 @@ DbDatum Database::get_device_property_list(const std::string &dev, const std::st
 void Database::get_device_property_list(std::string &dev,
                                         const std::string &wildcard,
                                         std::vector<std::string> &prop_list,
-                                        DbServerCache *db_cache)
+                                        std::shared_ptr<DbServerCache> db_cache)
 {
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         DbDatum db = get_device_property_list(dev, const_cast<std::string &>(wildcard));
         prop_list = db.value_string;
@@ -3962,7 +3964,7 @@ DbDatum Database::get_services(const std::string &servname, const std::string &i
     // Get list of services
 
     ApiUtil *au = ApiUtil::instance();
-    DbServerCache *dsc;
+    std::shared_ptr<DbServerCache> dsc;
     if(au->in_server())
     {
         if(!from_env_var)
@@ -4055,7 +4057,7 @@ DbDatum Database::get_device_service_list(const std::string &servname)
     //
 
     ApiUtil *au = ApiUtil::instance();
-    DbServerCache *dsc;
+    std::shared_ptr<DbServerCache> dsc;
     if(au->in_server())
     {
         if(!from_env_var)
@@ -4934,7 +4936,9 @@ void Database::rename_server(const std::string &old_ds_name, const std::string &
 //
 //-----------------------------------------------------------------------------------------------------------------
 
-void Database::get_class_pipe_property(std::string device_class, DbData &db_data, DbServerCache *db_cache)
+void Database::get_class_pipe_property(std::string device_class,
+                                       DbData &db_data,
+                                       std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i;
     Any_var received;
@@ -4950,7 +4954,7 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         //
         // Get property(ies) from DB server
@@ -5093,7 +5097,7 @@ void Database::get_class_pipe_property(std::string device_class, DbData &db_data
 //
 //------------------------------------------------------------------------------------------------------------------
 
-void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServerCache *db_cache)
+void Database::get_device_pipe_property(std::string dev, DbData &db_data, std::shared_ptr<DbServerCache> db_cache)
 {
     unsigned int i, j;
     Any_var received;
@@ -5109,7 +5113,7 @@ void Database::get_device_pipe_property(std::string dev, DbData &db_data, DbServ
         (*property_names)[i + 1] = string_dup(db_data[i].name.c_str());
     }
 
-    if(db_cache == nullptr)
+    if(!db_cache)
     {
         //
         // Get propery(ies) from DB server

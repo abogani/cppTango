@@ -957,17 +957,16 @@ class Util
     void create_notifd_event_supplier();
     void create_zmq_event_supplier();
 
-    DbServerCache *get_db_cache()
+    std::shared_ptr<DbServerCache> get_db_cache()
     {
         return db_cache;
     }
 
     void unvalidate_db_cache()
     {
-        if(db_cache != nullptr)
+        if(db_cache)
         {
-            delete db_cache;
-            db_cache = nullptr;
+            db_cache.reset();
         }
     }
 
@@ -1261,8 +1260,8 @@ class Util
     TangoMonitor only_one;                           // Serialization monitor
     NotifdEventSupplier *nd_event_supplier{nullptr}; // The notifd event supplier object
 
-    DbServerCache *db_cache{nullptr}; // The db cache
-    Interceptors *inter{nullptr};     // The user interceptors
+    std::shared_ptr<DbServerCache> db_cache; // The db cache
+    Interceptors *inter{nullptr};            // The user interceptors
 
     bool svr_starting{true};  // Server is starting flag
     bool svr_stopping{false}; // Server is shutting down flag

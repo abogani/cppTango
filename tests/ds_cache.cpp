@@ -94,7 +94,7 @@ int main(int, char **)
         //
 
         string ds_name("DsCache/test");
-        DbServerCache *dsc = new DbServerCache(db, ds_name, h_name);
+        auto dsc = std::make_shared<DbServerCache>(db, ds_name, h_name);
 
         TEST_LOG << "   Filling db cache --> OK" << endl;
 
@@ -236,7 +236,6 @@ int main(int, char **)
         TEST_LOG << "   Getting class property --> OK" << endl;
 
         delete db;
-        delete dsc;
     }
 
     catch(Tango::DevFailed &e)
