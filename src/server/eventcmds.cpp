@@ -898,26 +898,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // db in a file
         //
 
-        std::string ev_name = ev->get_fqdn_prefix();
-        if(Util::instance()->use_file_db())
-        {
-            int size = ev_name.size();
-            if(ev_name[size - 1] == '#')
-            {
-                ev_name.erase(size - 1);
-            }
-        }
-
-        ev_name = ev_name + dev->get_name_lower();
-        if(!intr_change)
-        {
-            ev_name = ev_name + '/' + obj_name_lower;
-        }
-        if(Util::instance()->use_file_db() && ev != nullptr)
-        {
-            ev_name = ev_name + MODIFIER_DBASE_NO;
-        }
-        ev_name = ev_name + '.' + event;
+        std::string ev_name = ev->create_full_event_name(dev, event, obj_name_lower, intr_change);
 
         //
         // If the event is defined as using mcast transport, get caller host

@@ -254,23 +254,16 @@ SCENARIO("Polled attributes generate change events")
 
                 THEN("we receive some events with the initial value")
                 {
-                    // We get the following three initial events:
+                    // We get the following two initial events (the fact there
+                    // are two is a side effect of the fix for #369):
                     //
                     // 1. In `subscribe_event` we do a `read_attribute` to
                     // generate the first event
                     // 2. Because we are the first subscriber to `"attr"`, the
                     // polling loop starts and sends an event because it is the
                     // first time it has read the attribute
-                    // 3. As a side effect of the fix for #359 the first client
-                    // gets this event sent again on the next polling loop.
 
                     auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
-
-                    maybe_initial_event = callback.pop_next_event();
                     REQUIRE(maybe_initial_event.has_value());
                     REQUIRE(!maybe_initial_event->err);
                     REQUIRE(maybe_initial_event->attr_value != nullptr);
