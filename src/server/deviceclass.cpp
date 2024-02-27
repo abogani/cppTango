@@ -74,6 +74,8 @@ DeviceClass::DeviceClass(const std::string &s) :
     only_one("class")
 
 {
+    TANGO_LOG_DEBUG << "Entering DeviceClass::DeviceClass for class " << name << std::endl;
+
     //
     // Create the associated DbClass object
     //
@@ -128,6 +130,8 @@ DeviceClass::DeviceClass(const std::string &s) :
     //
 
     type = NotSet;
+
+    TANGO_LOG_DEBUG << "Leaving DeviceClass::DeviceClass for class " << name << std::endl;
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

@@ -542,6 +542,7 @@ DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name, const std
 
 void DeviceImpl::real_ctor()
 {
+    TANGO_LOG_DEBUG << "Entering DeviceImpl::real_ctor for device " << device_name << std::endl;
     version = DevVersion;
     blackbox_depth = 0;
 
@@ -606,6 +607,8 @@ void DeviceImpl::real_ctor()
     //
 
     init_logger();
+
+    TANGO_LOG_DEBUG << "Leaving DeviceImpl::real_ctor for device " << device_name << std::endl;
 }
 
 //+-------------------------------------------------------------------------
