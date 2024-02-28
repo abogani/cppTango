@@ -157,7 +157,7 @@ windows-build:
         --target install
         --config "${CMAKE_BUILD_TYPE}"
     # catch
-    - $FILENAME = catch-${CATCH_VERSION}.zip
+    - $FILENAME="catch-${CATCH_VERSION}.zip"
     - curl.exe -L https://github.com/catchorg/Catch2/archive/refs/tags/v${CATCH_VERSION}.zip -o ${FILENAME}
     - md -Force ${TANGO_CATCH_SOURCE}/..
     - Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_CATCH_SOURCE}/..
