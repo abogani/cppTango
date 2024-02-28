@@ -78,6 +78,9 @@ endif()
 function(tango_find_omniorb_version)
     if (DEFINED OMNIORB_PKG_VERSION)
         set(version ${OMNIORB_PKG_VERSION})
+    elseif(WIN32)
+        # There is no acconfig.h on Windows
+        return()
     else()
         find_file(acconfig
             NAMES omniORB4/acconfig.h
@@ -130,7 +133,7 @@ if (NOT TANGO_SKIP_OMNIORB_VERSION_CHECK)
                 "Set -DTANGO_SKIP_OMNIORB_VERSION_CHECK=ON to disable this check (at your own risk).")
         endif()
         message(STATUS "Found OMNIORB_VERSION=${OMNIORB_VERSION}")
-    else()
+    elseif(NOT WIN32)
         message(WARNING "omniORB version not found")
     endif()
 endif()
