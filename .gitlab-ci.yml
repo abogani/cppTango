@@ -428,14 +428,14 @@ cmake-with-locations-and-min-versions-env:
     - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/tango-idl/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
     - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake"
+    - export cppzmq_ROOT="${INSTALL_PREFIX}/cppzmq"
+    - export JPEG_ROOT="${INSTALL_PREFIX}/libjpeg"
     - >
       cmake
       -Werror=dev
       -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
       -DTANGO_USE_JPEG=ON
-      -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
       -DTANGO_USE_TELEMETRY=ON
     - ci/build.sh
 
