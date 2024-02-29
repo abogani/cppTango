@@ -1762,7 +1762,29 @@ void Database::get_class_property(std::string device_class, DbData &db_data, std
     // Call db server or get data from cache
     //
 
-    if(db_cache)
+    if(!db_cache)
+    {
+        //
+        // Call DB server
+        //
+
+        Any send;
+        AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
+
+        send <<= property_names;
+
+        if(filedb != nullptr)
+        {
+            received = filedb->DbGetClassProperty(send);
+        }
+        else
+        {
+            CALL_DB_SERVER("DbGetClassProperty", send, received);
+        }
+
+        received.inout() >>= property_values;
+    }
+    else
     {
         //
         // Try to get property(ies) from cache
@@ -1803,28 +1825,6 @@ void Database::get_class_property(std::string device_class, DbData &db_data, std
                 throw;
             }
         }
-    }
-    else
-    {
-        //
-        // Call DB server
-        //
-
-        Any send;
-        AutoConnectTimeout act(DB_RECONNECT_TIMEOUT);
-
-        send <<= property_names;
-
-        if(filedb != nullptr)
-        {
-            received = filedb->DbGetClassProperty(send);
-        }
-        else
-        {
-            CALL_DB_SERVER("DbGetClassProperty", send, received);
-        }
-
-        received.inout() >>= property_values;
     }
 
     //
