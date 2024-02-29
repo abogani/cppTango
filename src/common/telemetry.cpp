@@ -1009,8 +1009,7 @@ class Appender : public log4tango::Appender
         if(Configuration::is_valid_grpc_endpoint(collector_logs_endpoint))
         {
     // we are using gRPC (user specified or default gRPC endpoint)
-    // the distinction between macOS and any other OS is temporary and related to Otel versions
-    #if defined(__APPLE__)
+    #if defined(TANGO_TELEMETRY_EXPORTER_OPTION_NEW)
             opentelemetry::exporter::otlp::OtlpGrpcLogRecordExporterOptions opts;
     #else
             opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;

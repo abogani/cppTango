@@ -69,6 +69,16 @@ if (TANGO_USE_TELEMETRY)
       find_package(nlohmann_json REQUIRED)
       find_package(OpenSSL REQUIRED)
     endif()
+
+    if(TANGO_TELEMETRY_USE_GRPC)
+      if(NOT DEFINED TANGO_TELEMETRY_EXPORTER_OPTION_NEW)
+        try_compile(TANGO_TELEMETRY_EXPORTER_OPTION_NEW ${CMAKE_CURRENT_BINARY_DIR}/test_opentelemetry_exporter_option_new_name
+                    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_opentelemetry_exporter_option_new_name.cpp
+                    LINK_LIBRARIES opentelemetry-cpp::otlp_grpc_log_record_exporter)
+      endif()
+
+      message(DEBUG "opentelemetry-cpp uses new exporter name: ${TANGO_TELEMETRY_EXPORTER_OPTION_NEW}")
+    endif()
 else()
     message(STATUS "Tango telemetry (OpenTelemetry) disabled")
 endif()
