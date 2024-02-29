@@ -76,15 +76,16 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 - Our coding style is defined via a .clang-format file in the top level directory.
   Please configure your editor to use that. In case your editor does not
-  support auto-formatting, you can enable the `clang-format` via
-  `cmake -S . -B build -DTANGO_CLANG_FORMAT=ON` and call it like `cmake --build build --target clang-format`
+  support auto-formatting, you can use the pre-commit hooks:
+
+  ```
+  pip install pre-commit
+  pre-commit run --all-files --show-diff-on-failure
+  ```
 - Please refrain from adding "fix formatting" commits as these are in general
   not necessary and will also not be accepted.
-- The current reference version of clang-format is 17, packages are available
-  for [debian](https://apt.llvm.org),
-  [fedora](https://copr.fedorainfracloud.org/coprs/g/fedora-llvm-team/llvm-snapshots/),
-  [MacOSX](https://formulae.brew.sh/formula/clang-format#default),
-  [Windows](https://github.com/llvm/llvm-project/releases) and possibly more.
+- The current reference version of clang-format is 17.0.6 and is shipped with
+  the pre-commit hooks.
 
 For special cases code formatting can be turned off inline, see
 [here](https://clang.llvm.org/docs/ClangFormatStyleOptions.html#disabling-formatting-on-a-piece-of-code)

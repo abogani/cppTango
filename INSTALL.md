@@ -112,7 +112,6 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `CMAKE_DISABLE_PRECOMPILE_HEADERS` | `OFF`                                           | Precompiled headers (makes compilation much faster)
 | `CMAKE_INSTALL_PREFIX`             | `/usr/local` or `C:/Program Files`              | Desired install path
 | `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                           | Allows to increase the verbosity level with `ON`
-| `TANGO_CLANG_FORMAT`               | `OFF`                                           | Adds a target `clang-format` for automatic C++ source code formatting
 | `TANGO_ENABLE_COVERAGE`            | `OFF`                                           | Instrument code for coverage analysis
 | `TANGO_ENABLE_SANITIZER`           | *empty*                                         | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
 | `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
