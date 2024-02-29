@@ -780,7 +780,11 @@ class InterfaceImplementation final
     {
         if(provider)
         {
-            static_cast<opentelemetry::sdk::trace::TracerProvider *>(provider.get())->ForceFlush();
+            auto *base_class = dynamic_cast<opentelemetry::sdk::trace::TracerProvider *>(provider.get());
+            if(base_class != nullptr)
+            {
+                base_class->ForceFlush();
+            }
         }
     }
 
