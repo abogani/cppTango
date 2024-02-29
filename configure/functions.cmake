@@ -29,9 +29,9 @@ function(set_cflags_and_include target)
 			   )
       if (TANGO_TELEMETRY_USE_HTTP)
         target_link_libraries(${target} PRIVATE
-	                      opentelemetry-cpp::otlp_http_exporter
-			      opentelemetry-cpp::ostream_log_record_exporter
-	                     )
+                              opentelemetry-cpp::otlp_http_exporter
+                              opentelemetry-cpp::otlp_http_log_record_exporter
+                             )
       endif()
       if (TANGO_TELEMETRY_USE_GRPC)
         target_link_libraries(${target} PRIVATE
