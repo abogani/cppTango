@@ -1,6 +1,9 @@
 #include "utils/utils.h"
 
 #include <catch2/catch_translate_exception.hpp>
+#include <catch2/reporters/catch_reporter_event_listener.hpp>
+#include <catch2/reporters/catch_reporter_registrars.hpp>
+
 #include <tango/tango.h>
 
 #include <sstream>
@@ -35,15 +38,12 @@ Context::Context(const std::string &instance_name, const std::string &tmpl_name,
     m_server.start(instance_name, extra_args);
 }
 
-Context::~Context()
-{
-    Tango::ApiUtil::cleanup();
-}
-
 std::string Context::info()
 {
     std::stringstream ss;
-    ss << "Started server on port " << m_server.get_port() << " redirected to \n" << m_server.get_redirect_file();
+    const std::string &filename = m_server.get_redirect_file();
+    size_t sep = filename.find_last_of("/\\");
+    ss << "Started server on port " << m_server.get_port() << " redirected to " << filename.substr(sep + 1);
     return ss.str();
 }
 
@@ -53,5 +53,18 @@ std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
+
+// Listener to cleanup the Tango client ApiUtil singleton
+class TangoListener : public Catch::EventListenerBase
+{
+    using Catch::EventListenerBase::EventListenerBase;
+
+    void testRunEnded(Catch::TestRunStats const &) override
+    {
+        Tango::ApiUtil::cleanup();
+    }
+};
+
+CATCH_REGISTER_LISTENER(TangoListener)
 
 } // namespace TangoTest

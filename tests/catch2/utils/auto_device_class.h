@@ -6,36 +6,24 @@
 #include <functional>
 #include <type_traits>
 
+#include "utils/type_traits.h"
+
 namespace TangoTest
 {
 
 namespace detail
 {
-template <typename T, typename = std::void_t<>>
-struct has_attribute_factory : std::false_type
-{
-};
+template <typename T>
+using attribute_factory_t = decltype(T::attribute_factory);
 
 template <typename T>
-struct has_attribute_factory<T, std::void_t<decltype(T::attribute_factory)>> : std::true_type
-{
-};
+constexpr bool has_attribute_factory = is_detected_v<attribute_factory_t, T>;
 
 template <typename T>
-constexpr bool has_attribute_factory_v = has_attribute_factory<T>::value;
-
-template <typename T, typename = std::void_t<>>
-struct has_command_factory : std::false_type
-{
-};
+using command_factory_t = decltype(T::command_factory);
 
 template <typename T>
-struct has_command_factory<T, std::void_t<decltype(T::command_factory)>> : std::true_type
-{
-};
-
-template <typename T>
-constexpr bool has_command_factory_v = has_command_factory<T>::value;
+constexpr bool has_command_factory = is_detected_v<command_factory_t, T>;
 
 template <typename F>
 struct member_fn_traits;
@@ -57,29 +45,33 @@ struct member_fn_traits<R (C::*)(Args... args)>
 };
 } // namespace detail
 
-//+ Class template to automatically generate a Tango::DeviceClass from a
-/// Tango::Device.
-///
-/// The template expects the following static member functions to be defined:
-///
-///   - static void attribute_factory(std::vector<Tango::Attr *> &attrs);
-///   - static void command_factory(std::vector<Tango::Command *> &cmds)
-///
-/// Use the TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE macro (in a single
-/// implementation file per Device) to instantiate the static members
-/// AutoDeviceClass and to register the device class with Tango.
-///
-/// Example:
-///
-///  class MyDevice : public Tango::Device
-///  {
-///      static void attribute_factory(std::vector<Tango::Attr *> attrs)
-///      {
-///          // ... Add attributes here
-///      }
-///  };
-///
-///  TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(MyDevice)
+/** @brief Automatically generate a Tango::DeviceClass from a Tango::Device.
+ *
+ * If the following static member functions are defined then they will be called
+ * during device instantiation:
+ *
+ *   - static void attribute_factory(std::vector<Tango::Attr *> &attrs);
+ *   - static void command_factory(std::vector<Tango::Command *> &cmds)
+ *
+ * Use the TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE macro (in a single
+ * implementation file per Device) to instantiate AutoDeviceClass's static
+ * members and to register the device class with Tango.
+ *
+ * Example:
+ *
+ *  class MyDevice : public Tango::Device
+ *  {
+ *    static void attribute_factory(std::vector<Tango::Attr *> attrs)
+ *    {
+ *      // ... Add attributes here
+ *    }
+ *  };
+ *
+ *  TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(MyDevice)
+ *
+ * @tparam Device C++ class for Tango device
+ * @param s name of device class
+ */
 template <typename Device>
 class AutoDeviceClass : public Tango::DeviceClass
 {
@@ -130,7 +122,7 @@ class AutoDeviceClass : public Tango::DeviceClass
   protected:
     void command_factory() override
     {
-        if constexpr(detail::has_command_factory_v<Device>)
+        if constexpr(detail::has_command_factory<Device>)
         {
             Device::command_factory(command_list);
         }
@@ -138,7 +130,7 @@ class AutoDeviceClass : public Tango::DeviceClass
 
     void attribute_factory(std::vector<Tango::Attr *> &attrs) override
     {
-        if constexpr(detail::has_attribute_factory_v<Device>)
+        if constexpr(detail::has_attribute_factory<Device>)
         {
             Device::attribute_factory(attrs);
         }
@@ -164,30 +156,30 @@ class AutoCommand : public Tango::Command
 
     CORBA::Any *execute(Tango::DeviceImpl *dev, const CORBA::Any &in_any) override
     {
-        CORBA::Any *out_any = new CORBA::Any();
         if constexpr(traits::arity == 0 && std::is_same_v<void, typename traits::return_type>)
         {
             std::invoke(cmd_fn, static_cast<Device *>(dev));
+            return insert();
         }
         else if constexpr(traits::arity == 0)
         {
             auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev));
-            *out_any <<= ret;
+            return insert(ret);
         }
         else if constexpr(std::is_same_v<void, typename traits::return_type>)
         {
             typename traits::template argument_type<0> arg;
-            in_any >>= arg;
+            extract(in_any, arg);
             std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+            return insert();
         }
         else
         {
             typename traits::template argument_type<0> arg;
-            in_any >>= arg;
+            extract(in_any, arg);
             auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
-            *out_any <<= ret;
+            return insert(ret);
         }
-        return out_any;
     }
 
   private:
@@ -287,12 +279,17 @@ struct ClassRegistrar : ClassRegistrarBase
 
 } // namespace TangoTest
 
-//+ Instantiate a TangoTest::AutoDeviceClass for DEVICE.
-///
-/// For each DEVICE, this macro must be used in a single implementation file to
-/// instantiate static data members.
-///
-/// The device class will be registered with Tango with the name #DEVICE.
+/**
+ * @brief Instantiate a TangoTest::AutoDeviceClass for DEVICE.
+ *
+ * For each DEVICE, this macro must be used in a single implementation file to
+ * instantiate static data members.
+ *
+ * The device class will be registered with Tango with the name #DEVICE.
+ *
+ * @param DEVICE class
+ * @param NAME name of class
+ */
 #define TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(DEVICE, NAME)                                        \
     template <>                                                                                    \
     TangoTest::AutoDeviceClass<DEVICE> *TangoTest::AutoDeviceClass<DEVICE>::_instance = nullptr;   \

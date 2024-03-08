@@ -105,6 +105,7 @@ constexpr int k_max_port = 20000;
 
 std::minstd_rand g_rng;
 FilenameBuilder g_filename_builder;
+std::vector<int> g_used_ports; // Work around for #1230
 
 class PlatformListener : public Catch::EventListenerBase
 {
@@ -201,8 +202,14 @@ void TestServer::start(const std::string &instance_name,
             s_logger->log(ss.str());
         }
 
-        m_port = dist(g_rng);
-        std::swap(m_port, s_next_port);
+        // We cannot reuse a port that the ORB has already connected to due to
+        // #1230.
+
+        do
+        {
+            m_port = dist(g_rng);
+            std::swap(m_port, s_next_port);
+        } while(std::find(g_used_ports.begin(), g_used_ports.end(), m_port) != g_used_ports.end());
 
         std::string end_point = [&]()
         {
@@ -270,6 +277,7 @@ TestServer::~TestServer()
 void TestServer::stop(std::chrono::milliseconds timeout)
 {
     using Kind = platform::StopServerResult::Kind;
+    g_used_ports.push_back(m_port);
     auto stop_result = platform::stop_server(m_handle, timeout);
 
     switch(stop_result.kind)
@@ -288,11 +296,25 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         [[fallthrough]];
     case Kind::Exited:
     {
-        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        // `test_has_failed == true` if we are currently stopping the server
+        // in some dtor while there is an uncaught exception in flight.  This
+        // means either:
+        //  - the code under test has throw an exception; or
+        //  - some assertion has failed (where Catch2 will throw an exception)
+        // In either case the test has failed.
+        bool test_has_failed = std::uncaught_exceptions() > 0;
+        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0 || test_has_failed)
         {
             std::stringstream ss;
-            ss << "TestServer exited with exit status " << stop_result.exit_status
-               << " during the test. Server output:";
+            if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+            {
+                ss << "TestServer exited with exit status " << stop_result.exit_status
+                   << " during the test. Server output:\n";
+            }
+            else
+            {
+                ss << "Detected that test failed. Server output:\n";
+            }
             std::ifstream f{m_redirect_file};
             append_logs(f, ss);
 

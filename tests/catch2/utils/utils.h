@@ -7,6 +7,8 @@
 
 #include "utils/auto_device_class.h"
 #include "utils/test_server.h"
+#include "utils/callback_mock.h"
+#include "utils/matchers.h"
 
 #include <tango/tango.h>
 
@@ -27,7 +29,7 @@ class Context
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
 
-    ~Context();
+    ~Context() = default;
 
     std::string info();
 
@@ -39,18 +41,23 @@ class Context
 
 } // namespace TangoTest
 
-//+ Instantiate a TangoTest::AutoDeviceClass for template class DEVICE
-///
-/// This macro expects that the DEVICE takes its base class as a template
-/// parameter:
-///
-///     template<typename Base>
-///     class DEVICE : public Base {
-///         ...
-///     };
-///
-/// It will instantiate a TangoTest::AutoDeviceClass with a base class using IDL
-/// version MIN and onwards.
+/**
+ * @brief Instantiate a TangoTest::AutoDeviceClass for template class DEVICE
+ *
+ * This macro expects that the DEVICE takes its base class as a template
+ * parameter:
+ *
+ *     template<typename Base>
+ *     class DEVICE : public Base {
+ *         ...
+ *     };
+ *
+ * It will instantiate a TangoTest::AutoDeviceClass with a base class using IDL
+ * version MIN and onwards.
+ *
+ * @param DEVICE class template
+ * @param MIN minimum DeviceImpl version to use
+ */
 #define TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(DEVICE, MIN) TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE_##MIN(DEVICE)
 
 #define TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE_1(DEVICE)                           \
