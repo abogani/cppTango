@@ -136,7 +136,6 @@ if (NOT TANGO_SKIP_OMNIORB_VERSION_CHECK)
 endif()
 
 include(configure/check_omniidl.cmake)
-include(configure/clang-format.cmake)
 
 # Check for jpeg support
 if(TANGO_USE_JPEG)
