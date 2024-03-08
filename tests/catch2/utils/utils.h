@@ -10,6 +10,7 @@
 #include "utils/test_server.h"
 #include "utils/callback_mock.h"
 #include "utils/matchers.h"
+#include "utils/generators.h"
 
 #include <tango/tango.h>
 
@@ -17,8 +18,6 @@
 
 namespace TangoTest
 {
-
-constexpr int IDL_MAX = Tango::DevVersion + 1;
 
 std::string make_nodb_fqtrl(int port, std::string_view device_name);
 

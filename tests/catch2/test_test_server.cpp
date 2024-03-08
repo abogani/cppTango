@@ -452,7 +452,7 @@ SCENARIO("The env parameter for starting the server works")
 {
     using TestServer = TangoTest::TestServer;
 
-    int idlver = GENERATE(range(6, TangoTest::IDL_MAX));
+    int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TestServer server;

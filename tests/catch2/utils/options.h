@@ -10,6 +10,7 @@ namespace TangoTest
 struct Options
 {
     bool log_file_per_test_case = false;
+    std::optional<int> only_idl_version;
 };
 
 extern Options g_options;

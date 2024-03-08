@@ -1,4 +1,4 @@
-find_package(Catch2 3.1.1 REQUIRED)
+find_package(Catch2 3.3.0 REQUIRED)
 include(Catch)
 
 set(TANGO_CATCH2_TESTS_DIR ${CMAKE_CURRENT_LIST_DIR})

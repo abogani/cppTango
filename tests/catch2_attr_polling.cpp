@@ -60,7 +60,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrPollingCfg, 4)
 // TODO: Add case checking the client can enable polling when we have a database
 SCENARIO("Attribute polling can be enabled")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingCfg", idlver};
@@ -108,7 +108,7 @@ SCENARIO("Attribute polling can be enabled")
 
 SCENARIO("Attribute polling period can be updated")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingCfg", idlver};
@@ -142,7 +142,7 @@ SCENARIO("Attribute polling period can be updated")
 
 SCENARIO("Attribute polling can be disabled")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingCfg", idlver};
@@ -232,7 +232,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrPollingEvents, 4)
 
 SCENARIO("Polled attributes generate change events")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingEvents", idlver};
