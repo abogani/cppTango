@@ -53,16 +53,31 @@ function(tango_catch2_tests_create)
     target_link_libraries(Catch2Tests PUBLIC tango Catch2::Catch2 Threads::Threads)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
 
-    add_custom_target(TestServer ALL
-        COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:Catch2Tests> TestServer
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        )
+    if (WIN32)
+        set(SERVER_NAME "TestServer.exe")
+        # By default on Windows, administrator privileges are required to create symlinks so it
+        # is easiest to avoid them and just make a copy here.
+        add_custom_target(TestServer ALL
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Catch2Tests> ${SERVER_NAME}
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:Catch2Tests>
+            )
+        set(SERVER_PATH "$<TARGET_FILE_DIR:Catch2Tests>/${SERVER_NAME}")
+    else()
+        set(SERVER_NAME "TestServer")
+        add_custom_target(TestServer ALL
+            COMMAND ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:Catch2Tests> ${SERVER_NAME}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        set(SERVER_PATH "${CMAKE_CURRENT_BINARY_DIR}/${SERVER_NAME}")
+    endif()
 
     target_compile_definitions(Catch2Tests PRIVATE
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/TestServer\""
         "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_OUTPUT_DIR}\""
         "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\""
-        "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\"")
+        "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\""
+        "-DTANGO_TEST_CATCH2_TEST_BINARY_NAME=\"$<TARGET_FILE_NAME:Catch2Tests>\""
+        "-DTANGO_TEST_CATCH2_SERVER_BINARY_NAME=\"${SERVER_NAME}\"")
 
     catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::"
         EXTRA_ARGS --warn NoAssertions --log-file-per-test-case
