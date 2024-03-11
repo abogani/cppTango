@@ -64,7 +64,6 @@ SCENARIO("Attribute polling can be enabled")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingCfg", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
@@ -113,7 +112,6 @@ SCENARIO("Attribute polling period can be updated")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingCfg", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
@@ -148,7 +146,6 @@ SCENARIO("Attribute polling can be disabled")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingCfg", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
@@ -239,7 +236,6 @@ SCENARIO("Polled attributes generate change events")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingEvents", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 

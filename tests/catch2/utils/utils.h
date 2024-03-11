@@ -32,8 +32,6 @@ class Context
 
     ~Context() = default;
 
-    std::string info();
-
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
 
   private:

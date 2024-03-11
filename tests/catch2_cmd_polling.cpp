@@ -45,7 +45,6 @@ SCENARIO("Command polling can be enabled")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"cmd_polling", "CmdPollingCfg", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
@@ -94,7 +93,6 @@ SCENARIO("Command polling period can be updated")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"cmd_polling", "CmdPollingCfg", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
@@ -129,7 +127,6 @@ SCENARIO("Command polling can be disabled")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"cmd_polling", "CmdPollingCfg", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 

@@ -48,7 +48,6 @@ SCENARIO("AutoAttr can be read and written")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"auto_attr", "AutoAttrDev", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());

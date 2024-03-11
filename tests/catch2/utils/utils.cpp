@@ -61,15 +61,6 @@ Context::Context(const std::string &instance_name, const std::string &tmpl_name,
                    << m_server.get_redirect_file();
 }
 
-std::string Context::info()
-{
-    std::stringstream ss;
-    const std::string &filename = m_server.get_redirect_file();
-    size_t sep = filename.find_last_of("/\\");
-    ss << "Started server on port " << m_server.get_port() << " redirected to " << filename.substr(sep + 1);
-    return ss.str();
-}
-
 std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 {
     std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "TestServer/tests/1");
