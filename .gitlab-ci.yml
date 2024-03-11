@@ -92,6 +92,7 @@ pre-commit:
   artifacts:
     when: always
     paths:
+      - build/tests/catch2_test_logs
       - build/tests/results
       - build/tests/core.*
 
