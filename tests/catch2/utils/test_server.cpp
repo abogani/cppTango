@@ -1,4 +1,5 @@
 #include "utils/test_server.h"
+#include "utils/utils.h"
 
 #include "utils/platform/platform.h"
 
@@ -37,9 +38,6 @@ struct FilenameBuilder
     // This is the limit on Linux and Windows
     constexpr static size_t k_max_filename_length = 255;
 
-    constexpr static size_t k_prefix_length = 4;
-    // Random prefix to make filenames unique between invocations
-    char prefix[k_prefix_length];
     // The current test case we are running
     std::string current_test_case_name;
     // The current test case part that we are running
@@ -60,20 +58,21 @@ struct FilenameBuilder
 
         std::string test_case_name = current_test_case_name;
 
-        // We use `k_prefix_length` here because the prefix includes the
-        // randomly generated characters and an '_', which is the same length as
-        // `prefix` which stores the randomly generated characters and a '\0'.
-        size_t max_length = k_max_filename_length - k_prefix_length - suffix.size();
+        // We use `detail::k_log_filename_prefix_length` here because the prefix
+        // includes the randomly generated characters and an '_', which is the
+        // same length as `detail::g_log_filename_prefix` which stores the
+        // randomly generated characters and a '\0'.
+        size_t max_length = k_max_filename_length - detail::k_log_filename_prefix_length - suffix.size();
 
         if(test_case_name.size() > max_length)
         {
             test_case_name.resize(max_length);
         }
 
-        std::string filename = [&, this]()
+        std::string filename = [&]()
         {
             std::stringstream ss;
-            ss << prefix << "_";
+            ss << detail::g_log_filename_prefix << "_";
             std::transform(test_case_name.begin(),
                            test_case_name.end(),
                            std::ostream_iterator<char>(ss),
@@ -119,20 +118,6 @@ class PlatformListener : public Catch::EventListenerBase
         {
             std::uniform_int_distribution dist{k_min_port, k_max_port};
             TestServer::s_next_port = dist(g_rng);
-        }
-
-        {
-            constexpr const char k_base64[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            static_assert(sizeof(k_base64) - 1 == 62); // - 1 for \0
-
-            char prefix[FilenameBuilder::k_prefix_length];
-            std::uniform_int_distribution dist{0, 61};
-            for(size_t i = 0; i < FilenameBuilder::k_prefix_length - 1; ++i)
-            {
-                prefix[i] = k_base64[dist(g_rng)];
-            }
-            prefix[FilenameBuilder::k_prefix_length - 1] = '\0';
-            memcpy(g_filename_builder.prefix, prefix, 4);
         }
 
         platform::init();

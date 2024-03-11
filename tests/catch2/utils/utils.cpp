@@ -1,11 +1,13 @@
 #include "utils/utils.h"
 
+#include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_translate_exception.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
 
 #include <tango/tango.h>
 
+#include <random>
 #include <sstream>
 
 CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
@@ -67,7 +69,27 @@ class TangoListener : public Catch::EventListenerBase
 {
     using Catch::EventListenerBase::EventListenerBase;
 
-    void testRunEnded(Catch::TestRunStats const &) override
+    void testRunStarting(const Catch::TestRunInfo &) override
+    {
+        {
+            std::minstd_rand rng;
+            rng.seed(Catch::getSeed());
+
+            constexpr const char k_base62[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            static_assert(sizeof(k_base62) - 1 == 62); // - 1 for \0
+
+            char uid[detail::k_log_filename_prefix_length];
+            std::uniform_int_distribution dist{0, 61};
+            for(size_t i = 0; i < detail::k_log_filename_prefix_length - 1; ++i)
+            {
+                uid[i] = k_base62[dist(rng)];
+            }
+            uid[detail::k_log_filename_prefix_length - 1] = '\0';
+            memcpy(detail::g_log_filename_prefix, uid, 4);
+        }
+    }
+
+    void testRunEnded(const Catch::TestRunStats &) override
     {
         Tango::ApiUtil::cleanup();
     }
@@ -88,6 +110,11 @@ bool DevFailedReasonMatcher::match(const Tango::DevFailed &exception) const
 std::string DevFailedReasonMatcher::describe() const
 {
     return "Exception reason is: " + reason;
+}
+
+namespace detail
+{
+char g_log_filename_prefix[k_log_filename_prefix_length];
 }
 
 } // namespace TangoTest

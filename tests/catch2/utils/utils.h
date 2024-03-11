@@ -58,6 +58,14 @@ inline DevFailedReasonMatcher DevFailedReasonEquals(std::string const &message)
     return DevFailedReasonMatcher(message);
 }
 
+namespace detail
+{
+// A unique identifier representing the random seed used by the test run.
+// The intention is this that uid is easier to spot compared a string of numbers.
+constexpr static size_t k_log_filename_prefix_length = 4;
+extern char g_log_filename_prefix[k_log_filename_prefix_length];
+} // namespace detail
+
 } // namespace TangoTest
 
 /**
