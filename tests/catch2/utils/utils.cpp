@@ -1,6 +1,7 @@
 #include "utils/utils.h"
 
 #include <catch2/catch_get_random_seed.hpp>
+#include <catch2/catch_test_case_info.hpp>
 #include <catch2/catch_translate_exception.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
@@ -9,6 +10,7 @@
 
 #include <random>
 #include <sstream>
+#include <cstdlib>
 
 CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
 {
@@ -28,6 +30,11 @@ std::string reason(const Tango::DevFailed &e)
 namespace TangoTest
 {
 
+namespace
+{
+constexpr const char *k_log_file_environment_variable = "TANGO_TEST_LOG_FILE";
+}
+
 std::string make_nodb_fqtrl(int port, std::string_view device_name)
 {
     std::stringstream ss;
@@ -44,8 +51,14 @@ Context::Context(const std::string &instance_name, const std::string &tmpl_name,
         return ss.str();
     }();
 
+    TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
+                   << "\"" << tmpl_name << "_" << idlversion;
+
     std::vector<const char *> extra_args = {"-nodb", "-dlist", dlist_arg.c_str()};
     m_server.start(instance_name, extra_args);
+
+    TANGO_LOG_INFO << "Started server \"" << instance_name << "\" on port " << m_server.get_port() << " redirected to "
+                   << m_server.get_redirect_file();
 }
 
 std::string Context::info()
@@ -69,7 +82,11 @@ class TangoListener : public Catch::EventListenerBase
 {
     using Catch::EventListenerBase::EventListenerBase;
 
-    void testRunStarting(const Catch::TestRunInfo &) override
+    // Buffer to hold environment variable TANGO_TEST_LOG_FILE. This must last
+    // for the duration of the program as it is passed to putenv.
+    char m_env_buffer[4096];
+
+    void testRunStarting(const Catch::TestRunInfo &info) override
     {
         {
             constexpr const size_t k_prefix_length = 3;
@@ -90,11 +107,58 @@ class TangoListener : public Catch::EventListenerBase
             }
             detail::g_log_filename_prefix += '_';
         }
+
+        char timestamp[64];
+        {
+            std::time_t t = std::time(nullptr);
+            std::tm *now = std::localtime(&t);
+            std::strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", now);
+        }
+
+        std::string log_file_path = [&]()
+        {
+            std::stringstream ss;
+            ss << TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH << "/" << detail::g_log_filename_prefix << "_" << timestamp
+               << ".log";
+            return ss.str();
+        }();
+
+        std::cout << "Logging to file " << log_file_path << "\n";
+
+        // Set an environment variable, used by setup_topic_log_appender here
+        // and in the device servers.
+        {
+            std::stringstream ss;
+            ss << k_log_file_environment_variable << "=" << log_file_path;
+            strncpy(m_env_buffer, ss.str().c_str(), sizeof(m_env_buffer));
+            putenv(m_env_buffer);
+        }
+
+        // As we are not a device server, so we need to set the logger up ourselves
+        Tango::_core_logger = new log4tango::Logger("Catch2Tests", log4tango::Level::DEBUG);
+        detail::setup_topic_log_appender("test");
+
+        TANGO_LOG_INFO << "Test run \"" << info.name << "\" starting";
     }
 
     void testRunEnded(const Catch::TestRunStats &) override
     {
         Tango::ApiUtil::cleanup();
+    }
+
+    void testCaseStarting(const Catch::TestCaseInfo &info) override
+    {
+        TANGO_LOG_INFO << "Test case \"" << info.name << "\" starting";
+    }
+
+    void testCasePartialStarting(const Catch::TestCaseInfo &info, uint64_t part) override
+    {
+        TANGO_LOG_INFO << "Test case partial \"" << info.name << "\" part " << part << " starting";
+    }
+
+    void sectionStarting(const Catch::SectionInfo &info) override
+    {
+        TANGO_LOG_INFO << "Section \"" << info.name << "\" starting";
     }
 };
 
@@ -118,6 +182,27 @@ std::string DevFailedReasonMatcher::describe() const
 namespace detail
 {
 std::string g_log_filename_prefix;
+
+void setup_topic_log_appender(std::string_view topic)
+{
+    const char *filename = getenv(k_log_file_environment_variable);
+    if(filename == nullptr)
+    {
+        return;
+    }
+
+    log4tango::Logger *logger = Tango::Logging::get_core_logger();
+    TANGO_ASSERT(logger);
+
+    auto *appender = new log4tango::FileAppender("test-log-file", filename);
+    auto *layout = new log4tango::PatternLayout();
+    std::stringstream pattern;
+    pattern << std::setw(15) << topic << " %d{%H:%M:%S.%l} %p %F:%L %m%n";
+    layout->set_conversion_pattern(pattern.str());
+    appender->set_layout(layout);
+    logger->add_appender(appender);
 }
+
+} // namespace detail
 
 } // namespace TangoTest

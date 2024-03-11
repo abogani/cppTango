@@ -60,6 +60,15 @@ inline DevFailedReasonMatcher DevFailedReasonEquals(std::string const &message)
 
 namespace detail
 {
+// Setup a log appender to the file specified in the environment variable
+// TANGO_TEST_LOG_FILE.  Each log is prefixed with `topic`, this allows
+// multiple processes to log to this file at the same time.
+//
+// If the environment variable is not set, this does nothing.
+//
+// Expects: Tango::Logging::get_core_logger() != nullptr
+void setup_topic_log_appender(std::string_view topic);
+
 // A unique identifier representing the random seed used by the test run to make
 // it easier for the user to identify log files.  This is constructed during the
 // testRunStarting Catch2 event.
