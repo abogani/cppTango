@@ -54,6 +54,33 @@ function(tango_catch2_tests_create)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
 
     if (WIN32)
+        # On Windows, we need to copy any dependent DLLs into the test directory
+        # so that we can run the Catch2Tests EXE.
+        #
+        # When we move to CMake 3.22 (minimum) we can pass DL_PATHS to
+        # catch_discover_tests to avoid this copying.
+
+        add_custom_command(TARGET Catch2Tests POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:Catch2Tests> $<TARGET_FILE_DIR:Catch2Tests>
+          COMMAND_EXPAND_LISTS)
+
+        # The JPEG::JPEG target is an IMPORTED UNKNOWN library, which means it will not be found by TARGET_RUNTIME_DLLS
+        if (TANGO_USE_JPEG)
+            if (JPEG_RUNTIME_RELEASE AND JPEG_RUNTIME_DEBUG)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy $<$<CONFIG:Debug>:${JPEG_RUNTIME_DEBUG}:${JPEG_RUNTIME_RELEASE}> $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            elseif(JPEG_RUNTIME_RELEASE)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_RELEASE} $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            elseif(JPEG_RUNTIME_DEBUG)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            endif()
+        endif()
+
         set(SERVER_NAME "TestServer.exe")
         # By default on Windows, administrator privileges are required to create symlinks so it
         # is easiest to avoid them and just make a copy here.
