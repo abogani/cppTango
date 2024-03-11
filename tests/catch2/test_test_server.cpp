@@ -184,11 +184,22 @@ class ExitCrash : public Base
   public:
     using Base::Base;
 
+#ifdef _MSC_VER
+  #pragma warning(push)
+    // C4722: No return from dtor might cause a memory leak.
+    // This is the point of the test, so we disable the warning here.
+  #pragma warning(disable : 4722)
+#endif
+
     ~ExitCrash() override
     {
         std::cout << k_helpful_message << "\n";
         std::exit(42); // Exit 42 as we should only report if the server fails
     }
+
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
     void init_device() override { }
 };
