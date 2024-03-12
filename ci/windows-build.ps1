@@ -86,6 +86,12 @@ $FILENAME="catch-${CATCH_VERSION}.zip"
 Invoke-NativeCommand curl.exe -L https://github.com/catchorg/Catch2/archive/refs/tags/v${CATCH_VERSION}.zip -o ${FILENAME}
 md -Force ${TANGO_CATCH_SOURCE}/..
 Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_CATCH_SOURCE}/..
+# The catch CMakeList.txt does not support CMAKE_MSVC_RUNTIME_LIBRARY so we have to do it manually ourselves.
+$ADDITIONAL_ARGS=@()
+if ($BUILD_SHARED_LIBS -eq "OFF") {
+    $ADDITIONAL_ARGS+="-DCMAKE_CXX_FLAGS_DEBUG=`"/MTd /Zi /Ob0 /Od /RTC1`""
+    $ADDITIONAL_ARGS+="-DCMAKE_CXX_FLAGS_RELEASE=`"/MT /O2 /Ob2 /DNDEBUG`""
+}
 Invoke-NativeCommand cmake `
   -S "${TANGO_CATCH_SOURCE}" `
   -B "${TANGO_CATCH_SOURCE}/build" `
@@ -94,7 +100,8 @@ Invoke-NativeCommand cmake `
   -DCMAKE_INSTALL_PREFIX="${TANGO_CATCH_ROOT}" `
   -DCATCH_INSTALL_DOCS=OFF `
   -DCATCH_BUILD_TESTING=OFF `
-  -DCATCH_ENABLE_WERROR=OFF
+  -DCATCH_ENABLE_WERROR=OFF `
+  @ADDITIONAL_ARGS
 Invoke-NativeCommand cmake `
   --build "${TANGO_CATCH_SOURCE}/build" `
   --target install `
