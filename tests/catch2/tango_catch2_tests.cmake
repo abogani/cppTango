@@ -64,6 +64,8 @@ function(tango_catch2_tests_create)
         "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\""
         "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\"")
 
-    catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::" EXTRA_ARGS --warn NoAssertions PROPERTIES FIXTURES_REQUIRED CATCH2)
+    catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::"
+        EXTRA_ARGS --warn NoAssertions --log-file-per-test-case
+        PROPERTIES FIXTURES_REQUIRED CATCH2)
 
 endfunction()
