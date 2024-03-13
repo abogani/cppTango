@@ -58,11 +58,7 @@ struct FilenameBuilder
 
         std::string test_case_name = current_test_case_name;
 
-        // We use `detail::k_log_filename_prefix_length` here because the prefix
-        // includes the randomly generated characters and an '_', which is the
-        // same length as `detail::g_log_filename_prefix` which stores the
-        // randomly generated characters and a '\0'.
-        size_t max_length = k_max_filename_length - detail::k_log_filename_prefix_length - suffix.size();
+        size_t max_length = k_max_filename_length - detail::g_log_filename_prefix.size() - suffix.size();
 
         if(test_case_name.size() > max_length)
         {
@@ -72,7 +68,7 @@ struct FilenameBuilder
         std::string filename = [&]()
         {
             std::stringstream ss;
-            ss << detail::g_log_filename_prefix << "_";
+            ss << detail::g_log_filename_prefix;
             std::transform(test_case_name.begin(),
                            test_case_name.end(),
                            std::ostream_iterator<char>(ss),

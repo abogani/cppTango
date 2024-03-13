@@ -72,20 +72,23 @@ class TangoListener : public Catch::EventListenerBase
     void testRunStarting(const Catch::TestRunInfo &) override
     {
         {
+            constexpr const size_t k_prefix_length = 3;
+
             std::minstd_rand rng;
             rng.seed(Catch::getSeed());
 
             constexpr const char k_base62[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             static_assert(sizeof(k_base62) - 1 == 62); // - 1 for \0
 
-            char uid[detail::k_log_filename_prefix_length];
             std::uniform_int_distribution dist{0, 61};
-            for(size_t i = 0; i < detail::k_log_filename_prefix_length - 1; ++i)
+
+            // + 1 for the '_'
+            detail::g_log_filename_prefix.reserve(k_prefix_length + 1);
+            for(size_t i = 0; i < k_prefix_length; ++i)
             {
-                uid[i] = k_base62[dist(rng)];
+                detail::g_log_filename_prefix += k_base62[dist(rng)];
             }
-            uid[detail::k_log_filename_prefix_length - 1] = '\0';
-            memcpy(detail::g_log_filename_prefix, uid, 4);
+            detail::g_log_filename_prefix += '_';
         }
     }
 
@@ -114,7 +117,7 @@ std::string DevFailedReasonMatcher::describe() const
 
 namespace detail
 {
-char g_log_filename_prefix[k_log_filename_prefix_length];
+std::string g_log_filename_prefix;
 }
 
 } // namespace TangoTest
