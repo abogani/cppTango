@@ -120,7 +120,6 @@ bool append_logs(std::istream &in, std::ostream &out)
 }
 
 } // namespace
-  //
 
 int TestServer::s_next_port;
 std::unique_ptr<Logger> TestServer::s_logger;
