@@ -32,8 +32,69 @@ namespace TangoTest
 
 namespace
 {
-constexpr const char *k_log_file_environment_variable = "TANGO_TEST_LOG_FILE";
-}
+// Keeps track of the log file environment variable
+struct LogFileEnvVar
+{
+    // This environment variable is used to communicate the current
+    constexpr static const char *k_env_var = "TANGO_TEST_LOG_FILE";
+
+    LogFileEnvVar() = default;
+    LogFileEnvVar(const LogFileEnvVar &) = delete;
+    LogFileEnvVar(LogFileEnvVar &&) = delete;
+    LogFileEnvVar &operator=(const LogFileEnvVar &) = delete;
+    LogFileEnvVar &operator=(LogFileEnvVar &&) = delete;
+
+    ~LogFileEnvVar()
+    {
+        if(is_in_env)
+        {
+            clear();
+        }
+    }
+
+    // Set the log file environment variable to log_file_path.
+    //
+    // After this is called, the buffer is "part of the environment".
+    void set(std::string_view log_file_path)
+    {
+        if(is_in_env)
+        {
+            clear();
+        }
+
+        std::stringstream ss;
+        ss << k_env_var << "=" << log_file_path;
+        strncpy(buffer, ss.str().c_str(), sizeof(buffer));
+
+        // Unlike setenv, putenv works on Windows and *nixes so we are using it
+        // here.
+        putenv(buffer);
+
+        is_in_env = true;
+    }
+
+    // Set the log file environment variable to log_file_path.
+    //
+    // After this is called, the buffer is not "part of the environment".
+    void clear()
+    {
+        char clear_buffer[32];
+        std::stringstream ss;
+        ss << k_env_var << "=";
+        strncpy(clear_buffer, ss.str().c_str(), sizeof(clear_buffer));
+        putenv(clear_buffer);
+
+        is_in_env = false;
+    }
+
+    // This buffer becomes "part of the environment" after we call putenv, and
+    // we cannot touch it until we have removed in from the environment (by
+    // calling putenv again).
+    char buffer[4096];
+    bool is_in_env = false; // Set if the buffer is "part of the envionment"
+};
+
+} // namespace
 
 std::string make_nodb_fqtrl(int port, std::string_view device_name)
 {
@@ -73,9 +134,7 @@ class TangoListener : public Catch::EventListenerBase
 {
     using Catch::EventListenerBase::EventListenerBase;
 
-    // Buffer to hold environment variable TANGO_TEST_LOG_FILE. This must last
-    // for the duration of the program as it is passed to putenv.
-    char m_env_buffer[4096];
+    LogFileEnvVar m_log_file_env_var;
 
     void testRunStarting(const Catch::TestRunInfo &info) override
     {
@@ -116,14 +175,7 @@ class TangoListener : public Catch::EventListenerBase
 
         std::cout << "Logging to file " << log_file_path << "\n";
 
-        // Set an environment variable, used by setup_topic_log_appender here
-        // and in the device servers.
-        {
-            std::stringstream ss;
-            ss << k_log_file_environment_variable << "=" << log_file_path;
-            strncpy(m_env_buffer, ss.str().c_str(), sizeof(m_env_buffer));
-            putenv(m_env_buffer);
-        }
+        m_log_file_env_var.set(log_file_path);
 
         // As we are not a device server, so we need to set the logger up ourselves
         Tango::_core_logger = new log4tango::Logger("Catch2Tests", log4tango::Level::DEBUG);
@@ -210,7 +262,7 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
 
 void setup_topic_log_appender(std::string_view topic)
 {
-    const char *filename = getenv(k_log_file_environment_variable);
+    const char *filename = getenv(LogFileEnvVar::k_env_var);
     if(filename == nullptr)
     {
         return;
