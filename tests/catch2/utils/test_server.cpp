@@ -27,6 +27,7 @@ class CatchLogger : public Logger
   public:
     void log(const std::string &message) override
     {
+        TANGO_LOG_WARN << message;
         WARN(message);
     }
 
@@ -112,6 +113,12 @@ bool append_logs(std::istream &in, std::ostream &out)
     return false;
 }
 
+[[noreturn]] void throw_runtime_error(const std::string &message)
+{
+    TANGO_LOG_ERROR << message;
+    throw std::runtime_error(message);
+}
+
 } // namespace
   //
 
@@ -171,6 +178,9 @@ void TestServer::start(const std::string &instance_name,
         }();
         *end_point_slot = end_point.c_str();
 
+        TANGO_LOG_INFO << "Starting server with arguments "
+                       << Catch::StringMaker<std::vector<const char *>>::convert(args);
+
         auto start_result = platform::start_server(args, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
@@ -190,7 +200,7 @@ void TestServer::start(const std::string &instance_name,
             m_handle = start_result.handle;
             stop(timeout);
 
-            throw std::runtime_error(ss.str());
+            throw_runtime_error(ss.str());
         }
         case Kind::Exited:
         {
@@ -211,7 +221,7 @@ void TestServer::start(const std::string &instance_name,
             std::remove(m_redirect_file.c_str());
             if(!port_in_use)
             {
-                throw std::runtime_error(ss.str());
+                throw_runtime_error(ss.str());
             }
         }
         }
@@ -255,23 +265,32 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         //  - some assertion has failed (where Catch2 will throw an exception)
         // In either case the test has failed.
         bool test_has_failed = std::uncaught_exceptions() > 0;
+        std::stringstream ss;
+        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        {
+            ss << "TestServer exited with exit status " << stop_result.exit_status
+               << " during the test. Server output:\n";
+        }
+        else if(test_has_failed)
+        {
+            ss << "Test server exited cleanly, but we detected that test failed. Server output:\n";
+        }
+        else
+        {
+            ss << "Test server exited cleanly. Server output:\n";
+        }
+        std::ifstream f{m_redirect_file};
+        append_logs(f, ss);
+
         if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0 || test_has_failed)
         {
-            std::stringstream ss;
-            if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
-            {
-                ss << "TestServer exited with exit status " << stop_result.exit_status
-                   << " during the test. Server output:\n";
-            }
-            else
-            {
-                ss << "Detected that test failed. Server output:\n";
-            }
-            std::ifstream f{m_redirect_file};
-            append_logs(f, ss);
-
             s_logger->log(ss.str());
         }
+        else
+        {
+            TANGO_LOG_INFO << ss.str();
+        }
+
         break;
     }
     }
