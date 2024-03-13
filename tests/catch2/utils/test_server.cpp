@@ -35,9 +35,6 @@ class CatchLogger : public Logger
 
 struct FilenameBuilder
 {
-    // This is the limit on Linux and Windows
-    constexpr static size_t k_max_filename_length = 255;
-
     // The current test case we are running
     std::string current_test_case_name;
     // The current test case part that we are running
@@ -56,33 +53,7 @@ struct FilenameBuilder
         }();
         server_count += 1;
 
-        std::string test_case_name = current_test_case_name;
-
-        size_t max_length = k_max_filename_length - detail::g_log_filename_prefix.size() - suffix.size();
-
-        if(test_case_name.size() > max_length)
-        {
-            test_case_name.resize(max_length);
-        }
-
-        std::string filename = [&]()
-        {
-            std::stringstream ss;
-            ss << detail::g_log_filename_prefix;
-            std::transform(test_case_name.begin(),
-                           test_case_name.end(),
-                           std::ostream_iterator<char>(ss),
-                           [](char c)
-                           {
-                               if(c == ' ')
-                               {
-                                   return '_';
-                               }
-                               return c;
-                           });
-            ss << suffix;
-            return ss.str();
-        }();
+        std::string filename = detail::filename_from_test_case_name(current_test_case_name, suffix);
 
         std::string path = [&]()
         {

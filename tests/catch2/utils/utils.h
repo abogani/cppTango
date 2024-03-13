@@ -71,6 +71,14 @@ void setup_topic_log_appender(std::string_view topic);
 // it easier for the user to identify log files.  This is constructed during the
 // testRunStarting Catch2 event.
 extern std::string g_log_filename_prefix;
+
+// Return a filename containing the test_case_name, starting with
+// g_log_filename_prefix and ending with suffix.
+//
+// The filename will not exceed the path component size limit on the platform.
+// And any spaces (' ') in the test_case_name will be replaced with underscores
+// ('_').
+std::string filename_from_test_case_name(std::string_view test_case_name, std::string_view suffix);
 } // namespace detail
 
 } // namespace TangoTest

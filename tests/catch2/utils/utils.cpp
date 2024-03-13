@@ -174,6 +174,40 @@ namespace detail
 {
 std::string g_log_filename_prefix;
 
+std::string filename_from_test_case_name(std::string_view test_case_name, std::string_view suffix)
+{
+    // This is the limit for path component length on Linux and Windows
+    constexpr static size_t k_max_filename_length = 255;
+
+    size_t max_length = k_max_filename_length - g_log_filename_prefix.size() - suffix.size();
+
+    const char *end = test_case_name.end();
+    if(test_case_name.size() > max_length)
+    {
+        end = test_case_name.begin() + max_length;
+    }
+
+    std::stringstream ss;
+    ss << g_log_filename_prefix;
+    std::transform(test_case_name.begin(),
+                   end,
+                   std::ostream_iterator<char>(ss),
+                   [](char c)
+                   {
+                       if(c == ' ')
+                       {
+                           return '_';
+                       }
+                       return c;
+                   });
+    ss << suffix;
+
+    std::string filename = ss.str();
+    TANGO_ASSERT(filename.size() <= k_max_filename_length);
+
+    return filename;
+}
+
 void setup_topic_log_appender(std::string_view topic)
 {
     const char *filename = getenv(k_log_file_environment_variable);
