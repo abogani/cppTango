@@ -79,6 +79,30 @@ inline const char *basename(const char *path)
 
 #endif //== compiling TANGO lib ===============================
 
+// Map. TANGO_LOG_FATAL to FATAL level --------------------------------
+#define TANGO_LOG_FATAL                                                                                \
+    if(API_LOGGER && API_LOGGER->is_fatal_enabled())                                                   \
+        API_LOGGER->fatal_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                              \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                      \
+        }
+
+// Map. TANGO_LOG_ERROR to ERROR level --------------------------------
+#define TANGO_LOG_ERROR                                                                                \
+    if(API_LOGGER && API_LOGGER->is_error_enabled())                                                   \
+        API_LOGGER->error_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                              \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                      \
+        }
+
+// Map. TANGO_LOG_WARN to WARN level --------------------------------
+#define TANGO_LOG_WARN                                                                                \
+    if(API_LOGGER && API_LOGGER->is_warn_enabled())                                                   \
+        API_LOGGER->warn_stream() << log4tango::_begin_log << log4tango::LoggerStream::SourceLocation \
+        {                                                                                             \
+            ::Tango::logging_detail::basename(__FILE__), __LINE__                                     \
+        }
+
 // Map. TANGO_LOG_INFO to INFO level --------------------------------
 #define TANGO_LOG_INFO                                                                                \
     if(API_LOGGER && API_LOGGER->is_info_enabled())                                                   \
