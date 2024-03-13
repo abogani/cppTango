@@ -1,4 +1,5 @@
 #include "utils/utils.h"
+#include "utils/options.h"
 
 #include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_test_case_info.hpp>
@@ -94,6 +95,7 @@ struct LogFileEnvVar
     bool is_in_env = false; // Set if the buffer is "part of the envionment"
 };
 
+constexpr const char *k_log_directory_path = TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH;
 } // namespace
 
 std::string make_nodb_fqtrl(int port, std::string_view device_name)
@@ -158,28 +160,34 @@ class TangoListener : public Catch::EventListenerBase
             detail::g_log_filename_prefix += '_';
         }
 
-        char timestamp[64];
-        {
-            std::time_t t = std::time(nullptr);
-            std::tm *now = std::localtime(&t);
-            std::strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", now);
-        }
-
-        std::string log_file_path = [&]()
-        {
-            std::stringstream ss;
-            ss << TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH << "/" << detail::g_log_filename_prefix << "_" << timestamp
-               << ".log";
-            return ss.str();
-        }();
-
-        std::cout << "Logging to file " << log_file_path << "\n";
-
-        m_log_file_env_var.set(log_file_path);
-
         // As we are not a device server, so we need to set the logger up ourselves
         Tango::_core_logger = new log4tango::Logger("Catch2Tests", log4tango::Level::DEBUG);
-        detail::setup_topic_log_appender("test");
+
+        if(!g_options.log_file_per_test_case)
+        {
+            // In this case we just have a single log file for the duration of
+            // the test run.  We will include a timestamp in the filename just
+            // to add something meaningful to help users distinguish log files.
+
+            char timestamp[64];
+            {
+                std::time_t t = std::time(nullptr);
+                std::tm *now = std::localtime(&t);
+                std::strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", now);
+            }
+
+            std::string log_file_path = [&]()
+            {
+                std::stringstream ss;
+                ss << k_log_directory_path << "/" << detail::g_log_filename_prefix << timestamp << ".log";
+                return ss.str();
+            }();
+
+            std::cout << "Logging to file " << log_file_path << "\n";
+
+            m_log_file_env_var.set(log_file_path);
+            detail::setup_topic_log_appender("test");
+        }
 
         TANGO_LOG_INFO << "Test run \"" << info.name << "\" starting";
     }
@@ -191,6 +199,19 @@ class TangoListener : public Catch::EventListenerBase
 
     void testCaseStarting(const Catch::TestCaseInfo &info) override
     {
+        if(g_options.log_file_per_test_case)
+        {
+            std::string log_file_path = [&]()
+            {
+                std::stringstream ss;
+                ss << k_log_directory_path << "/" << detail::filename_from_test_case_name(info.name, ".log");
+                return ss.str();
+            }();
+
+            m_log_file_env_var.set(log_file_path);
+            detail::setup_topic_log_appender("test");
+        }
+
         TANGO_LOG_INFO << "Test case \"" << info.name << "\" starting";
     }
 
@@ -262,16 +283,20 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
 
 void setup_topic_log_appender(std::string_view topic)
 {
+    constexpr const char *k_appender_name = "test-log-file";
+
+    log4tango::Logger *logger = Tango::Logging::get_core_logger();
+    TANGO_ASSERT(logger);
+
+    logger->remove_appender(k_appender_name);
+
     const char *filename = getenv(LogFileEnvVar::k_env_var);
     if(filename == nullptr)
     {
         return;
     }
 
-    log4tango::Logger *logger = Tango::Logging::get_core_logger();
-    TANGO_ASSERT(logger);
-
-    auto *appender = new log4tango::FileAppender("test-log-file", filename);
+    auto *appender = new log4tango::FileAppender(k_appender_name, filename);
     auto *layout = new log4tango::PatternLayout();
     std::stringstream pattern;
     pattern << std::setw(15) << topic << " %d{%H:%M:%S.%l} %p %F:%L %m%n";
