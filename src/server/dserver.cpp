@@ -1427,6 +1427,12 @@ void DServer::wait_for_kill_thread()
 //        Create a Cpp Tango class from its name
 //
 //------------------------------------------------------------------------------------------------------------------
+void DServer::_create_cpp_class(const std::string &class_name,
+                                const std::string &param,
+                                const std::vector<std::string> &prefixes)
+{
+    create_cpp_class(class_name, param, prefixes);
+}
 
 void DServer::create_cpp_class(const char *cl_name, const char *par_name)
 {
@@ -1452,7 +1458,7 @@ void DServer::create_cpp_class(const std::string &class_name,
     {
         std::stringstream ret;
         ret << "Trying to load shared library " << class_name << " failed.\n";
-        for (auto const& [lib, error] : error_msgs)
+        for(auto const &[lib, error] : error_msgs)
         {
             ret << " - Library name: " << lib << " failed with error: " << error << "\n";
         }
@@ -1478,7 +1484,6 @@ void DServer::create_cpp_class(const std::string &class_name,
 
         error_msgs.emplace(key, str);
         ::LocalFree((HLOCAL) str);
-
     };
     if((mod = LoadLibrary(lib_name.c_str())) == NULL)
     {
@@ -1528,10 +1533,7 @@ void DServer::create_cpp_class(const std::string &class_name,
     lib_name = lib_name + ".so";
   #endif
 
-    auto fetch_error_msg = [&error_msgs](const std::string& key)
-    {
-        error_msgs.emplace(key, dlerror());
-    };
+    auto fetch_error_msg = [&error_msgs](const std::string &key) { error_msgs.emplace(key, dlerror()); };
 
     lib_ptr = dlopen(lib_name.c_str(), RTLD_NOW);
     if(lib_ptr == nullptr)

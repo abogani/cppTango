@@ -202,6 +202,8 @@ class DServer : public TANGO_BASE_CLASS
         this->create_cpp_class(c1, c2);
     }
 
+    void _create_cpp_class(const std::string &, const std::string &, const std::vector<std::string> &);
+
     void mcast_event_for_att(const std::string &, const std::string &, std::vector<std::string> &);
 
     ServerEventSubscriptionState get_event_subscription_state();
