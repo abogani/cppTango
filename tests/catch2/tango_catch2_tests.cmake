@@ -58,7 +58,8 @@ function(tango_catch2_tests_create)
 
     target_compile_definitions(Catch2Tests PRIVATE
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/TestServer\""
-        "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\"")
+        "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\""
+        "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\"")
 
     catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::" EXTRA_ARGS --warn NoAssertions PROPERTIES FIXTURES_REQUIRED CATCH2)
 

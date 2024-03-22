@@ -4,6 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/generators/catch_generators_range.hpp>
+#include <catch2/matchers/catch_matchers_templated.hpp>
 
 #include "utils/auto_device_class.h"
 #include "utils/test_server.h"
@@ -38,6 +39,24 @@ class Context
   private:
     TestServer m_server;
 };
+
+class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    DevFailedReasonMatcher(const std::string &e);
+
+    bool match(const Tango::DevFailed &exception) const;
+
+    std::string describe() const override;
+
+  private:
+    const std::string reason;
+};
+
+inline DevFailedReasonMatcher DevFailedReasonEquals(std::string const &message)
+{
+    return DevFailedReasonMatcher(message);
+}
 
 } // namespace TangoTest
 

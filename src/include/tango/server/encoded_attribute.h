@@ -51,6 +51,11 @@ namespace Tango
 class EncodedAttribute
 {
   public:
+    enum class Feature : int
+    {
+        JPEG,
+        JPEG_WITH_ALPHA
+    };
     /**@name Constructors
      * Miscellaneous constructors */
     //@{
@@ -188,6 +193,16 @@ class EncodedAttribute
      * @param gray16   Image (memory allocated by the function)
      */
     void decode_gray16(DeviceAttribute *attr, int *width, int *height, unsigned short **gray16);
+
+    /**
+     * Check whether a feature is supported or not by the EncodedAttribute.
+     *
+     * @param feat     Feature to be checked
+     * @return         bool, true if the feature is supported, false otherwise. If a feature is not
+     * supported, trying to use it will cause the EncodedAttribute to throw exceptions when calling
+     * methods with unsupported features.
+     */
+    bool is_feature_supported(const Feature &feat) const noexcept;
 
     //@}
 
