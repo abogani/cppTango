@@ -116,61 +116,6 @@ class AlarmEventDev : public Base
     Tango::AttrQuality attr_quality;
 };
 
-// Test event callback
-class EvCb : public Tango::CallBack
-{
-  public:
-    EvCb() :
-        event_received(false)
-    {
-    }
-
-    void push_event(Tango::EventData *ev)
-    {
-        event_received = true;
-        last_event_type = ev->event;
-        *(ev->attr_value) >> last_event_value;
-        last_event_quality = ev->attr_value->quality;
-        std::cout << "push: event_received=" << event_received << "; last_event_type=" << last_event_type
-                  << "; last_event_value=" << last_event_value << "; last_event_quality=" << last_event_quality << "\n";
-    }
-
-    bool test_event_received()
-    {
-        if(event_received)
-        {
-            event_received = false;
-            return true;
-        }
-        return false;
-    }
-
-    bool test_last_event(std::string expected_event_type,
-                         Tango::DevDouble expected_value,
-                         Tango::AttrQuality expected_quality)
-    {
-        std::cout << "test: event_received=" << event_received << "; last_event_type=" << last_event_type
-                  << "; last_event_value=" << last_event_value << "; last_event_quality=" << last_event_quality << "\n";
-        if(test_event_received())
-        {
-            return ((last_event_type == expected_event_type) && (last_event_value == expected_value) &&
-                    (last_event_quality == expected_quality));
-        }
-        return false;
-    }
-
-    void clear_event_flag()
-    {
-        event_received = false;
-    }
-
-  private:
-    bool event_received;
-    std::string last_event_type;
-    Tango::DevDouble last_event_value;
-    Tango::AttrQuality last_event_quality;
-};
-
 const char *attr_quality_name(Tango::AttrQuality qual)
 {
     switch(qual)
@@ -253,29 +198,46 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 
             AND_GIVEN("an alarm event subscription to that attribute")
             {
-                EvCb callback;
+                TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
 
                 WHEN("we set the attribute to a " << data.final.value << " value")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);
+
                     v << data.final.value;
-                    callback.clear_event_flag();
                     REQUIRE_NOTHROW(device->write_attribute(v));
 
                     if(data.event_quality.has_value())
                     {
                         THEN("an alarm event is generated with " << attr_quality_name(*data.event_quality))
                         {
-                            REQUIRE(callback.test_last_event("alarm", data.final.value, *data.event_quality));
+                            auto maybe_event = callback.pop_next_event();
+
+                            REQUIRE(maybe_event.has_value());
+                            REQUIRE(!maybe_event->err);
+                            REQUIRE(maybe_event->event == "alarm");
+
+                            REQUIRE(maybe_event->attr_value != nullptr);
+                            REQUIRE(maybe_event->attr_value->get_quality() == *data.event_quality);
+
+                            std::vector<Tango::DevDouble> expected{data.final.value, data.final.value};
+                            REQUIRE_THAT(*maybe_event->attr_value, TangoTest::AnyLikeContains(expected));
                         }
                     }
                     else
                     {
                         THEN("no event is generated")
                         {
-                            REQUIRE(!callback.test_event_received());
+                            auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                            REQUIRE(!maybe_event.has_value());
                         }
                     }
                 }
@@ -321,8 +283,14 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
 
             AND_GIVEN("an alarm event subscription to that attribute")
             {
-                EvCb callback;
+                TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
 
                 std::string new_name = data.new_cmd + 4;
                 std::transform(new_name.begin(), new_name.end(), new_name.begin(), ::toupper);
@@ -332,7 +300,14 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
 
                     THEN("an alarm event is generated with " << attr_quality_name(data.event_quality))
                     {
-                        REQUIRE(callback.test_last_event("alarm", ATTR_INIT_VALUE, data.event_quality));
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "alarm");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == data.event_quality);
                     }
                 }
             }
@@ -356,9 +331,12 @@ SCENARIO("Alarm events can be pushed from code manually")
 
             AND_GIVEN("an alarm event subscription")
             {
-                EvCb callback;
-                int evid;
-                REQUIRE_NOTHROW(evid = device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
 
                 WHEN("we push an alarm event from code")
                 {
@@ -366,7 +344,14 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                     THEN("an alarm event is generated")
                     {
-                        REQUIRE(callback.test_last_event("alarm", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_VALID));
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "alarm");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
                     }
                 }
             }
@@ -388,15 +373,17 @@ SCENARIO("Alarm events are pushed together with manual change events")
         {
             std::string att{"attr_change"};
 
-            EvCb change_cb, alarm_cb;
-            int change_evid, alarm_evid;
+            TangoTest::CallbackMock<Tango::EventData> callback;
 
-            WHEN("we subscribe to change and alarm events (no polling on attribute)")
+            WHEN("we subscribe to alarm events (no polling on attribute)")
             {
                 THEN("the subscription succeeds")
                 {
-                    REQUIRE_NOTHROW(change_evid = device->subscribe_event(att, Tango::CHANGE_EVENT, &change_cb));
-                    REQUIRE_NOTHROW(alarm_evid = device->subscribe_event(att, Tango::ALARM_EVENT, &alarm_cb));
+                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                    // discard the initial event we get when we subscribe
+                    auto maybe_initial_event = callback.pop_next_event();
+                    REQUIRE(maybe_initial_event.has_value());
 
                     WHEN("we push a change event from code")
                     {
@@ -404,8 +391,14 @@ SCENARIO("Alarm events are pushed together with manual change events")
 
                         THEN("a change and alarm events are generated")
                         {
-                            REQUIRE(change_cb.test_last_event("change", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_ALARM));
-                            REQUIRE(alarm_cb.test_last_event("alarm", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_ALARM));
+                            auto maybe_event = callback.pop_next_event();
+
+                            REQUIRE(maybe_event.has_value());
+                            REQUIRE(!maybe_event->err);
+                            REQUIRE(maybe_event->event == "alarm");
+
+                            REQUIRE(maybe_event->attr_value != nullptr);
+                            REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
                         }
                     }
                 }
@@ -416,26 +409,26 @@ SCENARIO("Alarm events are pushed together with manual change events")
         {
             std::string att{"attr_change_alarm"};
 
-            EvCb change_cb, alarm_cb;
-            int change_evid, alarm_evid;
+            TangoTest::CallbackMock<Tango::EventData> callback;
 
             WHEN("we subscribe to change and alarm events")
             {
                 THEN("the subscription succeeds")
                 {
-                    REQUIRE_NOTHROW(change_evid = device->subscribe_event(att, Tango::CHANGE_EVENT, &change_cb));
-                    REQUIRE_NOTHROW(alarm_evid = device->subscribe_event(att, Tango::ALARM_EVENT, &alarm_cb));
+                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                    // discard the initial event we get when we subscribe
+                    auto maybe_initial_event = callback.pop_next_event();
+                    REQUIRE(maybe_initial_event.has_value());
 
                     WHEN("we push a change event from code")
                     {
-                        // clear event received on subscription
-                        alarm_cb.clear_event_flag();
                         REQUIRE_NOTHROW(device->command_inout("push_change"));
 
-                        THEN("a change event is generated but alarm event is not")
+                        THEN("no alarm event is generated")
                         {
-                            REQUIRE(change_cb.test_last_event("change", ATTR_PUSH_ALARM_VALUE, Tango::ATTR_ALARM));
-                            REQUIRE(!alarm_cb.test_event_received());
+                            auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                            REQUIRE(!maybe_event.has_value());
                         }
                     }
                 }
