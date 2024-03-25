@@ -4720,7 +4720,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
             {
                 omni_mutex_lock oml(EventSupplier::get_event_mutex());
 
-                const AttrQuality old_quality = prev_change_event.quality;
+                const AttrQuality old_quality = prev_alarm_event.quality;
 
                 if(except != nullptr || quality == Tango::ATTR_INVALID || prev_alarm_event.err ||
                    old_quality == Tango::ATTR_INVALID)
@@ -4730,7 +4730,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
 
                 prev_alarm_event.store(send_attr_5, nullptr, nullptr, nullptr, except);
 
-                quality_change = (old_quality != prev_change_event.quality);
+                quality_change = (old_quality != prev_alarm_event.quality);
             }
 
             std::vector<std::string> filterable_names;
