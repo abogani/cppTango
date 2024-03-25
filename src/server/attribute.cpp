@@ -4549,7 +4549,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
         // Get the event supplier
         EventSupplier *event_supplier_zmq = nullptr;
         Tango::Util *tg{Util::instance()};
-        if(use_zmq_event() == true)
+        if(use_zmq_event())
         {
             event_supplier_zmq = tg->get_zmq_event_supplier();
         }
@@ -4560,7 +4560,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             client_libs = get_client_lib(ALARM_EVENT); // We want a copy
-            if((use_zmq_event() == true) && (event_supplier_zmq != nullptr))
+            if((use_zmq_event()) && (event_supplier_zmq != nullptr))
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
                 pub_socket_created = !sock_endpoint.empty();
@@ -4584,13 +4584,13 @@ void Attribute::fire_alarm_event(DevFailed *except)
             }
         }
 
-        if(client_libs.empty() == true)
+        if(client_libs.empty())
         {
             if((name_lower != "state") && (name_lower != "status"))
             {
                 // delete the data values allocated in the attribute
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     // For writable scalar attributes the sequence for the
                     // attribute data is not yet allocated. This will happen
@@ -4615,7 +4615,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
             {
                 // delete the data values allocated in the attribute
                 bool data_flag = get_value_flag();
-                if(data_flag == true)
+                if(data_flag)
                 {
                     // For writable scalar attributes the sequence for the
                     // attribute data is not yet allcoated. This will happen
@@ -4645,11 +4645,11 @@ void Attribute::fire_alarm_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    if(value_flag == false)
+                    if(!value_flag)
                     {
                         TangoSys_OMemStream o;
                         o << "Value for attribute " << name
-                          << " has not been updated. Can't send change "
+                          << " has not been updated. Can't send alarm "
                              "event\nSet the attribute value (using "
                              "set_value (...) method) before!"
                           << std::ends;
@@ -4722,7 +4722,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
 
                 const AttrQuality old_quality = prev_change_event.quality;
 
-                if(except || quality == Tango::ATTR_INVALID || prev_alarm_event.err ||
+                if(except != nullptr || quality == Tango::ATTR_INVALID || prev_alarm_event.err ||
                    old_quality == Tango::ATTR_INVALID)
                 {
                     force_alarm = true;
@@ -4792,7 +4792,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
         if((name_lower != "state") && (name_lower != "status"))
         {
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
@@ -4814,7 +4814,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
             // delete the data values allocated in the attribute
 
             bool data_flag = get_value_flag();
-            if(data_flag == true)
+            if(data_flag)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
