@@ -6140,6 +6140,14 @@ void Attribute::log_quality()
                 DEV_INFO_STREAM(dev) << "INFO quality for attribute " << name << std::endl;
                 break;
 
+            case ATTR_WARNING:
+                DEV_WARN_STREAM(dev) << "User defined WARNING quality for attribute " << name << std::endl;
+                break;
+
+            case ATTR_ALARM:
+                DEV_ERROR_STREAM(dev) << "User defined ALARM quality for attribute " << name << std::endl;
+                break;
+
             default:
                 TANGO_ASSERT_ON_DEFAULT(quality);
             }
