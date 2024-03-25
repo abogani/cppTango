@@ -82,6 +82,7 @@ class AlarmEventDev : public Base
         // attribute which pushes alarm events from code without checking criteria
         auto attr_push = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
             "attr_push", Tango::DEV_DOUBLE);
+        attr_push->set_default_properties(props);
         attr_push->set_alarm_event(true, false);
         attrs.push_back(attr_push);
         // attribute which pushes change events from code
