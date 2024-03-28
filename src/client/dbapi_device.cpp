@@ -190,7 +190,7 @@ void DbDevice::export_device(const DbDevExportInfo &dev_export)
 void DbDevice::get_property(DbData &db_data)
 {
     ApiUtil *au = ApiUtil::instance();
-    DbServerCache *dsc;
+    std::shared_ptr<DbServerCache> dsc;
     if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();
@@ -456,7 +456,7 @@ void DbDevice::clear_access_except_errors()
 void DbDevice::get_property_list(const std::string &wildcard, std::vector<std::string> &prop_list)
 {
     ApiUtil *au = ApiUtil::instance();
-    DbServerCache *dsc;
+    std::shared_ptr<DbServerCache> dsc;
     if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();

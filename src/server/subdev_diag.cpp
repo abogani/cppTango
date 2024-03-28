@@ -402,7 +402,7 @@ void SubDevDiag::get_sub_devices_from_cache()
 {
     TANGO_LOG_DEBUG << "SubDevDiag::get_sub_devices_from_cache() entering ... " << std::endl;
 
-    DbServerCache *db_cache;
+    std::shared_ptr<DbServerCache> db_cache;
     Tango::Util *tg = Tango::Util::instance();
 
     try
@@ -412,10 +412,10 @@ void SubDevDiag::get_sub_devices_from_cache()
     catch(Tango::DevFailed &e)
     {
         Except::print_exception(e);
-        db_cache = nullptr;
+        db_cache.reset();
     }
 
-    if(db_cache != nullptr)
+    if(db_cache)
     {
         // get the name of the admin device
         DServer *adm_dev = tg->get_dserver_device();

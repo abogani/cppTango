@@ -96,7 +96,7 @@ void DbClass::get_property(DbData &db_data)
     //
 
     ApiUtil *au = ApiUtil::instance();
-    DbServerCache *dsc;
+    std::shared_ptr<DbServerCache> dsc;
     if(au->in_server())
     {
         Tango::Util *tg = Tango::Util::instance();

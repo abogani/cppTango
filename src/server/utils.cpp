@@ -331,7 +331,6 @@ Util::Util(int argc, char *argv[]) :
     ser_model(BY_DEVICE),
     only_one("process"),
     nd_event_supplier(NULL),
-    db_cache(NULL),
     inter(NULL),
     svr_starting(true),
     svr_stopping(false),
@@ -552,7 +551,7 @@ void Util::effective_job(int argc, char *argv[])
                            << std::endl;
         }
         TANGO_LOG_DEBUG << "Connected to database" << std::endl;
-        if(get_db_cache() == nullptr)
+        if(!get_db_cache())
         {
             TANGO_LOG_DEBUG << "DbServerCache unavailable, will call db..." << std::endl;
         }
@@ -731,7 +730,6 @@ Util::Util(HINSTANCE hInst, int nCmdShow) :
     ser_model(BY_DEVICE),
     only_one("process"),
     nd_event_supplier(NULL),
-    db_cache(NULL),
     inter(NULL),
     svr_starting(true),
     svr_stopping(false),
@@ -1471,7 +1469,7 @@ void Util::connect_db()
             set_svr_starting(false);
             try
             {
-                db_cache = new DbServerCache(db, get_ds_name(), get_host_name());
+                db_cache = std::make_shared<DbServerCache>(db, get_ds_name(), get_host_name());
             }
             catch(Tango::DevFailed &e)
             {
@@ -1888,7 +1886,7 @@ void Util::server_already_running()
     {
         const Tango::DevVarLongStringArray *db_dev;
         CORBA::Any_var received;
-        if(db_cache != nullptr)
+        if(db_cache)
         {
             db_dev = db_cache->import_adm_dev();
         }
@@ -2091,14 +2089,12 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
         //
         // Delete the db cache if it has been used
         //
-
-        if(db_cache != nullptr)
+        if(db_cache)
         {
             // extract sub device information before deleting cache!
             get_sub_dev_diag().get_sub_devices_from_cache();
 
-            delete db_cache;
-            db_cache = nullptr;
+            db_cache.reset();
         }
 
         //
@@ -3195,13 +3191,12 @@ void *Util::ORBWin32Loop::run_undetached(void *ptr)
     // Delete DB cache (if there is one)
     //
 
-    if(util->db_cache != NULL)
+    if(util->db_cache)
     {
         // extract sub device information before deleting cache!
         util->get_sub_dev_diag().get_sub_devices_from_cache();
 
-        delete util->db_cache;
-        util->db_cache = NULL;
+        util->db_cache.reset();
     }
 
     util->set_svr_starting(false);
