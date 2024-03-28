@@ -502,24 +502,6 @@ extern thread_local InterfacePtr current_telemetry_interface;
 class Interface
 {
     //-----------------------------------------------------------------------------------------------------------------
-    // internal helper function: file_basename (for tracing location)
-    //-----------------------------------------------------------------------------------------------------------------
-    static const char *file_basename(const char *path) noexcept
-    {
-  #ifdef __WINDOWS__
-        static constexpr auto cm_path_separator = '\\';
-  #else
-        static constexpr auto cm_path_separator = '/';
-  #endif
-        auto last_dir_sep = std::strrchr(path, cm_path_separator);
-        if(last_dir_sep == nullptr)
-        {
-            return path;
-        }
-        return last_dir_sep + 1;
-    }
-
-    //-----------------------------------------------------------------------------------------------------------------
     // internal helper function: thread_id_to_string (for tracing location)
     //-----------------------------------------------------------------------------------------------------------------
     static const std::string thread_id_to_string() noexcept
@@ -724,7 +706,7 @@ class Interface
     Tango::telemetry::Scope
         scope(Tango::telemetry::SpanPtr &span, const char *file = "unknown-source-file", int line = -1)
     {
-        span->set_attribute("code.filepath", file_basename(file));
+        span->set_attribute("code.filepath", Tango::logging_detail::basename(file));
         span->set_attribute("code.lineno", std::to_string(line));
         span->set_attribute("thread.id", thread_id_to_string());
         return Tango::telemetry::Scope(span);
