@@ -57,7 +57,7 @@
 #include <tango/server/eventsupplier.h>
 #include <tango/server/device_3_templ.h>
 #if defined(TANGO_USE_TELEMETRY)
-  #include <tango/common/telemetry/telemetry_kernel_macros.h>
+  #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 #endif
 
 namespace Tango

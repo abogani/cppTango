@@ -33,7 +33,7 @@
 //===================================================================================
 
 #include <tango/tango.h>
-#include <tango/common/telemetry/telemetry_kernel_macros.h>
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 #define _dyn_attr
 
