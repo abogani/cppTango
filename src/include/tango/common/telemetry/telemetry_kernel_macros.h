@@ -61,9 +61,9 @@ class SilentKernelScope
     //    auto span = TELEMETRY_KERNEL_CLIENT_SPAN();
     //    TELEMETRY_KERNEL_CLIENT_SPAN(some_arg_name);
     //-----------------------------------------------------------------------------------------------------------------
-  #define TELEMETRY_KERNEL_CLIENT_SPAN(__ATTRS__)             \
+  #define TELEMETRY_KERNEL_CLIENT_SPAN(ATTRS)                 \
       Tango::telemetry::Interface::get_current()->start_span( \
-          TANGO_CURRENT_FUNCTION, __ATTRS__, Tango::telemetry::Span::Kind::kClient)
+          TANGO_CURRENT_FUNCTION, ATTRS, Tango::telemetry::Span::Kind::kClient)
 
     //-----------------------------------------------------------------------------------------------------------------
     // TELEMETRY_KERNEL_SERVER_SPAN (FOR CPP KERNEL ONLY)
@@ -89,18 +89,17 @@ class SilentKernelScope
   //---------------------------------------------------------------------------------
   // see otel. specs for details
   // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md#semantic-conventions-for-exceptions-on-spans
-  #define TELEMETRY_CATCH                                                                              \
-      }                                                                                                \
-      catch(...)                                                                                       \
-      {                                                                                                \
-          std::string __type__;                                                                        \
-          std::string __msg__;                                                                         \
-          Tango::telemetry::Interface::extract_exception_info(__type__, __msg__);                      \
-          auto __current_span__ = Tango::telemetry::Interface::get_current() -> get_current_span();    \
-          __current_span__->add_event("exception caught",                                              \
-                                      {{"exception.type", __type__}, {"exception.message", __msg__}}); \
-          TELEMETRY_SET_ERROR_STATUS("exception caught (see associated event)");                       \
-          throw;                                                                                       \
+  #define TELEMETRY_CATCH                                                                                      \
+      }                                                                                                        \
+      catch(...)                                                                                               \
+      {                                                                                                        \
+          std::string type;                                                                                    \
+          std::string msg;                                                                                     \
+          Tango::telemetry::Interface::extract_exception_info(type, msg);                                      \
+          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span();                \
+          current_span->add_event("exception caught", {{"exception.type", type}, {"exception.message", msg}}); \
+          TELEMETRY_SET_ERROR_STATUS("exception caught (see associated event)");                               \
+          throw;                                                                                               \
       }
 
 #endif // TANGO_USE_TELEMETRY

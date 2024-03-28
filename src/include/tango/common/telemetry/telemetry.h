@@ -1083,7 +1083,7 @@ class InterfaceScope
     //    }
     //
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_ACTIVE_INTERFACE(__TI__) Tango::telemetry::InterfaceScope(__TI__)
+  #define TELEMETRY_ACTIVE_INTERFACE(TI) Tango::telemetry::InterfaceScope(TI)
 
     //-------------------------------------------------------------------------------
     // MACRO: TELEMETRY_SPAN
@@ -1119,7 +1119,7 @@ class InterfaceScope
     //    ...
     //    span->End();
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_SCOPE(__SPAN__) Tango::telemetry::Interface::get_current()->scope(__SPAN__, __FILE__, __LINE__)
+  #define TELEMETRY_SCOPE(SPAN) Tango::telemetry::Interface::get_current()->scope(SPAN, __FILE__, __LINE__)
 
     //-------------------------------------------------------------------------------
     // TELEMETRY_ADD_EVENT
@@ -1130,13 +1130,13 @@ class InterfaceScope
     //
     //    TELEMETRY_ADD_EVENT("this annotation will be attached to the current span");
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_ADD_EVENT(__MSG__)                                                              \
-      {                                                                                             \
-          auto __current_span__ = Tango::telemetry::Interface::get_current() -> get_current_span(); \
-          if(__current_span__)                                                                      \
-          {                                                                                         \
-              __current_span__->add_event(__MSG__);                                                 \
-          }                                                                                         \
+  #define TELEMETRY_ADD_EVENT(MSG)                                                              \
+      {                                                                                         \
+          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
+          if(current_span)                                                                      \
+          {                                                                                     \
+              current_span->add_event(MSG);                                                     \
+          }                                                                                     \
       }
 
     //-------------------------------------------------------------------------------
@@ -1151,13 +1151,13 @@ class InterfaceScope
     //
     //    TELEMETRY_ADD_ATTRIBUTE("somekey", someValue);
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_ADD_ATTRIBUTE(__KEY__, __VAL__)                                                 \
-      {                                                                                             \
-          auto __current_span__ = Tango::telemetry::Interface::get_current() -> get_current_span(); \
-          if(__current_span__)                                                                      \
-          {                                                                                         \
-              __current_span__->set_attribute(__KEY__, __VAL__);                                    \
-          }                                                                                         \
+  #define TELEMETRY_ADD_ATTRIBUTE(KEY, VALUE)                                                   \
+      {                                                                                         \
+          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
+          if(current_span)                                                                      \
+          {                                                                                     \
+              current_span->set_attribute(KEY, VALUE);                                          \
+          }                                                                                     \
       }
 
     //-------------------------------------------------------------------------------
@@ -1178,13 +1178,13 @@ class InterfaceScope
     //      TELEMETRY_SET_ERROR_STATUS("oops, an error occurred!");
     //    }
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_SET_ERROR_STATUS(__DESC__)                                                      \
-      {                                                                                             \
-          auto __current_span__ = Tango::telemetry::Interface::get_current() -> get_current_span(); \
-          if(__current_span__->get_status() != Tango::telemetry::Span::Status::kError)              \
-          {                                                                                         \
-              __current_span__->set_status(Tango::telemetry::Span::Status::kError, __DESC__);       \
-          }                                                                                         \
+  #define TELEMETRY_SET_ERROR_STATUS(DESC)                                                      \
+      {                                                                                         \
+          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
+          if(current_span->get_status() != Tango::telemetry::Span::Status::kError)              \
+          {                                                                                     \
+              current_span->set_status(Tango::telemetry::Span::Status::kError, DESC);           \
+          }                                                                                     \
       }
 
 } // namespace Tango::telemetry
