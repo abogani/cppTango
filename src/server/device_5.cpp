@@ -132,12 +132,12 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_5Impl::read_attributes_5 arrived for dev " << get_name() << ", att[0] = " << names[0]
@@ -386,7 +386,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -414,12 +414,12 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_5Impl::write_read_attributes_5 arrived" << std::endl;
@@ -549,7 +549,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -689,12 +689,12 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_5Impl::set_attribute_config_5 arrived" << std::endl;
@@ -742,7 +742,7 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -1024,11 +1024,11 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_5Impl::set_pipe_config_5 arrived for " << new_conf.length() << " pipe(s)" << std::endl;
@@ -1105,7 +1105,7 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -1136,12 +1136,13 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto scope = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", name}}, cl_id);
+    auto scope =
+        TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", name}}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_5Impl::read_pipe_5 arrived for pipe " << name << std::endl;
@@ -1358,7 +1359,7 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -1386,13 +1387,13 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto scope =
-        TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
+    auto scope = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(
+        TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     std::string pipe_name(pi_value.name.in());
@@ -1518,7 +1519,7 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -1551,13 +1552,13 @@ Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto scope =
-        TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
+    auto scope = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(
+        TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     std::string pipe_name(pi_value.name.in());
@@ -1593,7 +1594,7 @@ Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 

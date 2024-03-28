@@ -652,8 +652,8 @@ class Interface
     //-----------------------------------------------------------------------------------------------------------------
     //! Start a new Span.
     //!
-    //! It is recommended to use the TELEMETRY_SPAN macro rather than this function. Please use the macro unless you
-    //! know what you're doing. A misusage of the \p kind parameter can notably created some side effects on backend
+    //! It is recommended to use the TANGO_TELEMETRY_SPAN macro rather than this function. Please use the macro unless
+    //! you know what you're doing. A misusage of the \p kind parameter can notably created some side effects on backend
     //! side.
     //
     //! For consistency reasons, it is recommended to use the TANGO_CURRENT_FUNCTION macro to name the new span.
@@ -666,7 +666,7 @@ class Interface
     //!
     //! Example:
     //! @code
-    //! auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"key", "value"}});
+    //! auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"key", "value"}});
     //! auto scope = Tango::telemetry::Interface::Scope(span);
     //! @endcode
     //!
@@ -677,7 +677,7 @@ class Interface
     //!
     //! \returns std::shared_ptr holding the new Tango::telemetry::Span or an invalid default span.
     //!
-    //! \see TELEMETRY_SPAN
+    //! \see TANGO_TELEMETRY_SPAN
     //! \see Tango::telemetry::Span::set_attribute
     //! \see Tango::telemetry::AttributeValue
     //-----------------------------------------------------------------------------------------------------------------
@@ -688,7 +688,7 @@ class Interface
     //-----------------------------------------------------------------------------------------------------------------
     //! Return the current Span.
     //!
-    //! Allows to retrieve the current span for a downstream context. The TELEMETRY_ADD_ATTRIBUTE macro offers a
+    //! Allows to retrieve the current span for a downstream context. The TANGO_TELEMETRY_ADD_ATTRIBUTE macro offers a
     //! syntactic shortcut for this function.
     //!
     //! @code
@@ -710,15 +710,15 @@ class Interface
     //!
     //! Example:
     //! @code
-    //! auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //! auto scope = TELEMETRY_SCOPE(span);
+    //! auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //! auto scope = TANGO_TELEMETRY_SCOPE(span);
     //! @endcode
     //!
     //! @param span the Span to activate.
     //!
     //! \returns a Tango::telemetry::Scope.
     //!
-    //! \see TELEMETRY_SCOPE
+    //! \see TANGO_TELEMETRY_SCOPE
     //! \see Tango::telemetry::Scope
     //-----------------------------------------------------------------------------------------------------------------
     Tango::telemetry::Scope
@@ -1008,22 +1008,22 @@ class InterfaceScope
     //     // The scope makes use of teh RAII paradigm to control how long the span remains
     //     // active. The active span will be the parent of any span created downstream.
     //     //-----------------------------------------------------------------------------------
-    //     auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //     auto scope = TELEMETRY_SCOPE(span);
+    //     auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //     auto scope = TANGO_TELEMETRY_SCOPE(span);
     //     // -----------------------------------------------------------------------------------
     //     // Now, let's add an attribute (as a key/value pair) to the span. An attribute is
     //     // purely user defined and there is no semantic convention to respect. This a contextual
     //     // information that will be propagated together with the span and that will available
     //     // as a meta-data in the backend (e.g., as a search criteria). We can do so using the
-    //     // span object or the TELEMETRY_ADD_ATTRIBUTE macro. The key must be a std::string while
+    //     // span object or the TANGO_TELEMETRY_ADD_ATTRIBUTE macro. The key must be a std::string while
     //     // the value must be one of the types supported by Tango::telemetry::AttributeValue.
     //     //-----------------------------------------------------------------------------------
-    //     TELEMETRY_ADD_ATTRIBUTE("data_update_counter", get_data_update_counter());
+    //     TANGO_TELEMETRY_ADD_ATTRIBUTE("data_update_counter", get_data_update_counter());
     //     try
     //     {
     //          ...
     //          // add an annotations to the span (an event in the OpenTelemetry jargon)
-    //          TELEMETRY_ADD_EVENT("so far, so good...");
+    //          TANGO_TELEMETRY_ADD_EVENT("so far, so good...");
     //          ...
     //          // end the span for precise profiling
     //          // will be ended automatically otherwise when it goes out of scope
@@ -1033,7 +1033,7 @@ class InterfaceScope
     //      {
     //          // tell the world that an error occurred in the span
     //          auto err_msg = Tango::telemetry::extract_exception_info();
-    //          TELEMETRY_SET_ERROR_STATUS(err_msg);
+    //          TANGO_TELEMETRY_SET_ERROR_STATUS(err_msg);
     //          throw(...);
     //      }
     //
@@ -1047,7 +1047,7 @@ class InterfaceScope
     //-------------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------------
-    // TELEMETRY_ACTIVE_INTERFACE
+    // TANGO_TELEMETRY_ACTIVE_INTERFACE
     //
     // Snapshots which interface is currently attached to the current thread then attaches
     // the specified one. Uses the magic provide by the C++11 "thread_local" keyword.
@@ -1069,11 +1069,11 @@ class InterfaceScope
     //        Tango::telemetry::InterfacePtr tti = Tango::telemetry::InterfaceFactory(cfg);
     //
     //        // activate the interface (make it the "current" one for the thread executing this code)
-    //        auto interface_scope = TELEMETRY_ACTIVE_INTERFACE(tti);
+    //        auto interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(tti);
     //
     //        // create the client root span (i.e., the parent of any span created in this thread)
-    //        auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //        auto scope = TELEMETRY_SCOPE(span);
+    //        auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //        auto scope = TANGO_TELEMETRY_SCOPE(span);
     //
     //        while (go_on)
     //        {
@@ -1083,10 +1083,10 @@ class InterfaceScope
     //    }
     //
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_ACTIVE_INTERFACE(TI) Tango::telemetry::InterfaceScope(TI)
+  #define TANGO_TELEMETRY_ACTIVE_INTERFACE(TI) Tango::telemetry::InterfaceScope(TI)
 
     //-------------------------------------------------------------------------------
-    // MACRO: TELEMETRY_SPAN
+    // MACRO: TANGO_TELEMETRY_SPAN
     //
     // Start a new span.
     //
@@ -1095,18 +1095,18 @@ class InterfaceScope
     //
     // Usage:
     //
-    //    auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
     //        `-> span name = TANGO_CURRENT_FUNCTION (the recommended span name for consistency reasons)
     //        `-> no Tango::telemetry::Attributes (no 2nd  arg)
     //
-    //    auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"myKey", "myValue"}});
+    //    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"myKey", "myValue"}});
     //        `-> span name = TANGO_CURRENT_FUNCTION (the recommended span name for consistency reasons)
     //        `-> attributes = user defined key/value pairs (as string/AttributeValue pairs)
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_SPAN(...) Tango::telemetry::Interface::get_current()->start_span(__VA_ARGS__)
+  #define TANGO_TELEMETRY_SPAN(...) Tango::telemetry::Interface::get_current()->start_span(__VA_ARGS__)
 
     //-------------------------------------------------------------------------------
-    // MACRO: TELEMETRY_SCOPE
+    // MACRO: TANGO_TELEMETRY_SCOPE
     //
     // Start a new scope (i.e., makes the specified span the active one).
     //
@@ -1114,23 +1114,23 @@ class InterfaceScope
     // added to the span attributes.
     //
     // Usage:
-    //    auto span = TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //    auto scope = TELEMETRY_SCOPE(span);
+    //    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //    auto scope = TANGO_TELEMETRY_SCOPE(span);
     //    ...
     //    span->End();
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_SCOPE(SPAN) Tango::telemetry::Interface::get_current()->scope(SPAN, __FILE__, __LINE__)
+  #define TANGO_TELEMETRY_SCOPE(SPAN) Tango::telemetry::Interface::get_current()->scope(SPAN, __FILE__, __LINE__)
 
     //-------------------------------------------------------------------------------
-    // TELEMETRY_ADD_EVENT
+    // TANGO_TELEMETRY_ADD_EVENT
     //
     // Add an event to the current span.
     //
     // Usage:
     //
-    //    TELEMETRY_ADD_EVENT("this annotation will be attached to the current span");
+    //    TANGO_TELEMETRY_ADD_EVENT("this annotation will be attached to the current span");
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_ADD_EVENT(MSG)                                                              \
+  #define TANGO_TELEMETRY_ADD_EVENT(MSG)                                                        \
       {                                                                                         \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
           if(current_span)                                                                      \
@@ -1140,7 +1140,7 @@ class InterfaceScope
       }
 
     //-------------------------------------------------------------------------------
-    // TELEMETRY_ADD_ATTRIBUTE
+    // TANGO_TELEMETRY_ADD_ATTRIBUTE
     //
     // Add an attribute to the current span.
     //
@@ -1149,9 +1149,9 @@ class InterfaceScope
     //
     // Usage:
     //
-    //    TELEMETRY_ADD_ATTRIBUTE("somekey", someValue);
+    //    TANGO_TELEMETRY_ADD_ATTRIBUTE("somekey", someValue);
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_ADD_ATTRIBUTE(KEY, VALUE)                                                   \
+  #define TANGO_TELEMETRY_ADD_ATTRIBUTE(KEY, VALUE)                                             \
       {                                                                                         \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
           if(current_span)                                                                      \
@@ -1161,7 +1161,7 @@ class InterfaceScope
       }
 
     //-------------------------------------------------------------------------------
-    // TELEMETRY_SET_ERROR_STATUS
+    // TANGO_TELEMETRY_SET_ERROR_STATUS
     //
     // Set the error status of the current span.
     //
@@ -1175,10 +1175,10 @@ class InterfaceScope
     //    }
     //    catch (...)
     //    {
-    //      TELEMETRY_SET_ERROR_STATUS("oops, an error occurred!");
+    //      TANGO_TELEMETRY_SET_ERROR_STATUS("oops, an error occurred!");
     //    }
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_SET_ERROR_STATUS(DESC)                                                      \
+  #define TANGO_TELEMETRY_SET_ERROR_STATUS(DESC)                                                \
       {                                                                                         \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
           if(current_span->get_status() != Tango::telemetry::Span::Status::kError)              \

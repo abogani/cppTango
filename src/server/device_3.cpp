@@ -1202,7 +1202,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
             ++it;
             bad_attributes_str << (it == bad_attributes.end() ? "" : ",");
         }
-        TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
+        TANGO_TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
     }
 #endif
 
@@ -1627,7 +1627,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
             ++it;
             bad_attributes_str << (it == bad_attributes.end() ? "" : ",");
         }
-        TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
+        TANGO_TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
     }
 #endif
 }
@@ -2205,7 +2205,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
             ++it;
             bad_attributes_str << (it == bad_attributes.end() ? "" : ",");
         }
-        TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
+        TANGO_TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
     }
 #endif
 

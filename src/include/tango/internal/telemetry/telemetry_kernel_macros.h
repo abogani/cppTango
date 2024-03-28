@@ -41,16 +41,16 @@ class SilentKernelScope
 };
 
     //-----------------------------------------------------------------------------------------------------------------
-    // TELEMETRY_SILENT_KERNEL_SCOPE- see SilentKernelScope for details.
+    // TANGO_TELEMETRY_SILENT_KERNEL_SCOPE- see SilentKernelScope for details.
     //
     // Usage:
     //
-    //    auto silent_kernel_scope = TELEMETRY_SILENT_KERNEL_SCOPE();
+    //    auto silent_kernel_scope = TANGO_TELEMETRY_SILENT_KERNEL_SCOPE();
     //-----------------------------------------------------------------------------------------------------------------
-  #define TELEMETRY_SILENT_KERNEL_SCOPE SilentKernelScope()
+  #define TANGO_TELEMETRY_SILENT_KERNEL_SCOPE SilentKernelScope()
 
     //-----------------------------------------------------------------------------------------------------------------
-    // TELEMETRY_KERNEL_CLIENT_SPAN & TELEMETRY_KERNEL_CLIENT_SPAN  (FOR CPP KERNEL ONLY)
+    // TANGO_TELEMETRY_KERNEL_CLIENT_SPAN & TANGO_TELEMETRY_KERNEL_CLIENT_SPAN  (FOR CPP KERNEL ONLY)
     //
     // Start a new "client" span.
     //
@@ -58,15 +58,15 @@ class SilentKernelScope
     //
     // Usage:
     //
-    //    auto span = TELEMETRY_KERNEL_CLIENT_SPAN();
-    //    TELEMETRY_KERNEL_CLIENT_SPAN(some_arg_name);
+    //    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN();
+    //    TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(some_arg_name);
     //-----------------------------------------------------------------------------------------------------------------
-  #define TELEMETRY_KERNEL_CLIENT_SPAN(ATTRS)                 \
+  #define TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(ATTRS)           \
       Tango::telemetry::Interface::get_current()->start_span( \
           TANGO_CURRENT_FUNCTION, ATTRS, Tango::telemetry::Span::Kind::kClient)
 
     //-----------------------------------------------------------------------------------------------------------------
-    // TELEMETRY_KERNEL_SERVER_SPAN (FOR CPP KERNEL ONLY)
+    // TANGO_TELEMETRY_KERNEL_SERVER_SPAN (FOR CPP KERNEL ONLY)
     //
     // Start a new "server" span.
     //
@@ -74,22 +74,22 @@ class SilentKernelScope
     // reply to a client RPC.
     //
     // Usage:
-    //    TELEMETRY_KERNEL_SERVER_SPAN;
+    //    TANGO_TELEMETRY_KERNEL_SERVER_SPAN;
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_KERNEL_SERVER_SPAN(...) telemetry()->set_trace_context(__VA_ARGS__)
+  #define TANGO_TELEMETRY_KERNEL_SERVER_SPAN(...) telemetry()->set_trace_context(__VA_ARGS__)
 
     //-------------------------------------------------------------------------------
-    // TELEMETRY_TRY (FOR CPP KERNEL ONLY)
+    // TANGO_TELEMETRY_TRY (FOR CPP KERNEL ONLY)
     //-------------------------------------------------------------------------------
-  #define TELEMETRY_TRY \
-      try               \
+  #define TANGO_TELEMETRY_TRY \
+      try                     \
       {
   //---------------------------------------------------------------------------------
-  // TELEMETRY_TRY (FOR CPP KERNEL ONLY)
+  // TANGO_TELEMETRY_TRY (FOR CPP KERNEL ONLY)
   //---------------------------------------------------------------------------------
   // see otel. specs for details
   // https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md#semantic-conventions-for-exceptions-on-spans
-  #define TELEMETRY_CATCH                                                                                      \
+  #define TANGO_TELEMETRY_CATCH                                                                                \
       }                                                                                                        \
       catch(...)                                                                                               \
       {                                                                                                        \
@@ -98,7 +98,7 @@ class SilentKernelScope
           Tango::telemetry::Interface::extract_exception_info(type, msg);                                      \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span();                \
           current_span->add_event("exception caught", {{"exception.type", type}, {"exception.message", msg}}); \
-          TELEMETRY_SET_ERROR_STATUS("exception caught (see associated event)");                               \
+          TANGO_TELEMETRY_SET_ERROR_STATUS("exception caught (see associated event)");                         \
           throw;                                                                                               \
       }
 

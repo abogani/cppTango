@@ -465,12 +465,13 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto scope = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", in_cmd}}, cl_id);
+    auto scope =
+        TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", in_cmd}}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_4Impl::command_inout_4 arrived, source = " << source << ", command = " << in_cmd
@@ -511,7 +512,7 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -535,12 +536,12 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_4Impl::read_attributes_4 arrived for dev " << get_name() << ", att[0] = " << names[0]
@@ -791,7 +792,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -816,12 +817,12 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_4Impl::write_attributes_4 arrived" << std::endl;
@@ -850,7 +851,7 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -878,12 +879,12 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_4Impl::set_attribute_config_4 arrived" << std::endl;
@@ -918,7 +919,7 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
@@ -947,12 +948,12 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
     //--------------------------------------------------------------------------------
     // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TELEMETRY_ACTIVE_INTERFACE(telemetry());
+    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
     // extract W3C trace context headers then start a 'server' span to indicate that
     // we are handling a RPC (OpenTelemetry convention)
-    auto root_span = TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     // do our best to catch and trace any exception
-    TELEMETRY_TRY;
+    TANGO_TELEMETRY_TRY;
 #endif
 
     TANGO_LOG_DEBUG << "Device_4Impl::write_read_attributes_4 arrived" << std::endl;
@@ -1014,7 +1015,7 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
 
 #if defined(TANGO_USE_TELEMETRY)
     // do our best to catch and trace any exception
-    TELEMETRY_CATCH;
+    TANGO_TELEMETRY_CATCH;
 #endif
 }
 
