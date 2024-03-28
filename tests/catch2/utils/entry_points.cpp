@@ -1,4 +1,6 @@
 #include "utils/test_server.h"
+#include "utils/utils.h"
+#include "utils/options.h"
 
 #include <tango/tango.h>
 #include <catch2/catch_session.hpp>
@@ -9,9 +11,21 @@
 namespace TangoTest
 {
 
+Options g_options;
+
 int test_main(int argc, const char *argv[])
 {
-    return Catch::Session().run(argc, argv);
+    using namespace Catch::Clara;
+
+    Catch::Session session;
+
+    auto cli = session.cli();
+    cli |= Opt(g_options.log_file_per_test_case)["--log-file-per-test-case"](
+        "create a log file for each test case, otherwise use a single log file for the whole run");
+
+    session.cli(cli);
+
+    return session.run(argc, argv);
 }
 
 int server_main(int argc, const char *argv[])
@@ -19,6 +33,9 @@ int server_main(int argc, const char *argv[])
     try
     {
         auto *tg = Tango::Util::init(argc, (char **) argv);
+        tg->set_trace_level(5);
+        detail::setup_topic_log_appender(tg->get_ds_inst_name());
+        Tango::Logging::get_core_logger()->set_level(log4tango::Level::DEBUG);
         tg->server_init();
         std::cout << TestServer::k_ready_string << '\n' << std::flush;
         tg->server_run();

@@ -39,7 +39,6 @@ SCENARIO("attribute formatting can be controlled")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_manip", "AttrManipDev", idlver};
-        INFO(ctx.info());
         auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());

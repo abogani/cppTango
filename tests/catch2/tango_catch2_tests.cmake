@@ -20,18 +20,20 @@ function(tango_catch2_tests_create)
         message(FATAL_ERROR "Unsupported platform for Catch2 tests")
     endif()
 
-    set(TANGO_CATCH2_LOG_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_server_logs)
+    set(TANGO_CATCH2_LOG_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_test_logs)
+    set(TANGO_CATCH2_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_server_output)
 
     add_custom_target(Catch2ServerLogs ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_OUTPUT_DIR}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_LOG_DIR}")
 
     add_test(NAME catch2::setup COMMAND
         ${CMAKE_COMMAND}
-        "-DTANGO_CATCH2_LOG_DIR=${TANGO_CATCH2_LOG_DIR}"
+        "-DTANGO_CATCH2_LOG_DIR=${TANGO_CATCH2_OUTPUT_DIR}"
         -P "${TANGO_CATCH2_TESTS_DIR}/clean_log_dir.cmake")
     add_test(NAME catch2::cleanup COMMAND
         ${CMAKE_COMMAND}
-        "-DTANGO_CATCH2_LOG_DIR=${TANGO_CATCH2_LOG_DIR}"
+        "-DTANGO_CATCH2_LOG_DIR=${TANGO_CATCH2_OUTPUT_DIR}"
         -P "${TANGO_CATCH2_TESTS_DIR}/check_for_server_logs.cmake")
 
     set_tests_properties(catch2::setup PROPERTIES FIXTURES_SETUP CATCH2)
@@ -58,9 +60,12 @@ function(tango_catch2_tests_create)
 
     target_compile_definitions(Catch2Tests PRIVATE
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/TestServer\""
-        "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\""
-        "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\"")
+        "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_OUTPUT_DIR}\""
+        "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\""
+        "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\"")
 
-    catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::" EXTRA_ARGS --warn NoAssertions PROPERTIES FIXTURES_REQUIRED CATCH2)
+    catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::"
+        EXTRA_ARGS --warn NoAssertions --log-file-per-test-case
+        PROPERTIES FIXTURES_REQUIRED CATCH2)
 
 endfunction()

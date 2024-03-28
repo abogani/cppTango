@@ -32,8 +32,6 @@ class Context
 
     ~Context() = default;
 
-    std::string info();
-
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
 
   private:
@@ -57,6 +55,31 @@ inline DevFailedReasonMatcher DevFailedReasonEquals(std::string const &message)
 {
     return DevFailedReasonMatcher(message);
 }
+
+namespace detail
+{
+// Setup a log appender to the file specified in the environment variable
+// TANGO_TEST_LOG_FILE.  Each log is prefixed with `topic`, this allows
+// multiple processes to log to this file at the same time.
+//
+// If the environment variable is not set, this does nothing.
+//
+// Expects: Tango::Logging::get_core_logger() != nullptr
+void setup_topic_log_appender(std::string_view topic);
+
+// A unique identifier representing the random seed used by the test run to make
+// it easier for the user to identify log files.  This is constructed during the
+// testRunStarting Catch2 event.
+extern std::string g_log_filename_prefix;
+
+// Return a filename containing the test_case_name, starting with
+// g_log_filename_prefix and ending with suffix.
+//
+// The filename will not exceed the path component size limit on the platform.
+// And any spaces (' ') in the test_case_name will be replaced with underscores
+// ('_').
+std::string filename_from_test_case_name(std::string_view test_case_name, std::string_view suffix);
+} // namespace detail
 
 } // namespace TangoTest
 

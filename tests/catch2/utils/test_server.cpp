@@ -1,4 +1,5 @@
 #include "utils/test_server.h"
+#include "utils/utils.h"
 
 #include "utils/platform/platform.h"
 
@@ -26,6 +27,7 @@ class CatchLogger : public Logger
   public:
     void log(const std::string &message) override
     {
+        TANGO_LOG_WARN << message;
         WARN(message);
     }
 
@@ -34,12 +36,6 @@ class CatchLogger : public Logger
 
 struct FilenameBuilder
 {
-    // This is the limit on Linux and Windows
-    constexpr static size_t k_max_filename_length = 255;
-
-    constexpr static size_t k_prefix_length = 4;
-    // Random prefix to make filenames unique between invocations
-    char prefix[k_prefix_length];
     // The current test case we are running
     std::string current_test_case_name;
     // The current test case part that we are running
@@ -58,36 +54,7 @@ struct FilenameBuilder
         }();
         server_count += 1;
 
-        std::string test_case_name = current_test_case_name;
-
-        // We use `k_prefix_length` here because the prefix includes the
-        // randomly generated characters and an '_', which is the same length as
-        // `prefix` which stores the randomly generated characters and a '\0'.
-        size_t max_length = k_max_filename_length - k_prefix_length - suffix.size();
-
-        if(test_case_name.size() > max_length)
-        {
-            test_case_name.resize(max_length);
-        }
-
-        std::string filename = [&, this]()
-        {
-            std::stringstream ss;
-            ss << prefix << "_";
-            std::transform(test_case_name.begin(),
-                           test_case_name.end(),
-                           std::ostream_iterator<char>(ss),
-                           [](char c)
-                           {
-                               if(c == ' ')
-                               {
-                                   return '_';
-                               }
-                               return c;
-                           });
-            ss << suffix;
-            return ss.str();
-        }();
+        std::string filename = detail::filename_from_test_case_name(current_test_case_name, suffix);
 
         std::string path = [&]()
         {
@@ -121,20 +88,6 @@ class PlatformListener : public Catch::EventListenerBase
             TestServer::s_next_port = dist(g_rng);
         }
 
-        {
-            constexpr const char k_base64[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            static_assert(sizeof(k_base64) - 1 == 62); // - 1 for \0
-
-            char prefix[FilenameBuilder::k_prefix_length];
-            std::uniform_int_distribution dist{0, 61};
-            for(size_t i = 0; i < FilenameBuilder::k_prefix_length - 1; ++i)
-            {
-                prefix[i] = k_base64[dist(g_rng)];
-            }
-            prefix[FilenameBuilder::k_prefix_length - 1] = '\0';
-            memcpy(g_filename_builder.prefix, prefix, 4);
-        }
-
         platform::init();
     }
 
@@ -160,8 +113,13 @@ bool append_logs(std::istream &in, std::ostream &out)
     return false;
 }
 
+[[noreturn]] void throw_runtime_error(const std::string &message)
+{
+    TANGO_LOG_ERROR << message;
+    throw std::runtime_error(message);
+}
+
 } // namespace
-  //
 
 int TestServer::s_next_port;
 std::unique_ptr<Logger> TestServer::s_logger;
@@ -219,6 +177,9 @@ void TestServer::start(const std::string &instance_name,
         }();
         *end_point_slot = end_point.c_str();
 
+        TANGO_LOG_INFO << "Starting server with arguments "
+                       << Catch::StringMaker<std::vector<const char *>>::convert(args);
+
         auto start_result = platform::start_server(args, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
@@ -238,7 +199,7 @@ void TestServer::start(const std::string &instance_name,
             m_handle = start_result.handle;
             stop(timeout);
 
-            throw std::runtime_error(ss.str());
+            throw_runtime_error(ss.str());
         }
         case Kind::Exited:
         {
@@ -259,7 +220,7 @@ void TestServer::start(const std::string &instance_name,
             std::remove(m_redirect_file.c_str());
             if(!port_in_use)
             {
-                throw std::runtime_error(ss.str());
+                throw_runtime_error(ss.str());
             }
         }
         }
@@ -303,23 +264,32 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         //  - some assertion has failed (where Catch2 will throw an exception)
         // In either case the test has failed.
         bool test_has_failed = std::uncaught_exceptions() > 0;
+        std::stringstream ss;
+        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        {
+            ss << "TestServer exited with exit status " << stop_result.exit_status
+               << " during the test. Server output:\n";
+        }
+        else if(test_has_failed)
+        {
+            ss << "Test server exited cleanly, but we detected that test failed. Server output:\n";
+        }
+        else
+        {
+            ss << "Test server exited cleanly. Server output:\n";
+        }
+        std::ifstream f{m_redirect_file};
+        append_logs(f, ss);
+
         if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0 || test_has_failed)
         {
-            std::stringstream ss;
-            if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
-            {
-                ss << "TestServer exited with exit status " << stop_result.exit_status
-                   << " during the test. Server output:\n";
-            }
-            else
-            {
-                ss << "Detected that test failed. Server output:\n";
-            }
-            std::ifstream f{m_redirect_file};
-            append_logs(f, ss);
-
             s_logger->log(ss.str());
         }
+        else
+        {
+            TANGO_LOG_INFO << ss.str();
+        }
+
         break;
     }
     }
