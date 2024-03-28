@@ -390,21 +390,21 @@ class SpanImplementation final
     //-------------------------------------------------------------------------------------
     void add_event(const std::string &name, const Attributes &attributes) noexcept
     {
-        std::map<std::string, opentelemetry::common::AttributeValue> otel_attributes;
-
-        for(const auto &attribute : attributes)
-        {
-            std::visit(
-                [&](auto &&arg)
-                {
-                    // Convert each type to opentelemetry::trace::AttributeValue and add to convertedAttributes
-                    otel_attributes[attribute.first] = opentelemetry::common::AttributeValue(arg);
-                },
-                attribute.second);
-        }
-
         if(otel_span)
         {
+            std::map<std::string, opentelemetry::common::AttributeValue> otel_attributes;
+
+            for(const auto &attribute : attributes)
+            {
+                std::visit(
+                    [&](auto &&arg)
+                    {
+                        // Convert each type to opentelemetry::trace::AttributeValue and add to convertedAttributes
+                        otel_attributes[attribute.first] = opentelemetry::common::AttributeValue(arg);
+                    },
+                    attribute.second);
+            }
+
             otel_span->AddEvent(name, otel_attributes);
         }
     }
@@ -414,27 +414,27 @@ class SpanImplementation final
     //-------------------------------------------------------------------------------------
     void set_status(const Span::Status &status, const std::string &description = "") noexcept
     {
-        // see otel. specs on span status - description mandatory for status == Span::Status::kError
-        // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#set-status
-
-        span_status = status;
-
-        auto to_opentelemetry_code = [](Span::Status code)
-        {
-            switch(code)
-            {
-            case Span::Status::kOk:
-                return opentelemetry::trace::StatusCode::kOk;
-            case Span::Status::kError:
-                return opentelemetry::trace::StatusCode::kError;
-            case Span::Status::kUnset:
-            default:
-                return opentelemetry::trace::StatusCode::kUnset;
-            }
-        };
-
         if(otel_span)
         {
+            // see otel. specs on span status - description mandatory for status == Span::Status::kError
+            // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#set-status
+
+            span_status = status;
+
+            auto to_opentelemetry_code = [](Span::Status code)
+            {
+                switch(code)
+                {
+                case Span::Status::kOk:
+                    return opentelemetry::trace::StatusCode::kOk;
+                case Span::Status::kError:
+                    return opentelemetry::trace::StatusCode::kError;
+                case Span::Status::kUnset:
+                default:
+                    return opentelemetry::trace::StatusCode::kUnset;
+                }
+            };
+
             otel_span->SetStatus(to_opentelemetry_code(status), description);
         }
     }
