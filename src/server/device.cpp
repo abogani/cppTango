@@ -2342,6 +2342,8 @@ Tango::DevVarStringArray *DeviceImpl::black_box(CORBA::Long n)
     // Record operation request in black box
     //
 
+    blackbox_ptr->insert_op(Op_BlackBox);
+
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::black_box" << std::endl;
     return ret;
 }
