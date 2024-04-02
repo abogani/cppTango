@@ -21,6 +21,7 @@
 #include <iostream>
 #include <numeric>
 #include <tango/tango.h>
+#include <tango/common/utils/type_info.h>
 
 // DbInfo                              done
 // DbImportDevice
@@ -52,7 +53,7 @@
 // DbGetDeviceExportedList
 // DbGetDeviceDomainList
 // DbGetDeviceFamilyList
-// DbGetProperty
+// DbGetProperty                        done
 // DbPutProperty
 // DbDeleteProperty
 // DbGetAliasDevice
@@ -136,6 +137,18 @@ t_tango_class *search_class(t_server &s, string &name)
         if(equalsIgnoreCase(s.classes[i]->name, name))
         {
             return s.classes[i];
+        }
+    }
+    return nullptr;
+}
+
+t_free_object *search_free_object(t_server &s, string &name)
+{
+    for(unsigned int i = 0; i < s.free_objects.size(); i++)
+    {
+        if(equalsIgnoreCase(s.free_objects[i]->name, name))
+        {
+            return s.free_objects[i];
         }
     }
     return nullptr;
@@ -305,6 +318,15 @@ FileDatabase::~FileDatabase()
             delete(*pa);
         }
         delete(*j);
+    }
+
+    for(auto *obj : m_server.free_objects)
+    {
+        for(auto *prop : obj->properties)
+        {
+            delete prop;
+        }
+        delete obj;
     }
 }
 
@@ -886,8 +908,24 @@ std::string FileDatabase::parse_res_file(const std::string &file_name)
                 }
                 else if(equalsIgnoreCase(domain, "free"))
                 {
-                    //                        TANGO_LOG << "Free Tango res" << endl;
-                    // put_free_tango_res(family,member,values);
+                    t_free_object *obj = search_free_object(m_server, family);
+
+                    // We add free objects on demand.
+                    if(obj == nullptr)
+                    {
+                        obj = new t_free_object;
+                        obj->name = family;
+                        m_server.free_objects.push_back(obj);
+                    }
+
+                    t_property *prop = new t_property;
+                    prop->name = member;
+
+                    for(unsigned int n = 0; n < values.size(); n++)
+                    {
+                        prop->value.push_back(values[n]);
+                    }
+                    obj->properties.push_back(prop);
                 }
                 else
                 {
@@ -1202,6 +1240,31 @@ void FileDatabase ::write_file()
                 }
                 f << endl;
             }
+        }
+    }
+
+    f << "#############################################\n";
+    f << "# FREE OBJECT attributes\n\n";
+    for(auto *obj : m_server.free_objects)
+    {
+        for(auto *prop : obj->properties)
+        {
+            f << "FREE/" << obj->name << "->" << prop->name << ": ";
+            int margin = 5 + obj->name.size() + 2 + prop->name.size() + 2;
+            string margin_s(margin, ' ');
+            auto its = prop->value.begin();
+            if(its != prop->value.end())
+            {
+                write_string_value(*its, f);
+                ++its;
+                for(; its != prop->value.end(); ++its)
+                {
+                    f << ",\\" << endl;
+                    f << margin_s;
+                    write_string_value(*its, f);
+                }
+            }
+            f << "\n";
         }
     }
 
@@ -2323,27 +2386,122 @@ CORBA::Any *FileDatabase ::DbGetDeviceDomainList(CORBA::Any &)
     return any_ptr;
 }
 
-/** At the moment we have no information about general properties
- * so I put nothing out
+/**
+ *	Command DbGetProperty related method
+ *	Description: Get free object property
+ *
+ *	@param argin Str[0] = Object name
+ *               Str[1] = Property name
+ *               Str[n] = Property name
+ *	@returns Str[0] = Object name
+ *           Str[1] = Property number
+ *           Str[2] = Property name
+ *           Str[3] = Property value number (array case)
+ *           Str[4] = Property value 1
+ *           Str[n] = Property value n (array case)
+ *           Str[n + 1] = Property name
+ *           Str[n + 2] = Property value number (array case)
+ *           Str[n + 3] = Property value 1
+ *           Str[n + m] = Property value m
  */
-CORBA::Any *FileDatabase ::DbGetProperty(CORBA::Any &send)
+CORBA::Any *FileDatabase::DbGetProperty(CORBA::Any &send)
 {
     CORBA::Any *any_ptr = new CORBA::Any();
 
-    const Tango::DevVarStringArray *data_in = nullptr;
+    const DevVarStringArray *data_in = nullptr;
     auto *data_out = new DevVarStringArray;
-    const char *zero_str = "0";
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetProperty" << endl;
 
-    send >>= data_in;
+    if(!(send >>= data_in))
+    {
+        std::stringstream ss;
+        ss << "Incorrect type passed to FileDatabase::DbGetProperty. Expecting "
+           << tango_type_traits<DevVarStringArray>::type_value() << ", found " << detail::corba_any_to_type_name(send);
+        TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, ss.str().c_str());
+    }
 
-    data_out->length(2);
-    (*data_out)[0] = Tango::string_dup((*data_in)[0]);
-    (*data_out)[1] = Tango::string_dup(zero_str);
+    if(data_in->length() < 1)
+    {
+        std::stringstream ss;
+        ss << "Invalid number of arguments passed to FileDatabase::DbGetProperty. Expecting at least 1, found "
+           << data_in->length();
+        TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, ss.str().c_str());
+    }
+
+    const auto &free_objects = m_server.free_objects;
+    const char *obj_name = (*data_in)[0].in();
+
+    unsigned long num_prop = data_in->length() - 1;
+
+    // Allocate space for the properties up-front to avoid too may allocations.
+    //
+    // Here we are allocating the minimum amount of space required for each
+    // property.  That is, slots for:
+    //
+    //  - The name
+    //  - The number of elements of the value
+    //  - At least one element (this is expected even if the number of elements is
+    //  zero)
+    //
+    // Later we allocate more space if we find that there are multiple elements
+    // for a value.
+    data_out->length(data_out->length() + 3 * num_prop);
+
+    size_t out_index = 0;
+    (*data_out)[out_index] = Tango::string_dup(obj_name);
+    out_index++;
+    (*data_out)[out_index] = to_corba_string(num_prop);
+    out_index++;
+
+    auto obj = std::find_if(free_objects.begin(), free_objects.end(), hasName<t_free_object>(obj_name));
+    std::vector<t_property *> empty_prop_list;
+
+    // If the free object isn't in the database, then we pretend we are
+    // referencing a free object with no properties.  This is the same behaviour
+    // as TangoDatabase.
+    const auto &prop_list = obj != free_objects.end() ? (*obj)->properties : empty_prop_list;
+
+    for(CORBA::ULong j = 1; j < data_in->length(); ++j)
+    {
+        const char *prop_name = (*data_in)[j].in();
+        (*data_out)[out_index] = Tango::string_dup(prop_name);
+        out_index++;
+
+        auto prop = std::find_if(prop_list.begin(), prop_list.end(), hasName<t_property>(prop_name));
+
+        if(prop == prop_list.end())
+        {
+            (*data_out)[out_index] = Tango::string_dup("0");
+            out_index++;
+            // Even though we say 0 elements here, we add a " ".  This is
+            // inline with what TangoDatabase does when it cannot find the
+            // property.
+            (*data_out)[out_index] = Tango::string_dup(" ");
+            out_index++;
+        }
+        else
+        {
+            const auto &value = (*prop)->value;
+            size_t value_len = value.size();
+            if(value_len > 1)
+            {
+                // Correct our assumption above
+                data_out->length(data_out->length() + value_len - 1);
+            }
+
+            (*data_out)[out_index] = to_corba_string(value_len);
+            out_index++;
+
+            for(size_t i = 0; i < value_len; ++i)
+            {
+                (*data_out)[out_index] = Tango::string_dup(value[i].c_str());
+                out_index++;
+            }
+        }
+    }
 
     (*any_ptr) <<= data_out;
-
     return any_ptr;
 }
 
