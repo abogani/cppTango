@@ -562,7 +562,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
 
         // If we're handling change events manually and alarm_event_implemented is not set
         // evaluate and push alarm event as well
-        if(attr.is_change_event() && !attr.is_alarm_event())
+        if(attr.is_change_event() && !attr.is_alarm_event() && Util::instance()->is_auto_alarm_on_change_event())
         {
             do_detect_and_push_alarm_event(device_impl, attr_value, attr, attr_name, except, user_push);
         }

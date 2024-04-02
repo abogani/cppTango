@@ -181,6 +181,7 @@ const int DB_START_PHASE_RETRIES = 3;
 
 const char *const CONTROL_SYSTEM = "CtrlSystem";
 const char *const SERVICE_PROP_NAME = "Services";
+const char *const AUTO_ALARM_ON_CHANGE_PROP_NAME = "AutoAlarmOnChangeEvent";
 const char *const ACCESS_SERVICE = "AccessControl";
 
 //

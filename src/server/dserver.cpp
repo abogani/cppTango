@@ -1681,7 +1681,8 @@ void DServer::check_lock_owner(DeviceImpl *dev, const char *cmd_name, const char
 //
 // description :
 //        Get the properties defining which event has to be transported using multicast protocol. Also retrieve
-//        property for Nan allowed in writing attribute
+//        property for Nan allowed in writing attribute and whether alarm events should be sent on calls
+//        to push_change_event.
 //
 // args :
 //         in :
@@ -1706,6 +1707,7 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
         db_data.emplace_back("DSEventBufferHwm");
         db_data.emplace_back("EventBufferHwm");
         db_data.emplace_back("WAttrNaNAllowed");
+        db_data.emplace_back(AUTO_ALARM_ON_CHANGE_PROP_NAME);
 
         try
         {
@@ -1872,6 +1874,17 @@ void DServer::get_event_misc_prop(Tango::Util *tg)
                 bool new_val;
                 db_data[6] >> new_val;
                 tg->set_wattr_nan_allowed(new_val);
+            }
+
+            //
+            // Alarm events are pushed on calls to push_change_event
+            //
+
+            if(!db_data[7].is_empty())
+            {
+                bool new_val;
+                db_data[7] >> new_val;
+                tg->set_auto_alarm_on_change_event(new_val);
             }
         }
         catch(Tango::DevFailed &)
