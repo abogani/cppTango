@@ -136,7 +136,6 @@ void TestServer::start(const std::string &instance_name,
     std::vector<const char *> args{
         "TestServer",
         instance_name.c_str(),
-        "-nodb",
         "-ORBendPoint",
         nullptr, // filled in later
     };
