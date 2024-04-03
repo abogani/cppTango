@@ -55,15 +55,17 @@ Context::Context(const std::string &instance_name,
                  int idlversion,
                  std::vector<const char *> env)
 {
+    std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
+
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
-        ss << tmpl_name << "_" << idlversion << "::TestServer/tests/1";
+        ss << class_name << "::TestServer/tests/1";
         return ss.str();
     }();
 
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
-                   << "\"" << tmpl_name << "_" << idlversion;
+                   << "\"" << class_name << "\"";
 
     std::string log_file_env = []()
     {
@@ -72,6 +74,15 @@ Context::Context(const std::string &instance_name,
         return ss.str();
     }();
     env.emplace_back(log_file_env.c_str());
+
+    std::string class_enabled_env = [&]()
+    {
+        std::stringstream ss;
+        ss << detail::k_enabled_classes_env_var << "=" << class_name;
+        return ss.str();
+    }();
+    env.emplace_back(class_enabled_env.c_str());
+
     // append trailing NULL
     env.emplace_back(nullptr);
 

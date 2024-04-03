@@ -241,9 +241,12 @@ class AutoAttr : public Tango::Attr
 
 namespace detail
 {
+constexpr const char *k_enabled_classes_env_var = "TANGO_TEST_ENABLED_CLASSES";
+
 struct ClassRegistrarBase
 {
-    ClassRegistrarBase()
+    ClassRegistrarBase(const char *n) :
+        name{n}
     {
         if(registrars == nullptr)
         {
@@ -258,22 +261,19 @@ struct ClassRegistrarBase
     // We use a pointer here so that the first `ClassRegistrarBase` constructs
     // the vector.  This avoids the static initialisation order fiasco.
     static std::vector<ClassRegistrarBase *> *registrars;
+
+    const char *name;
 };
 
 template <typename DeviceClass>
 struct ClassRegistrar : ClassRegistrarBase
 {
-    ClassRegistrar(const char *n) :
-        name{n}
-    {
-    }
+    using ClassRegistrarBase::ClassRegistrarBase;
 
     Tango::DeviceClass *init_class() override
     {
         return DeviceClass::init(name);
     }
-
-    const char *name;
 };
 } // namespace detail
 
