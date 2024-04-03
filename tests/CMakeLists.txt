@@ -299,6 +299,7 @@ tango_catch2_tests_create(
     catch2_attr_polling.cpp
     catch2_cmd_polling.cpp
     catch2_jpeg_encoding.cpp
+    catch2_nodb_connection.cpp
     )
 
 configure_file(locked_device_cmd.h.cmake locked_device_cmd.h @ONLY)
