@@ -1842,37 +1842,6 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     }
 
     //
-    // For non-database device , try to ping them. It's the only way to know that
-    // the device is not defined
-    //
-
-    if(!dbase_used)
-    {
-        try
-        {
-            ping();
-        }
-        catch(Tango::ConnectionFailed &dfe)
-        {
-            if(strcmp(dfe.errors[1].reason, API_DeviceNotDefined) == 0)
-            {
-                throw;
-            }
-        }
-        catch(Tango::DevFailed &tdf)
-        {
-            // this deals with "not running no-db devices" for which the call to "reconnect"
-            // fails in this case, we just catch the exception and gently wait for the next
-            // connection attempt. added following the adoption of a call to "reconnect" instead
-            // of a call to "connect" (side effect).
-            if(strcmp(tdf.errors[0].reason, API_CantConnectToDevice) != 0)
-            {
-                throw;
-            }
-        }
-    }
-
-    //
     // get the name of the asscociated device when connecting
     // inside a device server
     //
