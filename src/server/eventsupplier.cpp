@@ -628,7 +628,7 @@ bool EventSupplier::do_detect_and_push_alarm_event(DeviceImpl *device_impl,
     // if no attribute of this name is registered for an alarm event,
     // then store the current value to start with.
     bool is_alarm{false};
-    if(attr.prev_alarm_event.inited == false)
+    if(!attr.prev_alarm_event.inited)
     {
         attr.prev_alarm_event.store(attr_value.attr_val_5, nullptr, nullptr, nullptr, except);
         is_alarm = true;
@@ -637,7 +637,7 @@ bool EventSupplier::do_detect_and_push_alarm_event(DeviceImpl *device_impl,
     // Check whether the data quality has changed. Fire event on a quality
     // change if the quality was previously ALARM and is now not ALARM or the
     // quality was not ALARM but is now ALARM. Do the same for WARNING.
-    if((!except) && (attr.prev_alarm_event.quality != the_quality) &&
+    if((except == nullptr) && (attr.prev_alarm_event.quality != the_quality) &&
        (((attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM)) ||
         ((attr.prev_alarm_event.quality == Tango::ATTR_WARNING) || (the_quality == Tango::ATTR_WARNING))))
     {
@@ -695,7 +695,7 @@ bool EventSupplier::do_detect_and_push_alarm_event(DeviceImpl *device_impl,
                        inc_ctr);
 
             inc_ctr = false;
-            if(need_free == true)
+            if(need_free)
             {
                 if(sent_value.attr_val_5 != nullptr)
                 {
@@ -703,7 +703,7 @@ bool EventSupplier::do_detect_and_push_alarm_event(DeviceImpl *device_impl,
                     sent_value.attr_val_5 = nullptr;
                 }
             }
-            if(name_changed == true)
+            if(name_changed)
             {
                 ev_name = EventName[ALARM_EVENT];
             }
