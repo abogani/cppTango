@@ -1788,8 +1788,6 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     }
     else
     {
-        corba_name = build_corba_name();
-
         //
         // If we are not using the database, give write access
         //
