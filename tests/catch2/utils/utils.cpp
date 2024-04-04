@@ -282,6 +282,20 @@ class TangoListener : public Catch::EventListenerBase
     {
         TANGO_LOG_INFO << "Section \"" << info.name << "\" starting";
     }
+
+    void assertionEnded(const Catch::AssertionStats &stats) override
+    {
+        if(stats.assertionResult.isOk())
+        {
+            return;
+        }
+
+        if(stats.assertionResult.hasExpression() && stats.assertionResult.hasExpandedExpression())
+        {
+            TANGO_LOG_WARN << "Assertion \"" << stats.assertionResult.getExpression() << "\" ("
+                           << stats.assertionResult.getExpandedExpression() << ") failed.";
+        }
+    }
 };
 
 CATCH_REGISTER_LISTENER(TangoListener)
