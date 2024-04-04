@@ -525,6 +525,15 @@ int main(int argc, char **argv)
     db_data.push_back(fwd_att6);
     db_data.push_back(root_att6);
 
+    Tango::DbDatum fwd_att7("fwd_ima_string_r");
+    Tango::DbDatum root_att7(RootAttrPropName);
+    fwd_att7 << (short) 1;
+    // State is temporarily entered, the value changed in the test
+    r_name = device1_name + "/state";
+    root_att7 << r_name;
+    db_data.push_back(fwd_att7);
+    db_data.push_back(root_att7);
+
     try
     {
         db->put_device_attribute_property(fwd_dev_name, db_data);

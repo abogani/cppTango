@@ -821,6 +821,35 @@ class FwdAttTestSuite : public CxxTest::TestSuite
             TS_FAIL("Could not extract attribute value to DevState");
         }
     }
+
+    void test_forward_string_image_attribute_addition(void)
+    {
+        Tango::Database *db = new Tango::Database();
+        Tango::DbData db_data_in;
+
+        db_data_in.push_back("fwd_ima_string_r");
+        Tango::DbDatum vel("fwd_ima_string_r");
+        Tango::DbDatum root_att("__root_att");
+        vel << (short) 1;
+        root_att << device2_name + "/String_ima_attr";
+        db_data_in.push_back(vel);
+        db_data_in.push_back(root_att);
+
+        db->put_device_attribute_property(fwd_device_name, db_data_in);
+        ad->command_inout("RestartServer");
+        std::this_thread::sleep_for(std::chrono::seconds(4));
+
+        Tango::DeviceAttribute string_attr;
+        TS_ASSERT_THROWS_NOTHING(string_attr = fwd_device->read_attribute("fwd_ima_string_r"));
+        vector<string> v_str_read;
+        string_attr >> v_str_read;
+
+        TS_ASSERT_EQUALS(v_str_read.size(), 2u);
+        TS_ASSERT_EQUALS(v_str_read[0], "Hello milky way");
+        TS_ASSERT_EQUALS(v_str_read[1], "Hello moon");
+
+        delete db;
+    }
 };
 
 void FwdAttTestSuite::EventCallBack::push_event(Tango::EventData *event_data)

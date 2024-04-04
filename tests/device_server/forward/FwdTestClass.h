@@ -107,6 +107,14 @@ class FwdAttrScaSta : public Tango::FwdAttr
     ~FwdAttrScaSta() { }
 };
 
+class FwdAttrImaStrRead : public Tango::FwdAttr
+{
+  public:
+    FwdAttrImaStrRead(const std::string &_n) :
+        FwdAttr(_n){}
+    ~FwdAttrImaStrRead(){}
+};
+
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	FwdTestClass::classes for dynamic creation
 

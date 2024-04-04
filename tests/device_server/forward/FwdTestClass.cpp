@@ -356,6 +356,9 @@ void FwdTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
     FwdAttrScaStr *att6 = new FwdAttrScaStr("fwd_string_rw");
     att_list.push_back(att6);
 
+    FwdAttrImaStrRead *att7 = new FwdAttrImaStrRead("fwd_ima_string_r");
+    att_list.push_back(att7);
+
     /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::attribute_factory_before
 

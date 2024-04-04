@@ -724,7 +724,14 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
                 }
                 else
                 {
-                    delete[] p_data;
+                    if(is_fwd_att())
+                    {
+                        Tango::DevVarStringArray::freebuf(p_data);
+                    }
+                    else
+                    {
+                        delete[] p_data;
+                    }
                 }
             }
             else
