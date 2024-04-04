@@ -46,12 +46,14 @@ class AlarmEventDev : public Base
     void push_alarm()
     {
         Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
+        this->push_alarm_event("attr_test", &v);
         this->push_alarm_event("attr_push", &v);
     }
 
     void push_change()
     {
         Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
+        this->push_change_event("attr_test", &v);
         this->push_change_event("attr_change", &v);
         this->push_change_event("attr_change_alarm", &v);
     }
@@ -521,6 +523,128 @@ SCENARIO("Subscribing to alarm events from a missing attribute fails")
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
                                            Tango::DevFailed,
                                            TangoTest::DevFailedReasonEquals(Tango::API_AttrNotFound));
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Pushing events for a polled attribute works")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("a polled attribute")
+        {
+            std::string att{"attr_test"};
+
+            AND_GIVEN("an alarm event subscription to that attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                WHEN("we push an alarm event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "alarm");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                    }
+                }
+
+                WHEN("we push a change event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "alarm");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Pushing alarm events from push_change_event on polled attributes can be disabled")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{
+            "alarm_event", "AlarmEventDev", idlver, "FREE/CtrlSystem->AutoAlarmOnChangeEvent: false\n"};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("a polled attribute")
+        {
+            std::string att{"attr_test"};
+
+            AND_GIVEN("an alarm event subscription to that attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                WHEN("we push an alarm event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                    THEN("an alarm event is generated")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "alarm");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                    }
+                }
+
+                WHEN("we push a change event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                    THEN("no alarm event is generated")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(!maybe_event.has_value());
+                    }
                 }
             }
         }
