@@ -4059,6 +4059,11 @@ void Attribute::fire_change_event(DevFailed *except)
 {
     TANGO_LOG_DEBUG << "Attribute::fire_change_event() entering ..." << std::endl;
 
+    if(!is_alarm_event() && Util::instance()->is_auto_alarm_on_change_event())
+    {
+        fire_alarm_event(except);
+    }
+
     if(except != nullptr)
     {
         set_value_flag(false);
