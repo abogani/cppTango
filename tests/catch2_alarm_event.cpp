@@ -74,6 +74,11 @@ class AlarmEventDev : public Base
         props.set_min_alarm(std::to_string(ATTR_MIN_ALARM).c_str());
         props.set_max_alarm(std::to_string(ATTR_MAX_ALARM).c_str());
 
+        auto attr_no_polling = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
+            "attr_no_polling", Tango::DEV_DOUBLE);
+        attr_no_polling->set_default_properties(props);
+        attrs.push_back(attr_no_polling);
+
         auto attr_test = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
             "attr_test", Tango::DEV_DOUBLE);
         attr_test->set_polling_period(100);
@@ -439,6 +444,32 @@ SCENARIO("Alarm events are pushed together with manual change events")
     }
 }
 
+SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        AND_GIVEN("an attribute with no polling")
+        {
+            std::string att{"attr_no_polling"};
+
+            TangoTest::CallbackMock<Tango::EventData> callback;
+
+            WHEN("we subscribe to alarm events")
+            {
+                THEN("the subscription fails")
+                {
+                    REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
+                                           Tango::DevFailed,
+                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                }
+            }
+        }
+    }
+}
+
 SCENARIO("Auto alarm on change events can be disabled")
 {
     int idlver = GENERATE(TangoTest::idlversion(6));
@@ -464,6 +495,32 @@ SCENARIO("Auto alarm on change events can be disabled")
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
                                            Tango::DevFailed,
                                            TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Subscribing to alarm events from a missing attribute fails")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        AND_GIVEN("a missing attribute")
+        {
+            std::string att{"attr_missing"};
+
+            TangoTest::CallbackMock<Tango::EventData> callback;
+
+            WHEN("we subscribe to alarm events")
+            {
+                THEN("the subscription fails")
+                {
+                    REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
+                                           Tango::DevFailed,
+                                           TangoTest::DevFailedReasonEquals(Tango::API_AttrNotFound));
                 }
             }
         }
