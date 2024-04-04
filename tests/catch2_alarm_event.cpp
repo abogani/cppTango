@@ -1,3 +1,4 @@
+#include <catch2/matchers/catch_matchers.hpp>
 #include <tango/tango.h>
 
 #include <memory>
@@ -458,25 +459,11 @@ SCENARIO("Auto alarm on change events can be disabled")
 
             WHEN("we subscribe to alarm_events")
             {
-                THEN("the subscription succeeds")
+                THEN("the subscription fails")
                 {
-                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
-
-                    // discard the initial event we get when we subscribe
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-
-                    WHEN("we push a change event from code")
-                    {
-                        REQUIRE_NOTHROW(device->command_inout("push_change"));
-
-                        THEN("a change and alarm events are generated")
-                        {
-                            auto maybe_event = callback.pop_next_event();
-
-                            REQUIRE(!maybe_event.has_value());
-                        }
-                    }
+                    REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
+                                           Tango::DevFailed,
+                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
                 }
             }
         }
