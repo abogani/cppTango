@@ -4061,7 +4061,7 @@ void Attribute::fire_change_event(DevFailed *except)
 
     if(!is_alarm_event() && Util::instance()->is_auto_alarm_on_change_event())
     {
-        fire_alarm_event(except);
+        do_fire_alarm_event(except, false);
     }
 
     if(except != nullptr)
@@ -4531,8 +4531,23 @@ void Attribute::fire_change_event(DevFailed *except)
  * @arg in:
  *          - ptr: Pointer to a DevFailed exception to fire in case of an error
  *                  to indicate.
+ *          - should_delete_seq: True if we should call delete_seq()
  **/
 void Attribute::fire_alarm_event(DevFailed *except)
+{
+    do_fire_alarm_event(except, true);
+}
+
+/**
+ * @name Attribute::do_fire_alarm_event
+ *
+ * @brief Fire an alarm event for the attribute value.
+ * @arg in:
+ *          - ptr: Pointer to a DevFailed exception to fire in case of an error
+ *                  to indicate.
+ *          - should_delete_seq: True if we should call delete_seq()
+ **/
+void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
 {
     TANGO_LOG_DEBUG << "Attribute::fire_alarm_event() entering ..." << std::endl;
 
@@ -4602,7 +4617,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
                     // only when adding the set point!
                     if(!check_scalar_wattribute())
                     {
-                        if(quality != Tango::ATTR_INVALID)
+                        if(quality != Tango::ATTR_INVALID && should_delete_seq)
                         {
                             delete_seq();
                         }
@@ -4627,7 +4642,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
                     // only when adding the set point!
                     if(!check_scalar_wattribute())
                     {
-                        if(quality != Tango::ATTR_INVALID)
+                        if(quality != Tango::ATTR_INVALID && should_delete_seq)
                         {
                             delete_seq();
                         }
@@ -4799,7 +4814,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
             bool data_flag = get_value_flag();
             if(data_flag)
             {
-                if(quality != Tango::ATTR_INVALID)
+                if(quality != Tango::ATTR_INVALID && should_delete_seq)
                 {
                     delete_seq();
                 }
@@ -4821,7 +4836,7 @@ void Attribute::fire_alarm_event(DevFailed *except)
             bool data_flag = get_value_flag();
             if(data_flag)
             {
-                if(quality != Tango::ATTR_INVALID)
+                if(quality != Tango::ATTR_INVALID && should_delete_seq)
                 {
                     delete_seq();
                 }

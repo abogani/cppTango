@@ -1800,6 +1800,24 @@ class Attribute
 
   private:
     /**
+     * Fire an alarm event for the attribute value. The event is pushed to ZMQ.
+     *
+     * The attribute data must be set with one of the Attribute::set_value or
+     * Attribute::setvalue_date_quality methods before firing the event.
+     * ATTENTION: The couple set_value() and fire_alarm_event() needs to be
+     * protected against concurrent accesses to the same attribute. Such an access
+     * might happen during a synchronous read or by a reading from the polling
+     * thread.
+     * Inside all methods reading or writing commands and attributes this protection is automatically done by the Tango
+     * serialisation monitor.
+     *
+     * @param except A pointer to a DevFailed exception to be thrown as alarm event.
+     * @param should_delete_seq If true the delete_seq() will be called before
+     * this returns
+     */
+    void do_fire_alarm_event(DevFailed *except, bool should_delete_seq);
+
+    /**
      * Extract internal value to dest depending on the type.
      * Free internal memory.
      * @param dest, receiving Any that will contain the data.
