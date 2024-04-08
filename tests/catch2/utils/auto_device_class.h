@@ -239,6 +239,68 @@ class AutoAttr : public Tango::Attr
     }
 };
 
+template <auto read_fn, auto write_fn = nullptr>
+class AutoSpectrumAttr : public Tango::SpectrumAttr
+{
+  public:
+    using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
+    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    using Tango::SpectrumAttr::SpectrumAttr;
+
+    // do we care about other possible parameters to Tango::Attr()?
+    AutoSpectrumAttr(const char *name, long data_type, long max_x) :
+        Tango::SpectrumAttr(name, data_type, has_write_fn ? Tango::READ_WRITE : Tango::READ, max_x)
+    {
+    }
+
+    ~AutoSpectrumAttr() override { }
+
+    void read(Tango::DeviceImpl *dev, Tango::Attribute &att) override
+    {
+        std::invoke(read_fn, static_cast<ReadDevice *>(dev), att);
+    }
+
+    void write(Tango::DeviceImpl *dev, Tango::WAttribute &att) override
+    {
+        if constexpr(has_write_fn)
+        {
+            std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
+        }
+    }
+};
+
+template <auto read_fn, auto write_fn = nullptr>
+class AutoImageAttr : public Tango::ImageAttr
+{
+  public:
+    using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
+    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    using Tango::ImageAttr::ImageAttr;
+
+    // do we care about other possible parameters to Tango::Attr()?
+    AutoImageAttr(const char *name, long data_type, long max_x, long max_y) :
+        Tango::ImageAttr(name, data_type, has_write_fn ? Tango::READ_WRITE : Tango::READ, max_x, max_y)
+    {
+    }
+
+    ~AutoImageAttr() override { }
+
+    void read(Tango::DeviceImpl *dev, Tango::Attribute &att) override
+    {
+        std::invoke(read_fn, static_cast<ReadDevice *>(dev), att);
+    }
+
+    void write(Tango::DeviceImpl *dev, Tango::WAttribute &att) override
+    {
+        if constexpr(has_write_fn)
+        {
+            std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
+        }
+    }
+};
+
 namespace detail
 {
 constexpr const char *k_enabled_classes_env_var = "TANGO_TEST_ENABLED_CLASSES";
