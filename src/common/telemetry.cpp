@@ -1,6 +1,8 @@
 
 #include <tango/tango.h>
 
+#include <tango/internal/utils.h>
+
 #if defined(TANGO_USE_TELEMETRY)
 
   #include <iostream>
@@ -360,13 +362,6 @@ class SpanImplementation final
         {
             using T = std::decay_t<decltype(arg)>;
 
-            // rather than throwing an exception, we generate compilation error in case there's an attempt
-            // to use an invalid (unsupported) data type
-            static_assert(std::is_same_v<T, bool> || std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-                              std::is_same_v<T, uint32_t> || std::is_same_v<T, double> ||
-                              std::is_same_v<T, const char *> || std::is_same_v<T, std::string>,
-                          "Unsupported type in Tango::telemetry::AttributeValue");
-
             if constexpr(std::is_same_v<T, std::string>)
             {
                 // convert std::string to opentelemetry::nostd::string_view
@@ -374,6 +369,9 @@ class SpanImplementation final
             }
             else
             {
+                static_assert(detail::is_one_of<T, opentelemetry::common::AttributeValue>::value,
+                              "Unsupported type in Tango::telemetry::AttributeValue");
+
                 // direct mapping for other supported types
                 return arg;
             }
