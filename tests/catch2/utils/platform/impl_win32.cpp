@@ -1,7 +1,8 @@
-#include "platform/impl_common.h"
+#include "utils/platform/platform.h"
 
-namespace TangoTest::platform::impl
+namespace TangoTest::platform
 {
+
 void init() { }
 
 StartServerResult start_server([[maybe_unused]] const std::vector<const char *> &args,
@@ -17,4 +18,4 @@ StopServerResult stop_server([[maybe_unused]] TestServer::Handle *handle,
 {
     return StopServerResult{};
 }
-} // namespace TangoTest::platform::impl
+} // namespace TangoTest::platform

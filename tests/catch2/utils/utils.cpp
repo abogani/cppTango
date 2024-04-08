@@ -254,7 +254,7 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
 
     size_t max_length = k_max_filename_length - g_log_filename_prefix.size() - suffix.size();
 
-    const char *end = test_case_name.end();
+    auto end = test_case_name.end();
     if(test_case_name.size() > max_length)
     {
         end = test_case_name.begin() + max_length;

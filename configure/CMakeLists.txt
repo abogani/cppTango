@@ -78,6 +78,9 @@ endif()
 function(tango_find_omniorb_version)
     if (DEFINED OMNIORB_PKG_VERSION)
         set(version ${OMNIORB_PKG_VERSION})
+    elseif(WIN32)
+        # There is no acconfig.h on Windows
+        return()
     else()
         find_file(acconfig
             NAMES omniORB4/acconfig.h
@@ -130,7 +133,7 @@ if (NOT TANGO_SKIP_OMNIORB_VERSION_CHECK)
                 "Set -DTANGO_SKIP_OMNIORB_VERSION_CHECK=ON to disable this check (at your own risk).")
         endif()
         message(STATUS "Found OMNIORB_VERSION=${OMNIORB_VERSION}")
-    else()
+    elseif(NOT WIN32)
         message(WARNING "omniORB version not found")
     endif()
 endif()
@@ -140,6 +143,70 @@ include(configure/check_omniidl.cmake)
 # Check for jpeg support
 if(TANGO_USE_JPEG)
     find_package(JPEG REQUIRED)
+
+    if (WIN32)
+        #We need to find the dll, and the turbojpeg files
+        get_filename_component(JPEG_LIBRARY_DIR ${JPEG_LIBRARY} DIRECTORY)
+        get_filename_component(JPEG_PREFIX ${JPEG_LIBRARY_DIR} DIRECTORY)
+
+        find_library(TURBO_JPEG_LIBRARY_DEBUG
+            NAMES turbojpeg${JPEG_DEBUG_POSTFIX}
+             PATHS "${JPEG_LIBRARY_DIR}")
+        find_library(TURBO_JPEG_LIBRARY_RELEASE
+            NAMES turbojpeg
+             PATHS "${JPEG_LIBRARY_DIR}")
+
+        find_library(TURBO_JPEG_LIBRARY_STATIC_DEBUG
+            NAMES turbojpeg-static${JPEG_DEBUG_POSTFIX}
+             PATHS "${JPEG_LIBRARY_DIR}")
+
+        find_library(TURBO_JPEG_LIBRARY_STATIC_RELEASE
+            NAMES turbojpeg-static
+             PATHS "${JPEG_LIBRARY_DIR}")
+
+        set(_extensions "dll" "pdb")
+
+        foreach(ext IN LISTS _extensions)
+            find_file(jpeg_${ext}_RELEASE
+                NAMES "jpeg62.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+
+            find_file(turbojpeg_${ext}_RELEASE
+                NAMES "turbojpeg.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+            find_file(jpeg_${ext}_DEBUG
+                NAMES "jpeg62${JPEG_DEBUG_POSTFIX}.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+
+            find_file(turbojpeg_${ext}_DEBUG
+                NAMES "turbojpeg${JPEG_DEBUG_POSTFIX}.${ext}"
+                 PATHS "${JPEG_PREFIX}"
+                PATH_SUFFIXES bin
+            )
+            if(jpeg_${ext}_RELEASE)
+                list(APPEND JPEG_RUNTIME_RELEASE "${jpeg_${ext}_RELEASE}")
+            endif()
+            if(turbojpeg_${ext}_RELEASE)
+                list(APPEND JPEG_RUNTIME_RELEASE "${turbojpeg_${ext}_RELEASE}")
+            endif()
+            if(jpeg_${ext}_DEBUG)
+                list(APPEND JPEG_RUNTIME_DEBUG "${jpeg_${ext}_DEBUG}")
+            endif()
+            if(turbojpeg_${ext}_DEBUG)
+                list(APPEND JPEG_RUNTIME_DEBUG "${turbojpeg_${ext}_DEBUG}")
+            endif()
+        endforeach(ext IN _extensions)
+
+        unset(_extensions)
+        unset(JPEG_PREFIX)
+        unset(JPEG_LIBRARY_DIR)
+    endif()
 endif()
 
 if(TANGO_USE_PTHREAD)

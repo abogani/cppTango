@@ -141,68 +141,6 @@ if (TANGO_INSTALL_DEPENDENCIES)
 
     #Jpeg
     if (TANGO_USE_JPEG)
-        #We need to find the dll, and the turbojpeg files
-        get_filename_component(JPEG_LIBRARY_DIR ${JPEG_LIBRARY} DIRECTORY)
-        get_filename_component(JPEG_PREFIX ${JPEG_LIBRARY_DIR} DIRECTORY)
-
-        find_library(TURBO_JPEG_LIBRARY_DEBUG
-            NAMES turbojpeg${JPEG_DEBUG_POSTFIX}
-             PATHS "${JPEG_LIBRARY_DIR}")
-        find_library(TURBO_JPEG_LIBRARY_RELEASE
-            NAMES turbojpeg
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        find_library(TURBO_JPEG_LIBRARY_STATIC_DEBUG
-            NAMES turbojpeg-static${JPEG_DEBUG_POSTFIX}
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        find_library(TURBO_JPEG_LIBRARY_STATIC_RELEASE
-            NAMES turbojpeg-static
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        set(_extensions "dll" "pdb")
-
-        foreach(ext IN LISTS _extensions)
-            find_file(jpeg_${ext}_RELEASE
-                NAMES "jpeg62.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-
-            find_file(turbojpeg_${ext}_RELEASE
-                NAMES "turbojpeg.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-            find_file(jpeg_${ext}_DEBUG
-                NAMES "jpeg62${JPEG_DEBUG_POSTFIX}.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-
-            find_file(turbojpeg_${ext}_DEBUG
-                NAMES "turbojpeg${JPEG_DEBUG_POSTFIX}.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-            if(jpeg_${ext}_RELEASE)
-                list(APPEND JPEG_RUNTIME_RELEASE "${jpeg_${ext}_RELEASE}")
-            endif()
-            if(turbojpeg_${ext}_RELEASE)
-                list(APPEND JPEG_RUNTIME_RELEASE "${turbojpeg_${ext}_RELEASE}")
-            endif()
-            if(jpeg_${ext}_DEBUG)
-                list(APPEND JPEG_RUNTIME_DEBUG "${jpeg_${ext}_DEBUG}")
-            endif()
-            if(turbojpeg_${ext}_DEBUG)
-                list(APPEND JPEG_RUNTIME_DEBUG "${turbojpeg_${ext}_DEBUG}")
-            endif()
-        endforeach(ext IN _extensions)
-
-        unset(_extensions)
-        unset(JPEG_PREFIX)
-        unset(JPEG_LIBRARY_DIR)
-
         install(FILES ${JPEG_INCLUDE_DIRS}/jconfig.h DESTINATION include COMPONENT headers)
         install(FILES ${JPEG_INCLUDE_DIRS}/jmorecfg.h DESTINATION include COMPONENT headers)
         install(FILES ${JPEG_INCLUDE_DIRS}/jpeglib.h DESTINATION include COMPONENT headers)

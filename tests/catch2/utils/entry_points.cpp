@@ -83,15 +83,15 @@ int main(int argc, const char *argv[])
 {
     std::string name{argv[0]};
 
-    if(ends_with(name, "TestServer"))
+    if(ends_with(name, TANGO_TEST_CATCH2_SERVER_BINARY_NAME))
     {
         return TangoTest::server_main(argc, argv);
     }
-    else if(ends_with(name, "Catch2Tests"))
+    else if(ends_with(name, TANGO_TEST_CATCH2_TEST_BINARY_NAME))
     {
         return TangoTest::test_main(argc, argv);
     }
 
-    std::cout << "Unexpected argv[0] " << name << "\n";
+    std::cerr << "Unexpected argv[0] " << name << "\n";
     return 1;
 }
