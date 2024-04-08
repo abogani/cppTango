@@ -466,7 +466,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                         error_from_devfailed((*aid.data_3)[index], e, names[i]);
                     }
 #if defined(TANGO_USE_TELEMETRY)
-                    bad_attributes.push_back(Tango::string_dup(names[i]));
+                    bad_attributes.push_back(names[i].in());
 #endif
                 }
             }
@@ -626,7 +626,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                         error_from_devfailed((*aid.data_3)[index], e, names[wanted_attr[i].idx_in_names]);
                     }
 #if defined(TANGO_USE_TELEMETRY)
-                    bad_attributes.push_back(Tango::string_dup(names[wanted_attr[i].idx_in_names]));
+                    bad_attributes.push_back(names[wanted_attr[i].idx_in_names].in());
 #endif
                 }
                 catch(...)
@@ -678,7 +678,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                         error_from_errorlist((*aid.data_3)[index], del, names[wanted_attr[i].idx_in_names]);
                     }
 #if defined(TANGO_USE_TELEMETRY)
-                    bad_attributes.push_back(Tango::string_dup(names[wanted_attr[i].idx_in_names]));
+                    bad_attributes.push_back(names[wanted_attr[i].idx_in_names].in());
 #endif
                 }
             }
@@ -756,7 +756,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     error_from_devfailed((*aid.data_3)[index], e, names[wanted_w_attr[i].idx_in_names]);
                 }
 #if defined(TANGO_USE_TELEMETRY)
-                bad_attributes.push_back(Tango::string_dup(names[wanted_w_attr[i].idx_in_names]));
+                bad_attributes.push_back(names[wanted_w_attr[i].idx_in_names].in());
 #endif
             }
         }
@@ -807,7 +807,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                         error_from_devfailed((*aid.data_3)[state_idx], e, names[state_idx]);
                     }
 #if defined(TANGO_USE_TELEMETRY)
-                    bad_attributes.push_back(Tango::string_dup(names[state_idx]));
+                    bad_attributes.push_back(names[state_idx].in());
 #endif
                 }
             }
@@ -832,7 +832,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                                          names[state_idx]);
                 }
 #if defined(TANGO_USE_TELEMETRY)
-                bad_attributes.push_back(Tango::string_dup(names[state_idx]));
+                bad_attributes.push_back(names[state_idx].in());
 #endif
             }
         }
@@ -865,7 +865,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     error_from_devfailed((*aid.data_3)[status_idx], e, names[status_idx]);
                 }
 #if defined(TANGO_USE_TELEMETRY)
-                bad_attributes.push_back(Tango::string_dup(names[status_idx]));
+                bad_attributes.push_back(names[status_idx].in());
 #endif
             }
         }
@@ -1291,7 +1291,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                 error_from_devfailed((*aid.data_3)[i], e, names[i]);
             }
 #if defined(TANGO_USE_TELEMETRY)
-            bad_attributes.push_back(CORBA::string_dup(names[i]));
+            bad_attributes.push_back(names[i].in());
 #endif
         }
     }
@@ -1423,7 +1423,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                 one_error((*aid.data_3)[i], reas, TANGO_EXCEPTION_ORIGIN, s, names[i]);
             }
 #if defined(TANGO_USE_TELEMETRY)
-            bad_attributes.push_back(CORBA::string_dup(names[i]));
+            bad_attributes.push_back(names[i].in());
 #endif
             continue;
         }
@@ -1453,7 +1453,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                 one_error((*aid.data_3)[i], reas, TANGO_EXCEPTION_ORIGIN, s, names[i]);
             }
 #if defined(TANGO_USE_TELEMETRY)
-            bad_attributes.push_back(CORBA::string_dup(names[i]));
+            bad_attributes.push_back(names[i].in());
 #endif
             continue;
         }
@@ -1491,7 +1491,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                     one_error((*aid.data_3)[i], reas, TANGO_EXCEPTION_ORIGIN, s, names[i]);
                 }
 #if defined(TANGO_USE_TELEMETRY)
-                bad_attributes.push_back(CORBA::string_dup(names[i]));
+                bad_attributes.push_back(names[i].in());
 #endif
                 continue;
             }
@@ -1610,7 +1610,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                 error_from_devfailed((*aid.data_3)[i], e, names[i]);
             }
 #if defined(TANGO_USE_TELEMETRY)
-            bad_attributes.push_back(CORBA::string_dup(names[i]));
+            bad_attributes.push_back(names[i].in());
 #endif
         }
     }
@@ -2008,7 +2008,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                         auto attr_name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
                         errs[nb_failed - 1].name = attr_name;
 #if defined(TANGO_USE_TELEMETRY)
-                        bad_attributes.push_back(Tango::string_dup(attr_name));
+                        bad_attributes.push_back(attr_name);
 #endif
                     }
                     else
@@ -2097,7 +2097,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
 
                         errs[nb_failed - 1].err_list = e.errors;
 #if defined(TANGO_USE_TELEMETRY)
-                        bad_attributes.push_back(Tango::string_dup(att.get_name().c_str()));
+                        bad_attributes.push_back(att.get_name());
 #endif
                     }
                     updated_attr.clear();
@@ -2176,7 +2176,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                     errs[nb_failed + i].index_in_call = updated_attr[att_in_db[i]].idx_in_names;
                     errs[nb_failed + i].err_list = e.errors;
 #if defined(TANGO_USE_TELEMETRY)
-                    bad_attributes.push_back(Tango::string_dup(single_att_name));
+                    bad_attributes.push_back(single_att_name);
 #endif
                 }
                 nb_failed = nb_failed + att_in_db.size();
