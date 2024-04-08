@@ -650,3 +650,143 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
         }
     }
 }
+
+template <class Base>
+class SpectrumAlarmEvent : public Base
+{
+  public:
+    using Base::Base;
+
+    ~SpectrumAlarmEvent() override { }
+
+    void init_device() override
+    {
+        attr_value = {ATTR_INIT_VALUE, ATTR_INIT_VALUE, ATTR_INIT_VALUE};
+    }
+
+    void push_change()
+    {
+        std::vector<Tango::DevDouble> v{ATTR_INIT_VALUE, ATTR_PUSH_ALARM_VALUE, ATTR_INIT_VALUE};
+        this->push_change_event("attr_test", v.data(), v.size());
+    }
+
+    void read_attribute(Tango::Attribute &att)
+    {
+        att.set_value(attr_value.data(), attr_value.size());
+    }
+
+    static void attribute_factory(std::vector<Tango::Attr *> &attrs)
+    {
+        Tango::UserDefaultAttrProp props;
+        props.set_min_warning(std::to_string(ATTR_MIN_WARNING).c_str());
+        props.set_max_warning(std::to_string(ATTR_MAX_WARNING).c_str());
+        props.set_min_alarm(std::to_string(ATTR_MIN_ALARM).c_str());
+        props.set_max_alarm(std::to_string(ATTR_MAX_ALARM).c_str());
+        props.set_event_abs_change("0.1");
+
+        auto attr_test =
+            new TangoTest::AutoSpectrumAttr<&SpectrumAlarmEvent::read_attribute>("attr_test", Tango::DEV_DOUBLE, 3);
+        attr_test->set_default_properties(props);
+        attr_test->set_change_event(true, true);
+        attrs.push_back(attr_test);
+    }
+
+    static void command_factory(std::vector<Tango::Command *> &cmds)
+    {
+        cmds.push_back(new TangoTest::AutoCommand<&SpectrumAlarmEvent::push_change>("push_change"));
+    }
+
+  private:
+    std::vector<Tango::DevDouble> attr_value;
+};
+
+TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(SpectrumAlarmEvent, 6)
+
+SCENARIO("Alarm events are generated for spectrum attributes on push_change_event")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "SpectrumAlarmEvent", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("a spetcrum attribute")
+        {
+            std::string att{"attr_test"};
+
+            AND_GIVEN("an alarm event and change event subscription to that attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback_alarm;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback_alarm));
+
+                TangoTest::CallbackMock<Tango::EventData> callback_change;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
+
+                // discard the initial events we get when we subscribe
+                auto maybe_initial_event = callback_alarm.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback_change.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                WHEN("we push a change event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                    THEN("alarm and change events are generated")
+                    {
+                        {
+                            auto maybe_event = callback_alarm.pop_next_event();
+
+                            REQUIRE(maybe_event.has_value());
+                            REQUIRE(!maybe_event->err);
+                            REQUIRE(maybe_event->event == "alarm");
+
+                            REQUIRE(maybe_event->attr_value != nullptr);
+                            REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        }
+
+                        {
+                            auto maybe_event = callback_change.pop_next_event();
+
+                            REQUIRE(maybe_event.has_value());
+                            REQUIRE(!maybe_event->err);
+                            REQUIRE(maybe_event->event == "change");
+
+                            REQUIRE(maybe_event->attr_value != nullptr);
+                            REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        }
+                    }
+                }
+            }
+
+            AND_GIVEN("only a change event subscription to that attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback_change;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
+
+                // discard the initial event we get when we subscribe
+                auto maybe_initial_event = callback_change.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                WHEN("we push a change event from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                    THEN("a change event is generated")
+                    {
+                        auto maybe_event = callback_change.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "change");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                    }
+                }
+            }
+        }
+    }
+}
