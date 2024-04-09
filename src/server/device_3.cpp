@@ -39,6 +39,29 @@
 #if defined(TANGO_USE_TELEMETRY)
   #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 #endif
+#include <tango/internal/utils.h>
+
+namespace
+{
+
+#if defined(TANGO_USE_TELEMETRY)
+
+void report_attr_error(const std::vector<std::string> &vec)
+{
+    if(vec.empty())
+    {
+        return;
+    }
+
+    std::stringstream sstr;
+    sstr << "failed to read the following attribute(s): ";
+    Tango::detail::stringify_vector(sstr, vec, ", ");
+    TANGO_TELEMETRY_SET_ERROR_STATUS(sstr.str());
+}
+
+#endif // TANGO_USE_TELEMETRY
+
+} // namespace
 
 namespace Tango
 {
@@ -1191,19 +1214,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
     }
 
 #if defined(TANGO_USE_TELEMETRY)
-    // set current span status to error
-    if(!bad_attributes.empty())
-    {
-        std::stringstream bad_attributes_str;
-        bad_attributes_str << "failed to write the following attribute(s): ";
-        for(auto it = bad_attributes.begin(); it != bad_attributes.end();)
-        {
-            bad_attributes_str << *it;
-            ++it;
-            bad_attributes_str << (it == bad_attributes.end() ? "" : ",");
-        }
-        TANGO_TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
-    }
+    report_attr_error(bad_attributes);
 #endif
 
     //
@@ -1616,19 +1627,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
     }
 
 #if defined(TANGO_USE_TELEMETRY)
-    // set current span status to error
-    if(!bad_attributes.empty())
-    {
-        std::stringstream bad_attributes_str;
-        bad_attributes_str << "failed to read teh following attribute(s): ";
-        for(auto it = bad_attributes.begin(); it != bad_attributes.end();)
-        {
-            bad_attributes_str << *it;
-            ++it;
-            bad_attributes_str << (it == bad_attributes.end() ? "" : ",");
-        }
-        TANGO_TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
-    }
+    report_attr_error(bad_attributes);
 #endif
 }
 
@@ -2194,19 +2193,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
     }
 
 #if defined(TANGO_USE_TELEMETRY)
-    // set current span status to error
-    if(!bad_attributes.empty())
-    {
-        std::stringstream bad_attributes_str;
-        bad_attributes_str << "failed to read the following attribute(s): ";
-        for(auto it = bad_attributes.begin(); it != bad_attributes.end();)
-        {
-            bad_attributes_str << *it;
-            ++it;
-            bad_attributes_str << (it == bad_attributes.end() ? "" : ",");
-        }
-        TANGO_TELEMETRY_SET_ERROR_STATUS(bad_attributes_str.str());
-    }
+    report_attr_error(bad_attributes);
 #endif
 
     //
