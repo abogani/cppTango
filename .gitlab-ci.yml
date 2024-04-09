@@ -41,7 +41,7 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 pre-commit:
-  image: registry.gitlab.com/tango-controls/docker/pre-commit:3.0.0
+  image: registry.gitlab.com/tango-controls/docker/pre-commit:3.7.0
   services: []
   tags:
     - docker, linux, amd64
