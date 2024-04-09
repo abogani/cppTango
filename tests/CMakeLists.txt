@@ -298,6 +298,7 @@ tango_catch2_tests_create(
     catch2_attr_polling.cpp
     catch2_cmd_polling.cpp
     catch2_filedatabase.cpp
+    catch2_internal_utils.cpp
     catch2_jpeg_encoding.cpp
     catch2_nodb_connection.cpp
     )
