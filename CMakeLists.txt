@@ -50,7 +50,7 @@ endif()
 
 
 # telemetry
-option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" OFF)
+option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" ON)
 include(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry)" ON "TANGO_USE_TELEMETRY" OFF)
 CMAKE_DEPENDENT_OPTION(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry)" ON "TANGO_USE_TELEMETRY" OFF)
