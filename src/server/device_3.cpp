@@ -346,6 +346,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
     //
 
 #if defined(TANGO_USE_TELEMETRY)
+    // Reference comment for multiple locations:
     // Due to the current implementation of Tango, errors related to attribute read (or writing) are tricky to trace
     // with details (attributes name). We choose to build a list of "bad attributes" (i.e. the list of attributes we
     // failed to read or write) then set the status of current telemetry span in case that list is not empty when we
@@ -1262,11 +1263,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
     unsigned long j;
 
 #if defined(TANGO_USE_TELEMETRY)
-    // Due to the current implementation of Tango, errors related to attribute read (or writing) are tricky to trace
-    // with details (attributes name). We choose to build a list of "bad attributes" (i.e. the list of attributes we
-    // failed to read or write) then set the status of current telemetry span in case that list is not empty when we
-    // reach the end of the method. The implementation is so that we to put some code at several locations to do the
-    // job. That's ugly but no choice, we have to deal with that.
+    // see comment at Device_3Impl::read_attributes_no_except
     std::vector<std::string> bad_attributes;
 #endif
 
@@ -1714,11 +1711,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
     sub.set_associated_device(get_name());
 
 #if defined(TANGO_USE_TELEMETRY)
-    // Due to the current implementation of Tango, errors related to attribute read (or writing) are tricky to trace
-    // with details (attributes name). We choose to build a list of "bad attributes" (i.e. the list of attributes we
-    // failed to read or write) then set the status of current telemetry span in case that list is not empty when we
-    // reach the end of the method. The implementation is so that we to put some code at several locations to do the
-    // job. That's ugly but no choice, we have to deal with that.
+    // see comment at Device_3Impl::read_attributes_no_except
     std::vector<std::string> bad_attributes;
 #endif
 

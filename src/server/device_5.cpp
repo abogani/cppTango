@@ -126,17 +126,8 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
                                                              const Tango::ClntIdent &cl_id)
 {
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
     auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
@@ -408,17 +399,8 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     AutoTangoMonitor sync(this, true);
 
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
     auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
@@ -683,17 +665,8 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     AutoTangoMonitor sync(this, true);
 
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
     auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
@@ -1018,16 +991,9 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
     AutoTangoMonitor sync(this, true);
 
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
+    // see comment in Device_4Impl::command_inout_4
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // start a 'server' span to indicate that we are handling a RPC (OpenTelemetry convention)
     auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
@@ -1130,18 +1096,10 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
 Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::ClntIdent &cl_id)
 {
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
+    // see comment in Device_4Impl::command_inout_4
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
     auto scope =
         TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", name}}, cl_id);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
@@ -1381,18 +1339,10 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
 void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango::ClntIdent &cl_id)
 {
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
+    // see comment in Device_4Impl::command_inout_4
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
     auto scope = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(
         TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
@@ -1546,18 +1496,10 @@ Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi
     AutoTangoMonitor sync(this, true);
 
 #if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
-    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
-    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
-    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
+    // see comment in Device_4Impl::command_inout_4
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
     auto scope = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(
         TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
-    // do our best to catch and trace any exception
     TANGO_TELEMETRY_TRY;
 #endif
 
