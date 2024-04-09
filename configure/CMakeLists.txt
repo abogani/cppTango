@@ -79,6 +79,10 @@ if (TANGO_USE_TELEMETRY)
 
       message(DEBUG "opentelemetry-cpp uses new exporter name: ${TANGO_TELEMETRY_EXPORTER_OPTION_NEW}")
     endif()
+
+    if(NOT TANGO_TELEMETRY_USE_GRPC AND NOT TANGO_TELEMETRY_USE_HTTP)
+      message(FATAL_ERROR "At least one of TANGO_TELEMETRY_USE_GRPC/TANGO_TELEMETRY_USE_HTTP needs to be enabled")
+    endif()
 else()
     message(STATUS "Tango telemetry (OpenTelemetry) disabled")
 endif()

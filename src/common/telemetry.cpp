@@ -171,11 +171,6 @@ std::string Configuration::extract_grpc_host_port(const std::string &endpoint) n
 //-----------------------------------------------------------------------------------------
 inline std::string Configuration::get_traces_endpoint_from_env()
 {
-    // cmake is supposed to deal with that, anyway...
-  #if !defined(TANGO_TELEMETRY_USE_HTTP) && !defined(TANGO_TELEMETRY_USE_GRPC)
-    #error neither TANGO_TELEMETRY_USE_HTTP nor TANGO_TELEMETRY_USE_GRPC is defined!
-  #endif
-
     std::string traces_endpoint;
 
     // get traces endpoint from env. variable.
@@ -191,8 +186,7 @@ inline std::string Configuration::get_traces_endpoint_from_env()
         // use http otherwise
         traces_endpoint = Configuration::DEFAULT_HTTP_TRACES_ENDPOINT;
   #else
-    // cmake is supposed to deal with that but anyway...
-    #error neither TANGO_TELEMETRY_USE_HTTP nor TANGO_TELEMETRY_USE_GRPC is defined!
+        static_assert(0, "Invalid endpoint handling in cmake")
   #endif
         TANGO_LOG << "warning! using default traces endpoint for telemetry: " << traces_endpoint << std::endl;
     }
@@ -249,11 +243,6 @@ inline std::string Configuration::get_traces_endpoint_from_env()
 //-----------------------------------------------------------------------------------------
 inline std::string Configuration::get_logs_endpoint_from_env()
 {
-    // cmake is supposed to deal with that, anyway...
-  #if !defined(TANGO_TELEMETRY_USE_HTTP) && !defined(TANGO_TELEMETRY_USE_GRPC)
-    #error neither TANGO_TELEMETRY_USE_HTTP nor TANGO_TELEMETRY_USE_GRPC is defined!
-  #endif
-
     std::string logs_endpoint;
 
     // get logs endpoint from env. variable.
@@ -269,8 +258,7 @@ inline std::string Configuration::get_logs_endpoint_from_env()
         // use http otherwise
         logs_endpoint = Configuration::DEFAULT_HTTP_LOGS_ENDPOINT;
   #else
-    // cmake is supposed to deal with that but anyway...
-    #error neither TANGO_TELEMETRY_USE_HTTP nor TANGO_TELEMETRY_USE_GRPC is defined!
+        static_assert(0, "Invalid endpoint handling in cmake")
   #endif
         TANGO_LOG << "warning! using default logs endpoint for telemetry: " << logs_endpoint << std::endl;
     }
