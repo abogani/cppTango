@@ -111,8 +111,11 @@ class FwdAttrImaStrRead : public Tango::FwdAttr
 {
   public:
     FwdAttrImaStrRead(const std::string &_n) :
-        FwdAttr(_n){}
-    ~FwdAttrImaStrRead(){}
+        FwdAttr(_n)
+    {
+    }
+
+    ~FwdAttrImaStrRead() { }
 };
 
 /* clang-format off */

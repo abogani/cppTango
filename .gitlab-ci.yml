@@ -41,7 +41,7 @@ workflow:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 pre-commit:
-  image: registry.gitlab.com/tango-controls/docker/pre-commit:3.0.0
+  image: registry.gitlab.com/tango-controls/docker/pre-commit:3.7.0-2
   services: []
   tags:
     - docker, linux, amd64
@@ -54,6 +54,7 @@ pre-commit:
       # fail job if the patch file is not empty
     - '! test -s ${PATCH_FILE}'
   cache:
+    key: pre-commit-cache
     paths:
       - ${PRE_COMMIT_HOME}
   artifacts:

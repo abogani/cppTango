@@ -1459,11 +1459,11 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
     Cpp_creator_ptr mt = (Cpp_creator_ptr) proc;
 #else
     void *lib_ptr;
-#if defined(__APPLE__)
+  #if defined(__APPLE__)
     lib_name = lib_name + ".dylib";
-#else
+  #else
     lib_name = lib_name + ".so";
-#endif
+  #endif
 
     lib_ptr = dlopen(lib_name.c_str(), RTLD_NOW);
     if(lib_ptr == nullptr)
