@@ -89,6 +89,33 @@ class DatabaseTestSuite : public CxxTest::TestSuite
 
     // The get_device_info call
 
+    void test_get_server_class_list()
+    {
+        DbDevInfo db_dev_info;
+        db_dev_info.server = "TestServer/test";
+        db_dev_info._class = "TestServer";
+        db_dev_info.name = "test/TestServer/1";
+        db->add_device(db_dev_info);
+
+        DbDatum db_datum;
+        TS_ASSERT_THROWS_NOTHING(db_datum = db->get_server_class_list("TestServer/test"));
+
+        TS_ASSERT_EQUALS(db_datum.value_string.size(), 1u);
+        TS_ASSERT_EQUALS(db_datum.value_string[0], "TestServer");
+
+        db->delete_device("dserver/TestServer/test");
+
+        TS_ASSERT_THROWS_NOTHING(db_datum = db->get_server_class_list("TestServer/test"));
+
+        TS_ASSERT_EQUALS(db_datum.value_string.size(), 1u);
+        TS_ASSERT_EQUALS(db_datum.value_string[0], "TestServer");
+
+        TS_ASSERT_THROWS_NOTHING(db_datum = db->get_server_class_list("TestServer/test1"));
+
+        TS_ASSERT_EQUALS(db_datum.value_string.size(), 0u);
+    }
+
+
     void test_get_device_info()
     {
         DbDevFullInfo dbfi = db->get_device_info(device1_name);
