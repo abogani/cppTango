@@ -3156,38 +3156,25 @@ DbDatum Database::get_server_class_list(const std::string &servname)
 
     CALL_DB_SERVER("DbGetDeviceServerClassList", send, received);
 
-    const DevVarStringArray *prop_list = nullptr;
-    received.inout() >>= prop_list;
+    const DevVarStringArray *class_list = nullptr;
+    received.inout() >>= class_list;
 
-    DbDatum db_datum;
-    if(prop_list == nullptr)
+    if(class_list == nullptr)
     {
         TANGO_THROW_EXCEPTION(API_IncoherentDbData, "Incoherent data received from database");
     }
-    else
+
+    // Extract the DServer class (if there is)
+    DbDatum db_datum{servname};
+    CORBA::ULong nb_classes = class_list->length();
+
+    for(CORBA::ULong i = 0, j = 0; i < nb_classes; i++)
     {
-        // Extract the DServer class
-
-        int n_props;
-        int nb_classes;
-        n_props = prop_list->length();
-        if(n_props == 0)
+        if(TG_strcasecmp((*class_list)[i], "DServer") != 0)
         {
-            nb_classes = 0;
-        }
-        else
-        {
-            nb_classes = n_props - 1;
-        }
-
-        db_datum.name = servname;
-        db_datum.value_string.resize(nb_classes);
-        for(int i = 0, j = 0; i < n_props; i++)
-        {
-            if(TG_strcasecmp((*prop_list)[i], "DServer") != 0)
-            {
-                db_datum.value_string[j++] = (*prop_list)[i];
-            }
+            db_datum.value_string.resize(j+1);
+            db_datum.value_string[j] = (*class_list)[i];
+            j++;
         }
     }
 
