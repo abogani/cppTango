@@ -34,6 +34,7 @@
 #define _WATTRSETVAL_TPP
 
 #include <type_traits>
+#include <tango/server/seqvec.h>
 
 namespace Tango
 {
