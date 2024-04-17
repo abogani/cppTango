@@ -64,7 +64,7 @@ sudo make install
 ## cppTango
 
 ```bash
-git clone --depth 1 https://gitlab.com/tango-controls/cppTango
+git clone --recurse-submodules --depth 1 https://gitlab.com/tango-controls/cppTango
 cd cppTango
 mkdir build
 cd build
