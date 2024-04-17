@@ -115,7 +115,6 @@ class DatabaseTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(db_datum.value_string.size(), 0u);
     }
 
-
     void test_get_device_info()
     {
         DbDevFullInfo dbfi = db->get_device_info(device1_name);

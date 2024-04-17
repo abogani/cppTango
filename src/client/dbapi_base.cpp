@@ -3172,7 +3172,7 @@ DbDatum Database::get_server_class_list(const std::string &servname)
     {
         if(TG_strcasecmp((*class_list)[i], "DServer") != 0)
         {
-            db_datum.value_string.resize(j+1);
+            db_datum.value_string.resize(j + 1);
             db_datum.value_string[j] = (*class_list)[i];
             j++;
         }
