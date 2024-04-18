@@ -1788,8 +1788,6 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
     }
     else
     {
-        corba_name = build_corba_name();
-
         //
         // If we are not using the database, give write access
         //
@@ -1838,26 +1836,6 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
         if(!dbase_used)
         {
             throw;
-        }
-    }
-
-    //
-    // For non-database device , try to ping them. It's the only way to know that
-    // the device is not defined
-    //
-
-    if(!dbase_used)
-    {
-        try
-        {
-            ping();
-        }
-        catch(Tango::ConnectionFailed &dfe)
-        {
-            if(strcmp(dfe.errors[1].reason, API_DeviceNotDefined) == 0)
-            {
-                throw;
-            }
         }
     }
 

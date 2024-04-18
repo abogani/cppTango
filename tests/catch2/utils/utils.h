@@ -34,6 +34,16 @@ class Context
 
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
 
+    /** Stop the associated TestServer instance if it has been started.
+     *
+     *  If the instance has a non-zero exit status, then diagnostics will be
+     *  output with the Catch2 WARN macro.
+     *
+     *  @param timeout if the server takes longer than this timeout,
+     *  a warning log will be generated
+     */
+    void stop_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
+
   private:
     TestServer m_server;
 };
