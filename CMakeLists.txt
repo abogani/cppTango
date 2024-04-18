@@ -113,6 +113,8 @@ add_library(tango $<TARGET_OBJECTS:log4tango_objects>
 
 set_cflags_and_include(tango)
 
+add_library(Tango::Tango ALIAS tango)
+
 if(WIN32)
     include(configure/cmake_win.cmake)
     include(configure/cpack_win.cmake)

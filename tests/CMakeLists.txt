@@ -71,7 +71,7 @@ endfunction()
 
 add_executable(conf_devtest conf_devtest.cpp)
 target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_DEFS})
-target_link_libraries(conf_devtest PUBLIC tango ${CMAKE_DL_LIBS})
+target_link_libraries(conf_devtest PUBLIC Tango::Tango ${CMAKE_DL_LIBS})
 target_precompile_headers(conf_devtest PRIVATE ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h)
 add_library(compare_test_object OBJECT compare_test.cpp compare_test.h cxx_common.h)
 target_compile_definitions(compare_test_object PRIVATE ${COMMON_TEST_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
@@ -88,7 +88,7 @@ function(CXX_GENERATE_TEST_EXEC name)
                                --template=${CMAKE_CURRENT_SOURCE_DIR}/cxxtest/template/tango_template.tpl
                                -o ${name}.cpp
                                ${INPUT_FILE}
-                       DEPENDS tango
+                       DEPENDS Tango::Tango
                                ${INPUT_FILE}
                                ${CMAKE_CURRENT_SOURCE_DIR}/cxxtest/template/tango_template.tpl
                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -97,7 +97,7 @@ function(CXX_GENERATE_TEST_EXEC name)
     add_executable(${name} $<TARGET_OBJECTS:compare_test_object> ${name}.cpp
         common.cpp)
     target_include_directories(${name} PRIVATE cxxtest/include ${CMAKE_CURRENT_BINARY_DIR}/cxxtest/include)
-    target_link_libraries(${name} PRIVATE tango Threads::Threads)
+    target_link_libraries(${name} PRIVATE Tango::Tango Threads::Threads)
     target_compile_definitions(${name} PRIVATE ${COMMON_TEST_DEFS})
     set_cflags_and_include(${name})
 
@@ -274,7 +274,7 @@ set(TESTS asyn_attr_cb
 function(TEST_SUITE_ADD_TEST test)
     add_executable(${test} ${test}.cpp common.cpp)
     target_compile_definitions(${test} PUBLIC ${COMMON_TEST_DEFS})
-    target_link_libraries(${test} tango ${CMAKE_DL_LIBS} Threads::Threads)
+    target_link_libraries(${test} Tango::Tango ${CMAKE_DL_LIBS} Threads::Threads)
     target_precompile_headers(${test} REUSE_FROM conf_devtest)
         #TODO generalize tests
 #    add_test(NAME "CPP::${test}"  COMMAND $<TARGET_FILE:${test}> ${DEV1} ${DEV2} ${DEV3} ${DEV1_ALIAS})

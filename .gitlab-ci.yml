@@ -539,7 +539,9 @@ cmake-config:
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
+    CMAKE_INSTALL_PREFIX: "tango_install"
   script: # override
     - ci/config.sh
     - ci/build.sh
-    - cmake --find-package -DCMAKE_MODULE_PATH=TangoCMakeModules -DCMAKE_PREFIX_PATH=build/tango -DNAME=tango -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST
+    - ci/install.sh
+    - cmake --find-package -DCMAKE_PREFIX_PATH=tango_install -DNAME=Tango -DCOMPILER_ID=GNU -DLANGUAGE=CXX -DMODE=EXIST
