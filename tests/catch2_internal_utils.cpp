@@ -38,3 +38,26 @@ SCENARIO("stringify_vector behaves as designed")
         REQUIRE(sstr.str() == data.result);
     }
 }
+
+SCENARIO("to_lower/to_upper perform")
+{
+    struct TestData
+    {
+        const std::string lower;
+        const std::string UPPER;
+    };
+
+    auto data = GENERATE((TestData{"", ""}), (TestData{"a123.b", "A123.B"}));
+
+    GIVEN("some strings")
+    {
+        WHEN("a case conversion")
+        {
+            REQUIRE(Tango::detail::to_lower(data.lower) == data.lower);
+            REQUIRE(Tango::detail::to_lower(data.UPPER) == data.lower);
+
+            REQUIRE(Tango::detail::to_upper(data.lower) == data.UPPER);
+            REQUIRE(Tango::detail::to_upper(data.UPPER) == data.UPPER);
+        }
+    }
+}

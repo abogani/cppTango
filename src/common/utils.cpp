@@ -148,4 +148,17 @@ std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d)
     }
     }
 }
+
+std::string to_lower(std::string str)
+{
+    std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
+    return str;
+}
+
+std::string to_upper(std::string str)
+{
+    std::transform(std::begin(str), std::end(str), std::begin(str), ::toupper);
+    return str;
+}
+
 } // namespace Tango::detail

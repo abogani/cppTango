@@ -2,6 +2,7 @@
 #define _INTERNAL_UTILS_H
 
 #include <iostream>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <variant>
@@ -50,6 +51,12 @@ void stringify_vector(std::ostream &os, const std::vector<T> &vec, const std::st
 
     os << vec[i];
 }
+
+/// @brief Convert the given string to lower case
+std::string to_lower(std::string str);
+
+/// @brief Convert the given string to UPPER case
+std::string to_upper(std::string str);
 
 } // namespace Tango::detail
 
