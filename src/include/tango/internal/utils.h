@@ -58,6 +58,11 @@ std::string to_lower(std::string str);
 /// @brief Convert the given string to UPPER case
 std::string to_upper(std::string str);
 
+/// @brief Parse the given lower case string as boolean
+///
+/// Returns an optional without value in case of error.
+std::optional<bool> to_boolean(std::string_view str);
+
 } // namespace Tango::detail
 
 #endif // _INTERNAL_UTILS_H

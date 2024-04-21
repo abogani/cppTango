@@ -161,4 +161,18 @@ std::string to_upper(std::string str)
     return str;
 }
 
+std::optional<bool> to_boolean(std::string_view str)
+{
+    if(str == "on" || str == "true" || str == "1")
+    {
+        return true;
+    }
+    else if(str == "off" || str == "false" || str == "0")
+    {
+        return false;
+    }
+
+    return {};
+}
+
 } // namespace Tango::detail

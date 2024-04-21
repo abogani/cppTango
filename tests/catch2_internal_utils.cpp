@@ -61,3 +61,25 @@ SCENARIO("to_lower/to_upper perform")
         }
     }
 }
+
+SCENARIO("to_boolean")
+{
+    GIVEN("some strings")
+    {
+        WHEN("parses them as std::optional<boolean>")
+        {
+            REQUIRE(!Tango::detail::to_boolean("").has_value());
+            REQUIRE(!Tango::detail::to_boolean("bs").has_value());
+            // case matters
+            REQUIRE(!Tango::detail::to_boolean("FALSE").has_value());
+
+            REQUIRE(Tango::detail::to_boolean("0") == false);
+            REQUIRE(Tango::detail::to_boolean("off") == false);
+            REQUIRE(Tango::detail::to_boolean("false") == false);
+
+            REQUIRE(Tango::detail::to_boolean("1") == true);
+            REQUIRE(Tango::detail::to_boolean("on") == true);
+            REQUIRE(Tango::detail::to_boolean("true") == true);
+        }
+    }
+}
