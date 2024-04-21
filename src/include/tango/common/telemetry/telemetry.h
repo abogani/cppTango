@@ -45,6 +45,10 @@ constexpr const char *kEnvVarTelemetryTracesEndPoint = "TANGO_TELEMETRY_TRACES_E
 //---------------------------------------------------------------------------------------------------------------------
 constexpr const char *kEnvVarTelemetryLogsEndPoint = "TANGO_TELEMETRY_LOGS_ENDPOINT";
 
+constexpr const char *kEnvVarTelemetryEnable = "TANGO_TELEMETRY_ENABLE";
+
+constexpr const char *kEnvVarTelemetryKernelEnable = "TANGO_TELEMETRY_KERNEL_ENABLE";
+
 //---------------------------------------------------------------------------------------------------------------------
 //! AttributeValue
 //!
@@ -165,7 +169,7 @@ struct Configuration
 
     //! Set to true (the default) to enable to the interface at instantiation.
     //! A disabled interface acts as a "no-op" one (i.e. signals, like traces, are silently dropped).
-    bool enabled{true};
+    bool enabled{false};
 
     //! Set to true to enable some of the kernel traces that are hidden by default.
     bool kernel_traces_enabled{false};

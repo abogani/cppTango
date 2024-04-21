@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------------------------
 
 #include <tango/tango.h>
+#include <tango/internal/utils.h>
 
 namespace Tango
 {
@@ -16,10 +17,11 @@ namespace Tango
 void DeviceImpl::initialize_telemetry_interface()
 {
     // TODO: DServer tracing?
-    bool telemetry_enabled = device_class->get_name() != "DServer" ? true : false;
+    bool telemetry_enabled = device_class->get_name() != "DServer"
+                                 ? detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryEnable, false)
+                                 : false;
 
-    // TODO
-    bool kernel_traces_enabled = false;
+    bool kernel_traces_enabled = detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryKernelEnable, false);
 
     // configure the telemetry
     // TODO: offer a way to specify the endpoint by Tango property (only env. var. so far)
