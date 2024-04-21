@@ -3,6 +3,8 @@
 
 #include <tango/internal/utils.h>
 
+#include "common.h"
+
 template <typename T>
 struct TestData
 {
@@ -80,6 +82,49 @@ SCENARIO("to_boolean")
             REQUIRE(Tango::detail::to_boolean("1") == true);
             REQUIRE(Tango::detail::to_boolean("on") == true);
             REQUIRE(Tango::detail::to_boolean("true") == true);
+        }
+    }
+}
+
+SCENARIO("get_boolean_env_var")
+{
+    GIVEN("a non existing env var")
+    {
+        const char *name = "I_DONT_EXIST";
+
+        WHEN("returns the default value")
+        {
+            REQUIRE(unset_env(name) == 0);
+            REQUIRE(Tango::detail::get_boolean_env_var(name, false) == false);
+            REQUIRE(Tango::detail::get_boolean_env_var(name, true) == true);
+        }
+    }
+    GIVEN("a non-boolean entry")
+    {
+        const char *name = "testvar";
+        WHEN("throws")
+        {
+            REQUIRE(set_env(name, "abcd", true) == 0);
+
+            REQUIRE_THROWS_MATCHES(Tango::detail::get_boolean_env_var(name, true),
+                                   Tango::DevFailed,
+                                   TangoTest::DevFailedReasonEquals(Tango::API_InvalidArgs));
+            REQUIRE(unset_env(name) == 0);
+        }
+    }
+
+    GIVEN("something which to_boolean groks")
+    {
+        const char *name = "testvar";
+        WHEN("works")
+        {
+            REQUIRE(set_env(name, "1", true) == 0);
+            REQUIRE(Tango::detail::get_boolean_env_var(name, false) == true);
+
+            REQUIRE(set_env(name, "off", true) == 0);
+            REQUIRE(Tango::detail::get_boolean_env_var(name, true) == false);
+
+            REQUIRE(unset_env(name) == 0);
         }
     }
 }

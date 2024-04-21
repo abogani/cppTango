@@ -63,6 +63,11 @@ std::string to_upper(std::string str);
 /// Returns an optional without value in case of error.
 std::optional<bool> to_boolean(std::string_view str);
 
+/// @brief Lookup the environment variable `env_var` and return its contents as boolean
+///
+/// Return `default_value` in case it is not present, throws for unkonwn content
+bool get_boolean_env_var(const char *env_var, bool default_value);
+
 } // namespace Tango::detail
 
 #endif // _INTERNAL_UTILS_H

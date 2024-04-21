@@ -175,4 +175,27 @@ std::optional<bool> to_boolean(std::string_view str)
     return {};
 }
 
+bool get_boolean_env_var(const char *env_var, bool default_value)
+{
+    std::string contents;
+    int ret = ApiUtil::instance()->get_env_var(env_var, contents);
+
+    if(ret != 0)
+    {
+        return default_value;
+    }
+
+    auto result = to_boolean(to_lower(contents));
+
+    if(!result.has_value())
+    {
+        std::stringstream sstr;
+        sstr << "Environment variable: " << env_var << ", with contents " << contents
+             << ", can not be parsed as boolean.";
+        TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, sstr.str());
+    }
+
+    return result.value();
+}
+
 } // namespace Tango::detail
