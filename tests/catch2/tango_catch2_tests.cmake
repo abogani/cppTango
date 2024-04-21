@@ -51,6 +51,7 @@ function(tango_catch2_tests_create)
         ${TANGO_CATCH2_TESTS_DIR}/utils/test_server.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/entry_points.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/utils.cpp
+        common.cpp
         ${PLATFORM_IMPL})
 
     target_link_libraries(Catch2Tests PUBLIC Tango::Tango Catch2::Catch2 Threads::Threads)
