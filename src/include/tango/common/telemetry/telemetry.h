@@ -49,6 +49,10 @@ constexpr const char *kEnvVarTelemetryEnable = "TANGO_TELEMETRY_ENABLE";
 
 constexpr const char *kEnvVarTelemetryKernelEnable = "TANGO_TELEMETRY_KERNEL_ENABLE";
 
+constexpr const char *kEnvVarTelemetryTracesExporter = "TANGO_TELEMETRY_TRACES_EXPORTER";
+
+constexpr const char *kEnvVarTelemetryLogsExporter = "TANGO_TELEMETRY_LOGS_EXPORTER";
+
 //---------------------------------------------------------------------------------------------------------------------
 //! AttributeValue
 //!
@@ -130,6 +134,11 @@ struct Configuration
     //-----------------------------------------------------------------------------------------------------------------
     static const std::string DEFAULT_HTTP_TRACES_ENDPOINT;
 
+    //-----------------------------------------------------------------------------------------------------------------
+    //! The default console endpoint to which the telemetry data is exported: cout
+    //-----------------------------------------------------------------------------------------------------------------
+    static const std::string DEFAULT_CONSOLE_TRACES_ENDPOINT;
+
     //-------------------------------------------------------------------------------------------------
     //! The default endpoint to which logs are exported
     //-------------------------------------------------------------------------------------------------
@@ -139,6 +148,11 @@ struct Configuration
     //! The default endpoint to which logs are exported
     //-------------------------------------------------------------------------------------------------
     static const std::string DEFAULT_HTTP_LOGS_ENDPOINT;
+
+    //-----------------------------------------------------------------------------------------------------------------
+    //! The default console endpoint to which the telemetry data is exported: cout
+    //-----------------------------------------------------------------------------------------------------------------
+    static const std::string DEFAULT_CONSOLE_LOGS_ENDPOINT;
 
     //-----------------------------------------------------------------------------------------------------------------
     //! The default batch size for traces: 256
@@ -187,11 +201,11 @@ struct Configuration
 
     //! The telemetry data collector endpoint for traces - a string of the form: "http://addr:port/..." or
     //! "grpc://addr:port"
-    std::string collector_traces_endpoint{Configuration::DEFAULT_GRPC_TRACES_ENDPOINT};
+    std::string collector_traces_endpoint{};
 
     //! The telemetry data collector endpoint for logs - a string of the form: "http://addr:port/..." or
     //! "grpc://addr:port"
-    std::string collector_logs_endpoint{Configuration::DEFAULT_GRPC_LOGS_ENDPOINT};
+    std::string collector_logs_endpoint{};
 
     //! The batch size for traces
     std::size_t traces_batch_size{Configuration::DEFAULT_TRACES_BATCH_SIZE};
@@ -219,14 +233,6 @@ struct Configuration
     bool is_a(const Configuration::Kind &kind) const noexcept;
 
     //! Check the syntactic validity of the specified endpoint.
-    //! Returns true if the specified string contains a syntactically valid http or grpc endpoint, returns false
-    //! otherwise. A valid telemetry data collector endpoint is of the form: "http://addr:port/..." or
-    //! "grpc://addr:port".
-    //!
-    //! @param endpoint The telemetry endpoint to be checked.
-    static bool is_valid_endpoint(const std::string &endpoint) noexcept;
-
-    //! Check the syntactic validity of the specified endpoint.
     //! Returns true if the specified string contains a syntactically valid http endpoint, returns false otherwise.
     //! A valid telemetry http data collector endpoint is of the form: "http://addr:port/...".
     //!
@@ -240,6 +246,13 @@ struct Configuration
     //! @param endpoint The telemetry endpoint to be checked.
     static bool is_valid_grpc_endpoint(const std::string &endpoint) noexcept;
 
+    //! Check the syntactic validity of the specified endpoint.
+    //! Returns true if the specified string contains a syntactically console endpoint, returns false otherwise.
+    //! A valid telemetry console data collector endpoint is of the form "cout" or "cerr"
+    //!
+    //! @param endpoint The telemetry endpoint to be checked.
+    static bool is_valid_console_endpoint(const std::string &endpoint) noexcept;
+
     //! Extract "host:port" from specified grpc endpoint.
     //! An empty string is returned if the specified endpoint is invalid.
     //! A valid telemetry grpc data collector endpoint is of the form: "grpc://addr:port".
@@ -247,29 +260,54 @@ struct Configuration
     //! @param endpoint The telemetry endpoint from which the 'host:port' substring is to extracted.
     static std::string extract_grpc_host_port(const std::string &endpoint) noexcept;
 
-    //! Get the traces endpoint for the dedicated env. variable.
-    //! Uses a defaults value in case the env. variable is undefined. If both gPRC and HTTP are supported, the
-    //! traces endpoint is assigned to the default gRPC endpoint. A Tango::DevFailed exception will thrown in
-    //! case the specified endpoint (i.e. the content of the env. variable) is (syntactically) invalid. A valid
-    //! telemetry data collector endpoint is of the form: "http://addr:port/..." or "grpc://addr:port".
+    ///! Available exporter types for logs and traces
+    ///!
+    ///! \see Configuration::get_exporter_from_env
+    enum class Exporter
+    {
+        grpc,
+        http,
+        console
+    };
+
+    static const Exporter kDefaultExporter{Exporter::console};
+
+    //! Check that endpoint describes a valid endpoint for the given exporter type, throws on error
+    static void
+        ensure_valid_endpoint(const char *env_var, Configuration::Exporter exporter_type, const std::string &endpoint);
+
+    //! Get the traces endpoint from the dedicated env. variable and the given exporter type
+    //! Uses a defaults value in case the env. variable is undefined.
+    //! A Tango::DevFailed exception will thrown in case the specified endpoint (i.e. the content of the
+    //! env. variable) is (syntactically) invalid. A valid telemetry data collector endpoint is of the
+    //! form: "http://addr:port/..." or "grpc://addr:port".
     //!
     //! \returns A std::string containing the traces endpoint.
     //!
     //! \see Interface::kEnvVarTelemetryTracesEndPoint.
     //! \see Configuration::DEFAULT_GRPC_TRACES_ENDPOINT and Configuration::DEFAULT_HTTP_TRACES_ENDPOINT.
-    static std::string get_traces_endpoint_from_env();
+    static std::string get_traces_endpoint_from_env(Exporter exporter_type);
 
-    //! Get the logs endpoint for the dedicated env. variable.
-    //! Uses a defaults value in case the env. variable is undefined. If both gPRC and HTTP are supported, the
-    //! logs endpoint is assigned to the default gRPC endpoint. A Tango::DevFailed exception will thrown in
-    //! case the specified endpoint (i.e. the content of the env. variable) is (syntactically) invalid. A valid
+    //! Get the traces endpoint from the dedicated env. variable and the given exporter type
+    //!
+    //! Uses a defaults value in case the env. variable is undefined.
+    //! A Tango::DevFailed exception will thrown in case the specified endpoint
+    //! (i.e. the content of the env. variable) is (syntactically) invalid. A valid
     //! telemetry data collector endpoint is of the form: "http://addr:port/..." or "grpc://addr:port".
     //!
     //! \returns A std::string containing the logs endpoint.
     //!
     //! \see Interface::kEnvVarTelemetryLogsEndPoint.
     //! \see Configuration::DEFAULT_GRPC_LOGS_ENDPOINT and Configuration::DEFAULT_HTTP_LOGS_ENDPOINT.
-    static std::string get_logs_endpoint_from_env();
+    static std::string get_logs_endpoint_from_env(Exporter exporter_type);
+
+    //! Parse the given string as Exporter, throws on error
+    static Exporter to_exporter(std::string_view str);
+
+    //! Fetch the exporter type from the given env. variable
+    //!
+    //! Defaults to Configuration::kDefaultExporter
+    static Exporter get_exporter_from_env(const char *env_var);
 };
 
 //---------------------------------------------------------------------------------------------------------------------
