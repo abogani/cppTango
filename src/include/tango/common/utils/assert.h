@@ -56,8 +56,9 @@ namespace Tango::detail
   #define TANGO_ASSERT_ON_DEFAULT(switchValue)                                                             \
       do                                                                                                   \
       {                                                                                                    \
+          using std::to_string;                                                                            \
           std::stringstream msg;                                                                           \
-          msg << "Reached unexpected default branch with value '" << std::to_string(switchValue) << "'";   \
+          msg << "Reached unexpected default branch with value '" << to_string(switchValue) << "'";        \
           Tango::detail::assertion_failure(__FILE__, __LINE__, TANGO_CURRENT_FUNCTION, msg.str().c_str()); \
       } while(false)
 #else
