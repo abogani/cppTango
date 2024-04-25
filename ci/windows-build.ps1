@@ -96,8 +96,8 @@ Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_CATCH_SOURCE}/..
 # The catch CMakeList.txt does not support CMAKE_MSVC_RUNTIME_LIBRARY so we have to do it manually ourselves.
 $ADDITIONAL_ARGS=@()
 if ($BUILD_SHARED_LIBS -eq "OFF") {
-    $ADDITIONAL_ARGS+="-DCMAKE_CXX_FLAGS_DEBUG=`"/MTd /Zi /Ob0 /Od /RTC1`""
-    $ADDITIONAL_ARGS+="-DCMAKE_CXX_FLAGS_RELEASE=`"/MT /O2 /Ob2 /DNDEBUG`""
+    $ADDITIONAL_ARGS+="-DCMAKE_CXX_FLAGS_DEBUG=/MTd /Zi /Ob0 /Od /RTC1 "
+    $ADDITIONAL_ARGS+="-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /Ob2 /DNDEBUG "
 }
 Invoke-NativeCommand cmake `
   -S "${TANGO_CATCH_SOURCE}" `

@@ -12,7 +12,8 @@ workflow:
 
 windows-build:
   tags:
-    - saas-windows-medium-amd64
+    - desy
+    - windows
   needs:
     - job: pre-commit
       artifacts: false
