@@ -1,6 +1,8 @@
 
 #include <tango/tango.h>
 
+#include <tango/common/git_revision.h>
+
 #include <tango/internal/utils.h>
 
 #if defined(TANGO_USE_TELEMETRY)
@@ -706,7 +708,7 @@ class InterfaceImplementation final
         //- the tracer name is the 'instrumentation library' - here, it's simply the cpp version of tango
         std::string tracer_name = "tango.cpp";
         //- the tracer version is the cppTango version
-        std::string tracer_version = TgLibVers;
+        std::string tracer_version = git_revision();
 
         if(!cfg.enabled)
         {
@@ -1138,7 +1140,7 @@ class Appender : public log4tango::Appender
         //- the tracer name is the 'instrumentation library' - here, it's simply the cpp version of tango
         std::string tracer_name = "tango.cpp";
         //- the tracer version is the cppTango version
-        std::string tracer_version = TgLibVers;
+        std::string tracer_version = git_revision();
 
         // check interface configuration kind
         if(interface->cfg.is_a(Configuration::Kind::Server))
@@ -1193,7 +1195,7 @@ class Appender : public log4tango::Appender
     inline opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> get_logger()
     {
         auto provider = opentelemetry::logs::Provider::GetLoggerProvider();
-        return provider->GetLogger(logger_name, "cppTango", TgLibVers);
+        return provider->GetLogger(logger_name, "cppTango", git_revision());
     }
 
     //-------------------------------------------------------------------------------------
