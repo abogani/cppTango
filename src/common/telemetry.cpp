@@ -22,6 +22,7 @@
   #include <opentelemetry/sdk/trace/processor.h>
   #include <opentelemetry/sdk/trace/batch_span_processor_options.h>
   #include <opentelemetry/sdk/trace/batch_span_processor_factory.h>
+  #include <opentelemetry/sdk/trace/simple_processor_factory.h>
   #include <opentelemetry/sdk/trace/tracer_provider.h>
   #include <opentelemetry/sdk/trace/tracer_provider_factory.h>
   #include <opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h>
@@ -32,6 +33,7 @@
   #include <opentelemetry/trace/propagation/http_trace_context.h>
 
   #include <opentelemetry/sdk/logs/processor.h>
+  #include <opentelemetry/sdk/logs/simple_log_record_processor_factory.h>
   #include <opentelemetry/sdk/logs/batch_log_record_processor_options.h>
   #include <opentelemetry/sdk/logs/batch_log_record_processor_factory.h>
 
@@ -729,6 +731,7 @@ class InterfaceImplementation final
         }
 
         std::unique_ptr<opentelemetry::sdk::trace::SpanExporter> exporter;
+        std::unique_ptr<opentelemetry::sdk::trace::SpanProcessor> processor;
 
         // we now have a valid endpoint for the given exporter type,
         // and we also already have checked the compiled features grpc and http for the requested exporter type
@@ -772,11 +775,27 @@ class InterfaceImplementation final
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
 
-        opentelemetry::sdk::trace::BatchSpanProcessorOptions opts;
-        opts.max_queue_size = cfg.max_batch_queue_size;
-        opts.max_export_batch_size = cfg.traces_batch_size;
-        opts.schedule_delay_millis = std::chrono::milliseconds(cfg.batch_schedule_delay_in_milliseconds);
-        auto processor = opentelemetry::sdk::trace::BatchSpanProcessorFactory::Create(std::move(exporter), opts);
+        TANGO_ASSERT(exporter);
+
+        switch(exporter_type)
+        {
+        case Configuration::Exporter::grpc:
+        case Configuration::Exporter::http:
+        {
+            opentelemetry::sdk::trace::BatchSpanProcessorOptions opts;
+            opts.max_queue_size = cfg.max_batch_queue_size;
+            opts.max_export_batch_size = cfg.traces_batch_size;
+            opts.schedule_delay_millis = std::chrono::milliseconds(cfg.batch_schedule_delay_in_milliseconds);
+            processor = opentelemetry::sdk::trace::BatchSpanProcessorFactory::Create(std::move(exporter), opts);
+        }
+        break;
+        case Configuration::Exporter::console:
+            // fix garbeled output with batch processing
+            processor = opentelemetry::sdk::trace::SimpleSpanProcessorFactory::Create(std::move(exporter));
+            break;
+        default:
+            TANGO_ASSERT_ON_DEFAULT(exporter_type);
+        }
 
         Tango::Util *util{nullptr};
         try
@@ -825,6 +844,7 @@ class InterfaceImplementation final
 
         auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
 
+        TANGO_ASSERT(processor);
         provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
 
         tracer = provider->GetTracer(tracer_name, tracer_version);
@@ -1063,6 +1083,7 @@ class Appender : public log4tango::Appender
         }
 
         std::unique_ptr<opentelemetry::sdk::logs::LogRecordExporter> exporter;
+        std::unique_ptr<opentelemetry::sdk::logs::LogRecordProcessor> processor;
 
         // we now have a valid endpoint for the given exporter type,
         // and we also already have checked the compiled features grpc and http for the requested exporter type
@@ -1110,11 +1131,27 @@ class Appender : public log4tango::Appender
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
 
-        opentelemetry::sdk::logs::BatchLogRecordProcessorOptions opts;
-        opts.max_queue_size = interface->cfg.max_batch_queue_size;
-        opts.max_export_batch_size = interface->cfg.logs_batch_size;
-        opts.schedule_delay_millis = std::chrono::milliseconds(interface->cfg.batch_schedule_delay_in_milliseconds);
-        auto processor = opentelemetry::sdk::logs::BatchLogRecordProcessorFactory::Create(std::move(exporter), opts);
+        TANGO_ASSERT(exporter);
+
+        switch(exporter_type)
+        {
+        case Configuration::Exporter::grpc:
+        case Configuration::Exporter::http:
+        {
+            opentelemetry::sdk::logs::BatchLogRecordProcessorOptions opts;
+            opts.max_queue_size = interface->cfg.max_batch_queue_size;
+            opts.max_export_batch_size = interface->cfg.logs_batch_size;
+            opts.schedule_delay_millis = std::chrono::milliseconds(interface->cfg.batch_schedule_delay_in_milliseconds);
+            processor = opentelemetry::sdk::logs::BatchLogRecordProcessorFactory::Create(std::move(exporter), opts);
+        }
+        break;
+        case Configuration::Exporter::console:
+            // fix garbeled output with batch processing
+            processor = opentelemetry::sdk::logs::SimpleLogRecordProcessorFactory::Create(std::move(exporter));
+            break;
+        default:
+            TANGO_ASSERT_ON_DEFAULT(exporter_type);
+        }
 
         Tango::Util *util{nullptr};
         try
@@ -1172,6 +1209,7 @@ class Appender : public log4tango::Appender
 
         auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
 
+        TANGO_ASSERT(processor);
         std::shared_ptr<opentelemetry::logs::LoggerProvider> provider =
             opentelemetry::sdk::logs::LoggerProviderFactory::Create(std::move(processor), resource);
 
