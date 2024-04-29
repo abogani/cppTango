@@ -150,28 +150,28 @@ struct Configuration
     static const std::string DEFAULT_HTTP_LOGS_ENDPOINT;
 
     //-----------------------------------------------------------------------------------------------------------------
-    //! The default console endpoint to which the telemetry data is exported: cout
+    //! The default console endpoint to which the telemetry data is exported
     //-----------------------------------------------------------------------------------------------------------------
     static const std::string DEFAULT_CONSOLE_LOGS_ENDPOINT;
 
     //-----------------------------------------------------------------------------------------------------------------
-    //! The default batch size for traces: 256
+    //! The default batch size for traces
     //-----------------------------------------------------------------------------------------------------------------
     static const std::size_t DEFAULT_TRACES_BATCH_SIZE;
 
     //-----------------------------------------------------------------------------------------------------------------
-    //! The default batch size for logs: 256
+    //! The default batch size for logs
     //-----------------------------------------------------------------------------------------------------------------
     static const std::size_t DEFAULT_LOGS_BATCH_SIZE;
 
     //--------------------------------------------------------s---------------------------------------------------------
-    //! The default max batch queue size (threshold above which signals are dropped - common to traces and logs): 1024
+    //! The default max batch queue size (threshold above which signals are dropped - common to traces and logs)
     //-----------------------------------------------------------------------------------------------------------------
     static const std::size_t DEFAULT_MAX_BATCH_QUEUE_SIZE;
 
     //-----------------------------------------------------------------------------------------------------------------
     //! The default delay (in ms) after which a batch processing is scheduled whatever is the number of pending signals
-    //! in the queue (common to traces and logs): 2500
+    //! in the queue (common to traces and logs)
     //-----------------------------------------------------------------------------------------------------------------
     static const std::size_t DEFAULT_BATCH_SCHEDULE_DELAY;
 
