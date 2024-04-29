@@ -20,6 +20,9 @@ class TelemetryDS : public Base
 
     void read_attribute(Tango::Attribute &att)
     {
+        auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"myKey", "myValue"}});
+        auto scope = TANGO_TELEMETRY_SCOPE(span);
+
         attr_dq_double = SERVER_VALUE;
         att.set_value_date_quality(&attr_dq_double, std::chrono::system_clock::now(), Tango::ATTR_VALID);
     }
@@ -68,6 +71,13 @@ SCENARIO("Telemetry traces are outputted")
 
             using Catch::Matchers::ContainsSubstring;
             REQUIRE_THAT(contents, ContainsSubstring("code.filepath:"));
+
+            if(idlver > 3)
+            {
+                REQUIRE_THAT(contents,
+                             ContainsSubstring("TelemetryDS") && ContainsSubstring("read_attribute") &&
+                                 ContainsSubstring("myKey") && ContainsSubstring("myValue"));
+            }
         }
     }
 }
