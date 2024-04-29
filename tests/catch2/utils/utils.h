@@ -4,7 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/generators/catch_generators_range.hpp>
-#include <catch2/matchers/catch_matchers_templated.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "utils/auto_device_class.h"
 #include "utils/test_server.h"
