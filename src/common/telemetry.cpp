@@ -127,7 +127,7 @@ using TracerPtr = opentelemetry::nostd::shared_ptr<opentelemetry::trace::Tracer>
 // get configuration kind
 Configuration::Kind Configuration::get_kind() const noexcept
 {
-    if(std::get_if<Configuration::Server>(&details))
+    if(std::get_if<Configuration::Server>(&details) != nullptr)
     {
         return Configuration::Kind::Server;
     }
@@ -148,7 +148,7 @@ bool Configuration::is_a(const Configuration::Kind &kind) const noexcept
 //-----------------------------------------------------------------------------------------
 bool Configuration::is_valid_http_endpoint(const std::string &endpoint) noexcept
 {
-    std::regex pattern("^(http|https)://[^/]+:\\d+(/.*)?$");
+    const std::regex pattern("^(http|https)://[^/]+:\\d+(/.*)?$");
     return std::regex_match(endpoint, pattern);
 }
 
@@ -157,7 +157,7 @@ bool Configuration::is_valid_http_endpoint(const std::string &endpoint) noexcept
 //-----------------------------------------------------------------------------------------
 bool Configuration::is_valid_console_endpoint(const std::string &endpoint) noexcept
 {
-    std::regex pattern("^(cout|cerr)$");
+    const std::regex pattern("^(cout|cerr)$");
     return std::regex_match(endpoint, pattern);
 }
 
@@ -167,7 +167,7 @@ bool Configuration::is_valid_console_endpoint(const std::string &endpoint) noexc
 bool Configuration::is_valid_grpc_endpoint(const std::string &endpoint) noexcept
 {
     // regex pattern to match 'host:port'
-    std::regex pattern("^grpc://[^/]+:\\d+$");
+    const std::regex pattern("^grpc://[^/]+:\\d+$");
     return std::regex_match(endpoint, pattern);
 }
 
@@ -177,7 +177,7 @@ bool Configuration::is_valid_grpc_endpoint(const std::string &endpoint) noexcept
 std::string Configuration::extract_grpc_host_port(const std::string &endpoint) noexcept
 {
     // regex pattern to match and capture 'host:port' from 'grpc://host:port'
-    std::regex pattern("^(?:grpc://)?([^/]+:\\d+)$");
+    const std::regex pattern("^(?:grpc://)?([^/]+:\\d+)$");
     std::smatch matches;
     if(std::regex_search(endpoint, matches, pattern) && matches.size() > 1)
     {
@@ -388,7 +388,7 @@ class SpanImplementation final
     //-------------------------------------------------------------------------------------
     inline opentelemetry::trace::Span &opentelemetry_span() noexcept
     {
-        return *(otel_span.get());
+        return *otel_span;
     }
 
     //-------------------------------------------------------------------------------------
@@ -618,7 +618,7 @@ class TangoTextMapCarrier : public opentelemetry::context::propagation::TextMapC
     //-------------------------------------------------------------------------------------
     // Given a key, returns the associated value or and empty if there's no such key
     //-------------------------------------------------------------------------------------
-    virtual opentelemetry::nostd::string_view Get(opentelemetry::nostd::string_view key) const noexcept override
+    opentelemetry::nostd::string_view Get(opentelemetry::nostd::string_view key) const noexcept override
     {
         auto it = headers.find(std::string(key));
         if(it != headers.end())
@@ -631,7 +631,7 @@ class TangoTextMapCarrier : public opentelemetry::context::propagation::TextMapC
     //-------------------------------------------------------------------------------------
     // Given a key, sets its associated value
     //-------------------------------------------------------------------------------------
-    virtual void Set(opentelemetry::nostd::string_view key, opentelemetry::nostd::string_view value) noexcept override
+    void Set(opentelemetry::nostd::string_view key, opentelemetry::nostd::string_view value) noexcept override
     {
         headers.insert(std::pair<std::string, std::string>(std::string(key), std::string(value)));
     }
@@ -807,7 +807,7 @@ class InterfaceImplementation final
             // ok, we are starting up... not a big deal
         }
 
-        auto api_util = Tango::ApiUtil::instance();
+        auto *api_util = Tango::ApiUtil::instance();
 
         std::string tango_host;
         api_util->get_env_var("TANGO_HOST", tango_host);
@@ -825,7 +825,8 @@ class InterfaceImplementation final
                 {"service.namespace", cfg.name_space.empty() ? "tango" : cfg.name_space},
                 {"service.name", srv_info.class_name},         // naming convention of OpenTelemetry
                 {"service.instance.id", srv_info.device_name}, // naming convention of OpenTelemetry
-                {"tango.server.name", util ? util->get_ds_exec_name() + "/" + util->get_ds_inst_name() : "unknown"},
+                {"tango.server.name",
+                 util != nullptr ? util->get_ds_exec_name() + "/" + util->get_ds_inst_name() : "unknown"},
                 {"tango.process.id", api_util->get_client_pid()},
                 {"tango.process.kind", api_util->in_server() ? "server" : "client"},
                 {"tango.host", tango_host}};
@@ -878,7 +879,7 @@ class InterfaceImplementation final
         {
             opentelemetry::context::propagation::GlobalTextMapPropagator::SetGlobalPropagator(
                 opentelemetry::nostd::shared_ptr<opentelemetry::context::propagation::TextMapPropagator>(
-                    new opentelemetry::trace::propagation::HttpTraceContext()));
+                    new(std::nothrow) opentelemetry::trace::propagation::HttpTraceContext()));
 
             InterfaceImplementation::global_propagator_initialized = true;
         }
@@ -904,7 +905,7 @@ class InterfaceImplementation final
         // step-1: instantiate a span without any impl.
         // here we follow the iso-cpp guidelines: don't deal with bad_alloc cause nobody can recover from it! see:
         // https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#f6-if-your-function-must-not-throw-declare-it-noexcept
-        auto span = new Span();
+        auto *span = new(std::nothrow) Span();
         // step-2: instantiate the impl then attach it to the span
         span->impl = std::make_unique<SpanImplementation>(std::move(otel_span));
         // step-3: return the new span
@@ -1057,7 +1058,7 @@ class Appender : public log4tango::Appender
     //-------------------------------------------------------------------------------------
     // Appender::dtor
     //-------------------------------------------------------------------------------------
-    virtual ~Appender()
+    ~Appender() override
     {
         cleanup_logger_provider();
     }
@@ -1163,14 +1164,14 @@ class Appender : public log4tango::Appender
             // ok, we are starting up... not a big deal
         }
 
-        auto api_util = Tango::ApiUtil::instance();
+        auto *api_util = Tango::ApiUtil::instance();
 
         std::string tango_host;
         api_util->get_env_var("TANGO_HOST", tango_host);
 
         opentelemetry::sdk::resource::ResourceAttributes resource_attributes;
 
-        std::string server_name(util ? util->get_ds_name() : "unknown server name");
+        std::string server_name(util != nullptr ? util->get_ds_name() : "unknown server name");
 
         // see the following link for details on tracer naming:
         // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#get-a-tracer
@@ -1189,7 +1190,8 @@ class Appender : public log4tango::Appender
                 {"service.namespace", interface->cfg.name_space.empty() ? "tango" : interface->cfg.name_space},
                 {"service.name", srv_info.class_name},         // naming convention of OpenTelemetry
                 {"service.instance.id", srv_info.device_name}, // naming convention of OpenTelemetry
-                {"tango.server.name", util ? util->get_ds_exec_name() + "/" + util->get_ds_inst_name() : "unknown"},
+                {"tango.server.name",
+                 util != nullptr ? util->get_ds_exec_name() + "/" + util->get_ds_inst_name() : "unknown"},
                 {"tango.process.id", api_util->get_client_pid()},
                 {"tango.process.kind", api_util->in_server() ? "server" : "client"},
                 {"tango.host", tango_host}};
@@ -1349,7 +1351,7 @@ const Configuration &Interface::get_configuration() const noexcept
 //-----------------------------------------------------------------------------------------
 log4tango::Appender *Interface::get_appender() const noexcept
 {
-    return new Appender(impl);
+    return new(std::nothrow) Appender(impl);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -1524,7 +1526,7 @@ ScopePtr Interface::set_trace_context(const std::string &new_span_name,
         break;
     }
 
-    if(!trace_context)
+    if(trace_context == nullptr)
     {
         // weird case...
         // deal with that just as if we didn't receive any trace context info from the client
@@ -1676,7 +1678,7 @@ std::string Interface::extract_exception_info(std::exception_ptr current_excepti
     }
     catch(const Tango::DevFailed &tango_ex)
     {
-        if(tango_ex.errors.length())
+        if(tango_ex.errors.length() > 0)
         {
             err << "EXCEPTION:Tango::DevFailed;REASON:" << tango_ex.errors[0].reason
                 << ";DESC:" << tango_ex.errors[0].desc << ";ORIGIN:" << tango_ex.errors[0].origin;
@@ -1724,7 +1726,7 @@ void Interface::extract_exception_info(std::string &type, std::string &message)
     {
         type = "Tango::DevFailed";
         std::stringstream err;
-        if(tango_ex.errors.length())
+        if(tango_ex.errors.length() > 0)
         {
             err << "REASON:" << tango_ex.errors[0].reason << ";DESC:" << tango_ex.errors[0].desc
                 << ";ORIGIN:" << tango_ex.errors[0].origin;

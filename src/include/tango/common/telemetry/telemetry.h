@@ -546,7 +546,7 @@ class Interface
     //-----------------------------------------------------------------------------------------------------------------
     // internal helper function: thread_id_to_string (for tracing location)
     //-----------------------------------------------------------------------------------------------------------------
-    static const std::string thread_id_to_string() noexcept
+    static std::string thread_id_to_string() noexcept
     {
         std::stringstream ss;
         ss << std::this_thread::get_id();
