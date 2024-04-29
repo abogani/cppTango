@@ -12,7 +12,7 @@
   #include <type_traits>
 
   #include <opentelemetry/trace/span.h>
-  #include "opentelemetry/trace/scope.h"
+  #include <opentelemetry/trace/scope.h>
   #include <opentelemetry/trace/context.h>
   #include <opentelemetry/trace/provider.h>
   #include <opentelemetry/trace/span_context.h>
@@ -38,6 +38,7 @@
   #include <opentelemetry/sdk/logs/batch_log_record_processor_factory.h>
 
   #include <opentelemetry/logs/provider.h>
+  #include <opentelemetry/sdk/logs/logger_provider.h>
   #include <opentelemetry/sdk/logs/logger_provider_factory.h>
   #include <opentelemetry/exporters/ostream/log_record_exporter.h>
   #include <opentelemetry/exporters/ostream/log_record_exporter_factory.h>
@@ -1224,6 +1225,13 @@ class Appender : public log4tango::Appender
     //-------------------------------------------------------------------------------------
     void cleanup_logger_provider()
     {
+        auto old_provider = opentelemetry::logs::Provider::GetLoggerProvider();
+        auto *base_class = dynamic_cast<opentelemetry::sdk::logs::LoggerProvider *>(old_provider.get());
+        if(base_class != nullptr)
+        {
+            base_class->ForceFlush();
+        }
+
         using LoggerProviderPtr = opentelemetry::nostd::shared_ptr<opentelemetry::logs::LoggerProvider>;
         LoggerProviderPtr provider{new opentelemetry::logs::NoopLoggerProvider};
         opentelemetry::logs::Provider::SetLoggerProvider(provider);
