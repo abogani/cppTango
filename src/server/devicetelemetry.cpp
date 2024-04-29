@@ -48,7 +48,7 @@ void DeviceImpl::initialize_telemetry_interface()
 //-------------------------------------------------------------------------------------------------
 void DeviceImpl::cleanup_telemetry_interface() noexcept
 {
-    // noop so far
+    telemetry_interface.reset();
 }
 
 #endif // #if defined(TANGO_USE_TELEMETRY)
