@@ -4243,7 +4243,7 @@ void Attribute::fire_change_event(DevFailed *except)
         long vers = dev->get_dev_idl_version();
         try
         {
-            if(vers >= 4)
+            if(vers >= 5)
             {
                 send_attr_5 = new Tango::AttributeValue_5{ZeroInitialize<Tango::AttributeValue_5>().value};
             }
