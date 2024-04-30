@@ -105,7 +105,10 @@ std::string make_nodb_fqtrl(int port, std::string_view device_name)
     return ss.str();
 }
 
-Context::Context(const std::string &instance_name, const std::string &tmpl_name, int idlversion)
+Context::Context(const std::string &instance_name,
+                 const std::string &tmpl_name,
+                 int idlversion,
+                 std::vector<const char *> env)
 {
     std::string dlist_arg = [&]()
     {
@@ -117,8 +120,11 @@ Context::Context(const std::string &instance_name, const std::string &tmpl_name,
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
                    << "\"" << tmpl_name << "_" << idlversion;
 
+    // append trailing NULL
+    env.emplace_back(nullptr);
+
     std::vector<const char *> extra_args = {"-nodb", "-dlist", dlist_arg.c_str()};
-    m_server.start(instance_name, extra_args);
+    m_server.start(instance_name, extra_args, env);
 
     TANGO_LOG_INFO << "Started server \"" << instance_name << "\" on port " << m_server.get_port() << " redirected to "
                    << m_server.get_redirect_file();

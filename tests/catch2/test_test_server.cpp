@@ -369,7 +369,7 @@ SCENARIO("test server crashes and timeouts are reported")
             try
             {
                 using namespace std::chrono_literals;
-                server.start("self_test", extra_args, 300ms);
+                server.start("self_test", extra_args, {nullptr}, 300ms);
             }
             catch(std::exception &ex)
             {
@@ -413,6 +413,72 @@ SCENARIO("test server crashes and timeouts are reported")
                 REQUIRE_THAT(logger->logs, SizeIs(1));
                 REQUIRE_THAT(logger->logs[0], ContainsSubstring("Timeout waiting for TestServer to exit"));
                 REQUIRE_THAT(logger->logs[0], ContainsSubstring(k_helpful_message));
+            }
+        }
+    }
+}
+
+template <class Base>
+class TestEnvDS : public Base
+{
+  public:
+    using Base::Base;
+
+    ~TestEnvDS() override { }
+
+    void init_device() override { }
+
+    void read_attribute(Tango::Attribute &att)
+    {
+        envValue = std::getenv("TANGO_TEST_ENV");
+        ptr = envValue.data();
+        // fake lvalue for &
+        att.set_value(&ptr);
+    }
+
+    static void attribute_factory(std::vector<Tango::Attr *> &attrs)
+    {
+        attrs.push_back(new TangoTest::AutoAttr<&TestEnvDS::read_attribute>("env", Tango::DEV_STRING));
+    }
+
+  private:
+    std::string envValue;
+    char *ptr;
+};
+
+TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(TestEnvDS<TANGO_BASE_CLASS>, TestEnvDS)
+
+SCENARIO("The env parameter for starting the server works")
+{
+    using TestServer = TangoTest::TestServer;
+
+    int idlver = GENERATE(range(6, TangoTest::IDL_MAX));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TestServer server;
+        std::vector<const char *> extra_args = {"-nodb", "-dlist", "TestEnvDS::TestServer/tests/1"};
+        std::vector<const char *> env{"TANGO_TEST_ENV=abcd"};
+        server.start("self_test", extra_args, env);
+
+        std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
+
+        auto device = std::make_unique<Tango::DeviceProxy>(fqtrl);
+        WHEN("we read the attribute")
+        {
+            std::string att{"env"};
+
+            Tango::DeviceAttribute da;
+            REQUIRE_NOTHROW(da = device->read_attribute(att));
+            THEN("the read value gives the expected value from the server")
+            {
+                std::string att_value;
+                da >> att_value;
+                REQUIRE(att_value == "abcd");
+            }
+
+            AND_THEN("but the environment variable is not present in here")
+            {
+                REQUIRE(std::getenv("TANGO_TEST_ENV") == nullptr);
             }
         }
     }

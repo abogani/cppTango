@@ -126,6 +126,7 @@ std::unique_ptr<Logger> TestServer::s_logger;
 
 void TestServer::start(const std::string &instance_name,
                        std::vector<const char *> extra_args,
+                       std::vector<const char *> env,
                        std::chrono::milliseconds timeout)
 {
     using Kind = platform::StartServerResult::Kind;
@@ -180,7 +181,7 @@ void TestServer::start(const std::string &instance_name,
         TANGO_LOG_INFO << "Starting server with arguments "
                        << Catch::StringMaker<std::vector<const char *>>::convert(args);
 
-        auto start_result = platform::start_server(args, m_redirect_file, k_ready_string, timeout);
+        auto start_result = platform::start_server(args, env, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
         {

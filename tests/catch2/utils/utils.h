@@ -26,7 +26,13 @@ std::string make_nodb_fqtrl(int port, std::string_view device_name);
 class Context
 {
   public:
-    Context(const std::string &instance_name, const std::string &tmpl_name, int idlversion);
+    /**
+     * env is a vector with entries of the form "key1=value1", "key2=value2"
+     */
+    Context(const std::string &instance_name,
+            const std::string &tmpl_name,
+            int idlversion,
+            std::vector<const char *> env = {});
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
 
