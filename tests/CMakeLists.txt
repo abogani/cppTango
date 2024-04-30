@@ -167,7 +167,6 @@ tango_add_test(NAME "CXX::cxx_dynamic_attributes" COMMAND $<TARGET_FILE:cxx_dyna
 CXX_GENERATE_TEST(cxx_encoded)
 CXX_GENERATE_TEST(cxx_enum_att)
 CXX_GENERATE_TEST(cxx_exception)
-CXX_GENERATE_TEST(cxx_filedatabase TRUE)
 CXX_GENERATE_TEST(cxx_fwd_att)
 CXX_GENERATE_TEST(cxx_group)
 CXX_GENERATE_TEST(cxx_mem_attr)
@@ -298,6 +297,7 @@ tango_catch2_tests_create(
     catch2_attr_manip.cpp
     catch2_attr_polling.cpp
     catch2_cmd_polling.cpp
+    catch2_filedatabase.cpp
     catch2_jpeg_encoding.cpp
     catch2_nodb_connection.cpp
     )
