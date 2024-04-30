@@ -67,7 +67,6 @@ if (TANGO_USE_TELEMETRY)
     if(WIN32)
       find_package(CURL REQUIRED)
       find_package(nlohmann_json REQUIRED)
-      find_package(OpenSSL REQUIRED)
     endif()
 
     if(TANGO_TELEMETRY_USE_GRPC)

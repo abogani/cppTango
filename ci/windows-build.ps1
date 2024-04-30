@@ -71,8 +71,6 @@ Expand-Archive -Path ${FILENAME} -DestinationPath ${OTEL_ROOT}
 mv ${OTEL_ROOT}/opentelemetry-cpp*/* ${OTEL_ROOT}
 rm -Recurse ${OTEL_ROOT}/opentelemetry-cpp*
 $ZLIB_NG_ROOT="${OTEL_ROOT}/zlib-ng"
-$LIBCURL_ROOT="${OTEL_ROOT}/libcurl"
-$OPENSSL_ROOT="${LIBCURL_ROOT}"
 
 Write-Host "== Build IDL" -ForegroundColor Blue
 md -Force "${TANGO_IDL_SOURCE}"
@@ -152,14 +150,8 @@ Invoke-NativeCommand cmake `
   -DBUILD_TESTING="${BUILD_TESTING}" `
   -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}" `
   -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake" `
-  -DCMAKE_MODULE_PATH="${LIBCURL_ROOT}" `
   -DZLIB_INCLUDE_DIR="${cwd}/${ZLIB_NG_ROOT}/include" `
   -DZLIB_LIBRARY="${cwd}/${ZLIB_NG_ROOT}/lib/zlib.lib" `
-  -DCURL_INCLUDE_DIR="${cwd}/${LIBCURL_ROOT}/include" `
-  -DCURL_LIBRARY="${cwd}/${LIBCURL_ROOT}/lib/libcurl.a" `
-  -DOPENSSL_USE_STATIC_LIBS=TRUE `
-  -DOPENSSL_MSVC_STATIC_RT="ON" `
-  -DOPENSSL_ROOT_DIR="${cwd}/${OPENSSL_ROOT}" `
   -DTANGO_OTEL_ROOT="${cwd}/${OTEL_ROOT}"
 Invoke-NativeCommand cmake `
   --build build `
