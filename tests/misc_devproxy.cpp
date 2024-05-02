@@ -85,7 +85,7 @@ int main(int argc, char **argv)
         tg_version = device->get_tango_lib_version();
 
         assert(tg_version >= 810);
-        TEST_LOG << "   Tango lib version --> OK" << endl;
+        TEST_LOG << "   Tango lib version --> " << tg_version << endl;
 
         // Test adm_name
 
@@ -155,6 +155,14 @@ int main(int argc, char **argv)
         assert(inf.dev_type == "TestDevice");
 
         TEST_LOG << "   Info --> OK" << endl;
+
+        const int vi_size = static_cast<int>(inf.version_info.size());
+        TEST_LOG << "version_info.size --> " << vi_size << endl;
+
+        for(const auto &[key, value] : inf.version_info)
+        {
+            TEST_LOG << "\t" << key << " : " << value << endl;
+        }
 
         // Test command_query
 

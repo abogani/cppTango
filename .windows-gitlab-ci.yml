@@ -19,7 +19,7 @@ windows-build:
   variables:
     JPEG_VERSION: 2.0.3
     NASM_VERSION: 2.15.05
-    TANGO_IDL_TAG: 6.0-alpha2
+    TANGO_IDL_TAG: 6.0-alpha3
     ZMQ_VERSION: 4.0.5-2
     OMNI_VERSION: 4.3.0
     PTHREAD_VERSION: 2.9.1

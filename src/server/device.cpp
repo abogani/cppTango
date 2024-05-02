@@ -40,7 +40,7 @@
 #include <tango/server/eventsupplier.h>
 #include <tango/client/apiexcept.h>
 #include <tango/server/tango_clock.h>
-
+#include <tango/common/git_revision.h>
 #include <tango/server/logging.h>
 
 namespace Tango
@@ -608,6 +608,17 @@ void DeviceImpl::real_ctor()
 
     init_logger();
 
+    //
+    // Set c++ version_info list values, got from tango_const.h and zmq.h
+    //
+
+    add_version_info("cppTango", TgLibVers);
+    add_version_info("cppTango.git_revision", Tango::git_revision());
+    add_version_info("omniORB", omniORB::versionString());
+    std::ostringstream zmq_version;
+    zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH << std::ends;
+    add_version_info("zmq", zmq_version.str());
+
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::real_ctor for device " << device_name << std::endl;
 }
 
@@ -1096,6 +1107,54 @@ void DeviceImpl::get_dev_system_resource()
 PortableServer::POA_ptr DeviceImpl::_default_POA()
 {
     return Util::instance()->get_poa();
+}
+
+//+--------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//		DeviceImpl::add_version_info
+//
+// description :
+//		add key=value pair to version_info list
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void DeviceImpl::add_version_info(const std::string &key, const std::string &value)
+{
+    version_info.insert_or_assign(key, value);
+    TANGO_LOG_DEBUG << "In DeviceImpl::add_version_info(key = " << key << ", value = " << value << ")" << std::endl;
+}
+
+//+--------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//		DeviceImpl::get_version_info
+//
+// description :
+//		get current libraries versions list
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+Tango::DevInfoVersionList DeviceImpl::get_version_info()
+{
+    //
+    // Convert version_info_list map into a DevInfoVersionList sequence
+    //
+
+    Tango::DevInfoVersionList dev_version_info;
+    int version_length = 0;
+    dev_version_info.length(version_info.size());
+
+    for(const auto &[key, value] : version_info)
+    {
+        Tango::DevInfoVersion version_info_elt;
+        version_info_elt.key = Tango::string_dup(key.c_str());
+        version_info_elt.value = Tango::string_dup(value.c_str());
+        dev_version_info[version_length] = version_info_elt;
+        version_length++;
+    }
+
+    return dev_version_info;
 }
 
 //+-------------------------------------------------------------------------

@@ -149,6 +149,7 @@ struct _DeviceInfo
     long server_version;
     std::string doc_url;
     std::string dev_type;
+    std::map<std::string, std::string> version_info;
 };
 
 typedef _DeviceInfo DeviceInfo;

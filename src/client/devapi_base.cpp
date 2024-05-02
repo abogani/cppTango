@@ -3117,6 +3117,7 @@ DeviceInfo const &DeviceProxy::info()
 {
     DevInfo_var dev_info;
     DevInfo_3_var dev_info_3;
+    DevInfo_6_var dev_info_6;
     int ctr = 0;
 
     while(ctr < 2)
@@ -3125,7 +3126,25 @@ DeviceInfo const &DeviceProxy::info()
         {
             check_and_reconnect();
 
-            if(version >= 3)
+            if(version >= 6)
+            {
+                Device_6_var dev = Device_6::_duplicate(device_6);
+                dev_info_6 = dev->info_6();
+
+                _info.dev_class = dev_info_6->dev_class;
+                _info.server_id = dev_info_6->server_id;
+                _info.server_host = dev_info_6->server_host;
+                _info.server_version = dev_info_6->server_version;
+                _info.doc_url = dev_info_6->doc_url;
+                _info.dev_type = dev_info_6->dev_type;
+
+                for(CORBA::ULong i = 0; i < dev_info_6->version_info.length(); ++i)
+                {
+                    Tango::DevInfoVersion version_info = dev_info_6->version_info[i];
+                    _info.version_info.insert(std::make_pair(version_info.key, version_info.value));
+                }
+            }
+            else if(version >= 3)
             {
                 Device_3_var dev = Device_3::_duplicate(device_3);
                 dev_info_3 = dev->info_3();

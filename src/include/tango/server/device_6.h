@@ -160,7 +160,16 @@ class Device_6Impl : public virtual POA_Tango::Device_6, public Device_5Impl
     /**@name CORBA operation methods
      * Method defined to implement TANGO device CORBA operation */
     //@{
-
+    /**
+     * Get device info.
+     *
+     * Invoked when the client request the info CORBA operation.
+     * It updates the black box and returns a DevInfo_6 object
+     * with miscellaneous device info
+     *
+     * @return A DevInfo object
+     */
+    Tango::DevInfo_6 *info_6() override;
     //@}
 
     /// @privatesection
