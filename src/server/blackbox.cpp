@@ -1490,6 +1490,10 @@ void BlackBox::build_info_as_str(long index)
             elt_str = elt_str + ") ";
             break;
 
+        case Op_Info_6:
+            elt_str = elt_str + "info_6 ";
+            break;
+
         case Op_Unknown:
             elt_str = elt_str + "unknown operation !!!!!";
             return;

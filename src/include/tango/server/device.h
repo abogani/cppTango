@@ -377,6 +377,23 @@ class DeviceImpl : public virtual POA_Tango::Device
      */
     PortableServer::POA_ptr _default_POA() override;
 
+    /**
+     * Add version info
+     *
+     * Append to device info current library versions used.
+     *
+     */
+    void add_version_info(const std::string &key, const std::string &value);
+
+    /**
+     * get version info list
+     *
+     * Return a DevInfoVersion list with current libraries
+     * and bindings versions used.
+     *
+     */
+    Tango::DevInfoVersionList get_version_info();
+
     //@}
 
   protected:
@@ -1579,6 +1596,10 @@ class DeviceImpl : public virtual POA_Tango::Device
      * The administration device name
      */
     std::string adm_device_name;
+    /**
+     * The version_info list to store library versions
+     */
+    std::map<std::string, std::string> version_info;
     //@}
 
   public:
