@@ -37,40 +37,6 @@
     #define LOG4TANGO_FIX_ERROR_COLLISION 1
   #endif
 
-  #ifdef LOG4TANGO_USE_THREADING
-
-        // deal with ERROR #define
-
-        // This #includes windows.h with NOGDI and WIN32_LEAN_AND_MEAN
-        // #defined. If this is not what the user wants, #include
-        // windows.h before this file.
-
-    #ifndef _WINDOWS_
-      #ifndef NOGDI
-        #define NOGDI // circumvent the ERROR #define in windows.h
-        #define LOG4TANGO_UNDEFINE_NOGDI
-      #endif
-
-      #ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
-        #define LOG4TANGO_UNDEFINE_WIN32_LEAN_AND_MEAN
-      #endif
-
-      #include <windows.h>
-
-      #ifdef LOG4TANGO_UNDEFINE_NOGDI
-        #undef NOGDI
-      #endif
-
-      #ifdef LOG4TANGO_UNDEFINE_WIN32_LEAN_AND_MEAN
-        #undef WIN32_LEAN_AND_MEAN
-      #endif
-
-    #endif
-        // done dealing with ERROR #define
-
-  #endif // LOG4TANGO_USE_THREADING
-
 /* define mode_t */
 namespace log4tango
 {
