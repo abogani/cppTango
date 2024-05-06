@@ -221,7 +221,11 @@ class DServerCmdTestSuite : public CxxTest::TestSuite
         din << dserver_name;
         TS_ASSERT_THROWS_NOTHING(dout = dserver->command_inout("GetLoggingTarget", din));
         dout >> logging_target_out;
+#if defined(TANGO_USE_TELEMETRY)
+        TS_ASSERT_EQUALS((*logging_target_out).length(), 2u); // console::cout + telemetry
+#else
         TS_ASSERT_EQUALS((*logging_target_out).length(), 1u); // console::cout
+#endif // TANGO_USE_TELEMETRY
 
         // set logging level to 5
         DevVarLongStringArray dserver_level_in;
@@ -287,7 +291,11 @@ class DServerCmdTestSuite : public CxxTest::TestSuite
         din << dserver_name;
         TS_ASSERT_THROWS_NOTHING(dout = dserver->command_inout("GetLoggingTarget", din));
         dout >> check_logging_target;
+#if defined(TANGO_USE_TELEMETRY)
+        TS_ASSERT_EQUALS((*check_logging_target).length(), 2u); // console::cout + telemetry
+#else
         TS_ASSERT_EQUALS((*check_logging_target).length(), 1u); // console::cout
+#endif // TANGO_USE_TELEMETRY
     }
 
     // Test comparing input with output
