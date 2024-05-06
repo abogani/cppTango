@@ -80,6 +80,9 @@ windows-build:
     - if: '$TANGO_USE_TELEMETRY == "ON" && $BUILD_SHARED_LIBS == "ON"'
       # currently not supported
       when: never
+    - if: '$TANGO_USE_TELEMETRY == "ON" && $CMAKE_BUILD_TYPE == "Debug"'
+      # currently not supported as well
+      when: never
     - if: '$ARCHITECTURE == "x64"'
       variables:
         NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win64/nasm-${NASM_VERSION}-installer-x64.exe"
