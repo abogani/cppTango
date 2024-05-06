@@ -1,14 +1,11 @@
 // NOLINTBEGIN(*)
 
-#ifndef GroupTestSuite_h
-  #define GroupTestSuite_h
+#include <ctime>
 
-  #include <ctime>
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME GroupTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME GroupTestSuite
 
 class GroupTestSuite : public CxxTest::TestSuite
 {
@@ -987,6 +984,5 @@ class GroupTestSuite : public CxxTest::TestSuite
                                 TS_ASSERT_EQUALS(std::string{e.errors[0].reason.in()}, API_EmptyDeviceAttribute));
     }
 };
-#endif // GroupTestSuite_h
 
 // NOLINTEND(*)

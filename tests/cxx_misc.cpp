@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef MiscTestSuite_h
-  #define MiscTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME MiscTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME MiscTestSuite
 
 class MiscTestSuite : public CxxTest::TestSuite
 {
@@ -161,6 +158,5 @@ class MiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(device1->info().server_version, server_version);
     }
 };
-#endif // MiscTestSuite_h
 
 // NOLINTEND(*)

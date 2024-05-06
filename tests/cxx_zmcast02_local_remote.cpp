@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef McastLocalRemoteTestSuite_h
-  #define McastLocalRemoteTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME McastLocalRemoteTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME McastLocalRemoteTestSuite
 
 // In this test, the client subscribes to two multicast events
 // One event comes from a device running in the same host than the client
@@ -257,7 +254,5 @@ void McastLocalRemoteTestSuite::EventCallBack::push_event(Tango::EventData *even
         TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
     }
 }
-
-#endif // McastLocalRemoteTestSuite_h
 
 // NOLINTEND(*)

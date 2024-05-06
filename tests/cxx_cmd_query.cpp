@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef CmdQueryTestSuite_h
-  #define CmdQueryTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME CmdQueryTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME CmdQueryTestSuite
 
 class CmdQueryTestSuite : public CxxTest::TestSuite
 {
@@ -549,6 +546,5 @@ class CmdQueryTestSuite : public CxxTest::TestSuite
                          "Lg[4] = Multicast IVL - Lg[5] = ZMQ release");
     }
 };
-#endif // CmdQueryTestSuite_h
 
 // NOLINTEND(*)

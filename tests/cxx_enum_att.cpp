@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef EnumTestSuite_h
-  #define EnumTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME EnumAttTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME EnumAttTestSuite
 
 static_assert(std::is_same<short, DevShort>::value, "short does not match DevShort");
 
@@ -605,7 +602,5 @@ class EnumAttTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(before, after);
     }
 };
-
-#endif // EnumTestSuite_h
 
 // NOLINTEND(*)

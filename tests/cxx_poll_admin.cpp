@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef PollAdminTestSuite_h
-  #define PollAdminTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME PollAdminTestSuite__loop
+#undef SUITE_NAME
+#define SUITE_NAME PollAdminTestSuite__loop
 
 class PollAdminTestSuite__loop : public CxxTest::TestSuite
 {
@@ -1149,7 +1146,5 @@ class PollAdminTestSuite__loop : public CxxTest::TestSuite
         CxxTest::TangoPrinter::restore_unset("dev1_IOStr1_polling");
     }
 };
-
-#endif // PollAdminTestSuite_h
 
 // NOLINTEND(*)

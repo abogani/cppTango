@@ -3,14 +3,12 @@
 //
 // Created by ingvord on 12/14/16.
 //
-#ifndef RecoZmqTestSuite_h
-  #define RecoZmqTestSuite_h
 
-  #include <thread>
-  #include "cxx_common.h"
+#include <thread>
+#include "cxx_common.h"
 
-  #undef SUITE_NAME
-  #define SUITE_NAME RecoZmqTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME RecoZmqTestSuite
 
 class RecoZmqTestSuite : public CxxTest::TestSuite
 {
@@ -234,7 +232,5 @@ class RecoZmqTestSuite : public CxxTest::TestSuite
         TS_ASSERT_LESS_THAN_EQUALS(1, eventCallback.error_count());
     }
 };
-
-#endif // RecoZmqTestSuite_h
 
 // NOLINTEND(*)

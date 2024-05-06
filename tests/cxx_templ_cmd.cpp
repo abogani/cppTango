@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef TemplateCmdTestSuite_h
-  #define TemplateCmdTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME TemplateCmdTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME TemplateCmdTestSuite
 
 class TemplateCmdTestSuite : public CxxTest::TestSuite
 {
@@ -257,7 +254,5 @@ class TemplateCmdTestSuite : public CxxTest::TestSuite
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IOState", din));
     }
 };
-
-#endif // TemplateCmdTestSuite_h
 
 // NOLINTEND(*)

@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef SvrMcastLocalRemoteTestSuite_h
-  #define SvrMcastLocalRemoteTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME SvrMcastLocalRemoteTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME SvrMcastLocalRemoteTestSuite
 
 // In this test, the local server is used to send mcast event locally (to this client) but
 // also to another client running on a remote host. This another client is in fact a device server
@@ -266,7 +263,5 @@ void SvrMcastLocalRemoteTestSuite::EventCallBack::push_event(Tango::EventData *e
         TEST_LOG << "EventCallBack::push_event(): could not extract data !\n";
     }
 }
-
-#endif // SvrMcastLocalRemoteTestSuite_h
 
 // NOLINTEND(*)
