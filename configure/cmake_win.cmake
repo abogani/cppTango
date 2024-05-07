@@ -165,6 +165,11 @@ if (TANGO_INSTALL_DEPENDENCIES)
       if(BUILD_SHARED_LIBS)
         message(FATAL_ERROR "Missing installation code")
       else()
+
+        if(NOT TANGO_OTEL_ROOT)
+          message(FATAL_ERROR "Missing TANGO_OTEL_ROOT variable")
+        endif()
+
         install(DIRECTORY ${TANGO_OTEL_ROOT}/lib/ DESTINATION lib)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/cmake DESTINATION lib)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/share/cmake DESTINATION lib)
