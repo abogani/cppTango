@@ -86,6 +86,23 @@ function(tango_catch2_tests_create)
             endif()
         endif()
 
+        # copy zlib dll manually
+        if (TANGO_USE_TELEMETRY)
+            if (ZLIB_RUNTIME_RELEASE AND ZLIB_RUNTIME_DEBUG)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy $<$<CONFIG:Debug>:${ZLIB_RUNTIME_DEBUG}:${ZLIB_RUNTIME_RELEASE}> $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            elseif(ZLIB_RUNTIME_RELEASE)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB_RUNTIME_RELEASE} $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            elseif(ZLIB_RUNTIME_DEBUG)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            endif()
+        endif()
+
         set(SERVER_NAME "TestServer.exe")
         # By default on Windows, administrator privileges are required to create symlinks so it
         # is easiest to avoid them and just make a copy here.

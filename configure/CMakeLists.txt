@@ -67,6 +67,18 @@ if (TANGO_USE_TELEMETRY)
     if(WIN32)
       find_package(CURL REQUIRED)
       find_package(nlohmann_json REQUIRED)
+
+      find_package(ZLIB REQUIRED)
+      # create variables pointing to the runtime DLL for later usage
+      if(ZLIB_LIBRARY_RELEASE AND NOT ZLIB_RUNTIME_RELEASE)
+        string(REGEX REPLACE "zlib.lib$" "zlib1.dll" ZLIB_RUNTIME_RELEASE "${ZLIB_LIBRARY_RELEASE}")
+        set(ZLIB_RUNTIME_RELEASE "${ZLIB_RUNTIME_RELEASE}" CACHE FILEPATH "")
+      endif()
+
+      if(ZLIB_LIBRARY_DEBUG AND NOT ZLIB_RUNTIME_DEBUG)
+        string(REGEX REPLACE "zlib.lib$" "zlib1.dll" ZLIB_RUNTIME_DEBUG "${ZLIB_LIBRARY_DEBUG}")
+        set(ZLIB_RUNTIME_DEBUG "${ZLIB_RUNTIME_DEBUG}" CACHE FILEPATH "")
+      endif()
     endif()
 
     if(TANGO_TELEMETRY_USE_GRPC)

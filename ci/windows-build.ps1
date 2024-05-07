@@ -144,14 +144,13 @@ Invoke-NativeCommand cmake `
   -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}" `
   -Dpthread_ROOT="${PTHREAD_ROOT}" `
   -DCatch2_ROOT="${cwd}/${TANGO_CATCH_ROOT}" `
+  -DZLIB_ROOT="${cwd}/${ZLIB_NG_ROOT}" `
   -DTANGO_USE_PTHREAD=ON `
   -DTANGO_USE_JPEG=ON `
   -DJPEG_DEBUG_POSTFIX=d `
   -DBUILD_TESTING="${BUILD_TESTING}" `
   -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}" `
   -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake" `
-  -DZLIB_INCLUDE_DIR="${cwd}/${ZLIB_NG_ROOT}/include" `
-  -DZLIB_LIBRARY="${cwd}/${ZLIB_NG_ROOT}/lib/zlib.lib" `
   -DTANGO_OTEL_ROOT="${cwd}/${OTEL_ROOT}"
 Invoke-NativeCommand cmake `
   --build build `

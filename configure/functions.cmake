@@ -26,6 +26,7 @@ function(set_cflags_and_include target)
                             opentelemetry-cpp::ostream_log_record_exporter
                             opentelemetry-cpp::ostream_span_exporter
                             opentelemetry-cpp::logs
+                            ZLIB::ZLIB
                            )
       if (TANGO_TELEMETRY_USE_HTTP)
         target_link_libraries(${target} PRIVATE
