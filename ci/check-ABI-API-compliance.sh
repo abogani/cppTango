@@ -53,13 +53,14 @@ function generate_info() {
 
   mkdir ${prefix}-branch/build
   cd ${prefix}-branch/build
-  cmake                                    \
-    -Werror=dev                            \
-    -DCMAKE_BUILD_TYPE=Debug               \
-    -Dcppzmq_ROOT=/home/tango        \
-    -DBUILD_TESTING=OFF                    \
-    -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF \
-    -DCMAKE_CXX_FLAGS=-gdwarf-4            \
+  cmake                                                 \
+    -Werror=dev                                         \
+    -DCMAKE_BUILD_TYPE=Debug                            \
+    -Dcppzmq_ROOT=/home/tango                           \
+    -DBUILD_TESTING=OFF                                 \
+    -DCMAKE_DISABLE_PRECOMPILE_HEADERS=OFF              \
+    -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY:-OFF}" \
+    -DCMAKE_CXX_FLAGS=-gdwarf-4                         \
     ..
   cmake --build . --parallel ${NUM_PROCESSORS}
   abi-dumper libtango.so -o ${base}/libtango-${prefix}.dump -lver ${prefix}
