@@ -56,6 +56,13 @@ void put_device_property(Tango::FileDatabase &db,
     db.DbPutDeviceProperty(property_as_any);
 }
 
+void delete_device_property(Tango::FileDatabase &db, const std::string &device_name, const std::string &property_name)
+{
+    std::vector<std::string> property{device_name, "1", property_name};
+    auto property_as_any = as_any(property);
+    db.DbDeleteDeviceProperty(property_as_any);
+}
+
 std::vector<std::string>
     get_device_property(Tango::FileDatabase &db, const std::string &device_name, const std::string &property_name)
 {
@@ -104,6 +111,197 @@ void _test_string_property_roundtrip(const std::vector<std::string> &property_va
         Tango::FileDatabase db(db_filename);
         assert_device_property(db, device_name, property_name, property_value);
     }
+}
+
+void put_class_property(Tango::FileDatabase &db,
+                        const std::string &class_name,
+                        const std::string &property_name,
+                        const std::vector<std::string> &values)
+{
+    std::vector<std::string> property{class_name, "1", property_name, std::to_string(values.size())};
+    property.insert(property.end(), values.begin(), values.end());
+    auto property_as_any = as_any(property);
+    db.DbPutClassProperty(property_as_any);
+}
+
+void delete_class_property(Tango::FileDatabase &db, const std::string &class_name, const std::string &property_name)
+{
+    std::vector<std::string> property{class_name, "1", property_name};
+    auto property_as_any = as_any(property);
+    db.DbDeleteClassProperty(property_as_any);
+}
+
+std::vector<std::string>
+    get_class_property(Tango::FileDatabase &db, const std::string &class_name, const std::string &property_name)
+{
+    std::vector<std::string> property_query_data{class_name, property_name};
+    auto property_query_as_any = as_any(property_query_data);
+    auto *property_as_any = db.DbGetClassProperty(property_query_as_any);
+    auto property = from_any(*property_as_any);
+    REQUIRE(property.size() > 3);
+    REQUIRE(class_name == property[0]);
+    REQUIRE("1" == property[1]);
+    REQUIRE(property_name == property[2]);
+
+    auto size = std::stoul(property[3].c_str());
+    if(size == 0)
+    {
+        return {};
+    }
+
+    std::vector<std::string> values{std::next(property.begin(), 4), property.end()};
+    REQUIRE(size == values.size());
+
+    return values;
+}
+
+void assert_class_property(Tango::FileDatabase &db,
+                           const std::string &class_name,
+                           const std::string &property_name,
+                           const std::vector<std::string> &property_value)
+{
+    auto property_value_from_db = get_class_property(db, class_name, property_name);
+    REQUIRE(property_value == property_value_from_db);
+}
+
+void put_device_attr_property(Tango::FileDatabase &db,
+                              const std::string &device_name,
+                              const std::string &attribute_name,
+                              const std::string &property_name,
+                              const std::vector<std::string> &values)
+{
+    std::vector<std::string> property{
+        device_name, "1", attribute_name, "1", property_name, std::to_string(values.size())};
+    property.insert(property.end(), values.begin(), values.end());
+    auto property_as_any = as_any(property);
+    db.DbPutDeviceAttributeProperty(property_as_any);
+}
+
+void delete_device_attr_property(Tango::FileDatabase &db,
+                                 const std::string &device_name,
+                                 const std::string &attribute_name,
+                                 const std::string &property_name)
+{
+    std::vector<std::string> property{device_name, attribute_name, property_name};
+    auto property_as_any = as_any(property);
+    db.DbDeleteDeviceAttributeProperty(property_as_any);
+}
+
+std::vector<std::string> get_device_attr_property(Tango::FileDatabase &db,
+                                                  const std::string &device_name,
+                                                  const std::string &attribute_name,
+                                                  const std::string &property_name)
+{
+    std::vector<std::string> property_query_data{device_name, attribute_name};
+    auto property_query_as_any = as_any(property_query_data);
+    auto *property_as_any = db.DbGetDeviceAttributeProperty(property_query_as_any);
+    auto list = from_any(*property_as_any);
+
+    CAPTURE(list);
+
+    REQUIRE(list.size() > 3);
+
+    REQUIRE(device_name == list[0]);
+
+    REQUIRE("1" == list[1]);
+    REQUIRE(attribute_name == list[2]);
+
+    if(list[3] == "0")
+    {
+        return {};
+    }
+
+    REQUIRE("1" == list[3]);
+
+    REQUIRE(list.size() > 6);
+
+    REQUIRE(property_name == list[4]);
+
+    auto size = parse_as<size_t>(list[5]);
+    if(size == 0)
+    {
+        return {};
+    }
+
+    std::vector<std::string> values{std::next(list.begin(), 6), list.end()};
+    REQUIRE(size == values.size());
+
+    return values;
+}
+
+void assert_device_attr_property(Tango::FileDatabase &db,
+                                 const std::string &device_name,
+                                 const std::string &attribute_name,
+                                 const std::string &property_name,
+                                 const std::vector<std::string> &property_values)
+{
+    auto property_value_from_db = get_device_attr_property(db, device_name, attribute_name, property_name);
+    REQUIRE(property_value_from_db == property_values);
+}
+
+void put_class_attr_property(Tango::FileDatabase &db,
+                             const std::string &class_name,
+                             const std::string &attribute_name,
+                             const std::string &property_name,
+                             const std::vector<std::string> &values)
+{
+    std::vector<std::string> property{
+        class_name, "1", attribute_name, "1", property_name, std::to_string(values.size())};
+    property.insert(property.end(), values.begin(), values.end());
+    auto property_as_any = as_any(property);
+    db.DbPutClassAttributeProperty(property_as_any);
+}
+
+std::vector<std::string> get_class_attr_property(Tango::FileDatabase &db,
+                                                 const std::string &class_name,
+                                                 const std::string &attribute_name,
+                                                 const std::string &property_name)
+{
+    std::vector<std::string> property_query_data{class_name, attribute_name};
+    auto property_query_as_any = as_any(property_query_data);
+    auto *property_as_any = db.DbGetClassAttributeProperty(property_query_as_any);
+    auto list = from_any(*property_as_any);
+
+    CAPTURE(list);
+
+    REQUIRE(list.size() > 3);
+
+    REQUIRE(class_name == list[0]);
+
+    REQUIRE("1" == list[1]);
+    REQUIRE(attribute_name == list[2]);
+
+    if(list[3] == "0")
+    {
+        return {};
+    }
+
+    REQUIRE("1" == list[3]);
+
+    REQUIRE(list.size() > 6);
+
+    REQUIRE(property_name == list[4]);
+
+    auto size = std::stoul(list[5].c_str());
+    if(size == 0)
+    {
+        return {};
+    }
+
+    std::vector<std::string> values{std::next(list.begin(), 6), list.end()};
+    REQUIRE(size == values.size());
+
+    return values;
+}
+
+void assert_class_attr_property(Tango::FileDatabase &db,
+                                const std::string &class_name,
+                                const std::string &attribute_name,
+                                const std::string &property_name,
+                                const std::vector<std::string> &property_values)
+{
+    auto property_value_from_db = get_class_attr_property(db, class_name, attribute_name, property_name);
+    REQUIRE(property_value_from_db == property_values);
 }
 
 std::string get_example_db()
@@ -242,6 +440,144 @@ SCENARIO("Check that unimplemented calls throw")
                 REQUIRE_THROWS_MATCHES(
                     func(), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_NotSupported));
             }
+        }
+    }
+}
+
+SCENARIO("Check that DbPutDeviceProperty")
+{
+    GIVEN("does nothing")
+    {
+        CORBA::Any any;
+        auto db = Tango::FileDatabase(get_example_db());
+
+        std::string device_name{"unknownDevice"};
+        std::string property_name{"someProp"};
+        std::vector<std::string> property_value{"someValue"};
+
+        WHEN("given a non matching device")
+        {
+            put_device_property(db, device_name, property_name, property_value);
+            auto results = get_device_property(db, device_name, property_name);
+            REQUIRE(results.empty());
+        }
+    }
+}
+
+SCENARIO("Check that DbDeleteDeviceProperty")
+{
+    GIVEN("works as expected")
+    {
+        std::string device_name{"test/device/01"};
+        std::string property_name{"property"};
+        std::vector<std::string> property_value{"someValue"};
+
+        const auto db_filename = create_dbfile(device_name);
+        Tango::FileDatabase db(db_filename);
+
+        WHEN("adding and deleting a property")
+        {
+            put_device_property(db, device_name, property_name, property_value);
+            delete_device_property(db, device_name, property_name);
+            auto results = get_device_property(db, device_name, property_name);
+            REQUIRE(results.empty());
+        }
+    }
+}
+
+SCENARIO("Check that DbXXXClassProperty")
+{
+    GIVEN("works as expected")
+    {
+        std::string device_name{"test/device/01"};
+        std::string property_name{"property"};
+        std::vector<std::string> property_value{"someValue"};
+
+        const auto db_filename = create_dbfile(device_name);
+
+        WHEN("adding and deleting a property")
+        {
+            std::string class_name{"class"};
+
+            {
+                Tango::FileDatabase db(db_filename);
+                put_class_property(db, class_name, property_name, property_value);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                assert_class_property(db, class_name, property_name, property_value);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                delete_class_property(db, class_name, property_name);
+                auto results = get_class_property(db, class_name, property_name);
+                REQUIRE(results.empty());
+            }
+        }
+    }
+}
+
+SCENARIO("Check that DbXXXDeviceAttributeProperty")
+{
+    GIVEN("works as expected")
+    {
+        std::string device_name{"test/device/01"};
+        std::string attribute_name{"someAttr"};
+        std::string property_name{"property"};
+        std::vector<std::string> property_value{"someValue"};
+
+        const auto db_filename = create_dbfile(device_name);
+
+        WHEN("adding and deleting a property")
+        {
+            {
+                Tango::FileDatabase db(db_filename);
+                put_device_attr_property(db, device_name, attribute_name, property_name, property_value);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                assert_device_attr_property(db, device_name, attribute_name, property_name, property_value);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                delete_device_attr_property(db, device_name, attribute_name, property_name);
+                auto results = get_device_attr_property(db, device_name, attribute_name, property_name);
+                REQUIRE(results.empty());
+            }
+        }
+    }
+}
+
+SCENARIO("Check that DbXXXClassAttributeProperty")
+{
+    GIVEN("works as expected")
+    {
+        std::string device_name{"test/device/01"};
+        std::string attribute_name{"someAttr"};
+        std::string property_name{"property"};
+        std::vector<std::string> property_value{"someValue"};
+
+        const auto db_filename = create_dbfile(device_name);
+
+        WHEN("adding and deleting a property")
+        {
+            std::string class_name{"class"};
+
+            {
+                Tango::FileDatabase db(db_filename);
+                put_class_attr_property(db, class_name, attribute_name, property_name, property_value);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                assert_class_attr_property(db, class_name, attribute_name, property_name, property_value);
+            }
+
+            // delete_class_attr_property can not be implemented as DbDeleteClassAttributeProperty is not implemented
         }
     }
 }
