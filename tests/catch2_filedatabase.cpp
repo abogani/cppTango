@@ -200,3 +200,48 @@ SCENARIO("A file with a device and a string property whose values has newlines")
         }
     }
 }
+
+SCENARIO("Check that unimplemented calls throw")
+{
+    GIVEN("a filedatabase from the documentation")
+    {
+        auto db = Tango::FileDatabase(get_example_db());
+
+        CORBA::Any any;
+        std::vector<std::function<void(void)>> funcs = {
+            std::bind(&Tango::FileDatabase::DbDeleteClassAttributeProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbImportDevice, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbExportDevice, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbUnExportDevice, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbAddDevice, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbDeleteDevice, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbAddServer, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbDeleteServer, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbExportServer, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbPutProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbDeleteProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetAliasDevice, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetDeviceAlias, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetAttributeAlias, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetDeviceAliasList, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetAttributeAliasList, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetClassPipeProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbGetDevicePipeProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbDeleteClassPipeProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbDeleteDevicePipeProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbPutClassPipeProperty, &db, std::ref(any)),
+            std::bind(&Tango::FileDatabase::DbPutDevicePipeProperty, &db, std::ref(any))};
+
+        // using GENERATE_REF directly does not work
+        auto func = GENERATE_REF(Catch::Generators::from_range(funcs));
+
+        AND_GIVEN("an unsupported function")
+        {
+            WHEN("we always throw")
+            {
+                REQUIRE_THROWS_MATCHES(
+                    func(), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_NotSupported));
+            }
+        }
+    }
+}
