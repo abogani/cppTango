@@ -514,12 +514,8 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
                                                              Tango::DevSource source,
                                                              const Tango::ClntIdent &cl_id)
 {
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_4Impl::read_attributes_4 arrived for dev " << get_name() << ", att[0] = " << names[0]
                     << std::endl;
@@ -784,12 +780,8 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_4Impl::write_attributes_4 arrived" << std::endl;
 
@@ -835,12 +827,8 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_4Impl::set_attribute_config_4 arrived" << std::endl;
 
@@ -893,12 +881,8 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_4Impl::write_read_attributes_4 arrived" << std::endl;
 

@@ -979,12 +979,8 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_5Impl::set_pipe_config_5 arrived for " << new_conf.length() << " pipe(s)" << std::endl;
 
@@ -1081,13 +1077,8 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
 
 Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::ClntIdent &cl_id)
 {
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto scope =
-        TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", name}}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", name}}));
 
     TANGO_LOG_DEBUG << "Device_5Impl::read_pipe_5 arrived for pipe " << name << std::endl;
     DevPipeData *back = nullptr;
@@ -1321,13 +1312,8 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
 
 void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango::ClntIdent &cl_id)
 {
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto scope = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(
-        TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", pi_value.name.in()}}));
 
     std::string pipe_name(pi_value.name.in());
     TANGO_LOG_DEBUG << "Device_5Impl::write_pipe_5 arrived for pipe " << pipe_name << std::endl;
@@ -1475,13 +1461,8 @@ Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto scope = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(
-        TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", pi_value.name.in()}}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", pi_value.name.in()}}));
 
     std::string pipe_name(pi_value.name.in());
     TANGO_LOG_DEBUG << "Device_5Impl::write_read_pipe_5 arrived for pipe " << pipe_name << std::endl;
