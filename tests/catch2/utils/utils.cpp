@@ -33,69 +33,9 @@ namespace TangoTest
 
 namespace
 {
-// Keeps track of the log file environment variable
-struct LogFileEnvVar
-{
-    // This environment variable is used to communicate the current
-    constexpr static const char *k_env_var = "TANGO_TEST_LOG_FILE";
-
-    LogFileEnvVar() = default;
-    LogFileEnvVar(const LogFileEnvVar &) = delete;
-    LogFileEnvVar(LogFileEnvVar &&) = delete;
-    LogFileEnvVar &operator=(const LogFileEnvVar &) = delete;
-    LogFileEnvVar &operator=(LogFileEnvVar &&) = delete;
-
-    ~LogFileEnvVar()
-    {
-        if(is_in_env)
-        {
-            clear();
-        }
-    }
-
-    // Set the log file environment variable to log_file_path.
-    //
-    // After this is called, the buffer is "part of the environment".
-    void set(std::string_view log_file_path)
-    {
-        if(is_in_env)
-        {
-            clear();
-        }
-
-        std::stringstream ss;
-        ss << k_env_var << "=" << log_file_path;
-        strncpy(buffer, ss.str().c_str(), sizeof(buffer));
-
-        // Unlike setenv, putenv works on Windows and *nixes so we are using it
-        // here.
-        putenv(buffer);
-
-        is_in_env = true;
-    }
-
-    // Set the log file environment variable to log_file_path.
-    //
-    // After this is called, the buffer is not "part of the environment".
-    void clear()
-    {
-        char clear_buffer[32];
-        std::stringstream ss;
-        ss << k_env_var << "=";
-        strncpy(clear_buffer, ss.str().c_str(), sizeof(clear_buffer));
-        putenv(clear_buffer);
-
-        is_in_env = false;
-    }
-
-    // This buffer becomes "part of the environment" after we call putenv, and
-    // we cannot touch it until we have removed in from the environment (by
-    // calling putenv again).
-    char buffer[4096];
-    bool is_in_env = false; // Set if the buffer is "part of the envionment"
-};
-
+constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 constexpr const char *k_log_directory_path = TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH;
+std::string g_current_log_file_path;
 } // namespace
 
 std::string make_nodb_fqtrl(int port, std::string_view device_name)
@@ -103,6 +43,11 @@ std::string make_nodb_fqtrl(int port, std::string_view device_name)
     std::stringstream ss;
     ss << "tango://127.0.0.1:" << port << "/" << device_name << "#dbase=no";
     return ss.str();
+}
+
+const char *get_current_log_file_path()
+{
+    return g_current_log_file_path.c_str();
 }
 
 Context::Context(const std::string &instance_name,
@@ -120,6 +65,13 @@ Context::Context(const std::string &instance_name,
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
                    << "\"" << tmpl_name << "_" << idlversion;
 
+    std::string log_file_env = []()
+    {
+        std::stringstream ss;
+        ss << k_log_file_env_var << "=" << g_current_log_file_path;
+        return ss.str();
+    }();
+    env.emplace_back(log_file_env.c_str());
     // append trailing NULL
     env.emplace_back(nullptr);
 
@@ -146,8 +98,6 @@ void Context::stop_server(std::chrono::milliseconds timeout)
 class TangoListener : public Catch::EventListenerBase
 {
     using Catch::EventListenerBase::EventListenerBase;
-
-    LogFileEnvVar m_log_file_env_var;
 
     void testRunStarting(const Catch::TestRunInfo &info) override
     {
@@ -187,17 +137,16 @@ class TangoListener : public Catch::EventListenerBase
                 std::strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", now);
             }
 
-            std::string log_file_path = [&]()
+            g_current_log_file_path = [&]()
             {
                 std::stringstream ss;
                 ss << k_log_directory_path << "/" << detail::g_log_filename_prefix << timestamp << ".log";
                 return ss.str();
             }();
 
-            std::cout << "Logging to file " << log_file_path << "\n";
+            std::cout << "Logging to file " << g_current_log_file_path << "\n";
 
-            m_log_file_env_var.set(log_file_path);
-            detail::setup_topic_log_appender("test");
+            detail::setup_topic_log_appender("test", g_current_log_file_path.c_str());
         }
 
         TANGO_LOG_INFO << "Test run \"" << info.name << "\" starting";
@@ -212,15 +161,14 @@ class TangoListener : public Catch::EventListenerBase
     {
         if(g_options.log_file_per_test_case)
         {
-            std::string log_file_path = [&]()
+            g_current_log_file_path = [&]()
             {
                 std::stringstream ss;
                 ss << k_log_directory_path << "/" << detail::filename_from_test_case_name(info.name, ".log");
                 return ss.str();
             }();
 
-            m_log_file_env_var.set(log_file_path);
-            detail::setup_topic_log_appender("test");
+            detail::setup_topic_log_appender("test", g_current_log_file_path.c_str());
         }
 
         TANGO_LOG_INFO << "Test case \"" << info.name << "\" starting";
@@ -292,7 +240,7 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
     return filename;
 }
 
-void setup_topic_log_appender(std::string_view topic)
+void setup_topic_log_appender(std::string_view topic, const char *filename)
 {
     constexpr const char *k_appender_name = "test-log-file";
 
@@ -301,10 +249,14 @@ void setup_topic_log_appender(std::string_view topic)
 
     logger->remove_appender(k_appender_name);
 
-    const char *filename = getenv(LogFileEnvVar::k_env_var);
     if(filename == nullptr)
     {
-        return;
+        filename = getenv(k_log_file_env_var);
+        if(filename == nullptr)
+        {
+            std::cout << k_log_file_env_var << " is unset.  Not logging.";
+            return;
+        }
     }
 
     auto *appender = new log4tango::FileAppender(k_appender_name, filename);
