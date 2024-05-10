@@ -89,6 +89,11 @@ class Context
      */
     std::string get_class_name();
 
+    /**
+     * Get the server redirection file
+     */
+    const std::string &get_redirect_file() const;
+
   private:
     std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;

@@ -186,6 +186,11 @@ std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
 
+const std::string &Context::get_redirect_file() const
+{
+    return m_server.get_redirect_file();
+}
+
 void Context::stop_server(std::chrono::milliseconds timeout)
 {
     m_server.stop(timeout);
