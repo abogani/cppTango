@@ -5,45 +5,43 @@
 
 #include <tango/internal/utils.h>
 
-#if defined(TANGO_USE_TELEMETRY)
+#include <iostream>
+#include <regex>
+#include <type_traits>
 
-  #include <iostream>
-  #include <regex>
-  #include <type_traits>
+#include <opentelemetry/trace/span.h>
+#include <opentelemetry/trace/scope.h>
+#include <opentelemetry/trace/context.h>
+#include <opentelemetry/trace/provider.h>
+#include <opentelemetry/trace/span_context.h>
 
-  #include <opentelemetry/trace/span.h>
-  #include <opentelemetry/trace/scope.h>
-  #include <opentelemetry/trace/context.h>
-  #include <opentelemetry/trace/provider.h>
-  #include <opentelemetry/trace/span_context.h>
+#include <opentelemetry/sdk/version/version.h>
+#include <opentelemetry/sdk/resource/resource.h>
+#include <opentelemetry/sdk/trace/processor.h>
+#include <opentelemetry/sdk/trace/batch_span_processor_options.h>
+#include <opentelemetry/sdk/trace/batch_span_processor_factory.h>
+#include <opentelemetry/sdk/trace/simple_processor_factory.h>
+#include <opentelemetry/sdk/trace/tracer_provider.h>
+#include <opentelemetry/sdk/trace/tracer_provider_factory.h>
+#include <opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h>
+#include <opentelemetry/exporters/otlp/otlp_http_exporter_factory.h>
+#include <opentelemetry/exporters/ostream/span_exporter_factory.h>
 
-  #include <opentelemetry/sdk/version/version.h>
-  #include <opentelemetry/sdk/resource/resource.h>
-  #include <opentelemetry/sdk/trace/processor.h>
-  #include <opentelemetry/sdk/trace/batch_span_processor_options.h>
-  #include <opentelemetry/sdk/trace/batch_span_processor_factory.h>
-  #include <opentelemetry/sdk/trace/simple_processor_factory.h>
-  #include <opentelemetry/sdk/trace/tracer_provider.h>
-  #include <opentelemetry/sdk/trace/tracer_provider_factory.h>
-  #include <opentelemetry/exporters/otlp/otlp_grpc_exporter_factory.h>
-  #include <opentelemetry/exporters/otlp/otlp_http_exporter_factory.h>
-  #include <opentelemetry/exporters/ostream/span_exporter_factory.h>
+#include <opentelemetry/context/propagation/global_propagator.h>
+#include <opentelemetry/trace/propagation/http_trace_context.h>
 
-  #include <opentelemetry/context/propagation/global_propagator.h>
-  #include <opentelemetry/trace/propagation/http_trace_context.h>
+#include <opentelemetry/sdk/logs/processor.h>
+#include <opentelemetry/sdk/logs/simple_log_record_processor_factory.h>
+#include <opentelemetry/sdk/logs/batch_log_record_processor_options.h>
+#include <opentelemetry/sdk/logs/batch_log_record_processor_factory.h>
 
-  #include <opentelemetry/sdk/logs/processor.h>
-  #include <opentelemetry/sdk/logs/simple_log_record_processor_factory.h>
-  #include <opentelemetry/sdk/logs/batch_log_record_processor_options.h>
-  #include <opentelemetry/sdk/logs/batch_log_record_processor_factory.h>
-
-  #include <opentelemetry/logs/provider.h>
-  #include <opentelemetry/sdk/logs/logger_provider.h>
-  #include <opentelemetry/sdk/logs/logger_provider_factory.h>
-  #include <opentelemetry/exporters/ostream/log_record_exporter.h>
-  #include <opentelemetry/exporters/ostream/log_record_exporter_factory.h>
-  #include <opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_factory.h>
-  #include <opentelemetry/exporters/otlp/otlp_http_log_record_exporter_factory.h>
+#include <opentelemetry/logs/provider.h>
+#include <opentelemetry/sdk/logs/logger_provider.h>
+#include <opentelemetry/sdk/logs/logger_provider_factory.h>
+#include <opentelemetry/exporters/ostream/log_record_exporter.h>
+#include <opentelemetry/exporters/ostream/log_record_exporter_factory.h>
+#include <opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_factory.h>
+#include <opentelemetry/exporters/otlp/otlp_http_log_record_exporter_factory.h>
 
 namespace Tango::telemetry
 {
@@ -222,19 +220,19 @@ Configuration::Exporter Configuration::get_exporter_from_env(const char *env_var
     switch(exporter_type)
     {
     case Exporter::grpc:
-  #if !defined(TANGO_TELEMETRY_USE_GRPC)
+#if !defined(TANGO_TELEMETRY_USE_GRPC)
         TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs,
                               "Requested grpc trace exporter, but compiled without GRPC support.");
-  #else
+#else
         break;
-  #endif
+#endif
     case Exporter::http:
-  #if !defined(TANGO_TELEMETRY_USE_HTTP)
+#if !defined(TANGO_TELEMETRY_USE_HTTP)
         TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs,
                               "Requested http trace exporter, but compiled without HTTP support.");
-  #else
+#else
         break;
-  #endif
+#endif
     case Exporter::console:
         // nothing to check
         break;
@@ -740,23 +738,23 @@ class InterfaceImplementation final
         switch(exporter_type)
         {
         case Configuration::Exporter::grpc:
-  #if defined(TANGO_TELEMETRY_USE_GRPC)
+#if defined(TANGO_TELEMETRY_USE_GRPC)
         {
             opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;
             opts.endpoint = cfg.extract_grpc_host_port(endpoint);
             opts.use_ssl_credentials = false;
             exporter = opentelemetry::exporter::otlp::OtlpGrpcExporterFactory::Create(opts);
         }
-  #endif
+#endif
         break;
         case Configuration::Exporter::http:
-  #if defined(TANGO_TELEMETRY_USE_HTTP)
+#if defined(TANGO_TELEMETRY_USE_HTTP)
         {
             opentelemetry::exporter::otlp::OtlpHttpExporterOptions opts;
             opts.url = endpoint;
             exporter = opentelemetry::exporter::otlp::OtlpHttpExporterFactory::Create(opts);
         }
-  #endif
+#endif
         break;
         case Configuration::Exporter::console:
             if(endpoint == "cout")
@@ -1093,27 +1091,27 @@ class Appender : public log4tango::Appender
         switch(exporter_type)
         {
         case Configuration::Exporter::grpc:
-  #if defined(TANGO_TELEMETRY_USE_GRPC)
+#if defined(TANGO_TELEMETRY_USE_GRPC)
         {
-    #if defined(TANGO_TELEMETRY_EXPORTER_OPTION_NEW)
+  #if defined(TANGO_TELEMETRY_EXPORTER_OPTION_NEW)
             opentelemetry::exporter::otlp::OtlpGrpcLogRecordExporterOptions opts;
-    #else
+  #else
             opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;
-    #endif
+  #endif
             opts.endpoint = Configuration::extract_grpc_host_port(endpoint);
             opts.use_ssl_credentials = false;
             exporter = opentelemetry::exporter::otlp::OtlpGrpcLogRecordExporterFactory::Create(opts);
         }
-  #endif
+#endif
         break;
         case Configuration::Exporter::http:
-  #if defined(TANGO_TELEMETRY_USE_HTTP)
+#if defined(TANGO_TELEMETRY_USE_HTTP)
         {
             opentelemetry::exporter::otlp::OtlpHttpLogRecordExporterOptions opts;
             opts.url = endpoint;
             exporter = opentelemetry::exporter::otlp::OtlpHttpLogRecordExporterFactory::Create(opts);
         }
-  #endif
+#endif
         break;
         case Configuration::Exporter::console:
             if(endpoint == "cout")
@@ -1770,5 +1768,3 @@ Tango::telemetry::InterfacePtr InterfaceFactory::create(const Configuration &cfg
 }
 
 } // namespace Tango::telemetry
-
-#endif // TANGO_USE_TELEMETRY
