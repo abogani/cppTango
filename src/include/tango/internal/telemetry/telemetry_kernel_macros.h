@@ -102,6 +102,29 @@ class SilentKernelScope
           throw;                                                                                               \
       }
 
+    /// Helper macros for tango RPC starting points
+    /// ATTRS is an initializer list enclosed in `()`, pass `({})` for no additional attributes
+  #define TANGO_TELEMETRY_TRACE_BEGIN(ATTRS)                                              \
+      auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(Tango::telemetry::Attributes ATTRS); \
+      auto scope = TANGO_TELEMETRY_SCOPE(span);                                           \
+      TANGO_TELEMETRY_TRY
+
+    /// Helper macros for tango RPC starting points inside the kernel part of the device server
+    /// ATTRS is an initializer list enclosed in `()`, pass `({})` for no additional attributes
+  #define TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(ATTRS)                                                              \
+      auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());                            \
+      auto scope =                                                                                               \
+          TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, Tango::telemetry::Attributes ATTRS, cl_id); \
+      TANGO_TELEMETRY_TRY
+
+  #define TANGO_TELEMETRY_TRACE_END() TANGO_TELEMETRY_CATCH
+
+#else
+
+  #define TANGO_TELEMETRY_TRACE_BEGIN(ATTRS) static_cast<void>(0)
+  #define TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(ATTRS) static_cast<void>(0)
+  #define TANGO_TELEMETRY_TRACE_END() static_cast<void>(0)
+
 #endif // TANGO_USE_TELEMETRY
 
 #endif // TANGO_COMMON_TELEMETRY_KERNEL_MACROS_H

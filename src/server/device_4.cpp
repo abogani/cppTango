@@ -456,21 +456,11 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
                                           Tango::DevSource source,
                                           const Tango::ClntIdent &cl_id)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    //--------------------------------------------------------------------------------
+    // Reference comment for multiple locations:
     // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
     // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
     // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
-    //--------------------------------------------------------------------------------
-    // attach the telemetry interface of this device to the thread executing this code
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    // extract W3C trace context headers then start a 'server' span to indicate that
-    // we are handling a RPC (OpenTelemetry convention)
-    auto scope =
-        TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {{"tango.operation.argument", in_cmd}}, cl_id);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", in_cmd}}));
 
     TANGO_LOG_DEBUG << "Device_4Impl::command_inout_4 arrived, source = " << source << ", command = " << in_cmd
                     << std::endl;

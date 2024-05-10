@@ -5801,16 +5801,8 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
 
 void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()},
-                                          {"tango.operation.argument", std::string(attr_str)}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN((Tango::telemetry::Attributes{{"tango.operation.target", dev_name()},
+                                                              {"tango.operation.argument", std::string(attr_str)}}));
 
     AttributeValueList *attr_value_list = nullptr;
     AttributeValueList_3 *attr_value_list_3 = nullptr;
@@ -5905,10 +5897,7 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
         delete attr_value_list;
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *&av_4)
