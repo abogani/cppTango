@@ -1204,14 +1204,7 @@ void Group::disable(const std::string &n, bool fwd)
 //-----------------------------------------------------------------------------
 bool Group::ping(bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
@@ -1252,15 +1245,7 @@ void Group::set_timeout_millis(int tmo_ms)
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout(const std::string &c, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", c}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = command_inout_asynch_i(c, false, fwd, -1);
     return command_inout_reply_i(id, 0);
@@ -1271,15 +1256,7 @@ GroupCmdReplyList Group::command_inout(const std::string &c, bool fwd)
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout(const std::string &c, const DeviceData &d, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", c}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = command_inout_asynch_i(c, d, false, fwd, -1);
     return command_inout_reply_i(id, 0);
@@ -1290,15 +1267,7 @@ GroupCmdReplyList Group::command_inout(const std::string &c, const DeviceData &d
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout(const std::string &c, const std::vector<DeviceData> &d, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", c}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = command_inout_asynch_i(c, d, false, fwd, -1);
     return command_inout_reply_i(id, 0);
@@ -1309,15 +1278,7 @@ GroupCmdReplyList Group::command_inout(const std::string &c, const std::vector<D
 //-----------------------------------------------------------------------------
 long Group::command_inout_asynch(const std::string &c, bool fgt, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", c}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return command_inout_asynch_i(c, fgt, fwd, -1);
 
@@ -1365,15 +1326,7 @@ long Group::command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, lon
 //-----------------------------------------------------------------------------
 long Group::command_inout_asynch(const std::string &c, const DeviceData &d, bool fgt, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", c}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return command_inout_asynch_i(c, d, fgt, fwd, -1);
 
@@ -1409,15 +1362,7 @@ long Group::command_inout_asynch_i(const std::string &c, const DeviceData &d, bo
 //-----------------------------------------------------------------------------
 long Group::command_inout_asynch(const std::string &c, const std::vector<DeviceData> &d, bool fgt, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", c}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return command_inout_asynch_i(c, d, fgt, fwd, -1);
 
@@ -1472,14 +1417,7 @@ long Group::command_inout_asynch_i(const std::string &c, const std::vector<Devic
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout_reply(long ari, long tmo)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return command_inout_reply_i(ari, tmo);
 
@@ -1530,15 +1468,7 @@ GroupCmdReplyList Group::command_inout_reply_i(long ari, long tmo)
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attribute(const std::string &a, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", a}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = read_attribute_asynch_i(a, fwd, -1);
     return read_attribute_reply_i(id, 0);
@@ -1549,14 +1479,7 @@ GroupAttrReplyList Group::read_attribute(const std::string &a, bool fwd)
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attributes(const std::vector<std::string> &al, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = read_attributes_asynch_i(al, fwd, -1);
     return read_attributes_reply_i(id, 0);
@@ -1567,15 +1490,7 @@ GroupAttrReplyList Group::read_attributes(const std::vector<std::string> &al, bo
 //-----------------------------------------------------------------------------
 long Group::read_attribute_asynch(const std::string &a, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", a}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return read_attribute_asynch_i(a, fwd, -1);
 
@@ -1620,14 +1535,7 @@ long Group::read_attribute_asynch_i(const std::string &a, bool fwd, long id)
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attribute_reply(long ari, long tmo)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return read_attribute_reply_i(ari, tmo);
 
@@ -1678,14 +1586,7 @@ GroupAttrReplyList Group::read_attribute_reply_i(long ari, long tmo)
 //-----------------------------------------------------------------------------
 long Group::read_attributes_asynch(const std::vector<std::string> &al, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return read_attributes_asynch_i(al, fwd, -1);
 
@@ -1718,14 +1619,7 @@ long Group::read_attributes_asynch_i(const std::vector<std::string> &al, bool fw
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attributes_reply(long ari, long tmo)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return read_attributes_reply_i(ari, tmo);
 
@@ -1776,15 +1670,7 @@ GroupAttrReplyList Group::read_attributes_reply_i(long ari, long tmo)
 //-----------------------------------------------------------------------------
 GroupReplyList Group::write_attribute(const DeviceAttribute &d, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", d.name}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = write_attribute_asynch_i(d, fwd, -1);
     return write_attribute_reply_i(id, 0);
@@ -1795,14 +1681,7 @@ GroupReplyList Group::write_attribute(const DeviceAttribute &d, bool fwd)
 //-----------------------------------------------------------------------------
 GroupReplyList Group::write_attribute(const std::vector<DeviceAttribute> &d, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     long id = write_attribute_asynch_i(d, fwd, -1);
     return write_attribute_reply_i(id, 0);
@@ -1813,15 +1692,7 @@ GroupReplyList Group::write_attribute(const std::vector<DeviceAttribute> &d, boo
 //-----------------------------------------------------------------------------
 long Group::write_attribute_asynch(const DeviceAttribute &d, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.argument", d.name}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return write_attribute_asynch_i(d, fwd, -1);
 
@@ -1866,14 +1737,7 @@ long Group::write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long id
 //-----------------------------------------------------------------------------
 long Group::write_attribute_asynch(const std::vector<DeviceAttribute> &d, bool fwd)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return write_attribute_asynch_i(d, fwd, -1);
 
@@ -1921,14 +1785,7 @@ long Group::write_attribute_asynch_i(const std::vector<DeviceAttribute> &d, bool
 //-----------------------------------------------------------------------------
 GroupReplyList Group::write_attribute_reply(long ari, long tmo)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN({});
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
 
     return write_attribute_reply_i(ari, tmo);
 
