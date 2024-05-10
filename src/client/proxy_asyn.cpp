@@ -185,10 +185,7 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
 
     return id;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -482,10 +479,7 @@ DeviceData Connection::command_inout_reply(long id)
 
     return data_out;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -797,10 +791,7 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
 
     return data_out;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -912,10 +903,7 @@ long DeviceProxy::read_attributes_asynch(const std::vector<std::string> &attr_na
 
     return id;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 long DeviceProxy::read_attribute_asynch(const std::string &name)
@@ -1138,10 +1126,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
 
     return nullptr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1348,10 +1333,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
     }
     return nullptr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1602,10 +1584,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
 
     return dev_attr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1847,10 +1826,7 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 
     return dev_attr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -2168,10 +2144,7 @@ long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &at
 
     return id;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
@@ -2265,10 +2238,7 @@ long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
 
     return id;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -2416,10 +2386,7 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
 
     remove_asyn_request(id);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -2531,10 +2498,7 @@ void DeviceProxy::write_attributes_reply(long id)
 
     remove_asyn_request(id);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------

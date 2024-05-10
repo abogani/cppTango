@@ -498,10 +498,7 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
     store_in_bb = false;
     return (command_inout_2(in_cmd, in_data, source));
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -770,10 +767,7 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
 
     return aid.data_4;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -821,10 +815,7 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
 
     return write_attributes_34(nullptr, &values);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -881,10 +872,7 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
     store_in_bb = false;
     return set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -969,10 +957,7 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
 
     return read_val_ptr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 } // namespace Tango

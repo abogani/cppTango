@@ -1486,10 +1486,7 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
 
     return data_out;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1700,10 +1697,7 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
     CORBA::Any_var tmp;
     return tmp;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -4524,10 +4518,7 @@ void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
@@ -4745,10 +4736,7 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5009,10 +4997,7 @@ void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5163,10 +5148,7 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
 
     return dev_pipe;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5307,10 +5289,7 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
     dev_pipe.get_root_blob().reset_insert_ctr();
     delete tmp_ptr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5454,10 +5433,7 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
 
     return r_dev_pipe;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5676,10 +5652,7 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
 
     return (dev_attr);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5793,10 +5766,7 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
 
     return (dev_attr);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr)
@@ -5966,10 +5936,7 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *
         av_4->err_list[nb_except].severity = Tango::ERR;
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *&av_5)
@@ -6038,10 +6005,7 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
         av_5->err_list[nb_except].severity = Tango::ERR;
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -6371,10 +6335,7 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -6654,10 +6615,7 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -6800,10 +6758,7 @@ void DeviceProxy::write_attribute(const AttributeValueList &attr_val)
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
@@ -6954,10 +6909,7 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
         }
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -9417,10 +9369,7 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
 
     return (ret_dev_attr);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -9687,10 +9636,7 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
 
     return (dev_attr);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------

@@ -373,10 +373,7 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
 
     return aid.data_5;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -527,10 +524,7 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
 
     return read_val_ptr;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -711,10 +705,7 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
 
     return set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, idl_version);
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -1067,10 +1058,7 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
         throw;
     }
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1313,10 +1301,7 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
     TANGO_LOG_DEBUG << "Leaving Device_5Impl::read_pipe_5" << std::endl;
     return back;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1465,10 +1450,7 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
 
     TANGO_LOG_DEBUG << "Leaving Device_5Impl::write_pipe_5" << std::endl;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1532,10 +1514,7 @@ Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi
 
     return back;
 
-#if defined(TANGO_USE_TELEMETRY)
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_CATCH;
-#endif
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 } // namespace Tango
