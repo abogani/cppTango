@@ -4392,15 +4392,7 @@ AttributeInfoEx DeviceProxy::get_attribute_config(const std::string &attr_string
 
 void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    // start a 'client' span to initiate a RPC (OpenTelemetry convention).
-    // use the current telemetry interface or the default one if none.
-    Tango::telemetry::Attributes attrs = {{"tango.operation.target", dev_name()}};
-    auto span = TANGO_TELEMETRY_KERNEL_CLIENT_SPAN(attrs);
-    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    // do our best to catch and trace any exception
-    TANGO_TELEMETRY_TRY;
-#endif
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
 
     AttributeConfigList attr_config_list;
     DevVarStringArray attr_list;
