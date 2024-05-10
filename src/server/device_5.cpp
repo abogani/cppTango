@@ -123,11 +123,8 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
                                                              Tango::DevSource source,
                                                              const Tango::ClntIdent &cl_id)
 {
-#if defined(TANGO_USE_TELEMETRY)
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_5Impl::read_attributes_5 arrived for dev " << get_name() << ", att[0] = " << names[0]
                     << std::endl;
@@ -393,11 +390,8 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_5Impl::write_read_attributes_5 arrived" << std::endl;
 
@@ -656,11 +650,8 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
 {
     AutoTangoMonitor sync(this, true);
 
-#if defined(TANGO_USE_TELEMETRY)
-    auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
-    TANGO_TELEMETRY_TRY;
-#endif
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
 
     TANGO_LOG_DEBUG << "Device_5Impl::set_attribute_config_5 arrived" << std::endl;
 
