@@ -119,11 +119,15 @@ class SilentKernelScope
 
   #define TANGO_TELEMETRY_TRACE_END() TANGO_TELEMETRY_CATCH
 
+  #define TANGO_TELEMETRY_TRACK_BAD_ATTR(ATTR) bad_attributes.emplace_back(ATTR);
+
 #else
 
   #define TANGO_TELEMETRY_TRACE_BEGIN(ATTRS) static_cast<void>(0)
   #define TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(ATTRS) static_cast<void>(0)
   #define TANGO_TELEMETRY_TRACE_END() static_cast<void>(0)
+
+  #define TANGO_TELEMETRY_TRACK_BAD_ATTR(ATTR) static_cast<void>(0)
 
 #endif // TANGO_USE_TELEMETRY
 
