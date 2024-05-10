@@ -42,9 +42,7 @@
 #include <tango/server/tango_clock.h>
 #include <tango/common/git_revision.h>
 #include <tango/server/logging.h>
-#if defined(TANGO_USE_TELEMETRY)
-  #include <tango/internal/telemetry/telemetry_kernel_macros.h>
-#endif
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 namespace Tango
 {

@@ -50,9 +50,7 @@
 #include <chrono>
 #include <memory>
 
-#if defined(TANGO_USE_TELEMETRY)
-  #include <tango/internal/telemetry/telemetry_kernel_macros.h>
-#endif
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 using namespace CORBA;
 
