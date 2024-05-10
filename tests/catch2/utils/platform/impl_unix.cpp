@@ -19,6 +19,8 @@
 // Common platform implementation for the Unix-like platforms we support, i.e.
 // Linux and macOS.
 
+extern char **environ;
+
 namespace TangoTest::platform
 {
 
@@ -104,6 +106,7 @@ void init()
 }
 
 StartServerResult start_server(const std::vector<const char *> &args,
+                               const std::vector<const char *> &env,
                                const std::string &redirect_filename,
                                const std::string &ready_string,
                                std::chrono::milliseconds timeout)
@@ -158,6 +161,8 @@ StartServerResult start_server(const std::vector<const char *> &args,
         }
 
         unix::kill_self_on_parent_death(ppid);
+
+        environ = (char **) env.data();
 
         if(execv(k_test_server_binary_path, (char *const *) args.data()) == -1)
         {

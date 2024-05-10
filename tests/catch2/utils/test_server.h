@@ -49,6 +49,7 @@ class TestServer
      */
     void start(const std::string &instance_name,
                std::vector<const char *> extra_args,
+               std::vector<const char *> env = {nullptr},
                std::chrono::milliseconds timeout = k_default_timeout);
 
     /** Stop the TestServer instance if it has been started.

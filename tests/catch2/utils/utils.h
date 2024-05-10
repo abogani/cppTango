@@ -22,11 +22,19 @@ constexpr int IDL_MAX = Tango::DevVersion + 1;
 
 std::string make_nodb_fqtrl(int port, std::string_view device_name);
 
+const char *get_current_log_file_path();
+
 // TODO Multiple devices and/or multiple device servers
 class Context
 {
   public:
-    Context(const std::string &instance_name, const std::string &tmpl_name, int idlversion);
+    /**
+     * env is a vector with entries of the form "key1=value1", "key2=value2"
+     */
+    Context(const std::string &instance_name,
+            const std::string &tmpl_name,
+            int idlversion,
+            std::vector<const char *> env = {});
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
 
@@ -75,7 +83,7 @@ namespace detail
 // If the environment variable is not set, this does nothing.
 //
 // Expects: Tango::Logging::get_core_logger() != nullptr
-void setup_topic_log_appender(std::string_view topic);
+void setup_topic_log_appender(std::string_view topic, const char *filename = nullptr);
 
 // A unique identifier representing the random seed used by the test run to make
 // it easier for the user to identify log files.  This is constructed during the
