@@ -60,10 +60,6 @@
   #include <ws2tcpip.h>
 #endif /* _TG_WINDOWS_ */
 
-#if defined(OBSERVABILITY_ENABLED)
-  #include <tango/common/telemetry/telemetry.h>
-#endif
-
 #include <omniORB4/omniInterceptors.h>
 
 namespace
