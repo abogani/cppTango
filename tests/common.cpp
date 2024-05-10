@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include <stdlib.h>
+#include <iostream>
 
 auto unset_env(const std::string &var) -> int
 {
@@ -41,5 +42,12 @@ double parse_as<double>(const std::string &str)
     return result;
 }
 #endif
+
+std::string load_file(const std::string &file)
+{
+    std::ifstream ifs(file, std::ios::binary);
+
+    return {std::istreambuf_iterator<char>{ifs}, {}};
+}
 
 // NOLINTEND(*)
