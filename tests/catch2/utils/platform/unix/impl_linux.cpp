@@ -58,6 +58,10 @@ FileWatcher::FileWatcher(const char *filename) :
 
 FileWatcher::~FileWatcher() { }
 
+void FileWatcher::start_watching() { }
+
+void FileWatcher::stop_watching() { }
+
 int FileWatcher::get_file_descriptor()
 {
     return m_pimpl->fd;

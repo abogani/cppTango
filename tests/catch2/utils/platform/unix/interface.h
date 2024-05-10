@@ -32,7 +32,7 @@ class FileWatcher
     explicit FileWatcher(const char *filename);
     FileWatcher(const FileWatcher &) = delete;
     FileWatcher &operator=(FileWatcher &) = delete;
-    ~FileWatcher();
+    virtual ~FileWatcher();
 
     // Return a file descriptor that can be `select()`'d on.
     //
@@ -44,6 +44,14 @@ class FileWatcher
 
     // Read and discard a single `write()` event.
     void pop_event();
+
+    // Start the file watcher thread on macOS.
+    // On Linux do nothing.
+    void start_watching();
+
+    // Stop the file watcher thread on macOS and close all fds.
+    // On Linux do nothing.
+    void stop_watching();
 
     // Cleanup any resources created by the `FileWatcher` which survive a
     // `fork()`.

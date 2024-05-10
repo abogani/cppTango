@@ -6,6 +6,9 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#ifdef __APPLE__
+  #include <signal.h>
+#endif
 
 #include <fstream>
 #include <thread>
@@ -183,7 +186,11 @@ StartServerResult start_server(const std::vector<const char *> &args,
             throw std::runtime_error(ss.str());
         }
 
+        // Begin watching the device server's log file.
+        // This is a no-op on Linux, only needed on macOS.
+        watcher.start_watching();
         int watch_fd = watcher.get_file_descriptor();
+
         auto end = steady_clock::now() + timeout;
         while(true)
         {
@@ -235,8 +242,13 @@ StartServerResult start_server(const std::vector<const char *> &args,
                     if(redirect_file.eof())
                     {
                         auto offset = -static_cast<ssize_t>(line.size());
-                        redirect_file.seekg(offset, std::ios_base::cur);
+                        // clear needs to happen here.
+                        // The reason being that on macOS seekg fails when
+                        // fail bit is set. We hope that it is a libc++ thing
+                        // and not a implementation detail that could bite us
+                        // again when implementing the Windows version.
                         redirect_file.clear();
+                        redirect_file.seekg(offset, std::ios_base::cur);
                         break;
                     }
 
@@ -254,6 +266,10 @@ StartServerResult start_server(const std::vector<const char *> &args,
                 }
             }
         }
+
+        // Tell the watcher on macOS to stop the watcher thread
+        // and close all fds. On Linux this is a no-op.
+        watcher.stop_watching();
     }
     }
 }
