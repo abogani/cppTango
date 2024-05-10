@@ -982,7 +982,7 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
 #if defined(TANGO_USE_TELEMETRY)
     // see comment in Device_4Impl::command_inout_4
     auto telemetry_interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(telemetry());
-    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION);
+    auto root_span = TANGO_TELEMETRY_KERNEL_SERVER_SPAN(TANGO_CURRENT_FUNCTION, {}, cl_id);
     TANGO_TELEMETRY_TRY;
 #endif
 
