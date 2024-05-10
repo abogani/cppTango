@@ -47,9 +47,7 @@
 #include <tango/server/dintrthread.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
-#if defined(TANGO_USE_TELEMETRY)
-  #include <tango/common/telemetry/telemetry.h>
-#endif
+#include <tango/common/telemetry/telemetry.h>
 
 namespace Tango
 {
