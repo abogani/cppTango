@@ -554,3 +554,35 @@ cmake-config:
     - ci/install.sh
     - cmake -S tests/cmake_config -B /tmp/cmake_config_test -DCMAKE_PREFIX_PATH="../../tango_install;tango_install"
     - cmake --build /tmp/cmake_config_test
+
+macos:
+  image: macos-13-xcode-14
+  tags:
+    - saas-macos-medium-m1
+  needs:
+    - job: pre-commit
+      artifacts: false
+  parallel:
+    matrix:
+      - PLATFORM: ["osx-arm64", "osx-64"]
+  before_script:
+    # Default shell is zsh on macOS but gitlab-runners are starting a bash shell
+    - curl -L micro.mamba.pm/install.sh | bash
+    - source /Users/gitlab/.bash_profile
+    - micromamba create -n cpptango-dev -f ci/cpptango-env-${PLATFORM}.txt
+    - micromamba activate cpptango-dev
+  script:
+    - >
+      cmake $CMAKE_ARGS -GNinja
+      -DCMAKE_BUILD_TYPE=Debug
+      -DBUILD_TESTING=ON
+      -DTANGO_USE_TELEMETRY=ON
+      -DTANGO_WARNINGS_AS_ERRORS=OFF
+      -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX"
+      -S . -B build
+    - cmake --build build
+    - ctest --output-on-failure --test-dir build -R "^catch2.*$"
+  artifacts:
+    when: always
+    paths:
+      - build/tests/catch2_test_logs
