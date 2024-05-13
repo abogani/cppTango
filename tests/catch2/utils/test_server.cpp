@@ -237,6 +237,11 @@ TestServer::~TestServer()
 
 void TestServer::stop(std::chrono::milliseconds timeout)
 {
+    if(m_handle == nullptr)
+    {
+        return;
+    }
+
     using Kind = platform::StopServerResult::Kind;
     g_used_ports.push_back(m_port);
     auto stop_result = platform::stop_server(m_handle, timeout);
