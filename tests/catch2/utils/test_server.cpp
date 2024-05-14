@@ -194,10 +194,10 @@ void TestServer::start(const std::string &instance_name,
             std::stringstream ss;
             ss << "Timeout waiting for TestServer to start. Server output:\n";
             std::ifstream f{m_redirect_file};
-            append_logs(f, ss);
 
             m_handle = start_result.handle;
             stop(timeout);
+            append_logs(f, ss);
 
             throw_runtime_error(ss.str());
         }
