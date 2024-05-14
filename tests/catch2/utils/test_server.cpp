@@ -178,8 +178,8 @@ void TestServer::start(const std::string &instance_name,
         *end_point_slot = end_point.c_str();
 
         TANGO_LOG_INFO << "Starting server with arguments "
-                       << Catch::StringMaker<std::vector<const char *>>::convert(args);
-
+                       << Catch::StringMaker<std::vector<const char *>>::convert(args) << " and environment "
+                       << Catch::StringMaker<std::vector<const char *>>::convert(env);
         auto start_result = platform::start_server(args, env, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
