@@ -367,7 +367,7 @@ void setup_topic_log_appender(std::string_view topic, const char *filename)
         filename = getenv(k_log_file_env_var);
         if(filename == nullptr)
         {
-            std::cout << k_log_file_env_var << " is unset.  Not logging.";
+            std::cout << k_log_file_env_var << " is unset. Not logging.\n";
             return;
         }
     }
