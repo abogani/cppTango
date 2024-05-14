@@ -147,7 +147,11 @@ void TestServer::start(const std::string &instance_name,
 
     args.push_back(nullptr);
 
-    std::vector<const char *> env;
+    std::vector<const char *> env{
+#ifdef __APPLE__
+        "PATH="
+#endif
+    };
 
     for(const auto *e : extra_env)
     {
