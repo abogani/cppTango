@@ -84,6 +84,7 @@ class TestServer
     Handle *m_handle = nullptr;
     int m_port = -1;
     std::string m_redirect_file;
+    std::vector<const char *> m_args, m_env;
 };
 
 } // namespace TangoTest
