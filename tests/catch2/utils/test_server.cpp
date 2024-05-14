@@ -125,8 +125,8 @@ int TestServer::s_next_port;
 std::unique_ptr<Logger> TestServer::s_logger;
 
 void TestServer::start(const std::string &instance_name,
-                       std::vector<const char *> extra_args,
-                       std::vector<const char *> env,
+                       const std::vector<const char *> &extra_args,
+                       const std::vector<const char *> &extra_env,
                        std::chrono::milliseconds timeout)
 {
     using Kind = platform::StartServerResult::Kind;
@@ -146,6 +146,15 @@ void TestServer::start(const std::string &instance_name,
     }
 
     args.push_back(nullptr);
+
+    std::vector<const char *> env;
+
+    for(const auto *e : extra_env)
+    {
+        env.push_back(e);
+    }
+
+    env.push_back(nullptr);
 
     // This will point to the slot after "-ORBendPoint"
     auto end_point_slot = std::find(args.begin(), args.end(), nullptr);

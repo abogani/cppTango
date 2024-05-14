@@ -76,9 +76,10 @@ SCENARIO("test servers can be started and stopped")
     GIVEN("a server started with basic device class")
     {
         std::vector<const char *> extra_args = {"-nodb", "-dlist", "Empty::TestServer/tests/1"};
+        std::vector<const char *> env;
 
         TestServer server;
-        server.start("self_test", extra_args);
+        server.start("self_test", extra_args, env);
         INFO("server port is " << server.get_port() << " and redirect file is " << server.get_redirect_file());
 
         WHEN("we create a DeviceProxy to the device")
@@ -108,7 +109,7 @@ SCENARIO("test servers can be started and stopped")
             // Reset the logs in case there were any from the initial server
             // starting
             logger->logs.clear();
-            server2.start("self_test2", extra_args);
+            server2.start("self_test2", extra_args, env);
 
             THEN("we can create device proxies and ping both devices")
             {
@@ -273,13 +274,14 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitCrash::TestServer/tests/1"};
+        std::vector<const char *> env;
 
         WHEN("we start the server")
         {
             std::optional<std::string> what = std::nullopt;
             try
             {
-                server.start("self_test", extra_args);
+                server.start("self_test", extra_args, env);
             }
             catch(std::exception &ex)
             {
@@ -307,7 +309,9 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<const char *> extra_args = {"-nodb", "-dlist", "DuringCrash::TestServer/tests/1"};
-        server.start("self_test", extra_args);
+        std::vector<const char *> env;
+
+        server.start("self_test", extra_args, env);
 
         WHEN("we run the test that crashes the device server")
         {
@@ -339,7 +343,9 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitCrash::TestServer/tests/1"};
-        server.start("self_test", extra_args);
+        std::vector<const char *> env;
+
+        server.start("self_test", extra_args, env);
 
         WHEN("we stop the server")
         {
@@ -362,6 +368,7 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitTimeout::TestServer/tests/1"};
+        std::vector<const char *> env;
 
         WHEN("we start the server")
         {
@@ -369,7 +376,7 @@ SCENARIO("test server crashes and timeouts are reported")
             try
             {
                 using namespace std::chrono_literals;
-                server.start("self_test", extra_args, {nullptr}, 300ms);
+                server.start("self_test", extra_args, env, 300ms);
             }
             catch(std::exception &ex)
             {
@@ -397,7 +404,9 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
-        server.start("self_test", extra_args);
+        std::vector<const char *> env;
+
+        server.start("self_test", extra_args, env);
 
         WHEN("we stop the server")
         {
