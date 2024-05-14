@@ -616,7 +616,7 @@ void DeviceImpl::real_ctor()
     add_version_info("cppTango.git_revision", Tango::git_revision());
     add_version_info("omniORB", omniORB::versionString());
     std::ostringstream zmq_version;
-    zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH << std::ends;
+    zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH;
     add_version_info("zmq", zmq_version.str());
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::real_ctor for device " << device_name << std::endl;
