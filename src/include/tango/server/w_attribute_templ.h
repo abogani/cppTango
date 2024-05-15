@@ -33,6 +33,8 @@
 #ifndef _WATTRIBUTE_TPP
 #define _WATTRIBUTE_TPP
 
+#include <tango/common/utils/type_info.h>
+
 namespace Tango
 {
 
@@ -925,14 +927,6 @@ void WAttribute::_update_any_written_value(const T &any, std::size_t x, std::siz
         TANGO_ASSERT_ON_DEFAULT(data_type);
     }
 }
-
-namespace detail
-{
-
-std::string corba_any_to_type_name(const CORBA::Any &any);
-std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d);
-
-} // namespace detail
 
 template <class T>
 void WAttribute::_update_written_value(const CORBA::Any &any, std::size_t x, std::size_t y)

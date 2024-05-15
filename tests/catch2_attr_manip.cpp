@@ -35,7 +35,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AttrManipDev, 3)
 
 SCENARIO("attribute formatting can be controlled")
 {
-    int idlver = GENERATE(range(3, 7));
+    int idlver = GENERATE(TangoTest::idlversion(3));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_manip", "AttrManipDev", idlver};

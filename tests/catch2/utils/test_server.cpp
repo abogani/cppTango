@@ -136,7 +136,6 @@ void TestServer::start(const std::string &instance_name,
     std::vector<const char *> args{
         "TestServer",
         instance_name.c_str(),
-        "-nodb",
         "-ORBendPoint",
         nullptr, // filled in later
     };
@@ -179,8 +178,8 @@ void TestServer::start(const std::string &instance_name,
         *end_point_slot = end_point.c_str();
 
         TANGO_LOG_INFO << "Starting server with arguments "
-                       << Catch::StringMaker<std::vector<const char *>>::convert(args);
-
+                       << Catch::StringMaker<std::vector<const char *>>::convert(args) << " and environment "
+                       << Catch::StringMaker<std::vector<const char *>>::convert(env);
         auto start_result = platform::start_server(args, env, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
@@ -195,10 +194,10 @@ void TestServer::start(const std::string &instance_name,
             std::stringstream ss;
             ss << "Timeout waiting for TestServer to start. Server output:\n";
             std::ifstream f{m_redirect_file};
-            append_logs(f, ss);
 
             m_handle = start_result.handle;
             stop(timeout);
+            append_logs(f, ss);
 
             throw_runtime_error(ss.str());
         }
@@ -238,6 +237,11 @@ TestServer::~TestServer()
 
 void TestServer::stop(std::chrono::milliseconds timeout)
 {
+    if(m_handle == nullptr)
+    {
+        return;
+    }
+
     using Kind = platform::StopServerResult::Kind;
     g_used_ports.push_back(m_port);
     auto stop_result = platform::stop_server(m_handle, timeout);

@@ -1,4 +1,4 @@
-find_package(Catch2 3.1.1 REQUIRED)
+find_package(Catch2 3.3.0 REQUIRED)
 include(Catch)
 
 set(TANGO_CATCH2_TESTS_DIR ${CMAKE_CURRENT_LIST_DIR})
@@ -22,10 +22,13 @@ function(tango_catch2_tests_create)
 
     set(TANGO_CATCH2_LOG_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_test_logs)
     set(TANGO_CATCH2_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_server_output)
+    set(TANGO_CATCH2_FILEDB_DIR ${CMAKE_CURRENT_BINARY_DIR}/catch2_test_filedb)
 
     add_custom_target(Catch2ServerLogs ALL
         COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_OUTPUT_DIR}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_LOG_DIR}")
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_LOG_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${TANGO_CATCH2_FILEDB_DIR}"
+        )
 
     add_test(NAME catch2::setup COMMAND
         ${CMAKE_COMMAND}
@@ -105,6 +108,7 @@ function(tango_catch2_tests_create)
         "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\""
         "-DTANGO_TEST_CATCH2_TEST_BINARY_NAME=\"$<TARGET_FILE_NAME:Catch2Tests>\""
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_NAME=\"${SERVER_NAME}\""
+        "-DTANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH=\"${TANGO_CATCH2_FILEDB_DIR}\""
         ${COMMON_TEST_DEFS})
 
     catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::"

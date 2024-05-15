@@ -70,6 +70,13 @@ class t_tango_class
     std::vector<t_attribute_property *> attribute_properties;
 };
 
+class t_free_object
+{
+  public:
+    std::string name;
+    std::vector<t_property *> properties;
+};
+
 class t_server
 {
   public:
@@ -77,6 +84,7 @@ class t_server
     std::string instance_name;
     std::vector<t_tango_class *> classes;
     std::vector<t_device *> devices;
+    std::vector<t_free_object *> free_objects;
 };
 
 template <class T>

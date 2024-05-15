@@ -56,7 +56,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(DoubleROAttrServer, 3)
 
 SCENARIO("Test connection and reading a double RO attribute on a nodb device")
 {
-    int idlver = GENERATE(range(3, 7));
+    int idlver = GENERATE(TangoTest::idlversion(3));
     GIVEN("a device proxy to a IDLv" << idlver << " nodb device")
     {
         TangoTest::Context ctx{"no_db_connection", "DoubleROAttrServer", idlver};

@@ -10,6 +10,7 @@
 #include "utils/test_server.h"
 #include "utils/callback_mock.h"
 #include "utils/matchers.h"
+#include "utils/generators.h"
 
 #include <tango/tango.h>
 
@@ -18,27 +19,48 @@
 namespace TangoTest
 {
 
-constexpr int IDL_MAX = Tango::DevVersion + 1;
-
 std::string make_nodb_fqtrl(int port, std::string_view device_name);
 
 const char *get_current_log_file_path();
 
-// TODO Multiple devices and/or multiple device servers
+// TODO: Multiple devices and/or multiple device servers
+// TODO: Maybe we want a builder API for this
 class Context
 {
   public:
     /**
-     * env is a vector with entries of the form "key1=value1", "key2=value2"
+     * @brief Create a Tango Test Context with a single device server in nodb mode
+     *
+     * @param instance_name Name of the device server instance
+     * @param tmpl_name Name of the template device class to instantiate
+     * @param idlversion IDL version of the device class to instantiate
+     * @param env environment entries of the form "key1=value1", "key2=value2"
      */
     Context(const std::string &instance_name,
             const std::string &tmpl_name,
             int idlversion,
             std::vector<const char *> env = {});
+    /**
+     * @brief Create a Tango Test Context with a single device server in filedb mode
+     *
+     * TODO: Do not require users to pass the filedb_contents
+     *
+     * @param instance_name Name of the device server instance
+     * @param tmpl_name Name of the template device class to instantiate
+     * @param idlversion IDL version of the device class to instantiate
+     * @param extra_filedb_contents Contents of the filedb to use
+     * @param env environment entries of the form "key1=value1", "key2=value2"
+     */
+    Context(const std::string &instance_name,
+            const std::string &tmpl_name,
+            int idlversion,
+            const std::string &extra_filedb_contents,
+            std::vector<const char *> env = {});
+
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
 
-    ~Context() = default;
+    ~Context();
 
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
 
@@ -53,6 +75,7 @@ class Context
     void stop_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
   private:
+    std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;
 };
 

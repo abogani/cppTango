@@ -41,7 +41,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(CmdPollingCfg, 4)
 // TODO: Add case checking the client can enable polling when we have a database
 SCENARIO("Command polling can be enabled")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"cmd_polling", "CmdPollingCfg", idlver};
@@ -89,7 +89,7 @@ SCENARIO("Command polling can be enabled")
 
 SCENARIO("Command polling period can be updated")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"cmd_polling", "CmdPollingCfg", idlver};
@@ -123,7 +123,7 @@ SCENARIO("Command polling period can be updated")
 
 SCENARIO("Command polling can be disabled")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"cmd_polling", "CmdPollingCfg", idlver};

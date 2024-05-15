@@ -12,6 +12,7 @@
 #include <random>
 #include <sstream>
 #include <cstdlib>
+#include <cstdio>
 
 CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
 {
@@ -35,6 +36,7 @@ namespace
 {
 constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 constexpr const char *k_log_directory_path = TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH;
+constexpr const char *k_filedb_directory_path = TANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH;
 std::string g_current_log_file_path;
 } // namespace
 
@@ -50,36 +52,133 @@ const char *get_current_log_file_path()
     return g_current_log_file_path.c_str();
 }
 
+namespace
+{
+/**
+ * @brief Append standard environment entries to env vector
+ *
+ * Note, env does not own the strings it contains, instead the return value does
+ * so the return value must be kept around while env is in use.
+ *
+ * @param env environment vector containing entries of the form "key=value"
+ * @param class_name name of the Tango device class
+ */
+std::vector<std::string> append_std_entries_to_env(std::vector<const char *> &env, std::string_view class_name)
+{
+    std::vector<std::string> result;
+
+    result.emplace_back(
+        []()
+        {
+            std::stringstream ss;
+            ss << k_log_file_env_var << "=" << g_current_log_file_path;
+            return ss.str();
+        }());
+    env.emplace_back(result.back().c_str());
+
+    result.emplace_back(
+        [&]()
+        {
+            std::stringstream ss;
+            ss << detail::k_enabled_classes_env_var << "=" << class_name;
+            return ss.str();
+        }());
+    env.emplace_back(result.back().c_str());
+
+    // append trailing NULL
+    env.emplace_back(nullptr);
+
+    return result;
+}
+} // namespace
+
+// TODO:  Don't handle filedb strings directly, but instead manipulate a
+// Tango::Filedatabase to build the database.
+Context::Context(const std::string &instance_name,
+                 const std::string &tmpl_name,
+                 int idlversion,
+                 const std::string &extra_filedb_contents,
+                 std::vector<const char *> env)
+{
+    {
+        static int filedb_count = 0;
+
+        std::stringstream ss;
+        ss << k_filedb_directory_path << "/";
+        ss << detail::g_log_filename_prefix << filedb_count++ << ".db";
+
+        m_filedb_path = ss.str();
+    }
+
+    std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
+
+    TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
+                   << "\"" << class_name << "\" and filedb \"" << *m_filedb_path << "\".";
+
+    {
+        std::ofstream out{*m_filedb_path};
+
+        auto write_and_log = [&out](auto &&...args)
+        {
+            if(API_LOGGER && API_LOGGER->is_info_enabled())
+            {
+                log4tango::LoggerStream::SourceLocation loc{::Tango::logging_detail::basename(__FILE__), __LINE__};
+                auto stream = API_LOGGER->info_stream();
+                stream << log4tango::_begin_log << loc << "Writing to filedb: '";
+                (stream << ... << args);
+                stream << "'";
+            }
+            (out << ... << args);
+        };
+
+        write_and_log("TestServer/", instance_name, "/DEVICE/", class_name, ": ", "TestServer/tests/1\n");
+        write_and_log(extra_filedb_contents);
+    }
+
+    std::vector<std::string> owner = append_std_entries_to_env(env, class_name);
+
+    std::string file_arg = std::string{"-file="} + *m_filedb_path;
+    std::vector<const char *> extra_args = {file_arg.c_str()};
+    m_server.start(instance_name, extra_args, env);
+
+    TANGO_LOG_INFO << "Started server \"" << instance_name << "\" on port " << m_server.get_port() << " redirected to "
+                   << m_server.get_redirect_file();
+}
+
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
                  std::vector<const char *> env)
 {
+    std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
+
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
-        ss << tmpl_name << "_" << idlversion << "::TestServer/tests/1";
+        ss << class_name << "::TestServer/tests/1";
         return ss.str();
     }();
 
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
-                   << "\"" << tmpl_name << "_" << idlversion;
+                   << "\"" << class_name << "\"";
 
-    std::string log_file_env = []()
-    {
-        std::stringstream ss;
-        ss << k_log_file_env_var << "=" << g_current_log_file_path;
-        return ss.str();
-    }();
-    env.emplace_back(log_file_env.c_str());
-    // append trailing NULL
-    env.emplace_back(nullptr);
+    std::vector<std::string> owner = append_std_entries_to_env(env, class_name);
 
     std::vector<const char *> extra_args = {"-nodb", "-dlist", dlist_arg.c_str()};
     m_server.start(instance_name, extra_args, env);
 
     TANGO_LOG_INFO << "Started server \"" << instance_name << "\" on port " << m_server.get_port() << " redirected to "
                    << m_server.get_redirect_file();
+}
+
+Context::~Context()
+{
+    m_server.stop();
+
+    if(m_filedb_path.has_value())
+    {
+        std::remove(m_filedb_path->c_str());
+    }
 }
 
 std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
@@ -183,6 +282,20 @@ class TangoListener : public Catch::EventListenerBase
     {
         TANGO_LOG_INFO << "Section \"" << info.name << "\" starting";
     }
+
+    void assertionEnded(const Catch::AssertionStats &stats) override
+    {
+        if(stats.assertionResult.isOk())
+        {
+            return;
+        }
+
+        if(stats.assertionResult.hasExpression() && stats.assertionResult.hasExpandedExpression())
+        {
+            TANGO_LOG_WARN << "Assertion \"" << stats.assertionResult.getExpression() << "\" ("
+                           << stats.assertionResult.getExpandedExpression() << ") failed.";
+        }
+    }
 };
 
 CATCH_REGISTER_LISTENER(TangoListener)
@@ -254,7 +367,7 @@ void setup_topic_log_appender(std::string_view topic, const char *filename)
         filename = getenv(k_log_file_env_var);
         if(filename == nullptr)
         {
-            std::cout << k_log_file_env_var << " is unset.  Not logging.";
+            std::cout << k_log_file_env_var << " is unset. Not logging.\n";
             return;
         }
     }

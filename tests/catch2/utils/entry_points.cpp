@@ -22,6 +22,8 @@ int test_main(int argc, const char *argv[])
     auto cli = session.cli();
     cli |= Opt(g_options.log_file_per_test_case)["--log-file-per-test-case"](
         "create a log file for each test case, otherwise use a single log file for the whole run");
+    cli |= Opt([](int value) { g_options.only_idl_version = value; },
+               "idlversion")["--only-idl"]("only idl version of servers to run tests against");
 
     session.cli(cli);
 
