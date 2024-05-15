@@ -1487,12 +1487,6 @@ AttributeEventSubscriptionStates MultiAttribute::get_event_subscription_states()
             filled = true;
         }
 
-        if(att.quality_event_subscribed())
-        {
-            events.has_quality_event_clients = true;
-            filled = true;
-        }
-
         if(att.periodic_event_subscribed())
         {
             events.periodic_event_clients = att.get_client_lib(PERIODIC_EVENT);
@@ -1591,11 +1585,6 @@ void MultiAttribute::set_event_subscription_states(const AttributeEventSubscript
         {
             att.set_user_event_sub(client_version);
             att.set_client_lib(client_version, USER_EVENT);
-        }
-
-        if(events.has_quality_event_clients)
-        {
-            att.set_quality_event_sub();
         }
 
         if(events.has_data_ready_event_clients)

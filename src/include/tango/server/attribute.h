@@ -1608,7 +1608,6 @@ class Attribute
     bool alarm_event_subscribed();
     bool periodic_event_subscribed();
     bool archive_event_subscribed();
-    bool quality_event_subscribed();
     bool user_event_subscribed();
     bool attr_conf_event_subscribed();
     bool data_ready_event_subscribed();
@@ -1653,16 +1652,6 @@ class Attribute
     time_t get_archive5_event_sub()
     {
         return event_archive5_subscription;
-    }
-
-    void set_quality_event_sub()
-    {
-        event_quality_subscription = Tango::get_current_system_datetime();
-    }
-
-    time_t get_quality_event_sub()
-    {
-        return event_quality_subscription;
     }
 
     void set_user_event_sub(int);
@@ -2038,7 +2027,6 @@ class Attribute
     long archive_periodic_counter{0}; // Number of periodic events sent so far
     LastAttrValue prev_change_event;  // Last change attribute
     LastAttrValue prev_alarm_event;   // Last alarm event attribute
-    LastAttrValue prev_quality_event; // Last quality attribute
     LastAttrValue prev_archive_event; // Last archive attribute
 
     PollClock::time_point last_periodic;         // Last time a periodic event was detected
@@ -2049,7 +2037,6 @@ class Attribute
     time_t event_change4_subscription;
     time_t event_change5_subscription;
     time_t event_alarm6_subscription;    // Last time an alarm subscription was made.
-    time_t event_quality_subscription;   // Last time() a subscription was made
     time_t event_periodic3_subscription; // Last time() a subscription was made
     time_t event_periodic4_subscription;
     time_t event_periodic5_subscription;

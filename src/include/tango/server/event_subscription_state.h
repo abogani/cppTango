@@ -22,7 +22,6 @@ struct AttributeEventSubscriptionState
     EventClientLibVersions user_event_clients;
     EventClientLibVersions attr_conf_event_clients;
 
-    bool has_quality_event_clients = false;
     bool has_data_ready_event_clients = false;
 
     bool has_zmq_event_channel = false;

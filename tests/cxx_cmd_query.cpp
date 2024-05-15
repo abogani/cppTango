@@ -526,7 +526,6 @@ class CmdQueryTestSuite : public CxxTest::TestSuite
             "event name can take the following values:\n"
             "    \"change\",\n"
             "    \"alarm\",\n"
-            "    \"quality\",\n"
             "    \"periodic\",\n"
             "    \"archive\",\n"
             "    \"user_event\",\n"

@@ -1425,10 +1425,6 @@ inline void Util::event_name_2_event_type(const std::string &event_name, EventTy
     {
         et = ALARM_EVENT;
     }
-    else if(event_name == "quality")
-    {
-        et = QUALITY_EVENT;
-    }
     else if(event_name == "periodic")
     {
         et = PERIODIC_EVENT;
