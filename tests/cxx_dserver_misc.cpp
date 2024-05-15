@@ -1,15 +1,12 @@
 // NOLINTBEGIN(*)
 
-#ifndef DServerMiscTestSuite_h
-  #define DServerMiscTestSuite_h
+#include <thread>
+#include <chrono>
 
-  #include <thread>
-  #include <chrono>
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME DServerMiscTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME DServerMiscTestSuite
 
 using namespace std::chrono_literals;
 
@@ -446,6 +443,5 @@ class DServerMiscTestSuite : public CxxTest::TestSuite
         device1->command_inout("PushPipeEvent", data);
     }
 };
-#endif // DServerMiscTestSuite_h
 
 // NOLINTEND(*)

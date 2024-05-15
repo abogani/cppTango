@@ -1,13 +1,10 @@
 // NOLINTBEGIN(*)
 
-#ifndef SyntaxTestSuite_h
-  #define SyntaxTestSuite_h
+#include "cxx_common.h"
+#include <tango/internal/utils.h>
 
-  #include "cxx_common.h"
-  #include <tango/internal/utils.h>
-
-  #undef SUITE_NAME
-  #define SUITE_NAME SyntaxTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME SyntaxTestSuite
 
 class SyntaxTestSuite : public CxxTest::TestSuite
 {
@@ -283,6 +280,5 @@ class SyntaxTestSuite : public CxxTest::TestSuite
         TS_ASSERT(!IDLVersionIsTooOld(0, 0));
     }
 };
-#endif // SyntaxTestSuite_h
 
 // NOLINTEND(*)

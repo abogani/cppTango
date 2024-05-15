@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef DynamicAttributesTestSuite_h
-  #define DynamicAttributesTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME DynamicAttributesTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME DynamicAttributesTestSuite
 
 class DynamicAttributesTestSuite : public CxxTest::TestSuite
 {
@@ -158,7 +155,5 @@ class DynamicAttributesTestSuite : public CxxTest::TestSuite
         }
     }
 };
-
-#endif // DynamicAttributesTestSuite_h
 
 // NOLINTEND(*)

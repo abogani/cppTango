@@ -1,15 +1,12 @@
 // NOLINTBEGIN(*)
 
-#ifndef DatabaseTestSuite_h
-  #define DatabaseTestSuite_h
+#include <ctime>
+#include <algorithm>
 
-  #include <ctime>
-  #include <algorithm>
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME DatabaseTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME DatabaseTestSuite
 
 class DatabaseTestSuite : public CxxTest::TestSuite
 {
@@ -390,6 +387,5 @@ class DatabaseTestSuite : public CxxTest::TestSuite
         non_matching_device_filter_test("");
     }
 };
-#endif // DatabaseTestSuite_h
 
 // NOLINTEND(*)

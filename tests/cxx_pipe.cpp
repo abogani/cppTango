@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef PipeTestSuite_h
-  #define PipeTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME PipeTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME PipeTestSuite
 
 class PipeTestSuite : public CxxTest::TestSuite
 {
@@ -704,7 +701,5 @@ class PipeTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(de_v_db.value[1], 2.22);
     }
 };
-
-#endif // PipeTestSuite_h
 
 // NOLINTEND(*)

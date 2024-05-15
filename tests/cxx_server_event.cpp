@@ -3,13 +3,11 @@
 //
 // Created by ingvord on 12/14/16.
 //
-#ifndef ServerEventTestSuite_h
-  #define ServerEventTestSuite_h
 
-  #include "cxx_common.h"
+#include "cxx_common.h"
 
-  #undef SUITE_NAME
-  #define SUITE_NAME ServerEventTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME ServerEventTestSuite
 
 class ServerEventTestSuite : public CxxTest::TestSuite
 {
@@ -203,7 +201,5 @@ class ServerEventTestSuite : public CxxTest::TestSuite
         db.rename_server(new_ds_name, old_ds_name);
     }
 };
-
-#endif // ServerEventTestSuite_h
 
 // NOLINTEND(*)

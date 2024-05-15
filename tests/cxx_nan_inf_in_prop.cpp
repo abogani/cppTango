@@ -1,14 +1,11 @@
 // NOLINTBEGIN(*)
 
-#ifndef NanInfInPropSuite_h
-  #define NanInfInPropSuite_h
+#include <limits>
 
-  #include <limits>
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME NanInfInPropSuite
+#undef SUITE_NAME
+#define SUITE_NAME NanInfInPropSuite
 
 class NanInfInPropSuite : public CxxTest::TestSuite
 {
@@ -445,6 +442,5 @@ class NanInfInPropSuite : public CxxTest::TestSuite
         CxxTest::TangoPrinter::restore_unset("NanInfScalarProp_restore_point");
     }
 };
-#endif // NanInfInPropSuite_h
 
 // NOLINTEND(*)

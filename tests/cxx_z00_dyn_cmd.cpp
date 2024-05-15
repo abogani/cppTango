@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef DynCmdSuite_h
-  #define DynCmdSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME DynCmdTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME DynCmdTestSuite
 
 class DynCmdTestSuite : public CxxTest::TestSuite
 {
@@ -192,7 +189,5 @@ class DynCmdTestSuite : public CxxTest::TestSuite
         TS_ASSERT_THROWS_NOTHING(device1->command_inout("IORemoveCommand"));
     }
 };
-
-#endif // DynCmdTestSuite_h
 
 // NOLINTEND(*)

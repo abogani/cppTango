@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef AttrProp_h
-  #define AttrProp_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME AttrPropTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME AttrPropTestSuite
 
 class AttrPropTestSuite : public CxxTest::TestSuite
 {
@@ -133,6 +130,5 @@ class AttrPropTestSuite : public CxxTest::TestSuite
         MultiAttrProp<DevUShort> mapush;
     }
 };
-#endif // AttrProp_h
 
 // NOLINTEND(*)

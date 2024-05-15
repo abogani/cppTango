@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef MiscUtilTestSuite_h
-  #define MiscUtilTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME MiscUtilTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME MiscUtilTestSuite
 
 class MiscUtilTestSuite : public CxxTest::TestSuite
 {
@@ -137,6 +134,5 @@ class MiscUtilTestSuite : public CxxTest::TestSuite
                                 TS_ASSERT_EQUALS(e.errors[0].severity, Tango::ERR));
     }
 };
-#endif // MiscUtilTestSuite_h
 
 // NOLINTEND(*)

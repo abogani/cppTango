@@ -1,18 +1,15 @@
 // NOLINTBEGIN(*)
 
-#ifndef FileDatabaseTestSuite_h
-  #define FileDatabaseTestSuite_h
+#include <array>
+#include <cstdio>
+#include <ostream>
+#include <stdexcept>
+#include <vector>
 
-  #include <array>
-  #include <cstdio>
-  #include <ostream>
-  #include <stdexcept>
-  #include <vector>
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME FileDatabaseTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME FileDatabaseTestSuite
 
 class FileDatabaseTestSuite : public CxxTest::TestSuite
 {
@@ -177,7 +174,5 @@ class FileDatabaseTestSuite : public CxxTest::TestSuite
         }
     }
 };
-
-#endif // FileDatabaseTestSuite_h
 
 // NOLINTEND(*)

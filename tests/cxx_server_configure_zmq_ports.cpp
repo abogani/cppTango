@@ -3,13 +3,11 @@
 //
 // Created by pxh on 18.12.2021.
 //
-#ifndef ServerConfigureEventTestSuite_h
-  #define ServerConfigureEventTestSuite_h
 
-  #include "cxx_common.h"
+#include "cxx_common.h"
 
-  #undef SUITE_NAME
-  #define SUITE_NAME ServerConfigureEventTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME ServerConfigureEventTestSuite
 
 template <typename TEvent>
 struct EventCallback : public Tango::CallBack
@@ -362,7 +360,5 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
         delete dserver;
     }
 };
-
-#endif // ServerConfigureEventTestSuite_h
 
 // NOLINTEND(*)

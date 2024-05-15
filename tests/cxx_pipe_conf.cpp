@@ -1,12 +1,9 @@
 // NOLINTBEGIN(*)
 
-#ifndef PipeConfTestSuite_h
-  #define PipeConfTestSuite_h
+#include "cxx_common.h"
 
-  #include "cxx_common.h"
-
-  #undef SUITE_NAME
-  #define SUITE_NAME PipeConfTestSuite
+#undef SUITE_NAME
+#define SUITE_NAME PipeConfTestSuite
 
 class PipeConfTestSuite : public CxxTest::TestSuite
 {
@@ -374,7 +371,5 @@ class PipeConfTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(pi.description, class_desc);
     }
 };
-
-#endif // PipeTestSuite_h
 
 // NOLINTEND(*)
