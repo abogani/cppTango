@@ -48,8 +48,8 @@ class TestServer
      *  after a `num_port_tries` attempts.
      */
     void start(const std::string &instance_name,
-               std::vector<const char *> extra_args,
-               std::vector<const char *> env = {nullptr},
+               const std::vector<const char *> &extra_args,
+               const std::vector<const char *> &extra_env,
                std::chrono::milliseconds timeout = k_default_timeout);
 
     /** Stop the TestServer instance if it has been started.
@@ -84,6 +84,7 @@ class TestServer
     Handle *m_handle = nullptr;
     int m_port = -1;
     std::string m_redirect_file;
+    std::vector<const char *> m_args, m_env;
 };
 
 } // namespace TangoTest

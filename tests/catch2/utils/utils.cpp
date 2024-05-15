@@ -55,17 +55,24 @@ const char *get_current_log_file_path()
 namespace
 {
 /**
- * @brief Append standard environment entries to env vector
+ * @brief Append standard environment entries to returned env vector
  *
- * Note, env does not own the strings it contains, instead the return value does
- * so the return value must be kept around while env is in use.
+ * We copy all environemnt variables from env to the returned result vector.
+ * Via create_env_vector() this can then be converted to a std::vector<const char*>
+ * again but result has to be kept around as only that owns the memory.
  *
  * @param env environment vector containing entries of the form "key=value"
  * @param class_name name of the Tango device class
  */
-std::vector<std::string> append_std_entries_to_env(std::vector<const char *> &env, std::string_view class_name)
+std::vector<std::string> append_std_entries_to_env(const std::vector<const char *> &env, std::string_view class_name)
 {
     std::vector<std::string> result;
+
+    // create copies of all elements in env
+    for(const auto *e : env)
+    {
+        result.emplace_back(e);
+    }
 
     result.emplace_back(
         []()
@@ -74,7 +81,6 @@ std::vector<std::string> append_std_entries_to_env(std::vector<const char *> &en
             ss << k_log_file_env_var << "=" << g_current_log_file_path;
             return ss.str();
         }());
-    env.emplace_back(result.back().c_str());
 
     result.emplace_back(
         [&]()
@@ -83,13 +89,22 @@ std::vector<std::string> append_std_entries_to_env(std::vector<const char *> &en
             ss << detail::k_enabled_classes_env_var << "=" << class_name;
             return ss.str();
         }());
-    env.emplace_back(result.back().c_str());
-
-    // append trailing NULL
-    env.emplace_back(nullptr);
 
     return result;
 }
+
+std::vector<const char *> create_env_vector(const std::vector<std::string> &result)
+{
+    std::vector<const char *> env;
+
+    for(const auto &elem : result)
+    {
+        env.emplace_back(elem.c_str());
+    }
+
+    return env;
+}
+
 } // namespace
 
 // TODO:  Don't handle filedb strings directly, but instead manipulate a
@@ -98,7 +113,7 @@ Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
                  const std::string &extra_filedb_contents,
-                 std::vector<const char *> env)
+                 std::vector<const char *> env_args)
 {
     {
         static int filedb_count = 0;
@@ -135,7 +150,8 @@ Context::Context(const std::string &instance_name,
         write_and_log(extra_filedb_contents);
     }
 
-    std::vector<std::string> owner = append_std_entries_to_env(env, class_name);
+    env_owner = append_std_entries_to_env(env_args, class_name);
+    auto env = create_env_vector(env_owner);
 
     std::string file_arg = std::string{"-file="} + *m_filedb_path;
     std::vector<const char *> extra_args = {file_arg.c_str()};
@@ -148,7 +164,7 @@ Context::Context(const std::string &instance_name,
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
-                 std::vector<const char *> env)
+                 std::vector<const char *> env_args)
 {
     std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
 
@@ -162,7 +178,8 @@ Context::Context(const std::string &instance_name,
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
                    << "\"" << class_name << "\"";
 
-    std::vector<std::string> owner = append_std_entries_to_env(env, class_name);
+    env_owner = append_std_entries_to_env(env_args, class_name);
+    auto env = create_env_vector(env_owner);
 
     std::vector<const char *> extra_args = {"-nodb", "-dlist", dlist_arg.c_str()};
     m_server.start(instance_name, extra_args, env);

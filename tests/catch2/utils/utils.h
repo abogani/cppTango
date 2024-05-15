@@ -77,6 +77,7 @@ class Context
   private:
     std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;
+    std::vector<std::string> env_owner;
 };
 
 class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase
