@@ -1033,6 +1033,7 @@ const std::string ZmqEventSubscriptionChangeCmd::in_desc =
     "device name, attribute/pipe name, action (\"subscribe\"), event name, <Tango client IDL version>\"\n"
     "event name can take the following values:\n"
     "    \"change\",\n"
+    "    \"alarm\",\n"
     "    \"quality\",\n"
     "    \"periodic\",\n"
     "    \"archive\",\n"
