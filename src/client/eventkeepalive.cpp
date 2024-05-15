@@ -1512,7 +1512,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
         }
 
-        if((ev_name == "change") || (ev_name == "quality") || (ev_name == "archive") || (ev_name == "user_event"))
+        if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "quality") || (ev_name == "archive") || (ev_name == "user_event"))
         {
             //
             // For attribute data event
@@ -1946,7 +1946,7 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     // For attribute data event
     //
 
-    if((vpos->event_name == "change") || (vpos->event_name == "quality") || (vpos->event_name == "archive") ||
+    if((vpos->event_name == "change") || (vpos->event_name == "alarm") || (vpos->event_name == "quality") || (vpos->event_name == "archive") ||
        (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
     {
         DeviceAttribute *da = nullptr;
