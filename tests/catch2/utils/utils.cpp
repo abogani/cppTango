@@ -94,6 +94,7 @@ std::string get_next_file_database_location()
 
 // TODO:  Don't handle filedb strings directly, but instead manipulate a
 // Tango::Filedatabase to build the database.
+// Needs Filedatabase::DbAddDevice/DbAddServer implemented to do that.
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
