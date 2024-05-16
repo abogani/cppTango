@@ -5,6 +5,8 @@
 
 #include "utils/utils.h"
 
+#include "common.h"
+
 namespace
 {
 
@@ -75,7 +77,7 @@ std::vector<std::string>
     REQUIRE("1" == property[1]);
     REQUIRE(property_name == property[2]);
 
-    auto size = std::stoul(property[3].c_str());
+    auto size = parse_as<size_t>(property[3]);
     if(size == 0)
     {
         return {};
@@ -143,7 +145,7 @@ std::vector<std::string>
     REQUIRE("1" == property[1]);
     REQUIRE(property_name == property[2]);
 
-    auto size = std::stoul(property[3].c_str());
+    auto size = parse_as<size_t>(property[3]);
     if(size == 0)
     {
         return {};
@@ -282,7 +284,7 @@ std::vector<std::string> get_class_attr_property(Tango::FileDatabase &db,
 
     REQUIRE(property_name == list[4]);
 
-    auto size = std::stoul(list[5].c_str());
+    auto size = parse_as<size_t>(list[5]);
     if(size == 0)
     {
         return {};
