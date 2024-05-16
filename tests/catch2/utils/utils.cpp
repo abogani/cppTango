@@ -186,6 +186,16 @@ void Context::stop_server(std::chrono::milliseconds timeout)
     m_server.stop(timeout);
 }
 
+std::string Context::get_file_database_path()
+{
+    if(m_filedb_path.has_value())
+    {
+        return *m_filedb_path;
+    }
+
+    throw std::runtime_error("Non existing filedatabase");
+}
+
 // Listener to cleanup the Tango client ApiUtil singleton
 class TangoListener : public Catch::EventListenerBase
 {

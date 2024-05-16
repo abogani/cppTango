@@ -79,6 +79,11 @@ class Context
      */
     void stop_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
+    /*
+     * Return the disc location of the FileDatabase, throws if there is none.
+     */
+    std::string get_file_database_path();
+
   private:
     std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;
