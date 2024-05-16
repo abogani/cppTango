@@ -84,10 +84,16 @@ class Context
      */
     std::string get_file_database_path();
 
+    /*
+     * Return the name of the Tango device class
+     */
+    std::string get_class_name();
+
   private:
     std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;
     std::vector<std::string> env_owner;
+    std::string m_class_name;
 };
 
 class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase
