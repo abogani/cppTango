@@ -1,8 +1,5 @@
 // NOLINTBEGIN(*)
 
-// These tests here don't test Tango::FileDatabase as it is just using the normal
-// TangoDatabase from the OCI image
-
 #include "common.h"
 
 int main(int argc, char **argv)

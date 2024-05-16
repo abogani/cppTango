@@ -240,7 +240,7 @@ set(TESTS asyn_attr_cb
           ConfEventBugClient
           copy_devproxy
           ds_cache
-          filedatabase
+          device_proxy_properties
           helper
           lock
           locked_device
@@ -345,7 +345,7 @@ tango_add_test(NAME "old_tests::attr_types"  COMMAND $<TARGET_FILE:attr_types> $
 tango_add_test(NAME "old_tests::cmd_types"  COMMAND $<TARGET_FILE:cmd_types> ${DEV1} 10)
 tango_add_test(NAME "old_tests::copy_devproxy"  COMMAND $<TARGET_FILE:copy_devproxy> ${DEV1} ${DEV2} ${DEV3} IDL5 5 IDL6 6)
 tango_add_test(NAME "old_tests::ds_cache"  COMMAND $<TARGET_FILE:ds_cache>)
-tango_add_test(NAME "old_tests::filedatabase"  COMMAND $<TARGET_FILE:filedatabase> ${DEV1})
+tango_add_test(NAME "old_tests::device_proxy_properties"  COMMAND $<TARGET_FILE:device_proxy_properties> ${DEV1})
 tango_add_test(NAME "old_tests::lock"  COMMAND $<TARGET_FILE:lock> ${DEV1} ${DEV2})
 tango_add_test(NAME "old_tests::mem_att"  COMMAND $<TARGET_FILE:mem_att> ${DEV1})
 tango_add_test(NAME "old_tests::misc_devattr"  COMMAND $<TARGET_FILE:misc_devattr>)
