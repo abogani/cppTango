@@ -81,6 +81,17 @@ void append_std_entries_to_env(std::vector<std::string> &env, std::string_view c
 
 } // namespace
 
+std::string get_next_file_database_location()
+{
+    static int filedb_count = 0;
+
+    std::stringstream ss;
+    ss << k_filedb_directory_path << "/";
+    ss << detail::g_log_filename_prefix << filedb_count++ << ".db";
+
+    return ss.str();
+}
+
 // TODO:  Don't handle filedb strings directly, but instead manipulate a
 // Tango::Filedatabase to build the database.
 Context::Context(const std::string &instance_name,
@@ -89,15 +100,7 @@ Context::Context(const std::string &instance_name,
                  const std::string &extra_filedb_contents,
                  std::vector<std::string> env)
 {
-    {
-        static int filedb_count = 0;
-
-        std::stringstream ss;
-        ss << k_filedb_directory_path << "/";
-        ss << detail::g_log_filename_prefix << filedb_count++ << ".db";
-
-        m_filedb_path = ss.str();
-    }
+    m_filedb_path = get_next_file_database_location();
 
     std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
 

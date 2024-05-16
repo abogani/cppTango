@@ -23,6 +23,11 @@ std::string make_nodb_fqtrl(int port, std::string_view device_name);
 
 const char *get_current_log_file_path();
 
+/* @brief Return a disc location where a FileDatabase can be created
+ *
+ */
+std::string get_next_file_database_location();
+
 // TODO: Multiple devices and/or multiple device servers
 // TODO: Maybe we want a builder API for this
 class Context
