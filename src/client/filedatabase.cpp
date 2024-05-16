@@ -1842,8 +1842,6 @@ CORBA::Any *FileDatabase ::DbPutClassProperty(CORBA::Any &send)
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbPutClassProperty" << endl;
 
     send >>= data_in;
-    //    for(unsigned int n = 0; n < data_in->length(); n++)
-    //        TANGO_LOG << "DbPutProperty : " << string((*data_in)[n]) << endl;
 
     if((*data_in).length() > 1)
     {
