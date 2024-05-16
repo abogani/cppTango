@@ -22,6 +22,14 @@ std::string create_dbfile(const std::string &device_name)
     return filename;
 }
 
+template <typename T>
+CORBA::Any as_any(T val)
+{
+    CORBA::Any _as_any;
+    _as_any <<= val;
+    return _as_any;
+}
+
 CORBA::Any as_any(std::vector<std::string> values)
 {
     auto *varstringarray = new Tango::DevVarStringArray();
@@ -306,6 +314,67 @@ void assert_class_attr_property(Tango::FileDatabase &db,
     REQUIRE(property_value_from_db == property_values);
 }
 
+std::vector<std::string>
+    get_free_property(Tango::FileDatabase &db, const std::string &object_name, const std::string &property_name)
+{
+    std::vector<std::string> property_query_data{object_name, property_name};
+    auto property_query_as_any = as_any(property_query_data);
+    auto property_as_any = db.DbGetProperty(property_query_as_any);
+    auto list = from_any(property_as_any);
+
+    CAPTURE(list);
+
+    REQUIRE(list.size() >= 5);
+    REQUIRE(object_name == list[0]);
+
+    auto numProperties = parse_as<size_t>(list[1]);
+    REQUIRE(numProperties == 1);
+
+    REQUIRE(property_name == list[2]);
+
+    auto size = parse_as<size_t>(list[3]);
+    if(size == 0)
+    {
+        REQUIRE(list[4] == " ");
+        return {};
+    }
+
+    std::vector<std::string> values{std::next(list.begin(), 4), list.end()};
+    REQUIRE(size == values.size());
+
+    return values;
+}
+
+void put_free_property(Tango::FileDatabase &db,
+                       const std::string &object_name,
+                       const std::string &property_name,
+                       const std::vector<std::string> &values)
+{
+    std::vector<std::string> property{object_name, "1", property_name, std::to_string(values.size())};
+    property.insert(property.end(), values.begin(), values.end());
+    auto property_as_any = as_any(property);
+    db.DbPutProperty(property_as_any);
+}
+
+void assert_free_property(Tango::FileDatabase &db,
+                          const std::string &object_name,
+                          const std::string &property_name,
+                          const std::vector<std::string> &property_values)
+{
+    auto property_values_from_db = get_free_property(db, object_name, property_name);
+    REQUIRE(property_values_from_db == property_values);
+}
+
+void delete_free_property(Tango::FileDatabase &db,
+                          const std::string &object_name,
+                          const std::vector<std::string> &property_names)
+{
+    std::vector<std::string> request{object_name};
+    request.insert(request.end(), property_names.begin(), property_names.end());
+    auto property_as_any = as_any(request);
+    db.DbDeleteProperty(property_as_any);
+}
+
 std::string get_example_db()
 {
     auto source = std::string(TANGO_TEST_CATCH2_RESOURCE_PATH) + "/example_property_file.db";
@@ -408,7 +477,7 @@ SCENARIO("Check that unimplemented calls throw")
         auto db = Tango::FileDatabase(get_example_db());
 
         CORBA::Any any;
-        std::vector<std::function<void(void)>> funcs = {
+        std::vector<std::function<CORBA::Any_var(void)>> funcs = {
             std::bind(&Tango::FileDatabase::DbDeleteClassAttributeProperty, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbImportDevice, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbExportDevice, &db, std::ref(any)),
@@ -418,8 +487,6 @@ SCENARIO("Check that unimplemented calls throw")
             std::bind(&Tango::FileDatabase::DbAddServer, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbDeleteServer, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbExportServer, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbPutProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbDeleteProperty, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbGetAliasDevice, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbGetDeviceAlias, &db, std::ref(any)),
             std::bind(&Tango::FileDatabase::DbGetAttributeAlias, &db, std::ref(any)),
@@ -580,6 +647,89 @@ SCENARIO("Check that DbXXXClassAttributeProperty")
             }
 
             // delete_class_attr_property can not be implemented as DbDeleteClassAttributeProperty is not implemented
+        }
+    }
+}
+
+SCENARIO("DbGetProperty throws exception")
+{
+    GIVEN("a filedatabase")
+    {
+        std::string device_name{"test/device/01"};
+        std::string object_name{Tango::CONTROL_SYSTEM};
+        std::string property_name{"property"};
+
+        const auto db_filename = create_dbfile(device_name);
+
+        WHEN("we feed in the wrong data type")
+        {
+            Tango::FileDatabase db(db_filename);
+
+            CORBA::Long i = 1;
+            auto any = as_any(i);
+
+            REQUIRE_THROWS_MATCHES(
+                db.DbGetProperty(any), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_InvalidCorbaAny));
+        }
+        AND_WHEN("or too few elements")
+        {
+            Tango::FileDatabase db(db_filename);
+
+            auto any = as_any({});
+
+            REQUIRE_THROWS_MATCHES(
+                db.DbGetProperty(any), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_InvalidCorbaAny));
+        }
+    }
+}
+
+SCENARIO("DbGetProperty returns nothing")
+{
+    GIVEN("a filedatabase")
+    {
+        std::string device_name{"test/device/01"};
+        std::string object_name{Tango::CONTROL_SYSTEM};
+        std::string property_name{"property"};
+
+        const auto db_filename = create_dbfile(device_name);
+
+        WHEN("when we request a non-existing property from a non existing object")
+        {
+            Tango::FileDatabase db(db_filename);
+            assert_free_property(db, object_name, property_name, {});
+        }
+    }
+}
+
+SCENARIO("Check that DbXXXProperty")
+{
+    GIVEN("works as expected")
+    {
+        std::string device_name{"test/device/01"};
+        std::string object_name{Tango::CONTROL_SYSTEM};
+        std::string property_name{"property"};
+        std::vector<std::string> property_values{"someValue", "anotherOne"};
+
+        const auto db_filename = create_dbfile(device_name);
+
+        WHEN("adding and deleting a property")
+        {
+            {
+                Tango::FileDatabase db(db_filename);
+                put_free_property(db, object_name, property_name, property_values);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                assert_free_property(db, object_name, property_name, property_values);
+            }
+
+            {
+                Tango::FileDatabase db(db_filename);
+                delete_free_property(db, object_name, {property_name});
+                auto results = get_free_property(db, object_name, property_name);
+                REQUIRE(results.empty());
+            }
         }
     }
 }

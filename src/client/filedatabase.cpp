@@ -54,8 +54,8 @@
 // DbGetDeviceDomainList
 // DbGetDeviceFamilyList
 // DbGetProperty                        done
-// DbPutProperty
-// DbDeleteProperty
+// DbPutProperty                        done
+// DbDeleteProperty                     done
 // DbGetAliasDevice
 // DbGetDeviceAlias
 // DbGetAttributeAlias
@@ -2464,14 +2464,150 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
     return any_ptr;
 }
 
-CORBA::Any_var FileDatabase ::DbPutProperty(CORBA::Any &)
+//--------------------------------------------------------
+/**
+ *	Command DbPutProperty related method
+ *	Description: Create / Update free object property(ies)
+ *
+ *	@param argin Str[0] = Object name
+ *               Str[1] = Property number
+ *               Str[2] = Property name
+ *               Str[3] = Property value number
+ *               Str[4] = Property value 1
+ *               Str[n] = Property value n
+ *               ....
+ */
+//--------------------------------------------------------
+CORBA::Any_var FileDatabase::DbPutProperty(CORBA::Any &send)
 {
-    TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
+    const DevVarStringArray *data_in = nullptr;
+
+    TANGO_LOG_DEBUG << "FILEDATABASE: entering DbPutProperty" << endl;
+
+    if(!(send >>= data_in))
+    {
+        std::stringstream ss;
+        ss << "Incorrect type passed to FileDatabase::DbPutProperty. Expecting "
+           << tango_type_traits<DevVarStringArray>::type_value() << ", found " << detail::corba_any_to_type_name(send);
+        TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, ss.str().c_str());
+    }
+
+    if(data_in->length() < 2)
+    {
+        std::stringstream ss;
+        ss << "Invalid number of arguments passed to FileDatabase::DbPutProperty. Expecting at least 2, found "
+           << data_in->length();
+        TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, ss.str().c_str());
+    }
+
+    auto &free_objects = m_server.free_objects;
+    const char *obj_name = (*data_in)[0].in();
+
+    auto obj = std::find_if(free_objects.begin(), free_objects.end(), hasName<t_free_object>(obj_name));
+
+    if(obj == free_objects.end())
+    {
+        obj = free_objects.insert(free_objects.end(), new t_free_object{obj_name, {}});
+    }
+
+    auto &prop_list = (*obj)->properties;
+
+    unsigned int n_properties = 0;
+    sscanf((*data_in)[1], "%6u", &n_properties);
+    unsigned int index = 2;
+
+    for(unsigned int i = 0; i < n_properties; i++)
+    {
+        const char *prop_name = (*data_in)[index].in();
+        index++;
+
+        auto prop = std::find_if(prop_list.begin(), prop_list.end(), hasName<t_property>(prop_name));
+
+        if(prop == prop_list.end())
+        {
+            prop = prop_list.insert(prop_list.end(), new t_property{prop_name, {}});
+        }
+
+        unsigned int n_values = 0;
+        sscanf((*data_in)[index], "%6u", &n_values);
+        index++;
+
+        auto &value = (*prop)->value;
+        value.resize(n_values);
+
+        for(unsigned int j = 0; j < n_values; j++)
+        {
+            value[j] = (*data_in)[index];
+            index++;
+        }
+    }
+
+    write_file();
+
+    return {};
 }
 
-CORBA::Any_var FileDatabase ::DbDeleteProperty(CORBA::Any &)
+//--------------------------------------------------------
+/**
+ *	Command DbDeleteProperty related method
+ *	Description: Delete free property from database
+ *
+ *	@param argin Str[0]  = Object name
+ *               Str[1] = Property name
+ *               Str[n] = Property name
+ */
+//--------------------------------------------------------
+CORBA::Any_var FileDatabase::DbDeleteProperty(CORBA::Any &send)
 {
-    TANGO_THROW_EXCEPTION(API_NotSupported, "Call to a Filedatabase not implemented.");
+    const DevVarStringArray *data_in = nullptr;
+
+    TANGO_LOG_DEBUG << "FILEDATABASE: entering DbDeleteProperty" << endl;
+
+    if(!(send >>= data_in))
+    {
+        std::stringstream ss;
+        ss << "Incorrect type passed to FileDatabase::DbDeleteProperty. Expecting "
+           << tango_type_traits<DevVarStringArray>::type_value() << ", found " << detail::corba_any_to_type_name(send);
+        TANGO_THROW_EXCEPTION(API_InvalidArgs, ss.str().c_str());
+    }
+
+    if(data_in->length() < 2)
+    {
+        std::stringstream ss;
+        ss << "Invalid number of arguments passed to FileDatabase::DbDeleteProperty. Expecting at least 2, found "
+           << data_in->length();
+        TANGO_THROW_EXCEPTION(API_InvalidArgs, ss.str().c_str());
+    }
+
+    auto &free_objects = m_server.free_objects;
+    const char *obj_name = (*data_in)[0].in();
+
+    auto obj = std::find_if(free_objects.begin(), free_objects.end(), hasName<t_free_object>(obj_name));
+
+    if(obj == free_objects.end())
+    {
+        return {};
+    }
+
+    auto &prop_list = (*obj)->properties;
+
+    for(CORBA::ULong i = 1; i < data_in->length(); ++i)
+    {
+        const char *prop_name = (*data_in)[i].in();
+
+        auto prop = std::find_if(prop_list.begin(), prop_list.end(), hasName<t_property>(prop_name));
+
+        if(prop == prop_list.end())
+        {
+            continue;
+        }
+
+        prop_list.erase(prop);
+    }
+
+    write_file();
+
+    return {};
 }
 
 CORBA::Any_var FileDatabase ::DbGetAliasDevice(CORBA::Any &)
