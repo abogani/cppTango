@@ -200,7 +200,17 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                     subscriber_info.push_back(epos->second.obj_name);
                     subscriber_info.emplace_back("subscribe");
                     subscriber_info.push_back(epos->second.event_name);
-                    subscriber_info.emplace_back("0");
+
+                    std::string::size_type apos = epos->second.event_name.find("alarm");
+                    if(apos < epos->second.event_name.length() ) {
+                        std::stringstream ss;
+                        ss << DevVersion;
+                        subscriber_info.emplace_back(ss.str());
+                    }
+                    else
+                    {
+                        subscriber_info.emplace_back("0");
+                    }
                     subscriber_in << subscriber_info;
 
                     subscriber_out =

@@ -1163,6 +1163,13 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                     print = true;
                 }
             }
+            else if(local_event_type == "alarm")
+            {
+                if(att.event_alarm6_subscription != 0)
+                {
+                    print = true;
+                }
+            }
         }
         else if(pipe_event)
         {
