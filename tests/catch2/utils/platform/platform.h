@@ -47,8 +47,8 @@ struct StartServerResult
  *
  * Wait for the server to output ready_string before returning.
  */
-StartServerResult start_server(const std::vector<const char *> &args,
-                               const std::vector<const char *> &env,
+StartServerResult start_server(const std::vector<std::string> &args,
+                               const std::vector<std::string> &env,
                                const std::string &redirect_filename,
                                const std::string &ready_string,
                                std::chrono::milliseconds timeout);

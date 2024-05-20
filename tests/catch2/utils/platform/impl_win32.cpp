@@ -5,8 +5,8 @@ namespace TangoTest::platform
 
 void init() { }
 
-StartServerResult start_server([[maybe_unused]] const std::vector<const char *> &args,
-                               [[maybe_unused]] const std::vector<const char *> &env,
+StartServerResult start_server([[maybe_unused]] const std::vector<std::string> &args,
+                               [[maybe_unused]] const std::vector<std::string> &env,
                                [[maybe_unused]] const std::string &redirect_filename,
                                [[maybe_unused]] const std::string &ready_string,
                                [[maybe_unused]] std::chrono::milliseconds timeout)

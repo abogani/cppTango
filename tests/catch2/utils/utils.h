@@ -39,7 +39,7 @@ class Context
     Context(const std::string &instance_name,
             const std::string &tmpl_name,
             int idlversion,
-            std::vector<const char *> env = {});
+            std::vector<std::string> env = {});
     /**
      * @brief Create a Tango Test Context with a single device server in filedb mode
      *
@@ -55,7 +55,7 @@ class Context
             const std::string &tmpl_name,
             int idlversion,
             const std::string &extra_filedb_contents,
-            std::vector<const char *> env = {});
+            std::vector<std::string> env = {});
 
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
