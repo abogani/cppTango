@@ -630,7 +630,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
         bool inc_ctr{true};
         for(std::vector<int>::iterator ite{client_libs.begin()}; ite != client_libs.end(); ++ite)
         {
-            bool need_free{false}, name_changed{false};
+            bool need_free{false};
 
             struct SuppliedEventData sent_value
             {
@@ -641,8 +641,6 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
             case 6:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
-                ev_name = EVENT_COMPAT_IDL5 + ev_name;
-                name_changed = true;
             }
             break;
 
@@ -677,10 +675,6 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
                     delete sent_value.attr_val_5;
                     sent_value.attr_val_5 = nullptr;
                 }
-            }
-            if(name_changed)
-            {
-                ev_name = EventName[ALARM_EVENT];
             }
         }
 

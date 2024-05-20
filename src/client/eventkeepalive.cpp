@@ -202,7 +202,8 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                     subscriber_info.push_back(epos->second.event_name);
 
                     std::string::size_type apos = epos->second.event_name.find("alarm");
-                    if(apos < epos->second.event_name.length() ) {
+                    if(apos < epos->second.event_name.length())
+                    {
                         std::stringstream ss;
                         ss << DevVersion;
                         subscriber_info.emplace_back(ss.str());
@@ -1522,7 +1523,8 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
         }
 
-        if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "quality") || (ev_name == "archive") || (ev_name == "user_event"))
+        if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "quality") || (ev_name == "archive") ||
+           (ev_name == "user_event"))
         {
             //
             // For attribute data event
@@ -1956,8 +1958,8 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     // For attribute data event
     //
 
-    if((vpos->event_name == "change") || (vpos->event_name == "alarm") || (vpos->event_name == "quality") || (vpos->event_name == "archive") ||
-       (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
+    if((vpos->event_name == "change") || (vpos->event_name == "alarm") || (vpos->event_name == "quality") ||
+       (vpos->event_name == "archive") || (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
     {
         DeviceAttribute *da = nullptr;
         FwdEventData *event_data = new FwdEventData(vpos->device, domain_name, vpos->event_name, da, err);

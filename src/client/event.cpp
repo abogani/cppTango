@@ -1544,8 +1544,8 @@ int EventConsumer::connect_event(DeviceProxy *device,
     //
 
     bool add_compat_info = false;
-    if(event == ATTR_CONF_EVENT || event == CHANGE_EVENT || event == ALARM_EVENT || event == PERIODIC_EVENT ||
-       event == ARCHIVE_EVENT || event == USER_EVENT)
+    if(event == ATTR_CONF_EVENT || event == CHANGE_EVENT || event == PERIODIC_EVENT || event == ARCHIVE_EVENT ||
+       event == USER_EVENT)
     {
         add_compat_info = true;
     }

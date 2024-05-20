@@ -1057,7 +1057,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         std::string event_topic;
         bool add_compat_info = false;
         if((event != EventName[PIPE_EVENT]) && (event != EventName[INTERFACE_CHANGE_EVENT]) &&
-           (event != EventName[DATA_READY_EVENT]))
+           (event != EventName[DATA_READY_EVENT]) && (event != EventName[ALARM_EVENT]))
         {
             add_compat_info = true;
         }
