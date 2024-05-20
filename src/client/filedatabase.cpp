@@ -2437,7 +2437,7 @@ CORBA::Any *FileDatabase::DbGetProperty(CORBA::Any &send)
     // Allocate space for the properties up-front to avoid too may allocations.
     //
     // Here we are allocating the minimum amount of space required for each
-    // property.  That is, slots for:
+    // property (3) plus object and property number (2). That is, slots for:
     //
     //  - The name
     //  - The number of elements of the value
@@ -2446,7 +2446,7 @@ CORBA::Any *FileDatabase::DbGetProperty(CORBA::Any &send)
     //
     // Later we allocate more space if we find that there are multiple elements
     // for a value.
-    data_out->length(data_out->length() + 3 * num_prop);
+    data_out->length(2 + 3 * num_prop);
 
     size_t out_index = 0;
     (*data_out)[out_index] = Tango::string_dup(obj_name);
