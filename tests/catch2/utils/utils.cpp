@@ -27,6 +27,12 @@ std::string reason(const Tango::DevFailed &e)
 {
     return std::string(e.errors[0].reason.in());
 }
+
+std::string make_class_name(const std::string &tmpl_name, int idlversion)
+{
+    return tmpl_name + "_" + std::to_string(idlversion);
+}
+
 } // namespace
 
 namespace TangoTest
@@ -81,28 +87,31 @@ void append_std_entries_to_env(std::vector<std::string> &env, std::string_view c
 
 } // namespace
 
+std::string get_next_file_database_location()
+{
+    static int filedb_count = 0;
+
+    std::stringstream ss;
+    ss << k_filedb_directory_path << "/";
+    ss << detail::g_log_filename_prefix << filedb_count++ << ".db";
+
+    return ss.str();
+}
+
 // TODO:  Don't handle filedb strings directly, but instead manipulate a
 // Tango::Filedatabase to build the database.
+// Needs Filedatabase::DbAddDevice/DbAddServer implemented to do that.
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
                  const std::string &extra_filedb_contents,
                  std::vector<std::string> env)
 {
-    {
-        static int filedb_count = 0;
-
-        std::stringstream ss;
-        ss << k_filedb_directory_path << "/";
-        ss << detail::g_log_filename_prefix << filedb_count++ << ".db";
-
-        m_filedb_path = ss.str();
-    }
-
-    std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
+    m_filedb_path = get_next_file_database_location();
+    m_class_name = make_class_name(tmpl_name, idlversion);
 
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
-                   << "\"" << class_name << "\" and filedb \"" << *m_filedb_path << "\".";
+                   << "\"" << m_class_name << "\" and filedb \"" << *m_filedb_path << "\".";
 
     {
         std::ofstream out{*m_filedb_path};
@@ -120,11 +129,11 @@ Context::Context(const std::string &instance_name,
             (out << ... << args);
         };
 
-        write_and_log("TestServer/", instance_name, "/DEVICE/", class_name, ": ", "TestServer/tests/1\n");
+        write_and_log("TestServer/", instance_name, "/DEVICE/", m_class_name, ": ", "TestServer/tests/1\n");
         write_and_log(extra_filedb_contents);
     }
 
-    append_std_entries_to_env(env, class_name);
+    append_std_entries_to_env(env, m_class_name);
 
     std::string file_arg = std::string{"-file="} + *m_filedb_path;
     std::vector<std::string> extra_args = {file_arg};
@@ -139,19 +148,19 @@ Context::Context(const std::string &instance_name,
                  int idlversion,
                  std::vector<std::string> env)
 {
-    std::string class_name = tmpl_name + "_" + std::to_string(idlversion);
+    m_class_name = make_class_name(tmpl_name, idlversion);
 
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
-        ss << class_name << "::TestServer/tests/1";
+        ss << m_class_name << "::TestServer/tests/1";
         return ss.str();
     }();
 
     TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
-                   << "\"" << class_name << "\"";
+                   << "\"" << m_class_name << "\"";
 
-    append_std_entries_to_env(env, class_name);
+    append_std_entries_to_env(env, m_class_name);
 
     std::vector<std::string> extra_args = {"-nodb", "-dlist", dlist_arg};
     m_server.start(instance_name, extra_args, env);
@@ -180,6 +189,21 @@ std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 void Context::stop_server(std::chrono::milliseconds timeout)
 {
     m_server.stop(timeout);
+}
+
+std::string Context::get_file_database_path()
+{
+    if(m_filedb_path.has_value())
+    {
+        return *m_filedb_path;
+    }
+
+    throw std::runtime_error("Non existing filedatabase");
+}
+
+std::string Context::get_class_name()
+{
+    return m_class_name;
 }
 
 // Listener to cleanup the Tango client ApiUtil singleton

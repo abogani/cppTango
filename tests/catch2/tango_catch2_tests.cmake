@@ -54,6 +54,8 @@ function(tango_catch2_tests_create)
         ${PLATFORM_IMPL})
 
     target_link_libraries(Catch2Tests PUBLIC tango Catch2::Catch2 Threads::Threads)
+    target_link_libraries(Catch2Tests PRIVATE $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
+
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
 
     if (WIN32)

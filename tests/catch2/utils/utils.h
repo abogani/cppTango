@@ -23,6 +23,11 @@ std::string make_nodb_fqtrl(int port, std::string_view device_name);
 
 const char *get_current_log_file_path();
 
+/* @brief Return a disc location where a FileDatabase can be created
+ *
+ */
+std::string get_next_file_database_location();
+
 // TODO: Multiple devices and/or multiple device servers
 // TODO: Maybe we want a builder API for this
 class Context
@@ -74,10 +79,21 @@ class Context
      */
     void stop_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
+    /*
+     * Return the disc location of the FileDatabase, throws if there is none.
+     */
+    std::string get_file_database_path();
+
+    /*
+     * Return the name of the Tango device class
+     */
+    std::string get_class_name();
+
   private:
     std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;
     std::vector<std::string> env_owner;
+    std::string m_class_name;
 };
 
 class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase

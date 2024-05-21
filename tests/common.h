@@ -48,6 +48,7 @@ constexpr const char *type_name = type_name_impl<T>::value;
 SPECIALIZE_TYPE_NAME(int);
 SPECIALIZE_TYPE_NAME(long);
 SPECIALIZE_TYPE_NAME(double);
+SPECIALIZE_TYPE_NAME(size_t);
 
   #undef SPECIALIZE_TYPE_NAME
 
