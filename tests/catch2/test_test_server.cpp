@@ -75,8 +75,8 @@ SCENARIO("test servers can be started and stopped")
 
     GIVEN("a server started with basic device class")
     {
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "Empty::TestServer/tests/1"};
-        std::vector<const char *> env;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "Empty::TestServer/tests/1"};
+        std::vector<std::string> env;
 
         TestServer server;
         server.start("self_test", extra_args, env);
@@ -273,8 +273,8 @@ SCENARIO("test server crashes and timeouts are reported")
     GIVEN("a server that crashes on start")
     {
         TestServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitCrash::TestServer/tests/1"};
-        std::vector<const char *> env;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "InitCrash::TestServer/tests/1"};
+        std::vector<std::string> env;
 
         WHEN("we start the server")
         {
@@ -308,8 +308,8 @@ SCENARIO("test server crashes and timeouts are reported")
     GIVEN("a server that crashes on during a test")
     {
         TestServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "DuringCrash::TestServer/tests/1"};
-        std::vector<const char *> env;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "DuringCrash::TestServer/tests/1"};
+        std::vector<std::string> env;
 
         server.start("self_test", extra_args, env);
 
@@ -342,8 +342,8 @@ SCENARIO("test server crashes and timeouts are reported")
     GIVEN("a server that crashes on exit")
     {
         TestServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitCrash::TestServer/tests/1"};
-        std::vector<const char *> env;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "ExitCrash::TestServer/tests/1"};
+        std::vector<std::string> env;
 
         server.start("self_test", extra_args, env);
 
@@ -367,8 +367,8 @@ SCENARIO("test server crashes and timeouts are reported")
     GIVEN("a server that times out on startup")
     {
         TestServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "InitTimeout::TestServer/tests/1"};
-        std::vector<const char *> env;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "InitTimeout::TestServer/tests/1"};
+        std::vector<std::string> env;
 
         WHEN("we start the server")
         {
@@ -403,8 +403,8 @@ SCENARIO("test server crashes and timeouts are reported")
     GIVEN("a sever that times out on exit")
     {
         TestServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
-        std::vector<const char *> env;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
+        std::vector<std::string> env;
 
         server.start("self_test", extra_args, env);
 
@@ -465,8 +465,8 @@ SCENARIO("The env parameter for starting the server works")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TestServer server;
-        std::vector<const char *> extra_args = {"-nodb", "-dlist", "TestEnvDS::TestServer/tests/1"};
-        std::vector<const char *> env{"TANGO_TEST_ENV=abcd"};
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "TestEnvDS::TestServer/tests/1"};
+        std::vector<std::string> env{"TANGO_TEST_ENV=abcd"};
         server.start("self_test", extra_args, env);
 
         std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");

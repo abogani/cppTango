@@ -125,43 +125,41 @@ int TestServer::s_next_port;
 std::unique_ptr<Logger> TestServer::s_logger;
 
 void TestServer::start(const std::string &instance_name,
-                       const std::vector<const char *> &extra_args,
-                       const std::vector<const char *> &extra_env,
+                       const std::vector<std::string> &extra_args,
+                       const std::vector<std::string> &extra_env,
                        std::chrono::milliseconds timeout)
 {
     using Kind = platform::StartServerResult::Kind;
 
+    TANGO_ASSERT(instance_name != "");
+
     m_redirect_file = g_filename_builder.build();
 
-    m_args.assign({
+    std::vector<std::string> args{
         "TestServer",
         instance_name.c_str(),
         "-ORBendPoint",
-        nullptr, // filled in later
-    });
+        "", // filled in later
+    };
 
-    for(const auto *arg : extra_args)
+    for(const auto &arg : extra_args)
     {
-        m_args.push_back(arg);
+        args.push_back(arg);
     }
 
-    m_args.push_back(nullptr);
-
-    m_env.assign({
+    std::vector<std::string> env{
 #ifdef __APPLE__
         "PATH="
 #endif
-    });
+    };
 
-    for(const auto *e : extra_env)
+    for(const auto &e : extra_env)
     {
-        m_env.push_back(e);
+        env.push_back(e);
     }
 
-    m_env.push_back(nullptr);
-
     // This will point to the slot after "-ORBendPoint"
-    auto end_point_slot = std::find(m_args.begin(), m_args.end(), nullptr);
+    auto end_point_slot = std::find(args.begin(), args.end(), "");
 
     std::uniform_int_distribution dist{k_min_port, k_max_port};
     for(int i = 0; i < k_num_port_tries; ++i)
@@ -182,18 +180,17 @@ void TestServer::start(const std::string &instance_name,
             std::swap(m_port, s_next_port);
         } while(std::find(g_used_ports.begin(), g_used_ports.end(), m_port) != g_used_ports.end());
 
-        std::string end_point = [&]()
+        *end_point_slot = [&]()
         {
             std::stringstream ss;
             ss << "giop:tcp::" << m_port;
             return ss.str();
         }();
-        *end_point_slot = end_point.c_str();
 
         TANGO_LOG_INFO << "Starting server with arguments "
-                       << Catch::StringMaker<std::vector<const char *>>::convert(m_args) << " and environment "
-                       << Catch::StringMaker<std::vector<const char *>>::convert(m_env);
-        auto start_result = platform::start_server(m_args, m_env, m_redirect_file, k_ready_string, timeout);
+                       << Catch::StringMaker<std::vector<std::string>>::convert(args) << " and environment "
+                       << Catch::StringMaker<std::vector<std::string>>::convert(env);
+        auto start_result = platform::start_server(args, env, m_redirect_file, k_ready_string, timeout);
 
         switch(start_result.kind)
         {

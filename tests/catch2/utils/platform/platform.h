@@ -42,13 +42,23 @@ struct StartServerResult
 
 // The following two functions are to be defined by each platform implementation
 
-/** Start the server with the given args redirecting output to the file
- * specified by redirect_filename.
+/**
+ * @brief Start a TestServer process
  *
- * Wait for the server to output ready_string before returning.
+ * All memory passed to this function is copied to the child process as
+ * required.
+ *
+ * @param args - arguments to pass to the TestServer binary.
+ *              These strings will end up as the `argv` array for the process.
+ * @param env - environment to provide for the child process.
+ *              Each entry must be of the form "KEY=VALUE" or "KEY=".
+ * @param redirect_filename - file to redirect all output to
+ * @param ready_string - string to wait for to know when ready
+ * @param timeout - how long until we give up waiting for `ready_string`
+ * @return - the outcome of starting the server. See TangoTest::platform::StartServerResult.
  */
-StartServerResult start_server(const std::vector<const char *> &args,
-                               const std::vector<const char *> &env,
+StartServerResult start_server(const std::vector<std::string> &args,
+                               const std::vector<std::string> &env,
                                const std::string &redirect_filename,
                                const std::string &ready_string,
                                std::chrono::milliseconds timeout);
@@ -68,8 +78,14 @@ struct StopServerResult
     int exit_status;
 };
 
-/** Stop the server specified by handle.
+/**
+ * @brief Stop a server
  *
+ * @param handle - a server returned by
+ *                 TangoTest::platform::start_server
+ * @param timeout - how long until we give up stopping the server
+ * @return - the outcome of stopping the server. See
+ *           TangoTest::platform::StopServerResult
  */
 StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout);
 

@@ -105,15 +105,13 @@ void init()
     }
 }
 
-StartServerResult start_server(const std::vector<const char *> &args,
-                               const std::vector<const char *> &env,
+StartServerResult start_server(const std::vector<std::string> &args,
+                               const std::vector<std::string> &env,
                                const std::string &redirect_filename,
                                const std::string &ready_string,
                                std::chrono::milliseconds timeout)
 {
     using Kind = StartServerResult::Kind;
-
-    TANGO_ASSERT(args.back() == nullptr);
 
     StartServerResult result;
 
@@ -162,9 +160,28 @@ StartServerResult start_server(const std::vector<const char *> &args,
 
         unix::kill_self_on_parent_death(ppid);
 
-        environ = (char **) env.data();
+        auto make_cstr_buffer = [](const std::vector<std::string> &items)
+        {
+            std::vector<const char *> result;
 
-        if(execv(k_test_server_binary_path, (char *const *) args.data()) == -1)
+            result.reserve(items.size() + 1);
+
+            for(const auto &entry : items)
+            {
+                result.emplace_back(entry.c_str());
+            }
+
+            result.emplace_back(nullptr);
+
+            return result;
+        };
+
+        std::vector<const char *> env_buffer = make_cstr_buffer(env);
+        std::vector<const char *> arg_buffer = make_cstr_buffer(args);
+
+        environ = const_cast<char **>(env_buffer.data());
+
+        if(execv(k_test_server_binary_path, const_cast<char *const *>(arg_buffer.data())) == -1)
         {
             perror("execv()");
             exit(1);
