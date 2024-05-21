@@ -35,7 +35,7 @@ CORBA::Any as_any(std::vector<std::string> values)
     return _as_any;
 }
 
-std::vector<std::string> from_any(const CORBA::Any &any)
+std::vector<std::string> from_any(const CORBA::Any_var &any)
 {
     auto *varstringarray = new Tango::DevVarStringArray();
     any >>= varstringarray;
@@ -70,8 +70,8 @@ std::vector<std::string>
 {
     std::vector<std::string> property_query_data{device_name, property_name};
     auto property_query_as_any = as_any(property_query_data);
-    auto *property_as_any = db.DbGetDeviceProperty(property_query_as_any);
-    auto property = from_any(*property_as_any);
+    auto property_as_any = db.DbGetDeviceProperty(property_query_as_any);
+    auto property = from_any(property_as_any);
     REQUIRE(property.size() > 4);
     REQUIRE(device_name == property[0]);
     REQUIRE("1" == property[1]);
@@ -138,8 +138,8 @@ std::vector<std::string>
 {
     std::vector<std::string> property_query_data{class_name, property_name};
     auto property_query_as_any = as_any(property_query_data);
-    auto *property_as_any = db.DbGetClassProperty(property_query_as_any);
-    auto property = from_any(*property_as_any);
+    auto property_as_any = db.DbGetClassProperty(property_query_as_any);
+    auto property = from_any(property_as_any);
     REQUIRE(property.size() > 3);
     REQUIRE(class_name == property[0]);
     REQUIRE("1" == property[1]);
@@ -196,8 +196,8 @@ std::vector<std::string> get_device_attr_property(Tango::FileDatabase &db,
 {
     std::vector<std::string> property_query_data{device_name, attribute_name};
     auto property_query_as_any = as_any(property_query_data);
-    auto *property_as_any = db.DbGetDeviceAttributeProperty(property_query_as_any);
-    auto list = from_any(*property_as_any);
+    auto property_as_any = db.DbGetDeviceAttributeProperty(property_query_as_any);
+    auto list = from_any(property_as_any);
 
     CAPTURE(list);
 
@@ -261,8 +261,8 @@ std::vector<std::string> get_class_attr_property(Tango::FileDatabase &db,
 {
     std::vector<std::string> property_query_data{class_name, attribute_name};
     auto property_query_as_any = as_any(property_query_data);
-    auto *property_as_any = db.DbGetClassAttributeProperty(property_query_as_any);
-    auto list = from_any(*property_as_any);
+    auto property_as_any = db.DbGetClassAttributeProperty(property_query_as_any);
+    auto list = from_any(property_as_any);
 
     CAPTURE(list);
 
@@ -348,8 +348,8 @@ SCENARIO("a file with only a device declaration")
         {
             auto device_list_query = as_any({"DeviceServer/instance", "Class"});
             std::vector<std::string> expected_device_list{device_name};
-            auto *device_list_any = valid_db.DbGetDeviceList(device_list_query);
-            auto device_list = from_any(*device_list_any);
+            auto device_list_any = valid_db.DbGetDeviceList(device_list_query);
+            auto device_list = from_any(device_list_any);
             REQUIRE(expected_device_list == device_list);
         }
     }
