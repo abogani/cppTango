@@ -451,7 +451,7 @@ SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
     int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
-        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        TangoTest::Context ctx{"no_polling", "AttrPollingEvents", idlver};
         std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
         AND_GIVEN("an attribute with no polling")
         {
@@ -459,13 +459,89 @@ SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
 
             TangoTest::CallbackMock<Tango::EventData> callback;
 
-            WHEN("we subscribe to alarm events")
+            WHEN("we subscribe with stateless=false to alarm events")
             {
                 THEN("the subscription fails")
                 {
-                    REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
+                    REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, false),
                                            Tango::DevFailed,
                                            TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                }
+            }
+
+            WHEN("we subscribe with stateless=true to alarm events")
+            {
+                THEN("the subscription succeeds")
+                {
+                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, true));
+
+                    AND_THEN("we receive an error event")
+                    {
+                        auto maybe_initial_event = callback.pop_next_event();
+                        REQUIRE(maybe_initial_event.has_value());
+                        REQUIRE(maybe_initial_event->err);
+                        REQUIRE(std::string(Tango::API_AttributePollingNotStarted) ==
+                                maybe_initial_event->errors[0].reason.in());
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Alarm events work with stateless=true")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("a polled attribute with a VALID value")
+        {
+            std::string att{"attr_test"};
+
+            REQUIRE(device->is_attribute_polled(att));
+
+            Tango::DeviceAttribute v;
+            v.set_name(att);
+            v << ATTR_INIT_VALUE;
+            REQUIRE_NOTHROW(device->write_attribute(v));
+
+            AND_GIVEN("a stateless alarm event subscription to that attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, true));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                WHEN("we set the attribute to a max WARNING value")
+                {
+                    Tango::DeviceAttribute v;
+                    v.set_name(att);
+                    v << ATTR_MAX_WARNING + 1;
+                    REQUIRE_NOTHROW(device->write_attribute(v));
+
+                    THEN("an alarm event is generated with ATTR_WARNING")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "alarm");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_WARNING);
+
+                        std::vector<Tango::DevDouble> expected{ATTR_MAX_WARNING + 1, ATTR_MAX_WARNING + 1};
+                        REQUIRE_THAT(*maybe_event->attr_value, TangoTest::AnyLikeContains(expected));
+                    }
                 }
             }
         }
