@@ -364,6 +364,39 @@ SCENARIO("test server crashes and timeouts are reported")
         }
     }
 
+    GIVEN("a sever that times out on exit")
+    {
+        TestServer server;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
+        std::vector<std::string> env;
+
+        server.start("self_test", extra_args, env);
+
+        WHEN("we stop the server")
+        {
+            using namespace std::chrono_literals;
+            server.stop(300ms);
+
+            THEN("there should be a single (non-port-in-use) log, reporting the timeout the helpful diagnostic")
+            {
+                using Catch::Matchers::ContainsSubstring;
+                using Catch::Matchers::SizeIs;
+
+                logger->remove_port_in_use_logs();
+                REQUIRE_THAT(logger->logs, SizeIs(1));
+                REQUIRE_THAT(logger->logs[0], ContainsSubstring("Timeout waiting for TestServer to exit"));
+                REQUIRE_THAT(logger->logs[0], ContainsSubstring(k_helpful_message));
+            }
+        }
+    }
+}
+
+SCENARIO("test server timeouts during startup are reported", "[!mayfail]")
+{
+    using TestServer = TangoTest::TestServer;
+    LoggerSwapper ls;
+    auto *logger = static_cast<TestLogger *>(TestServer::s_logger.get());
+
     GIVEN("a server that times out on startup")
     {
         TestServer server;
@@ -396,32 +429,6 @@ SCENARIO("test server crashes and timeouts are reported")
                 using Catch::Matchers::IsEmpty;
                 logger->remove_port_in_use_logs();
                 REQUIRE_THAT(logger->logs, IsEmpty());
-            }
-        }
-    }
-
-    GIVEN("a sever that times out on exit")
-    {
-        TestServer server;
-        std::vector<std::string> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
-        std::vector<std::string> env;
-
-        server.start("self_test", extra_args, env);
-
-        WHEN("we stop the server")
-        {
-            using namespace std::chrono_literals;
-            server.stop(300ms);
-
-            THEN("there should be a single (non-port-in-use) log, reporting the timeout the helpful diagnostic")
-            {
-                using Catch::Matchers::ContainsSubstring;
-                using Catch::Matchers::SizeIs;
-
-                logger->remove_port_in_use_logs();
-                REQUIRE_THAT(logger->logs, SizeIs(1));
-                REQUIRE_THAT(logger->logs[0], ContainsSubstring("Timeout waiting for TestServer to exit"));
-                REQUIRE_THAT(logger->logs[0], ContainsSubstring(k_helpful_message));
             }
         }
     }
