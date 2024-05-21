@@ -793,6 +793,10 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                     {
                         client_release = 3;
                     }
+                    else if(event == EventName[ALARM_EVENT])
+                    {
+                        client_release = 6;
+                    }
                     else
                     {
                         //
