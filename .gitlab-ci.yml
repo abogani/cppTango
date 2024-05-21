@@ -25,6 +25,7 @@ variables: &variables
   DEBIAN_11_IMAGE: "debian11:v7"
   UBUNTU_20_IMAGE: "ubuntu-20.04:v8"
   UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v7"
+  UBUNTU_22_IMAGE: "ubuntu-22.04:v10"
   UBUNTU_24_IMAGE: "ubuntu-24.04:v9"
   LLVM_LATEST_IMAGE: "llvm-latest:v12"
   GCC_LATEST_IMAGE: "gcc-latest:v8"
@@ -148,6 +149,12 @@ ubuntu-20.04:
   variables:
     <<: *variables
     OS_TYPE: "${UBUNTU_20_IMAGE}"
+
+ubuntu-22.04:
+  <<: *job-template-with-tests
+  variables:
+    <<: *variables
+    OS_TYPE: "${UBUNTU_22_IMAGE}"
 
 ubuntu-24.04:
   <<: *job-template-with-tests
