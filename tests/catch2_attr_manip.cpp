@@ -1,8 +1,4 @@
-#include <tango/tango.h>
-
-#include <memory>
-
-#include "utils/utils.h"
+#include "catch2_common.h"
 
 static constexpr double SERVER_VALUE = 8.888;
 

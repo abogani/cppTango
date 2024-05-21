@@ -4,7 +4,7 @@
   #include <process.h>
 #endif
 
-#include "common.h"
+#include "old_common.h"
 
 #define STATE_LOG_MESSAGE "State: Number of attribute(s) to read: "
 

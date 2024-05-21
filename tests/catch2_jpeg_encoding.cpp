@@ -1,12 +1,11 @@
+#include "catch2_common.h"
+
 #include <ctime>
 #include <cstdio>
 #include <iterator>
 #include <fstream>
 #include <memory>
 #include <vector>
-
-#include <utils/platform/platform.h>
-#include <utils/utils.h>
 
 // On those tests we encode and decode images from and to raw and jpeg formats.
 // These transformations are dependant on the jpeg implementation used.

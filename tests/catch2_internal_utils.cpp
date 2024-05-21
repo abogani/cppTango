@@ -1,9 +1,6 @@
-#include <tango/tango.h>
-#include <utils/utils.h>
+#include "catch2_common.h"
 
 #include <tango/internal/utils.h>
-
-#include "common.h"
 
 template <typename T>
 struct TestData

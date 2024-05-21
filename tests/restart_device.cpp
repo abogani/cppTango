@@ -1,6 +1,6 @@
 // NOLINTBEGIN(*)
 
-#include "common.h"
+#include "old_common.h"
 
 /*
  * Send the DevRestart command to the admin device of the

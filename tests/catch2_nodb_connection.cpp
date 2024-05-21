@@ -1,5 +1,4 @@
-#include <tango/tango.h>
-#include "utils/utils.h"
+#include "catch2_common.h"
 
 SCENARIO("Connection to invalid nodb device name")
 {

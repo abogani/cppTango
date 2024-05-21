@@ -8,7 +8,7 @@
 #endif
 
 #include <tango/internal/net.h>
-#include "common.h"
+#include "old_common.h"
 
 #include "locked_device_cmd.h"
 

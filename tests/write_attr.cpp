@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "common.h"
+#include "old_common.h"
 
 int main(int argc, char **argv)
 {
