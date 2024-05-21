@@ -149,7 +149,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AlarmEventDev, 6)
 
 SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 {
-    int idlver = GENERATE(range(6, 7));
+    int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
@@ -257,7 +257,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 
 SCENARIO("Manual quality change triggers ALARM_EVENT")
 {
-    int idlver = GENERATE(range(6, 7));
+    int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
@@ -326,7 +326,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
 
 SCENARIO("Alarm events can be pushed from code manually")
 {
-    int idlver = GENERATE(range(6, 7));
+    int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
@@ -370,7 +370,7 @@ SCENARIO("Alarm events can be pushed from code manually")
 
 SCENARIO("Alarm events are pushed together with manual change events")
 {
-    int idlver = GENERATE(range(6, 7));
+    int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
