@@ -308,10 +308,22 @@ class TangoListener : public Catch::EventListenerBase
             return;
         }
 
-        if(stats.assertionResult.hasExpression() && stats.assertionResult.hasExpandedExpression())
+        if(API_LOGGER && API_LOGGER->is_warn_enabled())
         {
-            TANGO_LOG_WARN << "Assertion \"" << stats.assertionResult.getExpression() << "\" ("
-                           << stats.assertionResult.getExpandedExpression() << ") failed.";
+            auto stream = API_LOGGER->warn_stream();
+            stream << log4tango::_begin_log
+                   << log4tango::LoggerStream::SourceLocation{::Tango::logging_detail::basename(__FILE__), __LINE__};
+
+            stream << "Assertion";
+            if(stats.assertionResult.hasExpression())
+            {
+                stream << " \"" << stats.assertionResult.getExpression() << "\"";
+            }
+            if(stats.assertionResult.hasExpandedExpression())
+            {
+                stream << " (" << stats.assertionResult.getExpandedExpression() << ")";
+            }
+            stream << " failed.";
         }
     }
 };
