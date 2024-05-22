@@ -131,6 +131,7 @@ void TestServer::start(const std::string &instance_name,
 {
     using Kind = platform::StartServerResult::Kind;
 
+    TANGO_ASSERT(!is_running());
     TANGO_ASSERT(instance_name != "");
 
     m_redirect_file = g_filename_builder.build();
@@ -161,8 +162,18 @@ void TestServer::start(const std::string &instance_name,
     // This will point to the slot after "-ORBendPoint"
     auto end_point_slot = std::find(args.begin(), args.end(), "");
 
+    int num_tries = k_num_port_tries;
+
+    // We are restarting the server on the same port and we want to fail if we
+    // cannot get that port.
+    if(m_port != -1)
+    {
+        s_next_port = m_port;
+        num_tries = 1;
+    }
+
     std::uniform_int_distribution dist{k_min_port, k_max_port};
-    for(int i = 0; i < k_num_port_tries; ++i)
+    for(int i = 0; i < num_tries; ++i)
     {
         if(i != 0)
         {
@@ -171,8 +182,8 @@ void TestServer::start(const std::string &instance_name,
             s_logger->log(ss.str());
         }
 
-        // We cannot reuse a port that the ORB has already connected to due to
-        // #1230.
+        // We cannot reuse a port that the ORB has already connected to for a
+        // new DeviceProxy due to #1230.
 
         do
         {
@@ -239,10 +250,12 @@ void TestServer::start(const std::string &instance_name,
 
 TestServer::~TestServer()
 {
-    if(m_handle != nullptr)
+    if(is_running())
     {
         stop();
     }
+
+    g_used_ports.push_back(m_port);
 }
 
 void TestServer::stop(std::chrono::milliseconds timeout)
@@ -253,7 +266,6 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     }
 
     using Kind = platform::StopServerResult::Kind;
-    g_used_ports.push_back(m_port);
     auto stop_result = platform::stop_server(m_handle, timeout);
 
     switch(stop_result.kind)
@@ -312,7 +324,6 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     std::remove(m_redirect_file.c_str());
 
     m_handle = nullptr;
-    m_port = -1;
     m_redirect_file = "";
 }
 

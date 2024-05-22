@@ -668,6 +668,75 @@ SCENARIO("Pushing events for a polled attribute works")
     }
 }
 
+SCENARIO("Alarm events subscription can be reconnected", "[slow]")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("a polled attribute with a VALID value")
+        {
+            std::string att{"attr_test"};
+
+            REQUIRE(device->is_attribute_polled(att));
+
+            Tango::DeviceAttribute v;
+            v.set_name(att);
+            v << ATTR_INIT_VALUE;
+            REQUIRE_NOTHROW(device->write_attribute(v));
+
+            AND_GIVEN("an alarm event subscription to that attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+                // discard the two initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+                maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                WHEN("when we stop the server")
+                {
+                    ctx.stop_server();
+
+                    THEN("a error event is generated")
+                    {
+                        auto maybe_event = callback.pop_next_event(std::chrono::seconds{20});
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(maybe_event->err);
+                        REQUIRE(std::string(Tango::API_EventTimeout) == maybe_event->errors[0].reason.in());
+
+                        AND_WHEN("we restart the server")
+                        {
+                            ctx.restart_server();
+
+                            THEN("an alarm event is generated after another error event")
+                            {
+                                auto maybe_event = callback.pop_next_event(std::chrono::seconds{20});
+                                REQUIRE(maybe_event.has_value());
+                                REQUIRE(maybe_event->err);
+                                REQUIRE(std::string(Tango::API_EventTimeout) == maybe_event->errors[0].reason.in());
+
+                                maybe_event = callback.pop_next_event(std::chrono::seconds{20});
+
+                                REQUIRE(maybe_event.has_value());
+                                REQUIRE(!maybe_event->err);
+                                REQUIRE(maybe_event->event == "alarm");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 SCENARIO("Pushing alarm events from push_change_event on polled attributes can be disabled")
 {
     int idlver = GENERATE(TangoTest::idlversion(6));

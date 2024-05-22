@@ -39,13 +39,20 @@ class TestServer
      *  The ctor only finishes after the ready string ("Ready to accept request")
      *  has been output.
      *
-     *  A free port is randomly chosen.
+     *  The first time the `start` is called a free port is randomly chosen.  On
+     *  subsequent calls the same port is always used, is that port is
+     *  unavailable `start` will fail.
      *
-     *  @param extra_args Arguments to
+     *  @param instance_name -- name of the TestServer instance
+     *  @param extra_args -- additional cli arguments to pass to the TestServer
+     *  @param extra_env -- additional environment variables to set for the TestServer
+     *  @param timeout -- how long to wait for the ready string
      *
      *  Throws a std::runtime_exception in case the server fails to start, or
      *  takes too long to output the ready string, or we fail to find a free port
-     *  after a `num_port_tries` attempts.
+     *  after a `k_num_port_tries` attempts.
+     *
+     *  Expects: `!this->is_running()` and `instance_name != ""`
      */
     void start(const std::string &instance_name,
                const std::vector<std::string> &extra_args,
@@ -56,10 +63,20 @@ class TestServer
      *
      *  If the instance has a non-zero exit status, then diagnostics will be
      *  output with the Catch2 WARN macro.
+     *
+     *  After the server has been stopped, it can be started again using the
+     *  same port by calling `start`.
      */
     void stop(std::chrono::milliseconds timeout = k_default_timeout);
 
     ~TestServer();
+
+    /** Returns `true` if the server has been start()'d and not yet stop()'d.
+     */
+    bool is_running()
+    {
+        return m_handle != nullptr;
+    }
 
     /** Return the port that the server is connected to.
      */
