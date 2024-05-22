@@ -214,6 +214,7 @@ class AttrPollingEvents : public Base
 
         attrs.push_back(new Attr("attr", Tango::DEV_BOOLEAN));
         attrs.back()->set_polling_period(k_polling_period);
+        attrs.push_back(new Attr("attr_no_polling", Tango::DEV_BOOLEAN));
     }
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
@@ -320,6 +321,49 @@ SCENARIO("Polled attributes generate change events")
                                 REQUIRE(!maybe_good_event.has_value());
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("Subscribing to change events for an attribute with no polling fails")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"no_polling", "AttrPollingEvents", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        AND_GIVEN("an attribute with no polling")
+        {
+            std::string att{"attr_no_polling"};
+
+            TangoTest::CallbackMock<Tango::EventData> callback;
+
+            WHEN("we subscribe with stateless=false to change events")
+            {
+                THEN("the subscription fails")
+                {
+                    REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback, false),
+                                           Tango::DevFailed,
+                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                }
+            }
+
+            WHEN("we subscribe with stateless=true to change events")
+            {
+                THEN("the subscription succeeds")
+                {
+                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback, true));
+
+                    AND_THEN("we receive an error event")
+                    {
+                        auto maybe_initial_event = callback.pop_next_event();
+                        REQUIRE(maybe_initial_event.has_value());
+                        REQUIRE(maybe_initial_event->err);
+                        REQUIRE(std::string(Tango::API_AttributePollingNotStarted) ==
+                                maybe_initial_event->errors[0].reason.in());
                     }
                 }
             }
