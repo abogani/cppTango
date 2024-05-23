@@ -33,6 +33,8 @@ class SpanImplementation;
 class ScopeImplementation;
 class InterfaceImplementation;
 
+constexpr const char *kTelemetryLogAppenderName = "telemetry_logs_appender";
+
 //---------------------------------------------------------------------------------------------------------------------
 //! Traces endpoint env. variable. This is the name of the optional env. variable containing the url to which traces
 //! are sent (collector).

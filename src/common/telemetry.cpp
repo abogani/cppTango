@@ -1055,7 +1055,7 @@ class Appender : public log4tango::Appender
     // Appender::ctor
     //-------------------------------------------------------------------------------------
     Appender(InterfaceImplementationPtr owner) :
-        log4tango::Appender("telemetry_logs_appender"),
+        log4tango::Appender(kTelemetryLogAppenderName),
         interface(owner)
     {
         init_logger_provider();
