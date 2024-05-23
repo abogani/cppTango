@@ -298,5 +298,3 @@ SCENARIO("Images can be converted to and from jpeg")
         delete[] gray_buffer;
     }
 }
-
-// NOLINTEND(*)

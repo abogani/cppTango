@@ -341,7 +341,7 @@ clang-tidy:
     CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
     CMAKE_UNITY_BUILD: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
-    BUILD_TESTING: "OFF"
+    BUILD_TESTING: "ON"
     CMAKE_BUILD_TYPE: "Debug"
     TANGO_MAKE_TARGET: "idl_source"
   script: # override
