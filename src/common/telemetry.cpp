@@ -932,7 +932,7 @@ class InterfaceImplementation final
         auto otel_span = get_tracer()->StartSpan(
             name,
             otel_attributes,
-            {{}, {}, opentelemetry::trace::SpanContext::GetInvalid(), to_opentelemetry_span_kind(kind)});
+            {{}, {}, opentelemetry::trace::SpanContext(false, false), to_opentelemetry_span_kind(kind)});
 
         return instantiate_span(otel_span);
     }
@@ -982,14 +982,21 @@ class InterfaceImplementation final
         return get_tracer()->GetCurrentSpan();
     }
 
+    // Avoid lifetime issues with static storage duration objects
+    opentelemetry::nostd::shared_ptr<const opentelemetry::context::RuntimeContextStorage> rcsKeep{
+        opentelemetry::context::RuntimeContext::GetConstRuntimeContextStorage()};
+    opentelemetry::nostd::shared_ptr<const opentelemetry::trace::TraceState> tsKeep{
+        opentelemetry::trace::TraceState::GetDefault()};
+
     // default interface flag
     bool is_default_interface{false};
 
     // the interface configuration
     Configuration cfg;
 
-    // the opentelemetry tracer provider
+    // the opentelemetry tracer/logger provider
     opentelemetry::nostd::shared_ptr<opentelemetry::trace::TracerProvider> provider;
+    opentelemetry::nostd::shared_ptr<opentelemetry::logs::LoggerProvider> logger_provider;
 
     // the actual opentelemetry tracer attached to this interface
     opentelemetry::nostd::shared_ptr<opentelemetry::trace::Tracer> tracer;
@@ -1211,11 +1218,11 @@ class Appender : public log4tango::Appender
         auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
 
         TANGO_ASSERT(processor);
-        std::shared_ptr<opentelemetry::logs::LoggerProvider> provider =
+        interface->logger_provider =
             opentelemetry::sdk::logs::LoggerProviderFactory::Create(std::move(processor), resource);
 
         // set the global logger provider
-        opentelemetry::logs::Provider::SetLoggerProvider(provider);
+        opentelemetry::logs::Provider::SetLoggerProvider(interface->logger_provider);
     }
 
     //-------------------------------------------------------------------------------------
@@ -1231,8 +1238,8 @@ class Appender : public log4tango::Appender
         }
 
         using LoggerProviderPtr = opentelemetry::nostd::shared_ptr<opentelemetry::logs::LoggerProvider>;
-        LoggerProviderPtr provider{new opentelemetry::logs::NoopLoggerProvider};
-        opentelemetry::logs::Provider::SetLoggerProvider(provider);
+        interface->logger_provider = LoggerProviderPtr(new opentelemetry::logs::NoopLoggerProvider);
+        opentelemetry::logs::Provider::SetLoggerProvider(interface->logger_provider);
     }
 
     //-------------------------------------------------------------------------------------
