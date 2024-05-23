@@ -48,6 +48,8 @@ void DeviceImpl::initialize_telemetry_interface()
 //-------------------------------------------------------------------------------------------------
 void DeviceImpl::cleanup_telemetry_interface() noexcept
 {
+    get_logger()->remove_appender(Tango::telemetry::kTelemetryLogAppenderName);
+
     telemetry_interface.reset();
 }
 
