@@ -50,7 +50,7 @@ std::vector<std::string> from_any(const CORBA::Any_var &any)
     std::vector<std::string> values;
     for(std::size_t i = 0; i != varstringarray->length(); i++)
     {
-        values.push_back(std::string((*varstringarray)[i]));
+        values.emplace_back((*varstringarray)[i]);
     }
     return values;
 }
@@ -426,7 +426,7 @@ SCENARIO("a file with only a device declaration")
 
 SCENARIO("string properties with quotes and/or spaces")
 {
-    auto data = GENERATE("hi", "hi ", "\"hi\"", "\"hi \"");
+    const auto *data = GENERATE("hi", "hi ", "\"hi\"", "\"hi \"");
 
     GIVEN("the string " << data)
     {
@@ -478,26 +478,26 @@ SCENARIO("Check that unimplemented calls throw")
 
         CORBA::Any any;
         std::vector<std::function<CORBA::Any_var(void)>> funcs = {
-            std::bind(&Tango::FileDatabase::DbDeleteClassAttributeProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbImportDevice, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbExportDevice, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbUnExportDevice, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbAddDevice, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbDeleteDevice, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbAddServer, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbDeleteServer, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbExportServer, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetAliasDevice, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetDeviceAlias, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetAttributeAlias, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetDeviceAliasList, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetAttributeAliasList, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetClassPipeProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbGetDevicePipeProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbDeleteClassPipeProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbDeleteDevicePipeProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbPutClassPipeProperty, &db, std::ref(any)),
-            std::bind(&Tango::FileDatabase::DbPutDevicePipeProperty, &db, std::ref(any))};
+            [&db, &any] { return db.DbDeleteClassAttributeProperty(any); },
+            [&db, &any] { return db.DbImportDevice(any); },
+            [&db, &any] { return db.DbExportDevice(any); },
+            [&db, &any] { return db.DbUnExportDevice(any); },
+            [&db, &any] { return db.DbAddDevice(any); },
+            [&db, &any] { return db.DbDeleteDevice(any); },
+            [&db, &any] { return db.DbAddServer(any); },
+            [&db, &any] { return db.DbDeleteServer(any); },
+            [&db, &any] { return db.DbExportServer(any); },
+            [&db, &any] { return db.DbGetAliasDevice(any); },
+            [&db, &any] { return db.DbGetDeviceAlias(any); },
+            [&db, &any] { return db.DbGetAttributeAlias(any); },
+            [&db, &any] { return db.DbGetDeviceAliasList(any); },
+            [&db, &any] { return db.DbGetAttributeAliasList(any); },
+            [&db, &any] { return db.DbGetClassPipeProperty(any); },
+            [&db, &any] { return db.DbGetDevicePipeProperty(any); },
+            [&db, &any] { return db.DbDeleteClassPipeProperty(any); },
+            [&db, &any] { return db.DbDeleteDevicePipeProperty(any); },
+            [&db, &any] { return db.DbPutClassPipeProperty(any); },
+            [&db, &any] { return db.DbPutDevicePipeProperty(any); }};
 
         // using GENERATE_REF directly does not work
         auto func = GENERATE_REF(Catch::Generators::from_range(funcs));
