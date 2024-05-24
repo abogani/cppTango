@@ -2291,7 +2291,7 @@ inline void Attribute::set_alarm_event_sub(int cl_lib)
     switch(cl_lib)
     {
     case 6:
-        event_alarm6_subscription = ::time(nullptr);
+        event_alarm6_subscription = Tango::get_current_system_datetime();
         break;
 
     default:
