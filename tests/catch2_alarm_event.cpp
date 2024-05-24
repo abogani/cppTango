@@ -13,6 +13,10 @@ static constexpr double ATTR_MIN_ALARM = -5.0;
 static constexpr double ATTR_MAX_ALARM = 5.0;
 static constexpr double ATTR_PUSH_ALARM_VALUE = 10.0;
 
+constexpr static const char *k_test_reason = "Test_Reason";
+constexpr static const char *k_alt_test_reason = "Test_Reason";
+constexpr static const char *k_a_helpful_desc = "A helpful description";
+
 // Test device class
 template <class Base>
 class AlarmEventDev : public Base
@@ -45,13 +49,73 @@ class AlarmEventDev : public Base
 
     void push_alarm()
     {
+        if(except_next_push)
+        {
+            except_next_push = false;
+            try
+            {
+                TANGO_THROW_EXCEPTION(k_test_reason, k_a_helpful_desc);
+            }
+            catch(Tango::DevFailed &e)
+            {
+                this->push_alarm_event("attr_push", &e);
+                this->push_alarm_event("attr_change_alarm", &e);
+                return;
+            }
+        }
+
+        if(alt_except_next_push)
+        {
+            alt_except_next_push = false;
+            try
+            {
+                TANGO_THROW_EXCEPTION(k_alt_test_reason, k_a_helpful_desc);
+            }
+            catch(Tango::DevFailed &e)
+            {
+                this->push_alarm_event("attr_push", &e);
+                this->push_alarm_event("attr_change_alarm", &e);
+                return;
+            }
+        }
+
         Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
         this->push_alarm_event("attr_test", &v);
         this->push_alarm_event("attr_push", &v);
+        this->push_alarm_event("attr_change_alarm", &v);
     }
 
     void push_change()
     {
+        if(except_next_push)
+        {
+            except_next_push = false;
+            try
+            {
+                TANGO_THROW_EXCEPTION(k_test_reason, k_a_helpful_desc);
+            }
+            catch(Tango::DevFailed &e)
+            {
+                this->push_change_event("attr_change", &e);
+                this->push_change_event("attr_change_alarm", &e);
+                return;
+            }
+        }
+
+        if(alt_except_next_push)
+        {
+            alt_except_next_push = false;
+            try
+            {
+                TANGO_THROW_EXCEPTION(k_alt_test_reason, k_a_helpful_desc);
+            }
+            catch(Tango::DevFailed &e)
+            {
+                this->push_change_event("attr_change", &e);
+                this->push_change_event("attr_change_alarm", &e);
+                return;
+            }
+        }
         Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
         this->push_change_event("attr_test", &v);
         this->push_change_event("attr_change", &v);
@@ -60,12 +124,33 @@ class AlarmEventDev : public Base
 
     void read_attribute(Tango::Attribute &att)
     {
+        if(throw_next_read)
+        {
+            throw_next_read = false;
+            TANGO_THROW_EXCEPTION(k_test_reason, k_a_helpful_desc);
+        }
+
         att.set_value_date_quality(&attr_value, std::chrono::system_clock::now(), attr_quality);
     }
 
     void write_attribute(Tango::WAttribute &att)
     {
         att.get_write_value(attr_value);
+    }
+
+    void throw_on_next_read()
+    {
+        throw_next_read = true;
+    }
+
+    void push_except_next()
+    {
+        except_next_push = true;
+    }
+
+    void push_alt_except_next()
+    {
+        alt_except_next_push = true;
     }
 
     static void attribute_factory(std::vector<Tango::Attr *> &attrs)
@@ -118,9 +203,16 @@ class AlarmEventDev : public Base
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::set_valid>("set_valid"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_alarm>("push_alarm"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_change>("push_change"));
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::throw_on_next_read>("throw_on_next_read"));
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_except_next>("push_except_next"));
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_except_next>("push_alt_except_next"));
     }
 
   private:
+    bool throw_next_read;
+    bool except_next_push;
+    bool alt_except_next_push;
+
     Tango::DevDouble attr_value;
     Tango::AttrQuality attr_quality;
 };
@@ -255,6 +347,64 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
     }
 }
 
+SCENARIO("Alarm events are sent on a read attribute exception")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AND_GIVEN("a subscription to a polled attribute")
+        {
+            std::string att{"attr_test"};
+
+            TangoTest::CallbackMock<Tango::EventData> callback;
+            REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+
+            // discard the two initial events we get when we subscribe
+            auto maybe_initial_event = callback.pop_next_event();
+            REQUIRE(maybe_initial_event.has_value());
+            maybe_initial_event = callback.pop_next_event();
+            REQUIRE(maybe_initial_event.has_value());
+
+            WHEN("the attribute read callback throws an exception once")
+            {
+                REQUIRE_NOTHROW(device->command_inout("throw_on_next_read"));
+
+                THEN("we recieve an error alarm event")
+                {
+                    auto maybe_ex_event = callback.pop_next_event();
+                    REQUIRE(maybe_ex_event.has_value());
+                    REQUIRE(maybe_ex_event->err);
+                    REQUIRE(maybe_ex_event->event == "alarm");
+                    REQUIRE(maybe_ex_event->errors.length() == 1);
+                    REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
+                    REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+
+                    AND_THEN("we recieve a normal alarm event")
+                    {
+                        auto maybe_good_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_good_event.has_value());
+                        REQUIRE(!maybe_good_event->err);
+                        REQUIRE(maybe_good_event->attr_value != nullptr);
+                        REQUIRE(maybe_good_event->event == "alarm");
+
+                        REQUIRE(maybe_good_event->attr_value != nullptr);
+                        REQUIRE(maybe_good_event->attr_value->get_quality() == Tango::ATTR_VALID);
+
+                        maybe_good_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                        REQUIRE(!maybe_good_event.has_value());
+                    }
+                }
+            }
+        }
+    }
+}
+
 SCENARIO("Manual quality change triggers ALARM_EVENT")
 {
     int idlver = GENERATE(TangoTest::idlversion(6));
@@ -334,9 +484,18 @@ SCENARIO("Alarm events can be pushed from code manually")
 
         REQUIRE(idlver == device->get_idl_version());
 
-        AND_GIVEN("an attribute which pushes events from code without checking criteria")
+        struct TestData
         {
-            std::string att{"attr_push"};
+            bool checks;
+            const char *name;
+        };
+
+        auto data = GENERATE(TestData{false, "attr_push"}, TestData{true, "attr_change_alarm"});
+
+        AND_GIVEN("an attribute which pushes events from code " << (data.checks ? "with" : "without")
+                                                                << " checking criteria")
+        {
+            std::string att{data.name};
 
             AND_GIVEN("an alarm event subscription")
             {
@@ -361,6 +520,116 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                         REQUIRE(maybe_event->attr_value != nullptr);
                         REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+
+                        AND_WHEN("we push another alarm event from code")
+                        {
+                            REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                            if(!data.checks)
+                            {
+                                THEN("another alarm event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(maybe_event.has_value());
+                                    REQUIRE(!maybe_event->err);
+                                    REQUIRE(maybe_event->event == "alarm");
+
+                                    REQUIRE(maybe_event->attr_value != nullptr);
+                                    REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                                }
+                            }
+                            else
+                            {
+                                THEN("no event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(!maybe_event.has_value());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                WHEN("we push an exception from code")
+                {
+                    REQUIRE_NOTHROW(device->command_inout("push_except_next"));
+                    REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                    THEN("an error alarm event is generated")
+                    {
+                        auto maybe_ex_event = callback.pop_next_event();
+                        REQUIRE(maybe_ex_event.has_value());
+                        REQUIRE(maybe_ex_event->err);
+                        REQUIRE(maybe_ex_event->event == "alarm");
+                        REQUIRE(maybe_ex_event->errors.length() == 1);
+                        REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
+                        REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+
+                        AND_WHEN("we push a normal event")
+                        {
+                            REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                            THEN("a normal alarm event is generated")
+                            {
+                                auto maybe_event = callback.pop_next_event();
+
+                                REQUIRE(maybe_event.has_value());
+                                REQUIRE(!maybe_event->err);
+                                REQUIRE(maybe_event->event == "alarm");
+
+                                REQUIRE(maybe_event->attr_value != nullptr);
+                                REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                            }
+                        }
+
+                        AND_WHEN("we push another exception with the same reason")
+                        {
+                            REQUIRE_NOTHROW(device->command_inout("push_except_next"));
+                            REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+                            if(!data.checks)
+                            {
+                                THEN("an error alarm event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(maybe_ex_event.has_value());
+                                    REQUIRE(maybe_ex_event->err);
+                                    REQUIRE(maybe_ex_event->event == "alarm");
+                                    REQUIRE(maybe_ex_event->errors.length() == 1);
+                                    REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_alt_test_reason});
+                                    REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                }
+                            }
+                            else
+                            {
+                                THEN("no event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(!maybe_event.has_value());
+                                }
+                            }
+                        }
+
+                        AND_WHEN("we push another exception with a different reason")
+                        {
+                            REQUIRE_NOTHROW(device->command_inout("push_alt_except_next"));
+                            REQUIRE_NOTHROW(device->command_inout("push_alarm"));
+
+                            THEN("an error alarm event is generated")
+                            {
+                                auto maybe_event = callback.pop_next_event();
+
+                                REQUIRE(maybe_ex_event.has_value());
+                                REQUIRE(maybe_ex_event->err);
+                                REQUIRE(maybe_ex_event->event == "alarm");
+                                REQUIRE(maybe_ex_event->errors.length() == 1);
+                                REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_alt_test_reason});
+                                REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                            }
+                        }
                     }
                 }
             }
@@ -398,7 +667,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                     {
                         REQUIRE_NOTHROW(device->command_inout("push_change"));
 
-                        THEN("a change and alarm events are generated")
+                        THEN("an alarm events are generated")
                         {
                             auto maybe_event = callback.pop_next_event();
 
@@ -408,6 +677,70 @@ SCENARIO("Alarm events are pushed together with manual change events")
 
                             REQUIRE(maybe_event->attr_value != nullptr);
                             REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        }
+                    }
+
+                    WHEN("we push an exception with push_change_event from code")
+                    {
+                        REQUIRE_NOTHROW(device->command_inout("push_except_next"));
+                        REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                        THEN("an error alarm event is generated")
+                        {
+                            auto maybe_ex_event = callback.pop_next_event();
+                            REQUIRE(maybe_ex_event.has_value());
+                            REQUIRE(maybe_ex_event->err);
+                            REQUIRE(maybe_ex_event->event == "alarm");
+                            REQUIRE(maybe_ex_event->errors.length() == 1);
+                            REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
+                            REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+
+                            AND_WHEN("we push a normal event")
+                            {
+                                REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                                THEN("a normal alarm event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(maybe_event.has_value());
+                                    REQUIRE(!maybe_event->err);
+                                    REQUIRE(maybe_event->event == "alarm");
+
+                                    REQUIRE(maybe_event->attr_value != nullptr);
+                                    REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                                }
+                            }
+
+                            AND_WHEN("we push another exception with the same reason")
+                            {
+                                REQUIRE_NOTHROW(device->command_inout("push_except_next"));
+                                REQUIRE_NOTHROW(device->command_inout("push_change"));
+                                THEN("no event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(!maybe_event.has_value());
+                                }
+                            }
+
+                            AND_WHEN("we push another exception with a different reason")
+                            {
+                                REQUIRE_NOTHROW(device->command_inout("push_alt_except_next"));
+                                REQUIRE_NOTHROW(device->command_inout("push_change"));
+
+                                THEN("an error alarm event is generated")
+                                {
+                                    auto maybe_event = callback.pop_next_event();
+
+                                    REQUIRE(maybe_ex_event.has_value());
+                                    REQUIRE(maybe_ex_event->err);
+                                    REQUIRE(maybe_ex_event->event == "alarm");
+                                    REQUIRE(maybe_ex_event->errors.length() == 1);
+                                    REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_alt_test_reason});
+                                    REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                }
+                            }
                         }
                     }
                 }
@@ -434,6 +767,17 @@ SCENARIO("Alarm events are pushed together with manual change events")
                     {
                         REQUIRE_NOTHROW(device->command_inout("push_change"));
 
+                        THEN("no alarm event is generated")
+                        {
+                            auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});
+                            REQUIRE(!maybe_event.has_value());
+                        }
+                    }
+
+                    WHEN("we push an exception with push_change_event from code")
+                    {
+                        REQUIRE_NOTHROW(device->command_inout("push_except_next"));
+                        REQUIRE_NOTHROW(device->command_inout("push_change"));
                         THEN("no alarm event is generated")
                         {
                             auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});

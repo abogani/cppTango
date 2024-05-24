@@ -609,12 +609,28 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
         is_alarm = true;
     }
 
+    // If we have transitioned to/from an exception or the exception has
+    // changed, raise an alarm event.
+
+    bool is_exception = except != nullptr;
+    bool was_exception = attr.prev_alarm_event.err;
+
+    if(is_exception != was_exception ||
+       (is_exception && Except::compare_exception(*except, attr.prev_change_event.except)))
+    {
+        is_alarm = true;
+    }
+
     // Check whether the data quality has changed. Fire event on a quality
     // change if the quality was previously ALARM and is now not ALARM or the
     // quality was not ALARM but is now ALARM. Do the same for WARNING.
-    if((except == nullptr) && (attr.prev_alarm_event.quality != the_quality) &&
-       (((attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM)) ||
-        ((attr.prev_alarm_event.quality == Tango::ATTR_WARNING) || (the_quality == Tango::ATTR_WARNING))))
+
+    bool quality_has_changed = attr.prev_alarm_event.quality != the_quality;
+    bool to_or_from_alarm_or_warning =
+        (attr.prev_alarm_event.quality == Tango::ATTR_ALARM) || (the_quality == Tango::ATTR_ALARM) ||
+        (attr.prev_alarm_event.quality == Tango::ATTR_WARNING) || (the_quality == Tango::ATTR_WARNING);
+
+    if(!is_exception && quality_has_changed && to_or_from_alarm_or_warning)
     {
         is_alarm = true;
     }
