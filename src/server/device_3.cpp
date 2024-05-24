@@ -36,6 +36,30 @@
 #include <tango/server/device_3_templ.h>
 #include <tango/server/tango_clock.h>
 #include <new>
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
+#include <tango/internal/utils.h>
+
+namespace
+{
+
+#if defined(TANGO_USE_TELEMETRY)
+
+void report_attr_error(const std::vector<std::string> &vec)
+{
+    if(vec.empty())
+    {
+        return;
+    }
+
+    std::stringstream sstr;
+    sstr << "failed to read the following attribute(s): ";
+    Tango::detail::stringify_vector(sstr, vec, ", ");
+    TANGO_TELEMETRY_SET_ERROR_STATUS(sstr.str());
+}
+
+#endif // TANGO_USE_TELEMETRY
+
+} // namespace
 
 namespace Tango
 {
@@ -319,6 +343,16 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
     // Catch all exceptions to set back the associated device after execution
     //
 
+#if defined(TANGO_USE_TELEMETRY)
+    // Reference comment for multiple locations:
+    // Due to the current implementation of Tango, errors related to attribute read (or writing) are tricky to trace
+    // with details (attributes name). We choose to build a list of "bad attributes" (i.e. the list of attributes we
+    // failed to read or write) then set the status of current telemetry span in case that list is not empty when we
+    // reach the end of the method. The implementation is so that we to put some code at several locations to do the
+    // job. That's ugly but no choice, we have to deal with that.
+    std::vector<std::string> bad_attributes;
+#endif
+
     try
     {
         //
@@ -453,6 +487,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     {
                         error_from_devfailed((*aid.data_3)[index], e, names[i]);
                     }
+                    TANGO_TELEMETRY_TRACK_BAD_ATTR(names[i].in());
                 }
             }
         }
@@ -610,6 +645,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     {
                         error_from_devfailed((*aid.data_3)[index], e, names[wanted_attr[i].idx_in_names]);
                     }
+                    TANGO_TELEMETRY_TRACK_BAD_ATTR(names[wanted_attr[i].idx_in_names].in());
                 }
                 catch(...)
                 {
@@ -659,6 +695,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     {
                         error_from_errorlist((*aid.data_3)[index], del, names[wanted_attr[i].idx_in_names]);
                     }
+                    TANGO_TELEMETRY_TRACK_BAD_ATTR(names[wanted_attr[i].idx_in_names].in());
                 }
             }
         }
@@ -734,6 +771,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                 {
                     error_from_devfailed((*aid.data_3)[index], e, names[wanted_w_attr[i].idx_in_names]);
                 }
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(names[wanted_w_attr[i].idx_in_names].in());
             }
         }
 
@@ -782,6 +820,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     {
                         error_from_devfailed((*aid.data_3)[state_idx], e, names[state_idx]);
                     }
+                    TANGO_TELEMETRY_TRACK_BAD_ATTR(names[state_idx].in());
                 }
             }
             else
@@ -804,6 +843,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                                          (*aid.data_3)[wanted_attr[id].idx_in_names].err_list,
                                          names[state_idx]);
                 }
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(names[state_idx].in());
             }
         }
 
@@ -834,6 +874,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                 {
                     error_from_devfailed((*aid.data_3)[status_idx], e, names[status_idx]);
                 }
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(names[status_idx].in());
             }
         }
 
@@ -1092,6 +1133,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                             {
                                 error_from_devfailed((*aid.data_3)[index], e, att.get_name().c_str());
                             }
+                            TANGO_TELEMETRY_TRACK_BAD_ATTR(att.get_name());
                         }
                     }
                 }
@@ -1154,6 +1196,10 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
         throw;
     }
 
+#if defined(TANGO_USE_TELEMETRY)
+    report_attr_error(bad_attributes);
+#endif
+
     //
     // Set back the device attribution for the thread
     //
@@ -1175,9 +1221,10 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
 // argument:
 //        in :
 //            - names: The names of the attribute to read
-//            - aid : Structure with pointers to data which should be returned to the caller. This method is called for
-//                    3 differents IDL releases (3, 4 and 5). In this struct, there is one ptr for each possible IDL.
-//                    Only the ptr for the caller IDL is not null.
+//            - aid : Structure with pointers to data which should be returned to the caller. This method is called
+//            for
+//                    3 differents IDL releases (3, 4 and 5). In this struct, there is one ptr for each possible
+//                    IDL. Only the ptr for the caller IDL is not null.
 //
 //--------------------------------------------------------------------------------------------------------------------
 
@@ -1187,8 +1234,8 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
     TANGO_LOG_DEBUG << "Reading " << nb_names << " attr in read_attributes_from_cache()" << std::endl;
 
     //
-    // Check that device supports the wanted attribute and that the attribute is polled. If some are non polled, store
-    // their index in the real_names sequence in a vector
+    // Check that device supports the wanted attribute and that the attribute is polled. If some are non polled,
+    // store their index in the real_names sequence in a vector
     //
 
     unsigned long i;
@@ -1196,6 +1243,11 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
     std::vector<long> non_polled;
     unsigned long nb_poll = poll_list.size();
     unsigned long j;
+
+#if defined(TANGO_USE_TELEMETRY)
+    // see comment at Device_3Impl::read_attributes_no_except
+    std::vector<std::string> bad_attributes;
+#endif
 
     for(i = 0; i < nb_names; i++)
     {
@@ -1228,6 +1280,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
             {
                 error_from_devfailed((*aid.data_3)[i], e, names[i]);
             }
+            TANGO_TELEMETRY_TRACK_BAD_ATTR(names[i].in());
         }
     }
 
@@ -1270,14 +1323,15 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                 {
                     one_error((*aid.data_3)[non_polled[i]], reas, TANGO_EXCEPTION_ORIGIN, s, att);
                 }
-
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(att.get_name());
                 not_polled_attr++;
                 continue;
             }
         }
 
         //
-        // Leave method if number of attributes which should not be polled is equal to the requested attribute number
+        // Leave method if number of attributes which should not be polled is equal to the requested attribute
+        // number
         //
 
         if(not_polled_attr == nb_names)
@@ -1328,8 +1382,8 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
 
         //
         // In some cases where data from polling are required by a DS for devices marked as polled but for which the
-        // polling is not sarted yet, polled_attr could be NULL at the end of this loop. Return "No data yet" in this
-        // case
+        // polling is not sarted yet, polled_attr could be NULL at the end of this loop. Return "No data yet" in
+        // this case
         //
 
         if(polled_attr == nullptr)
@@ -1354,7 +1408,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
             {
                 one_error((*aid.data_3)[i], reas, TANGO_EXCEPTION_ORIGIN, s, names[i]);
             }
-
+            TANGO_TELEMETRY_TRACK_BAD_ATTR(names[i].in());
             continue;
         }
 
@@ -1382,7 +1436,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
             {
                 one_error((*aid.data_3)[i], reas, TANGO_EXCEPTION_ORIGIN, s, names[i]);
             }
-
+            TANGO_TELEMETRY_TRACK_BAD_ATTR(names[i].in());
             continue;
         }
 
@@ -1418,7 +1472,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
                 {
                     one_error((*aid.data_3)[i], reas, TANGO_EXCEPTION_ORIGIN, s, names[i]);
                 }
-
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(names[i].in());
                 continue;
             }
         }
@@ -1432,10 +1486,10 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
 
         //
         // Finally, after all these checks, get value and store it in the sequence sent back to user
-        // In order to avoid unnecessary copy, don't use the assignement operator of the AttributeValue structure which
-        // copy each element and therefore also copy the Any object. The Any assignement operator is a deep copy! Create
-        // a new sequence using the attribute buffer and insert it into the Any. The sequence inside the source Any has
-        // been created using the attribute data buffer.
+        // In order to avoid unnecessary copy, don't use the assignement operator of the AttributeValue structure
+        // which copy each element and therefore also copy the Any object. The Any assignement operator is a deep
+        // copy! Create a new sequence using the attribute buffer and insert it into the Any. The sequence inside
+        // the source Any has been created using the attribute data buffer.
         //
 
         try
@@ -1535,8 +1589,13 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
             {
                 error_from_devfailed((*aid.data_3)[i], e, names[i]);
             }
+            TANGO_TELEMETRY_TRACK_BAD_ATTR(names[i].in());
         }
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    report_attr_error(bad_attributes);
+#endif
 }
 
 //+--------------------------------------------------------------------------------------------------------------------
@@ -1556,6 +1615,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
 void Device_3Impl::write_attributes_3(const Tango::AttributeValueList &values)
 {
     AutoTangoMonitor sync(this, true);
+
     TANGO_LOG_DEBUG << "Device_3Impl::write_attributes_3 arrived" << std::endl;
 
     //
@@ -1619,6 +1679,11 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
     SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
     std::string last_associated_device = sub.get_associated_device();
     sub.set_associated_device(get_name());
+
+#if defined(TANGO_USE_TELEMETRY)
+    // see comment at Device_3Impl::read_attributes_no_except
+    std::vector<std::string> bad_attributes;
+#endif
 
     //
     // Catch all exceptions to set back the associated device after execution
@@ -1734,6 +1799,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                 errs[nb_failed - 1].name = Tango::string_dup(single_att_name);
                 errs[nb_failed - 1].index_in_call = i;
                 errs[nb_failed - 1].err_list = e.errors;
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(single_att_name);
             }
         }
 
@@ -1793,6 +1859,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                 errs[nb_failed - 1].name = Tango::string_dup(single_att_name);
                 errs[nb_failed - 1].index_in_call = ctr->idx_in_names;
                 errs[nb_failed - 1].err_list = e.errors;
+                TANGO_TELEMETRY_TRACK_BAD_ATTR(single_att_name);
                 ctr = updated_attr.erase(ctr);
                 if(ctr >= updated_attr.end())
                 {
@@ -1845,8 +1912,8 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                     attr_vect[att.get_attr_idx()]->write(this, att);
 
                     //
-                    // If the write call succeed and if the attribute was memorized but with an exception thrown during
-                    // the device startup sequence, clear the memorized exception
+                    // If the write call succeed and if the attribute was memorized but with an exception thrown
+                    // during the device startup sequence, clear the memorized exception
                     //
 
                     if(att.get_mem_write_failed())
@@ -1867,11 +1934,15 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                     errs.length(nb_failed);
                     if(values_3 != nullptr)
                     {
-                        errs[nb_failed - 1].name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
+                        auto *attr_name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
+                        errs[nb_failed - 1].name = attr_name;
+                        TANGO_TELEMETRY_TRACK_BAD_ATTR(attr_name);
                     }
                     else
                     {
-                        errs[nb_failed - 1].name = Tango::string_dup((*values_4)[(*ite).idx_in_names].name);
+                        auto *attr_name = Tango::string_dup((*values_4)[(*ite).idx_in_names].name);
+                        errs[nb_failed - 1].name = attr_name;
+                        TANGO_TELEMETRY_TRACK_BAD_ATTR(attr_name);
                     }
                     errs[nb_failed - 1].index_in_call = (*ite).idx_in_names;
                     errs[nb_failed - 1].err_list = e.errors[0].err_list;
@@ -1888,11 +1959,15 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                     errs.length(nb_failed);
                     if(values_3 != nullptr)
                     {
-                        errs[nb_failed - 1].name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
+                        auto *attr_name = Tango::string_dup((*values_3)[(*ite).idx_in_names].name);
+                        errs[nb_failed - 1].name = attr_name;
+                        TANGO_TELEMETRY_TRACK_BAD_ATTR(attr_name);
                     }
                     else
                     {
-                        errs[nb_failed - 1].name = Tango::string_dup((*values_4)[(*ite).idx_in_names].name);
+                        auto *attr_name = Tango::string_dup((*values_4)[(*ite).idx_in_names].name);
+                        errs[nb_failed - 1].name = attr_name;
+                        TANGO_TELEMETRY_TRACK_BAD_ATTR(attr_name);
                     }
                     errs[nb_failed - 1].index_in_call = (*ite).idx_in_names;
                     errs[nb_failed - 1].err_list = e.errors;
@@ -1937,6 +2012,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                                 {
                                     att.rollback();
                                 }
+                                TANGO_TELEMETRY_TRACK_BAD_ATTR(att.get_name());
                                 break;
                             }
                         }
@@ -1968,6 +2044,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                         }
 
                         errs[nb_failed - 1].err_list = e.errors;
+                        TANGO_TELEMETRY_TRACK_BAD_ATTR(att.get_name());
                     }
                     updated_attr.clear();
                 }
@@ -1975,8 +2052,8 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
         }
 
         //
-        // Copy data into Attribute object, store the memorized one in db and if the attribute has a RDS alarm, set the
-        // write date
+        // Copy data into Attribute object, store the memorized one in db and if the attribute has a RDS alarm, set
+        // the write date
         //
         // Warning: Do not copy caller value if the user has manually set the attribute written value in its write
         // method
@@ -2041,10 +2118,10 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
                     {
                         single_att_name = (*values_4)[updated_attr[att_in_db[i]].idx_in_names].name;
                     }
-
                     errs[nb_failed + i].name = Tango::string_dup(single_att_name);
                     errs[nb_failed + i].index_in_call = updated_attr[att_in_db[i]].idx_in_names;
                     errs[nb_failed + i].err_list = e.errors;
+                    TANGO_TELEMETRY_TRACK_BAD_ATTR(single_att_name);
                 }
                 nb_failed = nb_failed + att_in_db.size();
             }
@@ -2059,6 +2136,10 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
         sub.set_associated_device(last_associated_device);
         throw;
     }
+
+#if defined(TANGO_USE_TELEMETRY)
+    report_attr_error(bad_attributes);
+#endif
 
     //
     // Set back the device attribution for the thread
@@ -2115,7 +2196,8 @@ Tango::DevAttrHistoryList_3 *Device_3Impl::read_attribute_history_3(const char *
     long nb_poll = poll_list.size();
 
     //
-    // Check that the device supports this attribute. This method returns an exception in case of unsupported attribute
+    // Check that the device supports this attribute. This method returns an exception in case of unsupported
+    // attribute
     //
 
     Attribute &att = dev_attr->get_attr_by_name(name);
@@ -2293,7 +2375,8 @@ Tango::DevInfo_3 *Device_3Impl::info_3()
 //         WARNING !!!!!!!!!!!!!!!!!!
 //
 //         This is the release 3 of this CORBA operation which returns much more parameter than in release 2
-//         The code has been duplicated in order to keep it clean (avoid many "if" on version number in a common method)
+//         The code has been duplicated in order to keep it clean (avoid many "if" on version number in a common
+//         method)
 //
 // argument:
 //        in :
@@ -2330,8 +2413,8 @@ Tango::AttributeConfigList_3 *Device_3Impl::get_attribute_config_3(const Tango::
 
     //
     // Check if the caller want to get config for all attribute.
-    // If the device implements IDL 3 (State and status as attributes) and the client is an old one (not able to read
-    // state/status as attribute), decrement attribute number
+    // If the device implements IDL 3 (State and status as attributes) and the client is an old one (not able to
+    // read state/status as attribute), decrement attribute number
     //
 
     std::string in_name(names[0]);
@@ -2411,6 +2494,7 @@ Tango::AttributeConfigList_3 *Device_3Impl::get_attribute_config_3(const Tango::
 void Device_3Impl::set_attribute_config_3(const Tango::AttributeConfigList_3 &new_conf)
 {
     AutoTangoMonitor sync(this, true);
+
     TANGO_LOG_DEBUG << "DeviceImpl::set_attribute_config_3 arrived" << std::endl;
 
     //
@@ -2423,9 +2507,9 @@ void Device_3Impl::set_attribute_config_3(const Tango::AttributeConfigList_3 &ne
 
     //
     // Record operation request in black box
-    // If this method is executed with the request to store info in blackbox (store_in_bb == true), this means that the
-    // request arrives through a Device_2 CORBA interface. Check locking feature in this case. Otherwise the request has
-    // arrived through Device_4 and the check is already done
+    // If this method is executed with the request to store info in blackbox (store_in_bb == true), this means that
+    // the request arrives through a Device_2 CORBA interface. Check locking feature in this case. Otherwise the
+    // request has arrived through Device_4 and the check is already done
     //
 
     if(store_in_bb)
@@ -2452,7 +2536,8 @@ void Device_3Impl::set_attribute_config_3(const Tango::AttributeConfigList_3 &ne
 //            - n : history depth (in record number)
 //
 // return:
-//         This method returns a pointer to a DevAttrHistoryList with one DevAttrHistory structure for each attribute
+//         This method returns a pointer to a DevAttrHistoryList with one DevAttrHistory structure for each
+//         attribute
 //        record
 //
 //--------------------------------------------------------------------------------------------------------------------
@@ -2728,16 +2813,16 @@ void Device_3Impl::add_alarmed(std::vector<long> &att_list)
 //        Device_3Impl::reading_state_necessary
 //
 // description :
-//        Method to check if it is necessary to read state. If the device has some alarmed attribute and one of these
-//        attributes has already been read and failed, it is not necessary to read state. It will also fail.
+//        Method to check if it is necessary to read state. If the device has some alarmed attribute and one of
+//        these attributes has already been read and failed, it is not necessary to read state. It will also fail.
 //
 // argument:
 //        in :
 //            - wanted_attr : The list of attribute to be read by this call
 //
 // return:
-//         This  method returns -1 if reading state is possible. Otherwise, it returns the index in the wanted_attr list
-//         of the alarmed attribute which failed
+//         This  method returns -1 if reading state is possible. Otherwise, it returns the index in the wanted_attr
+//         list of the alarmed attribute which failed
 //
 //--------------------------------------------------------------------------------------------------------------------
 

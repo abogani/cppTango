@@ -18,7 +18,7 @@ namespace details
 {
 constexpr static std::size_t zero = 0;
 
-std::vector<unsigned char> load_file(const std::string &file)
+std::vector<unsigned char> load_file_and_conv(const std::string &file)
 {
     std::ifstream read_file(file, std::ios::binary);
     REQUIRE(read_file.is_open());
@@ -62,15 +62,15 @@ class jpeg_encoder
         std::string resource_path = TANGO_TEST_CATCH2_RESOURCE_PATH;
 
         // Load all the data needed for the test
-        raw_24bits = load_file(resource_path + "/peppers.data");
-        raw_32bits = load_file(resource_path + "/peppers_alpha.data");
-        raw_8bits = load_file(resource_path + "/peppers_gray.data");
+        raw_24bits = load_file_and_conv(resource_path + "/peppers.data");
+        raw_32bits = load_file_and_conv(resource_path + "/peppers_alpha.data");
+        raw_8bits = load_file_and_conv(resource_path + "/peppers_gray.data");
 #ifdef JCS_EXTENSIONS
-        jpeg_rgb = load_file(resource_path + "/peppers.jpeg");
+        jpeg_rgb = load_file_and_conv(resource_path + "/peppers.jpeg");
 #else
-        jpeg_rgb = load_file(resource_path + "/peppers-9.jpeg");
+        jpeg_rgb = load_file_and_conv(resource_path + "/peppers-9.jpeg");
 #endif
-        jpeg_gray = load_file(resource_path + "/peppers_gray.jpeg");
+        jpeg_gray = load_file_and_conv(resource_path + "/peppers_gray.jpeg");
 
         encoder = std::make_unique<Tango::EncodedAttribute>();
     }

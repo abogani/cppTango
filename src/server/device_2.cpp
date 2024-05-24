@@ -450,18 +450,15 @@ Tango::AttributeValueList *Device_2Impl::read_attributes_2(const Tango::DevVarSt
     Tango::AttributeValueList *back = nullptr;
 
     //
-    //  Write the device name into the per thread data for
-    //  sub device diagnostics.
+    //  Write the device name into the per thread data for sub device diagnostics.
     //  Keep the old name, to put it back at the end!
-    //  During device access inside the same server,
-    //  the thread stays the same!
+    //  During device access inside the same server, the thread stays the same!
     //
     SubDevDiag &sub = (Tango::Util::instance())->get_sub_dev_diag();
     std::string last_associated_device = sub.get_associated_device();
     sub.set_associated_device(get_name());
 
-    // Catch all execeptions to set back the associated device after
-    // execution
+    // Catch all execeptions to set back the associated device after execution
     try
     {
         //

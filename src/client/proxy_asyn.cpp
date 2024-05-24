@@ -33,6 +33,7 @@
 //===================================================================================
 
 #include <tango/tango.h>
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 #define _dyn_attr
 
@@ -56,6 +57,8 @@ namespace Tango
 
 long Connection::command_inout_asynch(const std::string &command, const DeviceData &data_in, bool faf)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}, {"tango.operation.argument", command}}));
+
     //
     // Reconnect to device in case it is needed
     //
@@ -172,6 +175,8 @@ long Connection::command_inout_asynch(const std::string &command, const DeviceDa
     }
 
     return id;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -213,6 +218,8 @@ long Connection::command_inout_asynch(const std::string &command, bool faf)
 
 DeviceData Connection::command_inout_reply(long id)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     DeviceData data_out;
     //
     // Retrieve request object
@@ -454,6 +461,8 @@ DeviceData Connection::command_inout_reply(long id)
     remove_asyn_request(id);
 
     return data_out;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -476,6 +485,8 @@ DeviceData Connection::command_inout_reply(long id)
 
 DeviceData Connection::command_inout_reply(long id, long call_timeout)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -754,6 +765,8 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
     remove_asyn_request(id);
 
     return data_out;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -771,6 +784,8 @@ DeviceData Connection::command_inout_reply(long id, long call_timeout)
 
 long DeviceProxy::read_attributes_asynch(const std::vector<std::string> &attr_names)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Reconnect to device in case it is needed
     //
@@ -854,6 +869,8 @@ long DeviceProxy::read_attributes_asynch(const std::vector<std::string> &attr_na
     request->send_deferred();
 
     return id;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 long DeviceProxy::read_attribute_asynch(const std::string &name)
@@ -878,6 +895,8 @@ long DeviceProxy::read_attribute_asynch(const std::string &name)
 
 std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -1065,6 +1084,8 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
     }
 
     return nullptr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1083,6 +1104,8 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id)
 
 DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -1260,6 +1283,8 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
         return dev_attr;
     }
     return nullptr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1281,6 +1306,8 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id)
 
 std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long call_timeout)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -1499,6 +1526,8 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
     remove_asyn_request(id);
 
     return dev_attr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1521,6 +1550,8 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes_reply(long id, long c
 
 DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -1729,6 +1760,8 @@ DeviceAttribute *DeviceProxy::read_attribute_reply(long id, long call_timeout)
     remove_asyn_request(id);
 
     return dev_attr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1948,6 +1981,8 @@ void DeviceProxy::read_attr_except(CORBA::Request_ptr req, long id, read_attr_ty
 
 long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &attr_list)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Reconnect to device in case it is needed
     //
@@ -2035,10 +2070,14 @@ long DeviceProxy::write_attributes_asynch(const std::vector<DeviceAttribute> &at
     request->send_deferred();
 
     return id;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}, {"tango.operation.argument", attr.name}}));
+
     //
     // Reconnect to device in case it is needed
     //
@@ -2116,6 +2155,8 @@ long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
     request->send_deferred();
 
     return id;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -2135,6 +2176,8 @@ long DeviceProxy::write_attribute_asynch(const DeviceAttribute &attr)
 
 void DeviceProxy::write_attributes_reply(long id, long call_timeout)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -2252,6 +2295,8 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
     //
 
     remove_asyn_request(id);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -2268,6 +2313,8 @@ void DeviceProxy::write_attributes_reply(long id, long call_timeout)
 
 void DeviceProxy::write_attributes_reply(long id)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Retrieve request object
     //
@@ -2352,6 +2399,8 @@ void DeviceProxy::write_attributes_reply(long id)
     //
 
     remove_asyn_request(id);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------

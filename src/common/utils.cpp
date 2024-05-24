@@ -148,4 +148,54 @@ std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d)
     }
     }
 }
+
+std::string to_lower(std::string str)
+{
+    std::transform(std::begin(str), std::end(str), std::begin(str), ::tolower);
+    return str;
+}
+
+std::string to_upper(std::string str)
+{
+    std::transform(std::begin(str), std::end(str), std::begin(str), ::toupper);
+    return str;
+}
+
+std::optional<bool> to_boolean(std::string_view str)
+{
+    if(str == "on" || str == "true" || str == "1")
+    {
+        return true;
+    }
+    else if(str == "off" || str == "false" || str == "0")
+    {
+        return false;
+    }
+
+    return {};
+}
+
+bool get_boolean_env_var(const char *env_var, bool default_value)
+{
+    std::string contents;
+    int ret = ApiUtil::instance()->get_env_var(env_var, contents);
+
+    if(ret != 0)
+    {
+        return default_value;
+    }
+
+    auto result = to_boolean(to_lower(contents));
+
+    if(!result.has_value())
+    {
+        std::stringstream sstr;
+        sstr << "Environment variable: " << env_var << ", with contents " << contents
+             << ", can not be parsed as boolean.";
+        TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, sstr.str());
+    }
+
+    return result.value();
+}
+
 } // namespace Tango::detail

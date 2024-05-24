@@ -19,13 +19,27 @@ function(set_cflags_and_include target)
   endif()
 
   if (TANGO_USE_TELEMETRY)
-      target_link_libraries(${target} PRIVATE opentelemetry-cpp::trace opentelemetry-cpp::sdk opentelemetry-cpp::api)
+      target_link_libraries(${target} PRIVATE
+                            opentelemetry-cpp::trace
+                            opentelemetry-cpp::sdk
+                            opentelemetry-cpp::api
+                            opentelemetry-cpp::ostream_log_record_exporter
+                            opentelemetry-cpp::ostream_span_exporter
+                            opentelemetry-cpp::logs
+                            ZLIB::ZLIB
+                           )
       if (TANGO_TELEMETRY_USE_HTTP)
-        target_link_libraries(${target} PRIVATE opentelemetry-cpp::otlp_http_exporter)
+        target_link_libraries(${target} PRIVATE
+                              opentelemetry-cpp::otlp_http_exporter
+                              opentelemetry-cpp::otlp_http_log_record_exporter
+                             )
       endif()
       if (TANGO_TELEMETRY_USE_GRPC)
-        target_link_libraries(${target} PRIVATE opentelemetry-cpp::otlp_grpc_exporter)
-      endif()
+        target_link_libraries(${target} PRIVATE
+                              opentelemetry-cpp::otlp_grpc_exporter
+                              opentelemetry-cpp::otlp_grpc_log_record_exporter
+                             )
+        endif()
   endif()
 
 endfunction()

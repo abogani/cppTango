@@ -50,7 +50,7 @@ endif()
 
 
 # telemetry
-option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" OFF)
+option(TANGO_USE_TELEMETRY "Enable telemetry (OpenTelemetry)" ON)
 include(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(TANGO_TELEMETRY_USE_HTTP "Enable http protocol for telemetry (OpenTelemetry)" ON "TANGO_USE_TELEMETRY" OFF)
 CMAKE_DEPENDENT_OPTION(TANGO_TELEMETRY_USE_GRPC "Enable gRPC protocol for telemetry (OpenTelemetry)" ON "TANGO_USE_TELEMETRY" OFF)
@@ -95,15 +95,12 @@ add_subdirectory("log4tango")
 add_subdirectory("src")
 
 if(BUILD_TESTING)
-
   find_program(DOCKER_BINARY docker)
   if(NOT DOCKER_BINARY)
       message(WARNING "The tests can not be run as docker is missing.")
   endif()
-
   add_subdirectory("tests")
 endif()
-
 
 add_library(tango $<TARGET_OBJECTS:log4tango_objects>
                   $<TARGET_OBJECTS:common_objects>

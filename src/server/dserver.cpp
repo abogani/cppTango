@@ -1144,6 +1144,16 @@ void ServRestartThread::run(void *ptr)
     dev->init_logger();
 
     //
+    // Setup telemetry
+    //
+#if defined(TANGO_USE_TELEMETRY)
+    // initialize the telemetry interface
+    dev->initialize_telemetry_interface();
+    // attach the device's telemetry interface
+    Tango::telemetry::Interface::set_current(dev->telemetry());
+#endif
+
+    //
     // Reset initial state and status
     //
 

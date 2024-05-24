@@ -42,6 +42,7 @@
 #include <tango/server/tango_clock.h>
 #include <tango/common/git_revision.h>
 #include <tango/server/logging.h>
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 namespace Tango
 {
@@ -619,6 +620,16 @@ void DeviceImpl::real_ctor()
     zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH;
     add_version_info("zmq", zmq_version.str());
 
+    //
+    // Init telemetry
+    //
+#if defined(TANGO_USE_TELEMETRY)
+    // initialize the telemetry interface
+    initialize_telemetry_interface();
+    // attach the device's telemetry interface to the current thread
+    Tango::telemetry::Interface::set_current(telemetry());
+#endif
+
     TANGO_LOG_DEBUG << "Leaving DeviceImpl::real_ctor for device " << device_name << std::endl;
 }
 
@@ -839,6 +850,10 @@ DeviceImpl::~DeviceImpl()
 
     delete locker_client;
     delete old_locker_client;
+
+#if defined(TANGO_USE_TELEMETRY)
+    cleanup_telemetry_interface();
+#endif
 
     //
     // Delete the extension class instance
@@ -1805,6 +1820,7 @@ Tango::DevState DeviceImpl::dev_state()
 Tango::ConstDevString DeviceImpl::dev_status()
 {
     NoSyncModelTangoMonitor mon(this);
+
     const char *returned_str;
 
     if(run_att_conf_loop)
@@ -2140,6 +2156,7 @@ Tango::DevState DeviceImpl::state()
     try
     {
         AutoTangoMonitor sync(this);
+
         TANGO_LOG_DEBUG << "DeviceImpl::state (attribute) arrived" << std::endl;
 
         //
@@ -2233,6 +2250,7 @@ char *DeviceImpl::status()
     try
     {
         AutoTangoMonitor sync(this);
+
         TANGO_LOG_DEBUG << "DeviceImpl::status (attribute) arrived" << std::endl;
 
         //
@@ -2765,6 +2783,7 @@ Tango::AttributeConfigList *DeviceImpl::get_attribute_config(const Tango::DevVar
 void DeviceImpl::set_attribute_config(const Tango::AttributeConfigList &new_conf)
 {
     AutoTangoMonitor sync(this, true);
+
     TANGO_LOG_DEBUG << "DeviceImpl::set_attribute_config arrived" << std::endl;
 
     //
@@ -3263,6 +3282,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
 void DeviceImpl::write_attributes(const Tango::AttributeValueList &values)
 {
     AutoTangoMonitor sync(this, true);
+
     TANGO_LOG_DEBUG << "DeviceImpl::write_attributes arrived" << std::endl;
 
     //

@@ -121,7 +121,7 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `TANGO_USE_JPEG`                   | `ON`                                            | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                           | Compile against libc++ instead of stdlibc++ (Requires Clang)
 | `TANGO_USE_PTHREAD`                | `OFF`                                           | On windows platforms, build with pthread library.
-| `TANGO_USE_TELEMETRY`              | `OFF`                                           | Enable tracing for servers and clients
+| `TANGO_USE_TELEMETRY`              | `ON`                                            | Enable tracing for servers and clients
 | `TANGO_TELEMETRY_USE_GRPC`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable GRPC exporter for tracing
 | `TANGO_TELEMETRY_USE_HTTP`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable HTTP exporter for tracing
 | `TANGO_WARNINGS_AS_ERRORS`         | `OFF`                                           | Treat compiler warnings as errors

@@ -56,6 +56,7 @@
 #include <tango/server/device_5.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/device_3_templ.h>
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 namespace Tango
 {
@@ -122,6 +123,9 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
                                                              Tango::DevSource source,
                                                              const Tango::ClntIdent &cl_id)
 {
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_5Impl::read_attributes_5 arrived for dev " << get_name() << ", att[0] = " << names[0]
                     << std::endl;
 
@@ -365,6 +369,8 @@ Tango::AttributeValueList_5 *Device_5Impl::read_attributes_5(const Tango::DevVar
     }
 
     return aid.data_5;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -383,6 +389,10 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
                                                                    const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_5Impl::write_read_attributes_5 arrived" << std::endl;
 
     //
@@ -507,6 +517,8 @@ Tango::AttributeValueList_5 *Device_5Impl::write_read_attributes_5(const Tango::
     }
 
     return read_val_ptr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -637,6 +649,10 @@ Tango::AttributeConfigList_5 *Device_5Impl::get_attribute_config_5(const Tango::
 void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &new_conf, const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_5Impl::set_attribute_config_5 arrived" << std::endl;
 
     //
@@ -679,6 +695,8 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     //
 
     return set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, idl_version);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -951,6 +969,10 @@ Tango::PipeConfigList *Device_5Impl::get_pipe_config_5(const Tango::DevVarString
 void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_5Impl::set_pipe_config_5 arrived for " << new_conf.length() << " pipe(s)" << std::endl;
 
     //
@@ -1022,6 +1044,8 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
         e.errors[0].reason = Tango::string_dup(s.c_str());
         throw;
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1044,6 +1068,9 @@ void Device_5Impl::set_pipe_config_5(const Tango::PipeConfigList &new_conf, cons
 
 Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::ClntIdent &cl_id)
 {
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", name}}));
+
     TANGO_LOG_DEBUG << "Device_5Impl::read_pipe_5 arrived for pipe " << name << std::endl;
     DevPipeData *back = nullptr;
 
@@ -1255,6 +1282,8 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
 
     TANGO_LOG_DEBUG << "Leaving Device_5Impl::read_pipe_5" << std::endl;
     return back;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1274,6 +1303,9 @@ Tango::DevPipeData *Device_5Impl::read_pipe_5(const char *name, const Tango::Cln
 
 void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango::ClntIdent &cl_id)
 {
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", pi_value.name.in()}}));
+
     std::string pipe_name(pi_value.name.in());
     TANGO_LOG_DEBUG << "Device_5Impl::write_pipe_5 arrived for pipe " << pipe_name << std::endl;
 
@@ -1394,6 +1426,8 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
     //
 
     TANGO_LOG_DEBUG << "Leaving Device_5Impl::write_pipe_5" << std::endl;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
@@ -1417,6 +1451,9 @@ void Device_5Impl::write_pipe_5(const Tango::DevPipeData &pi_value, const Tango:
 Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi_value, const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", pi_value.name.in()}}));
 
     std::string pipe_name(pi_value.name.in());
     TANGO_LOG_DEBUG << "Device_5Impl::write_read_pipe_5 arrived for pipe " << pipe_name << std::endl;
@@ -1448,6 +1485,8 @@ Tango::DevPipeData *Device_5Impl::write_read_pipe_5(const Tango::DevPipeData &pi
     DevPipeData *back = read_pipe_5(pi_value.name.in(), cl_id);
 
     return back;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 } // namespace Tango

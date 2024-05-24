@@ -165,6 +165,17 @@ if (TANGO_INSTALL_DEPENDENCIES)
       if(BUILD_SHARED_LIBS)
         message(FATAL_ERROR "Missing installation code")
       else()
+        install(FILES ${ZLIB_ROOT}/include/zconf.h DESTINATION include COMPONENT headers)
+        install(FILES ${ZLIB_ROOT}/include/zlib.h DESTINATION include COMPONENT headers)
+        install(FILES ${ZLIB_ROOT}/include/zlib_name_mangling.h DESTINATION include COMPONENT headers)
+
+        install(FILES ${ZLIB_ROOT}/bin/zlib1.dll DESTINATION bin)
+        install(FILES ${ZLIB_ROOT}/lib/zlib.lib DESTINATION lib)
+
+        if(NOT TANGO_OTEL_ROOT)
+          message(FATAL_ERROR "Missing TANGO_OTEL_ROOT variable")
+        endif()
+
         install(DIRECTORY ${TANGO_OTEL_ROOT}/lib/ DESTINATION lib)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/cmake DESTINATION lib)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/share/cmake DESTINATION lib)

@@ -61,6 +61,7 @@
 #include <tango/server/device_4.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/device_3_templ.h>
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 namespace Tango
 {
@@ -455,6 +456,12 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
                                           Tango::DevSource source,
                                           const Tango::ClntIdent &cl_id)
 {
+    // Reference comment for multiple locations:
+    // HERE, WE ARE REPLYING TO A CLIENT  RPC - WE CAN HARDLY FIND A MORE "UPSTREAM"
+    // POINT IN THE CALL STACK TO SETUP THE TELEMETRY CONTEXT - WE CONSEQUENTLY HAVE
+    // TO CONSIDER THIS LOCATION AS THE ENTRY POINT OF THE CORRESPONDING TANGO RPC
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({{"tango.operation.argument", in_cmd}}));
+
     TANGO_LOG_DEBUG << "Device_4Impl::command_inout_4 arrived, source = " << source << ", command = " << in_cmd
                     << std::endl;
 
@@ -490,6 +497,8 @@ CORBA::Any *Device_4Impl::command_inout_4(const char *in_cmd,
 
     store_in_bb = false;
     return (command_inout_2(in_cmd, in_data, source));
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -505,6 +514,9 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
                                                              Tango::DevSource source,
                                                              const Tango::ClntIdent &cl_id)
 {
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_4Impl::read_attributes_4 arrived for dev " << get_name() << ", att[0] = " << names[0]
                     << std::endl;
 
@@ -750,6 +762,8 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
     }
 
     return aid.data_4;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -765,6 +779,10 @@ Tango::AttributeValueList_4 *Device_4Impl::read_attributes_4(const Tango::DevVar
 void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values, const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_4Impl::write_attributes_4 arrived" << std::endl;
 
     //
@@ -788,6 +806,8 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
     //
 
     return write_attributes_34(nullptr, &values);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -806,6 +826,10 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
 void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &new_conf, const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_4Impl::set_attribute_config_4 arrived" << std::endl;
 
     //
@@ -835,6 +859,8 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
 
     store_in_bb = false;
     return set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //+-------------------------------------------------------------------------
@@ -854,6 +880,10 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
                                                                    const Tango::ClntIdent &cl_id)
 {
     AutoTangoMonitor sync(this, true);
+
+    // see comment in Device_4Impl::command_inout_4
+    TANGO_TELEMETRY_KERNEL_TRACE_BEGIN(({}));
+
     TANGO_LOG_DEBUG << "Device_4Impl::write_read_attributes_4 arrived" << std::endl;
 
     //
@@ -910,6 +940,8 @@ Tango::AttributeValueList_4 *Device_4Impl::write_read_attributes_4(const Tango::
     read_val_ptr = read_attributes_4(att_name, Tango::DEV, dummy_cl_id);
 
     return read_val_ptr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 } // namespace Tango

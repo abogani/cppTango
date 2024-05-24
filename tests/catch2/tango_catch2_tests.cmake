@@ -51,6 +51,7 @@ function(tango_catch2_tests_create)
         ${TANGO_CATCH2_TESTS_DIR}/utils/test_server.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/entry_points.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/utils.cpp
+        common.cpp
         ${PLATFORM_IMPL})
 
     target_link_libraries(Catch2Tests PUBLIC Tango::Tango Catch2::Catch2 Threads::Threads)
@@ -81,6 +82,23 @@ function(tango_catch2_tests_create)
             elseif(JPEG_RUNTIME_DEBUG)
                 add_custom_command(TARGET Catch2Tests POST_BUILD
                   COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            endif()
+        endif()
+
+        # copy zlib dll manually
+        if (TANGO_USE_TELEMETRY)
+            if (ZLIB_RUNTIME_RELEASE AND ZLIB_RUNTIME_DEBUG)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy $<$<CONFIG:Debug>:${ZLIB_RUNTIME_DEBUG}:${ZLIB_RUNTIME_RELEASE}> $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            elseif(ZLIB_RUNTIME_RELEASE)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB_RUNTIME_RELEASE} $<TARGET_FILE_DIR:Catch2Tests>
+                  COMMAND_EXPAND_LISTS)
+            elseif(ZLIB_RUNTIME_DEBUG)
+                add_custom_command(TARGET Catch2Tests POST_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
                   COMMAND_EXPAND_LISTS)
             endif()
         endif()

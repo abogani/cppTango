@@ -50,6 +50,8 @@
 #include <chrono>
 #include <memory>
 
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
+
 using namespace CORBA;
 
 namespace Tango
@@ -407,12 +409,12 @@ void Connection::connect(const std::string &corba_name)
             // But we have want to know if the connection to the device is OK or not.
             // The _narrow() call does not necessary generates a remote call. It all depends on the object IDL type
             // stored in the IOR. If in the IOR, the IDL is the same than the one on which the narrow is done (Device_5
-            // on both side for instance), then the _narrow call will not generate any remote call and therefore, we don
-            // know if the connection is OK or NOT. This is the reason of the _non_existent() call. In case the IDl in
-            // the IOR and in the narrow() call are different, then the _narrow() call try to execute a remote _is_a()
-            // call and therefore tries to connect to the device. IN this case, the _non_existent() call is useless. But
-            // because we don want to analyse the IOR ourself, we always call _non_existent() Reset the connection
-            // timeout only after the _non_existent call.
+            // on both side for instance), then the _narrow call will not generate any remote call and therefore, we
+            // don't know if the connection is OK or NOT. This is the reason of the _non_existent() call. In case the
+            // IDl in the IOR and in the narrow() call are different, then the _narrow() call try to execute a remote
+            // _is_a() call and therefore tries to connect to the device. IN this case, the _non_existent() call is
+            // useless. But because we don want to analyse the IOR ourself, we always call _non_existent() Reset the
+            // connection timeout only after the _non_existent call.
             //
 
             if(corba_name.find(DbObjName) != std::string::npos)
@@ -869,6 +871,14 @@ ClntIdent Connection::get_client_identification() const
         CppClntIdent_6 ci_v6;
         ci_v6.cpp_clnt = pid;
         auto trace_context{W3CTraceContextV0()};
+#if defined(TANGO_USE_TELEMETRY)
+        // populate W3C headers of the IDLv6 data structure for trace context propagation
+        std::string trace_parent;
+        std::string trace_state;
+        Tango::telemetry::Interface::get_trace_context(trace_parent, trace_state);
+        trace_context.trace_parent = Tango::string_dup(trace_parent.c_str());
+        trace_context.trace_state = Tango::string_dup(trace_state.c_str());
+#endif
         ci_v6.trace_context.data(trace_context);
         ci.cpp_clnt_6(ci_v6);
     }
@@ -1264,6 +1274,8 @@ DeviceData Connection::command_inout(const std::string &command)
 
 DeviceData Connection::command_inout(const std::string &command, const DeviceData &data_in)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}, {"tango.operation.argument", command}}));
+
     //
     // We are using a pointer to an Any as the return value of the command_inout
     // call. This is because the assignament to the Any_var any in the
@@ -1464,6 +1476,8 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
     }
 
     return data_out;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1475,6 +1489,8 @@ DeviceData Connection::command_inout(const std::string &command, const DeviceDat
 
 CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA::Any &any)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}, {"tango.operation.argument", command}}));
+
     int ctr = 0;
     Tango::DevSource local_source;
     Tango::AccessControlType local_act;
@@ -1662,6 +1678,8 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
 
     CORBA::Any_var tmp;
     return tmp;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1718,6 +1736,16 @@ DeviceProxy::DeviceProxy(const char *na, bool need_check_acc, CORBA::ORB_var orb
 
 void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
 {
+#if defined(TANGO_USE_TELEMETRY)
+    // start a 'client' span and create a scope so that the RPCs related to the construction of
+    // the device proxy will traced under a specific scope and will enhance readability on backend
+    // side - we use the current telemetry interface or the default one if none.
+    // by default, the traces generated in this scope are silently ignored (see Tango::telemetry::SilentKernelScope)
+    auto silent_kernel_scope = TANGO_TELEMETRY_SILENT_KERNEL_SCOPE;
+    auto span = TANGO_TELEMETRY_SPAN("Tango::DeviceProxy::DeviceProxy", {{"tango.operation.argument", name}});
+    auto scope = TANGO_TELEMETRY_SCOPE(span);
+#endif
+
     //
     // Parse device name
     //
@@ -4364,6 +4392,8 @@ AttributeInfoEx DeviceProxy::get_attribute_config(const std::string &attr_string
 
 void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     AttributeConfigList attr_config_list;
     DevVarStringArray attr_list;
     int ctr = 0;
@@ -4461,10 +4491,14 @@ void DeviceProxy::set_attribute_config(const AttributeInfoList &dev_attr_list)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     AttributeConfigList attr_config_list;
     AttributeConfigList_3 attr_config_list_3;
     AttributeConfigList_5 attr_config_list_5;
@@ -4667,6 +4701,8 @@ void DeviceProxy::set_attribute_config(const AttributeInfoListEx &dev_attr_list)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -4819,6 +4855,8 @@ PipeInfo DeviceProxy::get_pipe_config(const std::string &pipe_name)
 
 void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // Error if device does not support IDL 5
     //
@@ -4916,6 +4954,8 @@ void DeviceProxy::set_pipe_config(const PipeInfoList &dev_pipe_list)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -4951,6 +4991,8 @@ std::vector<std::string> *DeviceProxy::get_pipe_list()
 
 DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}, {"tango.operation.argument", pipe_name}}));
+
     DevPipeData_var pipe_value_5;
     DevicePipe dev_pipe;
     int ctr = 0;
@@ -5054,6 +5096,8 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
     dev_pipe.get_root_blob().set_extract_delete(true);
 
     return dev_pipe;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5064,6 +5108,9 @@ DevicePipe DeviceProxy::read_pipe(const std::string &pipe_name)
 
 void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", dev_pipe.get_name()}}));
+
     DevPipeData pipe_value_5;
     int ctr = 0;
 
@@ -5182,6 +5229,8 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 
     dev_pipe.get_root_blob().reset_insert_ctr();
     delete tmp_ptr;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5192,6 +5241,9 @@ void DeviceProxy::write_pipe(DevicePipe &dev_pipe)
 
 DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", pipe_data.get_name()}}));
+
     DevPipeData pipe_value_5;
     DevPipeData_var r_pipe_value_5;
     DevicePipe r_dev_pipe;
@@ -5313,6 +5365,8 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
     r_dev_pipe.get_root_blob().set_extract_delete(true);
 
     return r_dev_pipe;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5323,6 +5377,8 @@ DevicePipe DeviceProxy::write_read_pipe(DevicePipe &pipe_data)
 
 std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std::string> &attr_string_list)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     AttributeValueList_var attr_value_list;
     AttributeValueList_3_var attr_value_list_3;
     AttributeValueList_4_var attr_value_list_4;
@@ -5520,6 +5576,8 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
     }
 
     return (dev_attr);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5530,6 +5588,8 @@ std::vector<DeviceAttribute> *DeviceProxy::read_attributes(const std::vector<std
 
 DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}, {"tango.operation.argument", attr_string}}));
+
     AttributeValueList_var attr_value_list;
     AttributeValueList_3_var attr_value_list_3;
     AttributeValueList_4_var attr_value_list_4;
@@ -5621,10 +5681,15 @@ DeviceAttribute DeviceProxy::read_attribute(const std::string &attr_string)
     }
 
     return (dev_attr);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN((Tango::telemetry::Attributes{{"tango.operation.target", dev_name()},
+                                                              {"tango.operation.argument", std::string(attr_str)}}));
+
     AttributeValueList *attr_value_list = nullptr;
     AttributeValueList_3 *attr_value_list_3 = nullptr;
     AttributeValueList_4 *attr_value_list_4 = nullptr;
@@ -5717,10 +5782,15 @@ void DeviceProxy::read_attribute(const char *attr_str, DeviceAttribute &dev_attr
         ApiUtil::attr_to_device(&((*attr_value_list)[0]), nullptr, version, &dev_attr);
         delete attr_value_list;
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *&av_4)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", std::string(attr_str)}}));
+
     DevVarStringArray attr_list;
     int ctr = 0;
     Tango::DevSource local_source;
@@ -5773,10 +5843,15 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_4 *
         av_4->err_list[nb_except].desc = Tango::string_dup(st.c_str());
         av_4->err_list[nb_except].severity = Tango::ERR;
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *&av_5)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", std::string(attr_str)}}));
+
     DevVarStringArray attr_list;
     int ctr = 0;
     Tango::DevSource local_source;
@@ -5829,6 +5904,8 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
         av_5->err_list[nb_except].desc = Tango::string_dup(st.c_str());
         av_5->err_list[nb_except].severity = Tango::ERR;
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -5839,6 +5916,8 @@ void DeviceProxy::read_attribute(const std::string &attr_str, AttributeValue_5 *
 
 void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     AttributeValueList attr_value_list;
     AttributeValueList_4 attr_value_list_4;
 
@@ -6147,6 +6226,8 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -6157,6 +6238,9 @@ void DeviceProxy::write_attributes(const std::vector<DeviceAttribute> &attr_list
 
 void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", dev_attr.name}}));
+
     AttributeValueList attr_value_list;
     AttributeValueList_4 attr_value_list_4;
     Tango::AccessControlType local_act;
@@ -6414,6 +6498,8 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -6424,6 +6510,9 @@ void DeviceProxy::write_attribute(const DeviceAttribute &dev_attr)
 
 void DeviceProxy::write_attribute(const AttributeValueList &attr_val)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", attr_val[0].name.in()}}));
+
     int ctr = 0;
     Tango::AccessControlType local_act;
 
@@ -6544,10 +6633,15 @@ void DeviceProxy::write_attribute(const AttributeValueList &attr_val)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", attr_val[0].name.in()}}));
+
     Tango::AccessControlType local_act;
 
     if(version == detail::INVALID_IDL_VERSION)
@@ -6682,6 +6776,8 @@ void DeviceProxy::write_attribute(const AttributeValueList_4 &attr_val)
             TANGO_RETHROW_DETAILED_EXCEPTION(ApiCommExcept, ce, API_CommunicationFailed, desc.str());
         }
     }
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -8886,6 +8982,9 @@ void DeviceProxy::get_locker_host(const std::string &f_addr, std::string &ip_add
 
 DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_attr)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(
+        ({{"tango.operation.target", dev_name()}, {"tango.operation.argument", dev_attr.name}}));
+
     //
     // This call is available only for Devices implemented IDL V4
     //
@@ -9129,6 +9228,8 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
     }
 
     return (ret_dev_attr);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -9140,6 +9241,8 @@ DeviceAttribute DeviceProxy::write_read_attribute(const DeviceAttribute &dev_att
 std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vector<DeviceAttribute> &attr_list,
                                                                  const std::vector<std::string> &r_names)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({{"tango.operation.target", dev_name()}}));
+
     //
     // This call is available only for Devices implemented IDL V5
     //
@@ -9384,6 +9487,8 @@ std::vector<DeviceAttribute> *DeviceProxy::write_read_attributes(const std::vect
     }
 
     return (dev_attr);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------

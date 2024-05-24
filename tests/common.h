@@ -94,6 +94,11 @@ auto unset_env(const std::string &var) -> int;
 auto set_env(const std::string &var, const std::string &value, bool force_update) -> int;
 
 /**
+ * Load the ginve file as binary from disc and return it's contents as std::string
+ */
+std::string load_file(const std::string &file);
+
+/**
  * Counts how many times the overload `push_event(TEvent*)` is called.
  *
  * Access to members is synchronised with a mutex so the class is thread safe,

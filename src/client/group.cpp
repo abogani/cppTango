@@ -31,8 +31,10 @@
 //
 //=============================================================================
 
-#include <tango/client/group.h>
 #include <sstream>
+#include <tango/tango.h>
+
+#include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 //-----------------------------------------------------------------------------
 // LOCAL DEBUGGING MACRO
@@ -1202,6 +1204,8 @@ void Group::disable(const std::string &n, bool fwd)
 //-----------------------------------------------------------------------------
 bool Group::ping(bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
 #ifdef TANGO_GROUP_HAS_THREAD_SAFE_IMPL
     omni_mutex_lock guard(elements_mutex);
 #endif
@@ -1216,6 +1220,8 @@ bool Group::ping(bool fwd)
         }
     }
     return result;
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1239,28 +1245,44 @@ void Group::set_timeout_millis(int tmo_ms)
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout(const std::string &c, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = command_inout_asynch_i(c, false, fwd, -1);
     return command_inout_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout(const std::string &c, const DeviceData &d, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = command_inout_asynch_i(c, d, false, fwd, -1);
     return command_inout_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout(const std::string &c, const std::vector<DeviceData> &d, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = command_inout_asynch_i(c, d, false, fwd, -1);
     return command_inout_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 long Group::command_inout_asynch(const std::string &c, bool fgt, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return command_inout_asynch_i(c, fgt, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1304,7 +1326,11 @@ long Group::command_inout_asynch_i(const std::string &c, bool fgt, bool fwd, lon
 //-----------------------------------------------------------------------------
 long Group::command_inout_asynch(const std::string &c, const DeviceData &d, bool fgt, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return command_inout_asynch_i(c, d, fgt, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1336,7 +1362,11 @@ long Group::command_inout_asynch_i(const std::string &c, const DeviceData &d, bo
 //-----------------------------------------------------------------------------
 long Group::command_inout_asynch(const std::string &c, const std::vector<DeviceData> &d, bool fgt, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return command_inout_asynch_i(c, d, fgt, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1387,7 +1417,11 @@ long Group::command_inout_asynch_i(const std::string &c, const std::vector<Devic
 //-----------------------------------------------------------------------------
 GroupCmdReplyList Group::command_inout_reply(long ari, long tmo)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return command_inout_reply_i(ari, tmo);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1434,21 +1468,33 @@ GroupCmdReplyList Group::command_inout_reply_i(long ari, long tmo)
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attribute(const std::string &a, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = read_attribute_asynch_i(a, fwd, -1);
     return read_attribute_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attributes(const std::vector<std::string> &al, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = read_attributes_asynch_i(al, fwd, -1);
     return read_attributes_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 long Group::read_attribute_asynch(const std::string &a, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return read_attribute_asynch_i(a, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1489,7 +1535,11 @@ long Group::read_attribute_asynch_i(const std::string &a, bool fwd, long id)
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attribute_reply(long ari, long tmo)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return read_attribute_reply_i(ari, tmo);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1536,7 +1586,11 @@ GroupAttrReplyList Group::read_attribute_reply_i(long ari, long tmo)
 //-----------------------------------------------------------------------------
 long Group::read_attributes_asynch(const std::vector<std::string> &al, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return read_attributes_asynch_i(al, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1565,7 +1619,11 @@ long Group::read_attributes_asynch_i(const std::vector<std::string> &al, bool fw
 //-----------------------------------------------------------------------------
 GroupAttrReplyList Group::read_attributes_reply(long ari, long tmo)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return read_attributes_reply_i(ari, tmo);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1612,21 +1670,33 @@ GroupAttrReplyList Group::read_attributes_reply_i(long ari, long tmo)
 //-----------------------------------------------------------------------------
 GroupReplyList Group::write_attribute(const DeviceAttribute &d, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = write_attribute_asynch_i(d, fwd, -1);
     return write_attribute_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 GroupReplyList Group::write_attribute(const std::vector<DeviceAttribute> &d, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     long id = write_attribute_asynch_i(d, fwd, -1);
     return write_attribute_reply_i(id, 0);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
 long Group::write_attribute_asynch(const DeviceAttribute &d, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return write_attribute_asynch_i(d, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1667,7 +1737,11 @@ long Group::write_attribute_asynch_i(const DeviceAttribute &d, bool fwd, long id
 //-----------------------------------------------------------------------------
 long Group::write_attribute_asynch(const std::vector<DeviceAttribute> &d, bool fwd)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return write_attribute_asynch_i(d, fwd, -1);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------
@@ -1711,7 +1785,11 @@ long Group::write_attribute_asynch_i(const std::vector<DeviceAttribute> &d, bool
 //-----------------------------------------------------------------------------
 GroupReplyList Group::write_attribute_reply(long ari, long tmo)
 {
+    TANGO_TELEMETRY_TRACE_BEGIN(({}));
+
     return write_attribute_reply_i(ari, tmo);
+
+    TANGO_TELEMETRY_TRACE_END();
 }
 
 //-----------------------------------------------------------------------------

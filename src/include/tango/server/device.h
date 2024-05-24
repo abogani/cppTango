@@ -47,6 +47,7 @@
 #include <tango/server/dintrthread.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
+#include <tango/common/telemetry/telemetry.h>
 
 namespace Tango
 {
@@ -1927,6 +1928,52 @@ class DeviceImpl : public virtual POA_Tango::Device
     void start_logging();
     void stop_logging();
 
+#if defined(TANGO_USE_TELEMETRY)
+    // initialize the telemetry interface.
+    // throw an ewception is the telemetry endpoint is invalid
+    void initialize_telemetry_interface();
+
+    // cleanup the telemetry interface.
+    void cleanup_telemetry_interface() noexcept;
+
+    // get access to the telemetry interface.
+    inline Tango::telemetry::InterfacePtr &telemetry()
+    {
+        if(!telemetry_interface)
+        {
+            std::stringstream msg;
+            msg << "the telemetry interface is not properly initialized for device '" << get_name_lower() << "'"
+                << std::ends;
+            TANGO_THROW_EXCEPTION(API_ClassNotFound, msg.str());
+        }
+        return telemetry_interface;
+    }
+
+    // enable the telemetry interface (enable tracing).
+    inline void enable_telemetry() noexcept
+    {
+        telemetry()->enable();
+    }
+
+    // disable the telemetry interface (disable tracing).
+    inline void disable_telemetry() noexcept
+    {
+        telemetry()->disable();
+    }
+
+    // enable traces of the kernel api.
+    inline void enable_kernel_traces() noexcept
+    {
+        telemetry()->enable_kernel_traces();
+    }
+
+    // disable traces of the kernel api.
+    inline void disable_kernel_traces() noexcept
+    {
+        telemetry()->disable_kernel_traces();
+    }
+#endif
+
   private:
     PipeEventSubscriptionStates get_pipe_event_subscription_states();
     void set_pipe_event_subscription_states(const PipeEventSubscriptionStates &);
@@ -2077,7 +2124,9 @@ class DeviceImpl : public virtual POA_Tango::Device
                     long y,
                     bool release);
 
-  protected:
+#if defined(TANGO_USE_TELEMETRY)
+    Tango::telemetry::InterfacePtr telemetry_interface;
+#endif
 };
 
 inline void DeviceImpl::set_state(const Tango::DevState &new_state)
