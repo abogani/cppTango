@@ -1,22 +1,22 @@
-set(HEADER_FILES
-                Appender.h
-                AppenderAttachable.h
-                LayoutAppender.h
-                FileAppender.h
-                RollingFileAppender.h
-                OstreamAppender.h
-                Layout.h
-                PatternLayout.h
-                XmlLayout.h
-                Logger.h
-                LogSeparator.h
-                LoggerStream.h
-                LogStreambuf.h
-                LoggingEvent.h
-                Level.h
-                Filter.h
-                Portability.h)
+set(LOG4TANGO_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Appender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppenderAttachable.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LayoutAppender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/FileAppender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/RollingFileAppender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/OstreamAppender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Layout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/PatternLayout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/XmlLayout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Logger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LogSeparator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LoggerStream.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LogStreambuf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/LoggingEvent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Level.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Filter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Portability.h
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-install(FILES ${HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tango/common/log4tango)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tango/common/log4tango)
+install(FILES ${LOG4TANGO_HEADERS} DESTINATION
+    "${CMAKE_INSTALL_INCLUDEDIR}/tango/common/log4tango")

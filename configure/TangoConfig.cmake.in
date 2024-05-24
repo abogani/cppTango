@@ -1,0 +1,34 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+include("${CMAKE_CURRENT_LIST_DIR}/TangoTargets.cmake")
+
+set(TANGO_USE_JPEG @TANGO_USE_JPEG@)
+set(TANGO_USE_TELEMETRY @TANGO_USE_TELEMETRY@)
+
+set(_module_path_save "${CMAKE_MODULE_PATH}")
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_LIST_DIR}/@TANGO_FIND_MODULES_PATH@")
+
+find_dependency(omniORB4)
+find_dependency(cppzmq)
+
+if(${TANGO_USE_JPEG})
+    find_dependency(JPEG)
+endif()
+
+if(${TANGO_USE_TELEMETRY})
+    find_dependency(gRPC)
+    find_dependency(opentelemetry-cpp)
+    if(WIN32)
+        find_dependency(CURL)
+        find_dependency(nlohmann_json)
+        find_dependency(OpenSSL_json)
+    endif()
+endif()
+
+set(CMAKE_MODULE_PATH "${_module_path_save}")
+unset(_module_path_save)
+
+include(CMakePackageConfigHelpers)
+check_required_components(Tango)

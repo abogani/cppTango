@@ -1,6 +1,6 @@
 function(_tango_create_single_device_server targetName)
     add_executable(${targetName} ${ARGN})
-    target_link_libraries(${targetName} PUBLIC tango ${CMAKE_DL_LIBS})
+    target_link_libraries(${targetName} PUBLIC Tango::Tango ${CMAKE_DL_LIBS})
     target_precompile_headers(${targetName} REUSE_FROM conf_devtest)
     target_compile_definitions(${targetName} PRIVATE ${COMMON_TEST_DEFS})
 endfunction()

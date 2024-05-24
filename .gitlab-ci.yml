@@ -540,3 +540,17 @@ cmake-superproject:
     - cd tests/superproject
     - ../../ci/config.sh
     - ../../ci/build.sh
+
+cmake-config:
+  <<: *job-template-no-test-run
+  variables:
+    <<: *variables
+    OS_TYPE: "${DEBIAN_12_IMAGE}"
+    BUILD_TESTING: "OFF"
+    CMAKE_INSTALL_PREFIX: "tango_install"
+  script: # override
+    - ci/config.sh
+    - ci/build.sh
+    - ci/install.sh
+    - cmake -S tests/cmake_config -B /tmp/cmake_config_test -DCMAKE_PREFIX_PATH="../../tango_install;tango_install"
+    - cmake --build /tmp/cmake_config_test

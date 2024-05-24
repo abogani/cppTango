@@ -3,10 +3,12 @@ include(GNUInstallDirs)
 option(TANGO_USE_JPEG "Build jpeg support" ON)
 option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
 
+set(TANGO_FIND_MODULES_PATH TangoCMakeModules)
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     option(TANGO_GIT_SUBMODULE_INIT "Initialise git submodules at configure time" ON)
-    if (TANGO_GIT_SUBMODULE_INIT AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/TangoCMakeModules/.git")
+    if (TANGO_GIT_SUBMODULE_INIT AND NOT EXISTS
+            "${CMAKE_CURRENT_SOURCE_DIR}/${TANGO_FIND_MODULES_PATH}/.git")
         message(STATUS "Initialising TangoCMakeModules")
         set(git_command ${GIT_EXECUTABLE} submodule update --init TangoCMakeModules)
         execute_process(COMMAND ${git_command}
@@ -19,7 +21,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/TangoCMakeModules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${TANGO_FIND_MODULES_PATH})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 if(NOT CMAKE_BUILD_TYPE)
