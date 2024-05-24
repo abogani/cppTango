@@ -632,9 +632,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
         {
             bool need_free{false};
 
-            struct SuppliedEventData sent_value
-            {
-            };
+            SuppliedEventData sent_value{};
 
             switch(*ite)
             {
