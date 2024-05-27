@@ -16,6 +16,7 @@ static constexpr double ATTR_PUSH_ALARM_VALUE = 10.0;
 constexpr static const char *k_test_reason = "Test_Reason";
 constexpr static const char *k_alt_test_reason = "Test_Reason";
 constexpr static const char *k_a_helpful_desc = "A helpful description";
+constexpr static const int k_polling_period = 100;
 
 // Test device class
 template <class Base>
@@ -168,7 +169,7 @@ class AlarmEventDev : public Base
 
         auto attr_test = new TangoTest::AutoAttr<&AlarmEventDev::read_attribute, &AlarmEventDev::write_attribute>(
             "attr_test", Tango::DEV_DOUBLE);
-        attr_test->set_polling_period(100);
+        attr_test->set_polling_period(k_polling_period);
         attr_test->set_default_properties(props);
         attrs.push_back(attr_test);
 
@@ -1068,6 +1069,34 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
                                 REQUIRE(std::string(Tango::API_EventTimeout) == maybe_event->errors[0].reason.in());
 
                                 maybe_event = callback.pop_next_event(std::chrono::seconds{20});
+
+                                REQUIRE(maybe_event.has_value());
+                                REQUIRE(!maybe_event->err);
+                                REQUIRE(maybe_event->event == "alarm");
+                            }
+                        }
+                    }
+                }
+
+                WHEN("when we polling the attribute")
+                {
+                    REQUIRE_NOTHROW(device->stop_poll_attribute(att));
+
+                    THEN("a error event is generated")
+                    {
+                        auto maybe_event = callback.pop_next_event(std::chrono::seconds{20});
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(maybe_event->err);
+                        REQUIRE(std::string(Tango::API_PollObjNotFound) == maybe_event->errors[0].reason.in());
+
+                        AND_WHEN("we reenable polling")
+                        {
+                            REQUIRE_NOTHROW(device->poll_attribute(att, k_polling_period));
+
+                            THEN("an alarm event is generated")
+                            {
+                                maybe_event = callback.pop_next_event();
 
                                 REQUIRE(maybe_event.has_value());
                                 REQUIRE(!maybe_event->err);
