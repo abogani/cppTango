@@ -105,12 +105,14 @@ Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
                  const std::string &extra_filedb_contents,
-                 std::vector<std::string> env)
+                 std::vector<std::string> env) :
+    m_instance_name{instance_name},
+    m_extra_env{std::move(env)}
 {
     m_filedb_path = get_next_file_database_location();
     m_class_name = make_class_name(tmpl_name, idlversion);
 
-    TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
+    TANGO_LOG_INFO << "Setting up server \"" << m_instance_name << "\" with device class "
                    << "\"" << m_class_name << "\" and filedb \"" << *m_filedb_path << "\".";
 
     {
@@ -129,24 +131,24 @@ Context::Context(const std::string &instance_name,
             (out << ... << args);
         };
 
-        write_and_log("TestServer/", instance_name, "/DEVICE/", m_class_name, ": ", "TestServer/tests/1\n");
+        write_and_log("TestServer/", m_instance_name, "/DEVICE/", m_class_name, ": ", "TestServer/tests/1\n");
         write_and_log(extra_filedb_contents);
     }
 
-    append_std_entries_to_env(env, m_class_name);
+    append_std_entries_to_env(m_extra_env, m_class_name);
 
     std::string file_arg = std::string{"-file="} + *m_filedb_path;
-    std::vector<std::string> extra_args = {file_arg};
-    m_server.start(instance_name, extra_args, env);
+    m_extra_args = {file_arg};
 
-    TANGO_LOG_INFO << "Started server \"" << instance_name << "\" on port " << m_server.get_port() << " redirected to "
-                   << m_server.get_redirect_file();
+    restart_server();
 }
 
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
-                 std::vector<std::string> env)
+                 std::vector<std::string> env) :
+    m_instance_name{instance_name},
+    m_extra_env{std::move(env)}
 {
     m_class_name = make_class_name(tmpl_name, idlversion);
 
@@ -157,16 +159,22 @@ Context::Context(const std::string &instance_name,
         return ss.str();
     }();
 
-    TANGO_LOG_INFO << "Starting server \"" << instance_name << "\" with device class "
+    TANGO_LOG_INFO << "Setting up server \"" << m_instance_name << "\" with device class "
                    << "\"" << m_class_name << "\"";
 
-    append_std_entries_to_env(env, m_class_name);
+    append_std_entries_to_env(m_extra_env, m_class_name);
 
-    std::vector<std::string> extra_args = {"-nodb", "-dlist", dlist_arg};
-    m_server.start(instance_name, extra_args, env);
+    m_extra_args = {"-nodb", "-dlist", dlist_arg};
 
-    TANGO_LOG_INFO << "Started server \"" << instance_name << "\" on port " << m_server.get_port() << " redirected to "
-                   << m_server.get_redirect_file();
+    restart_server();
+}
+
+void Context::restart_server(std::chrono::milliseconds timeout)
+{
+    m_server.start(m_instance_name, m_extra_args, m_extra_env, timeout);
+
+    TANGO_LOG_INFO << "Started server \"" << m_instance_name << "\" on port " << m_server.get_port()
+                   << " redirected to " << m_server.get_redirect_file();
 }
 
 Context::~Context()
@@ -308,10 +316,22 @@ class TangoListener : public Catch::EventListenerBase
             return;
         }
 
-        if(stats.assertionResult.hasExpression() && stats.assertionResult.hasExpandedExpression())
+        if(API_LOGGER && API_LOGGER->is_warn_enabled())
         {
-            TANGO_LOG_WARN << "Assertion \"" << stats.assertionResult.getExpression() << "\" ("
-                           << stats.assertionResult.getExpandedExpression() << ") failed.";
+            auto stream = API_LOGGER->warn_stream();
+            stream << log4tango::_begin_log
+                   << log4tango::LoggerStream::SourceLocation{::Tango::logging_detail::basename(__FILE__), __LINE__};
+
+            stream << "Assertion";
+            if(stats.assertionResult.hasExpression())
+            {
+                stream << " \"" << stats.assertionResult.getExpression() << "\"";
+            }
+            if(stats.assertionResult.hasExpandedExpression())
+            {
+                stream << " (" << stats.assertionResult.getExpandedExpression() << ")";
+            }
+            stream << " failed.";
         }
     }
 };

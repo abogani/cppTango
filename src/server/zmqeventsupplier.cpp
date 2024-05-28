@@ -1163,6 +1163,13 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                     print = true;
                 }
             }
+            else if(local_event_type == "alarm")
+            {
+                if(att.event_alarm6_subscription != 0)
+                {
+                    print = true;
+                }
+            }
         }
         else if(pipe_event)
         {
@@ -1758,7 +1765,10 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
         struct SuppliedEventData sent_value;
         ::memset(&sent_value, 0, sizeof(sent_value));
 
-        if(*ite >= 5)
+        // We only need the IDL5 compatibility prefix for event types that
+        // existed before IDL5 was released, i.e. not for ALARM_EVENT.
+
+        if(*ite >= 5 && event_type != ALARM_EVENT)
         {
             ev_name = EVENT_COMPAT_IDL5 + ev_name;
             name_changed = true;

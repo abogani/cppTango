@@ -1102,6 +1102,151 @@ class DeviceImpl : public virtual POA_Tango::Device
                            bool release = false);
     //@}
 
+    /**@name Push alarm event methods.
+     * These methods allow to fire alarm events for attributes manually,
+     *  without the polling to be started.
+     */
+
+    //@{
+    /**
+     * Set an implemented flag for the attribute to indicate that the server fires alarm events manually,
+     * without the polling to be started.
+     * If the detect parameter is set to true, the criteria specified for the alarm
+     * event are verified and the event is only pushed if they are fulfilled.
+     * If detect is set to false the event is fired without any value checking!
+     *
+     * @param attr_name The name of the attribute
+     * @param implemented True when the server fires alarm events manually.
+     * @param detect Triggers the verification of the alarm event properties when set to true. Default value is true.
+     */
+    void set_alarm_event(const std::string &attr_name, bool implemented, bool detect = true);
+
+    /**
+     * Push a alarm event for a state or status attribute or return an exception as alarm
+     * event for any attribute.
+     * The event is pushed to the event system.
+     *
+     * The method needs the attribue name as input.
+     * For the state and status attributes the actual state and status values are pushed.
+     * In case of an exception, the exception is pushed as an alarm event for the attribute.
+     *
+     * @param attr_name The name of the attribute
+     * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
+     */
+    void push_alarm_event(const std::string &attr_name, DevFailed *except = nullptr);
+
+    /**
+     * Push an alarm event for an attribute with Tango::DevShort attribute data type.
+     * The event is pushed to the event system.
+     *
+     * The method needs the attribue name and a pointer to the data to be pushed as input.
+     * Depending on the attribute type the dimensions x and y need to be given.
+     * The time stamp of the event is set to the actual time.
+     * The event is triggered with or without checking of the alarm event criteria depending
+     * on the configuration choosen with set_alarm_event().
+     *
+     * @param attr_name The name of the attribute
+     * @param p_data Pointer to the data to be pushed
+     * @param x The attribute x length. Default value is 1
+     * @param y The attribute y length. Default value is 0
+     * @param release The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent.
+     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
+     * to read <b>DevFailed</b> exception specification
+     */
+    template <class T>
+    void push_alarm_event(const std::string &attr_name, T *p_data, long x = 1, long y = 0, bool release = false);
+
+    /**
+     * Push an alarm event for an attribute with Tango::DevEncoded attribute data type
+     * when the DevEncoded data are specified by two pointers.
+     * The event is pushed to the event system.
+     *
+     * The method needs the attribue name and a pointer to the data to be pushed as input.
+     * Depending on the attribute type the dimensions x and y need to be given.
+     * The time stamp of the event is set to the actual time.
+     * The event is triggered with or without checking of the alarm event criteria depending
+     * on the configuration choosen with set_alarm_event().
+     *
+     * @param attr_name The name of the attribute
+     * @param p_str_data Pointer to the data string part to be pushed
+     * @param p_data Pointer to the data to be pushed
+     * @param size The data number (pointed to by p_data)
+     * @param release The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent.
+     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
+     * to read <b>DevFailed</b> exception specification
+     */
+    void push_alarm_event(const std::string &attr_name,
+                          Tango::DevString *p_str_data,
+                          Tango::DevUChar *p_data,
+                          long size,
+                          bool release = false);
+
+    /**
+     * Push an alarm event for an attribute with Tango::DevShort attribute data type.
+     * The event is pushed to the event system.
+     *
+     * The method needs the attribue name, a pointer to the data to be pushed, the time stamp
+     * for the data and the attribute quality factor as input.
+     * Depending on the attribute type the dimensions x and y need to be given.
+     * The event is triggered with or without checking of the alarm event criteria depending
+     * on the configuration choosen with set_alarm_event().
+     *
+     * @param attr_name The name of the attribute
+     * @param p_data Pointer to the data to be pushed
+     * @param t The time stamp
+     * @param qual The attribute quality factor
+     * @param x The attribute x length. Default value is 1
+     * @param y The attribute y length. Default value is 0
+     * @param release The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent.
+     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
+     * to read <b>DevFailed</b> exception specification
+     */
+    template <class T>
+    void push_alarm_event(const std::string &attr_name,
+                          T *p_data,
+                          const TangoTimestamp &t,
+                          Tango::AttrQuality qual,
+                          long x = 1,
+                          long y = 0,
+                          bool release = false);
+    /**
+     * Push an alarm event for an attribute with Tango::DevEncoded attribute data type
+     * when the data rea specified with two pointers.
+     * The event is pushed to the event system.
+     *
+     * The method needs the attribue name, a pointer to the data to be pushed, the time stamp
+     * for the data and the attribute quality factor as input.
+     * Depending on the attribute type the dimensions x and y need to be given.
+     * The event is triggered with or without checking of the alarm event criteria depending
+     * on the configuration choosen with set_alarm_event().
+     *
+     * @param attr_name The name of the attribute
+     * @param p_str_data Pointer to the data string part to be pushed
+     * @param p_data Pointer to the data to be pushed
+     * @param size Size of the data to be pushed (pointed to be p_data
+     * @param t The time stamp
+     * @param qual The attribute quality factor
+     * @param release The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent.
+     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
+     * to read <b>DevFailed</b> exception specification
+     */
+    void push_alarm_event(const std::string &attr_name,
+                          Tango::DevString *p_str_data,
+                          Tango::DevUChar *p_data,
+                          long size,
+                          const TangoTimestamp &t,
+                          Tango::AttrQuality qual,
+                          bool release = false);
+    //@}
+
     /**@name Push archive event methods.
      * These methods allow to fire archive events for attributes manually,
      *  without the polling to be started.
@@ -2194,6 +2339,18 @@ void DeviceImpl::push_change_event(const std::string &attr_name,
 }
 
 template <class T>
+void DeviceImpl::push_alarm_event(const std::string &attr_name,
+                                  T *p_data,
+                                  const TangoTimestamp &t,
+                                  Tango::AttrQuality qual,
+                                  long x,
+                                  long y,
+                                  bool release)
+{
+    push_event<T, &Attribute::fire_alarm_event>(attr_name, p_data, t, qual, x, y, release);
+}
+
+template <class T>
 void DeviceImpl::push_archive_event(const std::string &attr_name,
                                     T *p_data,
                                     const TangoTimestamp &t,
@@ -2209,6 +2366,12 @@ template <class T>
 inline void DeviceImpl::push_change_event(const std::string &attr_name, T *p_data, long x, long y, bool release)
 {
     push_event<T, &Attribute::fire_change_event>(attr_name, p_data, x, y, release);
+}
+
+template <class T>
+inline void DeviceImpl::push_alarm_event(const std::string &attr_name, T *p_data, long x, long y, bool release)
+{
+    push_event<T, &Attribute::fire_alarm_event>(attr_name, p_data, x, y, release);
 }
 
 template <class T>

@@ -1747,6 +1747,10 @@ void DServer::rem_obj_polling(const Tango::DevVarStringArray *argin, bool with_d
         {
             dev->push_change_event(obj_name, &ex);
         }
+        if(att.alarm_event_subscribed() && !att.is_alarm_event())
+        {
+            dev->push_alarm_event(obj_name, &ex);
+        }
     }
 
     //

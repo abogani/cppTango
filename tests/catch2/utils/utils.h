@@ -94,11 +94,23 @@ class Context
      */
     const std::string &get_redirect_file() const;
 
+    /** Restart the server if it has been stopped using the same port.
+     *
+     * @param timeout -- how long to wait for the server to start
+     *
+     * Throws: a `runtime_error` if the server cannot be restarted
+     *
+     * Expects: `stop_server()` has been called previously
+     */
+    void restart_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
+
   private:
     std::optional<std::string> m_filedb_path = std::nullopt;
     TestServer m_server;
-    std::vector<std::string> env_owner;
     std::string m_class_name;
+    std::string m_instance_name;
+    std::vector<std::string> m_extra_args;
+    std::vector<std::string> m_extra_env;
 };
 
 class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase

@@ -1126,6 +1126,16 @@ class Util
         wattr_nan_allowed = val;
     }
 
+    bool is_auto_alarm_on_change_event()
+    {
+        return auto_alarm_on_change_event;
+    }
+
+    void set_auto_alarm_on_change_event(bool val)
+    {
+        auto_alarm_on_change_event = val;
+    }
+
     RootAttRegistry &get_root_att_reg()
     {
         return root_att_reg;
@@ -1297,6 +1307,11 @@ class Util
     bool wattr_nan_allowed{false};               // NaN allowed when writing attribute
     RootAttRegistry root_att_reg;                // Root attribute(s) registry
 
+    // If set, then alarm events are automatically pushed to alarm event
+    // subscribes when a user calls push_change_event, if is_alarm_event is not
+    // set for the attribute.
+    bool auto_alarm_on_change_event{true};
+
     bool polling_bef_9_def{false}; // Is polling algo requirement defined
     bool polling_bef_9;            // use Tango < 9 polling algo. flag
 
@@ -1405,6 +1420,10 @@ inline void Util::event_name_2_event_type(const std::string &event_name, EventTy
     if(event_name == "change")
     {
         et = CHANGE_EVENT;
+    }
+    else if(event_name == "alarm")
+    {
+        et = ALARM_EVENT;
     }
     else if(event_name == "quality")
     {

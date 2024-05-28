@@ -272,6 +272,15 @@ void DServer::event_subscription(DeviceImpl &device,
                     TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
                 }
             }
+            else if(event == "alarm")
+            {
+                bool alarm_on_change = Util::instance()->is_auto_alarm_on_change_event() && attribute.is_change_event();
+                // allow subscribing to alarm events without polling if change events are pushed
+                if(!attribute.is_fwd_att() && !(attribute.is_alarm_event() || alarm_on_change))
+                {
+                    TANGO_THROW_EXCEPTION(API_AttributePollingNotStarted, o.str());
+                }
+            }
             else if(event == "archive")
             {
                 if(!attribute.is_fwd_att() && !attribute.is_archive_event())
@@ -533,6 +542,12 @@ void DServer::store_subscribed_client_info(DeviceImpl &device,
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
             attribute.set_change_event_sub(client_lib_version);
         }
+        else if(event_name == "alarm")
+        {
+            TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update alarm subscription\n";
+            omni_mutex_lock oml(EventSupplier::get_event_mutex());
+            attribute.set_alarm_event_sub(client_lib_version);
+        }
         else if(event_name == "quality")
         {
             TANGO_LOG_DEBUG << "DServer::store_subscribed_client_info(): update quality_change subscription\n";
@@ -777,6 +792,10 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                     if(event == EventName[ATTR_CONF_EVENT])
                     {
                         client_release = 3;
+                    }
+                    else if(event == EventName[ALARM_EVENT])
+                    {
+                        client_release = 6;
                     }
                     else
                     {
@@ -1042,7 +1061,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         std::string event_topic;
         bool add_compat_info = false;
         if((event != EventName[PIPE_EVENT]) && (event != EventName[INTERFACE_CHANGE_EVENT]) &&
-           (event != EventName[DATA_READY_EVENT]))
+           (event != EventName[DATA_READY_EVENT]) && (event != EventName[ALARM_EVENT]))
         {
             add_compat_info = true;
         }

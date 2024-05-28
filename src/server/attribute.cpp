@@ -173,6 +173,8 @@ Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const
 
     change_event_implmented = tmp_attr.is_change_event();
     check_change_event_criteria = tmp_attr.is_check_change_criteria();
+    alarm_event_implmented = tmp_attr.is_alarm_event();
+    check_alarm_event_criteria = tmp_attr.is_check_alarm_criteria();
     archive_event_implmented = tmp_attr.is_archive_event();
     check_archive_event_criteria = tmp_attr.is_check_archive_criteria();
     dr_event_implmented = tmp_attr.is_data_ready_event();
@@ -671,6 +673,10 @@ void Attribute::init_event_prop(std::vector<AttrProperty> &prop_list, const std:
     prev_change_event.err = false;
     prev_change_event.quality = Tango::ATTR_VALID;
 
+    prev_alarm_event.inited = false;
+    prev_alarm_event.err = false;
+    prev_alarm_event.quality = Tango::ATTR_VALID;
+
     prev_archive_event.inited = false;
     prev_archive_event.err = false;
     prev_archive_event.quality = Tango::ATTR_VALID;
@@ -684,6 +690,8 @@ void Attribute::init_event_prop(std::vector<AttrProperty> &prop_list, const std:
     event_change3_subscription = 0;
     event_change4_subscription = 0;
     event_change5_subscription = 0;
+
+    event_alarm6_subscription = 0;
 
     event_archive3_subscription = 0;
     event_archive4_subscription = 0;
@@ -4051,6 +4059,11 @@ void Attribute::fire_change_event(DevFailed *except)
 {
     TANGO_LOG_DEBUG << "Attribute::fire_change_event() entering ..." << std::endl;
 
+    if(!is_alarm_event() && Util::instance()->is_auto_alarm_on_change_event())
+    {
+        do_fire_alarm_event(except, false);
+    }
+
     if(except != nullptr)
     {
         set_value_flag(false);
@@ -4504,6 +4517,330 @@ void Attribute::fire_change_event(DevFailed *except)
                     delete_seq();
                 }
                 //                set_value_flag (false);
+            }
+        }
+
+        throw;
+    }
+}
+
+/**
+ * @name Attribute::fire_alarm_event
+ *
+ * @brief Fire an alarm event for the attribute value.
+ * @arg in:
+ *          - ptr: Pointer to a DevFailed exception to fire in case of an error
+ *                  to indicate.
+ *          - should_delete_seq: True if we should call delete_seq()
+ **/
+void Attribute::fire_alarm_event(DevFailed *except)
+{
+    do_fire_alarm_event(except, true);
+}
+
+/**
+ * @name Attribute::do_fire_alarm_event
+ *
+ * @brief Fire an alarm event for the attribute value.
+ * @arg in:
+ *          - ptr: Pointer to a DevFailed exception to fire in case of an error
+ *                  to indicate.
+ *          - should_delete_seq: True if we should call delete_seq()
+ **/
+void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
+{
+    TANGO_LOG_DEBUG << "Attribute::fire_alarm_event() entering ..." << std::endl;
+
+    if(except != nullptr)
+    {
+        set_value_flag(false);
+    }
+
+    // Check if it is needed to send an event
+    Tango::AttributeValue_5 *send_attr_5 = nullptr;
+    try
+    {
+        time_t alarm6_subscription, now{::time(nullptr)};
+        {
+            omni_mutex_lock oml(EventSupplier::get_event_mutex());
+            alarm6_subscription = now - event_alarm6_subscription;
+        }
+
+        // Get the event supplier
+        EventSupplier *event_supplier_zmq = nullptr;
+        Tango::Util *tg{Util::instance()};
+        if(use_zmq_event())
+        {
+            event_supplier_zmq = tg->get_zmq_event_supplier();
+        }
+
+        // Get client lib and if it's possible to send event (ZMQ socket created)
+        bool pub_socket_created = false;
+        std::vector<int> client_libs;
+        {
+            omni_mutex_lock oml(EventSupplier::get_event_mutex());
+            client_libs = get_client_lib(ALARM_EVENT); // We want a copy
+            if((use_zmq_event()) && (event_supplier_zmq != nullptr))
+            {
+                std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
+                pub_socket_created = !sock_endpoint.empty();
+            }
+        }
+
+        std::vector<int>::iterator ite;
+        for(ite = client_libs.begin(); ite != client_libs.end(); ++ite)
+        {
+            switch(*ite)
+            {
+                // No subscriptions for client versions earlier than 6.
+            case 6:
+                if(alarm6_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                {
+                    remove_client_lib(6, std::string(EventName[ALARM_EVENT]));
+                }
+                break;
+            default:
+                break;
+            }
+        }
+
+        if(client_libs.empty())
+        {
+            if((name_lower != "state") && (name_lower != "status"))
+            {
+                // delete the data values allocated in the attribute
+                bool data_flag = get_value_flag();
+                if(data_flag)
+                {
+                    // For writable scalar attributes the sequence for the
+                    // attribute data is not yet allocated. This will happen
+                    // only when adding the set point!
+                    if(!check_scalar_wattribute())
+                    {
+                        if(quality != Tango::ATTR_INVALID && should_delete_seq)
+                        {
+                            delete_seq();
+                        }
+                        //                      set_value_flag (false);
+                    }
+                }
+            }
+            return;
+        }
+
+        // Simply return if event supplier has not been created
+        if(event_supplier_zmq == nullptr)
+        {
+            if(name_lower != "state")
+            {
+                // delete the data values allocated in the attribute
+                bool data_flag = get_value_flag();
+                if(data_flag)
+                {
+                    // For writable scalar attributes the sequence for the
+                    // attribute data is not yet allcoated. This will happen
+                    // only when adding the set point!
+                    if(!check_scalar_wattribute())
+                    {
+                        if(quality != Tango::ATTR_INVALID && should_delete_seq)
+                        {
+                            delete_seq();
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        // Retrieve device object if not already done
+        if(dev == nullptr)
+        {
+            dev = tg->get_device_by_name(d_name);
+        }
+
+        // Check that the attribute value has been set
+        if(except == nullptr)
+        {
+            if((name_lower != "state") && (name_lower != "status"))
+            {
+                if(quality != Tango::ATTR_INVALID)
+                {
+                    if(!value_flag)
+                    {
+                        TangoSys_OMemStream o;
+                        o << "Value for attribute " << name
+                          << " has not been updated. Can't send alarm "
+                             "event\nSet the attribute value (using "
+                             "set_value (...) method) before!"
+                          << std::ends;
+                        TANGO_THROW_EXCEPTION(API_AttrValueNotSet, o.str());
+                    }
+                }
+            }
+        }
+
+        // Build one AttributeValue_5 object
+        long vers = dev->get_dev_idl_version();
+        try
+        {
+            if(vers >= 6)
+            {
+                send_attr_5 = new Tango::AttributeValue_5{ZeroInitialize<Tango::AttributeValue_5>().value};
+            }
+        }
+        catch(std::bad_alloc &)
+        {
+            TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
+        }
+
+        // Don`t try to access the attribute data when an exception was indicated
+        if(except == nullptr)
+        {
+            if(send_attr_5 != nullptr)
+            {
+                Attribute_2_AttributeValue(send_attr_5, dev);
+            }
+        }
+
+        // Create the structure used to send data to event system
+        EventSupplier::SuppliedEventData ad{};
+
+        // Fire event
+        if(is_check_alarm_criteria())
+        {
+            if(send_attr_5 != nullptr)
+            {
+                ad.attr_val_5 = send_attr_5;
+            }
+
+            //
+            // Eventually push the event (if detected)
+            // The detect_and_push_events() method returns true if the event
+            // is detected.
+            //
+
+            if(event_supplier_zmq != nullptr && pub_socket_created)
+            {
+                event_supplier_zmq->detect_and_push_alarm_event(dev, ad, *this, name, except, true);
+            }
+        }
+        else
+        {
+            //
+            // Send event, if the read_attribute failed or if it is the first time
+            // that the read_attribute succeed after a failure.
+            // Same thing if the attribute quality factor changes to INVALID
+            //
+            // This is done only to be able to set-up the same filters with events
+            // comming with the standard mechanism or coming from a manual fire event call.
+            //
+
+            bool force_alarm = false;
+            bool quality_change = false;
+            {
+                omni_mutex_lock oml(EventSupplier::get_event_mutex());
+
+                const AttrQuality old_quality = prev_alarm_event.quality;
+
+                if(except != nullptr || quality == Tango::ATTR_INVALID || prev_alarm_event.err ||
+                   old_quality == Tango::ATTR_INVALID)
+                {
+                    force_alarm = true;
+                }
+
+                prev_alarm_event.store(send_attr_5, nullptr, nullptr, nullptr, except);
+
+                quality_change = (old_quality != prev_alarm_event.quality);
+            }
+
+            std::vector<std::string> filterable_names;
+            std::vector<double> filterable_data;
+            std::vector<std::string> filterable_names_lg;
+            std::vector<long> filterable_data_lg;
+
+            filterable_names.emplace_back("forced_event");
+            if(force_alarm)
+            {
+                filterable_data.push_back((double) 1.0);
+            }
+            else
+            {
+                filterable_data.push_back((double) 0.0);
+            }
+
+            filterable_names.emplace_back("quality");
+            if(quality_change)
+            {
+                filterable_data.push_back((double) 1.0);
+            }
+            else
+            {
+                filterable_data.push_back((double) 0.0);
+            }
+
+            if(send_attr_5 != nullptr)
+            {
+                ad.attr_val_5 = send_attr_5;
+            }
+
+            //
+            // Finally push the event(s)
+            //
+
+            if(event_supplier_zmq != nullptr && pub_socket_created)
+            {
+                event_supplier_zmq->push_event_loop(dev,
+                                                    ALARM_EVENT,
+                                                    filterable_names,
+                                                    filterable_data,
+                                                    filterable_names_lg,
+                                                    filterable_data_lg,
+                                                    ad,
+                                                    *this,
+                                                    except);
+            }
+        }
+
+        // Return allocated memory
+        if(send_attr_5 != nullptr)
+        {
+            delete send_attr_5;
+            send_attr_5 = nullptr;
+        }
+
+        // Delete the data values allocated in the attribute
+        if((name_lower != "state") && (name_lower != "status"))
+        {
+            bool data_flag = get_value_flag();
+            if(data_flag)
+            {
+                if(quality != Tango::ATTR_INVALID && should_delete_seq)
+                {
+                    delete_seq();
+                }
+                //              set_value_flag (false);
+            }
+        }
+    }
+    catch(...)
+    {
+        if(send_attr_5 != nullptr)
+        {
+            delete send_attr_5;
+        }
+
+        if((name_lower != "state") && (name_lower != "status"))
+        {
+            // delete the data values allocated in the attribute
+
+            bool data_flag = get_value_flag();
+            if(data_flag)
+            {
+                if(quality != Tango::ATTR_INVALID && should_delete_seq)
+                {
+                    delete_seq();
+                }
+                //              set_value_flag (false);
             }
         }
 
@@ -5823,6 +6160,14 @@ void Attribute::log_quality()
                 DEV_INFO_STREAM(dev) << "INFO quality for attribute " << name << std::endl;
                 break;
 
+            case ATTR_WARNING:
+                DEV_WARN_STREAM(dev) << "User defined WARNING quality for attribute " << name << std::endl;
+                break;
+
+            case ATTR_ALARM:
+                DEV_ERROR_STREAM(dev) << "User defined ALARM quality for attribute " << name << std::endl;
+                break;
+
             default:
                 TANGO_ASSERT_ON_DEFAULT(quality);
             }
@@ -6168,6 +6513,28 @@ bool Attribute::change_event_subscribed()
         }
     }
     return ret;
+}
+
+/**
+ * @brief Returns true if there is a subscriber listening for the alarm event.
+ * @note This method belongs to a group of methods that is responsible to
+ * handle all the event types.
+ * @attention Please note that to ensure backwards compatibility this method
+ * group cannot be replaced with a single method that would accept the event
+ * type as a parameter.
+ **/
+bool Attribute::alarm_event_subscribed()
+{
+    if(event_alarm6_subscription != 0)
+    {
+        const auto now{::time(nullptr)};
+        if((now - event_alarm6_subscription) <= EVENT_RESUBSCRIBE_PERIOD)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool Attribute::periodic_event_subscribed()

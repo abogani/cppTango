@@ -37,6 +37,8 @@
 #include <tango/server/fwdattrdesc.h>
 #include <tango/server/encoded_attribute.h>
 #include <tango/server/tango_clock.h>
+#include <tango/client/apiexcept.h>
+#include <tango/server/exception_reason_consts.h>
 
 #include <functional>
 #include <iterator>
@@ -789,6 +791,64 @@ class Attribute
     bool is_check_change_criteria()
     {
         return check_change_event_criteria;
+    }
+
+    /**
+     * Fire an alarm event for the attribute value. The event is pushed to ZMQ.
+     *
+     * The attribute data must be set with one of the Attribute::set_value or
+     * Attribute::setvalue_date_quality methods before firing the event.
+     * ATTENTION: The couple set_value() and fire_alarm_event() needs to be
+     * protected against concurrent accesses to the same attribute. Such an access
+     * might happen during a synchronous read or by a reading from the polling
+     * thread.
+     * Inside all methods reading or writing commands and attributes this protection is automatically done by the Tango
+     * serialisation monitor.
+     *
+     * @param except A pointer to a DevFailed exception to be thrown as alarm event.
+     */
+    void fire_alarm_event(DevFailed *except = nullptr);
+
+    /**
+     * Set a flag to indicate that the server fires alarm events manually, without
+     * the polling to be started for the attribute.
+     * If the detect parameter is set to true, the criteria specified for the alarm
+     * event are verified and the event is only pushed if they are fulfilled.
+     * If detect is set to false the event is fired without any value checking!
+     *
+     * @param implemented True when the server fires alarm events manually.
+     * @param detect Triggers the verification of the alarm event properties when set to true.
+     */
+    void set_alarm_event(bool implemented, bool detect = true)
+    {
+        alarm_event_implmented = implemented;
+        check_alarm_event_criteria = detect;
+        if(!detect)
+        {
+            prev_alarm_event.err = false;
+            prev_alarm_event.quality = Tango::ATTR_VALID;
+        }
+    }
+
+    /**
+     * Check if the alarm event is fired manually (without polling) for this attribute.
+     *
+     * @return A boolean set to true if a manual fire alarm event is implemented.
+     */
+    bool is_alarm_event()
+    {
+        return alarm_event_implmented;
+    }
+
+    /**
+     * Check if the alarm event criteria should be checked when firing
+     * the event manually.
+     *
+     * @return A boolean set to true if an alarm event criteria will be checked.
+     */
+    bool is_check_alarm_criteria()
+    {
+        return check_alarm_event_criteria;
     }
 
     /**
@@ -1545,6 +1605,7 @@ class Attribute
     }
 
     bool change_event_subscribed();
+    bool alarm_event_subscribed();
     bool periodic_event_subscribed();
     bool archive_event_subscribed();
     bool quality_event_subscribed();
@@ -1571,6 +1632,13 @@ class Attribute
     time_t get_change5_event_sub()
     {
         return event_change5_subscription;
+    }
+
+    void set_alarm_event_sub(int);
+
+    time_t get_alarm6_event_sub()
+    {
+        return event_alarm6_subscription;
     }
 
     void set_periodic_event_sub(int);
@@ -1731,6 +1799,24 @@ class Attribute
     friend class DServer;
 
   private:
+    /**
+     * Fire an alarm event for the attribute value. The event is pushed to ZMQ.
+     *
+     * The attribute data must be set with one of the Attribute::set_value or
+     * Attribute::setvalue_date_quality methods before firing the event.
+     * ATTENTION: The couple set_value() and fire_alarm_event() needs to be
+     * protected against concurrent accesses to the same attribute. Such an access
+     * might happen during a synchronous read or by a reading from the polling
+     * thread.
+     * Inside all methods reading or writing commands and attributes this protection is automatically done by the Tango
+     * serialisation monitor.
+     *
+     * @param except A pointer to a DevFailed exception to be thrown as alarm event.
+     * @param should_delete_seq If true the delete_seq() will be called before
+     * this returns
+     */
+    void do_fire_alarm_event(DevFailed *except, bool should_delete_seq);
+
     /**
      * Extract internal value to dest depending on the type.
      * Free internal memory.
@@ -1951,6 +2037,7 @@ class Attribute
     long periodic_counter{0};         // Number of periodic events sent so far
     long archive_periodic_counter{0}; // Number of periodic events sent so far
     LastAttrValue prev_change_event;  // Last change attribute
+    LastAttrValue prev_alarm_event;   // Last alarm event attribute
     LastAttrValue prev_quality_event; // Last quality attribute
     LastAttrValue prev_archive_event; // Last archive attribute
 
@@ -1961,6 +2048,7 @@ class Attribute
     time_t event_change3_subscription; // Last time() a subscription was made
     time_t event_change4_subscription;
     time_t event_change5_subscription;
+    time_t event_alarm6_subscription;    // Last time an alarm subscription was made.
     time_t event_quality_subscription;   // Last time() a subscription was made
     time_t event_periodic3_subscription; // Last time() a subscription was made
     time_t event_periodic4_subscription;
@@ -1979,8 +2067,10 @@ class Attribute
     std::string d_name;                      // The device name
     DeviceImpl *dev{nullptr};                // The device object
     bool change_event_implmented{false};     // Flag true if a manual fire change event is implemented.
+    bool alarm_event_implmented{false};      // Flag true if a manual fire alarm event is implemented.
     bool archive_event_implmented{false};    // Flag true if a manual fire archive event is implemented.
     bool check_change_event_criteria{true};  // True if change event criteria should be checked when sending the event
+    bool check_alarm_event_criteria{true};   // True if alarm event criteria should be checked when sending the event
     bool check_archive_event_criteria{true}; // True if change event criteria should be checked when sending the event
     Tango::DevLong64 tmp_lo64[2];
     Tango::DevULong tmp_ulo[2];
@@ -2192,6 +2282,21 @@ inline void Attribute::set_change_event_sub(int cl_lib)
 
     default:
         event_change3_subscription = Tango::get_current_system_datetime();
+        break;
+    }
+}
+
+inline void Attribute::set_alarm_event_sub(int cl_lib)
+{
+    switch(cl_lib)
+    {
+    case 6:
+        event_alarm6_subscription = Tango::get_current_system_datetime();
+        break;
+
+    default:
+        TANGO_THROW_EXCEPTION(API_ClientTooOld,
+                              "Alarm events are only supported from client library version 6 onwards.");
         break;
     }
 }

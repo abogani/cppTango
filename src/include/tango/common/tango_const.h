@@ -181,6 +181,7 @@ const int DB_START_PHASE_RETRIES = 3;
 
 const char *const CONTROL_SYSTEM = "CtrlSystem";
 const char *const SERVICE_PROP_NAME = "Services";
+const char *const AUTO_ALARM_ON_CHANGE_PROP_NAME = "AutoAlarmOnChangeEvent";
 const char *const ACCESS_SERVICE = "AccessControl";
 
 //
@@ -957,11 +958,20 @@ enum EventType
     DATA_READY_EVENT,       ///< Data ready event
     INTERFACE_CHANGE_EVENT, ///< Device interface change event
     PIPE_EVENT,             ///< Device pipe event
+    ALARM_EVENT,            ///< Alarm event
     numEventType
 };
 
-const char *const EventName[] = {
-    "change", "quality", "periodic", "archive", "user_event", "attr_conf", "data_ready", "intr_change", "pipe"};
+const char *const EventName[] = {"change",
+                                 "quality",
+                                 "periodic",
+                                 "archive",
+                                 "user_event",
+                                 "attr_conf",
+                                 "data_ready",
+                                 "intr_change",
+                                 "pipe",
+                                 "alarm"};
 
 const char *const CONF_TYPE_EVENT = EventName[ATTR_CONF_EVENT];
 const char *const DATA_READY_TYPE_EVENT = EventName[DATA_READY_EVENT];
@@ -1034,6 +1044,7 @@ typedef struct _SendEventType
     _SendEventType() { }
 
     bool change{false};
+    bool alarm{false};
     bool archive{false};
     bool periodic{false};
 } SendEventType;

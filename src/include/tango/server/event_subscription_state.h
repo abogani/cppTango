@@ -16,6 +16,7 @@ struct AttributeEventSubscriptionState
     std::string attribute_name;
 
     EventClientLibVersions change_event_clients = {};
+    EventClientLibVersions alarm_event_clients = {};
     EventClientLibVersions archive_event_clients = {};
     EventClientLibVersions periodic_event_clients = {};
     EventClientLibVersions user_event_clients = {};
