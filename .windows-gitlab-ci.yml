@@ -131,7 +131,7 @@ release-builds:
     assets:
       links:
         # iteration order is from back to front:
-        # msi/zip -> debug/release -> static/shared -> x86/x64
+        # msi/zip -> debug/release -> otel/{} -> static/shared -> x86/x64
         - name: "${FILENAME_PREFIX}_x86_static_debug.msi"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_debug.msi"
 
@@ -143,6 +143,12 @@ release-builds:
 
         - name: "${FILENAME_PREFIX}_x86_static_release.zip"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_release.zip"
+
+        - name: "${FILENAME_PREFIX}_x86_static_otel_release.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_otel_release.msi"
+
+        - name: "${FILENAME_PREFIX}_x86_static_otel_release.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_otel_release.zip"
 
         - name: "${FILENAME_PREFIX}_x86_shared_debug.msi"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_shared_debug.msi"
@@ -167,6 +173,12 @@ release-builds:
 
         - name: "${FILENAME_PREFIX}_x64_static_release.zip"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_release.zip"
+
+        - name: "${FILENAME_PREFIX}_x64_static_otel_release.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_otel_release.msi"
+
+        - name: "${FILENAME_PREFIX}_x64_static_otel_release.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_otel_release.zip"
 
         - name: "${FILENAME_PREFIX}_x64_shared_debug.msi"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_shared_debug.msi"
