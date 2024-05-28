@@ -110,7 +110,8 @@ release-builds:
     FILENAME_PREFIX: "libtango_${CI_COMMIT_TAG}_${MSVC_VERSION}"
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   needs:
-    - windows-build
+    - job: windows-build
+      optional: true
   rules:
     - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG !~ /^.*-dev$/
       when: on_success
