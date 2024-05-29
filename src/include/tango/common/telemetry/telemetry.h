@@ -577,7 +577,7 @@ class Interface
     //!
     //! \see Configuration
     //-----------------------------------------------------------------------------------------------------------------
-    Interface(const Configuration &cfg) noexcept;
+    Interface(const Configuration &cfg);
 
     //- some disabled features
     Interface(const Interface &) = delete;
@@ -949,7 +949,7 @@ class InterfaceFactory
     //!
     //! \see Configuration
     //-----------------------------------------------------------------------------------------------------------------
-    static InterfacePtr create(const Tango::telemetry::Configuration &cfg) noexcept;
+    static InterfacePtr create(const Tango::telemetry::Configuration &cfg);
 
   private:
     InterfaceFactory() = delete;

@@ -1323,12 +1323,8 @@ class Appender : public log4tango::Appender
 //-----------------------------------------------------------------------------------------
 // Interface::Interface
 //-----------------------------------------------------------------------------------------
-Interface::Interface(const Configuration &config) noexcept
+Interface::Interface(const Configuration &config)
 {
-    // an Interface without a valid "implementation" is invalid and can't be used.
-    // but, we don't throw any exception if the instantiation failed! Yes, sir. See:
-    // https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#f6-if-your-function-must-not-throw-declare-it-noexcep
-
     impl = std::make_shared<InterfaceImplementation>(config);
 }
 
@@ -1757,7 +1753,7 @@ void Interface::extract_exception_info(std::string &type, std::string &message)
 //-----------------------------------------------------------------------------------------
 // InterfaceFactory: a Tango::telemetry::Interface factory
 //-----------------------------------------------------------------------------------------
-Tango::telemetry::InterfacePtr InterfaceFactory::create(const Configuration &cfg) noexcept
+Tango::telemetry::InterfacePtr InterfaceFactory::create(const Configuration &cfg)
 {
     auto srv = std::make_shared<Tango::telemetry::Interface>(cfg);
     return srv;
