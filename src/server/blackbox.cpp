@@ -1625,15 +1625,12 @@ void BlackBox::build_info_as_str(long index)
         {
             return;
         }
-        std::string::size_type old_pos;
         pos++;
-        old_pos = pos;
         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
         {
             return;
         }
         pos++;
-        old_pos = pos;
         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
         {
             return;
@@ -2118,9 +2115,7 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                 }
                 else
                 {
-                    std::string::size_type old_pos;
                     pos++;
-                    old_pos = pos;
                     if((pos = full_ip_str.find('.', pos)) == std::string::npos)
                     {
                         ret = -1;
@@ -2128,7 +2123,6 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                     else
                     {
                         pos++;
-                        old_pos = pos;
                         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
                         {
                             ret = -1;
