@@ -459,132 +459,132 @@ class DeviceData
     // insert methods for TANGO CORBA sequence types
     //
 
-    inline void operator<<(DevVarBooleanArray *datum)
+    void operator<<(DevVarBooleanArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarCharArray *datum)
+    void operator<<(DevVarCharArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarShortArray *datum)
+    void operator<<(DevVarShortArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarUShortArray *datum)
+    void operator<<(DevVarUShortArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarLongArray *datum)
+    void operator<<(DevVarLongArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarLong64Array *datum)
+    void operator<<(DevVarLong64Array *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarULongArray *datum)
+    void operator<<(DevVarULongArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarULong64Array *datum)
+    void operator<<(DevVarULong64Array *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarFloatArray *datum)
+    void operator<<(DevVarFloatArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarDoubleArray *datum)
+    void operator<<(DevVarDoubleArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarStringArray *datum)
+    void operator<<(DevVarStringArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarLongStringArray *datum)
+    void operator<<(DevVarLongStringArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(DevVarDoubleStringArray *datum)
+    void operator<<(DevVarDoubleStringArray *datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarBooleanArray &datum)
+    void operator<<(const DevVarBooleanArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarCharArray &datum)
+    void operator<<(const DevVarCharArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarShortArray &datum)
+    void operator<<(const DevVarShortArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarUShortArray datum)
+    void operator<<(const DevVarUShortArray datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarLongArray &datum)
+    void operator<<(const DevVarLongArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarLong64Array &datum)
+    void operator<<(const DevVarLong64Array &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarULongArray &datum)
+    void operator<<(const DevVarULongArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarULong64Array &datum)
+    void operator<<(const DevVarULong64Array &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarFloatArray &datum)
+    void operator<<(const DevVarFloatArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarDoubleArray &datum)
+    void operator<<(const DevVarDoubleArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarStringArray &datum)
+    void operator<<(const DevVarStringArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarLongStringArray &datum)
+    void operator<<(const DevVarLongStringArray &datum)
     {
         any.inout() <<= datum;
     }
 
-    inline void operator<<(const DevVarDoubleStringArray &datum)
+    void operator<<(const DevVarDoubleStringArray &datum)
     {
         any.inout() <<= datum;
     }

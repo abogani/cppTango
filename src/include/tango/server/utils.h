@@ -1160,7 +1160,7 @@ class Util
 
     // thread specific storage key accessor for client information/identification
     // return: the (omni) thread specific storage key dedicated to client information/identification
-    static inline omni_thread::key_t get_tssk_client_info()
+    static omni_thread::key_t get_tssk_client_info()
     {
         return Util::tssk_client_info;
     }

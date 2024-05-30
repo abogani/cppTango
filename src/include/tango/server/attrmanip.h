@@ -58,7 +58,7 @@ class AttrManip
         std::transform(format.begin(), format.end(), format.begin(), ::tolower);
     }
 
-    inline const std::string &to_string() const
+    const std::string &to_string() const
     {
         return format;
     }

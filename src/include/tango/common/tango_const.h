@@ -914,7 +914,7 @@ const char *const CmdArgTypeName[] = {"DevVoid",
                                       "Unknown"};
 
 /// Convert data types to strings
-inline constexpr const char *data_type_to_string(int type)
+constexpr const char *data_type_to_string(int type)
 {
     return (type >= DEV_VOID && type < (static_cast<int>(sizeof(CmdArgTypeName) / sizeof(CmdArgTypeName[0]))))
                ? CmdArgTypeName[type]

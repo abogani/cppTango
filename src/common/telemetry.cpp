@@ -385,7 +385,7 @@ class SpanImplementation final
     //-------------------------------------------------------------------------------------
     // SpanImplementation::opentelemetry_span
     //-------------------------------------------------------------------------------------
-    inline opentelemetry::trace::Span &opentelemetry_span() noexcept
+    opentelemetry::trace::Span &opentelemetry_span() noexcept
     {
         return *otel_span;
     }
@@ -976,7 +976,7 @@ class InterfaceImplementation final
     //-------------------------------------------------------------------------------------
     // get_current_opentelemetry_span
     //-------------------------------------------------------------------------------------
-    inline opentelemetry::nostd::shared_ptr<opentelemetry::trace::Span> get_current_opentelemetry_span() noexcept
+    opentelemetry::nostd::shared_ptr<opentelemetry::trace::Span> get_current_opentelemetry_span() noexcept
 
     {
         return get_tracer()->GetCurrentSpan();
@@ -1245,7 +1245,7 @@ class Appender : public log4tango::Appender
     //-------------------------------------------------------------------------------------
     // Appender::get_logger
     //-------------------------------------------------------------------------------------
-    inline opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> get_logger()
+    opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> get_logger()
     {
         auto provider = opentelemetry::logs::Provider::GetLoggerProvider();
         return provider->GetLogger(logger_name, "cppTango", git_revision());

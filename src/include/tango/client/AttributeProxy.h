@@ -135,7 +135,7 @@ class AttributeProxy
      *
      * @return The attribute name
      */
-    virtual inline std::string name()
+    virtual std::string name()
     {
         return attr_name;
     }
@@ -147,7 +147,7 @@ class AttributeProxy
      *
      * @return The underlying DeviceProxy object
      */
-    virtual inline DeviceProxy *get_device_proxy()
+    virtual DeviceProxy *get_device_proxy()
     {
         return dev_proxy;
     }
