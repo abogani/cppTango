@@ -863,8 +863,6 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
         const char *event_name = &(tmp_ptr[1]);
         std::string ev_name(event_name);
 
-        const char *endpoint = &(tmp_ptr[1 + ::strlen(event_name) + 1]);
-
         //
         // Check if it is a multicast event
         //
