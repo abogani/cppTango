@@ -62,8 +62,8 @@ class CallbackMock : public Tango::CallBack
 
   private:
     std::deque<TEvent> events{};
-    std::mutex m{};
-    std::condition_variable cv{};
+    std::mutex m;
+    std::condition_variable cv;
 };
 
 } // namespace TangoTest

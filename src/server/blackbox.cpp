@@ -151,9 +151,9 @@ void client_call_interceptor(omniCallDescriptor *d, omniServant *s)
         // force error status on an dedicated "exit span"
         //--------------------------------------------------------------------------------------------------
         // extract exception info
-        std::string err = Tango::telemetry::Interface::extract_exception_info();
+        // std::string err = Tango::telemetry::Interface::extract_exception_info();
         // catch trace context (see Tango::utils::tss)
-        auto telemetry = Tango::telemetry::Interface::get_current();
+        // auto telemetry = Tango::telemetry::Interface::get_current();
         // unfortunately, we can't attach the telemetry context of the caller from this interceptor cause it's
         // called at a early stage of the RPC and almost nothing is accessible. However, the callee attached
         // its telemetry interface to the thread executing this code. We consequently have a change to be
