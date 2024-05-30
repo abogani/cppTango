@@ -813,8 +813,6 @@ class InterfaceImplementation final
 
         opentelemetry::sdk::resource::ResourceAttributes resource_attributes;
 
-        std::string server_name(util != nullptr ? util->get_ds_name() : "unknown server name");
-
         // check interface configuration kind
         if(cfg.is_a(Configuration::Kind::Server))
         {
@@ -1176,15 +1174,6 @@ class Appender : public log4tango::Appender
         api_util->get_env_var("TANGO_HOST", tango_host);
 
         opentelemetry::sdk::resource::ResourceAttributes resource_attributes;
-
-        std::string server_name(util != nullptr ? util->get_ds_name() : "unknown server name");
-
-        // see the following link for details on tracer naming:
-        // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#get-a-tracer
-        //- the tracer name is the 'instrumentation library' - here, it's simply the cpp version of tango
-        std::string tracer_name = "tango.cpp";
-        //- the tracer version is the cppTango version
-        std::string tracer_version = git_revision();
 
         // check interface configuration kind
         if(interface->cfg.is_a(Configuration::Kind::Server))

@@ -351,8 +351,6 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
     CosNotifyFilter::Filter_var filter = CosNotifyFilter::Filter::_nil();
     CosNotifyFilter::FilterID filter_id;
 
-    std::string channel_name = epos->second.channel_name;
-
     try
     {
         ffp = ipos->second.eventChannel->default_filter_factory();

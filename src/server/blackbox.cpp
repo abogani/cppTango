@@ -1625,7 +1625,6 @@ void BlackBox::build_info_as_str(long index)
         {
             return;
         }
-        std::string ip1_str = full_ip_str.substr(0, pos);
         std::string::size_type old_pos;
         pos++;
         old_pos = pos;
@@ -1633,16 +1632,13 @@ void BlackBox::build_info_as_str(long index)
         {
             return;
         }
-        std::string ip2_str = full_ip_str.substr(old_pos, pos - old_pos);
         pos++;
         old_pos = pos;
         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
         {
             return;
         }
-        std::string ip3_str = full_ip_str.substr(old_pos, pos - old_pos);
         pos++;
-        std::string ip4_str = full_ip_str.substr(pos);
 
         //
         // Finally, get host name
@@ -2122,8 +2118,6 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                 }
                 else
                 {
-                    std::string ip1_str = full_ip_str.substr(0, pos);
-
                     std::string::size_type old_pos;
                     pos++;
                     old_pos = pos;
@@ -2133,7 +2127,6 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                     }
                     else
                     {
-                        std::string ip2_str = full_ip_str.substr(old_pos, pos - old_pos);
                         pos++;
                         old_pos = pos;
                         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
@@ -2142,9 +2135,7 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                         }
                         else
                         {
-                            std::string ip3_str = full_ip_str.substr(old_pos, pos - old_pos);
                             pos++;
-                            std::string ip4_str = full_ip_str.substr(pos);
 
                             struct sockaddr_in si;
                             si.sin_family = AF_INET;

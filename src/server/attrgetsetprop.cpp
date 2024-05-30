@@ -1146,7 +1146,6 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
     str.precision(TANGO_FLOAT_PRECISION);
 
     double alrm_usr_def_db;
-    std::string alrm_class_def;
     double alrm_class_def_db;
 
     bool store_in_db = false;

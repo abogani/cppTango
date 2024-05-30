@@ -166,7 +166,6 @@ void Logging::init(const std::string &ds_name, // dserver name
                 // get properties from TANGO-db
                 db->get_device_property(dserver_dev_name, db_data, tg->get_db_cache());
                 // set logging path
-                std::string level_str("WARN");
                 if(!db_data[0].is_empty())
                 {
                     db_data[0] >> Logging::_log_path;

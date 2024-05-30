@@ -864,7 +864,6 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
         std::string ev_name(event_name);
 
         const char *endpoint = &(tmp_ptr[1 + ::strlen(event_name) + 1]);
-        std::string endpoint_str(endpoint);
 
         //
         // Check if it is a multicast event
@@ -1956,7 +1955,6 @@ void ZmqEventConsumer::push_zmq_event(
     bool no_db_dev = false;
 
     size_t pos = ev_name.find('/', 8);
-    std::string base_tango_host = ev_name.substr(0, pos + 1);
     std::string canon_ev_name = ev_name.substr(pos + 1);
 
     if(ev_name.find(MODIFIER_DBASE_NO) != std::string::npos)
