@@ -10,7 +10,8 @@ Checks: >
     -bugprone-unchecked-optional-access,
     -modernize-use-nodiscard,
     -modernize-use-trailing-return-type,
-    -readability-named-parameter,
+    -performance-enum-size,
+    -readability-named-parameter
 
 WarningsAsErrors: >
     -clang-analyzer-*,
