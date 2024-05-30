@@ -351,7 +351,7 @@ clang-tidy:
     - >
       ${RUN_CLANG_TIDY}
       -p build -header-filter='.*' -config-file=ci/report.clang-tidy 'src' 'log4tango/src' 'tests/catch2*'
-      | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' > clang-tidy-output.txt
+      > clang-tidy-output.txt
   after_script:
     - set +o pipefail
     # Print error summary (check name and occurrence count).
