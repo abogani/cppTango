@@ -2864,11 +2864,11 @@ void DeviceProxy::redo_synch_write_call(TgRequest &req)
 
     if(version < 4)
     {
-        return write_attribute(*att);
+        write_attribute(*att);
     }
     else
     {
-        return write_attribute(*att_4);
+        write_attribute(*att_4);
     }
 }
 
