@@ -622,7 +622,7 @@ void Attribute::init_event_prop(std::vector<AttrProperty> &prop_list, const std:
 
     try
     {
-        archive_period = (int) (INT_MAX);
+        archive_period = INT_MAX;
 
         std::string archive_period_str;
         bool archive_period_defined = false;
@@ -4396,21 +4396,21 @@ void Attribute::fire_change_event(DevFailed *except)
             filterable_names.emplace_back("forced_event");
             if(force_change)
             {
-                filterable_data.push_back((double) 1.0);
+                filterable_data.push_back(1.0);
             }
             else
             {
-                filterable_data.push_back((double) 0.0);
+                filterable_data.push_back(0.0);
             }
 
             filterable_names.emplace_back("quality");
             if(quality_change)
             {
-                filterable_data.push_back((double) 1.0);
+                filterable_data.push_back(1.0);
             }
             else
             {
-                filterable_data.push_back((double) 0.0);
+                filterable_data.push_back(0.0);
             }
 
             if(send_attr_5 != nullptr)
@@ -4763,21 +4763,21 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
             filterable_names.emplace_back("forced_event");
             if(force_alarm)
             {
-                filterable_data.push_back((double) 1.0);
+                filterable_data.push_back(1.0);
             }
             else
             {
-                filterable_data.push_back((double) 0.0);
+                filterable_data.push_back(0.0);
             }
 
             filterable_names.emplace_back("quality");
             if(quality_change)
             {
-                filterable_data.push_back((double) 1.0);
+                filterable_data.push_back(1.0);
             }
             else
             {
-                filterable_data.push_back((double) 0.0);
+                filterable_data.push_back(0.0);
             }
 
             if(send_attr_5 != nullptr)
@@ -5209,21 +5209,21 @@ void Attribute::fire_archive_event(DevFailed *except)
             filterable_names.emplace_back("forced_event");
             if(force_change)
             {
-                filterable_data.push_back((double) 1.0);
+                filterable_data.push_back(1.0);
             }
             else
             {
-                filterable_data.push_back((double) 0.0);
+                filterable_data.push_back(0.0);
             }
 
             filterable_names.emplace_back("quality");
             if(quality_change)
             {
-                filterable_data.push_back((double) 1.0);
+                filterable_data.push_back(1.0);
             }
             else
             {
-                filterable_data.push_back((double) 0.0);
+                filterable_data.push_back(0.0);
             }
 
             filterable_names.emplace_back("counter");

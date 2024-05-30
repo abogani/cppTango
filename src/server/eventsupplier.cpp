@@ -469,21 +469,21 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
         filterable_names.emplace_back("forced_event");
         if(force_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         filterable_names.emplace_back("quality");
         if(quality_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         std::vector<int> &client_libs = attr.get_client_lib(CHANGE_EVENT);
@@ -869,21 +869,21 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         filterable_names.emplace_back("forced_event");
         if(force_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         filterable_names.emplace_back("quality");
         if(quality_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         auto time_delta = time_bef_attr - attr.archive_last_event;
