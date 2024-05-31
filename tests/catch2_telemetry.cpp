@@ -35,7 +35,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(TelemetryDS, 3)
 
 SCENARIO("Telemetry traces are outputted")
 {
-    int idlver = GENERATE(range(3, 7));
+    int idlver = GENERATE(TangoTest::idlversion(3));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         std::vector<std::string> env{"TANGO_TELEMETRY_ENABLE=on",
