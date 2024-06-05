@@ -510,6 +510,13 @@ build-conda-dev-package:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
+build-oci-image-cpp-ci:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  trigger:
+    project: tango-controls/docker/ci/cpp/debian12
+    branch: cpptango_version_main
+
 libcpp:
   <<: *job-template-no-test-run
   variables:
