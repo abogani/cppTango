@@ -515,7 +515,7 @@ build-oci-image-cpp-ci:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   trigger:
     project: tango-controls/docker/ci/cpp/debian12
-    branch: cpptango_version_main
+    branch: cppTango_version_main
 
 libcpp:
   <<: *job-template-no-test-run
