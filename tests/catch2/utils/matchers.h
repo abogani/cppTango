@@ -89,4 +89,126 @@ auto AnyLikeContains(const T &v)
 {
     return AnyLikeContainsMatcher{v};
 }
+
+class ReasonMatcher : public Catch::Matchers::MatcherBase<Tango::DevError>
+{
+  public:
+    ReasonMatcher(std::string reason) :
+        m_reason{CATCH_MOVE(reason)}
+    {
+    }
+
+    bool match(const Tango::DevError &error) const override
+    {
+        return strcmp(m_reason.c_str(), error.reason) == 0;
+    }
+
+    std::string describe() const override
+    {
+        return "reason equals \"" + m_reason + "\"";
+    }
+
+  private:
+    std::string m_reason;
+};
+
+inline ReasonMatcher Reason(std::string reason)
+{
+    return {CATCH_MOVE(reason)};
+}
+
+template <typename StringMatcher>
+class DescriptionMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevError>
+{
+  public:
+    DescriptionMatchesMatcher(StringMatcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const Tango::DevError &error) const override
+    {
+        return m_matcher.match(error.desc.in());
+    }
+
+    std::string describe() const override
+    {
+        return "description " + m_matcher.describe();
+    }
+
+  private:
+    StringMatcher m_matcher;
+};
+
+template <typename StringMatcher>
+DescriptionMatchesMatcher<StringMatcher> DescriptionMatches(StringMatcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
+
+template <typename ErrorMatcher>
+class AnyErrorMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFailed>
+{
+  public:
+    AnyErrorMatchesMatcher(ErrorMatcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const Tango::DevFailed &ex) const override
+    {
+        for(size_t i = 0; i < ex.errors.length(); ++i)
+        {
+            if(m_matcher.match(ex.errors[i]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    std::string describe() const override
+    {
+        return "has error matching " + m_matcher.describe();
+    }
+
+  private:
+    ErrorMatcher m_matcher;
+};
+
+template <typename ErrorMatcher>
+AnyErrorMatchesMatcher<ErrorMatcher> AnyErrorMatches(ErrorMatcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
+
+template <typename ErrorMatcher>
+class FirstErrorMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFailed>
+{
+  public:
+    FirstErrorMatchesMatcher(ErrorMatcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const Tango::DevFailed &ex) const override
+    {
+        return m_matcher.match(ex.errors[0]);
+    }
+
+    std::string describe() const override
+    {
+        return "has a first error matching " + m_matcher.describe();
+    }
+
+  private:
+    ErrorMatcher m_matcher;
+};
+
+template <typename ErrorMatcher>
+FirstErrorMatchesMatcher<ErrorMatcher> FirstErrorMatches(ErrorMatcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
 } // namespace TangoTest

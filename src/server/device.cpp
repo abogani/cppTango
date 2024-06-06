@@ -398,146 +398,19 @@ inline void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bo
 //
 //--------------------------------------------------------------------------
 
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const char *d_name, const char *de, Tango::DevState st, const char *sta) :
-    device_name(d_name),
-    desc(de),
-    device_status(sta),
-    device_state(st),
-    device_class(cl_ptr),
-    ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
-    rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
-{
-    real_ctor();
-}
-
 DeviceImpl::DeviceImpl(
-    DeviceClass *cl_ptr, const std::string &d_name, const std::string &de, Tango::DevState st, const std::string &sta) :
+    DeviceClass *cl_ptr, std::string_view d_name, std::string_view de, Tango::DevState st, std ::string_view sta) :
     device_name(d_name),
     desc(de),
     device_status(sta),
     device_state(st),
     device_class(cl_ptr),
     ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
     rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name.c_str()),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
+    only_one(d_name),
+    poll_mon(std::string{d_name} + " cache"),
+    att_conf_mon(std::string{d_name} + " att_config")
 {
-    real_ctor();
-}
-
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name) :
-    device_name(d_name),
-    device_class(cl_ptr),
-    ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
-    rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name.c_str()),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
-{
-    desc = "A Tango device";
-    device_state = Tango::UNKNOWN;
-    device_status = StatusNotSet;
-
-    real_ctor();
-}
-
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name, const std::string &description) :
-    device_name(d_name),
-    device_class(cl_ptr),
-    ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
-    rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name.c_str()),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
-{
-    desc = description;
-    device_state = Tango::UNKNOWN;
-    device_status = StatusNotSet;
-
     real_ctor();
 }
 

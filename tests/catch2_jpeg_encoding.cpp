@@ -142,9 +142,12 @@ SCENARIO("Images can be converted to and from jpeg")
                 {
                     THEN("An exception is thrown")
                     {
+                        using TangoTest::FirstErrorMatches;
+                        using TangoTest::Reason;
+
                         REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb32(test.raw_32bits.data(), 512, 512, 100),
                                                Tango::DevFailed,
-                                               TangoTest::DevFailedReasonEquals(Tango::API_UnsupportedFeature));
+                                               FirstErrorMatches(Reason(Tango::API_UnsupportedFeature)));
                     }
                 }
             }
@@ -152,18 +155,24 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_gray8(test.raw_8bits.data(), 0, 0, 100),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_EncodeErr));
+                                           FirstErrorMatches(Reason(Tango::API_EncodeErr)));
                 }
             }
             WHEN("Converting a color image to jpeg with incorrect parameters")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb24(test.raw_24bits.data(), 0, 0, 100),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_EncodeErr));
+                                           FirstErrorMatches(Reason(Tango::API_EncodeErr)));
                 }
             }
             if(test.encoder->is_feature_supported(Tango::EncodedAttribute::Feature::JPEG_WITH_ALPHA))
@@ -172,9 +181,12 @@ SCENARIO("Images can be converted to and from jpeg")
                 {
                     THEN("An exception is thrown")
                     {
+                        using TangoTest::FirstErrorMatches;
+                        using TangoTest::Reason;
+
                         REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb32(test.raw_32bits.data(), 0, 0, 100),
                                                Tango::DevFailed,
-                                               TangoTest::DevFailedReasonEquals(Tango::API_EncodeErr));
+                                               FirstErrorMatches(Reason(Tango::API_EncodeErr)));
                     }
                 }
             }
@@ -185,27 +197,36 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_gray8(test.raw_8bits.data(), 512, 512, 100),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_UnsupportedFeature));
+                                           FirstErrorMatches(Reason(Tango::API_UnsupportedFeature)));
                 }
             }
             WHEN("Converting a color image to jpeg without a jpeg library")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb24(test.raw_24bits.data(), 512, 512, 100),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_UnsupportedFeature));
+                                           FirstErrorMatches(Reason(Tango::API_UnsupportedFeature)));
                 }
             }
             WHEN("Converting a color image with alpha to jpeg without a jpeg library")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb32(test.raw_32bits.data(), 512, 512, 100),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_UnsupportedFeature));
+                                           FirstErrorMatches(Reason(Tango::API_UnsupportedFeature)));
                 }
             }
         }
@@ -258,18 +279,24 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_rgb32(&da_error, &width, &height, &color_buffer),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_WrongFormat));
+                                           FirstErrorMatches(Reason(Tango::API_WrongFormat)));
                 }
             }
             WHEN("Converting a black and white jpeg image to a raw one")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_gray8(&da_error, &width, &height, &color_buffer),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_DecodeErr));
+                                           FirstErrorMatches(Reason(Tango::API_DecodeErr)));
                 }
             }
         }
@@ -279,18 +306,24 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_rgb32(&da_rgb, &width, &height, &color_buffer),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_UnsupportedFeature));
+                                           FirstErrorMatches(Reason(Tango::API_UnsupportedFeature)));
                 }
             }
             WHEN("Converting a black and white jpeg image to a raw one without a jpeg library")
             {
                 THEN("An exception is thrown")
                 {
+                    using TangoTest::FirstErrorMatches;
+                    using TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_gray8(&da_gray, &width, &height, &gray_buffer),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_UnsupportedFeature));
+                                           FirstErrorMatches(Reason(Tango::API_UnsupportedFeature)));
                 }
             }
         }

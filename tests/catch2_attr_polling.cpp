@@ -345,9 +345,11 @@ SCENARIO("Subscribing to change events for an attribute with no polling fails")
             {
                 THEN("the subscription fails")
                 {
+                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback, false),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                                           FirstErrorMatches(Reason(Tango::API_AttributePollingNotStarted)));
                 }
             }
 

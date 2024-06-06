@@ -1902,7 +1902,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // Create a callback monitor and set its timeout to 1000ms not to block the event consumer for too long.
     //
 
-    new_event_callback.callback_monitor = new TangoMonitor();
+    new_event_callback.callback_monitor = new TangoMonitor(event_name + " callback");
     new_event_callback.callback_monitor->timeout(1000);
 
     //
