@@ -325,6 +325,7 @@ if(NOT WIN32)
             add_link_options(-fsanitize=undefined)
             if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
                 add_compile_options(
+                    -fsanitize=bool
                     -fsanitize=implicit-integer-truncation
                     -fsanitize=implicit-integer-arithmetic-value-change
                     -fsanitize=implicit-conversion
