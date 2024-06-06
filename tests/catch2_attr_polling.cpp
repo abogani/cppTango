@@ -1,6 +1,4 @@
-#include <tango/tango.h>
-#include <memory>
-#include "utils/utils.h"
+#include "catch2_common.h"
 
 constexpr static Tango::DevBoolean k_initial_value = false;
 constexpr static Tango::DevBoolean k_new_value = true;

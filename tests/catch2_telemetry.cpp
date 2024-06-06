@@ -1,9 +1,4 @@
-#include <tango/tango.h>
-
-#include <memory>
-
-#include "utils/utils.h"
-#include "common.h"
+#include "catch2_common.h"
 
 namespace
 {

@@ -2,7 +2,7 @@
 
 #include <time.h>
 
-#include "common.h"
+#include "old_common.h"
 
 void check_description(
     Tango::DeviceProxy &d, Tango::DeviceProxy &, string &, const char *, const char *, const char *, const char *);

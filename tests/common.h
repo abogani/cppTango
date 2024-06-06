@@ -6,20 +6,11 @@
   #include <iostream>
   #include <tango/tango.h>
 
-  #ifndef TS_ASSERT
-    #include <cassert>
-  #else
-    #undef assert
-  #endif
-
   #ifdef WIN32
     #include <process.h>
   #else
     #include <unistd.h>
   #endif
-
-using namespace std;
-using namespace Tango;
 
   #include "logging.h"
 

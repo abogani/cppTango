@@ -3,7 +3,7 @@
 #include <thread>
 #include <chrono>
 
-#include "common.h"
+#include "old_common.h"
 
 class EventCallBack : public Tango::CallBack
 {

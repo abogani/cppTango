@@ -1,6 +1,6 @@
 // NOLINTBEGIN(*)
 
-#include "common.h"
+#include "old_common.h"
 
 class EventCallBack : public CountingCallBack<Tango::PipeEventData>
 {

@@ -1,9 +1,6 @@
+#include "catch2_common.h"
+
 #include <catch2/matchers/catch_matchers.hpp>
-#include <tango/tango.h>
-
-#include <memory>
-
-#include "utils/utils.h"
 
 static constexpr double ATTR_VALID_VALUE = 0.0;
 static constexpr double ATTR_INIT_VALUE = ATTR_VALID_VALUE;

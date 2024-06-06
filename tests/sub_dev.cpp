@@ -1,6 +1,6 @@
 // NOLINTBEGIN(*)
 
-#include "common.h"
+#include "old_common.h"
 
 /*
  * Test module for sub device diagnostics in the Tango API.

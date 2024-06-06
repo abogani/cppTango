@@ -4,7 +4,7 @@
   #include <process.h>
 #endif
 
-#include "common.h"
+#include "old_common.h"
 
 int main(int argc, char **argv)
 {
