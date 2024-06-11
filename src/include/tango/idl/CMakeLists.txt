@@ -20,7 +20,7 @@ if(WIN32)
     endforeach(file)
 endif()
 
-add_custom_target(idl_source DEPENDS ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h tangoSK.cpp tangoDynSK.cpp)
+add_custom_target(idl_source DEPENDS ${TANGO_SOURCE_DIR}/src/include/tango/tango.h tangoSK.cpp tangoDynSK.cpp)
 
 add_library(idl_objects OBJECT ${SOURCES})
 target_include_directories(idl_objects SYSTEM PUBLIC $<TARGET_PROPERTY:omniORB4::omniORB4,INTERFACE_INCLUDE_DIRECTORIES>)

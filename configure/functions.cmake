@@ -9,6 +9,13 @@ function(set_cflags_and_include target)
         cppzmq::cppzmq
   )
 
+  target_include_directories(${target} PRIVATE
+    ${TANGO_SOURCE_DIR}/src/include
+    ${TANGO_SOURCE_DIR}/log4tango/include
+    ${TANGO_BINARY_DIR}/src/include
+    ${TANGO_BINARY_DIR}/log4tango/include
+  )
+
   target_include_directories(${target} SYSTEM PUBLIC
     ${cppzmq_INCLUDE_DIR}
     ${omniORB4_INCLUDE_DIR}
