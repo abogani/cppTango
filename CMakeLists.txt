@@ -106,6 +106,8 @@ target_include_directories(tango INTERFACE
     $<BUILD_INTERFACE:${TANGO_BINARY_DIR}/log4tango/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
+target_compile_features(tango INTERFACE cxx_std_17)
+
 add_library(Tango::Tango ALIAS tango)
 
 if(WIN32)
