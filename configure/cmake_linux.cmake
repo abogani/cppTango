@@ -79,8 +79,4 @@ install(
   PATTERN "FindTango.cmake" EXCLUDE
 )
 
-configure_file(tango.pc.cmake tango.pc @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tango.pc"
-        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
-
 include(configure/cpack_linux.cmake)

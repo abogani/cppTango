@@ -20,4 +20,4 @@ else()
     endif()
 endif()
 
-target_precompile_headers(common_objects PRIVATE ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h)
+target_precompile_headers(common_objects PRIVATE ${TANGO_SOURCE_DIR}/src/include/tango/tango.h)
