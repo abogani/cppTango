@@ -1265,6 +1265,11 @@ struct tango_type_traits<Tango::DevString>
 };
 
 template <>
+struct tango_type_traits<std::string> : tango_type_traits<Tango::DevString>
+{
+};
+
+template <>
 struct tango_type_traits<Tango::DevBoolean>
 {
     using ArrayType = Tango::DevVarBooleanArray;
