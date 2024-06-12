@@ -67,8 +67,9 @@ class DServerSignal : public TangoMonitor
 {
   public:
     static DServerSignal *instance();
+    static void cleanup_singleton();
 
-    ~DServerSignal() { }
+    ~DServerSignal();
 
 #ifndef _TG_WINDOWS_
     void register_class_signal(long, bool, DeviceClass *);
@@ -127,6 +128,7 @@ class DServerSignal : public TangoMonitor
 
     bool sig_to_install;
     bool sig_to_remove;
+    bool sig_th_should_stop = false;
     int inst_sig;
     int rem_sig;
 #ifdef _TG_WINDOWS_
@@ -135,7 +137,7 @@ class DServerSignal : public TangoMonitor
 #endif
 
   private:
-    static DServerSignal *_instance;
+    static std::unique_ptr<DServerSignal> _instance;
     std::vector<DeviceImpl *>::iterator find_device(long, DeviceImpl *);
     std::vector<DeviceImpl *>::iterator find_delayed_device(long, DeviceImpl *);
 

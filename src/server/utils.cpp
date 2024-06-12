@@ -2304,6 +2304,14 @@ void Util::server_cleanup()
     {
         omni_thread::release_dummy();
     }
+
+    // We explicitly cleanup the DServerSignal singleton here rather than
+    // relying on the static object de-initialiser as there is no guarantee what
+    // order static objects get de-initialised between translation units.
+    //
+    // The DServerSignal::ThSig thread accesses logging static objects and these
+    // might not exist when the DServerSignal singleton is being de-initialised.
+    DServerSignal::cleanup_singleton();
 }
 
 //+------------------------------------------------------------------------------------------------------------------

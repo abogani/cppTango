@@ -42,7 +42,7 @@
 namespace Tango
 {
 
-DServerSignal *DServerSignal::_instance = nullptr;
+std::unique_ptr<DServerSignal> DServerSignal::_instance = nullptr;
 DevSigAction DServerSignal::reg_sig[_NSIG];
 std::string DServerSignal::sig_name[_NSIG];
 #ifdef _TG_WINDOWS_
@@ -67,14 +67,19 @@ DServerSignal *DServerSignal::instance()
     {
         try
         {
-            _instance = new DServerSignal();
+            _instance.reset(new DServerSignal());
         }
         catch(std::bad_alloc &)
         {
             throw;
         }
     }
-    return _instance;
+    return _instance.get();
+}
+
+void DServerSignal::cleanup_singleton()
+{
+    _instance.reset(nullptr);
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -232,6 +237,29 @@ DServerSignal::DServerSignal() :
     sig_th->start();
 
     TANGO_LOG_DEBUG << "leaving DServerSignal constructor" << std::endl;
+}
+
+DServerSignal::~DServerSignal()
+{
+    // Request that ThSig stops just in case we have got here because some other
+    // thread is shutting the server down, in which case the ThSig might be
+    // waiting forever for a signal.
+    sig_th_should_stop = true;
+#ifndef _TG_WINDOWS_
+    pthread_kill(sig_th->my_thread, SIGINT);
+#else
+    win_signo = SIGINT;
+    SetEvent(win_ev);
+#endif
+    try
+    {
+        sig_th->join(nullptr);
+    }
+    catch(...)
+    {
+        // We are in the middle of shutting down and we don't care if we cannot
+        // join the thread, so we just continue here.
+    }
 }
 
 //+------------------------------------------------------------------------------------------------------------------
