@@ -21,7 +21,7 @@ function Invoke-NativeCommand() {
 
 $CMAKE_BUILD_PARALLEL_LEVEL=$env:NUMBER_OF_PROCESSORS
 # avoid cmake warning about unknown escape sequences
-$cwd = $(pwd | Convert-Path).Replace("\\", "/")
+$cwd = $(pwd | Convert-Path).Replace("\", "/")
 
 Write-Host "== Get ZeroMQ" -ForegroundColor Blue
 $FILENAME="zmq-${ZMQ_VERSION}_${VC_ARCH_VER}.zip"
