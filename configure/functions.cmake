@@ -16,11 +16,6 @@ function(set_cflags_and_include target)
     ${TANGO_BINARY_DIR}/log4tango/include
   )
 
-  target_include_directories(${target} SYSTEM PUBLIC
-    ${cppzmq_INCLUDE_DIR}
-    ${omniORB4_INCLUDE_DIR}
-  )
-
   if(TANGO_USE_JPEG)
       target_link_libraries(${target} PRIVATE JPEG::JPEG)
   endif()
