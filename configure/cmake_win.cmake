@@ -138,6 +138,7 @@ if (TANGO_INSTALL_DEPENDENCIES)
         install(FILES ${pthread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
         install(FILES ${pthread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
         install(FILES ${pthread_DBG_DEBUG} DESTINATION bin COMPONENT dynamic)
+        install(DIRECTORY ${pthread_INCLUDE_DIR}/ DESTINATION include)
     endif()
 
     #Jpeg
