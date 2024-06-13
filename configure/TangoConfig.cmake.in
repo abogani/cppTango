@@ -28,7 +28,6 @@ if(${TANGO_USE_TELEMETRY})
     if(WIN32)
         find_dependency(CURL)
         find_dependency(nlohmann_json)
-        find_dependency(OpenSSL_json)
     endif()
 endif()
 
