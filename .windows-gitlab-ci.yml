@@ -98,6 +98,7 @@ windows-build:
   script:
     - $PSVersionTable
     - try { & '.\ci\windows-build.ps1' } catch { Write-Host $_; exit 1 }
+    - try { & '.\ci\windows-test.ps1' } catch { Write-Host $_; exit 1 }
   artifacts:
     paths:
       - build/*.zip
