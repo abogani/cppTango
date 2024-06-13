@@ -67,6 +67,7 @@ endif()
 #install code
 
 install(TARGETS tango
+        EXPORT TangoTargets
         ARCHIVE DESTINATION lib COMPONENT static
         RUNTIME DESTINATION bin COMPONENT dynamic)
 

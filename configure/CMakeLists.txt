@@ -373,7 +373,3 @@ endif()
 include(configure/functions.cmake)
 
 include(GNUInstallDirs)
-
-configure_file(tango.pc.cmake tango.pc @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tango.pc"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

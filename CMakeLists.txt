@@ -117,4 +117,6 @@ else()
     include(configure/cmake_linux.cmake)
 endif()
 
+include(configure/install.cmake)
+
 include(CPack)
