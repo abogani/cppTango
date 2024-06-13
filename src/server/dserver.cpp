@@ -1376,6 +1376,8 @@ Tango::DevVarStringArray *DServer::query_dev_prop(std::string &class_name)
 //
 //-----------------------------------------------------------------------------------------------------------------
 
+KillThread *DServer::kill_thread = nullptr;
+
 void DServer::kill()
 {
     NoSyncModelTangoMonitor mon(this);
@@ -1386,9 +1388,9 @@ void DServer::kill()
     // Create the thread and start it
     //
 
-    KillThread *t = new KillThread;
+    kill_thread = new KillThread;
 
-    t->start();
+    kill_thread->start();
 }
 
 void *KillThread::run_undetached(TANGO_UNUSED(void *ptr))
@@ -1405,6 +1407,15 @@ void *KillThread::run_undetached(TANGO_UNUSED(void *ptr))
     tg->shutdown_ds();
 
     return nullptr;
+}
+
+void DServer::wait_for_kill_thread()
+{
+    if(kill_thread != nullptr)
+    {
+        kill_thread->join(nullptr);
+        kill_thread = nullptr;
+    }
 }
 
 //+----------------------------------------------------------------------------------------------------------------
