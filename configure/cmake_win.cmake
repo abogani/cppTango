@@ -182,6 +182,8 @@ if (TANGO_INSTALL_DEPENDENCIES)
           message(FATAL_ERROR "Missing TANGO_OTEL_ROOT variable")
         endif()
 
+        # Required by protobuf-config.cmake and gRPCConfig.cmake
+        install(DIRECTORY ${TANGO_OTEL_ROOT}/bin/ DESTINATION bin)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/lib/ DESTINATION lib)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/cmake/ DESTINATION cmake)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/share/cmake/ DESTINATION share/cmake)
