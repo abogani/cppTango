@@ -57,6 +57,10 @@ struct member_fn_traits<R (C::*)(Args... args)>
  * implementation file per Device) to instantiate AutoDeviceClass's static
  * members and to register the device class with Tango.
  *
+ * The `init_device` method is called automatically just after the constructor.
+ * For internal reasons the `delete_device` method, if present, must be called
+ * explicitly by the test code.
+ *
  * Example:
  *
  *  class MyDevice : public Tango::Device
@@ -106,7 +110,10 @@ class AutoDeviceClass : public Tango::DeviceClass
                 continue;
             }
 
-            device_list.push_back(new Device{this, name});
+            auto dev = new Device{this, name};
+            dev->init_device();
+
+            device_list.push_back(dev);
 
             if(tg->use_db() && !tg->use_file_db())
             {

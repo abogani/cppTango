@@ -9,14 +9,10 @@ template <class Base>
 class DoubleROAttrServer : public Base
 {
   public:
+    using Base::Base;
+
     Tango::DevDouble *attr_double_value_read;
     constexpr static Tango::DevDouble SIMPLE_SERVER_DOUBLE_VALUE = 42.1234;
-
-    DoubleROAttrServer(Tango::DeviceClass *cl, const char *dev_name) :
-        Base(cl, dev_name)
-    {
-        init_device();
-    }
 
     ~DoubleROAttrServer() override
     {
