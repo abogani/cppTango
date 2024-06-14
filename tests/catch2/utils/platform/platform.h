@@ -67,11 +67,10 @@ struct StopServerResult
 {
     enum class Kind
     {
-        Timeout,     // Timed out waiting for the sever to exit, exit_status
-                     // undefined
-        ExitedEarly, // The server had already exited when `stop()` was called,
+        ExitedEarly, // The server had already exited when `stop_server()` was called,
                      // exit_status is set
-        Exited,      // The server stopped with exit_status
+        Exiting,     // The server has been signalled to stop, exit_status is
+                     // undefined
     };
 
     Kind kind;
@@ -79,7 +78,7 @@ struct StopServerResult
 };
 
 /**
- * @brief Stop a server
+ * @brief Signal to a server to stop a server
  *
  * @param handle - a server returned by
  *                 TangoTest::platform::start_server
@@ -87,7 +86,22 @@ struct StopServerResult
  * @return - the outcome of stopping the server. See
  *           TangoTest::platform::StopServerResult
  */
-StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout);
+StopServerResult stop_server(TestServer::Handle *handle);
+
+struct WaitForStopResult
+{
+    enum class Kind
+    {
+        Timeout, // Timed out waiting for the sever to exit, exit_status
+                 // undefined
+        Exited,  // The server stopped with exit_status
+    };
+
+    Kind kind;
+    int exit_status;
+};
+
+WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::milliseconds timeout);
 
 } // namespace TangoTest::platform
 
