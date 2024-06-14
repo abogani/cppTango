@@ -3204,6 +3204,8 @@ void Attribute::delete_seq()
         value.enc_seq = nullptr;
         break;
     }
+
+    data_size = 0;
 }
 
 //+-------------------------------------------------------------------------
