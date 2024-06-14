@@ -146,15 +146,11 @@ Context::Context(const std::string &instance_name,
     restart_server();
 }
 
-Context::Context(const std::string &instance_name,
-                 const std::string &tmpl_name,
-                 int idlversion,
-                 std::vector<std::string> env) :
+Context::Context(const std::string &instance_name, const std::string &class_name, std::vector<std::string> env) :
+    m_class_name{class_name},
     m_instance_name{instance_name},
     m_extra_env{std::move(env)}
 {
-    m_class_name = make_class_name(tmpl_name, idlversion);
-
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
@@ -170,6 +166,14 @@ Context::Context(const std::string &instance_name,
     m_extra_args = {"-nodb", "-dlist", dlist_arg};
 
     restart_server();
+}
+
+Context::Context(const std::string &instance_name,
+                 const std::string &tmpl_name,
+                 int idlversion,
+                 std::vector<std::string> env) :
+    Context{instance_name, make_class_name(tmpl_name, idlversion), env}
+{
 }
 
 void Context::restart_server(std::chrono::milliseconds timeout)
@@ -197,6 +201,13 @@ std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
 
+std::unique_ptr<Tango::DeviceProxy> Context::get_admin_proxy()
+{
+    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "dserver/TestServer/" + m_instance_name);
+
+    return std::make_unique<Tango::DeviceProxy>(fqtrl);
+}
+
 const std::string &Context::get_redirect_file() const
 {
     return m_server.get_redirect_file();
@@ -205,6 +216,11 @@ const std::string &Context::get_redirect_file() const
 void Context::stop_server(std::chrono::milliseconds timeout)
 {
     m_server.stop(timeout);
+}
+
+int Context::wait_for_exit(std::chrono::milliseconds timeout)
+{
+    return m_server.wait_for_exit(timeout);
 }
 
 std::string Context::get_file_database_path()
