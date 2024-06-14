@@ -217,7 +217,7 @@ void Context::stop_server(std::chrono::milliseconds timeout)
     m_server.stop(timeout);
 }
 
-int Context::wait_for_exit(std::chrono::milliseconds timeout)
+ExitStatus Context::wait_for_exit(std::chrono::milliseconds timeout)
 {
     return m_server.wait_for_exit(timeout);
 }

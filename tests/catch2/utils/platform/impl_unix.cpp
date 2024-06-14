@@ -88,6 +88,31 @@ void handle_child(int)
     // Do nothing, we want to handle the server exiting synchronously
 }
 
+ExitStatus convert_wait_status(int status)
+{
+    using Kind = ExitStatus::Kind;
+
+    ExitStatus result;
+
+    if(WIFEXITED(status))
+    {
+        result.kind = Kind::Normal;
+        result.code = WEXITSTATUS(status);
+    }
+    else if(WIFSIGNALED(status))
+    {
+        result.kind = Kind::Aborted;
+        result.signal = WTERMSIG(status);
+    }
+    else
+    {
+        // This should never happen, but just in case we fill something in here.
+        result.kind = Kind::AbortedNoSignal;
+    }
+
+    return result;
+}
+
 } // namespace
 
 void init()
@@ -240,7 +265,7 @@ StartServerResult start_server(const std::vector<std::string> &args,
                 if(ret != 0)
                 {
                     result.kind = Kind::Exited;
-                    result.exit_status = WEXITSTATUS(status);
+                    result.exit_status = convert_wait_status(status);
                     return result;
                 }
             }
@@ -312,7 +337,7 @@ StopServerResult stop_server(TestServer::Handle *handle)
     if(pid != 0)
     {
         result.kind = Kind::ExitedEarly;
-        result.exit_status = WEXITSTATUS(status);
+        result.exit_status = convert_wait_status(status);
         return result;
     }
 
@@ -339,7 +364,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
         if(pid != 0)
         {
             result.kind = Kind::Exited;
-            result.exit_status = WEXITSTATUS(status);
+            result.exit_status = convert_wait_status(status);
             return result;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds{10});

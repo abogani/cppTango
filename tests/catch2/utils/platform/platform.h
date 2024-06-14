@@ -36,7 +36,7 @@ struct StartServerResult
     union
     {
         TestServer::Handle *handle;
-        int exit_status;
+        ExitStatus exit_status;
     };
 };
 
@@ -74,7 +74,7 @@ struct StopServerResult
     };
 
     Kind kind;
-    int exit_status;
+    ExitStatus exit_status;
 };
 
 /**
@@ -98,7 +98,7 @@ struct WaitForStopResult
     };
 
     Kind kind;
-    int exit_status;
+    ExitStatus exit_status;
 };
 
 WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::milliseconds timeout);

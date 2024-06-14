@@ -90,7 +90,7 @@ class Context
      *
      *  Throws: a `runtime_error` if the timeout is exceeded.
      */
-    int wait_for_exit(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
+    ExitStatus wait_for_exit(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
     /** Stop the associated TestServer instance if it has been started.
      *
