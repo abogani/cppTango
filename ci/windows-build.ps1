@@ -138,7 +138,8 @@ Invoke-NativeCommand cmake `
   --config "${CMAKE_BUILD_TYPE}"
 
 Write-Host "== Create archive" -ForegroundColor Blue
-# -B not working here, so we have to use cd
-cd build
+# -B not working here, so we have to change directories
+Push-Location build
 # space after `-D` is required
 Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
+Pop-Location
