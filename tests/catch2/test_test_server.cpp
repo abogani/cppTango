@@ -53,6 +53,26 @@ struct LoggerSwapper
     std::unique_ptr<TangoTest::Logger> logger;
 };
 
+std::vector<std::string> env_with_log_file(const char *class_name)
+{
+    std::vector<std::string> result;
+    result.reserve(2);
+
+    {
+        std::stringstream ss;
+        ss << TangoTest::detail::k_log_file_env_var << "=" << TangoTest::get_current_log_file_path();
+        result.emplace_back(ss.str());
+    }
+
+    {
+        std::stringstream ss;
+        ss << TangoTest::detail::k_enabled_classes_env_var << "=" << class_name;
+        result.emplace_back(ss.str());
+    }
+
+    return result;
+}
+
 } // namespace
 
 template <class Base>
@@ -77,7 +97,7 @@ SCENARIO("test servers can be started and stopped")
     GIVEN("a server started with basic device class")
     {
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "Empty::TestServer/tests/1"};
-        std::vector<std::string> env;
+        std::vector<std::string> env = env_with_log_file("Empty");
 
         TestServer server;
         server.start("self_test", extra_args, env);
@@ -275,7 +295,7 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "InitCrash::TestServer/tests/1"};
-        std::vector<std::string> env;
+        std::vector<std::string> env = env_with_log_file("InitCrash");
 
         WHEN("we start the server")
         {
@@ -310,7 +330,7 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "DuringCrash::TestServer/tests/1"};
-        std::vector<std::string> env;
+        std::vector<std::string> env = env_with_log_file("DuringCrash");
 
         server.start("self_test", extra_args, env);
 
@@ -344,7 +364,7 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "ExitCrash::TestServer/tests/1"};
-        std::vector<std::string> env;
+        std::vector<std::string> env = env_with_log_file("ExitCrash");
 
         server.start("self_test", extra_args, env);
 
@@ -369,7 +389,7 @@ SCENARIO("test server crashes and timeouts are reported")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "ExitTimeout::TestServer/tests/1"};
-        std::vector<std::string> env;
+        std::vector<std::string> env = env_with_log_file("ExitTimeout");
 
         server.start("self_test", extra_args, env);
 
@@ -402,7 +422,7 @@ SCENARIO("test server timeouts during startup are reported", "[!mayfail]")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "InitTimeout::TestServer/tests/1"};
-        std::vector<std::string> env;
+        std::vector<std::string> env = env_with_log_file("InitTimeout");
 
         WHEN("we start the server")
         {

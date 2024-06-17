@@ -140,6 +140,7 @@ class Context
 
 namespace detail
 {
+constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 // Setup a log appender to the file specified in the environment variable
 // TANGO_TEST_LOG_FILE.  Each log is prefixed with `topic`, this allows
 // multiple processes to log to this file at the same time.
