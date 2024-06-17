@@ -16,6 +16,7 @@ struct TestLogger : public TangoTest::Logger
 {
     void log(const std::string &message) override
     {
+        TANGO_LOG_INFO << "Got log: \"" << message << "\"";
         logs.push_back(message);
     }
 
