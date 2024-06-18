@@ -1,27 +1,8 @@
-# From https://stackoverflow.com/questions/47032005
-function Invoke-NativeCommand() {
-    if ($args.Count -eq 0) {
-        throw "No arguments."
-    }
-
-    $command = $args[0]
-    $commandArgs = @()
-
-    if ($args.Count -gt 1) {
-        $commandArgs = $args[1..($args.Count - 1)]
-    }
-
-    & $command $commandArgs
-    $result = $LASTEXITCODE
-
-    if ($result -ne 0) {
-        throw "`"$command $commandArgs`" exited with exit code $result."
-    }
-}
+. $PSScriptRoot/windows-lib.ps1
 
 $CMAKE_BUILD_PARALLEL_LEVEL=$env:NUMBER_OF_PROCESSORS
 # avoid cmake warning about unknown escape sequences
-$cwd = $(pwd | Convert-Path).Replace("\\", "/")
+$cwd = $(pwd | Convert-Path).Replace("\", "/")
 
 Write-Host "== Get ZeroMQ" -ForegroundColor Blue
 $FILENAME="zmq-${ZMQ_VERSION}_${VC_ARCH_VER}.zip"
@@ -157,7 +138,8 @@ Invoke-NativeCommand cmake `
   --config "${CMAKE_BUILD_TYPE}"
 
 Write-Host "== Create archive" -ForegroundColor Blue
-# -B not working here, so we have to use cd
-cd build
+# -B not working here, so we have to change directories
+Push-Location build
 # space after `-D` is required
 Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
+Pop-Location

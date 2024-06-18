@@ -65,21 +65,19 @@ function(tango_catch2_tests_create)
         # When we move to CMake 3.22 (minimum) we can pass DL_PATHS to
         # catch_discover_tests to avoid this copying.
 
+        # TODO: Use -E copy -t when on CMake 3.26
         add_custom_command(TARGET Catch2Tests POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:Catch2Tests> $<TARGET_FILE_DIR:Catch2Tests>
+          COMMAND ${CMAKE_COMMAND} -E "$<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:Catch2Tests>>,copy;$<TARGET_RUNTIME_DLLS:Catch2Tests>;$<TARGET_FILE_DIR:Catch2Tests>,true>"
           COMMAND_EXPAND_LISTS)
 
         # The JPEG::JPEG target is an IMPORTED UNKNOWN library, which means it will not be found by TARGET_RUNTIME_DLLS
         if (TANGO_USE_JPEG)
-            if (JPEG_RUNTIME_RELEASE AND JPEG_RUNTIME_DEBUG)
-                add_custom_command(TARGET Catch2Tests POST_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy $<$<CONFIG:Debug>:${JPEG_RUNTIME_DEBUG}:${JPEG_RUNTIME_RELEASE}> $<TARGET_FILE_DIR:Catch2Tests>
-                  COMMAND_EXPAND_LISTS)
-            elseif(JPEG_RUNTIME_RELEASE)
+            if(JPEG_RUNTIME_RELEASE)
                 add_custom_command(TARGET Catch2Tests POST_BUILD
                   COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_RELEASE} $<TARGET_FILE_DIR:Catch2Tests>
                   COMMAND_EXPAND_LISTS)
-            elseif(JPEG_RUNTIME_DEBUG)
+            endif()
+            if(JPEG_RUNTIME_DEBUG)
                 add_custom_command(TARGET Catch2Tests POST_BUILD
                   COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
                   COMMAND_EXPAND_LISTS)

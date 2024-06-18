@@ -67,6 +67,7 @@ endif()
 #install code
 
 install(TARGETS tango
+        EXPORT TangoTargets
         ARCHIVE DESTINATION lib COMPONENT static
         RUNTIME DESTINATION bin COMPONENT dynamic)
 
@@ -137,6 +138,7 @@ if (TANGO_INSTALL_DEPENDENCIES)
         install(FILES ${pthread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
         install(FILES ${pthread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
         install(FILES ${pthread_DBG_DEBUG} DESTINATION bin COMPONENT dynamic)
+        install(DIRECTORY ${pthread_INCLUDE_DIR}/ DESTINATION include)
     endif()
 
     #Jpeg
@@ -165,6 +167,10 @@ if (TANGO_INSTALL_DEPENDENCIES)
       if(BUILD_SHARED_LIBS)
         message(FATAL_ERROR "Missing installation code")
       else()
+        if (NOT ZLIB_ROOT)
+          get_filename_component(ZLIB_LIBRARY_DIR ${ZLIB_LIBRARY} DIRECTORY)
+          get_filename_component(ZLIB_ROOT ${ZLIB_LIBRARY_DIR} DIRECTORY)
+        endif()
         install(FILES ${ZLIB_ROOT}/include/zconf.h DESTINATION include COMPONENT headers)
         install(FILES ${ZLIB_ROOT}/include/zlib.h DESTINATION include COMPONENT headers)
         install(FILES ${ZLIB_ROOT}/include/zlib_name_mangling.h DESTINATION include COMPONENT headers)
@@ -176,10 +182,12 @@ if (TANGO_INSTALL_DEPENDENCIES)
           message(FATAL_ERROR "Missing TANGO_OTEL_ROOT variable")
         endif()
 
+        # Required by protobuf-config.cmake and gRPCConfig.cmake
+        install(DIRECTORY ${TANGO_OTEL_ROOT}/bin/ DESTINATION bin)
         install(DIRECTORY ${TANGO_OTEL_ROOT}/lib/ DESTINATION lib)
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/cmake DESTINATION lib)
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/share/cmake DESTINATION lib)
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/share/pkgconfig DESTINATION lib)
+        install(DIRECTORY ${TANGO_OTEL_ROOT}/cmake/ DESTINATION cmake)
+        install(DIRECTORY ${TANGO_OTEL_ROOT}/share/cmake/ DESTINATION share/cmake)
+        install(DIRECTORY ${TANGO_OTEL_ROOT}/share/pkgconfig/ DESTINATION share/pkgconfig)
       endif()
     endif()
 endif()
