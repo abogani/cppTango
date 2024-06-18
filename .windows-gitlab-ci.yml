@@ -25,7 +25,7 @@ windows-build:
     OMNI_VERSION: 4.3.0
     CATCH_VERSION: 3.5.1
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
-    OTEL_VERSION: v6
+    OTEL_VERSION: v7
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 17 2022"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
@@ -81,9 +81,6 @@ windows-build:
   rules:
     - if: '$TELEMETRY_USAGE == "With Otel" && $LIBRARY_TYPE == "Shared"'
       # currently not supported
-      when: never
-    - if: '$TELEMETRY_USAGE == "With Otel" && $CMAKE_BUILD_TYPE == "Debug"'
-      # currently not supported as well
       when: never
     - if: '$DEPENDENCY_LOCATION == "Build Deps" && (($TELEMETRY_USAGE == "No Otel" && $LIBRARY_TYPE == "Static") || $CMAKE_BUILD_TYPE == "Debug" || $ARCHITECTURE == "win32")'
       # Checking all the permutations is overkill, we only need to test that the normal TangoConfig.cmake.in works on
@@ -153,6 +150,12 @@ release-builds:
         - name: "${FILENAME_PREFIX}_x86_static_release.zip"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_release.zip"
 
+        - name: "${FILENAME_PREFIX}_x86_static_otel_debug.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_otel_debug.msi"
+
+        - name: "${FILENAME_PREFIX}_x86_static_otel_debug.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_otel_debug.zip"
+
         - name: "${FILENAME_PREFIX}_x86_static_otel_release.msi"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x86_static_otel_release.msi"
 
@@ -182,6 +185,12 @@ release-builds:
 
         - name: "${FILENAME_PREFIX}_x64_static_release.zip"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_release.zip"
+
+        - name: "${FILENAME_PREFIX}_x64_static_otel_debug.msi"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_otel_debug.msi"
+
+        - name: "${FILENAME_PREFIX}_x64_static_otel_debug.zip"
+          url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_otel_debug.zip"
 
         - name: "${FILENAME_PREFIX}_x64_static_otel_release.msi"
           url: "${RELEASE_URL_PREFIX}/${FILENAME_PREFIX}_x64_static_otel_release.msi"
