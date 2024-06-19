@@ -57,6 +57,7 @@ function(tango_catch2_tests_create)
     target_link_libraries(Catch2Tests PUBLIC Tango::Tango Catch2::Catch2 Threads::Threads)
     target_link_libraries(Catch2Tests PRIVATE $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
+    target_compile_options(Catch2Tests PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
     if (WIN32)
         # On Windows, we need to copy any dependent DLLs into the test directory
