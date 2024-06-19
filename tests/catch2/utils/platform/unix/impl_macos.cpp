@@ -1,6 +1,5 @@
 #include "utils/platform/unix/interface.h"
-
-#include "utils/platform/unix/interface.h"
+#include "utils/platform/platform.h"
 
 #include <functional>
 #include <thread>
@@ -13,7 +12,15 @@
 #include <sys/event.h>
 #include <iostream>
 
-namespace TangoTest::platform::unix
+namespace TangoTest::platform
+{
+
+std::vector<std::string> default_env()
+{
+    return {"PATH="};
+}
+
+namespace unix
 {
 
 struct FileWatcher::Impl
@@ -172,4 +179,5 @@ void FileWatcher::pop_event()
 // effort to implement something that mimics it. The tests works without it.
 void kill_self_on_parent_death([[maybe_unused]] pid_t ppid) { }
 
-} // namespace TangoTest::platform::unix
+} // namespace unix
+} // namespace TangoTest::platform

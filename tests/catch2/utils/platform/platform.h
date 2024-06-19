@@ -15,6 +15,10 @@ constexpr static const char *k_test_server_binary_path = TANGO_TEST_CATCH2_SERVE
 constexpr static const char *k_output_directory_path = TANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH;
 constexpr static const std::string_view k_resource_path = TANGO_TEST_CATCH2_RESOURCE_PATH;
 
+/** Return the platform specific default environment table
+ */
+std::vector<std::string> default_env();
+
 /** Called when the test run starts to do any setup required by the platform
  */
 void init();
