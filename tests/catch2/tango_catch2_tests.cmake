@@ -6,7 +6,7 @@ set(TANGO_CATCH2_TESTS_DIR ${CMAKE_CURRENT_LIST_DIR})
 function(tango_catch2_tests_create)
     set(TEST_FILES ${ARGN})
 
-    set(PLATFORM_IMPL "")
+    set(PLATFORM_IMPL "${TANGO_CATCH2_TESTS_DIR}/utils/platform/ready_string_finder.cpp")
     if(WIN32)
         list(APPEND PLATFORM_IMPL ${TANGO_CATCH2_TESTS_DIR}/utils/platform/impl_win32.cpp)
     elseif(UNIX)
