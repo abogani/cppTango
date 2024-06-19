@@ -265,7 +265,16 @@ TestServer::~TestServer()
 {
     if(is_running())
     {
-        stop();
+        try
+        {
+            stop();
+        }
+        catch(std::exception &e)
+        {
+            std::stringstream ss;
+            ss << "TestServer::stop() threw an exception during teardown: " << e.what();
+            s_logger->log(ss.str());
+        }
     }
 
     g_used_ports.push_back(m_port);
