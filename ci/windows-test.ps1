@@ -2,6 +2,13 @@
 
 $cwd = $(pwd | Convert-Path).Replace("\", "/")
 
+Write-Host "== Run Catch2 tests"
+Invoke-NativeCommand ctest `
+    --output-on-failure `
+    --test-dir build `
+    -C ${CMAKE_BUILD_TYPE} `
+    -R "^catch2.*$"
+
 Write-Host "== Test installation"
 $prefix = "$cwd/prefix"
 Invoke-NativeCommand cmake `

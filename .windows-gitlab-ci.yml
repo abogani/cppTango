@@ -100,7 +100,9 @@ windows-build:
     - try { & '.\ci\windows-build.ps1' } catch { Write-Host $_; exit 1 }
     - try { & '.\ci\windows-test.ps1' } catch { Write-Host $_; exit 1 }
   artifacts:
+    when: always
     paths:
+      - build/tests/catch2_test_logs
       - build/*.zip
       - build/*.msi
 
