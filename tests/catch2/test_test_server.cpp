@@ -518,7 +518,8 @@ SCENARIO("The env parameter for starting the server works")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "TestEnvDS::TestServer/tests/1"};
-        std::vector<std::string> env{"TANGO_TEST_ENV=abcd"};
+        std::vector<std::string> env = env_with_log_file("TestEnvDS");
+        env.emplace_back("TANGO_TEST_ENV=abcd");
         server.start("self_test", extra_args, env);
 
         std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
@@ -535,11 +536,11 @@ SCENARIO("The env parameter for starting the server works")
                 std::string att_value;
                 da >> att_value;
                 REQUIRE(att_value == "abcd");
-            }
 
-            AND_THEN("but the environment variable is not present in here")
-            {
-                REQUIRE(std::getenv("TANGO_TEST_ENV") == nullptr);
+                AND_THEN("but the environment variable is not present in here")
+                {
+                    REQUIRE(std::getenv("TANGO_TEST_ENV") == nullptr);
+                }
             }
         }
     }
