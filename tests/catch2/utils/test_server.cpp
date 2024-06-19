@@ -155,7 +155,7 @@ void TestServer::start(const std::string &instance_name,
     m_redirect_file = g_filename_builder.build();
 
     std::vector<std::string> args{
-        "TestServer",
+        TANGO_TEST_CATCH2_SERVER_BINARY_NAME,
         instance_name.c_str(),
         "-ORBendPoint",
         "", // filled in later
