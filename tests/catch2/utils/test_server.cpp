@@ -235,7 +235,6 @@ void TestServer::start(const std::string &instance_name,
             std::ifstream f{m_redirect_file};
 
             m_handle = start_result.handle;
-            stop(timeout);
             append_logs(f, ss);
 
             throw_runtime_error(ss.str());
