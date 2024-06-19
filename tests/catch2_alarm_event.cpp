@@ -28,6 +28,9 @@ class AlarmEventDev : public Base
     {
         attr_value = ATTR_INIT_VALUE;
         attr_quality = Tango::ATTR_VALID;
+        throw_next_read = false;
+        except_next_push = false;
+        alt_except_next_push = false;
     }
 
     void set_alarm()
