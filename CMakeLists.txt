@@ -108,6 +108,8 @@ target_include_directories(tango INTERFACE
 
 target_compile_features(tango INTERFACE cxx_std_17)
 
+target_compile_definitions(tango INTERFACE "$<$<AND:$<BOOL:${BUILD_SHARED_LIBS}>,$<CXX_COMPILER_ID:MSVC>>:TANGO_HAS_DLL>")
+
 add_library(Tango::Tango ALIAS tango)
 
 if(WIN32)
