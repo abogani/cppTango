@@ -122,6 +122,28 @@ SCENARIO("test servers can be started and stopped")
             }
         }
 
+#ifndef _TG_WINDOWS_
+        // When we provide a specific port for our ORBendPoint, omniORB will
+        // set the SO_REUSEADDR option for the socket we bind.  Unfortunately,
+        // on Windows SO_REUSEADDR has different behaviour to most other BSD
+        // socket implementations.  To cut a long story short this means if we
+        // start two Tango device servers with the same port, Windows will
+        // allow the second one to bind to the port even though it is already
+        // in use by the first and it is basically random which device server
+        // we end up talking to when we try to connect().
+        //
+        // The consequence of this is that if you run multiple copies of the
+        // tests in parallel on Windows, you will occasionally get random
+        // failures because two device servers are using the same port.
+        //
+        // If you are only running one copy of Catch2Tests.exe at a time, it
+        // should be fine because because the tests do not use the same port
+        // twice (except for this test which we are ifdef'ing away here).
+        //
+        // See
+        // https://stackoverflow.com/questions/14388706/how-do-so-reuseaddr-and-so-reuseport-differ
+        // for a nice version of the long story.
+
         WHEN("we start another sever with the same port")
         {
             TestServer::s_next_port = server.get_port();
@@ -168,6 +190,8 @@ SCENARIO("test servers can be started and stopped")
                 }
             }
         }
+
+#endif
 
         WHEN("we stop the server")
         {
