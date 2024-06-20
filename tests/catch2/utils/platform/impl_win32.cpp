@@ -14,9 +14,14 @@ StartServerResult start_server([[maybe_unused]] const std::vector<std::string> &
     return StartServerResult{};
 }
 
-StopServerResult stop_server([[maybe_unused]] TestServer::Handle *handle,
-                             [[maybe_unused]] std::chrono::milliseconds timeout)
+StopServerResult stop_server([[maybe_unused]] TestServer::Handle *handle)
 {
     return StopServerResult{};
+}
+
+WaitForStopResult wait_for_stop([[maybe_unused]] TestServer::Handle *handle,
+                                [[maybe_unused]] std::chrono::milliseconds timeout)
+{
+    return WaitForStopResult{};
 }
 } // namespace TangoTest::platform

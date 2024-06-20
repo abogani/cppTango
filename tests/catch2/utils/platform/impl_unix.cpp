@@ -296,7 +296,7 @@ StartServerResult start_server(const std::vector<std::string> &args,
     }
 }
 
-StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout)
+StopServerResult stop_server(TestServer::Handle *handle)
 {
     using std::chrono::steady_clock;
     using Kind = StopServerResult::Kind;
@@ -318,10 +318,24 @@ StopServerResult stop_server(TestServer::Handle *handle, std::chrono::millisecon
 
     kill(child, SIGTERM);
 
+    result.kind = Kind::Exiting;
+    return result;
+}
+
+WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::milliseconds timeout)
+{
+    using std::chrono::steady_clock;
+    using Kind = WaitForStopResult::Kind;
+
+    WaitForStopResult result;
+
+    pid_t child = static_cast<pid_t>(reinterpret_cast<ssize_t>(handle));
+
     auto end = steady_clock::now() + timeout;
     while(steady_clock::now() < end)
     {
-        pid = waitpid(pid, &status, WNOHANG);
+        int status = 0;
+        pid_t pid = waitpid(child, &status, WNOHANG);
         if(pid != 0)
         {
             result.kind = Kind::Exited;

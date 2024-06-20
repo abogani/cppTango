@@ -72,6 +72,8 @@ struct MulticastParameters
 typedef Tango::DeviceClass *(*Cpp_creator_ptr)(const char *);
 typedef void (*ClassFactoryFuncPtr)(DServer *);
 
+class KillThread;
+
 class DServer : public TANGO_BASE_CLASS
 {
   public:
@@ -116,6 +118,8 @@ class DServer : public TANGO_BASE_CLASS
     Tango::DevVarLongStringArray *get_logging_level(const Tango::DevVarStringArray *argin);
     void stop_logging();
     void start_logging();
+
+    static void wait_for_kill_thread();
 
     std::string &get_process_name()
     {
@@ -269,6 +273,9 @@ class DServer : public TANGO_BASE_CLASS
 
     bool polling_bef_9_def;
     bool polling_bef_9;
+
+    // Should not be delete'd, but join()'d instead.
+    static KillThread *kill_thread;
 };
 
 class KillThread : public omni_thread

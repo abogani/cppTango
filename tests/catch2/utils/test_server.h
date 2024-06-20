@@ -4,6 +4,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <optional>
 #include <vector>
 
 namespace TangoTest
@@ -66,8 +67,24 @@ class TestServer
      *
      *  After the server has been stopped, it can be started again using the
      *  same port by calling `start`.
+     *
+     *  Does nothing if `!is_running()`.
+     *
+     *  @param timeout -- how long to wait for the server to exit
      */
     void stop(std::chrono::milliseconds timeout = k_default_timeout);
+
+    /** Wait until the server has exited.
+     *
+     *  Returns the exit status of the server.
+     *
+     *  Raises an exception if the timeout is exceed.
+     *
+     *  @param timeout -- how long to wait for the server to exit
+     *
+     *  Expects: `is_running()`
+     */
+    int wait_for_exit(std::chrono::milliseconds timeout = k_default_timeout);
 
     ~TestServer();
 
@@ -101,6 +118,9 @@ class TestServer
     Handle *m_handle = nullptr;
     int m_port = -1;
     std::string m_redirect_file;
+
+    // Set if the test has called wait_for_exit() and it didn't timeout.
+    std::optional<int> m_exit_status = std::nullopt;
 };
 
 } // namespace TangoTest

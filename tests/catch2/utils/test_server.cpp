@@ -265,10 +265,54 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         return;
     }
 
-    using Kind = platform::StopServerResult::Kind;
-    auto stop_result = platform::stop_server(m_handle, timeout);
+    struct CombinedResult
+    {
+        enum Kind
+        {
+            Timeout, // exit_status undefined
+            ExitedEarlyUnexpected,
+            ExitedEarlyExpected,
+            Exited,
+        };
 
-    switch(stop_result.kind)
+        Kind kind;
+        int exit_status;
+    };
+
+    using Kind = CombinedResult::Kind;
+    CombinedResult result;
+    {
+        if(m_exit_status.has_value())
+        {
+            result.kind = Kind::ExitedEarlyExpected;
+            result.exit_status = *m_exit_status;
+        }
+
+        using StopKind = platform::StopServerResult::Kind;
+        using WaitKind = platform::WaitForStopResult::Kind;
+        auto stop_result = platform::stop_server(m_handle);
+        if(stop_result.kind == StopKind::Exiting)
+        {
+            auto wait_result = platform::wait_for_stop(m_handle, timeout);
+
+            if(wait_result.kind == WaitKind::Timeout)
+            {
+                result.kind = Kind::Timeout;
+            }
+            else
+            {
+                result.kind = Kind::Exited;
+                result.exit_status = wait_result.exit_status;
+            }
+        }
+        else
+        {
+            result.kind = Kind::ExitedEarlyUnexpected;
+            result.exit_status = stop_result.exit_status;
+        }
+    }
+
+    switch(result.kind)
     {
     case Kind::Timeout:
     {
@@ -280,7 +324,10 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         s_logger->log(ss.str());
         break;
     }
-    case Kind::ExitedEarly:
+
+    case Kind::ExitedEarlyUnexpected:
+        [[fallthrough]];
+    case Kind::ExitedEarlyExpected:
         [[fallthrough]];
     case Kind::Exited:
     {
@@ -291,11 +338,11 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         //  - some assertion has failed (where Catch2 will throw an exception)
         // In either case the test has failed.
         bool test_has_failed = std::uncaught_exceptions() > 0;
+        bool exited_early = result.kind == Kind::ExitedEarlyExpected || result.kind == Kind::ExitedEarlyUnexpected;
         std::stringstream ss;
-        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        if(exited_early || result.exit_status != 0)
         {
-            ss << "TestServer exited with exit status " << stop_result.exit_status
-               << " during the test. Server output:\n";
+            ss << "TestServer exited with exit status " << result.exit_status << " during the test. Server output:\n";
         }
         else if(test_has_failed)
         {
@@ -308,7 +355,11 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
-        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0 || test_has_failed)
+        // When we are ExitedEarlyExpected then the test knows what the exit
+        // status is. So, if it hasn't failed the test, then the exit code isn't
+        // suspicious even if it non-zero.
+        bool suspicious_exit_status = result.exit_status != 0 && result.kind != Kind::ExitedEarlyExpected;
+        if(result.kind == Kind::ExitedEarlyUnexpected || suspicious_exit_status || test_has_failed)
         {
             s_logger->log(ss.str());
         }
@@ -325,6 +376,30 @@ void TestServer::stop(std::chrono::milliseconds timeout)
 
     m_handle = nullptr;
     m_redirect_file = "";
+    m_exit_status = std::nullopt;
+}
+
+int TestServer::wait_for_exit(std::chrono::milliseconds timeout)
+{
+    TANGO_ASSERT(is_running());
+
+    using Kind = platform::WaitForStopResult::Kind;
+
+    auto result = platform::wait_for_stop(m_handle, timeout);
+
+    if(result.kind == Kind::Timeout)
+    {
+        throw std::runtime_error("Timeout exceeded");
+    }
+
+    // We don't report the contents of the redirect file here as don't know if
+    // the test has failed or not at this point and we want to WARN with the
+    // server output if it has.
+    //
+    // We save the m_exit_status for later so we can report it during stop.
+    m_exit_status = result.exit_status;
+
+    return result.exit_status;
 }
 
 } // namespace TangoTest
