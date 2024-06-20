@@ -7,7 +7,6 @@ Checks: >
     modernize-*,
     readability-*,
     bugprone-*,
-    -bugprone-unchecked-optional-access,
     -bugprone-multi-level-implicit-pointer-conversion,
     -modernize-use-nodiscard,
     -modernize-use-trailing-return-type,
