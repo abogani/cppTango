@@ -2512,12 +2512,24 @@ void Attribute::set_one_event_prop(const char *prop_name,
     }
     else if(rel_change_usr_def)
     {
-        prop_val[0] = (rel_change_set_class_def[0])
-                          ? rel_change_usr[0]
-                          : ((rel_change_set_usr_def[0]) ? rel_change_usr[0] : rel_change_tmp[0]);
-        prop_val[1] = (rel_change_set_class_def[1])
-                          ? rel_change_usr[1]
-                          : ((rel_change_set_usr_def[1]) ? rel_change_usr[1] : rel_change_tmp[1]);
+        auto select_value = [&rel_change_set_class_def, &rel_change_set_usr_def, &rel_change_usr, &rel_change_tmp](
+                                size_t index) -> double
+        {
+            if(rel_change_set_class_def[index])
+            {
+                return rel_change_usr[index];
+            }
+
+            if(rel_change_set_usr_def[index])
+            {
+                return rel_change_usr[index];
+            }
+
+            return rel_change_tmp[index];
+        };
+
+        prop_val[0] = select_value(0);
+        prop_val[1] = select_value(1);
     }
     else
     {
