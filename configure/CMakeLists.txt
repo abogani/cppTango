@@ -51,8 +51,12 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "cppTango: version ${TANGO_GIT_REVISION}")
 message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
+set(IDL_VERSION_REQUESTED 6.0.2)
+find_package(tangoidl ${IDL_VERSION_REQUESTED} CONFIG REQUIRED)
+set(IDL_VERSION_FOUND ${tangoidl_VERSION})
+message(STATUS "IDL: version ${IDL_VERSION_FOUND}")
+
 find_package(cppzmq REQUIRED)
-find_package(tangoidl CONFIG REQUIRED)
 find_package(omniORB4 REQUIRED)
 
 if (TANGO_USE_TELEMETRY)

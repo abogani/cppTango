@@ -492,6 +492,7 @@ void DeviceImpl::real_ctor()
     std::ostringstream zmq_version;
     zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH;
     add_version_info("zmq", zmq_version.str());
+    add_version_info("idl", TANGO_IDL_VERSION_STR);
 
     //
     // Init telemetry
