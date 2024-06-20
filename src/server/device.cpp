@@ -489,9 +489,7 @@ void DeviceImpl::real_ctor()
     add_version_info("cppTango", TgLibVers);
     add_version_info("cppTango.git_revision", Tango::git_revision());
     add_version_info("omniORB", omniORB::versionString());
-    std::ostringstream zmq_version;
-    zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH;
-    add_version_info("zmq", zmq_version.str());
+    add_version_info("zmq", std::to_string(ZMQ_VERSION));
     add_version_info("idl", TANGO_IDL_VERSION_STR);
 
     //
