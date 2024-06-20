@@ -215,7 +215,7 @@ class InitCrash : public Base
     InitCrash(Tango::DeviceClass *device_class, const std::string &dev_name) :
         Base(device_class, dev_name)
     {
-        std::cout << k_helpful_message << "\n";
+        std::cout << k_helpful_message << "\n" << std::flush;
         std::exit(0); // Exit 0 as we should always report this
     }
 
@@ -239,7 +239,7 @@ class ExitCrash : public Base
 
     ~ExitCrash() override
     {
-        std::cout << k_helpful_message << "\n";
+        std::cout << k_helpful_message << "\n" << std::flush;
         std::exit(42); // Exit 42 as we should only report if the server fails
     }
 
@@ -262,7 +262,7 @@ class DuringCrash : public Base
 
     void read_attribute(Tango::Attribute &)
     {
-        std::cout << k_helpful_message << "\n";
+        std::cout << k_helpful_message << "\n" << std::flush;
         std::exit(0); // Exit 0 as we should always report this
     }
 
