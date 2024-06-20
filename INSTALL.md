@@ -117,6 +117,7 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
 | `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                           | Install dependencies of tango as well (Windows only)
 | `TANGO_OMNIIDL_PATH`               |                                                 | omniORB4 search path for omniidl
+| `TANGO_SKIP_OLD_TESTS`             | `OFF`                                           | Do not build cxxtests or old_tests.  This can be slow to build, so if you are not planning to run them (but you do want the Catch2Tests) you can turn them off.
 | `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                           | Do not check the version of omniORB.  Enable this at your own risk.
 | `TANGO_USE_JPEG`                   | `ON`                                            | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                           | Compile against libc++ instead of stdlibc++ (Requires Clang)
