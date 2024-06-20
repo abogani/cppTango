@@ -52,7 +52,7 @@ message(STATUS "cppTango: version ${TANGO_GIT_REVISION}")
 message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
 find_package(cppzmq REQUIRED)
-find_package(tangoidl REQUIRED)
+find_package(tangoidl CONFIG REQUIRED)
 find_package(omniORB4 REQUIRED)
 
 if (TANGO_USE_TELEMETRY)

@@ -427,8 +427,8 @@ cmake-with-locations-and-min-versions-env:
     # needs to be in-sync with scripts.git/install_minimum_versions.sh
     - INSTALL_PREFIX=/tmp/install
     - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
-    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/tango-idl/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
-    - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake"
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
+    - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake:${INSTALL_PREFIX}/tango-idl/lib/cmake"
     - export cppzmq_ROOT="${INSTALL_PREFIX}/cppzmq"
     - export JPEG_ROOT="${INSTALL_PREFIX}/libjpeg"
     - >
