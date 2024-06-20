@@ -119,6 +119,14 @@ bool append_logs(std::istream &in, std::ostream &out)
     throw std::runtime_error(message);
 }
 
+void remove_file(const std::string &filename)
+{
+    if(std::remove(filename.c_str()) != 0)
+    {
+        TANGO_LOG_WARN << "Failed to remove \"" << filename << "\": " << strerror(errno);
+    }
+}
+
 } // namespace
 
 int TestServer::s_next_port;
@@ -239,6 +247,7 @@ void TestServer::start(const std::string &instance_name,
         {
             std::stringstream ss;
             ss << "TestServer exited with exit status " << start_result.exit_status << ". Server output:\n";
+
             std::ifstream f{m_redirect_file};
             bool port_in_use = false;
             for(std::string line; std::getline(f, line);)
@@ -250,8 +259,9 @@ void TestServer::start(const std::string &instance_name,
                 }
                 ss << "\t" << line << "\n";
             }
+            f.close();
 
-            std::remove(m_redirect_file.c_str());
+            remove_file(m_redirect_file);
             if(!port_in_use)
             {
                 throw_runtime_error(ss.str());
@@ -394,7 +404,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     }
     }
 
-    std::remove(m_redirect_file.c_str());
+    remove_file(m_redirect_file.c_str());
 
     m_handle = nullptr;
     m_redirect_file = "";
