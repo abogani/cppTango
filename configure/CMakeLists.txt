@@ -183,8 +183,8 @@ if(TANGO_USE_JPEG)
 
     if (WIN32)
         #We need to find the dll, and the turbojpeg files
-        get_filename_component(JPEG_LIBRARY_DIR ${JPEG_LIBRARY} DIRECTORY)
-        get_filename_component(JPEG_PREFIX ${JPEG_LIBRARY_DIR} DIRECTORY)
+        get_filename_component(JPEG_PREFIX ${JPEG_INCLUDE_DIR} DIRECTORY)
+        set(JPEG_LIBRARY_DIR ${JPEG_PREFIX}/lib)
 
         find_library(TURBO_JPEG_LIBRARY_DEBUG
             NAMES turbojpeg${JPEG_DEBUG_POSTFIX}
