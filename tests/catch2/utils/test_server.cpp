@@ -124,6 +124,24 @@ bool append_logs(std::istream &in, std::ostream &out)
 int TestServer::s_next_port;
 std::unique_ptr<Logger> TestServer::s_logger;
 
+std::ostream &operator<<(std::ostream &os, const ExitStatus &status)
+{
+    using Kind = ExitStatus::Kind;
+
+    switch(status.kind)
+    {
+    case Kind::Normal:
+        os << status.code;
+        break;
+    case Kind::Aborted:
+        os << "(Aborted by signal " << status.signal << ")";
+        break;
+    case Kind::AbortedNoSignal:
+        os << "(Aborted)";
+    }
+    return os;
+}
+
 void TestServer::start(const std::string &instance_name,
                        const std::vector<std::string> &extra_args,
                        const std::vector<std::string> &extra_env,
@@ -217,7 +235,6 @@ void TestServer::start(const std::string &instance_name,
             std::ifstream f{m_redirect_file};
 
             m_handle = start_result.handle;
-            stop(timeout);
             append_logs(f, ss);
 
             throw_runtime_error(ss.str());
@@ -276,7 +293,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         };
 
         Kind kind;
-        int exit_status;
+        ExitStatus exit_status;
     };
 
     using Kind = CombinedResult::Kind;
@@ -340,7 +357,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         bool test_has_failed = std::uncaught_exceptions() > 0;
         bool exited_early = result.kind == Kind::ExitedEarlyExpected || result.kind == Kind::ExitedEarlyUnexpected;
         std::stringstream ss;
-        if(exited_early || result.exit_status != 0)
+        if(exited_early || !result.exit_status.is_success())
         {
             ss << "TestServer exited with exit status " << result.exit_status << " during the test. Server output:\n";
         }
@@ -358,7 +375,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         // When we are ExitedEarlyExpected then the test knows what the exit
         // status is. So, if it hasn't failed the test, then the exit code isn't
         // suspicious even if it non-zero.
-        bool suspicious_exit_status = result.exit_status != 0 && result.kind != Kind::ExitedEarlyExpected;
+        bool suspicious_exit_status = !result.exit_status.is_success() && result.kind != Kind::ExitedEarlyExpected;
         if(result.kind == Kind::ExitedEarlyUnexpected || suspicious_exit_status || test_has_failed)
         {
             s_logger->log(ss.str());
@@ -379,7 +396,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     m_exit_status = std::nullopt;
 }
 
-int TestServer::wait_for_exit(std::chrono::milliseconds timeout)
+ExitStatus TestServer::wait_for_exit(std::chrono::milliseconds timeout)
 {
     TANGO_ASSERT(is_running());
 

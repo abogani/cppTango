@@ -18,6 +18,32 @@ class Logger
     virtual ~Logger() { }
 };
 
+struct ExitStatus
+{
+    enum class Kind
+    {
+        Normal,          // The TestServer exited normally, code is active.
+        Aborted,         // The TestServer was Aborted, signal is active.
+        AbortedNoSignal, // The TestServer was Aborted, neither code nor signal
+                         // are defined.
+    };
+
+    Kind kind;
+
+    union
+    {
+        int code;   // exit code of the TestServer
+        int signal; // signal used to abort the TestServer
+    };
+
+    bool is_success()
+    {
+        return kind == Kind::Normal && code == 0;
+    }
+};
+
+std::ostream &operator<<(std::ostream &os, const ExitStatus &status);
+
 /* RAII class for a TestServer process
  */
 class TestServer
@@ -84,7 +110,7 @@ class TestServer
      *
      *  Expects: `is_running()`
      */
-    int wait_for_exit(std::chrono::milliseconds timeout = k_default_timeout);
+    ExitStatus wait_for_exit(std::chrono::milliseconds timeout = k_default_timeout);
 
     ~TestServer();
 
@@ -120,7 +146,7 @@ class TestServer
     std::string m_redirect_file;
 
     // Set if the test has called wait_for_exit() and it didn't timeout.
-    std::optional<int> m_exit_status = std::nullopt;
+    std::optional<ExitStatus> m_exit_status = std::nullopt;
 };
 
 } // namespace TangoTest

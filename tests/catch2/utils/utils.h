@@ -90,7 +90,7 @@ class Context
      *
      *  Throws: a `runtime_error` if the timeout is exceeded.
      */
-    int wait_for_exit(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
+    ExitStatus wait_for_exit(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
     /** Stop the associated TestServer instance if it has been started.
      *
@@ -140,6 +140,7 @@ class Context
 
 namespace detail
 {
+constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 // Setup a log appender to the file specified in the environment variable
 // TANGO_TEST_LOG_FILE.  Each log is prefixed with `topic`, this allows
 // multiple processes to log to this file at the same time.

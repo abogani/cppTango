@@ -43,7 +43,6 @@ namespace TangoTest
 
 namespace
 {
-constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 constexpr const char *k_log_directory_path = TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH;
 constexpr const char *k_filedb_directory_path = TANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH;
 std::string g_current_log_file_path;
@@ -75,7 +74,7 @@ void append_std_entries_to_env(std::vector<std::string> &env, std::string_view c
         []()
         {
             std::stringstream ss;
-            ss << k_log_file_env_var << "=" << g_current_log_file_path;
+            ss << detail::k_log_file_env_var << "=" << g_current_log_file_path;
             return ss.str();
         }());
 
@@ -218,7 +217,7 @@ void Context::stop_server(std::chrono::milliseconds timeout)
     m_server.stop(timeout);
 }
 
-int Context::wait_for_exit(std::chrono::milliseconds timeout)
+ExitStatus Context::wait_for_exit(std::chrono::milliseconds timeout)
 {
     return m_server.wait_for_exit(timeout);
 }
