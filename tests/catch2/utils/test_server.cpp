@@ -349,7 +349,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     case Kind::Timeout:
     {
         std::stringstream ss;
-        ss << "Timeout waiting for TestServer to exit. Server output:";
+        ss << "Timeout waiting for TestServer to exit. Server output:\n";
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
