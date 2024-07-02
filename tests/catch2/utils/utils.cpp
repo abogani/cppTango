@@ -291,6 +291,11 @@ class TangoListener : public Catch::EventListenerBase
 
             detail::setup_topic_log_appender("test", g_current_log_file_path.c_str());
         }
+        else
+        {
+            std::cout << "Logging to a file per test case.  Filename prefix is \"" << detail::g_log_filename_prefix
+                      << "\"\n";
+        }
 
         TANGO_LOG_INFO << "Test run \"" << info.name << "\" starting";
     }
