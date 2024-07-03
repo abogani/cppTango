@@ -42,7 +42,7 @@
 // Include IDL generated files which includes CORBA include files
 //
 
-#ifdef _TG_WINDOWS_
+#if defined(_TG_WINDOWS_) && defined(TANGO_HAS_DLL) && !defined(_TANGO_LIB)
   #define USE_stub_in_nt_dll
 #endif
 
