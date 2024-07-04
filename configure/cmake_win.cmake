@@ -90,6 +90,10 @@ function(tango_install_dependency_headers tgt)
     endforeach()
 endfunction()
 
+# This will contain cmake code to recreate all the IMPORTED targets used
+# by Tango
+set(TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "")
+
 # Install the lib/dll files for a target and add code to
 # TANGO_INSTALL_DEPENDENCIES_IMPORTED_TARGETS to reconstitute the IMPORTED target
 # once it has been installed.
@@ -136,6 +140,91 @@ function(tango_install_imported tgt)
         )
     endif()
 
+    if(${type} STREQUAL SHARED_LIBRARY)
+        STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} SHARED IMPORTED)\n")
+    elseif(${type} STREQUAL STATIC_LIBRARY)
+        STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} STATIC IMPORTED)\n")
+    else()
+        if (loc_rel OR loc_dgb)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} UNKNOWN IMPORTED)\n")
+        else()
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} INTERFACE IMPORTED)\n")
+        endif()
+    endif()
+
+    # As we are installing all the include files to the same directory
+    # we do not need to copy an INTERFACE_INCLUDE_DIRECTORIES property
+    set(props_to_check
+        INTERFACE_LINK_LIBRARIES
+        INTERFACE_LINK_OPTIONS
+        STATIC_LIBRARY_OPTIONS
+        INTERFACE_COMPILE_FEATURES
+        INTERFACE_COMPILE_DEFINITIONS
+        INTERFACE_COMPILE_OPTIONS
+        )
+
+    set(props_copy_lines "")
+    foreach (prop ${props_to_check})
+        get_target_property(value ${tgt} ${prop})
+        if (value)
+            string(APPEND props_copy_lines "    ${prop} \"${value}\"\n")
+        endif()
+    endforeach()
+
+    if (props_copy_lines)
+        STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+set_target_properties(${tgt} PROPERTIES\n\
+${props_copy_lines}    )\n")
+    endif()
+
+    if (${type} STREQUAL SHARED_LIBRARY)
+        if (loc_rel AND implib_rel)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+if(EXISTS \${TANGO_IMPORT_BINDIR}/${loc_rel_name})\n\
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)\n\
+    set_target_properties(${tgt} PROPERTIES\n\
+        IMPORTED_LOCATION_RELEASE \${TANGO_IMPORT_BINDIR}/${loc_rel_name}\n\
+        IMPORTED_IMPLIB_RELEASE \${TANGO_IMPORT_LIBDIR}/${implib_rel_name}\n\
+        )\n\
+endif()\n")
+        endif()
+        if (loc_dbg AND implib_dbg)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+if(EXISTS \${TANGO_IMPORT_BINDIR}/${loc_dbg_name})\n\
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)\n\
+    set_target_properties(${tgt} PROPERTIES\n\
+        IMPORTED_LOCATION_DEBUG \${TANGO_IMPORT_BINDIR}/${loc_dbg_name}\n\
+        IMPORTED_IMPLIB_DEBUG \${TANGO_IMPORT_LIBDIR}/${implib_dbg_name}\n\
+        )\n\
+endif()\n")
+        endif()
+    else()
+        if (loc_rel)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+if(EXISTS \${TANGO_IMPORT_LIBDIR}/${loc_rel_name})\n\
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)\n\
+    set_target_properties(${tgt} PROPERTIES\n\
+        IMPORTED_LOCATION_RELEASE \${TANGO_IMPORT_LIBDIR}/${loc_rel_name}\n\
+        )\n\
+endif()\n")
+        endif()
+        if (loc_dbg)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+if(EXISTS \${TANGO_IMPORT_LIBDIR}/${loc_dbg_name})\n\
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)\n\
+    set_target_properties(${tgt} PROPERTIES\n\
+        IMPORTED_LOCATION_DEBUG \${TANGO_IMPORT_LIBDIR}/${loc_dbg_name}\n\
+        )\n\
+endif()\n")
+        endif()
+    endif()
+
+    STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\n")
+    set(TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS ${TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS} PARENT_SCOPE)
 endfunction()
 
 # Recursively look through INTERFACE_LINK_LIBRARIES targets of `tgt` and append
