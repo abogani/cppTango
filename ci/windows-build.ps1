@@ -123,8 +123,7 @@ Invoke-NativeCommand cmake `
   -DJPEG_DEBUG_POSTFIX=d `
   -DBUILD_TESTING="${BUILD_TESTING}" `
   -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}" `
-  -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake" `
-  -DTANGO_OTEL_ROOT="${cwd}/${OTEL_ROOT}"
+  -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake"
 Invoke-NativeCommand cmake `
   --build build `
   --config "${CMAKE_BUILD_TYPE}"
