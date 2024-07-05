@@ -75,7 +75,7 @@ class Appender
   #if defined(APPENDERS_HAVE_LEVEL_THRESHOLD) || defined(APPENDERS_HAVE_FILTERS)
     int append(const LoggingEvent &event);
   #else
-    inline int append(const LoggingEvent &event)
+    int append(const LoggingEvent &event)
     {
         return _append(event);
     }
@@ -109,7 +109,7 @@ class Appender
     /**
      * Returns this appender name.
      **/
-    inline const std::string &get_name() const
+    const std::string &get_name() const
     {
         return _name;
     }

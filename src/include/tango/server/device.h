@@ -755,7 +755,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarCharArray type data
      */
-    inline Tango::DevVarCharArray *create_DevVarCharArray(unsigned char *ptr, long length)
+    Tango::DevVarCharArray *create_DevVarCharArray(unsigned char *ptr, long length)
     {
         return new Tango::DevVarCharArray(length, length, ptr, false);
     }
@@ -771,7 +771,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarShortArray type data
      */
-    inline Tango::DevVarShortArray *create_DevVarShortArray(short *ptr, long length)
+    Tango::DevVarShortArray *create_DevVarShortArray(short *ptr, long length)
     {
         return new Tango::DevVarShortArray(length, length, ptr, false);
     }
@@ -788,7 +788,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarLongArray type data
      */
 
-    inline Tango::DevVarLongArray *create_DevVarLongArray(DevLong *ptr, long length)
+    Tango::DevVarLongArray *create_DevVarLongArray(DevLong *ptr, long length)
     {
         return new Tango::DevVarLongArray(length, length, ptr, false);
     }
@@ -805,7 +805,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarLong64Array type data
      */
 
-    inline Tango::DevVarLong64Array *create_DevVarLong64Array(DevLong64 *ptr, long length)
+    Tango::DevVarLong64Array *create_DevVarLong64Array(DevLong64 *ptr, long length)
     {
         return new Tango::DevVarLong64Array(length, length, ptr, false);
     }
@@ -821,7 +821,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarFloatArray type data
      */
-    inline Tango::DevVarFloatArray *create_DevVarFloatArray(float *ptr, long length)
+    Tango::DevVarFloatArray *create_DevVarFloatArray(float *ptr, long length)
     {
         return new Tango::DevVarFloatArray(length, length, ptr, false);
     }
@@ -837,7 +837,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarDoubleArray type data
      */
-    inline Tango::DevVarDoubleArray *create_DevVarDoubleArray(double *ptr, long length)
+    Tango::DevVarDoubleArray *create_DevVarDoubleArray(double *ptr, long length)
     {
         return new Tango::DevVarDoubleArray(length, length, ptr, false);
     }
@@ -853,7 +853,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarUShortArray type data
      */
-    inline Tango::DevVarUShortArray *create_DevVarUShortArray(unsigned short *ptr, long length)
+    Tango::DevVarUShortArray *create_DevVarUShortArray(unsigned short *ptr, long length)
     {
         return new Tango::DevVarUShortArray(length, length, ptr, false);
     }
@@ -870,7 +870,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarULongArray type data
      */
 
-    inline Tango::DevVarULongArray *create_DevVarULongArray(DevULong *ptr, long length)
+    Tango::DevVarULongArray *create_DevVarULongArray(DevULong *ptr, long length)
     {
         return new Tango::DevVarULongArray(length, length, ptr, false);
     }
@@ -887,7 +887,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarULong64Array type data
      */
 
-    inline Tango::DevVarULong64Array *create_DevVarULong64Array(DevULong64 *ptr, long length)
+    Tango::DevVarULong64Array *create_DevVarULong64Array(DevULong64 *ptr, long length)
     {
         return new Tango::DevVarULong64Array(length, length, ptr, false);
     }
@@ -903,7 +903,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarStringArray type data
      */
-    inline Tango::DevVarStringArray *create_DevVarStringArray(char **ptr, long length)
+    Tango::DevVarStringArray *create_DevVarStringArray(char **ptr, long length)
     {
         return new Tango::DevVarStringArray(length, length, ptr, false);
     }
@@ -2019,7 +2019,7 @@ class DeviceImpl : public virtual POA_Tango::Device
         }
     }
 
-    inline log4tango::Logger *get_logger()
+    log4tango::Logger *get_logger()
     {
         return logger != nullptr ? logger : get_logger_i();
     }
@@ -2037,7 +2037,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     void cleanup_telemetry_interface() noexcept;
 
     // get access to the telemetry interface.
-    inline Tango::telemetry::InterfacePtr &telemetry()
+    Tango::telemetry::InterfacePtr &telemetry()
     {
         if(!telemetry_interface)
         {
@@ -2050,25 +2050,25 @@ class DeviceImpl : public virtual POA_Tango::Device
     }
 
     // enable the telemetry interface (enable tracing).
-    inline void enable_telemetry() noexcept
+    void enable_telemetry() noexcept
     {
         telemetry()->enable();
     }
 
     // disable the telemetry interface (disable tracing).
-    inline void disable_telemetry() noexcept
+    void disable_telemetry() noexcept
     {
         telemetry()->disable();
     }
 
     // enable traces of the kernel api.
-    inline void enable_kernel_traces() noexcept
+    void enable_kernel_traces() noexcept
     {
         telemetry()->enable_kernel_traces();
     }
 
     // disable traces of the kernel api.
-    inline void disable_kernel_traces() noexcept
+    void disable_kernel_traces() noexcept
     {
         telemetry()->disable_kernel_traces();
     }

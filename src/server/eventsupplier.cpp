@@ -136,7 +136,6 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
                                                     std::string &attr_name,
                                                     PollClock::time_point time_bef_attr)
 {
-    std::string event, domain_name;
     time_t now, change3_subscription, periodic3_subscription, archive3_subscription;
     time_t change4_subscription, periodic4_subscription, archive4_subscription;
     time_t change5_subscription, periodic5_subscription, archive5_subscription;
@@ -379,7 +378,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
                                                  DevFailed *except,
                                                  TANGO_UNUSED(bool user_push))
 {
-    std::string event, domain_name;
+    std::string domain_name;
     double delta_change_rel = 0.0;
     double delta_change_abs = 0.0;
     bool is_change = false;
@@ -469,21 +468,21 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
         filterable_names.emplace_back("forced_event");
         if(force_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         filterable_names.emplace_back("quality");
         if(quality_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         std::vector<int> &client_libs = attr.get_client_lib(CHANGE_EVENT);
@@ -727,7 +726,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
                                                   PollClock::time_point time_bef_attr,
                                                   TANGO_UNUSED(bool user_push))
 {
-    std::string event, domain_name;
+    std::string domain_name;
     double delta_change_rel = 0.0;
     double delta_change_abs = 0.0;
     bool is_change = false;
@@ -869,21 +868,21 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
         filterable_names.emplace_back("forced_event");
         if(force_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         filterable_names.emplace_back("quality");
         if(quality_change)
         {
-            filterable_data.push_back((double) 1.0);
+            filterable_data.push_back(1.0);
         }
         else
         {
-            filterable_data.push_back((double) 0.0);
+            filterable_data.push_back(0.0);
         }
 
         auto time_delta = time_bef_attr - attr.archive_last_event;
@@ -998,7 +997,6 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
                                                    DevFailed *except,
                                                    PollClock::time_point time_bef_attr)
 {
-    std::string event, domain_name;
     bool ret = false;
 
     //
@@ -2467,7 +2465,6 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
                                          DevFailed *except,
                                          const std::string &attr_name)
 {
-    std::string event, domain_name;
     time_t now, att_conf_subscription, attr_sub;
 
     TANGO_LOG_DEBUG << "EventSupplier::push_att_conf_events(): called for attribute " << attr_name << std::endl;

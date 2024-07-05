@@ -123,7 +123,7 @@ class LogAdapter
 
     virtual ~LogAdapter();
 
-    inline log4tango::Logger *get_logger()
+    log4tango::Logger *get_logger()
     {
         return logger_;
     }

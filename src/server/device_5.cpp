@@ -694,7 +694,7 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     // Call the Device_3Impl set_attribute_config
     //
 
-    return set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, idl_version);
+    set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, idl_version);
 
     TANGO_TELEMETRY_TRACE_END();
 }

@@ -1457,7 +1457,7 @@ void DeviceClass::device_destroyer(const std::string &dev_name)
 void DeviceClass::device_destroyer(const char *dev_name)
 {
     std::string name_str(dev_name);
-    return device_destroyer(name_str);
+    device_destroyer(name_str);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

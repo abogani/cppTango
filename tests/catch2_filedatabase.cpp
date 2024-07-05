@@ -654,8 +654,6 @@ SCENARIO("DbGetProperty throws exception")
         using TangoTest::FirstErrorMatches, TangoTest::Reason;
 
         std::string device_name{"test/device/01"};
-        std::string object_name{Tango::CONTROL_SYSTEM};
-        std::string property_name{"property"};
 
         const auto db_filename = create_dbfile(device_name);
 

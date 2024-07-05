@@ -805,7 +805,7 @@ void Device_4Impl::write_attributes_4(const Tango::AttributeValueList_4 &values,
     // Call the Device_3Impl write_attributes
     //
 
-    return write_attributes_34(nullptr, &values);
+    write_attributes_34(nullptr, &values);
 
     TANGO_TELEMETRY_TRACE_END();
 }
@@ -858,7 +858,7 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
     //
 
     store_in_bb = false;
-    return set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
+    set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
 
     TANGO_TELEMETRY_TRACE_END();
 }

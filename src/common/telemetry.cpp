@@ -385,7 +385,7 @@ class SpanImplementation final
     //-------------------------------------------------------------------------------------
     // SpanImplementation::opentelemetry_span
     //-------------------------------------------------------------------------------------
-    inline opentelemetry::trace::Span &opentelemetry_span() noexcept
+    opentelemetry::trace::Span &opentelemetry_span() noexcept
     {
         return *otel_span;
     }
@@ -813,8 +813,6 @@ class InterfaceImplementation final
 
         opentelemetry::sdk::resource::ResourceAttributes resource_attributes;
 
-        std::string server_name(util != nullptr ? util->get_ds_name() : "unknown server name");
-
         // check interface configuration kind
         if(cfg.is_a(Configuration::Kind::Server))
         {
@@ -976,7 +974,7 @@ class InterfaceImplementation final
     //-------------------------------------------------------------------------------------
     // get_current_opentelemetry_span
     //-------------------------------------------------------------------------------------
-    inline opentelemetry::nostd::shared_ptr<opentelemetry::trace::Span> get_current_opentelemetry_span() noexcept
+    opentelemetry::nostd::shared_ptr<opentelemetry::trace::Span> get_current_opentelemetry_span() noexcept
 
     {
         return get_tracer()->GetCurrentSpan();
@@ -1177,15 +1175,6 @@ class Appender : public log4tango::Appender
 
         opentelemetry::sdk::resource::ResourceAttributes resource_attributes;
 
-        std::string server_name(util != nullptr ? util->get_ds_name() : "unknown server name");
-
-        // see the following link for details on tracer naming:
-        // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#get-a-tracer
-        //- the tracer name is the 'instrumentation library' - here, it's simply the cpp version of tango
-        std::string tracer_name = "tango.cpp";
-        //- the tracer version is the cppTango version
-        std::string tracer_version = git_revision();
-
         // check interface configuration kind
         if(interface->cfg.is_a(Configuration::Kind::Server))
         {
@@ -1245,7 +1234,7 @@ class Appender : public log4tango::Appender
     //-------------------------------------------------------------------------------------
     // Appender::get_logger
     //-------------------------------------------------------------------------------------
-    inline opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> get_logger()
+    opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> get_logger()
     {
         auto provider = opentelemetry::logs::Provider::GetLoggerProvider();
         return provider->GetLogger(logger_name, "cppTango", git_revision());

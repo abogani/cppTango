@@ -157,7 +157,7 @@ class DServerSignal : public TangoMonitor
         }
     }
 #else
-    static inline bool auto_signal(long s)
+    static bool auto_signal(long s)
     {
         return (s == SIGQUIT) || (s == SIGINT) || (s == SIGHUP) || (s == SIGTERM);
     }

@@ -203,11 +203,11 @@ struct Configuration
 
     //! The telemetry data collector endpoint for traces - a string of the form: "http://addr:port/..." or
     //! "grpc://addr:port"
-    std::string collector_traces_endpoint{};
+    std::string collector_traces_endpoint{}; // NOLINT(readability-redundant-member-init)
 
     //! The telemetry data collector endpoint for logs - a string of the form: "http://addr:port/..." or
     //! "grpc://addr:port"
-    std::string collector_logs_endpoint{};
+    std::string collector_logs_endpoint{}; // NOLINT(readability-redundant-member-init)
 
     //! The batch size for traces
     std::size_t traces_batch_size{Configuration::DEFAULT_TRACES_BATCH_SIZE};

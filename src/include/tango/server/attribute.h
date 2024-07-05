@@ -1830,7 +1830,7 @@ class Attribute
     void log_quality();
     void log_alarm_quality() const;
 
-    inline void init_string_prop(std::vector<AttrProperty> &prop_list, std::string &attr, const char *attr_name)
+    void init_string_prop(std::vector<AttrProperty> &prop_list, std::string &attr, const char *attr_name)
     {
         try
         {
@@ -1842,7 +1842,7 @@ class Attribute
         }
     }
 
-    inline bool is_value_set(const char *attr_name)
+    bool is_value_set(const char *attr_name)
     {
         if(strcmp(attr_name, "min_alarm") == 0)
         {

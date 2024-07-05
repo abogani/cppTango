@@ -27,7 +27,7 @@ variables: &variables
   UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v7"
   UBUNTU_22_IMAGE: "ubuntu-22.04:v10"
   UBUNTU_24_IMAGE: "ubuntu-24.04:v9"
-  LLVM_LATEST_IMAGE: "llvm-latest:v12"
+  LLVM_LATEST_IMAGE: "llvm-latest:v14"
   GCC_LATEST_IMAGE: "gcc-latest:v8"
   FEDORA_IMAGE: "fedora37:v7"
   ALPINE_IMAGE: "alpine-3.15:v7"
@@ -352,7 +352,7 @@ clang-tidy:
     - >
       ${RUN_CLANG_TIDY}
       -p build -header-filter='.*' -config-file=ci/report.clang-tidy 'src' 'log4tango/src' 'tests/catch2*'
-      | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' > clang-tidy-output.txt
+      > clang-tidy-output.txt
   after_script:
     - set +o pipefail
     # Print error summary (check name and occurrence count).

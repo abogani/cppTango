@@ -85,7 +85,7 @@ class LoggerStream
      * Returns the destination Logger for this stream.
      * @returns The Logger.
      **/
-    inline Logger &get_logger() const
+    Logger &get_logger() const
     {
         return _logger;
     }
@@ -94,7 +94,7 @@ class LoggerStream
      * Returns the level for this stream.
      * @returns The level.
      **/
-    inline Level::Value get_level() const
+    Level::Value get_level() const
     {
         return _level;
     }
@@ -104,7 +104,7 @@ class LoggerStream
      *
      * @returns A reference to itself.
      **/
-    inline LoggerStream &operator<<(LOG4TANGO_UNUSED(const LogInitiator &i))
+    LoggerStream &operator<<(LOG4TANGO_UNUSED(const LogInitiator &i))
     {
         return *this;
     }
@@ -115,7 +115,7 @@ class LoggerStream
      *
      * @returns A reference to itself.
      **/
-    inline LoggerStream &operator<<(LOG4TANGO_UNUSED(const LogSeparator &s))
+    LoggerStream &operator<<(LOG4TANGO_UNUSED(const LogSeparator &s))
     {
         flush();
         return *this;
@@ -127,7 +127,7 @@ class LoggerStream
      *
      * @returns A reference to itself.
      **/
-    inline LoggerStream &operator<<(LOG4TANGO_UNUSED(ls_terminator endoflog))
+    LoggerStream &operator<<(LOG4TANGO_UNUSED(ls_terminator endoflog))
     {
         flush();
         return *this;
@@ -141,7 +141,7 @@ class LoggerStream
      *
      * @returns A reference to itself.
      **/
-    inline LoggerStream &operator<<(SourceLocation source_location)
+    LoggerStream &operator<<(SourceLocation source_location)
     {
         _source_location = source_location;
         return *this;
@@ -162,7 +162,7 @@ class LoggerStream
     inline LoggerStream &operator<<(std::ios_base &(_cdecl *_F)(std::ios_base &) )
     {
 #else
-    inline LoggerStream &operator<<(std::ios_base &(*_F)(std::ios_base &) )
+    LoggerStream &operator<<(std::ios_base &(*_F)(std::ios_base &) )
     {
 #endif
         if(_buffer != nullptr)

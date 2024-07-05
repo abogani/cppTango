@@ -130,13 +130,13 @@ class PollObj : public omni_mutex
         return needed_time;
     }
 
-    inline PollObjType get_type()
+    PollObjType get_type()
     {
         omni_mutex_lock sync(*this);
         return get_type_i();
     }
 
-    inline PollObjType get_type_i()
+    PollObjType get_type_i()
     {
         return type;
     }

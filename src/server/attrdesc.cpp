@@ -419,7 +419,7 @@ void Attr::set_default_properties(UserDefaultAttrProp &prop_list)
     }
 
     TangoSys_MemStream def_archive_period;
-    def_archive_period << (int) (INT_MAX);
+    def_archive_period << INT_MAX;
     if(!prop_list.archive_period.empty() && (TG_strcasecmp(prop_list.archive_period.c_str(), AlrmValueNotSpec) != 0) &&
        (prop_list.archive_period != def_archive_period.str()) &&
        (TG_strcasecmp(prop_list.archive_period.c_str(), NotANumber) != 0))

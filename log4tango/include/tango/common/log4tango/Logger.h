@@ -59,7 +59,7 @@ class Logger : public AppenderAttachable
      * Return the logger name.
      * @returns The logger name.
      */
-    inline const std::string &get_name() const
+    const std::string &get_name() const
     {
         return _name;
     }
@@ -74,7 +74,7 @@ class Logger : public AppenderAttachable
      * Returns the assigned Level, if any, for this Logger.
      * @return Level - the assigned Level, can be Level::NOTSET
      **/
-    inline Level::Value get_level() const
+    Level::Value get_level() const
     {
         return _level;
     }
@@ -107,7 +107,7 @@ class Logger : public AppenderAttachable
      * @param level The level of this log message.
      * @param message string to write in the log file
      **/
-    inline void log(const std::string &file, int line, Level::Value level, const std::string &message)
+    void log(const std::string &file, int line, Level::Value level, const std::string &message)
     {
         if(is_level_enabled(level))
         {
@@ -149,7 +149,7 @@ class Logger : public AppenderAttachable
      * @param line Line number of this log message.
      * @param message string to write in the log file
      **/
-    inline void debug(const std::string &file, int line, const std::string &message)
+    void debug(const std::string &file, int line, const std::string &message)
     {
         if(is_level_enabled(Level::DEBUG))
         {
@@ -161,7 +161,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level DEBUG.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_debug_enabled() const
+    bool is_debug_enabled() const
     {
         return is_level_enabled(Level::DEBUG);
     }
@@ -170,7 +170,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level DEBUG.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream debug_stream()
+    LoggerStream debug_stream()
     {
         return LoggerStream(*this, Level::DEBUG, true);
     }
@@ -190,7 +190,7 @@ class Logger : public AppenderAttachable
      * @param line Line number of this log message.
      * @param message string to write in the log file
      **/
-    inline void info(const std::string &file, int line, const std::string &message)
+    void info(const std::string &file, int line, const std::string &message)
     {
         if(is_level_enabled(Level::INFO))
         {
@@ -202,7 +202,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level INFO.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_info_enabled() const
+    bool is_info_enabled() const
     {
         return is_level_enabled(Level::INFO);
     }
@@ -211,7 +211,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level INFO.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream info_stream()
+    LoggerStream info_stream()
     {
         return LoggerStream(*this, Level::INFO, true);
     }
@@ -231,7 +231,7 @@ class Logger : public AppenderAttachable
      * @param line Line number of this log message.
      * @param message string to write in the log file
      **/
-    inline void warn(const std::string &file, int line, const std::string &message)
+    void warn(const std::string &file, int line, const std::string &message)
     {
         if(is_level_enabled(Level::WARN))
         {
@@ -243,7 +243,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level WARN.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_warn_enabled() const
+    bool is_warn_enabled() const
     {
         return is_level_enabled(Level::WARN);
     }
@@ -252,7 +252,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level WARN.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream warn_stream()
+    LoggerStream warn_stream()
     {
         return LoggerStream(*this, Level::WARN, true);
     }
@@ -272,7 +272,7 @@ class Logger : public AppenderAttachable
      * @param line Line number of this log message.
      * @param message string to write in the log file
      **/
-    inline void error(const std::string &file, int line, const std::string &message)
+    void error(const std::string &file, int line, const std::string &message)
     {
         if(is_level_enabled(Level::ERROR))
         {
@@ -284,7 +284,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level ERROR.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_error_enabled() const
+    bool is_error_enabled() const
     {
         return is_level_enabled(Level::ERROR);
     }
@@ -293,7 +293,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level ERROR.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream error_stream()
+    LoggerStream error_stream()
     {
         return LoggerStream(*this, Level::ERROR, true);
     }
@@ -313,7 +313,7 @@ class Logger : public AppenderAttachable
      * @param line Line number of this log message.
      * @param message string to write in the log file
      **/
-    inline void fatal(const std::string &file, int line, const std::string &message)
+    void fatal(const std::string &file, int line, const std::string &message)
     {
         if(is_level_enabled(Level::FATAL))
         {
@@ -325,7 +325,7 @@ class Logger : public AppenderAttachable
      * Return true if the Logger will log messages with level FATAL.
      * @returns Whether the Logger will log.
      **/
-    inline bool is_fatal_enabled() const
+    bool is_fatal_enabled() const
     {
         return is_level_enabled(Level::FATAL);
     }
@@ -334,7 +334,7 @@ class Logger : public AppenderAttachable
      * Return a LoggerStream with level FATAL.
      * @returns The LoggerStream.
      **/
-    inline LoggerStream fatal_stream()
+    LoggerStream fatal_stream()
     {
         return LoggerStream(*this, Level::FATAL, true);
     }
@@ -345,7 +345,7 @@ class Logger : public AppenderAttachable
      * @param filter The filter flag
      * @returns The requested LoggerStream.
      **/
-    inline LoggerStream get_stream(Level::Value level, bool filter = true)
+    LoggerStream get_stream(Level::Value level, bool filter = true)
     {
         return LoggerStream(*this, level, filter);
     }

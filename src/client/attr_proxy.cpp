@@ -69,7 +69,6 @@ void AttributeProxy::real_constructor(std::string &name)
     //
 
     parse_name(name);
-    std::string corba_name;
 
     //
     // Create the associated DeviceProxy object

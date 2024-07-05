@@ -99,7 +99,7 @@ class PatternLayout : public Layout
     class PatternComponent
     {
       public:
-        inline virtual ~PatternComponent() { }
+        virtual ~PatternComponent() { }
 
         virtual void append(std::ostringstream &out, const LoggingEvent &event) = 0;
     };
