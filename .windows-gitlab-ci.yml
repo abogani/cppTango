@@ -57,28 +57,28 @@ windows-build:
     # NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-installer-x86.exe"
     # VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
     # CMAKE_BUILD_TYPE: "Release"
-    # BUILD_SHARED_LIBS: "ON"
-    # TANGO_USE_TELEMETRY: "ON"
+    # LIBRARY_TYPE: "Shared"
+    # TELEMETRY_USAGE: "With Otel"
     # END local testing
   parallel:
     matrix:
       - CMAKE_BUILD_TYPE:
         - "Release"
         - "Debug"
-        BUILD_SHARED_LIBS:
-        - "ON"
-        - "OFF"
+        LIBRARY_TYPE:
+        - "Shared"
+        - "Static"
         ARCHITECTURE:
         - "x64"
         - "win32"
-        TANGO_USE_TELEMETRY:
-        - "ON"
-        - "OFF"
+        TELEMETRY_USAGE:
+        - "With Otel"
+        - "No Otel"
   rules:
-    - if: '$TANGO_USE_TELEMETRY == "ON" && $BUILD_SHARED_LIBS == "ON"'
+    - if: '$TELEMETRY_USAGE == "With Otel" && $LIBRARY_TYPE == "Shared"'
       # currently not supported
       when: never
-    - if: '$TANGO_USE_TELEMETRY == "ON" && $CMAKE_BUILD_TYPE == "Debug"'
+    - if: '$TELEMETRY_USAGE == "With Otel" && $CMAKE_BUILD_TYPE == "Debug"'
       # currently not supported as well
       when: never
     - if: '$ARCHITECTURE == "x64"'
