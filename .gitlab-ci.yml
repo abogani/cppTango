@@ -20,19 +20,19 @@ variables: &variables
   BUILD_TESTING: "ON"
   TANGO_USE_TELEMETRY: "ON"
   # docker image names and versions
-  DEBIAN_12_IMAGE: "debian12:v8"
-  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v7"
-  DEBIAN_11_IMAGE: "debian11:v7"
-  UBUNTU_20_IMAGE: "ubuntu-20.04:v8"
-  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v7"
-  UBUNTU_22_IMAGE: "ubuntu-22.04:v10"
-  UBUNTU_24_IMAGE: "ubuntu-24.04:v9"
-  LLVM_LATEST_IMAGE: "llvm-latest:v14"
-  GCC_LATEST_IMAGE: "gcc-latest:v8"
-  FEDORA_IMAGE: "fedora37:v7"
-  ALPINE_IMAGE: "alpine-3.15:v7"
-  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v7"
-  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v8"
+  DEBIAN_12_IMAGE: "debian12:v9"
+  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v8"
+  DEBIAN_11_IMAGE: "debian11:v8"
+  UBUNTU_20_IMAGE: "ubuntu-20.04:v9"
+  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v8"
+  UBUNTU_22_IMAGE: "ubuntu-22.04:v11"
+  UBUNTU_24_IMAGE: "ubuntu-24.04:v10"
+  LLVM_LATEST_IMAGE: "llvm-latest:v15"
+  GCC_LATEST_IMAGE: "gcc-latest:v9"
+  FEDORA_IMAGE: "fedora37:v8"
+  ALPINE_IMAGE: "alpine-3.15:v8"
+  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v8"
+  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v9"
   GIT_SUBMODULE_STRATEGY: "recursive"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
@@ -427,8 +427,8 @@ cmake-with-locations-and-min-versions-env:
     # needs to be in-sync with scripts.git/install_minimum_versions.sh
     - INSTALL_PREFIX=/tmp/install
     - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
-    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/tango-idl/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
-    - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake"
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
+    - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake:${INSTALL_PREFIX}/tango-idl/lib/cmake"
     - export cppzmq_ROOT="${INSTALL_PREFIX}/cppzmq"
     - export JPEG_ROOT="${INSTALL_PREFIX}/libjpeg"
     - >
