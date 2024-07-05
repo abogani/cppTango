@@ -30,3 +30,9 @@ if ($TELEMETRY_USAGE -eq "With Otel") {
 } else {
     $TANGO_USE_TELEMETRY = "OFF"
 }
+
+if ($DEPENDENCY_LOCATION -eq "Installed Deps") {
+    $TANGO_INSTALL_DEPENDENCIES = "ON"
+} else {
+    $TANGO_INSTALL_DEPENDENCIES = "OFF"
+}

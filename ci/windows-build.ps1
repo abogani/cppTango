@@ -112,7 +112,7 @@ Invoke-NativeCommand cmake `
   -DTANGO_WARNINGS_AS_ERRORS="${TANGO_WARNINGS_AS_ERRORS}" `
   -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" `
   -Dtangoidl_ROOT="${cwd}/${TANGO_IDL_ROOT}" `
-  -DTANGO_INSTALL_DEPENDENCIES=ON `
+  -DTANGO_INSTALL_DEPENDENCIES="${TANGO_INSTALL_DEPENDENCIES}" `
   -DomniORB4_ROOT="${cwd}/${TANGO_OMNI_ROOT}" `
   -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}" `
   -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}" `
@@ -128,9 +128,12 @@ Invoke-NativeCommand cmake `
   --build build `
   --config "${CMAKE_BUILD_TYPE}"
 
-Write-Host "== Create archive" -ForegroundColor Blue
-# -B not working here, so we have to change directories
-Push-Location build
-# space after `-D` is required
-Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
-Pop-Location
+# We only want to make packages with bundled dependencies
+if ($TANGO_INSTALL_DEPENDENCIES -eq "ON") {
+  Write-Host "== Create archive" -ForegroundColor Blue
+  # -B not working here, so we have to change directories
+  Push-Location build
+  # space after `-D` is required
+  Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
+  Pop-Location
+}

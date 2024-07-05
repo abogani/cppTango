@@ -59,6 +59,7 @@ windows-build:
     # CMAKE_BUILD_TYPE: "Release"
     # LIBRARY_TYPE: "Shared"
     # TELEMETRY_USAGE: "With Otel"
+    # DEPENDENCY_LOCATION: "Installed Deps"
     # END local testing
   parallel:
     matrix:
@@ -74,12 +75,19 @@ windows-build:
         TELEMETRY_USAGE:
         - "With Otel"
         - "No Otel"
+        DEPENDENCY_LOCATION:
+        - "Installed Deps"
+        - "Build Deps"
   rules:
     - if: '$TELEMETRY_USAGE == "With Otel" && $LIBRARY_TYPE == "Shared"'
       # currently not supported
       when: never
     - if: '$TELEMETRY_USAGE == "With Otel" && $CMAKE_BUILD_TYPE == "Debug"'
       # currently not supported as well
+      when: never
+    - if: '$DEPENDENCY_LOCATION == "Build Deps" && (($TELEMETRY_USAGE == "No Otel" && $LIBRARY_TYPE == "Static") || $CMAKE_BUILD_TYPE == "Debug" || $ARCHITECTURE == "win32")'
+      # Checking all the permutations is overkill, we only need to test that the normal TangoConfig.cmake.in works on
+      # Windows and testing Release Shared No Otel and Release Static With Otel  on x64 is enough for this.
       when: never
     - if: '$ARCHITECTURE == "x64"'
       variables:
