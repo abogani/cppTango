@@ -291,6 +291,11 @@ class TangoListener : public Catch::EventListenerBase
 
             detail::setup_topic_log_appender("test", g_current_log_file_path.c_str());
         }
+        else
+        {
+            std::cout << "Logging to a file per test case.  Filename prefix is \"" << detail::g_log_filename_prefix
+                      << "\"\n";
+        }
 
         TANGO_LOG_INFO << "Test run \"" << info.name << "\" starting";
     }
@@ -382,17 +387,38 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
 
     std::stringstream ss;
     ss << g_log_filename_prefix;
-    std::transform(test_case_name.begin(),
-                   end,
-                   std::ostream_iterator<char>(ss),
-                   [](char c)
-                   {
-                       if(c == ' ')
-                       {
-                           return '_';
-                       }
-                       return c;
-                   });
+    for(auto it = test_case_name.begin(); it != end; ++it)
+    {
+        switch(*it)
+        {
+        case '<':
+            [[fallthrough]];
+        case '>':
+            [[fallthrough]];
+        case ':':
+            [[fallthrough]];
+        case '"':
+            [[fallthrough]];
+        case '/':
+            [[fallthrough]];
+        case '\\':
+            [[fallthrough]];
+        case '|':
+            [[fallthrough]];
+        case '?':
+            [[fallthrough]];
+        case '*':
+            // None of these characters are allowed on all platforms we support
+            // so let's just skip them
+            continue;
+        case ' ':
+            // Spaces in filenames are annoying
+            ss << '_';
+            break;
+        default:
+            ss << *it;
+        }
+    }
     ss << suffix;
 
     std::string filename = ss.str();

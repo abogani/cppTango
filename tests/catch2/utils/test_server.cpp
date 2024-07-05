@@ -119,6 +119,14 @@ bool append_logs(std::istream &in, std::ostream &out)
     throw std::runtime_error(message);
 }
 
+void remove_file(const std::string &filename)
+{
+    if(std::remove(filename.c_str()) != 0)
+    {
+        TANGO_LOG_WARN << "Failed to remove \"" << filename << "\": " << strerror(errno);
+    }
+}
+
 } // namespace
 
 int TestServer::s_next_port;
@@ -155,7 +163,7 @@ void TestServer::start(const std::string &instance_name,
     m_redirect_file = g_filename_builder.build();
 
     std::vector<std::string> args{
-        "TestServer",
+        TANGO_TEST_CATCH2_SERVER_BINARY_NAME,
         instance_name.c_str(),
         "-ORBendPoint",
         "", // filled in later
@@ -166,11 +174,7 @@ void TestServer::start(const std::string &instance_name,
         args.push_back(arg);
     }
 
-    std::vector<std::string> env{
-#ifdef __APPLE__
-        "PATH="
-#endif
-    };
+    std::vector<std::string> env = platform::default_env();
 
     for(const auto &e : extra_env)
     {
@@ -243,6 +247,7 @@ void TestServer::start(const std::string &instance_name,
         {
             std::stringstream ss;
             ss << "TestServer exited with exit status " << start_result.exit_status << ". Server output:\n";
+
             std::ifstream f{m_redirect_file};
             bool port_in_use = false;
             for(std::string line; std::getline(f, line);)
@@ -254,8 +259,9 @@ void TestServer::start(const std::string &instance_name,
                 }
                 ss << "\t" << line << "\n";
             }
+            f.close();
 
-            std::remove(m_redirect_file.c_str());
+            remove_file(m_redirect_file);
             if(!port_in_use)
             {
                 throw_runtime_error(ss.str());
@@ -269,7 +275,16 @@ TestServer::~TestServer()
 {
     if(is_running())
     {
-        stop();
+        try
+        {
+            stop();
+        }
+        catch(std::exception &e)
+        {
+            std::stringstream ss;
+            ss << "TestServer::stop() threw an exception during teardown: " << e.what();
+            s_logger->log(ss.str());
+        }
     }
 
     g_used_ports.push_back(m_port);
@@ -334,7 +349,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     case Kind::Timeout:
     {
         std::stringstream ss;
-        ss << "Timeout waiting for TestServer to exit. Server output:";
+        ss << "Timeout waiting for TestServer to exit. Server output:\n";
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
@@ -389,7 +404,7 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     }
     }
 
-    std::remove(m_redirect_file.c_str());
+    remove_file(m_redirect_file.c_str());
 
     m_handle = nullptr;
     m_redirect_file = "";

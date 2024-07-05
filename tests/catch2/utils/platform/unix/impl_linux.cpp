@@ -1,13 +1,21 @@
 #include "utils/platform/unix/interface.h"
+#include "utils/platform/platform.h"
 
 #include <csignal>
 #include <sys/inotify.h>
 #include <sys/prctl.h>
 #include <unistd.h>
 
-namespace TangoTest::platform::unix
+namespace TangoTest::platform
 {
 
+std::vector<std::string> default_env()
+{
+    return {};
+}
+
+namespace unix
+{
 struct FileWatcher::Impl
 {
     explicit Impl(const char *filename)
@@ -89,4 +97,5 @@ void kill_self_on_parent_death(pid_t ppid)
     }
 }
 
-} // namespace TangoTest::platform::unix
+} // namespace unix
+} // namespace TangoTest::platform

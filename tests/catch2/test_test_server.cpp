@@ -122,6 +122,28 @@ SCENARIO("test servers can be started and stopped")
             }
         }
 
+#ifndef _TG_WINDOWS_
+        // When we provide a specific port for our ORBendPoint, omniORB will
+        // set the SO_REUSEADDR option for the socket we bind.  Unfortunately,
+        // on Windows SO_REUSEADDR has different behaviour to most other BSD
+        // socket implementations.  To cut a long story short this means if we
+        // start two Tango device servers with the same port, Windows will
+        // allow the second one to bind to the port even though it is already
+        // in use by the first and it is basically random which device server
+        // we end up talking to when we try to connect().
+        //
+        // The consequence of this is that if you run multiple copies of the
+        // tests in parallel on Windows, you will occasionally get random
+        // failures because two device servers are using the same port.
+        //
+        // If you are only running one copy of Catch2Tests.exe at a time, it
+        // should be fine because because the tests do not use the same port
+        // twice (except for this test which we are ifdef'ing away here).
+        //
+        // See
+        // https://stackoverflow.com/questions/14388706/how-do-so-reuseaddr-and-so-reuseport-differ
+        // for a nice version of the long story.
+
         WHEN("we start another sever with the same port")
         {
             TestServer::s_next_port = server.get_port();
@@ -169,6 +191,8 @@ SCENARIO("test servers can be started and stopped")
             }
         }
 
+#endif
+
         WHEN("we stop the server")
         {
             REQUIRE_NOTHROW(server.stop());
@@ -191,7 +215,7 @@ class InitCrash : public Base
     InitCrash(Tango::DeviceClass *device_class, const std::string &dev_name) :
         Base(device_class, dev_name)
     {
-        std::cout << k_helpful_message << "\n";
+        std::cout << k_helpful_message << "\n" << std::flush;
         std::exit(0); // Exit 0 as we should always report this
     }
 
@@ -215,7 +239,7 @@ class ExitCrash : public Base
 
     ~ExitCrash() override
     {
-        std::cout << k_helpful_message << "\n";
+        std::cout << k_helpful_message << "\n" << std::flush;
         std::exit(42); // Exit 42 as we should only report if the server fails
     }
 
@@ -238,7 +262,7 @@ class DuringCrash : public Base
 
     void read_attribute(Tango::Attribute &)
     {
-        std::cout << k_helpful_message << "\n";
+        std::cout << k_helpful_message << "\n" << std::flush;
         std::exit(0); // Exit 0 as we should always report this
     }
 
@@ -494,7 +518,8 @@ SCENARIO("The env parameter for starting the server works")
     {
         TestServer server;
         std::vector<std::string> extra_args = {"-nodb", "-dlist", "TestEnvDS::TestServer/tests/1"};
-        std::vector<std::string> env{"TANGO_TEST_ENV=abcd"};
+        std::vector<std::string> env = env_with_log_file("TestEnvDS");
+        env.emplace_back("TANGO_TEST_ENV=abcd");
         server.start("self_test", extra_args, env);
 
         std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
@@ -511,11 +536,11 @@ SCENARIO("The env parameter for starting the server works")
                 std::string att_value;
                 da >> att_value;
                 REQUIRE(att_value == "abcd");
-            }
 
-            AND_THEN("but the environment variable is not present in here")
-            {
-                REQUIRE(std::getenv("TANGO_TEST_ENV") == nullptr);
+                AND_THEN("but the environment variable is not present in here")
+                {
+                    REQUIRE(std::getenv("TANGO_TEST_ENV") == nullptr);
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ set(TANGO_CATCH2_TESTS_DIR ${CMAKE_CURRENT_LIST_DIR})
 function(tango_catch2_tests_create)
     set(TEST_FILES ${ARGN})
 
-    set(PLATFORM_IMPL "")
+    set(PLATFORM_IMPL "${TANGO_CATCH2_TESTS_DIR}/utils/platform/ready_string_finder.cpp")
     if(WIN32)
         list(APPEND PLATFORM_IMPL ${TANGO_CATCH2_TESTS_DIR}/utils/platform/impl_win32.cpp)
     elseif(UNIX)
@@ -57,6 +57,7 @@ function(tango_catch2_tests_create)
     target_link_libraries(Catch2Tests PUBLIC Tango::Tango Catch2::Catch2 Threads::Threads)
     target_link_libraries(Catch2Tests PRIVATE $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
+    target_compile_options(Catch2Tests PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
     if (WIN32)
         # On Windows, we need to copy any dependent DLLs into the test directory
@@ -119,7 +120,7 @@ function(tango_catch2_tests_create)
     endif()
 
     target_compile_definitions(Catch2Tests PRIVATE
-        "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/TestServer\""
+        "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${SERVER_PATH}\""
         "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_OUTPUT_DIR}\""
         "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\""
         "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\""
