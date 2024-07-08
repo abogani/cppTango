@@ -23,7 +23,6 @@ windows-build:
     TANGO_IDL_TAG: 6.0.2
     ZMQ_VERSION: 4.0.5-2
     OMNI_VERSION: 4.3.0
-    PTHREAD_VERSION: 2.9.1
     CATCH_VERSION: 3.5.1
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
     OTEL_VERSION: v6
@@ -39,7 +38,6 @@ windows-build:
     TANGO_IDL_ROOT: dependencies/tango-idl
     TANGO_CATCH_ROOT: dependencies/catch
     TANGO_CATCH_SOURCE: dependencies/source/Catch2-${CATCH_VERSION}
-    PTHREAD_ROOT: dependencies/pthread
     OTEL_ROOT: dependencies/otel
     WIX_TOOLSET_LOCATION: dependencies/wix
     PYTHON_LOCATION: dependencies/python
@@ -59,29 +57,37 @@ windows-build:
     # NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-installer-x86.exe"
     # VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
     # CMAKE_BUILD_TYPE: "Release"
-    # BUILD_SHARED_LIBS: "ON"
-    # TANGO_USE_TELEMETRY: "ON"
+    # LIBRARY_TYPE: "Shared"
+    # TELEMETRY_USAGE: "With Otel"
+    # DEPENDENCY_LOCATION: "Installed Deps"
     # END local testing
   parallel:
     matrix:
       - CMAKE_BUILD_TYPE:
         - "Release"
         - "Debug"
-        BUILD_SHARED_LIBS:
-        - "ON"
-        - "OFF"
+        LIBRARY_TYPE:
+        - "Shared"
+        - "Static"
         ARCHITECTURE:
         - "x64"
         - "win32"
-        TANGO_USE_TELEMETRY:
-        - "ON"
-        - "OFF"
+        TELEMETRY_USAGE:
+        - "With Otel"
+        - "No Otel"
+        DEPENDENCY_LOCATION:
+        - "Installed Deps"
+        - "Build Deps"
   rules:
-    - if: '$TANGO_USE_TELEMETRY == "ON" && $BUILD_SHARED_LIBS == "ON"'
+    - if: '$TELEMETRY_USAGE == "With Otel" && $LIBRARY_TYPE == "Shared"'
       # currently not supported
       when: never
-    - if: '$TANGO_USE_TELEMETRY == "ON" && $CMAKE_BUILD_TYPE == "Debug"'
+    - if: '$TELEMETRY_USAGE == "With Otel" && $CMAKE_BUILD_TYPE == "Debug"'
       # currently not supported as well
+      when: never
+    - if: '$DEPENDENCY_LOCATION == "Build Deps" && (($TELEMETRY_USAGE == "No Otel" && $LIBRARY_TYPE == "Static") || $CMAKE_BUILD_TYPE == "Debug" || $ARCHITECTURE == "win32")'
+      # Checking all the permutations is overkill, we only need to test that the normal TangoConfig.cmake.in works on
+      # Windows and testing Release Shared No Otel and Release Static With Otel  on x64 is enough for this.
       when: never
     - if: '$ARCHITECTURE == "x64"'
       variables:

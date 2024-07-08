@@ -25,7 +25,11 @@ function(set_cflags_and_include target)
   )
 
   if(TANGO_USE_JPEG)
+    if (WIN32 AND NOT BUILD_SHARED_LIBS AND TARGET JPEG::JPEG-static)
+      target_link_libraries(${target} PRIVATE JPEG::JPEG-static)
+    else()
       target_link_libraries(${target} PRIVATE JPEG::JPEG)
+    endif()
   endif()
 
   if (TANGO_USE_TELEMETRY)

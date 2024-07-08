@@ -16,12 +16,6 @@ Invoke-NativeCommand curl.exe -JOL https://github.com/tango-controls/omniorb-win
 md -Force ${TANGO_OMNI_ROOT}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_OMNI_ROOT}
 
-Write-Host "== Get pthread" -ForegroundColor Blue
-$FILENAME="pthreads-win32-${PTHREAD_VERSION}_${VC_ARCH_VER}.zip"
-Invoke-NativeCommand curl.exe -JOL https://github.com/tango-controls/Pthread_WIN32/releases/download/${PTHREAD_VERSION}/${FILENAME}
-md -Force ${PTHREAD_ROOT}
-Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_ROOT}
-
 Write-Host "== Get nasm" -ForegroundColor Blue
 Invoke-NativeCommand curl.exe -L ${NASM_DOWNLOAD_LINK} -o nasm.exe
 Invoke-NativeCommand ./nasm.exe /S /v/qn
@@ -118,28 +112,28 @@ Invoke-NativeCommand cmake `
   -DTANGO_WARNINGS_AS_ERRORS="${TANGO_WARNINGS_AS_ERRORS}" `
   -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" `
   -Dtangoidl_ROOT="${cwd}/${TANGO_IDL_ROOT}" `
-  -DTANGO_INSTALL_DEPENDENCIES=ON `
+  -DTANGO_INSTALL_DEPENDENCIES="${TANGO_INSTALL_DEPENDENCIES}" `
   -DomniORB4_ROOT="${cwd}/${TANGO_OMNI_ROOT}" `
   -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}" `
   -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}" `
   -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}" `
-  -Dpthread_ROOT="${PTHREAD_ROOT}" `
   -DCatch2_ROOT="${cwd}/${TANGO_CATCH_ROOT}" `
   -DZLIB_ROOT="${cwd}/${ZLIB_NG_ROOT}" `
-  -DTANGO_USE_PTHREAD=ON `
   -DTANGO_USE_JPEG=ON `
   -DJPEG_DEBUG_POSTFIX=d `
   -DBUILD_TESTING="${BUILD_TESTING}" `
   -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}" `
-  -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake" `
-  -DTANGO_OTEL_ROOT="${cwd}/${OTEL_ROOT}"
+  -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake"
 Invoke-NativeCommand cmake `
   --build build `
   --config "${CMAKE_BUILD_TYPE}"
 
-Write-Host "== Create archive" -ForegroundColor Blue
-# -B not working here, so we have to change directories
-Push-Location build
-# space after `-D` is required
-Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
-Pop-Location
+# We only want to make packages with bundled dependencies
+if ($TANGO_INSTALL_DEPENDENCIES -eq "ON") {
+  Write-Host "== Create archive" -ForegroundColor Blue
+  # -B not working here, so we have to change directories
+  Push-Location build
+  # space after `-D` is required
+  Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
+  Pop-Location
+}

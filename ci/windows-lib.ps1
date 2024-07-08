@@ -18,3 +18,21 @@ function Invoke-NativeCommand() {
         throw "`"$command $commandArgs`" exited with exit code $result."
     }
 }
+
+if ($LIBRARY_TYPE -eq "Shared") {
+    $BUILD_SHARED_LIBS = "ON"
+} else {
+    $BUILD_SHARED_LIBS = "OFF"
+}
+
+if ($TELEMETRY_USAGE -eq "With Otel") {
+    $TANGO_USE_TELEMETRY = "ON"
+} else {
+    $TANGO_USE_TELEMETRY = "OFF"
+}
+
+if ($DEPENDENCY_LOCATION -eq "Installed Deps") {
+    $TANGO_INSTALL_DEPENDENCIES = "ON"
+} else {
+    $TANGO_INSTALL_DEPENDENCIES = "OFF"
+}

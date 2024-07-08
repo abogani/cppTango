@@ -1,7 +1,6 @@
 include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
-option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
 
 set(TANGO_FIND_MODULES_PATH TangoCMakeModules)
 find_package(Git QUIET)
@@ -184,79 +183,6 @@ include(configure/check_omniidl.cmake)
 # Check for jpeg support
 if(TANGO_USE_JPEG)
     find_package(JPEG REQUIRED)
-
-    if (WIN32)
-        #We need to find the dll, and the turbojpeg files
-        get_filename_component(JPEG_PREFIX ${JPEG_INCLUDE_DIR} DIRECTORY)
-        set(JPEG_LIBRARY_DIR ${JPEG_PREFIX}/lib)
-
-        find_library(TURBO_JPEG_LIBRARY_DEBUG
-            NAMES turbojpeg${JPEG_DEBUG_POSTFIX}
-             PATHS "${JPEG_LIBRARY_DIR}")
-        find_library(TURBO_JPEG_LIBRARY_RELEASE
-            NAMES turbojpeg
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        find_library(TURBO_JPEG_LIBRARY_STATIC_DEBUG
-            NAMES turbojpeg-static${JPEG_DEBUG_POSTFIX}
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        find_library(TURBO_JPEG_LIBRARY_STATIC_RELEASE
-            NAMES turbojpeg-static
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        set(_extensions "dll" "pdb")
-
-        foreach(ext IN LISTS _extensions)
-            find_file(jpeg_${ext}_RELEASE
-                NAMES "jpeg62.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-
-            find_file(turbojpeg_${ext}_RELEASE
-                NAMES "turbojpeg.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-            find_file(jpeg_${ext}_DEBUG
-                NAMES "jpeg62${JPEG_DEBUG_POSTFIX}.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-
-            find_file(turbojpeg_${ext}_DEBUG
-                NAMES "turbojpeg${JPEG_DEBUG_POSTFIX}.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-            if(jpeg_${ext}_RELEASE)
-                list(APPEND JPEG_RUNTIME_RELEASE "${jpeg_${ext}_RELEASE}")
-            endif()
-            if(turbojpeg_${ext}_RELEASE)
-                list(APPEND JPEG_RUNTIME_RELEASE "${turbojpeg_${ext}_RELEASE}")
-            endif()
-            if(jpeg_${ext}_DEBUG)
-                list(APPEND JPEG_RUNTIME_DEBUG "${jpeg_${ext}_DEBUG}")
-            endif()
-            if(turbojpeg_${ext}_DEBUG)
-                list(APPEND JPEG_RUNTIME_DEBUG "${turbojpeg_${ext}_DEBUG}")
-            endif()
-        endforeach(ext IN _extensions)
-
-        unset(_extensions)
-        unset(JPEG_PREFIX)
-        unset(JPEG_LIBRARY_DIR)
-    endif()
-endif()
-
-if(TANGO_USE_PTHREAD)
-    if(WIN32)
-        find_package(pthread REQUIRED)
-    else()
-        message(WARNING "You cannot use TANGO_USE_PTHREAD on non windows
-        platforms")
-    endif()
 endif()
 
 set(CPPZMQ_TRY_COMPILE_OUTPUT "" CACHE STRING "Compilation test for compatible cppzmq version")
