@@ -62,3 +62,11 @@ install(
   FILES_MATCHING PATTERN "*.cmake"
   PATTERN "FindTango.cmake" EXCLUDE
 )
+if (TANGO_USE_JPEG)
+  install(
+    FILES
+      "${CMAKE_CURRENT_LIST_DIR}/FindJPEG.cmake"
+    DESTINATION
+      ${ConfigPackageLocation}/${TANGO_FIND_MODULES_PATH}
+  )
+endif()

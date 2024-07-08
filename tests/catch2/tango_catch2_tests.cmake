@@ -71,20 +71,6 @@ function(tango_catch2_tests_create)
           COMMAND ${CMAKE_COMMAND} -E "$<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:Catch2Tests>>,copy;$<TARGET_RUNTIME_DLLS:Catch2Tests>;$<TARGET_FILE_DIR:Catch2Tests>,true>"
           COMMAND_EXPAND_LISTS)
 
-        # The JPEG::JPEG target is an IMPORTED UNKNOWN library, which means it will not be found by TARGET_RUNTIME_DLLS
-        if (TANGO_USE_JPEG)
-            if(JPEG_RUNTIME_RELEASE)
-                add_custom_command(TARGET Catch2Tests POST_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_RELEASE} $<TARGET_FILE_DIR:Catch2Tests>
-                  COMMAND_EXPAND_LISTS)
-            endif()
-            if(JPEG_RUNTIME_DEBUG)
-                add_custom_command(TARGET Catch2Tests POST_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
-                  COMMAND_EXPAND_LISTS)
-            endif()
-        endif()
-
         # copy zlib dll manually
         if (TANGO_USE_TELEMETRY)
             if (ZLIB_RUNTIME_RELEASE AND ZLIB_RUNTIME_DEBUG)
