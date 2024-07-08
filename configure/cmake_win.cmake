@@ -47,12 +47,6 @@ target_link_libraries(tango
     PRIVATE
         ${WIN32_LIBS})
 
-if(TANGO_USE_PTHREAD)
-    target_link_libraries(tango
-        PRIVATE
-            pthread::pthread)
-endif()
-
 set_property(TARGET tango PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -126,19 +120,6 @@ if (TANGO_INSTALL_DEPENDENCIES)
             install(FILES ${omniORB4_COS4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
             install(FILES ${ZeroMQ_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
         endif()
-    endif()
-
-    #pthreads
-    if (TANGO_USE_PTHREAD)
-        install(FILES ${pthread_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
-        install(FILES ${pthread_DBG_RELEASE} DESTINATION bin COMPONENT dynamic)
-        install(FILES ${pthread_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-        install(FILES ${pthread_DBG_DEBUG} DESTINATION bin COMPONENT dynamic)
-        install(DIRECTORY ${pthread_INCLUDE_DIR}/ DESTINATION include)
     endif()
 
     #Jpeg

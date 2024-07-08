@@ -62,9 +62,3 @@ install(
   FILES_MATCHING PATTERN "*.cmake"
   PATTERN "FindTango.cmake" EXCLUDE
 )
-install(
-  FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Findpthread.cmake"
-  DESTINATION
-    ${ConfigPackageLocation}/${TANGO_FIND_MODULES_PATH}
-)

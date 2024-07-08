@@ -95,7 +95,6 @@ the dependencies we need are:
  * cppzmq
  * JPEG (optional)
  * omniORB4
- * pthread (optional, windows only)
  * tangoidl
  * ZeroMQ
  * opentelemetry-cpp, protobuf, grpc, abseil, libcurl, c-ares, libre2 (optional)
@@ -121,7 +120,6 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                           | Do not check the version of omniORB.  Enable this at your own risk.
 | `TANGO_USE_JPEG`                   | `ON`                                            | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                           | Compile against libc++ instead of stdlibc++ (Requires Clang)
-| `TANGO_USE_PTHREAD`                | `OFF`                                           | On windows platforms, build with pthread library.
 | `TANGO_USE_TELEMETRY`              | `ON`                                            | Enable tracing for servers and clients
 | `TANGO_TELEMETRY_USE_GRPC`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable GRPC exporter for tracing
 | `TANGO_TELEMETRY_USE_HTTP`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable HTTP exporter for tracing
@@ -311,7 +309,6 @@ during installation as well.
 SET ARCH=x64-msvc15
 SET PYVER=py37
 https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.3.0/omniorb-4.3.0_%ARCH%_%PYVER%.zip
-https://github.com/tango-controls/Pthread_WIN32/releases/download/2.9.1/pthreads-win32-2.9.1_%ARCH%.zip
 https://github.com/tango-controls/zmq-windows-ci/releases/download/4.0.5-2/zmq-4.0.5-2_%ARCH%.zip
 git clone --depth 1 -b 5.1.2 https://gitlab.com/tango-controls/tango-idl tango-idl-source
 ```
@@ -335,7 +332,6 @@ cmake --build . --target install
 cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release                             \
       -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                               \
       -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" \
-      -Dpthread_ROOT="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
 ```
 
 - Compile with `cmake --build .`

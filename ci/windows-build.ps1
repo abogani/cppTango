@@ -16,12 +16,6 @@ Invoke-NativeCommand curl.exe -JOL https://github.com/tango-controls/omniorb-win
 md -Force ${TANGO_OMNI_ROOT}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_OMNI_ROOT}
 
-Write-Host "== Get pthread" -ForegroundColor Blue
-$FILENAME="pthreads-win32-${PTHREAD_VERSION}_${VC_ARCH_VER}.zip"
-Invoke-NativeCommand curl.exe -JOL https://github.com/tango-controls/Pthread_WIN32/releases/download/${PTHREAD_VERSION}/${FILENAME}
-md -Force ${PTHREAD_ROOT}
-Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_ROOT}
-
 Write-Host "== Get nasm" -ForegroundColor Blue
 Invoke-NativeCommand curl.exe -L ${NASM_DOWNLOAD_LINK} -o nasm.exe
 Invoke-NativeCommand ./nasm.exe /S /v/qn
@@ -123,10 +117,8 @@ Invoke-NativeCommand cmake `
   -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}" `
   -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}" `
   -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}" `
-  -Dpthread_ROOT="${PTHREAD_ROOT}" `
   -DCatch2_ROOT="${cwd}/${TANGO_CATCH_ROOT}" `
   -DZLIB_ROOT="${cwd}/${ZLIB_NG_ROOT}" `
-  -DTANGO_USE_PTHREAD=ON `
   -DTANGO_USE_JPEG=ON `
   -DJPEG_DEBUG_POSTFIX=d `
   -DBUILD_TESTING="${BUILD_TESTING}" `

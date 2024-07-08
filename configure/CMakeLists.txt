@@ -1,7 +1,6 @@
 include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
-option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
 
 set(TANGO_FIND_MODULES_PATH TangoCMakeModules)
 find_package(Git QUIET)
@@ -247,15 +246,6 @@ if(TANGO_USE_JPEG)
         unset(_extensions)
         unset(JPEG_PREFIX)
         unset(JPEG_LIBRARY_DIR)
-    endif()
-endif()
-
-if(TANGO_USE_PTHREAD)
-    if(WIN32)
-        find_package(pthread REQUIRED)
-    else()
-        message(WARNING "You cannot use TANGO_USE_PTHREAD on non windows
-        platforms")
     endif()
 endif()
 

@@ -23,7 +23,6 @@ windows-build:
     TANGO_IDL_TAG: 6.0.2
     ZMQ_VERSION: 4.0.5-2
     OMNI_VERSION: 4.3.0
-    PTHREAD_VERSION: 2.9.1
     CATCH_VERSION: 3.5.1
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
     OTEL_VERSION: v6
@@ -39,7 +38,6 @@ windows-build:
     TANGO_IDL_ROOT: dependencies/tango-idl
     TANGO_CATCH_ROOT: dependencies/catch
     TANGO_CATCH_SOURCE: dependencies/source/Catch2-${CATCH_VERSION}
-    PTHREAD_ROOT: dependencies/pthread
     OTEL_ROOT: dependencies/otel
     WIX_TOOLSET_LOCATION: dependencies/wix
     PYTHON_LOCATION: dependencies/python
