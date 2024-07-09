@@ -39,6 +39,16 @@ class AlarmDev : public Base
         return multi_attr->check_alarm("attr");
     }
 
+    bool has_alarm_after_second_check()
+    {
+        Tango::MultiAttribute *multi_attr = Base::get_device_attr();
+        Tango::Attribute &attr = multi_attr->get_attr_by_name("attr");
+        attr_value = k_alarming_value;
+        attr.set_value(&attr_value);
+        multi_attr->check_alarm("attr");
+        return multi_attr->check_alarm("attr");
+    }
+
     void read_attribute(Tango::Attribute &attr)
     {
         attr.set_value(&attr_value);
@@ -48,9 +58,11 @@ class AlarmDev : public Base
     {
         Tango::UserDefaultAttrProp props;
         props.set_max_alarm(std::to_string(k_alarm_level).c_str());
+        props.set_abs_change("0.1");
 
         attrs.push_back(new TangoTest::AutoAttr<&AlarmDev::read_attribute>("attr", Tango::DEV_DOUBLE));
         attrs.back()->set_default_properties(props);
+        attrs.back()->set_change_event(true, true);
     }
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
@@ -58,6 +70,8 @@ class AlarmDev : public Base
         cmds.push_back(new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_set>("has_alarm_after_set"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_push>("has_alarm_after_push"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_force>("has_alarm_after_force"));
+        cmds.push_back(
+            new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_second_check>("has_alarm_after_second_check"));
     }
 
   private:
@@ -87,17 +101,51 @@ SCENARIO("check_alarm reports alarms correctly")
             }
         }
 
-        // The behaviour of these next two when blocks is a little surprising,
-        // but this is how cppTango currently works (I would expect the command
-        // to return `true` in both cases).
-        //
-        // TODO(#1182): Determine if this is really what we want
-        WHEN("we call check_alarm after push_change_event")
+        // TODO: One of these two cases calling push_change_event is wrong.
+        if(idlver >= 4)
+        {
+            WHEN("we subscribe the change events for the attribute")
+            {
+                TangoTest::CallbackMock<Tango::EventData> callback;
+                REQUIRE_NOTHROW(device->subscribe_event("attr", Tango::CHANGE_EVENT, &callback));
+
+                // discard the initial events we get when we subscribe
+                auto maybe_initial_event = callback.pop_next_event();
+                REQUIRE(maybe_initial_event.has_value());
+
+                AND_WHEN("we call check_alarm after push_change_event")
+                {
+                    Tango::DeviceData result;
+                    REQUIRE_NOTHROW(result = device->command_inout("has_alarm_after_push"));
+
+                    THEN("we should receive a change event")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(!maybe_event->err);
+                        REQUIRE(maybe_event->event == "change");
+
+                        REQUIRE(maybe_event->attr_value != nullptr);
+                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+
+                        AND_THEN("the command returns true")
+                        {
+                            using TangoTest::AnyLikeContains;
+
+                            REQUIRE_THAT(result, AnyLikeContains(true));
+                        }
+                    }
+                }
+            }
+        }
+
+        WHEN("we call check_alarm_after push_change_event without subscribing")
         {
             Tango::DeviceData result;
             REQUIRE_NOTHROW(result = device->command_inout("has_alarm_after_push"));
 
-            THEN("the command returns false")
+            AND_THEN("the command returns false")
             {
                 using TangoTest::AnyLikeContains;
 
@@ -110,11 +158,24 @@ SCENARIO("check_alarm reports alarms correctly")
             Tango::DeviceData result;
             REQUIRE_NOTHROW(result = device->command_inout("has_alarm_after_force"));
 
-            THEN("the command returns false")
+            THEN("the command returns true")
             {
                 using TangoTest::AnyLikeContains;
 
-                REQUIRE_THAT(result, AnyLikeContains(false));
+                REQUIRE_THAT(result, AnyLikeContains(true));
+            }
+        }
+
+        WHEN("we call check_alarm after forcing the quality to alarm")
+        {
+            Tango::DeviceData result;
+            REQUIRE_NOTHROW(result = device->command_inout("has_alarm_after_second_check"));
+
+            THEN("the command returns true")
+            {
+                using TangoTest::AnyLikeContains;
+
+                REQUIRE_THAT(result, AnyLikeContains(true));
             }
         }
     }
