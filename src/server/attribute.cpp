@@ -1820,7 +1820,7 @@ void Attribute::set_time()
 
 bool Attribute::check_alarm()
 {
-    bool returned = false;
+    bool returned = quality == Tango::ATTR_ALARM || quality == Tango::ATTR_WARNING;
 
     //
     // Throw exception if no alarm is defined for this attribute
@@ -1832,11 +1832,6 @@ bool Attribute::check_alarm()
 
         o << "No alarm defined for attribute " << name << std::ends;
         TANGO_THROW_EXCEPTION(API_AttrNoAlarm, o.str());
-    }
-
-    if(quality == Tango::ATTR_ALARM || quality == Tango::ATTR_WARNING)
-    {
-        return true;
     }
 
     //
