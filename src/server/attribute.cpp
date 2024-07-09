@@ -1834,7 +1834,7 @@ bool Attribute::check_alarm()
         TANGO_THROW_EXCEPTION(API_AttrNoAlarm, o.str());
     }
 
-    if(quality == Tango::ATTR_ALARM)
+    if(quality == Tango::ATTR_ALARM || quality == Tango::ATTR_WARNING)
     {
         return true;
     }
