@@ -573,6 +573,10 @@ macos:
     - micromamba create -n cpptango-dev -f ci/cpptango-env-${PLATFORM}.txt
     - micromamba activate cpptango-dev
   script:
+    # Sometimes the PollThread on the macOS CI seems to stall for up to ~600 ms
+    # which can cause some tests to fail sporadically.  Increasing the
+    # TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD from 100 ms seems to make the tests
+    # more reliable.
     - >
       cmake $CMAKE_ARGS -GNinja
       -DCMAKE_BUILD_TYPE=Debug
@@ -580,6 +584,7 @@ macos:
       -DTANGO_USE_TELEMETRY=ON
       -DTANGO_WARNINGS_AS_ERRORS=OFF
       -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX"
+      -DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=1000
       -S . -B build
     - cmake --build build
     - ctest --output-on-failure --test-dir build -R "^catch2.*$"

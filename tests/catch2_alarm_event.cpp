@@ -13,7 +13,7 @@ static constexpr double ATTR_PUSH_ALARM_VALUE = 10.0;
 constexpr static const char *k_test_reason = "Test_Reason";
 constexpr static const char *k_alt_test_reason = "Test_Reason";
 constexpr static const char *k_a_helpful_desc = "A helpful description";
-constexpr static const int k_polling_period = 100;
+constexpr static const int k_polling_period = TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD;
 
 // Test device class
 template <class Base>
