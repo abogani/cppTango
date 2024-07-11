@@ -815,6 +815,7 @@ WARN_LOGFILE           =
 
 INPUT                  = @PROJECT_SOURCE_DIR@/src/include \
                          @PROJECT_BINARY_DIR@/src/include \
+                         @PROJECT_SOURCE_DIR@/src/client/doc.h \
                          @PROJECT_SOURCE_DIR@/log4tango/include
 
 # This tag can be used to specify the character encoding of the source files
