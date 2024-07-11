@@ -34,6 +34,13 @@
 #ifndef _DOC_DOXYGEN_H
 #define _DOC_DOXYGEN_H
 
+// NOTE: This file gets rendered by doxygen as a series of html files in the top
+// level directory.  The scripts to build the multi-version site in ci/docs-site
+// assume that all the html files will be in the top level, therefore, if you
+// change things so that the site contains subdirectories, this will require
+// updating the process we use for building the multi-version site to account
+// for this.
+
 /**
 \file   doc.h
 \brief Just a file to write some Doxygen specific documentation

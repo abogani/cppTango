@@ -472,6 +472,18 @@ doxygen-documentation:
     paths:
       - build/doc_html
 
+documentation-site:
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+  needs:
+    - job: doxygen-documentation
+      artifacts: true
+  script:
+    - ci/docs-site/build.sh
+  artifacts:
+    when: always
+    paths:
+      - site
+
 sanitizer:
   <<: *job-template-with-tests
   variables:
