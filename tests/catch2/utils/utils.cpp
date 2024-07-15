@@ -449,7 +449,7 @@ void setup_topic_log_appender(std::string_view topic, const char *filename)
     auto *appender = new log4tango::FileAppender(k_appender_name, filename);
     auto *layout = new log4tango::PatternLayout();
     std::stringstream pattern;
-    pattern << std::setw(15) << topic << " %d{%H:%M:%S.%l} %p %F:%L %m%n";
+    pattern << std::setw(15) << topic << " %d{%H:%M:%S.%l} %p %T(%t) %F:%L %m%n";
     layout->set_conversion_pattern(pattern.str());
     appender->set_layout(layout);
     logger->add_appender(appender);
