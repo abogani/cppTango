@@ -308,7 +308,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                 REQUIRE(maybe_initial_event.has_value());
                 maybe_initial_event = callback.pop_next_event();
 
-                WHEN("we set the attribute to a " << data.final.value << " value")
+                WHEN("we set the attribute to a " << data.final.name << " value")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);
