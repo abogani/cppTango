@@ -1484,6 +1484,7 @@ class Attribute
     virtual void set_rvalue() { }
 
     void delete_seq();
+    void delete_seq_and_reset_alarm();
     bool check_scalar_wattribute();
 
     void wanted_date(bool flag)

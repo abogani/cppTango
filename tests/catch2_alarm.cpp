@@ -101,7 +101,6 @@ SCENARIO("check_alarm reports alarms correctly")
             }
         }
 
-        // TODO: One of these two cases calling push_change_event is wrong.
         if(idlver >= 4)
         {
             WHEN("we subscribe the change events for the attribute")
@@ -129,11 +128,11 @@ SCENARIO("check_alarm reports alarms correctly")
                         REQUIRE(maybe_event->attr_value != nullptr);
                         REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
 
-                        AND_THEN("the command returns true")
+                        AND_THEN("the command returns false")
                         {
                             using TangoTest::AnyLikeContains;
 
-                            REQUIRE_THAT(result, AnyLikeContains(true));
+                            REQUIRE_THAT(result, AnyLikeContains(false));
                         }
                     }
                 }

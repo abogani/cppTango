@@ -3120,6 +3120,23 @@ bool Attribute::check_scalar_wattribute()
 
 //+-------------------------------------------------------------------------
 //
+// method :        Attribute::delete_seq_and_reset_alarm
+//
+// description :    Delete the sequence created to store attribute
+//            value and reset any alarms that may have been calculated by
+//            set_alarm.
+//
+//--------------------------------------------------------------------------
+
+void Attribute::delete_seq_and_reset_alarm()
+{
+    delete_seq();
+    quality = Tango::ATTR_VALID;
+    alarm.reset();
+}
+
+//+-------------------------------------------------------------------------
+//
 // method :        Attribute::delete_seq
 //
 // description :    Delete the sequence created to store attribute
@@ -4180,7 +4197,7 @@ void Attribute::fire_change_event(DevFailed *except)
                     {
                         if(quality != Tango::ATTR_INVALID)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                         //                        set_value_flag (false);
                     }
@@ -4208,7 +4225,7 @@ void Attribute::fire_change_event(DevFailed *except)
                     {
                         if(quality != Tango::ATTR_INVALID)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                         //                        set_value_flag (false);
                     }
@@ -4486,7 +4503,7 @@ void Attribute::fire_change_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //                set_value_flag (false);
             }
@@ -4516,7 +4533,7 @@ void Attribute::fire_change_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //                set_value_flag (false);
             }
@@ -4621,7 +4638,7 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
                     {
                         if(quality != Tango::ATTR_INVALID && should_delete_seq)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                         //                      set_value_flag (false);
                     }
@@ -4646,7 +4663,7 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
                     {
                         if(quality != Tango::ATTR_INVALID && should_delete_seq)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                     }
                 }
@@ -4818,7 +4835,7 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
             {
                 if(quality != Tango::ATTR_INVALID && should_delete_seq)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //              set_value_flag (false);
             }
@@ -4840,7 +4857,7 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
             {
                 if(quality != Tango::ATTR_INVALID && should_delete_seq)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //              set_value_flag (false);
             }
@@ -4988,7 +5005,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                     {
                         if(quality != Tango::ATTR_INVALID)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                         //                        set_value_flag (false);
                     }
@@ -5022,7 +5039,7 @@ void Attribute::fire_archive_event(DevFailed *except)
                     {
                         if(quality != Tango::ATTR_INVALID)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                         //                        set_value_flag (false);
                     }
@@ -5286,7 +5303,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //                set_value_flag (false);
             }
@@ -5318,7 +5335,7 @@ void Attribute::fire_archive_event(DevFailed *except)
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //                set_value_flag (false);
             }
@@ -5474,7 +5491,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
                     {
                         if(quality != Tango::ATTR_INVALID)
                         {
-                            delete_seq();
+                            delete_seq_and_reset_alarm();
                         }
                         //                        set_value_flag (false);
                     }
@@ -5631,7 +5648,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //                set_value_flag (false);
             }
@@ -5663,7 +5680,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
             {
                 if(quality != Tango::ATTR_INVALID)
                 {
-                    delete_seq();
+                    delete_seq_and_reset_alarm();
                 }
                 //                set_value_flag (false);
             }
