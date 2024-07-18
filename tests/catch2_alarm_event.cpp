@@ -13,7 +13,7 @@ static constexpr double ATTR_PUSH_ALARM_VALUE = 10.0;
 constexpr static const char *k_test_reason = "Test_Reason";
 constexpr static const char *k_alt_test_reason = "Test_Reason";
 constexpr static const char *k_a_helpful_desc = "A helpful description";
-constexpr static const int k_polling_period = 100;
+constexpr static const int k_polling_period = TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD;
 
 // Test device class
 template <class Base>
@@ -59,7 +59,10 @@ class AlarmEventDev : public Base
             }
             catch(Tango::DevFailed &e)
             {
+                TANGO_LOG_DEBUG << "Pushing error ALARM_EVENT to \"attr_push\"";
                 this->push_alarm_event("attr_push", &e);
+
+                TANGO_LOG_DEBUG << "Pushing error ALARM_EVENT to \"attr_change_alarm\"";
                 this->push_alarm_event("attr_change_alarm", &e);
                 return;
             }
@@ -74,15 +77,23 @@ class AlarmEventDev : public Base
             }
             catch(Tango::DevFailed &e)
             {
+                TANGO_LOG_DEBUG << "Pushing alternative error ALARM_EVENT to \"attr_push\"";
                 this->push_alarm_event("attr_push", &e);
+
+                TANGO_LOG_DEBUG << "Pushing alternative error ALARM_EVENT to \"attr_change_alarm\"";
                 this->push_alarm_event("attr_change_alarm", &e);
                 return;
             }
         }
 
         Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
+        TANGO_LOG_DEBUG << "Pushing ALARM_EVENT with value " << v << " to \"attr_test\"";
         this->push_alarm_event("attr_test", &v);
+
+        TANGO_LOG_DEBUG << "Pushing ALARM_EVENT with value " << v << " to \"attr_push\"";
         this->push_alarm_event("attr_push", &v);
+
+        TANGO_LOG_DEBUG << "Pushing ALARM_EVENT with value " << v << " to \"attr_change_alarm\"";
         this->push_alarm_event("attr_change_alarm", &v);
     }
 
@@ -97,7 +108,10 @@ class AlarmEventDev : public Base
             }
             catch(Tango::DevFailed &e)
             {
+                TANGO_LOG_DEBUG << "Pushing error CHANGE_EVENT to \"attr_change\"";
                 this->push_change_event("attr_change", &e);
+
+                TANGO_LOG_DEBUG << "Pushing alternative error CHANGE_EVENT to \"attr_change_alarm\"";
                 this->push_change_event("attr_change_alarm", &e);
                 return;
             }
@@ -112,14 +126,22 @@ class AlarmEventDev : public Base
             }
             catch(Tango::DevFailed &e)
             {
+                TANGO_LOG_DEBUG << "Pushing altnerative error CHANGE_EVENT to \"attr_change\"";
                 this->push_change_event("attr_change", &e);
+
+                TANGO_LOG_DEBUG << "Pushing alternative error CHANGE_EVENT to \"attr_change_alarm\"";
                 this->push_change_event("attr_change_alarm", &e);
                 return;
             }
         }
         Tango::DevDouble v{ATTR_PUSH_ALARM_VALUE};
+        TANGO_LOG_DEBUG << "Pushing CHANGE_EVENT with value " << v << " to \"attr_test\"";
         this->push_change_event("attr_test", &v);
+
+        TANGO_LOG_DEBUG << "Pushing CHANGE_EVENT with value " << v << " to \"attr_change\"";
         this->push_change_event("attr_change", &v);
+
+        TANGO_LOG_DEBUG << "Pushing CHANGE_EVENT with value " << v << " to \"attr_change_alarm\"";
         this->push_change_event("attr_change_alarm", &v);
     }
 
@@ -128,15 +150,18 @@ class AlarmEventDev : public Base
         if(throw_next_read)
         {
             throw_next_read = false;
+            TANGO_LOG_DEBUG << "Throwing from read_attribute";
             TANGO_THROW_EXCEPTION(k_test_reason, k_a_helpful_desc);
         }
 
         att.set_value_date_quality(&attr_value, std::chrono::system_clock::now(), attr_quality);
+        TANGO_LOG_DEBUG << "Read value " << attr_value << " and quality " << attr_quality;
     }
 
     void write_attribute(Tango::WAttribute &att)
     {
         att.get_write_value(attr_value);
+        TANGO_LOG_DEBUG << "Written value " << attr_value;
     }
 
     void throw_on_next_read()
@@ -291,6 +316,8 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
         {
             std::string att{"attr_test"};
 
+            TANGO_LOG_DEBUG << "attribute name = \"" << att << "\"";
+
             REQUIRE(device->is_attribute_polled(att));
 
             Tango::DeviceAttribute v;
@@ -308,7 +335,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                 REQUIRE(maybe_initial_event.has_value());
                 maybe_initial_event = callback.pop_next_event();
 
-                WHEN("we set the attribute to a " << data.final.value << " value")
+                WHEN("we set the attribute to a " << data.final.name << " value")
                 {
                     Tango::DeviceAttribute v;
                     v.set_name(att);

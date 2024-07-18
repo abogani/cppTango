@@ -105,6 +105,8 @@ function(tango_catch2_tests_create)
         set(SERVER_PATH "${CMAKE_CURRENT_BINARY_DIR}/${SERVER_NAME}")
     endif()
 
+    set(TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD 100 CACHE STRING "Default polling period to use for the Catch2Tests in milliseconds")
+
     target_compile_definitions(Catch2Tests PRIVATE
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${SERVER_PATH}\""
         "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_OUTPUT_DIR}\""
@@ -113,6 +115,7 @@ function(tango_catch2_tests_create)
         "-DTANGO_TEST_CATCH2_TEST_BINARY_NAME=\"$<TARGET_FILE_NAME:Catch2Tests>\""
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_NAME=\"${SERVER_NAME}\""
         "-DTANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH=\"${TANGO_CATCH2_FILEDB_DIR}\""
+        "-DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=${TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD}"
         ${COMMON_TEST_DEFS})
 
     catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::"

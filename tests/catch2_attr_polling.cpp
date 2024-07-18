@@ -2,7 +2,7 @@
 
 constexpr static Tango::DevBoolean k_initial_value = false;
 constexpr static Tango::DevBoolean k_new_value = true;
-constexpr static Tango::DevLong k_polling_period = 100; // 100 ms
+constexpr static Tango::DevLong k_polling_period = TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD;
 constexpr static const char *k_test_reason = "Test_Reason";
 constexpr static const char *k_a_helpful_desc = "A helpful description";
 
