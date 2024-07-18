@@ -472,6 +472,55 @@ doxygen-documentation:
     paths:
       - build/doc_html
 
+publish-docs-tarball:
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+  needs:
+    - job: doxygen-documentation
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/
+      when: on_success
+  variables:
+      PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/docs/${CI_COMMIT_TAG}"
+  script:
+    - mv build/doc_html ${CI_COMMIT_TAG}
+    - ci/docs-site/patch-in-version-selector.sh ${CI_COMMIT_TAG}
+    - tar cjf docs.tar.bz2 ${CI_COMMIT_TAG}
+    - >
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --fail
+      --upload-file "docs.tar.bz2"
+      "${PACKAGE_REGISTRY_URL}/docs.tar.bz2"
+
+documentation-site:
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+  needs:
+    - job: doxygen-documentation
+      artifacts: true
+  script:
+    - ci/docs-site/build.sh
+  artifacts:
+    when: always
+    paths:
+      - site
+
+pages:
+  needs:
+    - job: documentation-site
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^.*-rc.*$/
+      when: on_success
+    # Comment this out on main branch when in release phase
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
+  script:
+    - mv site public
+    - echo "Pages accessible through ${CI_PAGES_URL}"
+  artifacts:
+    when: always
+    paths:
+      - public
+
 sanitizer:
   <<: *job-template-with-tests
   variables:
