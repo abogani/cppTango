@@ -76,3 +76,42 @@ SCENARIO("Telemetry traces are outputted")
         }
     }
 }
+
+SCENARIO("Telemetry does complain about invalid environment variables")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        struct TestData
+        {
+            std::string telemetry, kernel, traces_exporter, logs_exporter, traces_endpoint, logs_endpoint;
+        };
+
+        auto data = GENERATE(TestData{"bogus", "on", "console", "console", "cout", "cout"},
+                             TestData{"on", "bogus", "console", "console", "cout", "cout"},
+                             TestData{"on", "on", "bogus", "console", "cout", "cout"},
+                             TestData{"on", "on", "console", "bogus", "cout", "cout"},
+                             TestData{"on", "on", "console", "console", "bogus", "cout"},
+                             TestData{"on", "on", "console", "console", "cout", "bogus"});
+
+        WHEN("set the environment variables")
+        {
+            std::vector<std::string> env{"TANGO_TELEMETRY_ENABLE=" + data.telemetry,
+                                         "TANGO_TELEMETRY_KERNEL_ENABLE=" + data.kernel,
+                                         "TANGO_TELEMETRY_TRACES_EXPORTER=" + data.traces_exporter,
+                                         "TANGO_TELEMETRY_LOGS_EXPORTER=" + data.logs_exporter,
+                                         "TANGO_TELEMETRY_TRACES_ENDPOINT=" + data.traces_endpoint,
+                                         "TANGO_TELEMETRY_LOGS_ENDPOINT=" + data.logs_endpoint};
+
+            INFO(Catch::StringMaker<std::vector<std::string>>::convert(env));
+
+            // avoid parsing issues in REQUIRE_XXX macro
+            auto f = [&idlver, &env]() { TangoTest::Context ctx{"telemetry", "TelemetryDS", idlver, env}; };
+
+            using Catch::Matchers::ContainsSubstring;
+            using Catch::Matchers::MessageMatches;
+            REQUIRE_THROWS_MATCHES(
+                f(), std::runtime_error, MessageMatches(ContainsSubstring("Error reason = API_InvalidArgs")));
+        }
+    }
+}

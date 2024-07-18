@@ -371,19 +371,9 @@ class InterfaceImplementation final
     //-------------------------------------------------------------------------------------
     // Ctor
     //-------------------------------------------------------------------------------------
-    explicit InterfaceImplementation(const Configuration &config)
+    explicit InterfaceImplementation(const Configuration &config) :
+        cfg{config}
     {
-        initialize(config);
-    }
-
-    //-------------------------------------------------------------------------------------
-    // initialize
-    //-------------------------------------------------------------------------------------
-    void initialize(const Configuration &config)
-    {
-        // copy configuration locally
-        cfg = config;
-        // init the trace provider
         init_tracer_provider();
         // init the global propagator
         init_global_propagator();
@@ -419,14 +409,8 @@ class InterfaceImplementation final
             return;
         }
 
-        auto exporter_type = Configuration::get_exporter_from_env(kEnvVarTelemetryTracesExporter);
-
-        std::string endpoint = cfg.collector_traces_endpoint;
-
-        if(endpoint.empty())
-        {
-            endpoint = Configuration::get_traces_endpoint_from_env(exporter_type);
-        }
+        auto exporter_type = cfg.traces_exporter;
+        auto endpoint = cfg.traces_endpoint;
 
         std::unique_ptr<opentelemetry::sdk::trace::SpanExporter> exporter;
         std::unique_ptr<opentelemetry::sdk::trace::SpanProcessor> processor;
@@ -777,14 +761,8 @@ class Appender : public log4tango::Appender
             return;
         }
 
-        auto exporter_type = Configuration::get_exporter_from_env(kEnvVarTelemetryLogsExporter);
-
-        std::string endpoint = interface->cfg.collector_logs_endpoint;
-
-        if(endpoint.empty())
-        {
-            endpoint = Configuration::get_logs_endpoint_from_env(exporter_type);
-        }
+        auto exporter_type = interface->cfg.logs_exporter;
+        auto endpoint = interface->cfg.logs_endpoint;
 
         std::unique_ptr<opentelemetry::sdk::logs::LogRecordExporter> exporter;
         std::unique_ptr<opentelemetry::sdk::logs::LogRecordProcessor> processor;
@@ -802,7 +780,7 @@ class Appender : public log4tango::Appender
   #else
             opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;
   #endif
-            opts.endpoint = Configuration::extract_grpc_host_port(endpoint);
+            opts.endpoint = interface->cfg.extract_grpc_host_port(endpoint);
             opts.use_ssl_credentials = false;
             exporter = opentelemetry::exporter::otlp::OtlpGrpcLogRecordExporterFactory::Create(opts);
         }
@@ -1330,14 +1308,8 @@ Tango::telemetry::InterfacePtr Interface::get_default_interface() noexcept
 
     if(!InterfaceImplementation::default_telemetry_interface)
     {
-        // configure the default telemetry interface
-        // TODO: offer a way to specify the endpoint by Tango property (only env. var. so far)
-        // TODO: it means that, so far, any endpoint specified through Configuration
-        // TODO: will be ignored - it here there for (near) future use- we simple pass an empty
-        // TODO: string till we provide the ability to get the endpoint using a Tango property.
-
         InterfaceImplementation::default_telemetry_interface = std::make_shared<Tango::telemetry::Interface>(
-            Configuration{false, false, "TangoTelemetry", "tango", Configuration::Client{"tango.telemetry.default"}});
+            Configuration{"TangoTelemetry", "tango", Configuration::Client{"tango.telemetry.default"}});
 
         // mark this interface as the default one
         InterfaceImplementation::default_telemetry_interface->impl->is_default_interface = true;

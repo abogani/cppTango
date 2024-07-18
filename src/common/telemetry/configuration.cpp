@@ -71,6 +71,35 @@ const std::size_t Configuration::DEFAULT_MAX_BATCH_QUEUE_SIZE = 2048;
 //-----------------------------------------------------------------------------------------
 const std::size_t Configuration::DEFAULT_BATCH_SCHEDULE_DELAY = 2500;
 
+// TODO: offer a way to specify the endpoint by Tango property (only env. var. so far)
+// TODO: it means that, so far, any endpoint specified through Interface::Configuration
+// TODO: will be ignored - it here there for (near) future use- we simple pass an empty
+// TODO: string till we provide the ability to get the endpoint using a Tango property.
+Configuration::Configuration(std::string id, std::string name_space, ServerClientDetails details) :
+    id(id),
+    name_space(name_space),
+    details(details)
+{
+    auto *detailsServer = std::get_if<Configuration::Server>(&details);
+
+    if(detailsServer != nullptr && detailsServer->class_name == "DServer")
+    {
+        enabled = false;
+    }
+    else
+    {
+        enabled = detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryEnable, false);
+    }
+
+    kernel_traces_enabled = detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryKernelEnable, false);
+
+    traces_endpoint = get_traces_endpoint_from_env(Tango::telemetry::Configuration::Exporter::console);
+    logs_endpoint = get_logs_endpoint_from_env(Tango::telemetry::Configuration::Exporter::console);
+
+    traces_exporter = get_exporter_from_env(telemetry::kEnvVarTelemetryTracesExporter);
+    logs_exporter = get_exporter_from_env(telemetry::kEnvVarTelemetryLogsExporter);
+}
+
 Configuration::Kind Configuration::get_kind() const noexcept
 {
     if(std::get_if<Configuration::Server>(&details) != nullptr)
