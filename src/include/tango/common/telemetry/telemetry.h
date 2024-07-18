@@ -1,6 +1,8 @@
 #ifndef TANGO_COMMON_TELEMETRY_H
 #define TANGO_COMMON_TELEMETRY_H
 
+#include <tango/common/tango_version.h>
+
 #if defined(TANGO_USE_TELEMETRY)
 
   #include <tango/common/telemetry/configuration.h>
