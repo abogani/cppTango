@@ -1,7 +1,11 @@
 #include "catch2_common.h"
+#include "tango/server/except.h"
 
 constexpr static const Tango::DevDouble k_alarm_level = 20;
 constexpr static const Tango::DevDouble k_alarming_value = 99;
+
+constexpr static const char *k_test_reason = "Test_Reason";
+constexpr static const char *k_a_helpful_desc = "A helpful description";
 
 template <class Base>
 class AlarmDev : public Base
@@ -49,6 +53,21 @@ class AlarmDev : public Base
         return multi_attr->check_alarm("attr");
     }
 
+    bool has_alarm_after_push_except()
+    {
+        Tango::MultiAttribute *multi_attr = Base::get_device_attr();
+        try
+        {
+            TANGO_THROW_EXCEPTION(k_test_reason, k_a_helpful_desc);
+        }
+        catch(Tango::DevFailed &ex)
+        {
+            Base::push_change_event("attr", &ex);
+        }
+
+        return multi_attr->check_alarm("attr");
+    }
+
     void read_attribute(Tango::Attribute &attr)
     {
         attr.set_value(&attr_value);
@@ -69,6 +88,8 @@ class AlarmDev : public Base
     {
         cmds.push_back(new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_set>("has_alarm_after_set"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_push>("has_alarm_after_push"));
+        cmds.push_back(
+            new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_push_except>("has_alarm_after_push_except"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_force>("has_alarm_after_force"));
         cmds.push_back(
             new TangoTest::AutoCommand<&AlarmDev::has_alarm_after_second_check>("has_alarm_after_second_check"));
@@ -127,6 +148,28 @@ SCENARIO("check_alarm reports alarms correctly")
 
                         REQUIRE(maybe_event->attr_value != nullptr);
                         REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+
+                        AND_THEN("the command returns false")
+                        {
+                            using TangoTest::AnyLikeContains;
+
+                            REQUIRE_THAT(result, AnyLikeContains(false));
+                        }
+                    }
+                }
+
+                AND_WHEN("we call check_alarm after pushing an exception")
+                {
+                    Tango::DeviceData result;
+                    REQUIRE_NOTHROW(result = device->command_inout("has_alarm_after_push_except"));
+
+                    THEN("we should receive an error event")
+                    {
+                        auto maybe_event = callback.pop_next_event();
+
+                        REQUIRE(maybe_event.has_value());
+                        REQUIRE(maybe_event->err);
+                        REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_test_reason});
 
                         AND_THEN("the command returns false")
                         {
