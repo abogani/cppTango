@@ -23,22 +23,22 @@ class ChangeEventOnNanDev_Double : public Base
         attr_rel_value = ATTR_INIT_VALUE;
     }
 
-    void set_abs_nan(void)
+    void set_abs_nan()
     {
         attr_abs_value = ATTR_NAN_VALUE;
     }
 
-    void set_rel_nan(void)
+    void set_rel_nan()
     {
         attr_rel_value = ATTR_NAN_VALUE;
     }
 
-    void unset_abs_nan(void)
+    void unset_abs_nan()
     {
         attr_abs_value = ATTR_INIT_VALUE;
     }
 
-    void unset_rel_nan(void)
+    void unset_rel_nan()
     {
         attr_rel_value = ATTR_INIT_VALUE;
     }
@@ -100,22 +100,22 @@ class ChangeEventOnNanDev_Float : public Base
         attr_rel_value = ATTR_INIT_VALUE;
     }
 
-    void set_abs_nan(void)
+    void set_abs_nan()
     {
         attr_abs_value = ATTR_NAN_VALUE;
     }
 
-    void set_rel_nan(void)
+    void set_rel_nan()
     {
         attr_rel_value = ATTR_NAN_VALUE;
     }
 
-    void unset_abs_nan(void)
+    void unset_abs_nan()
     {
         attr_abs_value = ATTR_INIT_VALUE;
     }
 
-    void unset_rel_nan(void)
+    void unset_rel_nan()
     {
         attr_rel_value = ATTR_INIT_VALUE;
     }
