@@ -166,7 +166,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(ChangeEventOnNanDev_Double, 4)
 
 SCENARIO("Change events for DevDouble are generated on NaN with absolute change")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Double", idlver};
@@ -250,7 +250,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
 
 SCENARIO("Change events for DevDouble are generated on NaN with relative change")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Double", idlver};
@@ -334,7 +334,7 @@ TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(ChangeEventOnNanDev_Float, 4)
 
 SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Float", idlver};
@@ -418,7 +418,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 
 SCENARIO("Change events for DevFloat are generated on NaN with relative change")
 {
-    int idlver = GENERATE(range(4, 7));
+    int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Float", idlver};
