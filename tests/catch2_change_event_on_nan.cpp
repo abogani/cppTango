@@ -2,7 +2,8 @@
 #include <memory>
 #include <cmath>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include "utils/utils.h"
+
+#include "catch2_common.h"
 
 constexpr static Tango::DevDouble ATTR_INIT_VALUE = 0.0;
 static const Tango::DevDouble ATTR_NAN_VALUE = std::nan("nan");
