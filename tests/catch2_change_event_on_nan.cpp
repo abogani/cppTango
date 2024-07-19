@@ -187,6 +187,9 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
 
                 THEN("we receive some events with the initial value")
                 {
+                    using Catch::Matchers::IsNaN;
+                    using Catch::Matchers::WithinAbs;
+                    using TangoTest::AnyLikeMatches;
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
                     //
@@ -200,9 +203,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
                     REQUIRE(maybe_initial_event.has_value());
                     REQUIRE(!maybe_initial_event->err);
                     REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    double value1;
-                    *maybe_initial_event->attr_value >> value1;
-                    REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
+                    REQUIRE_THAT(*maybe_initial_event->attr_value,
+                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
 
                     maybe_initial_event = callback.pop_next_event();
 
@@ -216,9 +218,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
                             REQUIRE(maybe_new_event->attr_value != nullptr);
-                            double value3;
-                            *maybe_new_event->attr_value >> value3;
-                            REQUIRE_THAT(value3, Catch::Matchers::IsNaN());
+                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches(IsNaN()));
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_abs_nan"));
@@ -229,9 +229,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
                                     REQUIRE(maybe_new_event.has_value());
                                     REQUIRE(!maybe_new_event->err);
                                     REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    double value4;
-                                    *maybe_initial_event->attr_value >> value4;
-                                    REQUIRE_THAT(value4, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
+                                    REQUIRE_THAT(*maybe_new_event->attr_value,
+                                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
                                 }
                             }
                         }
@@ -264,6 +263,10 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
                 THEN("we receive some events with the initial value")
                 {
+                    using Catch::Matchers::IsNaN;
+                    using Catch::Matchers::WithinAbs;
+                    using TangoTest::AnyLikeMatches;
+
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
                     //
@@ -277,9 +280,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                     REQUIRE(maybe_initial_event.has_value());
                     REQUIRE(!maybe_initial_event->err);
                     REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    double value1;
-                    *maybe_initial_event->attr_value >> value1;
-                    REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
+                    REQUIRE_THAT(*maybe_initial_event->attr_value,
+                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
 
                     maybe_initial_event = callback.pop_next_event();
 
@@ -292,9 +294,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
                             REQUIRE(maybe_new_event->attr_value != nullptr);
-                            double value3;
-                            *maybe_new_event->attr_value >> value3;
-                            REQUIRE_THAT(value3, Catch::Matchers::IsNaN());
+                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches(IsNaN()));
 
                             AND_WHEN("we unset the attribute value from NaN")
                             {
@@ -305,9 +305,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                                     REQUIRE(maybe_new_event.has_value());
                                     REQUIRE(!maybe_new_event->err);
                                     REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    double value4;
-                                    *maybe_initial_event->attr_value >> value4;
-                                    REQUIRE_THAT(value4, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
+                                    REQUIRE_THAT(*maybe_new_event->attr_value,
+                                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
                                 }
                             }
                         }
@@ -343,6 +342,10 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 
                 THEN("we receive some events with the initial value")
                 {
+                    using Catch::Matchers::IsNaN;
+                    using Catch::Matchers::WithinAbs;
+                    using TangoTest::AnyLikeMatches;
+
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
                     //
@@ -356,9 +359,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
                     REQUIRE(maybe_initial_event.has_value());
                     REQUIRE(!maybe_initial_event->err);
                     REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    float value1;
-                    *maybe_initial_event->attr_value >> value1;
-                    REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
+                    REQUIRE_THAT(*maybe_initial_event->attr_value,
+                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
 
                     maybe_initial_event = callback.pop_next_event();
 
@@ -372,9 +374,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
                             REQUIRE(maybe_new_event->attr_value != nullptr);
-                            float value3;
-                            *maybe_new_event->attr_value >> value3;
-                            REQUIRE_THAT(value3, Catch::Matchers::IsNaN());
+                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches<float>(IsNaN()));
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_abs_nan"));
@@ -385,9 +385,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
                                     REQUIRE(maybe_new_event.has_value());
                                     REQUIRE(!maybe_new_event->err);
                                     REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    float value4;
-                                    *maybe_initial_event->attr_value >> value4;
-                                    REQUIRE_THAT(value4, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
+                                    REQUIRE_THAT(*maybe_new_event->attr_value,
+                                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
                                 }
                             }
                         }
@@ -420,6 +419,10 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
                 THEN("we receive some events with the initial value")
                 {
+                    using Catch::Matchers::IsNaN;
+                    using Catch::Matchers::WithinAbs;
+                    using TangoTest::AnyLikeMatches;
+
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
                     //
@@ -433,9 +436,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                     REQUIRE(maybe_initial_event.has_value());
                     REQUIRE(!maybe_initial_event->err);
                     REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    float value1;
-                    *maybe_initial_event->attr_value >> value1;
-                    REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
+                    REQUIRE_THAT(*maybe_initial_event->attr_value,
+                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
 
                     maybe_initial_event = callback.pop_next_event();
 
@@ -448,9 +450,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
                             REQUIRE(maybe_new_event->attr_value != nullptr);
-                            float value3;
-                            *maybe_new_event->attr_value >> value3;
-                            REQUIRE_THAT(value3, Catch::Matchers::IsNaN());
+                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches<float>(IsNaN()));
 
                             AND_WHEN("we unset the attribute value from NaN")
                             {
@@ -461,9 +461,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                                     REQUIRE(maybe_new_event.has_value());
                                     REQUIRE(!maybe_new_event->err);
                                     REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    float value4;
-                                    *maybe_initial_event->attr_value >> value4;
-                                    REQUIRE_THAT(value4, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
+                                    REQUIRE_THAT(*maybe_new_event->attr_value,
+                                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
                                 }
                             }
                         }
