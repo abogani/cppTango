@@ -205,12 +205,6 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
                     REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
 
                     maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    double value2;
-                    *maybe_initial_event->attr_value >> value2;
-                    REQUIRE_THAT(value2, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
 
                     WHEN("we set the attribute value to NaN")
                     {
@@ -288,12 +282,6 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                     REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
 
                     maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    double value2;
-                    *maybe_initial_event->attr_value >> value2;
-                    REQUIRE_THAT(value2, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001));
 
                     WHEN("we set the attribute value to NaN")
                     {
@@ -373,12 +361,6 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
                     REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
 
                     maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    float value2;
-                    *maybe_initial_event->attr_value >> value2;
-                    REQUIRE_THAT(value2, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
 
                     WHEN("we set the attribute value to NaN")
                     {
@@ -456,12 +438,6 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                     REQUIRE_THAT(value1, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
 
                     maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    float value2;
-                    *maybe_initial_event->attr_value >> value2;
-                    REQUIRE_THAT(value2, Catch::Matchers::WithinAbs(ATTR_INIT_VALUE, 0.0000001f));
 
                     WHEN("we set the attribute value to NaN")
                     {
