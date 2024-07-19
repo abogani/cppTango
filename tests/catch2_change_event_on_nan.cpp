@@ -178,7 +178,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
         {
             std::string att{"attr_abs"};
 
-            REQUIRE(device->is_attribute_polled(att) == true);
+            REQUIRE(device->is_attribute_polled(att));
 
             AND_GIVEN("a change event subscription")
             {
@@ -262,7 +262,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
         {
             std::string att{"attr_rel"};
 
-            REQUIRE(device->is_attribute_polled(att) == true);
+            REQUIRE(device->is_attribute_polled(att));
 
             AND_GIVEN("a change event subscription")
             {
@@ -346,7 +346,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
         {
             std::string att{"attr_abs"};
 
-            REQUIRE(device->is_attribute_polled(att) == true);
+            REQUIRE(device->is_attribute_polled(att));
 
             AND_GIVEN("a change event subscription")
             {
@@ -430,7 +430,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
         {
             std::string att{"attr_rel"};
 
-            REQUIRE(device->is_attribute_polled(att) == true);
+            REQUIRE(device->is_attribute_polled(att));
 
             AND_GIVEN("a change event subscription")
             {
