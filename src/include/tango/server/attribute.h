@@ -369,8 +369,41 @@ class Attribute
      * @return A boolean set to true if the attribute is polled.
      */
     bool is_polled();
+
     /**
-     * Check if the attribute read value is below/above the alarm level.
+     * Check the attribute's value to determine if it should be
+     * in alarm based on its configuration and update its quality and alarm reason
+     * flag appropriately.
+     *
+     * The attribute can be determined to be in alarm for one of the following
+     * reasons:
+     *
+     *  1. The attribute's value is outside the configured warning levels ([min_warning,
+     *      max_warning]).
+     *      The quality is set to ATTR_WARNING, this function will return true and one of
+     *      is_min_warning() or is_max_warning() will be true.
+     *  2. The attribute's value is outside the configured alarm levels ([min_alarm,
+     *      max_alarm]).
+     *      The quality is set to ATTR_ALARM, this function will return true and one of
+     *      is_min_alarm() or is_max_alarm() will be true.
+     *  3. For a WAttribute, the read value and write value have differed by more
+     *      than the configured value (delta_val) for more than the configured time
+     *      (delta_t).
+     *      The quality is set to ATTR_ALARM, this function will return true and
+     *      is_rds_alarm() will be true.
+     *
+     * If the quality is not ATTR_VALID on entry to this function, no calculation
+     * to determine if the attribute should be in alarm is performed and the quality
+     * and alarm reason flags are unchanged.  In this case `check_alarm` returns true
+     * if the quality was either ATTR_ALARM or ATTR_WARNING on entry to the function.
+     *
+     * @note This function will generate a dev error (warning) stream log if
+     * the quality of the attribute is ATTR_ALARM (ATTR_WARNING) and it is
+     * different from the quality of the attribute before the last time the
+     * attribute was read.  Similarly, if the reason the attribute is in alarm
+     * has changed an appropriate dev stream log will be generated. This means
+     * if a device server calls this function in between reads it can result in
+     * multiple such logs.
      *
      * @return A boolean set to true if the attribute is in alarm condition.
      * @exception DevFailed If no alarm level is defined.
@@ -1451,6 +1484,7 @@ class Attribute
     virtual void set_rvalue() { }
 
     void delete_seq();
+    void delete_seq_and_reset_alarm();
     bool check_scalar_wattribute();
 
     void wanted_date(bool flag)

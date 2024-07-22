@@ -376,7 +376,7 @@ inline void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bo
 
     if(del_seq)
     {
-        delete ptr;
+        att.delete_seq();
     }
 }
 
