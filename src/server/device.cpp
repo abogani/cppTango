@@ -5810,10 +5810,6 @@ bool DeviceImpl::is_there_subscriber(const std::string &att_name, EventType even
         ret = att.alarm_event_subscribed();
         break;
 
-    case QUALITY_EVENT:
-        ret = att.quality_event_subscribed();
-        break;
-
     case PERIODIC_EVENT:
         ret = att.periodic_event_subscribed();
         break;

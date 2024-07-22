@@ -1347,10 +1347,6 @@ void RootAttRegistry::auto_unsub()
                         delta_t = now - att.get_periodic5_event_sub();
                         break;
 
-                    case QUALITY_EVENT:
-                        delta_t = now - att.get_quality_event_sub();
-                        break;
-
                     case ARCHIVE_EVENT:
                         delta_t = now - att.get_archive5_event_sub();
                         break;

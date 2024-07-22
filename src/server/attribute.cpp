@@ -681,7 +681,6 @@ void Attribute::init_event_prop(std::vector<AttrProperty> &prop_list, const std:
     prev_archive_event.err = false;
     prev_archive_event.quality = Tango::ATTR_VALID;
 
-    prev_quality_event.inited = false;
     //
     // do not start sending events automatically, wait for the first client to subscribe. Sending events automatically
     // will put an unnecessary load on the server because all attributes will be polled
@@ -708,7 +707,6 @@ void Attribute::init_event_prop(std::vector<AttrProperty> &prop_list, const std:
     event_attr_conf_subscription = 0;
     event_attr_conf5_subscription = 0;
 
-    event_quality_subscription = 0;
     event_data_ready_subscription = 0;
 
     //
@@ -6592,19 +6590,6 @@ bool Attribute::archive_event_subscribed()
             }
         }
     }
-    return ret;
-}
-
-bool Attribute::quality_event_subscribed()
-{
-    bool ret = false;
-
-    if(event_quality_subscription != 0)
-    {
-        const time_t now = Tango::get_current_system_datetime();
-        ret = now - event_quality_subscription <= EVENT_RESUBSCRIBE_PERIOD;
-    }
-
     return ret;
 }
 
