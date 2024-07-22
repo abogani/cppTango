@@ -79,6 +79,20 @@ class DevStateExcept : public Base
         }
     }
 
+    Tango::DevState dev_state() override
+    {
+        Tango::DevState state = Base::dev_state();
+
+        m_dev_state_called = true;
+
+        return state;
+    }
+
+    void reset_dev_state_called()
+    {
+        m_dev_state_called = false;
+    }
+
     void read_attr(Tango::Attribute &attr) override
     {
         Action action = m_on_read[attr.get_name()];
@@ -104,6 +118,11 @@ class DevStateExcept : public Base
         default:
             TANGO_ASSERT_ON_DEFAULT(action);
         }
+    }
+
+    bool has_dev_state_been_called()
+    {
+        return m_dev_state_called;
     }
 
     void set_actions(const Tango::DevVarStringArray &args)
@@ -150,11 +169,15 @@ class DevStateExcept : public Base
     static void command_factory(std::vector<Tango::Command *> &cmds)
     {
         cmds.push_back(new TangoTest::AutoCommand<&DevStateExcept::set_actions>("set_actions"));
+        cmds.push_back(
+            new TangoTest::AutoCommand<&DevStateExcept::has_dev_state_been_called>("has_dev_state_been_called"));
+        cmds.push_back(new TangoTest::AutoCommand<&DevStateExcept::reset_dev_state_called>("reset_dev_state_called"));
     }
 
   private:
     std::unordered_map<std::string, Action> m_on_read;
     std::unordered_map<std::string, Tango::DevDouble> m_values;
+    bool m_dev_state_called = false;
 };
 
 TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(DevStateExcept, 1)
@@ -222,6 +245,73 @@ SCENARIO("dev_state works with exceptions")
                         using TangoTest::AnyLikeContains;
 
                         REQUIRE_THAT(da, AnyLikeContains(data.expected));
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("user dev_state is always called")
+{
+    int idlver = GENERATE(TangoTest::idlversion(3));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device in ALARM state")
+    {
+        using TangoTest::AnyLikeContains;
+
+        TangoTest::Context ctx{"state", "DevStateExcept", idlver};
+        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        Tango::DeviceData args;
+        Tango::DevVarStringArray actions;
+
+        actions.length(3);
+
+        actions[0] = "alarm";
+        actions[1] = "normal";
+        actions[2] = "normal";
+
+        args << actions;
+
+        REQUIRE_NOTHROW(device->command_inout("set_actions", args));
+        Tango::DeviceData dd;
+        REQUIRE_NOTHROW(dd = device->command_inout("State"));
+        REQUIRE_THAT(dd, AnyLikeContains(Tango::ALARM));
+        REQUIRE_NOTHROW(dd = device->command_inout("reset_dev_state_called"));
+
+        WHEN("we prime the alarming attribute to throw an exception")
+        {
+            actions[0] = "except";
+            actions[1] = "normal";
+            actions[2] = "normal";
+            args << actions;
+            REQUIRE_NOTHROW(device->command_inout("set_actions", args));
+
+            AND_WHEN("we read the throwing attribute and State")
+            {
+                using UniquePtr = std::unique_ptr<std::vector<Tango::DeviceAttribute>>;
+                using TangoTest::AnyErrorMatches;
+                using TangoTest::AnyLikeContains;
+                using TangoTest::Reason;
+
+                UniquePtr das;
+                REQUIRE_NOTHROW(das = UniquePtr{device->read_attributes({"attr1", "State"})});
+
+                THEN("it returns an exception for the throwing attribute and ON for the State")
+                {
+                    Tango::DevDouble value;
+                    REQUIRE_THROWS_MATCHES(
+                        (*das)[0] >> value, Tango::DevFailed, AnyErrorMatches(Reason(k_test_reason)));
+
+                    REQUIRE_THAT((*das)[1], AnyLikeContains(Tango::ALARM));
+
+                    AND_THEN("we find that dev_state() has been called")
+                    {
+                        using TangoTest::AnyLikeContains;
+
+                        Tango::DeviceData dd;
+                        REQUIRE_NOTHROW(dd = device->command_inout("has_dev_state_been_called"));
+                        REQUIRE_THAT(dd, AnyLikeContains(true));
                     }
                 }
             }
