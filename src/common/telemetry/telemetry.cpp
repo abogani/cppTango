@@ -5,6 +5,8 @@
 
 #include <tango/internal/utils.h>
 
+#include <tango/common/telemetry/configuration.h>
+
 #include <iostream>
 #include <regex>
 #include <type_traits>
@@ -46,67 +48,6 @@
 namespace Tango::telemetry
 {
 
-std::string to_string(Configuration::Exporter exporter_type)
-{
-    switch(exporter_type)
-    {
-    case Configuration::Exporter::grpc:
-        return "grpc";
-    case Configuration::Exporter::http:
-        return "http";
-    case Configuration::Exporter::console:
-        return "console";
-    default:
-        using ut = std::underlying_type_t<Configuration::Exporter>;
-        return std::to_string(static_cast<ut>(exporter_type));
-    }
-}
-
-//-----------------------------------------------------------------------------------------
-//! The default endpoint to which traces are exported
-//-----------------------------------------------------------------------------------------
-const std::string Configuration::DEFAULT_GRPC_TRACES_ENDPOINT{"grpc://localhost:4317"};
-
-//-----------------------------------------------------------------------------------------
-//! The default endpoint to which traces are exported
-//-----------------------------------------------------------------------------------------
-const std::string Configuration::DEFAULT_HTTP_TRACES_ENDPOINT{"http://localhost:4318/v1/traces"};
-
-const std::string Configuration::DEFAULT_CONSOLE_TRACES_ENDPOINT{"cout"};
-
-//-----------------------------------------------------------------------------------------
-//! The default endpoint to which logs are exported
-//-----------------------------------------------------------------------------------------
-const std::string Configuration::DEFAULT_GRPC_LOGS_ENDPOINT{"grpc://localhost:4317"};
-
-//-----------------------------------------------------------------------------------------
-//! The default endpoint to which logs are exported
-//-----------------------------------------------------------------------------------------
-const std::string Configuration::DEFAULT_HTTP_LOGS_ENDPOINT{"http://localhost:4318/v1/logs"};
-
-const std::string Configuration::DEFAULT_CONSOLE_LOGS_ENDPOINT{"cout"};
-
-//-----------------------------------------------------------------------------------------
-//! The default batch size for traces
-//-----------------------------------------------------------------------------------------
-const std::size_t Configuration::DEFAULT_TRACES_BATCH_SIZE = 512;
-
-//-----------------------------------------------------------------------------------------
-//! The default batch size for logs
-//-----------------------------------------------------------------------------------------
-const std::size_t Configuration::DEFAULT_LOGS_BATCH_SIZE = 512;
-
-//-----------------------------------------------------------------------------------------
-//! The default max batch queue size (threshold above which signals are dropped)
-//-----------------------------------------------------------------------------------------
-const std::size_t Configuration::DEFAULT_MAX_BATCH_QUEUE_SIZE = 2048;
-
-//-----------------------------------------------------------------------------------------
-//! The default delay (in ms) after which a batch processing is scheduled whatever is the
-//! number of pending signals in the queue: 2500
-//-----------------------------------------------------------------------------------------
-const std::size_t Configuration::DEFAULT_BATCH_SCHEDULE_DELAY = 2500;
-
 //-----------------------------------------------------------------------------------------
 // The telemetry::Interface currently attached to the current thread  (thread_local - TSS)
 //-----------------------------------------------------------------------------------------
@@ -116,248 +57,6 @@ thread_local InterfacePtr current_telemetry_interface{nullptr};
 // Ptr to opentelemetry tracer
 //-----------------------------------------------------------------------------------------
 using TracerPtr = opentelemetry::nostd::shared_ptr<opentelemetry::trace::Tracer>;
-
-//-----------------------------------------------------------------------------------------
-// TELEMETRY CONFIGURATION
-//-----------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------
-// Configuration::get_kind
-//-----------------------------------------------------------------------------------------
-// get configuration kind
-Configuration::Kind Configuration::get_kind() const noexcept
-{
-    if(std::get_if<Configuration::Server>(&details) != nullptr)
-    {
-        return Configuration::Kind::Server;
-    }
-    return Configuration::Kind::Client;
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::is_a
-//-----------------------------------------------------------------------------------------
-// check configuration kind
-bool Configuration::is_a(const Configuration::Kind &kind) const noexcept
-{
-    return get_kind() == kind;
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::is_valid_http_endpoint
-//-----------------------------------------------------------------------------------------
-bool Configuration::is_valid_http_endpoint(const std::string &endpoint) noexcept
-{
-    const std::regex pattern("^(http|https)://[^/]+:\\d+(/.*)?$");
-    return std::regex_match(endpoint, pattern);
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::is_valid_console_endpoint
-//-----------------------------------------------------------------------------------------
-bool Configuration::is_valid_console_endpoint(const std::string &endpoint) noexcept
-{
-    const std::regex pattern("^(cout|cerr)$");
-    return std::regex_match(endpoint, pattern);
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::is_valid_grpc_endpoint
-//-----------------------------------------------------------------------------------------
-bool Configuration::is_valid_grpc_endpoint(const std::string &endpoint) noexcept
-{
-    // regex pattern to match 'host:port'
-    const std::regex pattern("^grpc://[^/]+:\\d+$");
-    return std::regex_match(endpoint, pattern);
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::extract_grpc_host_port
-//-----------------------------------------------------------------------------------------
-std::string Configuration::extract_grpc_host_port(const std::string &endpoint) noexcept
-{
-    // regex pattern to match and capture 'host:port' from 'grpc://host:port'
-    const std::regex pattern("^(?:grpc://)?([^/]+:\\d+)$");
-    std::smatch matches;
-    if(std::regex_search(endpoint, matches, pattern) && matches.size() > 1)
-    {
-        // valid endpoint return: host:port
-        return matches[1].str();
-    }
-    else
-    {
-        // invalid endpoint return: empty string
-        return "";
-    }
-}
-
-Configuration::Exporter Configuration::to_exporter(std::string_view str)
-{
-    if(str == "grpc")
-    {
-        return Exporter::grpc;
-    }
-    else if(str == "http")
-    {
-        return Exporter::http;
-    }
-    else if(str == "console")
-    {
-        return Exporter::console;
-    }
-
-    std::stringstream sstr;
-    sstr << "Can not parse " << str << " as Exporter enum class.";
-    TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, sstr.str());
-}
-
-Configuration::Exporter Configuration::get_exporter_from_env(const char *env_var)
-{
-    std::string exp;
-    int ret = ApiUtil::instance()->get_env_var(env_var, exp);
-
-    Exporter exporter_type = ret != 0 ? kDefaultExporter : to_exporter(detail::to_lower(exp));
-
-    switch(exporter_type)
-    {
-    case Exporter::grpc:
-#if !defined(TANGO_TELEMETRY_USE_GRPC)
-        TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs,
-                              "Requested grpc trace exporter, but compiled without GRPC support.");
-#else
-        break;
-#endif
-    case Exporter::http:
-#if !defined(TANGO_TELEMETRY_USE_HTTP)
-        TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs,
-                              "Requested http trace exporter, but compiled without HTTP support.");
-#else
-        break;
-#endif
-    case Exporter::console:
-        // nothing to check
-        break;
-    default:
-        TANGO_ASSERT_ON_DEFAULT(exporter_type);
-    }
-
-    return exporter_type;
-}
-
-void Configuration::ensure_valid_endpoint(const char *env_var,
-                                          Configuration::Exporter exporter_type,
-                                          const std::string &endpoint)
-{
-    switch(exporter_type)
-    {
-    case Exporter::grpc:
-        if(!Configuration::is_valid_grpc_endpoint(endpoint))
-        {
-            std::stringstream err;
-            err << "the specified telemetry endpoint '" << endpoint << "' is invalid - ";
-            err << "check the " << env_var << " env. var. - ";
-            err << "expecting a valid gRPC endpoint - e.g., grpc://localhost:4318";
-            TANGO_LOG << err.str() << std::endl;
-            TANGO_THROW_EXCEPTION(API_InvalidArgs, err.str());
-        }
-        break;
-    case Exporter::http:
-        if(!Configuration::is_valid_http_endpoint(endpoint))
-        {
-            std::stringstream err;
-            err << "the specified telemetry endpoint '" << endpoint << "' is invalid - ";
-            err << "check the " << env_var << " env. var. - ";
-            err << "expecting a valid http[s]:// url - e.g., http://localhost:4317/v1/traces";
-            TANGO_LOG << err.str() << std::endl;
-            TANGO_THROW_EXCEPTION(API_InvalidArgs, err.str());
-        }
-        break;
-    case Exporter::console:
-        if(!Configuration::is_valid_console_endpoint(endpoint))
-        {
-            std::stringstream err;
-            err << "the specified telemetry endpoint '" << endpoint << "' is invalid - ";
-            err << "check the " << env_var << " env. var. - ";
-            err << R"(expecting "cout" or "cerr")";
-            TANGO_LOG << err.str() << std::endl;
-            TANGO_THROW_EXCEPTION(API_InvalidArgs, err.str());
-        }
-        break;
-    default:
-        TANGO_ASSERT_ON_DEFAULT(exporter_type);
-    }
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::get_traces_endpoint_from_env
-//-----------------------------------------------------------------------------------------
-inline std::string Configuration::get_traces_endpoint_from_env(Exporter exporter_type)
-{
-    std::string endpoint;
-
-    // get traces endpoint from env. variable.
-    int ret = ApiUtil::instance()->get_env_var(kEnvVarTelemetryTracesEndPoint, endpoint);
-
-    // use default endpoint if none provided
-    if(ret != 0)
-    {
-        switch(exporter_type)
-        {
-        case Exporter::grpc:
-            endpoint = Configuration::DEFAULT_GRPC_TRACES_ENDPOINT;
-            break;
-        case Exporter::http:
-            endpoint = Configuration::DEFAULT_HTTP_TRACES_ENDPOINT;
-            break;
-        case Exporter::console:
-            endpoint = Configuration::DEFAULT_CONSOLE_TRACES_ENDPOINT;
-            break;
-        default:
-            TANGO_ASSERT_ON_DEFAULT(exporter_type);
-        }
-
-        TANGO_LOG << "warning! using default traces endpoint for telemetry: " << endpoint << std::endl;
-    }
-
-    ensure_valid_endpoint(kEnvVarTelemetryTracesEndPoint, exporter_type, endpoint);
-
-    return endpoint;
-}
-
-//-----------------------------------------------------------------------------------------
-// Configuration::get_logs_endpoint_from_env
-//-----------------------------------------------------------------------------------------
-inline std::string Configuration::get_logs_endpoint_from_env(Exporter exporter_type)
-{
-    std::string endpoint;
-
-    // get logs endpoint from env. variable.
-    int ret = ApiUtil::instance()->get_env_var(kEnvVarTelemetryLogsEndPoint, endpoint);
-
-    // use default endpoint if none provided
-    if(ret != 0)
-    {
-        switch(exporter_type)
-        {
-        case Exporter::grpc:
-            endpoint = Configuration::DEFAULT_GRPC_LOGS_ENDPOINT;
-            break;
-        case Exporter::http:
-            endpoint = Configuration::DEFAULT_HTTP_LOGS_ENDPOINT;
-            break;
-        case Exporter::console:
-            endpoint = Configuration::DEFAULT_CONSOLE_LOGS_ENDPOINT;
-            break;
-        default:
-            TANGO_ASSERT_ON_DEFAULT(exporter_type);
-        }
-
-        TANGO_LOG << "warning! using default logs endpoint for telemetry: " << endpoint << std::endl;
-    }
-
-    ensure_valid_endpoint(kEnvVarTelemetryLogsEndPoint, exporter_type, endpoint);
-
-    return endpoint;
-}
 
 //-----------------------------------------------------------------------------------------
 //  SPAN-IMPLEMENTATION
@@ -672,19 +371,9 @@ class InterfaceImplementation final
     //-------------------------------------------------------------------------------------
     // Ctor
     //-------------------------------------------------------------------------------------
-    explicit InterfaceImplementation(const Configuration &config)
+    explicit InterfaceImplementation(const Configuration &config) :
+        cfg{config}
     {
-        initialize(config);
-    }
-
-    //-------------------------------------------------------------------------------------
-    // initialize
-    //-------------------------------------------------------------------------------------
-    void initialize(const Configuration &config)
-    {
-        // copy configuration locally
-        cfg = config;
-        // init the trace provider
         init_tracer_provider();
         // init the global propagator
         init_global_propagator();
@@ -720,14 +409,8 @@ class InterfaceImplementation final
             return;
         }
 
-        auto exporter_type = Configuration::get_exporter_from_env(kEnvVarTelemetryTracesExporter);
-
-        std::string endpoint = cfg.collector_traces_endpoint;
-
-        if(endpoint.empty())
-        {
-            endpoint = Configuration::get_traces_endpoint_from_env(exporter_type);
-        }
+        auto exporter_type = cfg.traces_exporter;
+        auto endpoint = cfg.traces_endpoint;
 
         std::unique_ptr<opentelemetry::sdk::trace::SpanExporter> exporter;
         std::unique_ptr<opentelemetry::sdk::trace::SpanProcessor> processor;
@@ -1078,14 +761,8 @@ class Appender : public log4tango::Appender
             return;
         }
 
-        auto exporter_type = Configuration::get_exporter_from_env(kEnvVarTelemetryLogsExporter);
-
-        std::string endpoint = interface->cfg.collector_logs_endpoint;
-
-        if(endpoint.empty())
-        {
-            endpoint = Configuration::get_logs_endpoint_from_env(exporter_type);
-        }
+        auto exporter_type = interface->cfg.logs_exporter;
+        auto endpoint = interface->cfg.logs_endpoint;
 
         std::unique_ptr<opentelemetry::sdk::logs::LogRecordExporter> exporter;
         std::unique_ptr<opentelemetry::sdk::logs::LogRecordProcessor> processor;
@@ -1103,7 +780,7 @@ class Appender : public log4tango::Appender
   #else
             opentelemetry::exporter::otlp::OtlpGrpcExporterOptions opts;
   #endif
-            opts.endpoint = Configuration::extract_grpc_host_port(endpoint);
+            opts.endpoint = interface->cfg.extract_grpc_host_port(endpoint);
             opts.use_ssl_credentials = false;
             exporter = opentelemetry::exporter::otlp::OtlpGrpcLogRecordExporterFactory::Create(opts);
         }
@@ -1323,12 +1000,8 @@ class Appender : public log4tango::Appender
 //-----------------------------------------------------------------------------------------
 // Interface::Interface
 //-----------------------------------------------------------------------------------------
-Interface::Interface(const Configuration &config) noexcept
+Interface::Interface(const Configuration &config)
 {
-    // an Interface without a valid "implementation" is invalid and can't be used.
-    // but, we don't throw any exception if the instantiation failed! Yes, sir. See:
-    // https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#f6-if-your-function-must-not-throw-declare-it-noexcep
-
     impl = std::make_shared<InterfaceImplementation>(config);
 }
 
@@ -1635,14 +1308,8 @@ Tango::telemetry::InterfacePtr Interface::get_default_interface() noexcept
 
     if(!InterfaceImplementation::default_telemetry_interface)
     {
-        // configure the default telemetry interface
-        // TODO: offer a way to specify the endpoint by Tango property (only env. var. so far)
-        // TODO: it means that, so far, any endpoint specified through Configuration
-        // TODO: will be ignored - it here there for (near) future use- we simple pass an empty
-        // TODO: string till we provide the ability to get the endpoint using a Tango property.
-
         InterfaceImplementation::default_telemetry_interface = std::make_shared<Tango::telemetry::Interface>(
-            Configuration{false, false, "TangoTelemetry", "tango", Configuration::Client{"tango.telemetry.default"}});
+            Configuration{"TangoTelemetry", "tango", Configuration::Client{"tango.telemetry.default"}});
 
         // mark this interface as the default one
         InterfaceImplementation::default_telemetry_interface->impl->is_default_interface = true;
@@ -1757,7 +1424,7 @@ void Interface::extract_exception_info(std::string &type, std::string &message)
 //-----------------------------------------------------------------------------------------
 // InterfaceFactory: a Tango::telemetry::Interface factory
 //-----------------------------------------------------------------------------------------
-Tango::telemetry::InterfacePtr InterfaceFactory::create(const Configuration &cfg) noexcept
+Tango::telemetry::InterfacePtr InterfaceFactory::create(const Configuration &cfg)
 {
     auto srv = std::make_shared<Tango::telemetry::Interface>(cfg);
     return srv;

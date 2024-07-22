@@ -16,24 +16,8 @@ namespace Tango
 //-------------------------------------------------------------------------------------------------
 void DeviceImpl::initialize_telemetry_interface()
 {
-    // TODO: DServer tracing?
-    bool telemetry_enabled = device_class->get_name() != "DServer"
-                                 ? detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryEnable, false)
-                                 : false;
-
-    bool kernel_traces_enabled = detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryKernelEnable, false);
-
-    // configure the telemetry
-    // TODO: offer a way to specify the endpoint by Tango property (only env. var. so far)
-    // TODO: it means that, so far, any endpoint specified through Interface::Configuration
-    // TODO: will be ignored - it here there for (near) future use- we simple pass an empty
-    // TODO: string till we provide the ability to get the endpoint using a Tango property.
-    Tango::telemetry::Configuration cfg{telemetry_enabled,
-                                        kernel_traces_enabled,
-                                        device_name,
-                                        "tango",
-                                        Tango::telemetry::Configuration::Server{device_class->get_name(), device_name},
-                                        ""};
+    auto details = telemetry::Configuration::Server{device_class->get_name(), device_name};
+    telemetry::Configuration cfg{device_name, "tango", details};
 
     // this might throw an exception in case there's no valid endpoint defined
     telemetry_interface = Tango::telemetry::InterfaceFactory::create(cfg);
