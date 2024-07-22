@@ -1808,7 +1808,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     {
                         if(rel_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_db)[i]) && !std::isnan((*curr_seq_db)[i]))
+                            if(std::isnan((*prev_seq_db)[i]) != std::isnan((*curr_seq_db)[i]))
                             {
                                 is_change = true;
                                 return (is_change);
@@ -1835,7 +1835,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                         }
                         if(abs_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_db)[i]) && !std::isnan((*curr_seq_db)[i]))
+                            if(std::isnan((*prev_seq_db)[i]) != std::isnan((*curr_seq_db)[i]))
                             {
                                 is_change = true;
                                 return (is_change);
@@ -1949,7 +1949,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                     {
                         if(rel_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_fl)[i]) && !std::isnan((*curr_seq_fl)[i]))
+                            if(std::isnan((*prev_seq_fl)[i]) != std::isnan((*curr_seq_fl)[i]))
                             {
                                 is_change = true;
                                 return (is_change);
@@ -1975,7 +1975,7 @@ bool EventSupplier::detect_change(Attribute &attr,
                         }
                         if(abs_change[0] != INT_MAX)
                         {
-                            if(std::isnan((*prev_seq_fl)[i]) && !std::isnan((*curr_seq_fl)[i]))
+                            if(std::isnan((*prev_seq_fl)[i]) != std::isnan((*curr_seq_fl)[i]))
                             {
                                 is_change = true;
                                 return (is_change);

@@ -5,6 +5,8 @@
 
 #include "utils/type_traits.h"
 
+#include <type_traits>
+
 namespace TangoTest
 {
 namespace detail
@@ -15,6 +17,20 @@ using corba_extraction_result_t = decltype(std::declval<AnyLike>() >>= std::decl
 
 template <typename AnyLike, typename T>
 constexpr bool has_corba_extract_operator_to = is_detected_v<corba_extraction_result_t, AnyLike, T>;
+
+template <typename>
+struct first_argument;
+
+template <typename Matcher, typename Arg>
+struct first_argument<bool (Matcher::*)(Arg) const>
+{
+    using type = std::remove_cv_t<std::remove_reference_t<Arg>>;
+};
+
+// The type a Matcher is expecting to be passed.
+// Some Catch2 matchers are generic, in which case this will not work.
+template <typename Matcher>
+using matchee_t = typename first_argument<decltype(&Matcher::match)>::type;
 
 } // namespace detail
 
@@ -88,6 +104,88 @@ template <typename T>
 auto AnyLikeContains(const T &v)
 {
     return AnyLikeContainsMatcher{v};
+}
+
+/**
+ * @brief Matches an "any like" type that contains a value to be matched against
+ *
+ * An "any like" type is something such as a `CORBA::Any` or `Tango::DeviceData`
+ * where we can do one of the following to extract a value:
+ *
+ *   T value;
+ *   bool extraction_succeeded = any_like >>= value;
+ *
+ * or
+ *
+ *   T value;
+ *   bool extraction_succeeded = any_like >> value;
+ *
+ * @tparam ContentsMatcher type of matcher
+ * @tparam T type of value that should be stored in the any like
+ * @param matcher to match against
+ */
+template <typename ContentsMatcher, typename T>
+struct AnyLikeMatchesMatcher : Catch::Matchers::MatcherGenericBase
+{
+    AnyLikeMatchesMatcher(ContentsMatcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    template <typename AnyLike>
+    bool match(AnyLike &any) const
+    {
+        T other;
+
+        if constexpr(detail::has_corba_extract_operator_to<AnyLike, T>)
+        {
+            if(!(any >>= other))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if(!(any >> other))
+            {
+                return false;
+            }
+        }
+
+        return m_matcher.match(other);
+    }
+
+    // TODO: Improve the output here.
+    //
+    // In addition to the values we show, ideally, we need to include:
+    //  - A name for AnyLike
+    //  - A name for T
+    //  - A name for the type actually stored in the AnyLike
+    //
+    //  This will involve writing our own Catch::StringMaker specialisations
+    std::string describe() const override
+    {
+        return "has contents matching " + m_matcher.describe();
+    }
+
+  private:
+    ContentsMatcher m_matcher;
+};
+
+// Match the contents of the AnyLike and try to match it to ContentsMatcher.
+// Requires that ContentsMatcher does not inherit from GenericMatcherBase.
+template <typename ContentsMatcher>
+auto AnyLikeMatches(const ContentsMatcher &&matcher)
+{
+    return AnyLikeMatchesMatcher<ContentsMatcher, detail::matchee_t<ContentsMatcher>>(CATCH_FORWARD(matcher));
+}
+
+// The type T here is the type to extract the AnyLike into.
+// declval(ContentsMatcher).match(declval(T)) must be a valid expression.
+template <typename T, typename ContentsMatcher>
+auto AnyLikeMatches(const ContentsMatcher &&matcher)
+{
+    return AnyLikeMatchesMatcher<ContentsMatcher, T>(CATCH_FORWARD(matcher));
 }
 
 class ReasonMatcher : public Catch::Matchers::MatcherBase<Tango::DevError>
