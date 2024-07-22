@@ -190,6 +190,7 @@ std::string Configuration::extract_grpc_host_port(const std::string &endpoint) n
     }
 }
 
+/// @throw Tango::API_InvalidArgs
 Configuration::Exporter Configuration::to_exporter(std::string_view str)
 {
     if(str == "grpc")
@@ -210,6 +211,7 @@ Configuration::Exporter Configuration::to_exporter(std::string_view str)
     TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, sstr.str());
 }
 
+/// @throw Tango::API_InvalidArgs
 Configuration::Exporter Configuration::get_exporter_from_env(const char *env_var)
 {
     std::string exp;
@@ -243,6 +245,7 @@ Configuration::Exporter Configuration::get_exporter_from_env(const char *env_var
     return exporter_type;
 }
 
+/// @throw Tango::API_InvalidArgs
 void Configuration::ensure_valid_endpoint(const char *env_var,
                                           Configuration::Exporter exporter_type,
                                           const std::string &endpoint)
