@@ -246,6 +246,47 @@ class AutoAttr : public Tango::Attr
     }
 };
 
+template <typename EnumType, auto read_fn, auto write_fn = nullptr>
+class AutoEnumAttr : public Tango::Attr
+{
+  public:
+    using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
+    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    using Tango::Attr::Attr;
+
+    // do we care about other possible parameters to Tango::Attr()?
+    AutoEnumAttr(const char *name) :
+        Tango::Attr(name, Tango::DEV_ENUM, has_write_fn ? Tango::READ_WRITE : Tango::READ)
+    {
+    }
+
+    ~AutoEnumAttr() override { }
+
+    void read(Tango::DeviceImpl *dev, Tango::Attribute &att) override
+    {
+        std::invoke(read_fn, static_cast<ReadDevice *>(dev), att);
+    }
+
+    void write(Tango::DeviceImpl *dev, Tango::WAttribute &att) override
+    {
+        if constexpr(has_write_fn)
+        {
+            std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
+        }
+    }
+
+    virtual bool same_type(const std::type_info &in_type) override
+    {
+        return typeid(EnumType) == in_type;
+    }
+
+    virtual std::string get_enum_type() override
+    {
+        return typeid(EnumType).name();
+    }
+};
+
 template <auto read_fn, auto write_fn = nullptr>
 class AutoSpectrumAttr : public Tango::SpectrumAttr
 {
@@ -277,6 +318,47 @@ class AutoSpectrumAttr : public Tango::SpectrumAttr
     }
 };
 
+template <typename EnumType, auto read_fn, auto write_fn = nullptr>
+class AutoEnumSpectrumAttr : public Tango::SpectrumAttr
+{
+  public:
+    using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
+    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    using Tango::SpectrumAttr::SpectrumAttr;
+
+    // do we care about other possible parameters to Tango::Attr()?
+    AutoEnumSpectrumAttr(const char *name, long max_x) :
+        Tango::SpectrumAttr(name, Tango::DEV_ENUM, has_write_fn ? Tango::READ_WRITE : Tango::READ, max_x)
+    {
+    }
+
+    ~AutoEnumSpectrumAttr() override { }
+
+    void read(Tango::DeviceImpl *dev, Tango::Attribute &att) override
+    {
+        std::invoke(read_fn, static_cast<ReadDevice *>(dev), att);
+    }
+
+    void write(Tango::DeviceImpl *dev, Tango::WAttribute &att) override
+    {
+        if constexpr(has_write_fn)
+        {
+            std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
+        }
+    }
+
+    virtual bool same_type(const std::type_info &in_type) override
+    {
+        return typeid(EnumType) == in_type;
+    }
+
+    virtual std::string get_enum_type() override
+    {
+        return typeid(EnumType).name();
+    }
+};
+
 template <auto read_fn, auto write_fn = nullptr>
 class AutoImageAttr : public Tango::ImageAttr
 {
@@ -305,6 +387,47 @@ class AutoImageAttr : public Tango::ImageAttr
         {
             std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
         }
+    }
+};
+
+template <typename EnumType, auto read_fn, auto write_fn = nullptr>
+class AutoEnumImageAttr : public Tango::ImageAttr
+{
+  public:
+    using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
+    using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
+    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    using Tango::ImageAttr::ImageAttr;
+
+    // do we care about other possible parameters to Tango::Attr()?
+    AutoEnumImageAttr(const char *name, long max_x, long max_y) :
+        Tango::ImageAttr(name, Tango::DEV_ENUM, has_write_fn ? Tango::READ_WRITE : Tango::READ, max_x, max_y)
+    {
+    }
+
+    ~AutoEnumImageAttr() override { }
+
+    void read(Tango::DeviceImpl *dev, Tango::Attribute &att) override
+    {
+        std::invoke(read_fn, static_cast<ReadDevice *>(dev), att);
+    }
+
+    void write(Tango::DeviceImpl *dev, Tango::WAttribute &att) override
+    {
+        if constexpr(has_write_fn)
+        {
+            std::invoke(write_fn, static_cast<WriteDevice *>(dev), att);
+        }
+    }
+
+    virtual bool same_type(const std::type_info &in_type) override
+    {
+        return typeid(EnumType) == in_type;
+    }
+
+    virtual std::string get_enum_type() override
+    {
+        return typeid(EnumType).name();
     }
 };
 
