@@ -135,7 +135,7 @@ namespace Tango
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate Attribute::XXX methods and associate template classes
+// Instantiate Attribute::XXX methods and associate template classes
 //
 //-----------------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ template void Attribute::_extract_value<Tango::DevVarULong64Array>(CORBA::Any &)
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate Util::fill_XXX_polling buffers methods and associate template classes
+// Instantiate Util::fill_XXX_polling buffers methods and associate template classes
 //
 //-----------------------------------------------------------------------------
 
@@ -277,7 +277,7 @@ template void Util::fill_cmd_polling_buffer(DeviceImpl *, std::string &, CmdHist
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate WAttribute::XXX methods
+// Instantiate WAttribute::XXX methods
 //
 //-----------------------------------------------------------------------------
 
@@ -358,7 +358,7 @@ template void WAttribute::_copy_any_data(const CORBA::Any &);
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate DevicePipe helper functions
+// Instantiate DevicePipe helper functions
 //
 //-----------------------------------------------------------------------------
 
@@ -576,7 +576,7 @@ template DevicePipe &operator>>(DevicePipe &, DataElement<DevVarStateArray *> &)
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate DevicePipeBlob helper functions
+// Instantiate DevicePipeBlob helper functions
 //
 //-----------------------------------------------------------------------------
 
@@ -795,7 +795,7 @@ template DevicePipeBlob &operator>>(DevicePipeBlob &, DataElement<DevVarStateArr
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate WPipe helper functions
+// Instantiate WPipe helper functions
 //
 //-----------------------------------------------------------------------------
 
@@ -891,7 +891,7 @@ template WPipe &operator>>(WPipe &, DataElement<DevVarStateArray *> &);
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate Pipe helper functions
+// Instantiate Pipe helper functions
 //
 //-----------------------------------------------------------------------------
 
@@ -1017,7 +1017,7 @@ template Pipe &operator<<(Pipe &, DataElement<DevVarStateArray *> &);
 
 //+----------------------------------------------------------------------------
 //
-// Instanciate DataElement helper functions
+// Instantiate DataElement helper functions
 //
 //-----------------------------------------------------------------------------
 

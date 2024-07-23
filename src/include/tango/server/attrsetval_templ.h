@@ -170,9 +170,7 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     }
 
     //
-    // If the data is wanted from the DevState command, store it in a sequence. If the attribute  has an associated
-    // writable attribute, store data in a temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
+    // If the data is wanted from the DevState command, store it in a sequence.
     //
 
     if(data_size > enum_nb)
@@ -212,29 +210,13 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     }
     else
     {
-        if((is_writ_associated()))
+        if((data_format == Tango::SCALAR) && (release))
         {
-            if(data_format == Tango::SCALAR)
-            {
-                tmp_sh[0] = *loc_enum_ptr;
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size);
-                value.sh_seq->length(data_size);
-                ::memcpy(value.sh_seq->get_buffer(false), loc_enum_ptr, data_size * sizeof(Tango::DevShort));
-            }
+            value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
         }
         else
         {
-            if((data_format == Tango::SCALAR) && (release))
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, release);
-            }
+            value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, release);
         }
     }
     value_flag = true;
@@ -309,59 +291,26 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
 
     //
     // If the data is wanted from the DevState command, store it in a sequence.
-    // If the attribute  has an associated writable attribute, store data in a
-    // temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
     //
+
+    auto *tmp = get_value_storage<ArrayType>();
 
     if(!date)
     {
-        auto *tmp = get_value_storage<ArrayType>();
         *tmp = new ArrayType(data_size, data_size, p_data, release);
     }
     else
     {
-        if((is_writ_associated()))
+        if((data_format == Tango::SCALAR) && (release))
         {
-            if(data_format == Tango::SCALAR)
-            {
-                get_tmp_storage<T>()[0] = *p_data;
-                delete_data_if_needed(p_data, release);
-            }
-            else
-            {
-                auto *tmp = get_value_storage<ArrayType>();
-                *tmp = new ArrayType(data_size);
-                (*tmp)->length(data_size);
-                ::memcpy((*tmp)->get_buffer(false), p_data, data_size * sizeof(T));
-                if(release)
-                {
-                    delete[] p_data;
-                }
-            }
+            T *tmp_ptr = new T[1];
+            *tmp_ptr = *p_data;
+            *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
+            delete_data_if_needed(p_data, release);
         }
         else
         {
-            if((data_format == Tango::SCALAR) && (release))
-            {
-                T *tmp_ptr = new T[1];
-                *tmp_ptr = *p_data;
-                auto *tmp = get_value_storage<ArrayType>();
-                *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
-                if(is_fwd_att())
-                {
-                    delete[] p_data;
-                }
-                else
-                {
-                    delete p_data;
-                }
-            }
-            else
-            {
-                auto *tmp = get_value_storage<ArrayType>();
-                *tmp = new ArrayType(data_size, data_size, p_data, release);
-            }
+            *tmp = new ArrayType(data_size, data_size, p_data, release);
         }
     }
     value_flag = true;
@@ -389,10 +338,7 @@ inline void
 
     if(qual == Tango::ATTR_INVALID)
     {
-        if(!(is_writ_associated()) || (data_format != Tango::SCALAR))
-        {
-            delete_seq();
-        }
+        delete_seq();
     }
 }
 
@@ -406,10 +352,7 @@ inline void Attribute::set_value_date_quality(
 
     if(qual == Tango::ATTR_INVALID)
     {
-        if(!(is_writ_associated()) || (data_format != Tango::SCALAR))
-        {
-            delete_seq();
-        }
+        delete_seq();
     }
 }
 
@@ -513,9 +456,6 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
 
     //
     // If the data is wanted from the DevState command, store it in a sequence.
-    // If the attribute  has an associated writable attribute, store data in a
-    // temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
     //
 
     if(!date)
@@ -524,44 +464,16 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     }
     else
     {
-        if((is_writ_associated()))
+        if((data_format == Tango::SCALAR) && (release))
         {
-            if(data_format == Tango::SCALAR)
-            {
-                tmp_sh[0] = *p_data;
-                delete_data_if_needed(p_data, release);
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size);
-                value.sh_seq->length(data_size);
-                ::memcpy(value.sh_seq->get_buffer(false), p_data, data_size * sizeof(Tango::DevShort));
-                if(release)
-                {
-                    delete[] p_data;
-                }
-            }
+            Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
+            *tmp_ptr = *p_data;
+            value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, tmp_ptr, release);
+            delete_data_if_needed(p_data, release);
         }
         else
         {
-            if((data_format == Tango::SCALAR) && (release))
-            {
-                Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
-                *tmp_ptr = *p_data;
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, tmp_ptr, release);
-                if(is_fwd_att())
-                {
-                    delete[] p_data;
-                }
-                else
-                {
-                    delete p_data;
-                }
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
-            }
+            value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
         }
     }
     value_flag = true;
@@ -634,9 +546,6 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
 
     //
     // If the data is wanted from the DevState command, store it in a sequence.
-    // If the attribute  has an associated writable attribute, store data in a
-    // temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
     //
 
     if(!date)
@@ -649,7 +558,6 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
                 strvec[i] = p_data[i];
             }
             value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
-            delete[] p_data;
         }
         else
         {
@@ -658,87 +566,31 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
     }
     else
     {
-        if((is_writ_associated()))
+        if(release)
         {
-            if(data_format == Tango::SCALAR)
+            char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
+            if(is_fwd_att())
             {
-                tmp_str[0] = *p_data;
-                delete_data_if_needed(p_data, release);
-                scalar_str_attr_release = release;
+                for(std::uint32_t i = 0; i < data_size; i++)
+                {
+                    strvec[i] = Tango::string_dup(p_data[i]);
+                }
             }
             else
             {
-                value.str_seq = new Tango::DevVarStringArray(data_size);
-                value.str_seq->length(data_size);
-                for(std::uint32_t k = 0; k < data_size; k++)
+                for(std::uint32_t i = 0; i < data_size; i++)
                 {
-                    (*value.str_seq)[k] = Tango::string_dup(p_data[k]);
-                }
-                if(release)
-                {
-                    if(is_fwd_att())
-                    {
-                        Tango::DevVarStringArray::freebuf(p_data);
-                    }
-                    else
-                    {
-                        for(std::uint32_t k = 0; k < data_size; k++)
-                        {
-                            delete[] p_data[k];
-                        }
-                        delete[] p_data;
-                    }
+                    strvec[i] = p_data[i];
                 }
             }
+            value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
         }
         else
         {
-            if(release)
-            {
-                char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
-                if(is_fwd_att())
-                {
-                    for(std::uint32_t i = 0; i < data_size; i++)
-                    {
-                        strvec[i] = Tango::string_dup(p_data[i]);
-                    }
-                }
-                else
-                {
-                    for(std::uint32_t i = 0; i < data_size; i++)
-                    {
-                        strvec[i] = p_data[i];
-                    }
-                }
-                value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
-                if(data_format == Tango::SCALAR)
-                {
-                    if(is_fwd_att())
-                    {
-                        Tango::DevVarStringArray::freebuf(p_data);
-                    }
-                    else
-                    {
-                        delete p_data;
-                    }
-                }
-                else
-                {
-                    if(is_fwd_att())
-                    {
-                        Tango::DevVarStringArray::freebuf(p_data);
-                    }
-                    else
-                    {
-                        delete[] p_data;
-                    }
-                }
-            }
-            else
-            {
-                value.str_seq = new Tango::DevVarStringArray(data_size, data_size, p_data, release);
-            }
+            value.str_seq = new Tango::DevVarStringArray(data_size, data_size, p_data, release);
         }
+
+        delete_data_if_needed(p_data, release);
     }
     value_flag = true;
 
@@ -815,31 +667,24 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
     }
     else
     {
-        if((is_writ_associated()))
+        if(release)
         {
-            tmp_enc[0] = *p_data;
-            delete_data_if_needed(p_data, release);
+            DevEncoded *tmp_ptr = new DevEncoded[1];
+
+            tmp_ptr->encoded_format = p_data->encoded_format;
+
+            unsigned long nb_data = p_data->encoded_data.length();
+            tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
+            p_data->encoded_data.replace(0, 0, nullptr, false);
+
+            value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, tmp_ptr, true);
         }
         else
         {
-            if(release)
-            {
-                DevEncoded *tmp_ptr = new DevEncoded[1];
-
-                tmp_ptr->encoded_format = p_data->encoded_format;
-
-                unsigned long nb_data = p_data->encoded_data.length();
-                tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
-                p_data->encoded_data.replace(0, 0, nullptr, false);
-
-                value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, tmp_ptr, true);
-                delete p_data;
-            }
-            else
-            {
-                value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
-            }
+            value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
         }
+
+        delete_data_if_needed(p_data, release);
     }
     value_flag = true;
 

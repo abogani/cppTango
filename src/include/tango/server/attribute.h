@@ -695,66 +695,198 @@ class Attribute
      * value
      */
     //@{
+
     /**
-     * Set internal attribute value (for Tango::DevEncoded attribute data type).
+     * This method stores the attribute value inside the Attribute object and set current time as readout time
      *
-     * This method stores the attribute read value inside the object. This data will be
-     * returned to the caller. This method also stores the date when it is called
-     * and initialise the attribute quality factor.
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     *
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+     * otherwise. For the DevString's, when release is true we expect value to have been allocated with
+     * Tango::string_dup or equivalent.
+     *
+     * @param T *p_data: pointer to value
+     * @param long x=1: the attribute x dimension
+     * @param long y=0: the attribute y dimension
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data,
+     * or wrong Enum value.
+     */
+    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
+    void set_value(T *p_data, long x = 1, long y = 0, bool release = false);
+
+    /**
+     * This is special realization for scalar C++11 scoped enum with short as underlying data type or old enum of
+     * set_value method to store the attribute value inside the Attribute object, and set current time as readout time
+     *
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+     * otherwise.
+     *
+     * @param T *enum_ptr: pointer to Enum value
+     * @param long x=1: the attribute x dimension
+     * @param long y=0: the attribute y dimension
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     *
+     * @exception DevFailed If the attribute data type is not coherent or data size exceed attribute length..
+     */
+    template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> * = nullptr>
+    void set_value(T *enum_ptr, long x = 1, long y = 0, bool release = false);
+
+    /**
+     * This is special realization for Tango::DevEncoded attribute data type of
+     * set_value method to store the attribute value inside the Attribute object, set current time as readout time
+     * and calculate attribute quality factor (if warning/alarm levels are defined)
+     *
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     *
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data_str  have been allocated with Tango::string_dup or equivalent
+     * and p_data with operator new[].
      *
      * @param p_data_str The attribute string part read value
      * @param p_data The attribute raw data part read value
      * @param size Size of the attribute raw data part
      * @param release The release flag. If true, memory pointed to by p_data will be
      *           freed after being send to the client. Default value is false.
-     * @exception DevFailed If the attribute data type is not coherent.
-     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
-     * to read <b>DevFailed</b> exception specification
+     * @exception DevFailed If the attribute data type is not coherent
      */
     void set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data, long size, bool release = false);
+
     /**
-     * Set internal attribute value (for Tango::DevEncoded attribute data type).
+     * This is special realization for Tango::EncodedAttribute attribute data type of
+     * set_value method to store the attribute value inside the Attribute object
      *
-     * This method stores the attribute read value inside the object. This data will be
-     * returned to the caller. This method also stores the date when it is called
-     * and initialise the attribute quality factor.
+     * The value will be later send to the client either as result of attribute readout of event value
+     * After readout value will be destroyed.
      *
-     * @param attr Handle to EncodedAttribute object
+     * When release is true, we expect p_data to be allocated with operator new.
+     *
+     * @param attr pointer to to EncodedAttribute object
      * @exception DevFailed If the attribute data type is not coherent.
-     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
-     * to read <b>DevFailed</b> exception specification
      */
     void set_value(Tango::EncodedAttribute *attr);
 
     /**
-     * Set internal attribute value (for enum attribute data type).
+     * This method stores the attribute value inside the Attribute object, with readout time and quality, provided by
+     * user
      *
-     * This method stores the attribute read value inside the object. This data will be
-     * returned to the caller. This method also stores the date when it is called
-     * and initialise the attribute quality factor.
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
      *
-     * @param attr Handle to attribute object
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+     * otherwise. For the DevString's, when release is true we expect value to have been allocated with
+     * Tango::string_dup or equivalent.
+     *
+     * @param T *p_data: pointer to value
+     * @param time_t time: readout time
+     * @param Tango::AttrQuality quality: the attribute quality
+     * @param long x=1: the attribute x dimension
+     * @param long y=0: the attribute y dimension
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
      * @exception DevFailed If the attribute data type is not coherent.
-     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
-     * to read <b>DevFailed</b> exception specification
      */
-    template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> * = nullptr>
-    void set_value(T *, long x = 1, long y = 0, bool release = false);
+    template <class T>
+    void set_value_date_quality(
+        T *p_data, time_t time, Tango::AttrQuality quality, long x = 1, long y = 0, bool rel = false);
 
     /**
-     * Set internal attribute value (for non enum attribute data type).
+     * This method stores the attribute value inside the Attribute object, with readout time and quality, provided by
+     * user
      *
-     * This method stores the attribute read value inside the object. This data will be
-     * returned to the caller. This method also stores the date when it is called
-     * and initialise the attribute quality factor.
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
      *
-     * @param attr Handle to attribute object
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+     * otherwise. For the DevString's, when release is true we expect value to have been allocated with
+     * Tango::string_dup or equivalent.
+     *
+     * @param T *p_data: pointer to value
+     * @param const TangoTimestamp time: readout time
+     * @param Tango::AttrQuality quality: the attribute quality
+     * @param long x=1: the attribute x dimension
+     * @param long y=0: the attribute y dimension
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
      * @exception DevFailed If the attribute data type is not coherent.
-     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
-     * to read <b>DevFailed</b> exception specification
      */
-    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
-    void set_value(T *, long x = 1, long y = 0, bool release = false);
+    template <class T>
+    void set_value_date_quality(
+        T *p_data, const TangoTimestamp &time, Tango::AttrQuality quality, long x = 1, long y = 0, bool rel = false);
+
+    /**
+     * This is special realization for Tango::DevEncoded attribute data type of
+     * set_value_date_quality method to store the attribute value inside the Attribute object,
+     * with readout time attribute quality, provided by user
+     *
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     *
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data_str  have been allocated with Tango::string_dup or equivalent
+     * and p_data with operator new[].
+     *
+     * @param Tango::DevString *p_data_str: the attribute string part read value
+     * @param Tango::DevUChar *p_data: the attribute raw data part read value
+     * @param long size: size of raw data part
+     * @param time_t time: readout time
+     * @param Tango::AttrQuality quality: the attribute quality
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent.
+     */
+    void set_value_date_quality(Tango::DevString *p_data_str,
+                                Tango::DevUChar *p_data,
+                                long size,
+                                time_t t,
+                                Tango::AttrQuality qual,
+                                bool release = false);
+
+    /**
+     * This is special realization for Tango::DevEncoded attribute data type of
+     * set_value_date_quality method to store the attribute value inside the Attribute object,
+     * with readout time attribute quality, provided by user
+     *
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     *
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data_str  have been allocated with Tango::string_dup or equivalent
+     * and p_data with operator new[].
+     *
+     * @param Tango::DevString *p_data_str: The attribute string part read value
+     * @param Tango::DevUChar *p_data: The attribute raw data part read value
+     * @param long size: size of raw data part
+     * @param TangoTimestamp time: readout time
+     * @param Tango::AttrQuality quality: the attribute quality
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent.
+     */
+    void set_value_date_quality(Tango::DevString *p_data_str,
+                                Tango::DevUChar *p_data,
+                                long size,
+                                const TangoTimestamp &,
+                                Tango::AttrQuality qual,
+                                bool release = false);
+
     //---------------------------------------------------------------------------
 
     /**
@@ -1392,53 +1524,6 @@ class Attribute
     template <class T>
     T **get_value_storage();
 
-    /**
-     * Returns the internal buffer to keep temporary data of this type.
-     * It does not do any memory management
-     */
-    template <class T>
-    T (&get_tmp_storage())
-    [2];
-
-    /**
-     * Set internal attribute value, date and quality factor (for Tango::DevShort attribute data type).
-     *
-     * This method stores the attribute read value, the date and the attribute
-     * quality factor inside the object. This data will be
-     * returned to the caller.
-     *
-     * @param p_data The attribute read value
-     * @param t The date
-     * @param qual The attribute quality factor
-     * @param x The attribute x length. Default value is 1
-     * @param y The attribute y length. Default value is 0
-     * @param release The release flag. If true, memory pointed to by p_data will be
-     *           freed after being send to the client. Default value is false.
-     * @exception DevFailed If the attribute data type is not coherent.
-     * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
-     * to read <b>DevFailed</b> exception specification
-     */
-    template <class T>
-    void set_value_date_quality(T *, time_t, Tango::AttrQuality, long x = 1, long y = 0, bool rel = false);
-
-    void set_value_date_quality(Tango::DevString *p_data_str,
-                                Tango::DevUChar *p_data,
-                                long size,
-                                time_t t,
-                                Tango::AttrQuality qual,
-                                bool release = false);
-
-    template <class T>
-    void set_value_date_quality(
-        T *, const TangoTimestamp &, Tango::AttrQuality, long x = 1, long y = 0, bool rel = false);
-
-    void set_value_date_quality(Tango::DevString *p_data_str,
-                                Tango::DevUChar *p_data,
-                                long size,
-                                const TangoTimestamp &,
-                                Tango::AttrQuality qual,
-                                bool release = false);
-
     //
     // methods not usable for the external world (outside the lib)
     //
@@ -1485,7 +1570,6 @@ class Attribute
 
     void delete_seq();
     void delete_seq_and_reset_alarm();
-    bool check_scalar_wattribute();
 
     void wanted_date(bool flag)
     {
@@ -1568,40 +1652,6 @@ class Attribute
     {
         return value.enc_seq;
     }
-
-    Tango::DevLong64 *get_tmp_scalar_long64()
-    {
-        return tmp_lo64;
-    }
-
-    Tango::DevULong *get_tmp_scalar_ulong()
-    {
-        return tmp_ulo;
-    }
-
-    Tango::DevULong64 *get_tmp_scalar_ulong64()
-    {
-        return tmp_ulo64;
-    }
-
-    Tango::DevState *get_tmp_scalar_state()
-    {
-        return tmp_state;
-    }
-
-    void add_write_value(Tango::DevVarShortArray *);
-    void add_write_value(Tango::DevVarLongArray *);
-    void add_write_value(Tango::DevVarDoubleArray *);
-    void add_write_value(Tango::DevVarStringArray *);
-    void add_write_value(Tango::DevVarFloatArray *);
-    void add_write_value(Tango::DevVarBooleanArray *);
-    void add_write_value(Tango::DevVarUShortArray *);
-    void add_write_value(Tango::DevVarCharArray *);
-    void add_write_value(Tango::DevVarLong64Array *);
-    void add_write_value(Tango::DevVarULongArray *);
-    void add_write_value(Tango::DevVarULong64Array *);
-    void add_write_value(Tango::DevVarStateArray *);
-    void add_write_value(Tango::DevEncoded &);
 
     unsigned long get_name_size()
     {
@@ -1729,6 +1779,31 @@ class Attribute
         idx_in_attr = new_idx;
     }
 
+    //+-------------------------------------------------------------------------
+    //
+    // method :         Attribute::add_write_value
+    //
+    // description :    These methods add the associated writable attribute
+    //                  value to the attribute value sequence
+    //
+    // in :    val : The associated write attribute value
+    //
+    //--------------------------------------------------------------------------
+
+    void add_write_value(Tango::DevVarShortArray *val_ptr);
+    void add_write_value(Tango::DevVarLongArray *val_ptr);
+    void add_write_value(Tango::DevVarDoubleArray *val_ptr);
+    void add_write_value(Tango::DevVarStringArray *val_ptr);
+    void add_write_value(Tango::DevVarFloatArray *val_ptr);
+    void add_write_value(Tango::DevVarBooleanArray *val_ptr);
+    void add_write_value(Tango::DevVarUShortArray *val_ptr);
+    void add_write_value(Tango::DevVarCharArray *val_ptr);
+    void add_write_value(Tango::DevVarLong64Array *val_ptr);
+    void add_write_value(Tango::DevVarULongArray *val_ptr);
+    void add_write_value(Tango::DevVarULong64Array *val_ptr);
+    void add_write_value(Tango::DevVarStateArray *val_ptr);
+    void add_write_value(Tango::DevEncoded &val_ptr);
+
     DeviceImpl *get_att_device();
 
     template <typename T>
@@ -1822,11 +1897,21 @@ class Attribute
     friend class DServer;
 
   private:
+    /*
+     * Implementations of methods, which add the associated writable attribute value
+     * to the attribute value sequence
+     */
+
+    template <class T>
+    void add_write_value_impl(T *val_ptr);
+    void add_write_value_impl(Tango::DevVarStringArray *val_ptr);
+    void add_write_value_impl(Tango::DevEncoded &val_ref);
+
     /**
      * Fire an alarm event for the attribute value. The event is pushed to ZMQ.
      *
      * The attribute data must be set with one of the Attribute::set_value or
-     * Attribute::setvalue_date_quality methods before firing the event.
+     * Attribute::set_value_date_quality methods before firing the event.
      * ATTENTION: The couple set_value() and fire_alarm_event() needs to be
      * protected against concurrent accesses to the same attribute. Such an access
      * might happen during a synchronous read or by a reading from the polling
@@ -1907,6 +1992,30 @@ class Attribute
     unsigned long name_size;
     std::string name_lower;
     DevEncoded enc_help;
+
+    //+-------------------------------------------------------------------------
+    //
+    // method :         Attribute::general_check_alarm
+    //
+    // description :   These methods check if the attribute is out of alarm/warning level
+    //                 and return a boolean set to true if the attribute out of the thresholds,
+    //                 and it also set the attribute quality factor to ALARM/WARNING
+    //
+    // in :     const Tango::AttrQuality &alarm_type: type of alarm to check
+    //          const T &max_value: max level threshold
+    //          const T &min_value: min level threshold
+    //
+    // out :    bool: true if value out of the limits
+    //
+    //--------------------------------------------------------------------------
+
+    template <typename T>
+    bool general_check_alarm(const Tango::AttrQuality &alarm_type, const T &min_value, const T &max_value);
+
+    // unfortunately DevEncoded is special and cannot be templated, but functionality is similar to general_check_alarm
+    bool general_check_devencoded_alarm(const Tango::AttrQuality &alarm_type,
+                                        const unsigned char &min_value,
+                                        const unsigned char &max_value);
 
   protected:
     /// @privatesection
@@ -2030,16 +2139,6 @@ class Attribute
     long dim_x;
     long dim_y;
 
-    Tango::DevShort tmp_sh[2];
-    Tango::DevLong tmp_lo[2];
-    Tango::DevFloat tmp_fl[2];
-    Tango::DevDouble tmp_db[2];
-    Tango::DevString tmp_str[2];
-    Tango::DevUShort tmp_ush[2];
-    Tango::DevBoolean tmp_boo[2];
-    Tango::DevUChar tmp_cha[2];
-    Tango::DevEncoded tmp_enc[2];
-
     std::vector<AttrProperty>::iterator pos_end;
 
     std::uint32_t enum_nb{0};     // For enum attribute
@@ -2093,18 +2192,14 @@ class Attribute
     bool check_change_event_criteria{true};  // True if change event criteria should be checked when sending the event
     bool check_alarm_event_criteria{true};   // True if alarm event criteria should be checked when sending the event
     bool check_archive_event_criteria{true}; // True if change event criteria should be checked when sending the event
-    Tango::DevLong64 tmp_lo64[2];
-    Tango::DevULong tmp_ulo[2];
-    Tango::DevULong64 tmp_ulo64[2];
-    Tango::DevState tmp_state[2];
-    AttrSerialModel attr_serial_model;                   // Flag for attribute serialization model
-    bool dr_event_implmented{false};                     // Flag true if fire data ready event is implemented
-    bool scalar_str_attr_release{false};                 // Need memory freeing (scalar string attr, R/W att)
-    bool notifd_event{false};                            // Set to true if event required using notifd
-    bool zmq_event{false};                               // Set to true if event required using ZMQ
-    std::vector<std::string> mcast_event;                // In case of multicasting used for event transport
-    AttrQuality old_quality;                             // Previous attribute quality
-    std::bitset<numFlags> old_alarm;                     // Previous attribute alarm
+    AttrSerialModel attr_serial_model;       // Flag for attribute serialization model
+    bool dr_event_implmented{false};         // Flag true if fire data ready event is implemented
+    bool scalar_str_attr_release{false};     // Need memory freeing (scalar string attr, R/W att)
+    bool notifd_event{false};                // Set to true if event required using notifd
+    bool zmq_event{false};                   // Set to true if event required using ZMQ
+    std::vector<std::string> mcast_event;    // In case of multicasting used for event transport
+    AttrQuality old_quality;                 // Previous attribute quality
+    std::bitset<numFlags> old_alarm;         // Previous attribute alarm
     std::map<std::string, DevFailed> startup_exceptions; // Map containing exceptions related to attribute configuration
                                                          // raised during the server startup sequence
     bool check_startup_exceptions{
@@ -2423,7 +2518,14 @@ inline void Attribute::delete_data_if_needed(T *data, bool release)
     }
     else
     {
-        delete data;
+        if(data_format == Tango::SCALAR)
+        {
+            delete data;
+        }
+        else
+        {
+            delete[] data;
+        }
     }
 }
 
@@ -2459,7 +2561,14 @@ inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString 
     }
     else
     {
-        delete data;
+        if(data_format == Tango::SCALAR)
+        {
+            delete data;
+        }
+        else
+        {
+            delete[] data;
+        }
     }
 }
 
