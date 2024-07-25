@@ -615,7 +615,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
     bool was_exception = attr.prev_alarm_event.err;
 
     if(is_exception != was_exception ||
-       (is_exception && Except::compare_exception(*except, attr.prev_change_event.except)))
+       (is_exception && !Except::compare_exception(*except, attr.prev_alarm_event.except)))
     {
         is_alarm = true;
     }

@@ -11,7 +11,7 @@ static constexpr double ATTR_MAX_ALARM = 5.0;
 static constexpr double ATTR_PUSH_ALARM_VALUE = 10.0;
 
 constexpr static const char *k_test_reason = "Test_Reason";
-constexpr static const char *k_alt_test_reason = "Test_Reason";
+constexpr static const char *k_alt_test_reason = "Test_AltReason";
 constexpr static const char *k_a_helpful_desc = "A helpful description";
 constexpr static const int k_polling_period = TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD;
 
@@ -231,7 +231,7 @@ class AlarmEventDev : public Base
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_change>("push_change"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::throw_on_next_read>("throw_on_next_read"));
         cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_except_next>("push_except_next"));
-        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_except_next>("push_alt_except_next"));
+        cmds.push_back(new TangoTest::AutoCommand<&AlarmEventDev::push_alt_except_next>("push_alt_except_next"));
     }
 
   private:
@@ -619,12 +619,12 @@ SCENARIO("Alarm events can be pushed from code manually")
                                 {
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(maybe_ex_event.has_value());
-                                    REQUIRE(maybe_ex_event->err);
-                                    REQUIRE(maybe_ex_event->event == "alarm");
-                                    REQUIRE(maybe_ex_event->errors.length() == 1);
-                                    REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_alt_test_reason});
-                                    REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                    REQUIRE(maybe_event.has_value());
+                                    REQUIRE(maybe_event->err);
+                                    REQUIRE(maybe_event->event == "alarm");
+                                    REQUIRE(maybe_event->errors.length() == 1);
+                                    REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_test_reason});
+                                    REQUIRE(maybe_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
                                 }
                             }
                             else
@@ -647,12 +647,12 @@ SCENARIO("Alarm events can be pushed from code manually")
                             {
                                 auto maybe_event = callback.pop_next_event();
 
-                                REQUIRE(maybe_ex_event.has_value());
-                                REQUIRE(maybe_ex_event->err);
-                                REQUIRE(maybe_ex_event->event == "alarm");
-                                REQUIRE(maybe_ex_event->errors.length() == 1);
-                                REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_alt_test_reason});
-                                REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                REQUIRE(maybe_event.has_value());
+                                REQUIRE(maybe_event->err);
+                                REQUIRE(maybe_event->event == "alarm");
+                                REQUIRE(maybe_event->errors.length() == 1);
+                                REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_alt_test_reason});
+                                REQUIRE(maybe_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
                             }
                         }
                     }
@@ -758,12 +758,12 @@ SCENARIO("Alarm events are pushed together with manual change events")
                                 {
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(maybe_ex_event.has_value());
-                                    REQUIRE(maybe_ex_event->err);
-                                    REQUIRE(maybe_ex_event->event == "alarm");
-                                    REQUIRE(maybe_ex_event->errors.length() == 1);
-                                    REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_alt_test_reason});
-                                    REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                    REQUIRE(maybe_event.has_value());
+                                    REQUIRE(maybe_event->err);
+                                    REQUIRE(maybe_event->event == "alarm");
+                                    REQUIRE(maybe_event->errors.length() == 1);
+                                    REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_alt_test_reason});
+                                    REQUIRE(maybe_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
                                 }
                             }
                         }
