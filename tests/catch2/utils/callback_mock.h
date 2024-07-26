@@ -24,7 +24,7 @@ class CallbackMock : public Tango::CallBack
     CallbackMock &operator=(const CallbackMock &) = delete;
     CallbackMock &operator=(CallbackMock &&) = delete;
 
-    constexpr static const std::chrono::milliseconds k_default_timeout{5 * TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD};
+    constexpr static const std::chrono::milliseconds k_default_timeout{2 * TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD + 300};
 
     void push_event(TEvent *event) override
     {

@@ -100,6 +100,10 @@ md -FORCE ${PYTHON_LOCATION}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${PYTHON_LOCATION}
 $env:Path += ";${cwd}/${PYTHON_LOCATION}"
 
+# On the Windows CI, we see the polling thread stall occasionally which causes
+# the tests to fail. Increasing the TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD here
+# avoids the failure when the stall occurs.
+
 Write-Host "== Build tango" -ForegroundColor Blue
 Invoke-NativeCommand cmake `
   -S . `
@@ -123,6 +127,7 @@ Invoke-NativeCommand cmake `
   -DJPEG_DEBUG_POSTFIX=d `
   -DBUILD_TESTING="${BUILD_TESTING}" `
   -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}" `
+  -DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=3000 `
   -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake"
 Invoke-NativeCommand cmake `
   --build build `
