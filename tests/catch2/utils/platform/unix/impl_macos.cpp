@@ -105,11 +105,6 @@ struct FileWatcher::Impl
         }
     }
 
-    ~Impl()
-    {
-        stop_watching_thread();
-    }
-
     void stop_watching()
     {
         stop_watching_thread();
@@ -123,6 +118,11 @@ struct FileWatcher::Impl
         watched_fds[0] = watched_fds[1] = -1;
         ::close(fds[1]);
         ::close(fds[0]);
+    }
+
+    ~Impl()
+    {
+        stop_watching();
     }
 
     const std::size_t number_of_watched_files{1};
