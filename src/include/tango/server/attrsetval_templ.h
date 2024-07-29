@@ -39,27 +39,121 @@
 namespace Tango
 {
 
-//+-------------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        Attribute::set_value
-//
-// description :
-//        Set the attribute read value and quality. This method automatically set the date when it has been called
-//
-//        This method is overloaded several times for all the supported attribute data type. Nevertheless, one
-//        template method is defined (this one) which will be called for all data types with no overload.
-//        This is the case for enumeration data type
-//
-// argument :
-//         in :
-//            - enum_ptr : The attribute read value
-//            - x : The attribute x dimension (default is 1)
-//            - y : The atttribute y dimension (default is 0)
-//            - release : A flag set to true if memory must be de-allocated (default is false)
-//
-//-------------------------------------------------------------------------------------------------------------------
+/// @cond DO_NOT_DOCUMENT
 
+/*
+ * method: Attribute::set_value
+ *
+ * These methods store the attribute value inside the Attribute object, set current time as readout time
+ * and calculate attribute quality factor (if warning/alarm levels are defined)
+ *
+ * The value will be later send to the client either as result of attribute readout of event value,
+ * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+ *
+ * After readout or in case of failure value will be destroyed.
+ *
+ * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+ * otherwise. For the DevString's, when release is true we expect value to have been allocated with Tango::string_dup or
+ * equivalent.
+ *
+ * @param T *p_data: pointer to value
+ * @param long x=1: the attribute x dimension
+ * @param long y=0: the attribute y dimension
+ * @param bool release: The release flag. If true, memory pointed to by p_data will be
+ *           freed after being send to the client. Default value is false.
+ * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data, or
+ * wrong Enum value.
+ *
+ */
+
+// General set_value realisation for almost all data types
+template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
+inline void Attribute::set_value(T *p_data, long x, long y, bool release)
+{
+    using ArrayType = typename tango_type_traits<T>::ArrayType;
+
+    //
+    // Throw exception if type is not correct
+    //
+
+    if(data_type != Tango::tango_type_traits<T>::type_value())
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::tango_type_traits<T>::type_value()
+          << " got " << (CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
+    }
+
+    //
+    // Check that data size is less than the given max
+    //
+
+    if((x > max_x) || (y > max_y))
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
+          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
+    }
+
+    //
+    // Compute data size and set default quality to valid.
+    //
+
+    dim_x = x;
+    dim_y = y;
+    set_data_size();
+    quality = Tango::ATTR_VALID;
+
+    //
+    // Throw exception if pointer is null and data_size != 0
+    //
+
+    if(data_size != 0)
+    {
+        CHECK_PTR(p_data, name);
+    }
+
+    // Get proper storage
+    auto *tmp = get_value_storage<ArrayType>();
+
+    // Save data to proper seq
+    if((data_format == Tango::SCALAR) && (release))
+    {
+        T *tmp_ptr = new T[1];
+        *tmp_ptr = *p_data;
+        *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
+        delete_data_if_needed(p_data, release);
+    }
+    else
+    {
+        *tmp = new ArrayType(data_size, data_size, p_data, release);
+    }
+
+    value_flag = true;
+
+    //
+    // Reset alarm flags
+    //
+
+    alarm.reset();
+
+    //
+    // Get time
+    //
+
+    set_time();
+}
+
+// Special set_value realisation for scalar C++11 scoped enum with short as underlying data type or old enum
 template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 {
@@ -169,10 +263,6 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         CHECK_PTR(enum_ptr, name);
     }
 
-    //
-    // If the data is wanted from the DevState command, store it in a sequence.
-    //
-
     if(data_size > enum_nb)
     {
         if(enum_nb != 0)
@@ -228,138 +318,9 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     set_time();
 }
 
-template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
-inline void Attribute::set_value(T *p_data, long x, long y, bool release)
-{
-    using ArrayType = typename tango_type_traits<T>::ArrayType;
-
-    //
-    // Throw exception if type is not correct
-    //
-
-    if(data_type != Tango::tango_type_traits<T>::type_value())
-    {
-        delete_data_if_needed(p_data, release);
-
-        std::stringstream o;
-
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::tango_type_traits<T>::type_value()
-          << " got " << (CmdArgType) data_type << std::ends;
-
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
-    }
-
-    //
-    // Check that data size is less than the given max
-    //
-
-    if((x > max_x) || (y > max_y))
-    {
-        delete_data_if_needed(p_data, release);
-
-        std::stringstream o;
-
-        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
-          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
-
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
-    }
-
-    //
-    // Compute data size and set default quality to valid.
-    //
-
-    dim_x = x;
-    dim_y = y;
-    set_data_size();
-    quality = Tango::ATTR_VALID;
-
-    //
-    // Throw exception if pointer is null and data_size != 0
-    //
-
-    if(data_size != 0)
-    {
-        CHECK_PTR(p_data, name);
-    }
-
-    //
-    // If the data is wanted from the DevState command, store it in a sequence.
-    //
-
-    auto *tmp = get_value_storage<ArrayType>();
-
-    if((data_format == Tango::SCALAR) && (release))
-    {
-        T *tmp_ptr = new T[1];
-        *tmp_ptr = *p_data;
-        *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
-        delete_data_if_needed(p_data, release);
-    }
-    else
-    {
-        *tmp = new ArrayType(data_size, data_size, p_data, release);
-    }
-
-    value_flag = true;
-
-    //
-    // Reset alarm flags
-    //
-
-    alarm.reset();
-
-    //
-    // Get time
-    //
-
-    set_time();
-}
-
-template <class T>
-inline void
-    Attribute::set_value_date_quality(T *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
-{
-    set_value(p_data, x, y, release);
-    set_quality(qual, false);
-    set_date(t);
-
-    if(qual == Tango::ATTR_INVALID)
-    {
-        delete_seq();
-    }
-}
-
-template <class T>
-inline void Attribute::set_value_date_quality(
-    T *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
-{
-    set_value(p_data, x, y, release);
-    set_quality(qual, false);
-    set_date(t);
-
-    if(qual == Tango::ATTR_INVALID)
-    {
-        delete_seq();
-    }
-}
-
-//+-------------------------------------------------------------------------
-//
-// method :         Attribute::set_value
-//
-// description :     Set the attribute read value and quality. This method
-//            automatically set the date when it has been called
-//            This method is overloaded several times for all the
-//            supported attribute data type
-//
-// in :            p_data : The attribute read value
-//            x : The attribute x dimension (default is 1)
-//            y : The atttribute y dimension (default is 0)
-//            release : A flag set to true if memory must be
-//                  de-allocated (default is false)
-//
-//--------------------------------------------------------------------------
+// Special set_value realisation for Tango::DevShort due to the fact, that Tango::DevEnum
+// is effectively Tango::DevShort under hood and when one calls set_value for DevEnum -
+// cpp gives him Tango::DevShort realisation
 template <>
 inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool release)
 {
@@ -469,6 +430,8 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     set_time();
 }
 
+// Special set_value realisation for Tango::DevString due to different memory management of Tango::DevString (aka
+// char*[])
 template <>
 inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool release)
 {
@@ -557,6 +520,8 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
     set_time();
 }
 
+// Special set_value realisation for Tango::DevEncoded due to different memory management of Tango::DevString (aka
+// char*[])
 template <>
 inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool release)
 {
@@ -651,6 +616,43 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
     set_time();
 }
 
+/*
+ * method: Attribute::set_value_date_quality
+ *
+ * These methods store the attribute value inside the Attribute object,
+ * with readout time and attribute quality factor provided by user.
+ *
+ *
+ */
+
+template <class T>
+inline void
+    Attribute::set_value_date_quality(T *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
+template <class T>
+inline void Attribute::set_value_date_quality(
+    T *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
 template <>
 inline void Attribute::set_value_date_quality(
     Tango::DevEncoded *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
@@ -668,6 +670,8 @@ inline void Attribute::set_value_date_quality(
     set_quality(qual, false);
     set_date(t);
 }
+
+/// @endcond
 
 } // namespace Tango
 #endif // _ATTRSETVAL_TPP

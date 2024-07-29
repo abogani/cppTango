@@ -44,6 +44,18 @@
 namespace Tango
 {
 
+/// @cond DO_NOT_DOCUMENT
+
+/*
+ * method: Attribute::set_value and Attribute::set_value_date_quality for Tango::DevEncoded dtype
+ *
+ * These are two special realizations of Attribute::set_value and Attribute::set_value_date_quality (see
+ * attrsetval_templ.h) for Tango::DevEncoded dtype in case if user calls these method with separate data_str and data.
+ *
+ * In this case we make an intermediate helper Tango::DevEncoded variable, copy user data there
+ * and then call method realizations from attrsetval_templ.h
+ */
+
 void Attribute::set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data, long size, bool release)
 {
     if(p_data_str == nullptr || p_data == nullptr)
@@ -122,4 +134,7 @@ void Attribute::set_value_date_quality(Tango::DevString *p_data_str,
     set_quality(qual, false);
     set_date(t);
 }
+
+/// @endcond
+
 } // namespace Tango
