@@ -90,11 +90,11 @@ Configuration::Configuration(std::string id, std::string name_space, ServerClien
 
     kernel_traces_enabled = detail::get_boolean_env_var(Tango::telemetry::kEnvVarTelemetryKernelEnable, false);
 
-    traces_endpoint = get_traces_endpoint_from_env(Tango::telemetry::Configuration::Exporter::console);
-    logs_endpoint = get_logs_endpoint_from_env(Tango::telemetry::Configuration::Exporter::console);
-
     traces_exporter = get_exporter_from_env(telemetry::kEnvVarTelemetryTracesExporter);
     logs_exporter = get_exporter_from_env(telemetry::kEnvVarTelemetryLogsExporter);
+
+    traces_endpoint = get_traces_endpoint_from_env(traces_exporter);
+    logs_endpoint = get_logs_endpoint_from_env(logs_exporter);
 }
 
 Configuration::Kind Configuration::get_kind() const noexcept
