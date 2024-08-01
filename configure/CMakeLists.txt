@@ -51,7 +51,13 @@ message(STATUS "cppTango: version ${TANGO_GIT_REVISION}")
 message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
 set(IDL_VERSION_REQUESTED 6.0.2)
-find_package(tangoidl ${IDL_VERSION_REQUESTED} CONFIG REQUIRED)
+if(NOT tangoidl_FOUND)
+  # Intentional check if we found it first so that cmake super projects like the TangoSourceDistribution
+  # can fake the result. Once we require at least cmake 3.24 we can use the approach outlined at
+  # https://cmake.org/cmake/help/latest/module/FetchContent.html#integrating-with-find-package
+  find_package(tangoidl ${IDL_VERSION_REQUESTED} CONFIG REQUIRED)
+endif()
+
 set(IDL_VERSION_FOUND ${tangoidl_VERSION})
 message(STATUS "IDL: version ${IDL_VERSION_FOUND}")
 
