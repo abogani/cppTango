@@ -271,8 +271,6 @@ std::string Configuration::get_traces_endpoint_from_env(Exporter exporter_type)
         default:
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
-
-        TANGO_LOG << "warning! using default traces endpoint for telemetry: " << endpoint << std::endl;
     }
 
     ensure_valid_endpoint(kEnvVarTelemetryTracesEndPoint, exporter_type, endpoint);
@@ -304,8 +302,6 @@ std::string Configuration::get_logs_endpoint_from_env(Exporter exporter_type)
         default:
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
-
-        TANGO_LOG << "warning! using default logs endpoint for telemetry: " << endpoint << std::endl;
     }
 
     ensure_valid_endpoint(kEnvVarTelemetryLogsEndPoint, exporter_type, endpoint);
