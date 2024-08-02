@@ -82,8 +82,8 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
 
         std::stringstream o;
 
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::tango_type_traits<T>::type_value()
-          << " got " << (CmdArgType) data_type << std::ends;
+        o << "Invalid incoming data type " << Tango::tango_type_traits<T>::type_value() << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
@@ -166,8 +166,9 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         delete_data_if_needed(enum_ptr, release);
 
         std::stringstream o;
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::DEV_ENUM << " got "
-          << (CmdArgType) data_type << std::ends;
+
+        o << "Invalid incoming data type " << Tango::DEV_ENUM << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
@@ -332,10 +333,12 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     {
         delete_data_if_needed(p_data, release);
 
-        std::stringstream ss;
-        ss << "Invalid data type for attribute " << name;
+        std::stringstream o;
 
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, ss.str());
+        o << "Invalid incoming data type " << Tango::DEV_SHORT << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
     //
@@ -445,8 +448,8 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
 
         std::stringstream o;
 
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::DEV_STRING << " got "
-          << (CmdArgType) data_type << std::ends;
+        o << "Invalid incoming data type " << Tango::DEV_STRING << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
@@ -535,8 +538,8 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
 
         std::stringstream o;
 
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::DEV_ENCODED << " got "
-          << (CmdArgType) data_type << std::ends;
+        o << "Invalid incoming data type " << Tango::DEV_ENCODED << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
