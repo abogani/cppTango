@@ -3057,31 +3057,13 @@ void Attribute::fire_change_event(DevFailed *except)
             }
         }
 
-        if(client_libs.empty())
+        //
+        // Simply return if event supplier(s) are not created or there is no clients
+        //
+
+        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
         {
             if((name_lower != "state") && (name_lower != "status"))
-            {
-                // delete the data values allocated in the attribute
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
-                    //                        set_value_flag (false);
-                }
-            }
-            return;
-        }
-
-        //
-        // Simply return if event supplier(s) are not created
-        //
-
-        if((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr))
-        {
-            if(name_lower != "state")
             {
                 // delete the data values allocated in the attribute
                 bool data_flag = get_value_flag();
@@ -3486,7 +3468,11 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
             }
         }
 
-        if(client_libs.empty())
+        //
+        // Simply return if event supplier is not created or there is no clients
+        //
+
+        if((event_supplier_zmq == nullptr) || client_libs.empty())
         {
             if((name_lower != "state") && (name_lower != "status"))
             {
@@ -3499,24 +3485,6 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
                         delete_seq_and_reset_alarm();
                     }
                     //                      set_value_flag (false);
-                }
-            }
-            return;
-        }
-
-        // Simply return if event supplier has not been created
-        if(event_supplier_zmq == nullptr)
-        {
-            if(name_lower != "state")
-            {
-                // delete the data values allocated in the attribute
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID && should_delete_seq)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
                 }
             }
             return;
@@ -3835,34 +3803,13 @@ void Attribute::fire_archive_event(DevFailed *except)
             }
         }
 
-        if(client_libs.empty())
+        //
+        // Simply return if event supplier(s) are not created or there is no clients
+        //
+
+        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
         {
             if((name_lower != "state") && (name_lower != "status"))
-            {
-                //
-                // Delete the data values allocated in the attribute
-                //
-
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
-                    //                        set_value_flag (false);
-                }
-            }
-            return;
-        }
-
-        //
-        // Simply return if event supplier(s) are not created
-        //
-
-        if((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr))
-        {
-            if(name_lower != "state")
             {
                 //
                 // Delete the data values allocated in the attribute
@@ -4300,12 +4247,12 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
         }
 
         //
-        // Simply return if event suplier(s) are not created
+        // Simply return if event supplier(s) are not created or there is no clients
         //
 
         if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
         {
-            if(name_lower != "state")
+            if((name_lower != "state") && (name_lower != "status"))
             {
                 //
                 // Delete the data values allocated in the attribute
