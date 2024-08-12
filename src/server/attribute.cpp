@@ -3982,6 +3982,8 @@ void Attribute::fire_archive_event(DevFailed *except)
             {
                 omni_mutex_lock oml(EventSupplier::get_event_mutex());
 
+                const AttrQuality old_quality = prev_archive_event.quality;
+
                 // Execute detect_change only to calculate the delta_change_rel and
                 // delta_change_abs and force_change !
 
