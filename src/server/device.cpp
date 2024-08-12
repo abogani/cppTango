@@ -1530,6 +1530,9 @@ Tango::DevState DeviceImpl::dev_state()
 
                     try
                     {
+                        att.wanted_date(false);
+                        att.set_value_flag(false);
+
                         if(vers < 3)
                         {
                             read_attr(att);
@@ -1539,9 +1542,6 @@ Tango::DevState DeviceImpl::dev_state()
                             //
                             // Otherwise, get it from device
                             //
-
-                            att.wanted_date(false);
-                            att.set_value_flag(false);
 
                             if(!attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::READ_REQ))
                             {
