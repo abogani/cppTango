@@ -1488,7 +1488,7 @@ class Attribute
     /**
      * The attribute data size
      */
-    std::uint32_t data_size;
+    std::uint32_t data_size = 0;
     /**
      * Flag set to true if a minimum value is defined
      */
