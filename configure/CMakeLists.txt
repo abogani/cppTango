@@ -298,6 +298,8 @@ endif()
 if(TANGO_WARNINGS_AS_ERRORS)
   if(WIN32)
     add_compile_options(/WX)
+    # LNK4099: PDB was not found
+    add_link_options(/WX /ignore:4099)
   else()
     add_compile_options(-Werror)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
