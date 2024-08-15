@@ -395,6 +395,12 @@ void Util::effective_job(int argc, char *argv[])
 
         check_args(argc, argv);
 
+#if defined(TANGO_USE_TELEMETRY)
+        // create a telemetry configuration early on, might throw in case the
+        // configuration is invalid
+        TANGO_UNUSED(telemetry::Configuration config);
+#endif
+
         //
         // Create the signal object
         // It is necessary to create this object before the ORB is initialised.
