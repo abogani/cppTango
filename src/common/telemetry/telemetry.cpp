@@ -1302,7 +1302,7 @@ void Interface::get_trace_context(std::string &trace_parent, std::string &trace_
 //-----------------------------------------------------------------------------------------
 // Interface::get_default_interface: returns the default Tango::telemetry::Interface
 //-----------------------------------------------------------------------------------------
-Tango::telemetry::InterfacePtr Interface::get_default_interface() noexcept
+Tango::telemetry::InterfacePtr Interface::get_default_interface()
 {
     const std::lock_guard<std::mutex> lock(InterfaceImplementation::default_telemetry_interface_mutex);
 
