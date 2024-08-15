@@ -175,16 +175,40 @@ class AutoCommand : public Tango::Command
         }
         else if constexpr(std::is_same_v<void, typename traits::return_type>)
         {
-            typename traits::template argument_type<0> arg;
-            extract(in_any, arg);
-            std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+            using arg_type = std::remove_cv_t<std::remove_reference_t<typename traits::template argument_type<0>>>;
+            if constexpr(std::is_same_v<arg_type, typename Tango::tango_type_traits<arg_type>::ArrayType>)
+            {
+                const arg_type *arg;
+                extract(in_any, arg);
+                std::invoke(cmd_fn, static_cast<Device *>(dev), *arg);
+            }
+            else
+            {
+                arg_type arg;
+                extract(in_any, arg);
+                std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+            }
             return insert();
         }
         else
         {
-            typename traits::template argument_type<0> arg;
-            extract(in_any, arg);
-            auto ret = std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+            using arg_type = std::remove_cv_t<std::remove_reference_t<typename traits::template argument_type<0>>>;
+            auto ret = [this, &dev, &in_any]()
+            {
+                if constexpr(std::is_same_v<arg_type, typename Tango::tango_type_traits<arg_type>::ArrayType>)
+                {
+                    arg_type *arg;
+                    extract(in_any, arg);
+                    return std::invoke(cmd_fn, static_cast<Device *>(dev), *arg);
+                }
+                else
+                {
+                    arg_type arg;
+                    extract(in_any, arg);
+                    return std::invoke(cmd_fn, static_cast<Device *>(dev), arg);
+                }
+            }();
+
             return insert(ret);
         }
     }
@@ -198,7 +222,8 @@ class AutoCommand : public Tango::Command
         }
         else
         {
-            return Tango::tango_type_traits<typename traits::return_type>::type_value();
+            using ret_type = std::remove_cv_t<std::remove_reference_t<typename traits::return_type>>;
+            return Tango::tango_type_traits<ret_type>::type_value();
         }
     }
 
@@ -210,7 +235,8 @@ class AutoCommand : public Tango::Command
         }
         else
         {
-            return Tango::tango_type_traits<typename traits::template argument_type<0>>::type_value();
+            using arg_type = std::remove_cv_t<std::remove_reference_t<typename traits::template argument_type<0>>>;
+            return Tango::tango_type_traits<arg_type>::type_value();
         }
     }
 };

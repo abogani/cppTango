@@ -1506,7 +1506,7 @@ Tango::DevState DeviceImpl::dev_state()
                 // Set attr value
                 //
 
-                long i, j;
+                long i;
                 std::vector<Tango::Attr *> &attr_vect = device_class->get_class_attr()->get_attr_list();
 
                 for(i = 0; i < nb_wanted_attr; i++)
@@ -1530,6 +1530,9 @@ Tango::DevState DeviceImpl::dev_state()
 
                     try
                     {
+                        att.wanted_date(false);
+                        att.set_value_flag(false);
+
                         if(vers < 3)
                         {
                             read_attr(att);
@@ -1539,9 +1542,6 @@ Tango::DevState DeviceImpl::dev_state()
                             //
                             // Otherwise, get it from device
                             //
-
-                            att.wanted_date(false);
-                            att.set_value_flag(false);
 
                             if(!attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::READ_REQ))
                             {
@@ -1572,29 +1572,14 @@ Tango::DevState DeviceImpl::dev_state()
                             att.set_quality(Tango::ATTR_INVALID);
                         }
 
-                        for(j = 0; j < i; j++)
+                        if(!att.get_wanted_date())
                         {
-                            long idx;
-                            if((vers >= 3) && (state_from_read))
+                            if(att.get_quality() != Tango::ATTR_INVALID)
                             {
-                                idx = attr_list_2[j];
+                                att.delete_seq();
                             }
-                            else
-                            {
-                                idx = attr_list[j];
-                            }
-                            Tango::Attribute &tmp_att = dev_attr->get_attr_by_ind(idx);
-                            if(!att.get_wanted_date())
-                            {
-                                if(tmp_att.get_quality() != Tango::ATTR_INVALID)
-                                {
-                                    tmp_att.delete_seq();
-                                }
-                                tmp_att.wanted_date(true);
-                            }
+                            att.wanted_date(true);
                         }
-                        att.wanted_date(true);
-                        //                       throw;
                     }
                 }
 

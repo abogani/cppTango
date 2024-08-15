@@ -306,6 +306,7 @@ tango_catch2_tests_create(
     catch2_attr_polling.cpp
     catch2_cmd_polling.cpp
     catch2_test_dtypes.cpp
+    catch2_dev_state.cpp
     catch2_internal_utils.cpp
     catch2_nodb_connection.cpp
     catch2_change_event_on_nan.cpp

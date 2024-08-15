@@ -306,7 +306,6 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
                                    std::vector<long> &);
     void write_attributes_in_db(const std::vector<long> &, const std::vector<AttIdx> &);
     void add_alarmed(std::vector<long> &);
-    long reading_state_necessary(const std::vector<AttIdx> &);
     void state2attr(Tango::DevState, Tango::AttributeValue_3 &);
     void state2attr(Tango::DevState, Tango::AttributeValue_4 &);
     void state2attr(Tango::DevState, Tango::AttributeValue_5 &);

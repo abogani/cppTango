@@ -546,21 +546,25 @@ class DeviceImpl : public virtual POA_Tango::Device
         (void) attr_list;
     }
 
-    /**
-     * Get device state.
+    /** Get the device state.
      *
-     * Default method to get device state. The behaviour of this method depends
-     * on the device state. If the device state is ON or ALARM, it reads
-     * the attribute(s) with an alarm level defined, check if the read value is
-     * above/below the alarm and eventually change the state to ALARM, return the
-     * device state. For all the other device state, this method simply returns
-     * the state
-     * This method can be redefined in
-     * sub-classes in case of the default behaviour does not fulfill the needs
+     * The default implementation depends on the device state.
+     *
+     * If the device state is ON or ALARM, it reads the attributes with an alarm
+     * level defined, determines the quality factor of each of these attributes
+     * by comparing the read value to the alarm levels. If any of the attributes
+     * are determined to have a quality factor of ATTR_ALARM, then it sets the
+     * state to ALARM, otherwise it sets the state to ON.  Finally, it returns
+     * the newly determined device state.
+     *
+     * For all the other device states, the default implementation simply
+     * returns the current state.
+     *
+     * This method can be overridden in sub-classes as required.
      *
      * @return The device state
-     * @exception DevFailed If it is necessary to read attribute(s) and a problem
-     * occurs during the reading.
+     * @exception DevFailed The default implementation of this method does not
+     * throw an exception and it is recommended that overrides do not either.
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
