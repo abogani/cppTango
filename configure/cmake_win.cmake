@@ -47,7 +47,7 @@ target_link_libraries(tango
     PRIVATE
         ${WIN32_LIBS})
 
-set_property(TARGET tango PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
+set_property(TARGET tango PROPERTY LINK_FLAGS "/DEBUG")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/Debug)
