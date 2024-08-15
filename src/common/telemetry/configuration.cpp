@@ -97,6 +97,11 @@ Configuration::Configuration(std::string id, std::string name_space, ServerClien
     logs_endpoint = get_logs_endpoint_from_env(logs_exporter);
 }
 
+Configuration::Configuration() :
+    Configuration{"TangoTelemetry", "tango", Configuration::Client{"tango.telemetry.default"}}
+{
+}
+
 Configuration::Kind Configuration::get_kind() const noexcept
 {
     if(std::get_if<Configuration::Server>(&details) != nullptr)

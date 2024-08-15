@@ -77,6 +77,9 @@ class Configuration
 
     Configuration(std::string id, std::string name_space, ServerClientDetails details);
 
+    // default configuration
+    Configuration();
+
     // tell the world that this struct relies on default copy and assignment operators
     Configuration(const Configuration &) = default;
     Configuration &operator=(const Configuration &) = default;
