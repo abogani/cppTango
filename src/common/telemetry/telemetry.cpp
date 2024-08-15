@@ -400,7 +400,9 @@ class InterfaceImplementation final
         //- the tracer version is the cppTango version
         std::string tracer_version = git_revision();
 
-        if(!cfg.enabled)
+        auto exporter_type = cfg.traces_exporter;
+
+        if(!cfg.enabled || exporter_type == Configuration::Exporter::none)
         {
             using TracerProviderPtr = opentelemetry::nostd::shared_ptr<opentelemetry::trace::TracerProvider>;
             provider = TracerProviderPtr{new opentelemetry::trace::NoopTracerProvider};
@@ -409,7 +411,6 @@ class InterfaceImplementation final
             return;
         }
 
-        auto exporter_type = cfg.traces_exporter;
         auto endpoint = cfg.traces_endpoint;
 
         std::unique_ptr<opentelemetry::sdk::trace::SpanExporter> exporter;
@@ -453,6 +454,8 @@ class InterfaceImplementation final
                 TANGO_ASSERT(false);
             }
             break;
+        case Configuration::Exporter::none:
+            TANGO_ASSERT("Invalid exporter type: none");
         default:
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
@@ -475,6 +478,8 @@ class InterfaceImplementation final
             // fix garbeled output with batch processing
             processor = opentelemetry::sdk::trace::SimpleSpanProcessorFactory::Create(std::move(exporter));
             break;
+        case Configuration::Exporter::none:
+            TANGO_ASSERT("Invalid exporter type: none");
         default:
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
@@ -755,13 +760,14 @@ class Appender : public log4tango::Appender
     //-------------------------------------------------------------------------------------
     void init_logger_provider()
     {
-        if(!interface->cfg.enabled)
+        auto exporter_type = interface->cfg.logs_exporter;
+
+        if(!interface->cfg.enabled || exporter_type == Configuration::Exporter::none)
         {
             cleanup_logger_provider();
             return;
         }
 
-        auto exporter_type = interface->cfg.logs_exporter;
         auto endpoint = interface->cfg.logs_endpoint;
 
         std::unique_ptr<opentelemetry::sdk::logs::LogRecordExporter> exporter;

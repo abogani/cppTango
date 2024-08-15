@@ -20,6 +20,8 @@ std::string to_string(Configuration::Exporter exporter_type)
         return "http";
     case Configuration::Exporter::console:
         return "console";
+    case Configuration::Exporter::none:
+        return "none";
     default:
         using ut = std::underlying_type_t<Configuration::Exporter>;
         return std::to_string(static_cast<ut>(exporter_type));
@@ -167,6 +169,10 @@ Configuration::Exporter Configuration::to_exporter(std::string_view str)
     {
         return Exporter::console;
     }
+    else if(str == "none")
+    {
+        return Exporter::none;
+    }
 
     std::stringstream sstr;
     sstr << "Can not parse " << str << " as Exporter enum class.";
@@ -197,6 +203,8 @@ Configuration::Exporter Configuration::get_exporter_from_env(const char *env_var
 #else
         break;
 #endif
+    case Exporter::none:
+        [[fallthrough]];
     case Exporter::console:
         // nothing to check
         break;
@@ -247,6 +255,9 @@ void Configuration::ensure_valid_endpoint(const char *env_var,
             TANGO_THROW_EXCEPTION(API_InvalidArgs, err.str());
         }
         break;
+    case Exporter::none:
+        // nothing to check
+        break;
     default:
         TANGO_ASSERT_ON_DEFAULT(exporter_type);
     }
@@ -273,6 +284,8 @@ std::string Configuration::get_traces_endpoint_from_env(Exporter exporter_type)
         case Exporter::console:
             endpoint = Configuration::DEFAULT_CONSOLE_TRACES_ENDPOINT;
             break;
+        case Exporter::none:
+            return {};
         default:
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
@@ -304,6 +317,8 @@ std::string Configuration::get_logs_endpoint_from_env(Exporter exporter_type)
         case Exporter::console:
             endpoint = Configuration::DEFAULT_CONSOLE_LOGS_ENDPOINT;
             break;
+        case Exporter::none:
+            return {};
         default:
             TANGO_ASSERT_ON_DEFAULT(exporter_type);
         }
