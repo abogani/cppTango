@@ -1908,7 +1908,7 @@ class Attribute
     void add_write_value_impl(Tango::DevEncoded &val_ref);
 
     /**
-     * Fire an alarm event for the attribute value. The event is pushed to ZMQ.
+     * Fire an event for the attribute value. The event is pushed to ZMQ.
      *
      * The attribute data must be set with one of the Attribute::set_value or
      * Attribute::set_value_date_quality methods before firing the event.
@@ -1919,11 +1919,16 @@ class Attribute
      * Inside all methods reading or writing commands and attributes this protection is automatically done by the Tango
      * serialisation monitor.
      *
+     * @param event_type Event type to be send.
      * @param except A pointer to a DevFailed exception to be thrown as alarm event.
      * @param should_delete_seq If true the delete_seq() will be called before
      * this returns
      */
-    void do_fire_alarm_event(DevFailed *except, bool should_delete_seq);
+    void generic_fire_event(const EventType &event_type,
+                            DevFailed *except,
+                            bool should_delete_seq = true,
+                            std::vector<std::string> filterable_names = std::vector<std::string>(),
+                            std::vector<double> filterable_data = std::vector<double>());
 
     /**
      * Extract internal value to dest depending on the type.

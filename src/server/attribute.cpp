@@ -2938,30 +2938,38 @@ void Attribute::AttributeConfig_3_2_AttributeConfig_5(const Tango::AttributeConf
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//        Attribute::fire_change_event
+//        Attribute::generic_fire_event
 //
 // description :
-//        Fire a change change event for the attribute value.
+//        Fire a requested event for the attribute value.
 //
 // arguments:
 //         in :
+//            - EventType: type of event to be fired
 //            - ptr : Pointer to a DevFailed exception to fire in case of an error to indicate.
 //
 //---------------------------------------------------------------------------------------------------------------------
-
-void Attribute::fire_change_event(DevFailed *except)
+void Attribute::generic_fire_event(const EventType &event_type,
+                                   DevFailed *except,
+                                   bool should_delete_seq,
+                                   std::vector<std::string> filterable_names,
+                                   std::vector<double> filterable_data)
 {
-    TANGO_LOG_DEBUG << "Attribute::fire_change_event() entering ..." << std::endl;
+    TANGO_LOG_DEBUG << "Attribute::generic_fire_event() for " << EventName[event_type] << " entering ..." << std::endl;
 
-    if(!is_alarm_event() && Util::instance()->is_auto_alarm_on_change_event())
+    if(event_type == CHANGE_EVENT && !is_alarm_event() && Util::instance()->is_auto_alarm_on_change_event())
     {
-        do_fire_alarm_event(except, false);
+        generic_fire_event(ALARM_EVENT, except, false);
     }
 
     if(except != nullptr)
     {
         set_value_flag(false);
     }
+
+    bool must_have_data = (name_lower != "state") && (name_lower != "status") && (quality != Tango::ATTR_INVALID);
+
+    bool must_clean_data = must_have_data && get_value_flag() && should_delete_seq;
 
     //
     // Check if it is needed to send an event
@@ -2973,16 +2981,52 @@ void Attribute::fire_change_event(DevFailed *except)
 
     try
     {
-        time_t now;
-        time_t change3_subscription, change4_subscription, change5_subscription;
+        time_t event3_subscription = 0, event4_subscription = 0, event5_subscription = 0, event6_subscription = 0;
 
-        now = Tango::get_current_system_datetime();
+        int oldest_supported_idl = 3;
+
+        time_t now = Tango::get_current_system_datetime();
 
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            change3_subscription = now - event_change3_subscription;
-            change4_subscription = now - event_change4_subscription;
-            change5_subscription = now - event_change5_subscription;
+            switch(event_type)
+            {
+            case CHANGE_EVENT:
+            {
+                event3_subscription = now - event_change3_subscription;
+                event4_subscription = now - event_change4_subscription;
+                event5_subscription = now - event_change5_subscription;
+                event6_subscription =
+                    now - event_change5_subscription; // this is odd, but we do not have event_change6_subscription
+                break;
+            }
+            case ARCHIVE_EVENT:
+            {
+                event3_subscription = now - event_archive3_subscription;
+                event4_subscription = now - event_archive4_subscription;
+                event5_subscription = now - event_archive5_subscription;
+                event6_subscription =
+                    now - event_archive5_subscription; // this is odd, but we do not have event_archive6_subscription
+                break;
+            }
+            case USER_EVENT:
+            {
+                event3_subscription = now - event_user3_subscription;
+                event4_subscription = now - event_user4_subscription;
+                event5_subscription = now - event_user5_subscription;
+                event6_subscription =
+                    now - event_user5_subscription; // this is odd, but we do not have event_user6_subscription
+                break;
+            }
+            case ALARM_EVENT:
+            {
+                event6_subscription = now - event_alarm6_subscription;
+                oldest_supported_idl = 6;
+                break;
+            }
+            default:
+                TANGO_ASSERT_ON_DEFAULT(event_type);
+            }
         }
 
         //
@@ -3007,18 +3051,14 @@ void Attribute::fire_change_event(DevFailed *except)
         //
         // Get client lib and if it's possible to send event (ZMQ socket created)
         //
-
         std::vector<int> client_libs;
         {
             omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            client_libs = get_client_lib(CHANGE_EVENT); // We want a copy
+            client_libs = get_client_lib(event_type); // We want a copy
             if(use_zmq_event() && event_supplier_zmq != nullptr)
             {
                 std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                if(!sock_endpoint.empty())
-                {
-                    pub_socket_created = true;
-                }
+                pub_socket_created = !sock_endpoint.empty();
             }
         }
 
@@ -3028,30 +3068,30 @@ void Attribute::fire_change_event(DevFailed *except)
             switch(*ite)
             {
             case 6:
-                if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                if(oldest_supported_idl >= 6 && event6_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
-                    remove_client_lib(6, std::string(EventName[CHANGE_EVENT]));
+                    remove_client_lib(6, std::string(EventName[event_type]));
                 }
                 break;
 
             case 5:
-                if(change5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                if(oldest_supported_idl >= 5 && event5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
-                    remove_client_lib(5, std::string(EventName[CHANGE_EVENT]));
+                    remove_client_lib(5, std::string(EventName[event_type]));
                 }
                 break;
 
             case 4:
-                if(change4_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                if(oldest_supported_idl >= 4 && event4_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
-                    remove_client_lib(4, std::string(EventName[CHANGE_EVENT]));
+                    remove_client_lib(4, std::string(EventName[event_type]));
                 }
                 break;
 
             default:
-                if(change3_subscription >= EVENT_RESUBSCRIBE_PERIOD)
+                if(oldest_supported_idl >= 3 && event3_subscription >= EVENT_RESUBSCRIBE_PERIOD)
                 {
-                    remove_client_lib(3, std::string(EventName[CHANGE_EVENT]));
+                    remove_client_lib(3, std::string(EventName[event_type]));
                 }
                 break;
             }
@@ -3063,19 +3103,11 @@ void Attribute::fire_change_event(DevFailed *except)
 
         if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
         {
-            if((name_lower != "state") && (name_lower != "status"))
+            if(must_clean_data)
             {
-                // delete the data values allocated in the attribute
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
-                    //                        set_value_flag (false);
-                }
+                delete_seq_and_reset_alarm();
             }
+            //                        set_value_flag (false);
             return;
         }
 
@@ -3088,29 +3120,16 @@ void Attribute::fire_change_event(DevFailed *except)
             dev = tg->get_device_by_name(d_name);
         }
 
-        if(except == nullptr)
+        if(except == nullptr && must_have_data && !get_value_flag())
         {
-            //
-            // Check that the attribute value has been set
-            //
+            TangoSys_OMemStream o;
 
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    if(!value_flag)
-                    {
-                        TangoSys_OMemStream o;
+            o << "Value for attribute ";
+            o << name;
+            o << " has not been updated. Can't send " << EventName[event_type] << " event\n";
+            o << "Set the attribute value (using set_value(...) method) before!" << std::ends;
 
-                        o << "Value for attribute ";
-                        o << name;
-                        o << " has not been updated. Can't send change event\n";
-                        o << "Set the attribute value (using set_value(...) method) before!" << std::ends;
-
-                        TANGO_THROW_EXCEPTION(API_AttrValueNotSet, o.str());
-                    }
-                }
-            }
+            TANGO_THROW_EXCEPTION(API_AttrValueNotSet, o.str());
         }
 
         //
@@ -3159,31 +3178,50 @@ void Attribute::fire_change_event(DevFailed *except)
         }
 
         //
+        // Fire event
+        //
+
+        bool criteria_fulfilled = false;
+
+        switch(event_type)
+        {
+        case CHANGE_EVENT:
+            criteria_fulfilled = is_check_change_criteria();
+            break;
+        case ALARM_EVENT:
+            criteria_fulfilled = is_check_alarm_criteria();
+            break;
+        case ARCHIVE_EVENT:
+            criteria_fulfilled = is_check_archive_criteria();
+            break;
+        case USER_EVENT:
+            break;
+        default:
+            TANGO_ASSERT_ON_DEFAULT(event_type);
+        }
+
+        //
         // Create the structure used to send data to event system
         //
 
         EventSupplier::SuppliedEventData ad;
         ::memset(&ad, 0, sizeof(ad));
 
-        //
-        // Fire event
-        //
-
-        if(is_check_change_criteria())
+        if(send_attr_5 != nullptr)
         {
-            if(send_attr_5 != nullptr)
-            {
-                ad.attr_val_5 = send_attr_5;
-            }
-            else if(send_attr_4 != nullptr)
-            {
-                ad.attr_val_4 = send_attr_4;
-            }
-            else
-            {
-                ad.attr_val_3 = send_attr;
-            }
+            ad.attr_val_5 = send_attr_5;
+        }
+        else if(send_attr_4 != nullptr)
+        {
+            ad.attr_val_4 = send_attr_4;
+        }
+        else if(send_attr != nullptr)
+        {
+            ad.attr_val_3 = send_attr;
+        }
 
+        if(criteria_fulfilled)
+        {
             //
             // Eventually push the event (if detected)
             // When we have both notifd and zmq event supplier, do not detect the event
@@ -3191,10 +3229,23 @@ void Attribute::fire_change_event(DevFailed *except)
             // is detected.
             //
 
+            auto now_timeval = PollClock::now(); // for archive event
+
             bool send_event = false;
             if(event_supplier_nd != nullptr)
             {
-                send_event = event_supplier_nd->detect_and_push_change_event(dev, ad, *this, name, except, true);
+                switch(event_type)
+                {
+                case CHANGE_EVENT:
+                    send_event = event_supplier_nd->detect_and_push_change_event(dev, ad, *this, name, except, true);
+                    break;
+                case ARCHIVE_EVENT:
+                    send_event = event_supplier_nd->detect_and_push_archive_event(
+                        dev, ad, *this, name, except, now_timeval, true);
+                    break;
+                default: // ALARM_EVENT cannot be sent with notify
+                    TANGO_ASSERT_ON_DEFAULT(event_type);
+                }
             }
             if(event_supplier_zmq != nullptr)
             {
@@ -3208,14 +3259,28 @@ void Attribute::fire_change_event(DevFailed *except)
                         std::vector<long> f_data_lg;
 
                         event_supplier_zmq->push_event_loop(
-                            dev, CHANGE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, *this, except);
+                            dev, event_type, f_names, f_data, f_names_lg, f_data_lg, ad, *this, except);
                     }
                 }
                 else
                 {
                     if(pub_socket_created)
                     {
-                        event_supplier_zmq->detect_and_push_change_event(dev, ad, *this, name, except, true);
+                        switch(event_type)
+                        {
+                        case CHANGE_EVENT:
+                            event_supplier_zmq->detect_and_push_change_event(dev, ad, *this, name, except, true);
+                            break;
+                        case ALARM_EVENT:
+                            event_supplier_zmq->detect_and_push_alarm_event(dev, ad, *this, name, except, true);
+                            break;
+                        case ARCHIVE_EVENT:
+                            event_supplier_zmq->detect_and_push_archive_event(
+                                dev, ad, *this, name, except, now_timeval, true);
+                            break;
+                        default:
+                            TANGO_ASSERT_ON_DEFAULT(event_type);
+                        }
                     }
                 }
             }
@@ -3231,71 +3296,104 @@ void Attribute::fire_change_event(DevFailed *except)
             // comming with the standard mechanism or coming from a manual fire event call.
             //
 
-            bool force_change = false;
-            bool quality_change = false;
-
-            {
-                omni_mutex_lock oml(EventSupplier::get_event_mutex());
-
-                const AttrQuality old_quality = prev_change_event.quality;
-
-                if((except != nullptr) || quality == Tango::ATTR_INVALID || prev_change_event.err ||
-                   old_quality == Tango::ATTR_INVALID)
-                {
-                    force_change = true;
-                }
-
-                prev_change_event.store(send_attr_5, send_attr_4, send_attr, nullptr, except);
-
-                quality_change = (old_quality != prev_change_event.quality);
-            }
-
-            std::vector<std::string> filterable_names;
-            std::vector<double> filterable_data;
             std::vector<std::string> filterable_names_lg;
             std::vector<long> filterable_data_lg;
 
-            filterable_names.emplace_back("forced_event");
-            if(force_change)
+            if(event_type != USER_EVENT)
             {
-                filterable_data.push_back(1.0);
-            }
-            else
-            {
-                filterable_data.push_back(0.0);
-            }
+                bool force_event = false;
+                bool quality_change = false;
+                double delta_change_rel = 0.0;
+                double delta_change_abs = 0.0;
 
-            filterable_names.emplace_back("quality");
-            if(quality_change)
-            {
-                filterable_data.push_back(1.0);
-            }
-            else
-            {
-                filterable_data.push_back(0.0);
-            }
+                {
+                    omni_mutex_lock oml(EventSupplier::get_event_mutex());
 
-            if(send_attr_5 != nullptr)
-            {
-                ad.attr_val_5 = send_attr_5;
-            }
-            else if(send_attr_4 != nullptr)
-            {
-                ad.attr_val_4 = send_attr_4;
-            }
-            else
-            {
-                ad.attr_val_3 = send_attr;
+                    LastAttrValue *prev_event;
+                    switch(event_type)
+                    {
+                    case CHANGE_EVENT:
+                        prev_event = &prev_change_event;
+                        break;
+                    case ALARM_EVENT:
+                        prev_event = &prev_alarm_event;
+                        break;
+                    case ARCHIVE_EVENT:
+                        prev_event = &prev_archive_event;
+                        break;
+                    default:
+                        TANGO_ASSERT_ON_DEFAULT(event_type);
+                    }
+
+                    const AttrQuality previous_quality = prev_event->quality;
+
+                    if(event_type == ARCHIVE_EVENT)
+                    {
+                        // Execute detect_change only to calculate the delta_change_rel and
+                        // delta_change_abs and force_change !
+
+                        if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
+                        {
+                            EventSupplier *event_supplier =
+                                event_supplier_nd != nullptr ? event_supplier_nd : event_supplier_zmq;
+                            event_supplier->detect_change(
+                                *this, ad, true, delta_change_rel, delta_change_abs, except, force_event, dev);
+                        }
+                    }
+                    else if(event_type == CHANGE_EVENT || event_type == ALARM_EVENT)
+                    {
+                        if((except != nullptr) || quality == Tango::ATTR_INVALID || prev_event->err ||
+                           previous_quality == Tango::ATTR_INVALID)
+                        {
+                            force_event = true;
+                        }
+                    }
+
+                    prev_event->store(send_attr_5, send_attr_4, send_attr, nullptr, except);
+
+                    quality_change = (previous_quality != prev_event->quality);
+                }
+
+                filterable_names.emplace_back("forced_event");
+                if(force_event)
+                {
+                    filterable_data.push_back(1.0);
+                }
+                else
+                {
+                    filterable_data.push_back(0.0);
+                }
+
+                filterable_names.emplace_back("quality");
+                if(quality_change)
+                {
+                    filterable_data.push_back(1.0);
+                }
+                else
+                {
+                    filterable_data.push_back(0.0);
+                }
+
+                if(event_type == ARCHIVE_EVENT)
+                {
+                    filterable_names.emplace_back("counter");
+                    filterable_data_lg.push_back(-1);
+
+                    filterable_names.emplace_back("delta_change_rel");
+                    filterable_data.push_back(delta_change_rel);
+                    filterable_names.emplace_back("delta_change_abs");
+                    filterable_data.push_back(delta_change_abs);
+                }
             }
 
             //
             // Finally push the event(s)
             //
 
-            if(event_supplier_nd != nullptr)
+            if(event_supplier_nd != nullptr && event_type != ALARM_EVENT)
             {
                 event_supplier_nd->push_event(dev,
-                                              "change",
+                                              EventName[event_type],
                                               filterable_names,
                                               filterable_data,
                                               filterable_names_lg,
@@ -3309,7 +3407,7 @@ void Attribute::fire_change_event(DevFailed *except)
             if(event_supplier_zmq != nullptr && pub_socket_created)
             {
                 event_supplier_zmq->push_event_loop(dev,
-                                                    CHANGE_EVENT,
+                                                    event_type,
                                                     filterable_names,
                                                     filterable_data,
                                                     filterable_names_lg,
@@ -3327,32 +3425,28 @@ void Attribute::fire_change_event(DevFailed *except)
         if(send_attr_5 != nullptr)
         {
             delete send_attr_5;
+            send_attr_5 = nullptr;
         }
         else if(send_attr_4 != nullptr)
         {
             delete send_attr_4;
+            send_attr_4 = nullptr;
         }
         else
         {
             delete send_attr;
+            send_attr = nullptr;
         }
 
         //
         // Delete the data values allocated in the attribute
         //
 
-        if((name_lower != "state") && (name_lower != "status"))
+        if(must_clean_data)
         {
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //                set_value_flag (false);
-            }
+            delete_seq_and_reset_alarm();
         }
+        //                set_value_flag (false);
     }
     catch(...)
     {
@@ -3369,23 +3463,32 @@ void Attribute::fire_change_event(DevFailed *except)
             delete send_attr;
         }
 
-        if((name_lower != "state") && (name_lower != "status"))
+        if(must_clean_data)
         {
-            // delete the data values allocated in the attribute
-
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //                set_value_flag (false);
-            }
+            delete_seq_and_reset_alarm();
         }
-
+        //                set_value_flag (false);
         throw;
     }
+}
+
+//+------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        Attribute::fire_change_event
+//
+// description :
+//        Fire a change event for the attribute value.
+//
+// arguments:
+//         in :
+//            - ptr : Pointer to a DevFailed exception to fire in case of an error to indicate.
+//
+//---------------------------------------------------------------------------------------------------------------------
+
+void Attribute::fire_change_event(DevFailed *except)
+{
+    generic_fire_event(CHANGE_EVENT, except);
 }
 
 /**
@@ -3395,295 +3498,10 @@ void Attribute::fire_change_event(DevFailed *except)
  * @arg in:
  *          - ptr: Pointer to a DevFailed exception to fire in case of an error
  *                  to indicate.
- *          - should_delete_seq: True if we should call delete_seq()
  **/
 void Attribute::fire_alarm_event(DevFailed *except)
 {
-    do_fire_alarm_event(except, true);
-}
-
-/**
- * @name Attribute::do_fire_alarm_event
- *
- * @brief Fire an alarm event for the attribute value.
- * @arg in:
- *          - ptr: Pointer to a DevFailed exception to fire in case of an error
- *                  to indicate.
- *          - should_delete_seq: True if we should call delete_seq()
- **/
-void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
-{
-    TANGO_LOG_DEBUG << "Attribute::fire_alarm_event() entering ..." << std::endl;
-
-    if(except != nullptr)
-    {
-        set_value_flag(false);
-    }
-
-    // Check if it is needed to send an event
-    Tango::AttributeValue_5 *send_attr_5 = nullptr;
-    try
-    {
-        time_t alarm6_subscription, now{::time(nullptr)};
-        {
-            omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            alarm6_subscription = now - event_alarm6_subscription;
-        }
-
-        // Get the event supplier
-        EventSupplier *event_supplier_zmq = nullptr;
-        Tango::Util *tg{Util::instance()};
-        if(use_zmq_event())
-        {
-            event_supplier_zmq = tg->get_zmq_event_supplier();
-        }
-
-        // Get client lib and if it's possible to send event (ZMQ socket created)
-        bool pub_socket_created = false;
-        std::vector<int> client_libs;
-        {
-            omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            client_libs = get_client_lib(ALARM_EVENT); // We want a copy
-            if((use_zmq_event()) && (event_supplier_zmq != nullptr))
-            {
-                std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                pub_socket_created = !sock_endpoint.empty();
-            }
-        }
-
-        std::vector<int>::iterator ite;
-        for(ite = client_libs.begin(); ite != client_libs.end(); ++ite)
-        {
-            switch(*ite)
-            {
-                // No subscriptions for client versions earlier than 6.
-            case 6:
-                if(alarm6_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(6, std::string(EventName[ALARM_EVENT]));
-                }
-                break;
-            default:
-                break;
-            }
-        }
-
-        //
-        // Simply return if event supplier is not created or there is no clients
-        //
-
-        if((event_supplier_zmq == nullptr) || client_libs.empty())
-        {
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                // delete the data values allocated in the attribute
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID && should_delete_seq)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
-                    //                      set_value_flag (false);
-                }
-            }
-            return;
-        }
-
-        // Retrieve device object if not already done
-        if(dev == nullptr)
-        {
-            dev = tg->get_device_by_name(d_name);
-        }
-
-        // Check that the attribute value has been set
-        if(except == nullptr)
-        {
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    if(!value_flag)
-                    {
-                        TangoSys_OMemStream o;
-                        o << "Value for attribute " << name
-                          << " has not been updated. Can't send alarm "
-                             "event\nSet the attribute value (using "
-                             "set_value (...) method) before!"
-                          << std::ends;
-                        TANGO_THROW_EXCEPTION(API_AttrValueNotSet, o.str());
-                    }
-                }
-            }
-        }
-
-        // Build one AttributeValue_5 object
-        long vers = dev->get_dev_idl_version();
-        try
-        {
-            if(vers >= 6)
-            {
-                send_attr_5 = new Tango::AttributeValue_5{ZeroInitialize<Tango::AttributeValue_5>().value};
-            }
-        }
-        catch(std::bad_alloc &)
-        {
-            TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
-        }
-
-        // Don`t try to access the attribute data when an exception was indicated
-        if(except == nullptr)
-        {
-            if(send_attr_5 != nullptr)
-            {
-                Attribute_2_AttributeValue(send_attr_5, dev);
-            }
-        }
-
-        // Create the structure used to send data to event system
-        EventSupplier::SuppliedEventData ad{};
-
-        // Fire event
-        if(is_check_alarm_criteria())
-        {
-            if(send_attr_5 != nullptr)
-            {
-                ad.attr_val_5 = send_attr_5;
-            }
-
-            //
-            // Eventually push the event (if detected)
-            // The detect_and_push_events() method returns true if the event
-            // is detected.
-            //
-
-            if(event_supplier_zmq != nullptr && pub_socket_created)
-            {
-                event_supplier_zmq->detect_and_push_alarm_event(dev, ad, *this, name, except, true);
-            }
-        }
-        else
-        {
-            //
-            // Send event, if the read_attribute failed or if it is the first time
-            // that the read_attribute succeed after a failure.
-            // Same thing if the attribute quality factor changes to INVALID
-            //
-            // This is done only to be able to set-up the same filters with events
-            // comming with the standard mechanism or coming from a manual fire event call.
-            //
-
-            bool force_alarm = false;
-            bool quality_change = false;
-            {
-                omni_mutex_lock oml(EventSupplier::get_event_mutex());
-
-                const AttrQuality old_quality = prev_alarm_event.quality;
-
-                if(except != nullptr || quality == Tango::ATTR_INVALID || prev_alarm_event.err ||
-                   old_quality == Tango::ATTR_INVALID)
-                {
-                    force_alarm = true;
-                }
-
-                prev_alarm_event.store(send_attr_5, nullptr, nullptr, nullptr, except);
-
-                quality_change = (old_quality != prev_alarm_event.quality);
-            }
-
-            std::vector<std::string> filterable_names;
-            std::vector<double> filterable_data;
-            std::vector<std::string> filterable_names_lg;
-            std::vector<long> filterable_data_lg;
-
-            filterable_names.emplace_back("forced_event");
-            if(force_alarm)
-            {
-                filterable_data.push_back(1.0);
-            }
-            else
-            {
-                filterable_data.push_back(0.0);
-            }
-
-            filterable_names.emplace_back("quality");
-            if(quality_change)
-            {
-                filterable_data.push_back(1.0);
-            }
-            else
-            {
-                filterable_data.push_back(0.0);
-            }
-
-            if(send_attr_5 != nullptr)
-            {
-                ad.attr_val_5 = send_attr_5;
-            }
-
-            //
-            // Finally push the event(s)
-            //
-
-            if(event_supplier_zmq != nullptr && pub_socket_created)
-            {
-                event_supplier_zmq->push_event_loop(dev,
-                                                    ALARM_EVENT,
-                                                    filterable_names,
-                                                    filterable_data,
-                                                    filterable_names_lg,
-                                                    filterable_data_lg,
-                                                    ad,
-                                                    *this,
-                                                    except);
-            }
-        }
-
-        // Return allocated memory
-        if(send_attr_5 != nullptr)
-        {
-            delete send_attr_5;
-            send_attr_5 = nullptr;
-        }
-
-        // Delete the data values allocated in the attribute
-        if((name_lower != "state") && (name_lower != "status"))
-        {
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID && should_delete_seq)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //              set_value_flag (false);
-            }
-        }
-    }
-    catch(...)
-    {
-        if(send_attr_5 != nullptr)
-        {
-            delete send_attr_5;
-        }
-
-        if((name_lower != "state") && (name_lower != "status"))
-        {
-            // delete the data values allocated in the attribute
-
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID && should_delete_seq)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //              set_value_flag (false);
-            }
-        }
-
-        throw;
-    }
+    generic_fire_event(ALARM_EVENT, except);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -3702,429 +3520,7 @@ void Attribute::do_fire_alarm_event(DevFailed *except, bool should_delete_seq)
 
 void Attribute::fire_archive_event(DevFailed *except)
 {
-    TANGO_LOG_DEBUG << "Attribute::fire_archive_event() entering ..." << std::endl;
-
-    if(except != nullptr)
-    {
-        set_value_flag(false);
-    }
-
-    //
-    // Check if it is needed to send an event
-    //
-
-    Tango::AttributeValue_3 *send_attr = nullptr;
-    Tango::AttributeValue_4 *send_attr_4 = nullptr;
-    Tango::AttributeValue_5 *send_attr_5 = nullptr;
-
-    try
-    {
-        time_t now;
-        time_t archive3_subscription, archive4_subscription, archive5_subscription;
-
-        now = Tango::get_current_system_datetime();
-
-        {
-            omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            archive3_subscription = now - event_archive3_subscription;
-            archive4_subscription = now - event_archive4_subscription;
-            archive5_subscription = now - event_archive5_subscription;
-        }
-
-        //
-        // Get the event supplier(s)
-        //
-
-        EventSupplier *event_supplier_nd = nullptr;
-        EventSupplier *event_supplier_zmq = nullptr;
-        bool pub_socket_created = false;
-
-        Tango::Util *tg = Util::instance();
-        if(use_notifd_event())
-        {
-            event_supplier_nd = tg->get_notifd_event_supplier();
-            pub_socket_created = true;
-        }
-        if(use_zmq_event())
-        {
-            event_supplier_zmq = tg->get_zmq_event_supplier();
-        }
-
-        //
-        // Get client lib and if it's possible to send event (ZMQ socket created)
-        //
-
-        std::vector<int> client_libs;
-        {
-            omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            client_libs = get_client_lib(ARCHIVE_EVENT); // We want a copy
-            if(use_zmq_event() && event_supplier_zmq != nullptr)
-            {
-                std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                if(!sock_endpoint.empty())
-                {
-                    pub_socket_created = true;
-                }
-            }
-        }
-
-        std::vector<int>::iterator ite;
-        for(ite = client_libs.begin(); ite != client_libs.end(); ++ite)
-        {
-            switch(*ite)
-            {
-            case 6:
-                if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(6, std::string(EventName[ARCHIVE_EVENT]));
-                }
-                break;
-
-            case 5:
-                if(archive5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(5, std::string(EventName[ARCHIVE_EVENT]));
-                }
-                break;
-
-            case 4:
-                if(archive4_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(4, std::string(EventName[ARCHIVE_EVENT]));
-                }
-                break;
-
-            default:
-                if(archive3_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(3, std::string(EventName[ARCHIVE_EVENT]));
-                }
-                break;
-            }
-        }
-
-        //
-        // Simply return if event supplier(s) are not created or there is no clients
-        //
-
-        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
-        {
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                //
-                // Delete the data values allocated in the attribute
-                //
-
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
-                    //                        set_value_flag (false);
-                }
-            }
-            return;
-        }
-
-        //
-        // Retrieve device object if not already done
-        //
-
-        if(dev == nullptr)
-        {
-            dev = tg->get_device_by_name(d_name);
-        }
-
-        if(except == nullptr)
-        {
-            //
-            // Check that the attribute value has been set
-            //
-
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    if(!value_flag)
-                    {
-                        TangoSys_OMemStream o;
-
-                        o << "Value for attribute ";
-                        o << name;
-                        o << " has not been updated. Can't send archive event\n";
-                        o << "Set the attribute value (using set_value(...) method) before!" << std::ends;
-
-                        TANGO_THROW_EXCEPTION(API_AttrValueNotSet, o.str());
-                    }
-                }
-            }
-        }
-
-        //
-        // Build one AttributeValue_3, AttributeValue_4 or AttributeValue_5 object
-        //
-
-        try
-        {
-            if(dev->get_dev_idl_version() > 4)
-            {
-                send_attr_5 = new Tango::AttributeValue_5{ZeroInitialize<Tango::AttributeValue_5>().value};
-            }
-            else if(dev->get_dev_idl_version() == 4)
-            {
-                send_attr_4 = new Tango::AttributeValue_4{ZeroInitialize<Tango::AttributeValue_4>().value};
-            }
-            else
-            {
-                send_attr = new Tango::AttributeValue_3{ZeroInitialize<Tango::AttributeValue_3>().value};
-            }
-        }
-        catch(std::bad_alloc &)
-        {
-            TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
-        }
-
-        //
-        // Don`t try to access the attribute data when an exception was indicated
-        //
-
-        if(except == nullptr)
-        {
-            if(send_attr_5 != nullptr)
-            {
-                Attribute_2_AttributeValue(send_attr_5, dev);
-            }
-            else if(send_attr_4 != nullptr)
-            {
-                Attribute_2_AttributeValue(send_attr_4, dev);
-            }
-            else
-            {
-                Attribute_2_AttributeValue(send_attr, dev);
-            }
-        }
-
-        //
-        // Create the structure used to send data to event system
-        //
-
-        EventSupplier::SuppliedEventData ad;
-        ::memset(&ad, 0, sizeof(ad));
-
-        if(send_attr_5 != nullptr)
-        {
-            ad.attr_val_5 = send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            ad.attr_val_4 = send_attr_4;
-        }
-        else
-        {
-            ad.attr_val_3 = send_attr;
-        }
-
-        //
-        // Fire event
-        //
-
-        if(is_check_archive_criteria())
-        {
-            auto now_timeval = PollClock::now();
-
-            //
-            // Eventually push the event (if detected)
-            // When we have both notifd and zmq event supplier, do not detect the event
-            // two times. The detect_and_push_events() method returns true if the event
-            // is detected.
-            //
-
-            bool send_event = false;
-            if(event_supplier_nd != nullptr)
-            {
-                send_event =
-                    event_supplier_nd->detect_and_push_archive_event(dev, ad, *this, name, except, now_timeval, true);
-            }
-            if(event_supplier_zmq != nullptr)
-            {
-                if(event_supplier_nd != nullptr)
-                {
-                    if(send_event && pub_socket_created)
-                    {
-                        std::vector<std::string> f_names;
-                        std::vector<double> f_data;
-                        std::vector<std::string> f_names_lg;
-                        std::vector<long> f_data_lg;
-
-                        event_supplier_zmq->push_event_loop(
-                            dev, ARCHIVE_EVENT, f_names, f_data, f_names_lg, f_data_lg, ad, *this, except);
-                    }
-                }
-                else
-                {
-                    if(pub_socket_created)
-                    {
-                        event_supplier_zmq->detect_and_push_archive_event(
-                            dev, ad, *this, name, except, now_timeval, true);
-                    }
-                }
-            }
-        }
-        else
-        {
-            bool force_change = false;
-            bool quality_change = false;
-            double delta_change_rel = 0.0;
-            double delta_change_abs = 0.0;
-
-            {
-                omni_mutex_lock oml(EventSupplier::get_event_mutex());
-
-                const AttrQuality old_quality = prev_archive_event.quality;
-
-                // Execute detect_change only to calculate the delta_change_rel and
-                // delta_change_abs and force_change !
-
-                if((event_supplier_nd != nullptr) || (event_supplier_zmq != nullptr))
-                {
-                    EventSupplier *event_supplier =
-                        event_supplier_nd != nullptr ? event_supplier_nd : event_supplier_zmq;
-                    event_supplier->detect_change(
-                        *this, ad, true, delta_change_rel, delta_change_abs, except, force_change, dev);
-                }
-
-                prev_archive_event.store(send_attr_5, send_attr_4, send_attr, nullptr, except);
-
-                quality_change = (old_quality != prev_archive_event.quality);
-            }
-
-            std::vector<std::string> filterable_names;
-            std::vector<double> filterable_data;
-            std::vector<std::string> filterable_names_lg;
-            std::vector<long> filterable_data_lg;
-
-            filterable_names.emplace_back("forced_event");
-            if(force_change)
-            {
-                filterable_data.push_back(1.0);
-            }
-            else
-            {
-                filterable_data.push_back(0.0);
-            }
-
-            filterable_names.emplace_back("quality");
-            if(quality_change)
-            {
-                filterable_data.push_back(1.0);
-            }
-            else
-            {
-                filterable_data.push_back(0.0);
-            }
-
-            filterable_names.emplace_back("counter");
-            filterable_data_lg.push_back(-1);
-
-            filterable_names.emplace_back("delta_change_rel");
-            filterable_data.push_back(delta_change_rel);
-            filterable_names.emplace_back("delta_change_abs");
-            filterable_data.push_back(delta_change_abs);
-
-            if(event_supplier_nd != nullptr)
-            {
-                event_supplier_nd->push_event(dev,
-                                              "archive",
-                                              filterable_names,
-                                              filterable_data,
-                                              filterable_names_lg,
-                                              filterable_data_lg,
-                                              ad,
-                                              name,
-                                              except,
-                                              false);
-            }
-
-            if(event_supplier_zmq != nullptr && pub_socket_created)
-            {
-                event_supplier_zmq->push_event_loop(dev,
-                                                    ARCHIVE_EVENT,
-                                                    filterable_names,
-                                                    filterable_data,
-                                                    filterable_names_lg,
-                                                    filterable_data_lg,
-                                                    ad,
-                                                    *this,
-                                                    except);
-            }
-        }
-
-        if(send_attr_5 != nullptr)
-        {
-            delete send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            delete send_attr_4;
-        }
-        else
-        {
-            delete send_attr;
-        }
-
-        //
-        // Delete the data values allocated in the attribute
-        //
-
-        if((name_lower != "state") && (name_lower != "status"))
-        {
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //                set_value_flag (false);
-            }
-        }
-    }
-    catch(...)
-    {
-        if(send_attr_5 != nullptr)
-        {
-            delete send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            delete send_attr_4;
-        }
-        else
-        {
-            delete send_attr;
-        }
-
-        //
-        // Delete the data values allocated in the attribute
-        //
-
-        if((name_lower != "state") && (name_lower != "status"))
-        {
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //                set_value_flag (false);
-            }
-        }
-
-        throw;
-    }
+    generic_fire_event(ARCHIVE_EVENT, except);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -4147,320 +3543,7 @@ void Attribute::fire_event(const std::vector<std::string> &filt_names,
                            const std::vector<double> &filt_vals,
                            DevFailed *except)
 {
-    TANGO_LOG_DEBUG << "Attribute::fire_event() entring ..." << std::endl;
-
-    if(except != nullptr)
-    {
-        set_value_flag(false);
-    }
-
-    Tango::AttributeValue_3 *send_attr = nullptr;
-    Tango::AttributeValue_4 *send_attr_4 = nullptr;
-    Tango::AttributeValue_5 *send_attr_5 = nullptr;
-
-    //
-    // Check if it is needed to send an event
-    //
-
-    try
-    {
-        time_t now;
-        time_t user3_subscription, user4_subscription, user5_subscription;
-
-        now = Tango::get_current_system_datetime();
-
-        {
-            omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            user3_subscription = now - event_user3_subscription;
-            user4_subscription = now - event_user4_subscription;
-            user5_subscription = now - event_user5_subscription;
-        }
-
-        //
-        // Get the event supplier(s)
-        //
-
-        EventSupplier *event_supplier_nd = nullptr;
-        EventSupplier *event_supplier_zmq = nullptr;
-        bool pub_socket_created = false;
-
-        Tango::Util *tg = Util::instance();
-        if(use_notifd_event())
-        {
-            event_supplier_nd = tg->get_notifd_event_supplier();
-            pub_socket_created = true;
-        }
-        if(use_zmq_event())
-        {
-            event_supplier_zmq = tg->get_zmq_event_supplier();
-        }
-
-        //
-        // Get client lib and if it's possible to send event (ZMQ socket created)
-        //
-
-        std::vector<int> client_libs;
-        {
-            omni_mutex_lock oml(EventSupplier::get_event_mutex());
-            client_libs = get_client_lib(USER_EVENT); // We want a copy
-            if(use_zmq_event() && event_supplier_zmq != nullptr)
-            {
-                std::string &sock_endpoint = static_cast<ZmqEventSupplier *>(event_supplier_zmq)->get_event_endpoint();
-                if(!sock_endpoint.empty())
-                {
-                    pub_socket_created = true;
-                }
-            }
-        }
-
-        std::vector<int>::iterator ite;
-        for(ite = client_libs.begin(); ite != client_libs.end(); ++ite)
-        {
-            switch(*ite)
-            {
-            case 6:
-                if(user5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(6, std::string(EventName[USER_EVENT]));
-                }
-                break;
-
-            case 5:
-                if(user5_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(5, std::string(EventName[USER_EVENT]));
-                }
-                break;
-
-            case 4:
-                if(user4_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(4, std::string(EventName[USER_EVENT]));
-                }
-                break;
-
-            default:
-                if(user3_subscription >= EVENT_RESUBSCRIBE_PERIOD)
-                {
-                    remove_client_lib(3, std::string(EventName[USER_EVENT]));
-                }
-                break;
-            }
-        }
-
-        //
-        // Simply return if event supplier(s) are not created or there is no clients
-        //
-
-        if(((event_supplier_nd == nullptr) && (event_supplier_zmq == nullptr)) || client_libs.empty())
-        {
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                //
-                // Delete the data values allocated in the attribute
-                //
-
-                bool data_flag = get_value_flag();
-                if(data_flag)
-                {
-                    if(quality != Tango::ATTR_INVALID)
-                    {
-                        delete_seq_and_reset_alarm();
-                    }
-                    //                        set_value_flag (false);
-                }
-            }
-            return;
-        }
-
-        //
-        // Retrieve device object if not already done
-        //
-
-        if(dev == nullptr)
-        {
-            dev = tg->get_device_by_name(d_name);
-        }
-
-        if(except == nullptr)
-        {
-            //
-            // Check that the attribute value has been set
-            //
-
-            if((name_lower != "state") && (name_lower != "status"))
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    if(!value_flag)
-                    {
-                        TangoSys_OMemStream o;
-
-                        o << "Value for attribute ";
-                        o << name;
-                        o << " has not been updated. Can't send user event\n";
-                        o << "Set the attribute value (using set_value(...) method) before!" << std::ends;
-
-                        TANGO_THROW_EXCEPTION(API_AttrValueNotSet, o.str());
-                    }
-                }
-            }
-        }
-
-        //
-        // Build one AttributeValue_3, AttributeValue_4 object or Attribute_5 object
-        //
-
-        try
-        {
-            if(dev->get_dev_idl_version() > 4)
-            {
-                send_attr_5 = new Tango::AttributeValue_5{ZeroInitialize<Tango::AttributeValue_5>{}.value};
-            }
-            else if(dev->get_dev_idl_version() == 4)
-            {
-                send_attr_4 = new Tango::AttributeValue_4{ZeroInitialize<Tango::AttributeValue_4>{}.value};
-            }
-            else
-            {
-                send_attr = new Tango::AttributeValue_3{ZeroInitialize<Tango::AttributeValue_3>{}.value};
-            }
-        }
-        catch(std::bad_alloc &)
-        {
-            TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
-        }
-
-        //
-        // Don`t try to access the attribute data when an exception was indicated
-        //
-
-        if(except == nullptr)
-        {
-            if(send_attr_5 != nullptr)
-            {
-                Attribute_2_AttributeValue(send_attr_5, dev);
-            }
-            else if(send_attr_4 != nullptr)
-            {
-                Attribute_2_AttributeValue(send_attr_4, dev);
-            }
-            else
-            {
-                Attribute_2_AttributeValue(send_attr, dev);
-            }
-        }
-
-        //
-        // Create the structure used to send data to event system
-        //
-
-        EventSupplier::SuppliedEventData ad;
-        ::memset(&ad, 0, sizeof(ad));
-
-        if(send_attr_5 != nullptr)
-        {
-            ad.attr_val_5 = send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            ad.attr_val_4 = send_attr_4;
-        }
-        else
-        {
-            ad.attr_val_3 = send_attr;
-        }
-
-        //
-        // Fire event
-        //
-
-        std::vector<std::string> filterable_names_lg;
-        std::vector<long> filterable_data_lg;
-
-        if(event_supplier_nd != nullptr)
-        {
-            event_supplier_nd->push_event(dev,
-                                          "user_event",
-                                          filt_names,
-                                          filt_vals,
-                                          filterable_names_lg,
-                                          filterable_data_lg,
-                                          ad,
-                                          name,
-                                          except,
-                                          false);
-        }
-        if(event_supplier_zmq != nullptr && pub_socket_created)
-        {
-            event_supplier_zmq->push_event_loop(
-                dev, USER_EVENT, filt_names, filt_vals, filterable_names_lg, filterable_data_lg, ad, *this, except);
-        }
-
-        if(send_attr_5 != nullptr)
-        {
-            delete send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            delete send_attr_4;
-        }
-        else
-        {
-            delete send_attr;
-        }
-
-        //
-        // delete the data values allocated in the attribute
-        //
-
-        if((name_lower != "state") && (name_lower != "status"))
-        {
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //                set_value_flag (false);
-            }
-        }
-    }
-    catch(...)
-    {
-        if(send_attr_5 != nullptr)
-        {
-            delete send_attr_5;
-        }
-        else if(send_attr_4 != nullptr)
-        {
-            delete send_attr_4;
-        }
-        else
-        {
-            delete send_attr;
-        }
-
-        //
-        // delete the data values allocated in the attribute
-        //
-
-        if((name_lower != "state") && (name_lower != "status"))
-        {
-            bool data_flag = get_value_flag();
-            if(data_flag)
-            {
-                if(quality != Tango::ATTR_INVALID)
-                {
-                    delete_seq_and_reset_alarm();
-                }
-                //                set_value_flag (false);
-            }
-        }
-
-        throw;
-    }
+    generic_fire_event(USER_EVENT, except, true, filt_names, filt_vals);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
