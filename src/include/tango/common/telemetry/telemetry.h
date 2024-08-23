@@ -326,7 +326,7 @@ class Interface
     // internal helper function: forward declaration of the method returning the default interface.
     // see Interface::get_current for details regarding the semantic and usage of the default interface.
     //-----------------------------------------------------------------------------------------------------------------
-    static Tango::telemetry::InterfacePtr get_default_interface() noexcept;
+    static Tango::telemetry::InterfacePtr get_default_interface();
 
   public:
     //-----------------------------------------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ class Interface
     //!
     //! \see Tango::telemetry::Interface::set_current
     //-----------------------------------------------------------------------------------------------------------------
-    static InterfacePtr get_current() noexcept
+    static InterfacePtr get_current()
     {
         return Tango::telemetry::current_telemetry_interface ? Tango::telemetry::current_telemetry_interface
                                                              : Interface::get_default_interface();
