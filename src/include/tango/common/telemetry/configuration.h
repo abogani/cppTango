@@ -72,7 +72,8 @@ class Configuration
     {
         grpc,
         http,
-        console
+        console,
+        none
     };
 
     Configuration(std::string id, std::string name_space, ServerClientDetails details);

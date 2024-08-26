@@ -145,3 +145,40 @@ SCENARIO("Telemetry can be configured for all variants")
         }
     }
 }
+
+SCENARIO("Telemetry traces/logs can be turned off")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        std::vector<std::string> env{"TANGO_TELEMETRY_ENABLE=on",
+                                     "TANGO_TELEMETRY_KERNEL_ENABLE=on",
+                                     "TANGO_TELEMETRY_TRACES_EXPORTER=none",
+                                     "TANGO_TELEMETRY_LOGS_EXPORTER=none"};
+        TangoTest::Context ctx{"telemetry", "TelemetryDS", idlver, env};
+        auto device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        WHEN("we read the attribute")
+        {
+            std::string att{"attr_dq_db"};
+
+            Tango::DeviceAttribute da;
+            REQUIRE_NOTHROW(da = device->read_attribute(att));
+
+            THEN("the read value matches the value on the server")
+            {
+                double att_value;
+                da >> att_value;
+                REQUIRE(att_value == SERVER_VALUE);
+            }
+
+            auto contents = load_file(ctx.get_redirect_file());
+            REQUIRE(!contents.empty());
+
+            using Catch::Matchers::ContainsSubstring;
+            REQUIRE_THAT(contents, !ContainsSubstring("code.filepath:"));
+        }
+    }
+}

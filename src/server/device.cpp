@@ -44,6 +44,10 @@
 #include <tango/server/logging.h>
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
+#if defined(TANGO_USE_TELEMETRY)
+  #include <opentelemetry/version.h>
+#endif
+
 namespace Tango
 {
 
@@ -492,6 +496,10 @@ void DeviceImpl::real_ctor()
     add_version_info("zmq", std::to_string(ZMQ_VERSION));
     add_version_info("cppzmq", std::to_string(CPPZMQ_VERSION));
     add_version_info("idl", TANGO_IDL_VERSION_STR);
+
+#if defined(TANGO_USE_TELEMETRY)
+    add_version_info("opentelemetry-cpp", OPENTELEMETRY_VERSION);
+#endif
 
     //
     // Init telemetry
