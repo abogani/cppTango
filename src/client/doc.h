@@ -94,6 +94,8 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * Client classes are mostly used in application(s) acting as clients and dealing with Tango devices.
  * Server classes are mostly used in Tango class or device server process main function.
  *
+ * See the \ref news for details about what's new in the Tango \tangoversion release.
+ *
  * In order to develop Tango's related software, it's a good idea to have a look at the
  * <a href=https://tango-controls.readthedocs.io>Tango Controls documentation</a>, especially the
  * <i>Developer's Guide</i> section.
@@ -101,6 +103,18 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * A look at the so-called <a href=pages.html>"Related Pages"</a> could also help the developer.
  *
  * Useful information is also available on the <a href=http://www.tango-controls.org>Tango Web site</a>.
+ *
+ */
+
+/*******************************************************
+ *                                                     *
+ *          The News page                              *
+ *                                                     *
+ *******************************************************/
+
+/*! \page news Tango \tangoversion Release Notes
+ *
+ * \include{doc} RELEASE_NOTES.md
  *
  */
 

@@ -6,14 +6,14 @@ September XXXX, 2024
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.5.0)?](#whats-new-since-version-950)
-  * [10.0.0 - Bug Fixes](#1000-bug-fixes)
-  * [10.0.0 - Changes](#1000-changes)
-  * [10.0.0 - Source Code Comparison With Version 9.5.0](#1000-source-code-comparison-with-version-950)
-  * [10.0.0 - Milestone](#1000-milestone)
-  * [10.0.0 - Feedback](#1000-feedback)
-  * [10.0.0 - Contributions](#1000-contributions)
-  * [10.0.0 - Acknowledgement](#1000-acknowledgement)
+  - [What's New (Since Version 9.5.0)?](#whats-new-since-version-950)
+  - [10.0.0 - Bug Fixes](#1000-bug-fixes)
+  - [10.0.0 - Changes](#1000-changes)
+  - [10.0.0 - Source Code Comparison With Version 9.5.0](#1000-source-code-comparison-with-version-950)
+  - [10.0.0 - Milestone](#1000-milestone)
+  - [10.0.0 - Feedback](#1000-feedback)
+  - [10.0.0 - Contributions](#1000-contributions)
+  - [10.0.0 - Acknowledgement](#1000-acknowledgement)
 
 ## What's New Since Version 9.5.0?
 
@@ -129,14 +129,14 @@ October 10th, 2023
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.4.2)?](#whats-new-since-version-942)
-  * [9.5.0 - Bug Fixes](#950-bug-fixes)
-  * [9.5.0 - Changes](#950-changes)
-  * [9.5.0 - Source Code Comparison With Version 9.4.2](#950-source-code-comparison-with-version-942)
-  * [9.5.0 - Milestone](#950-milestone)
-  * [9.5.0 - Feedback](#950-feedback)
-  * [9.5.0 - Contributions](#950-contributions)
-  * [9.5.0 - Acknowledgement](#950-acknowledgement)
+  - [What's New (Since Version 9.4.2)?](#whats-new-since-version-942)
+  - [9.5.0 - Bug Fixes](#950-bug-fixes)
+  - [9.5.0 - Changes](#950-changes)
+  - [9.5.0 - Source Code Comparison With Version 9.4.2](#950-source-code-comparison-with-version-942)
+  - [9.5.0 - Milestone](#950-milestone)
+  - [9.5.0 - Feedback](#950-feedback)
+  - [9.5.0 - Contributions](#950-contributions)
+  - [9.5.0 - Acknowledgement](#950-acknowledgement)
 
 ## What's New Since Version 9.4.2?
 
@@ -202,14 +202,14 @@ June 19th, 2023
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.4.1)?](#whats-new-since-version-941)
-  * [9.4.2 - Bug Fixes](#942-bug-fixes)
-  * [9.4.2 - Changes](#942-changes)
-  * [9.4.2 - Source Code Comparison With Version 9.4.1](#942-source-code-comparison-with-version-941)
-  * [9.4.2 - Milestone](#942-milestone)
-  * [9.4.2 - Feedback](#942-feedback)
-  * [9.4.2 - Contributions](#942-contributions)
-  * [9.4.2 - Acknowledgement](#942-acknowledgement)
+  - [What's New (Since Version 9.4.1)?](#whats-new-since-version-941)
+  - [9.4.2 - Bug Fixes](#942-bug-fixes)
+  - [9.4.2 - Changes](#942-changes)
+  - [9.4.2 - Source Code Comparison With Version 9.4.1](#942-source-code-comparison-with-version-941)
+  - [9.4.2 - Milestone](#942-milestone)
+  - [9.4.2 - Feedback](#942-feedback)
+  - [9.4.2 - Contributions](#942-contributions)
+  - [9.4.2 - Acknowledgement](#942-acknowledgement)
 
 ## What's New Since Version 9.4.1?
 
@@ -268,16 +268,16 @@ February 2nd, 2023
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.3.5)?](#whats-new-since-version-935)
-  * [9.4.0+ - Changes Which Might Have An Impact On Users](#940-changes-which-might-have-an-impact-on-users)
-  * [9.4.0 - Bug Fixes](#940-bug-fixes)
-  * [9.4.1 - Bug Fixes](#941-bug-fixes)
-  * [9.4.1 - Changes](#941-changes)
-  * [9.4.0+ - Source Code Comparison With Version 9.3.5](#940-source-code-comparison-with-version-935)
-  * [9.4.1 - Source Code Comparison With Version 9.4.0](#941-source-code-comparison-with-version-940)
-  * [9.4.1 - Feedback](#941-feedback)
-  * [9.4.1 - Contributions](#941-contributions)
-  * [9.4.1 - Acknowledgement](#941-acknowledgement)
+  - [What's New (Since Version 9.3.5)?](#whats-new-since-version-935)
+  - [9.4.0+ - Changes Which Might Have An Impact On Users](#940-changes-which-might-have-an-impact-on-users)
+  - [9.4.0 - Bug Fixes](#940-bug-fixes)
+  - [9.4.1 - Bug Fixes](#941-bug-fixes)
+  - [9.4.1 - Changes](#941-changes)
+  - [9.4.0+ - Source Code Comparison With Version 9.3.5](#940-source-code-comparison-with-version-935)
+  - [9.4.1 - Source Code Comparison With Version 9.4.0](#941-source-code-comparison-with-version-940)
+  - [9.4.1 - Feedback](#941-feedback)
+  - [9.4.1 - Contributions](#941-contributions)
+  - [9.4.1 - Acknowledgement](#941-acknowledgement)
 
 ## What's New Since Version 9.4.0?
 
