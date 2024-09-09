@@ -69,7 +69,6 @@ struct MulticastParameters
 //
 //=============================================================================
 
-typedef Tango::DeviceClass *(*Cpp_creator_ptr)(const char *);
 typedef void (*ClassFactoryFuncPtr)(DServer *);
 
 class KillThread;
@@ -203,6 +202,8 @@ class DServer : public TANGO_BASE_CLASS
         this->create_cpp_class(c1, c2);
     }
 
+    void _create_cpp_class(const std::string &, const std::string &, const std::vector<std::string> &);
+
     void mcast_event_for_att(const std::string &, const std::string &, std::vector<std::string> &);
 
     ServerEventSubscriptionState get_event_subscription_state();
@@ -246,6 +247,7 @@ class DServer : public TANGO_BASE_CLASS
     TANGO_REV_EXP void class_factory();
     void add_class(DeviceClass *);
     void create_cpp_class(const char *, const char *);
+    void create_cpp_class(const std::string &, const std::string &, const std::vector<std::string> &);
     void get_dev_prop(Tango::Util *);
     void event_subscription(DeviceImpl &device,
                             const std::string &obj_name,
