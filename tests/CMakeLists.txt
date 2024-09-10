@@ -10,6 +10,11 @@ if(NOT Python3_EXECUTABLE)
   message(FATAL_ERROR "Could not find python 3.")
 endif()
 
+if(MSVC)
+  # Default value: /DEBUG /INCREMENTAL
+  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG:NONE")
+endif()
+
 #TODO different OS
 set(SERV_NAME "DevTest")
 set(FWD_SERV_NAME "FwdTest")
