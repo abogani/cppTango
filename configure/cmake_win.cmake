@@ -99,15 +99,20 @@ set(TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "")
 # once it has been installed.
 function(tango_install_imported tgt)
     get_target_property(type ${tgt} TYPE)
-    get_target_property(loc_rel ${tgt} IMPORTED_LOCATION_RELEASE)
-    get_target_property(loc_dbg ${tgt} IMPORTED_LOCATION_DEBUG)
-    get_target_property(implib_rel ${tgt} IMPORTED_IMPLIB_RELEASE)
-    get_target_property(implib_dbg ${tgt} IMPORTED_IMPLIB_DEBUG)
+    get_target_property(imported_cfgs ${tgt} IMPORTED_CONFIGURATIONS)
+    if (imported_cfgs)
+        foreach(cfg ${imported_cfgs})
+            string(TOUPPER ${cfg} cfg)
+            get_target_property(loc_${cfg} ${tgt} IMPORTED_LOCATION_${cfg})
+            get_target_property(implib_${cfg} ${tgt} IMPORTED_IMPLIB_${cfg})
+            get_filename_component(loc_name_${cfg} ${loc_${cfg}} NAME)
+            get_filename_component(implib_name_${cfg} ${implib_${cfg}} NAME)
+        endforeach()
 
-    get_filename_component(loc_rel_name ${loc_rel} NAME)
-    get_filename_component(loc_dbg_name ${loc_dbg} NAME)
-    get_filename_component(implib_rel_name ${implib_rel} NAME)
-    get_filename_component(implib_dbg_name ${implib_dbg} NAME)
+        list(GET imported_cfgs 0 fallback_cfg)
+    else()
+        set(fallback_cfg NONE)
+    endif()
 
     if(${type} STREQUAL SHARED_LIBRARY)
         set(LOCDIR ${CMAKE_INSTALL_BINDIR})
@@ -115,30 +120,32 @@ function(tango_install_imported tgt)
         set(LOCDIR ${CMAKE_INSTALL_LIBDIR})
     endif()
 
-    if (loc_rel)
-        install(FILES  ${loc_rel}
-            CONFIGURATIONS Release
-            DESTINATION ${LOCDIR}
-        )
-    endif()
-    if(implib_rel)
-        install(FILES  ${implib_rel}
-            CONFIGURATIONS Release
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
-    endif()
-    if (loc_dbg)
-        install(FILES  ${loc_dbg}
-            CONFIGURATIONS Debug
-            DESTINATION ${LOCDIR}
-        )
-    endif()
-    if (implib_dbg)
-        install(FILES  ${implib_dbg}
-            CONFIGURATIONS Debug
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
-    endif()
+    foreach(cfg ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${cfg} cfg)
+        if (loc_${cfg})
+            install(FILES ${loc_${cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${LOCDIR}
+            )
+        elseif(loc_${fallback_cfg})
+            install(FILES ${loc_${fallback_cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${LOCDIR}
+            )
+        endif()
+
+        if (implib_${cfg})
+            install(FILES ${implib_${cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+        elseif(implib_${fallback_cfg})
+            install(FILES ${implib_${fallback_cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+        endif()
+    endforeach()
 
     if(${type} STREQUAL SHARED_LIBRARY)
         STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
@@ -147,7 +154,15 @@ add_library(${tgt} SHARED IMPORTED)\n")
         STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
 add_library(${tgt} STATIC IMPORTED)\n")
     else()
-        if (loc_rel OR loc_dgb)
+        set(has_loc FALSE)
+
+        foreach(cfg ${imported_cfgs})
+            if (loc_${cfg})
+                set(has_loc TRUE)
+            endif()
+        endforeach()
+
+        if (has_loc)
             STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
 add_library(${tgt} UNKNOWN IMPORTED)\n")
         else()
@@ -182,45 +197,32 @@ ${props_copy_lines}    )\n")
     endif()
 
     if (${type} STREQUAL SHARED_LIBRARY)
-        if (loc_rel AND implib_rel)
-            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
-if(EXISTS \${TANGO_IMPORT_BINDIR}/${loc_rel_name})\n\
-    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)\n\
-    set_target_properties(${tgt} PROPERTIES\n\
-        IMPORTED_LOCATION_RELEASE \${TANGO_IMPORT_BINDIR}/${loc_rel_name}\n\
-        IMPORTED_IMPLIB_RELEASE \${TANGO_IMPORT_LIBDIR}/${implib_rel_name}\n\
-        )\n\
-endif()\n")
-        endif()
-        if (loc_dbg AND implib_dbg)
-            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
-if(EXISTS \${TANGO_IMPORT_BINDIR}/${loc_dbg_name})\n\
-    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)\n\
-    set_target_properties(${tgt} PROPERTIES\n\
-        IMPORTED_LOCATION_DEBUG \${TANGO_IMPORT_BINDIR}/${loc_dbg_name}\n\
-        IMPORTED_IMPLIB_DEBUG \${TANGO_IMPORT_LIBDIR}/${implib_dbg_name}\n\
-        )\n\
-endif()\n")
-        endif()
+        foreach(cfg ${imported_cfgs})
+            string(TOUPPER ${cfg} cfg)
+            if (loc_${cfg} AND implib_${cfg})
+                STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+    if(EXISTS \${TANGO_IMPORT_BINDIR}/${loc_name_${cfg}})\n\
+        set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${cfg})\n\
+        set_target_properties(${tgt} PROPERTIES\n\
+            IMPORTED_LOCATION_${cfg} \${TANGO_IMPORT_BINDIR}/${loc_name_${cfg}}\n\
+            IMPORTED_IMPLIB_${cfg} \${TANGO_IMPORT_LIBDIR}/${implib_name_${cfg}}\n\
+            )\n\
+    endif()\n")
+            endif()
+        endforeach()
     else()
-        if (loc_rel)
-            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
-if(EXISTS \${TANGO_IMPORT_LIBDIR}/${loc_rel_name})\n\
-    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)\n\
+        foreach(cfg ${imported_cfgs})
+            string(TOUPPER ${cfg} cfg)
+            if (loc_${cfg})
+                STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+if(EXISTS \${TANGO_IMPORT_LIBDIR}/${loc_name_${cfg}})\n\
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${cfg})\n\
     set_target_properties(${tgt} PROPERTIES\n\
-        IMPORTED_LOCATION_RELEASE \${TANGO_IMPORT_LIBDIR}/${loc_rel_name}\n\
+        IMPORTED_LOCATION_${cfg} \${TANGO_IMPORT_LIBDIR}/${loc_name_${cfg}}\n\
         )\n\
 endif()\n")
-        endif()
-        if (loc_dbg)
-            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
-if(EXISTS \${TANGO_IMPORT_LIBDIR}/${loc_dbg_name})\n\
-    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)\n\
-    set_target_properties(${tgt} PROPERTIES\n\
-        IMPORTED_LOCATION_DEBUG \${TANGO_IMPORT_LIBDIR}/${loc_dbg_name}\n\
-        )\n\
-endif()\n")
-        endif()
+            endif()
+        endforeach()
     endif()
 
     STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\n")
@@ -269,7 +271,7 @@ if (TANGO_INSTALL_DEPENDENCIES)
         if(BUILD_SHARED_LIBS)
           message(FATAL_ERROR "Missing installation code")
         else()
-            # This is a bit of hack because ZLIB:ZLIB is awkwardly defined as a UNKNOWN library
+            # This is a bit of hack because ZLIB::ZLIB is awkwardly defined as a UNKNOWN library
             # and doesn't know about the DLL, so our logic above misses it.
             # TODO: Somehow avoid this
           if (NOT ZLIB_ROOT)
