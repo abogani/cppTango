@@ -73,6 +73,12 @@ if (TANGO_USE_TELEMETRY)
     message(STATUS "Tango telemetry (OpenTelemetry) enabled")
     find_package(opentelemetry-cpp REQUIRED)
 
+    if(TANGO_TELEMETRY_USE_GRPC AND NOT TARGET opentelemetry-cpp::otlp_grpc_exporter)
+        message(FATAL_ERROR "The opentelemetry-cpp library was compiled without grpc support but TANGO_TELEMETRY_USE_GRPC is enabled.")
+    elseif(TANGO_TELEMETRY_USE_HTTP AND NOT TARGET opentelemetry-cpp::otlp_http_exporter)
+      message(FATAL_ERROR "The opentelemetry-cpp library was compiled without http support but TANGO_TELEMETRY_USE_HTTP is enabled.")
+    endif()
+
     if(WIN32)
       find_package(CURL REQUIRED)
       find_package(nlohmann_json REQUIRED)
