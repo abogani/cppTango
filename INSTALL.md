@@ -336,13 +336,13 @@ cmake --build . --target install
 - Configure with
 
 ```
-cmake -G "Visual Studio 17 2022" -A "x64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release               \
-      -B build -S .                                                                                               \
-      -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                     \
-      -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" \
-      -DBUILD_TESTING=OFF -DTANGO_USE_TELEMETRY=OFF ..
+cmake -G "Visual Studio 17 2022" -A "x64" -DCMAKE_INSTALL_PREFIX=my-install-folder -DCMAKE_BUILD_TYPE=Release     ^
+      -B build -S .                                                                                               ^
+      -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                     ^
+      -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" ^
+      -DBUILD_TESTING=OFF -DTANGO_USE_TELEMETRY=OFF
 ```
 
-- Compile with `cmake --build .`
-- Install with `cmake --build . --target install`
-- You now have a full tango installation in `build/install`
+- Compile with `cmake --build build`
+- Install with `cmake --build build --target install`
+- You now have a full tango installation in `my-install-folder`
