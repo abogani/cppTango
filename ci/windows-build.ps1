@@ -39,7 +39,7 @@ Invoke-NativeCommand cmake `
   --config "${CMAKE_BUILD_TYPE}"
 
 Write-Host "== Get OTEL" -ForegroundColor Blue
-$FILENAME="opentelemetry-with-deps-static-${ARCHITECTURE}.zip"
+$FILENAME="opentelemetry-with-deps-static-${CMAKE_BUILD_TYPE}-${ARCHITECTURE}.zip"
 Invoke-NativeCommand curl.exe -JOL "https://gitlab.com/api/v4/projects/54003303/packages/generic/opentelemetry/${OTEL_VERSION}/${FILENAME}"
 md -Force ${OTEL_ROOT}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${OTEL_ROOT}
