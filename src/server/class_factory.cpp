@@ -243,7 +243,8 @@ void DServer::class_factory()
 
     // proc contains a valid pointer to Tango::DServer::class_factory().
     // Convert and call it.
-    convertor conv{.d = &DServer::stop_polling};
+    convertor conv{};
+    conv.d = &DServer::stop_polling;
     conv.s = proc;
     PTR tmp{conv.d};
     (this->*tmp)();

@@ -322,7 +322,7 @@ bool IORegSigOwn::is_allowed(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA
     }
 }
 
-CORBA::Any *IORegSigOwn::execute(Tango::DeviceImpl *device, const CORBA::Any &in_any)
+CORBA::Any *IORegSigOwn::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNUSED(const CORBA::Any &in_any))
 {
 #ifdef __linux
     try
