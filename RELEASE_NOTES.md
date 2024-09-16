@@ -2,7 +2,7 @@
 
 # Tango C++ library 10.0.0 Release Notes
 
-September XXXX, 2024
+September 20th, 2024
 
 Table of Contents
 =================
