@@ -13,25 +13,19 @@ namespace TangoTest
 {
 
 template <typename TEvent>
-class CallbackMock : public Tango::CallBack
+class CallbackMockBase : public Tango::CallBack
 {
   public:
     using Event = TEvent;
 
-    explicit CallbackMock() = default;
-    CallbackMock(const CallbackMock &) = delete;
-    CallbackMock(CallbackMock &&) = delete;
-    CallbackMock &operator=(const CallbackMock &) = delete;
-    CallbackMock &operator=(CallbackMock &&) = delete;
+    explicit CallbackMockBase() = default;
+    CallbackMockBase(const CallbackMockBase &) = delete;
+    CallbackMockBase(CallbackMockBase &&) = delete;
+    CallbackMockBase &operator=(const CallbackMockBase &) = delete;
+    CallbackMockBase &operator=(CallbackMockBase &&) = delete;
 
     constexpr static const std::chrono::milliseconds k_default_timeout{(2 * TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD) +
                                                                        300};
-
-    void push_event(TEvent *event) override
-    {
-      REQUIRE(event != nullptr);
-      collect_event(*event);
-    }
 
     std::optional<TEvent> pop_next_event(std::chrono::milliseconds timeout = k_default_timeout)
     {
@@ -57,7 +51,7 @@ class CallbackMock : public Tango::CallBack
         return std::nullopt;
     }
 
-  private:
+  protected:
     void collect_event(TEvent event)
     {
         {
@@ -68,6 +62,7 @@ class CallbackMock : public Tango::CallBack
         cv.notify_one();
     }
 
+  private:
     std::deque<TEvent> events{};
     std::mutex m;
     std::condition_variable cv;
