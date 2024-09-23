@@ -29,12 +29,8 @@ class CallbackMock : public Tango::CallBack
 
     void push_event(TEvent *event) override
     {
-        {
-            std::unique_lock<std::mutex> lk(m);
-            events.emplace_back(*event);
-        }
-
-        cv.notify_one();
+      REQUIRE(event != nullptr);
+      collect_event(*event);
     }
 
     std::optional<TEvent> pop_next_event(std::chrono::milliseconds timeout = k_default_timeout)
@@ -62,6 +58,16 @@ class CallbackMock : public Tango::CallBack
     }
 
   private:
+    void collect_event(TEvent event)
+    {
+        {
+            std::unique_lock<std::mutex> lk(m);
+            events.emplace_back(event);
+        }
+
+        cv.notify_one();
+    }
+
     std::deque<TEvent> events{};
     std::mutex m;
     std::condition_variable cv;
