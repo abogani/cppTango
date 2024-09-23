@@ -7,6 +7,8 @@
 
 #include <catch2/catch_tostring.hpp>
 
+#include "callback_mock_helpers.h"
+
 #include <tango/internal/stl_corba_helpers.h>
 
 namespace TangoTest::detail
@@ -71,6 +73,12 @@ template <>
 struct StringMaker<Tango::EventData>
 {
     static std::string convert(Tango::EventData const &value);
+};
+
+template <>
+struct StringMaker<TangoTest::AttrReadEventCopyable>
+{
+    static std::string convert(TangoTest::AttrReadEventCopyable const &value);
 };
 
 template <>

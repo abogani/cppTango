@@ -47,6 +47,22 @@ SCENARIO("catch2 stringmakers specialications")
         }
     }
 
+    GIVEN("a AttrReadEventCopyable")
+    {
+        std::vector<std::string> att_names;
+        Tango::DevErrorList errors;
+        Tango::AttrReadEvent event(nullptr, att_names, nullptr, errors);
+        TangoTest::AttrReadEventCopyable event_copyable(&event);
+
+        WHEN("we can convert it to a string")
+        {
+            using namespace Catch::Matchers;
+
+            auto result = Catch::StringMaker<TangoTest::AttrReadEventCopyable>::convert(event_copyable);
+            REQUIRE_THAT(result, !IsEmpty());
+        }
+    }
+
     GIVEN("a DeviceInfo")
     {
         Tango::DeviceInfo info;

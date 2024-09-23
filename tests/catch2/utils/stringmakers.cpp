@@ -157,6 +157,23 @@ std::string StringMaker<Tango::EventData>::convert(Tango::EventData const &value
     return os.str();
 }
 
+std::string StringMaker<TangoTest::AttrReadEventCopyable>::convert(TangoTest::AttrReadEventCopyable const &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "attr_names: " << Catch::StringMaker<std::vector<std::string>>::convert(value.attr_names);
+    os << sep;
+    os << "argout: " << Catch::StringMaker<std::vector<Tango::DeviceAttribute>>::convert(value.argout);
+    os << sep;
+    os << "err: " << std::boolalpha << value.err;
+    os << sep;
+    os << "errors: " << Catch::StringMaker<Tango::DevErrorList>::convert(value.errors);
+    os << clc;
+
+    return os.str();
+}
+
 std::string StringMaker<CORBA::Any>::convert(CORBA::Any const &any)
 {
     std::ostringstream os;

@@ -53,6 +53,7 @@ function(tango_catch2_tests_create)
         ${TANGO_CATCH2_TESTS_DIR}/utils/entry_points.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/utils.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/stringmakers.cpp
+        ${TANGO_CATCH2_TESTS_DIR}/utils/callback_mock_helpers.cpp
         common.cpp
         ${PLATFORM_IMPL})
 

@@ -1,6 +1,8 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_templated.hpp>
 
+#include "callback_mock_helpers.h"
+
 #include <tango/tango.h>
 
 #include <tango/common/utils/type_info.h>
