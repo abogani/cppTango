@@ -25,11 +25,47 @@ where we highlight what was improved or modified.
 
 ## 10.0.0 - Features
 
+### Experimental support for client/server tracing using OpenTelemetry [#1185](https://gitlab.com/tango-controls/cppTango/-/issues/1185), [#1323](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1323)
+
+cppTango 10.0.0 provides telemetry support for all device servers using IDLv4 or
+later and works on Linux, MacOSX and Windows.  For a description of the various
+concepts introduce by telemetry see the [OpenTelemerty
+website](https://opentelemetry.io/).  For more information about using telemetry
+with cppTango see [Telemetry Support](@ref telemetry) in the documentation.
+
+### New Alarm Event [#1030](https://gitlab.com/tango-controls/cppTango/-/issues/1030)
+
+cppTango 10.0.0 introduces support for the new alarm events.  Alarm events can
+be thought of as a subset of change events, only events which involve a
+transition to or from the `Tango::ATTR_ALARM` or `Tango::ATTR_WARNING` quality
+factors.
+
+The polling thread will send alarm events for all polled attributes to any
+clients that subscribe to alarm events with a call to
+`DeviceProxy::subscribe_event()`, passing `Tango::ALARM_EVENT`.
+
+Devices which manually push change events will automatically also push alarm
+events to clients which have subscribed to alarm events, unless the manual
+pushing of alarm events has been enabled for the attribute with
+`Tango::Attr::set_alarm_event()` or the `CtrlSystem` property
+`AutoAlarmOnChangeEvent` is defined and falsey.
+
+### Extended version information [#1155](https://gitlab.com/tango-controls/cppTango/-/issues/1155)
+
+cppTango 10.0.0 introduces support for more detailed version information which
+is also extendable by users.  Servers can add key/value pairs to the version
+information by calling `DeviceImpl::add_version_info()`.  cppTango 10.0.0
+adds version information about itself and the various dependencies it was
+compiled against.
+
+Clients can request this information with a call to `DeviceProxy::info()`
+where the assigned key/value pairs will be available in the
+`Tango::_DeviceInfo::version_info` member.
+
+### Other features
+
 - Introduce `Tango::Device_6Impl` class with support for new Tango IDLv6 features
 - `TANGO_BASE_CLASS` now points to `Tango::Device_6Impl`
-- Add experimental support for client/server tracing using [OpenTelemetry](https://opentelemetry.io/) for all device servers with IDLv4 or newer on Linux/MaOSX/Windows [#1185](https://gitlab.com/tango-controls/cppTango/-/issues/1185), [#1323](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1323)
-- Add new Alarm Event [#1030](https://gitlab.com/tango-controls/cppTango/-/issues/1030)
-- Add extended version information [#1155](https://gitlab.com/tango-controls/cppTango/-/issues/1155)
 - Require at least C++17 for compilation [#1176](https://gitlab.com/tango-controls/cppTango/-/issues/1176)
 - Provide a cmake package configuration file on Linux/MacOSX/Windows [#857](https://gitlab.com/tango-controls/cppTango/-/issues/857), [#1277](https://gitlab.com/tango-controls/cppTango/-/issues/1277)
 - Add new test framework catch2, version 3.3.0 or newer, for faster and
