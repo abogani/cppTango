@@ -134,7 +134,7 @@ SCENARIO("check_alarm reports alarms correctly")
                 using namespace TangoTest::Matchers;
 
                 auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
+                REQUIRE(maybe_initial_event != std::nullopt);
 
                 AND_WHEN("we call check_alarm after push_change_event")
                 {
@@ -145,12 +145,9 @@ SCENARIO("check_alarm reports alarms correctly")
                     {
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "change");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::CHANGE_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
 
                         AND_THEN("the command returns false")
                         {
@@ -173,9 +170,8 @@ SCENARIO("check_alarm reports alarms correctly")
 
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(maybe_event->err);
-                        REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_test_reason});
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventErrorMatches(AllMatch(Reason(k_test_reason))));
 
                         AND_THEN("the command returns false")
                         {

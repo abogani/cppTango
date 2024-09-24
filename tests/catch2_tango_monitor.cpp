@@ -96,9 +96,9 @@ SCENARIO("TangoMonitor provides good error messages")
                 REQUIRE_THROWS_MATCHES(
                     thread->grab_monitor(),
                     Tango::DevFailed,
-                    AnyErrorMatches(Reason(Tango::API_CommandTimedOut) &&
-                                    DescriptionMatches(ContainsSubstring(k_name) && ContainsSubstring(self) &&
-                                                       ContainsSubstring(other))));
+                    ErrorListMatches(AnyMatch(Reason(Tango::API_CommandTimedOut) &&
+                                              DescriptionMatches(ContainsSubstring(k_name) && ContainsSubstring(self) &&
+                                                                 ContainsSubstring(other)))));
             }
         }
     }

@@ -299,7 +299,7 @@ SCENARIO("user dev_state is always called")
                 {
                     Tango::DevDouble value;
                     REQUIRE_THROWS_MATCHES(
-                        (*das)[0] >> value, Tango::DevFailed, AnyErrorMatches(Reason(k_test_reason)));
+                        (*das)[0] >> value, Tango::DevFailed, ErrorListMatches(AnyMatch(Reason(k_test_reason))));
 
                     REQUIRE_THAT((*das)[1], AnyLikeContains(Tango::ALARM));
 

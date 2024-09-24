@@ -216,11 +216,10 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
                         {
                             using namespace Catch::Matchers;
                             using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches(IsNaN())));
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_abs_nan"));
@@ -228,11 +227,10 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
                                 THEN("a change event is generated")
                                 {
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(
+                                        maybe_new_event,
+                                        EventValueMatches(AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001))));
                                 }
                             }
                         }
@@ -297,10 +295,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                             using namespace TangoTest::Matchers;
 
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches(IsNaN())));
 
                             AND_WHEN("we unset the attribute value from NaN")
                             {
@@ -311,11 +307,10 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                                     using namespace TangoTest::Matchers;
 
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(
+                                        maybe_new_event,
+                                        EventValueMatches(AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001))));
                                 }
                             }
                         }
@@ -382,10 +377,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
                             using namespace TangoTest::Matchers;
 
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches<float>(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches<float>(IsNaN())));
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_abs_nan"));
@@ -393,11 +386,10 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
                                 THEN("a change event is generated")
                                 {
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_new_event,
+                                                 EventValueMatches(
+                                                     AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f))));
                                 }
                             }
                         }
@@ -462,10 +454,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                             using namespace TangoTest::Matchers;
 
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches<float>(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches<float>(IsNaN())));
 
                             AND_WHEN("we unset the attribute value from NaN")
                             {
@@ -473,11 +463,10 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                                 THEN("a change event is generated")
                                 {
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_new_event,
+                                                 EventValueMatches(
+                                                     AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f))));
                                 }
                             }
                         }
