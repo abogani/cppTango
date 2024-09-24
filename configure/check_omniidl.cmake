@@ -19,10 +19,9 @@ function(test_omniidl)
     if (WIN32)
         if(TARGET omniORB4::omniORB4-static)
           # Always statically link on Windows so we don't need the omniorb dll's to be in the PATH
-          set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+          set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
           set(link_libs omniORB4::omniORB4-static;omniORB4::COS4-static;omniORB4::Dynamic4-static;ws2_32.lib)
         else()
-          set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL")
           set(link_libs omniORB4::omniORB4;omniORB4::COS4;omniORB4::Dynamic4;ws2_32.lib)
         endif()
 

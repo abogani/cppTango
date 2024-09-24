@@ -14,6 +14,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(CTest)
 
+set(CMAKE_TRY_COMPILE_CONFIGURATION "${CMAKE_BUILD_TYPE}")
+
 option(TANGO_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 option(BUILD_SHARED_LIBS "Build a shared library instead of static" ON)
 option(TANGO_USE_LIBCPP "Build against libc++" OFF)
