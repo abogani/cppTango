@@ -831,6 +831,11 @@ char *Except::print_CORBA_SystemException_r(const CORBA::SystemException *e, cha
     return error_msg;
 }
 
+void Except::print_error_stack(const Tango::DevErrorList &e)
+{
+    print_error_stack(e, std::cerr);
+}
+
 //+----------------------------------------------------------------------------
 //
 // method :         print_error_stack
@@ -840,36 +845,35 @@ char *Except::print_CORBA_SystemException_r(const CORBA::SystemException *e, cha
 // in :            e : Reference to the error stack
 //
 //-----------------------------------------------------------------------------
-
-void Except::print_error_stack(const Tango::DevErrorList &e)
+void Except::print_error_stack(const Tango::DevErrorList &e, std::ostream &os)
 {
     for(unsigned long i = 0; i < e.length(); i++)
     {
-        std::cerr << "Tango error stack" << std::endl;
-        std::cerr << "Severity = ";
+        os << "Tango error stack" << std::endl;
+        os << "Severity = ";
         switch(e[i].severity)
         {
         case Tango::WARN:
-            std::cerr << "WARNING ";
+            os << "WARNING ";
             break;
 
         case Tango::ERR:
-            std::cerr << "ERROR ";
+            os << "ERROR ";
             break;
 
         case Tango::PANIC:
-            std::cerr << "PANIC ";
+            os << "PANIC ";
             break;
 
         default:
-            std::cerr << "Unknown severity code";
+            os << "Unknown severity code";
             break;
         }
-        std::cerr << std::endl;
-        std::cerr << "Error reason = " << e[i].reason.in() << std::endl;
-        std::cerr << "Desc : " << e[i].desc.in() << std::endl;
-        std::cerr << "Origin : " << e[i].origin.in() << std::endl;
-        std::cerr << std::endl;
+        os << std::endl;
+        os << "Error reason = " << e[i].reason.in() << std::endl;
+        os << "Desc : " << e[i].desc.in() << std::endl;
+        os << "Origin : " << e[i].origin.in() << std::endl;
+        os << std::endl;
     }
 }
 
