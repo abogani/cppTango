@@ -80,6 +80,8 @@ if (TANGO_USE_TELEMETRY)
       message(FATAL_ERROR "The opentelemetry-cpp library was compiled without http support but TANGO_TELEMETRY_USE_HTTP is enabled.")
     endif()
 
+    message(STATUS "opentelemetry-cpp: version ${OPENTELEMETRY_VERSION}")
+
     if(WIN32)
       find_package(CURL REQUIRED)
       find_package(nlohmann_json REQUIRED)
