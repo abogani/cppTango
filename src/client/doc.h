@@ -1,4 +1,5 @@
 //=============================================================================
+// Telemetry Support
 //
 // file :               doc.h
 //
@@ -621,6 +622,16 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
 
  * Please note that the timeout case is managed differently because it will not enter the re-connection
  * system. The transparency reconnection mode is set by default to true starting with Tango version 5.5.
+ */
+
+/*******************************************************
+ *                                                     *
+ *               The telemetry related page            *
+ *                                                     *
+ *******************************************************/
+
+/** \page telemetry Telemetry Support
+ * \include{doc} telemetry.md
  */
 
 #endif /* DOC_DOXYGEN */
