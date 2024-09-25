@@ -104,7 +104,7 @@ if (TANGO_USE_TELEMETRY)
                     LINK_LIBRARIES opentelemetry-cpp::otlp_grpc_log_record_exporter)
       endif()
 
-      message(DEBUG "opentelemetry-cpp uses new exporter name: ${TANGO_TELEMETRY_EXPORTER_OPTION_NEW}")
+      message(STATUS "opentelemetry-cpp uses new exporter name: ${TANGO_TELEMETRY_EXPORTER_OPTION_NEW}")
     endif()
 
     if(NOT TANGO_TELEMETRY_USE_GRPC AND NOT TANGO_TELEMETRY_USE_HTTP)
