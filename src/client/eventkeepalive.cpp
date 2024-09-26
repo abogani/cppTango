@@ -351,8 +351,6 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
     CosNotifyFilter::Filter_var filter = CosNotifyFilter::Filter::_nil();
     CosNotifyFilter::FilterID filter_id;
 
-    std::string channel_name = epos->second.channel_name;
-
     try
     {
         ffp = ipos->second.eventChannel->default_filter_factory();
@@ -1513,8 +1511,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
         }
 
-        if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "quality") || (ev_name == "archive") ||
-           (ev_name == "user_event"))
+        if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "archive") || (ev_name == "user_event"))
         {
             //
             // For attribute data event
@@ -1948,8 +1945,8 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     // For attribute data event
     //
 
-    if((vpos->event_name == "change") || (vpos->event_name == "alarm") || (vpos->event_name == "quality") ||
-       (vpos->event_name == "archive") || (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
+    if((vpos->event_name == "change") || (vpos->event_name == "alarm") || (vpos->event_name == "archive") ||
+       (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
     {
         DeviceAttribute *da = nullptr;
         FwdEventData *event_data = new FwdEventData(vpos->device, domain_name, vpos->event_name, da, err);

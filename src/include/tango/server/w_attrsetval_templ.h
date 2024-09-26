@@ -34,6 +34,7 @@
 #define _WATTRSETVAL_TPP
 
 #include <type_traits>
+#include <tango/server/seqvec.h>
 
 namespace Tango
 {
@@ -238,7 +239,21 @@ inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
 template <class T>
 inline void WAttribute::set_write_value(std::vector<T> &val, size_t x, size_t y)
 {
-    set_write_value(&val[0], x, y);
+    if constexpr(std::is_same_v<T, bool> || std::is_same_v<T, std::string>)
+    {
+        typename tango_type_traits<T>::ArrayType tmp_seq;
+        tmp_seq << val;
+
+        CORBA::Any tmp_any;
+        tmp_any <<= tmp_seq;
+        check_written_value(tmp_any, x, y);
+        copy_data(tmp_any);
+        set_user_set_write_value(true);
+    }
+    else
+    {
+        set_write_value(val.data(), x, y);
+    }
 }
 
 template <class T>

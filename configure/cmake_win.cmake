@@ -47,13 +47,7 @@ target_link_libraries(tango
     PRIVATE
         ${WIN32_LIBS})
 
-if(TANGO_USE_PTHREAD)
-    target_link_libraries(tango
-        PRIVATE
-            pthread::pthread)
-endif()
-
-set_property(TARGET tango PROPERTY LINK_FLAGS "/force:multiple /DEBUG")
+set_property(TARGET tango PROPERTY LINK_FLAGS "/DEBUG")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/Debug)
@@ -67,6 +61,7 @@ endif()
 #install code
 
 install(TARGETS tango
+        EXPORT TangoTargets
         ARCHIVE DESTINATION lib COMPONENT static
         RUNTIME DESTINATION bin COMPONENT dynamic)
 
@@ -75,111 +70,216 @@ install(DIRECTORY "$<TARGET_FILE_DIR:tango>/"
         DESTINATION bin COMPONENT dynamic
         FILES_MATCHING PATTERN "*.pdb")
 
-if (TANGO_INSTALL_DEPENDENCIES)
-    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/COS DESTINATION include COMPONENT)
-    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/omniORB4 DESTINATION include COMPONENT headers)
-    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/omnithread DESTINATION include COMPONENT headers FILES_MATCHING PATTERN "*.h" PATTERN "*.in" EXCLUDE)
-    install(DIRECTORY ${omniORB4_INCLUDE_DIR}/omniVms DESTINATION include COMPONENT headers)
-    install(FILES ${omniORB4_INCLUDE_DIR}/omniconfig.h DESTINATION include COMPONENT headers)
-    install(FILES ${omniORB4_INCLUDE_DIR}/omnithread.h DESTINATION include COMPONENT headers)
-    install(FILES ${ZeroMQ_INCLUDE_DIR}/zmq.h DESTINATION include COMPONENT headers)
-    install(FILES ${ZeroMQ_INCLUDE_DIR}/zmq_utils.h DESTINATION include COMPONENT headers)
-    install(FILES ${cppzmq_INCLUDE_DIR}/zmq.hpp DESTINATION include COMPONENT headers)
-    install(FILES ${cppzmq_INCLUDE_DIR}/zmq_addon.hpp DESTINATION include COMPONENT headers)
+# Install the header files for the target
+function(tango_install_dependency_headers tgt)
+    if (NOT TARGET ${tgt})
+        return()
+    endif()
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        install(FILES ${omniORB4_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_thread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_COS4_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_Dynamic4_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${ZeroMQ_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${omniORB4_thread_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${omniORB4_COS4_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${omniORB4_Dynamic4_LIBRARY_DEBUG} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${ZeroMQ_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
+    get_target_property(inc_dirs ${tgt} INTERFACE_INCLUDE_DIRECTORIES)
+    foreach(dir ${inc_dirs})
+        file(GLOB files "${dir}/*")
+        foreach (file ${files})
+            if (IS_DIRECTORY ${file})
+                install(DIRECTORY ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING
+                    REGEX ".*" REGEX "\\.in" EXCLUDE)
+            elseif(NOT ${file} MATCHES "\\.in$")
+                install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+            endif()
+        endforeach()
+    endforeach()
+endfunction()
+
+# This will contain cmake code to recreate all the IMPORTED targets used
+# by Tango
+set(TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "")
+
+# Install the lib/dll files for a target and add code to
+# TANGO_INSTALL_DEPENDENCIES_IMPORTED_TARGETS to reconstitute the IMPORTED target
+# once it has been installed.
+function(tango_install_imported tgt)
+    get_target_property(type ${tgt} TYPE)
+    get_target_property(imported_cfgs ${tgt} IMPORTED_CONFIGURATIONS)
+    if (imported_cfgs)
+        foreach(cfg ${imported_cfgs})
+            string(TOUPPER ${cfg} cfg)
+            get_target_property(loc_${cfg} ${tgt} IMPORTED_LOCATION_${cfg})
+            get_target_property(implib_${cfg} ${tgt} IMPORTED_IMPLIB_${cfg})
+            get_filename_component(loc_name_${cfg} ${loc_${cfg}} NAME)
+            get_filename_component(implib_name_${cfg} ${implib_${cfg}} NAME)
+        endforeach()
+
+        list(GET imported_cfgs 0 fallback_cfg)
     else()
-        install(FILES ${omniORB4_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_thread_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_COS4_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_Dynamic4_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${ZeroMQ_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${omniORB4_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${omniORB4_thread_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${omniORB4_COS4_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${omniORB4_Dynamic4_LIBRARY_RELEASE} DESTINATION lib COMPONENT dynamic)
-        install(FILES ${ZeroMQ_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
+        set(fallback_cfg NONE)
     endif()
 
-    if(CMAKE_VS_PLATFORM_TOOLSET IN_LIST WINDOWS_SUPPORTED_VS_TOOLSETS)
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            install(FILES ${omniORB4_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${omniORB4_Dynamic4_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${omniORB4_thread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${omniORB4_COS4_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${ZeroMQ_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
+    if(${type} STREQUAL SHARED_LIBRARY)
+        set(LOCDIR ${CMAKE_INSTALL_BINDIR})
+    else()
+        set(LOCDIR ${CMAKE_INSTALL_LIBDIR})
+    endif()
+
+    foreach(cfg ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${cfg} cfg)
+        if (loc_${cfg})
+            install(FILES ${loc_${cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${LOCDIR}
+            )
+        elseif(loc_${fallback_cfg})
+            install(FILES ${loc_${fallback_cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${LOCDIR}
+            )
+        endif()
+
+        if (implib_${cfg})
+            install(FILES ${implib_${cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+        elseif(implib_${fallback_cfg})
+            install(FILES ${implib_${fallback_cfg}}
+                CONFIGURATIONS ${cfg}
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+        endif()
+    endforeach()
+
+    if(${type} STREQUAL SHARED_LIBRARY)
+        STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} SHARED IMPORTED)\n")
+    elseif(${type} STREQUAL STATIC_LIBRARY)
+        STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} STATIC IMPORTED)\n")
+    else()
+        set(has_loc FALSE)
+
+        foreach(cfg ${imported_cfgs})
+            if (loc_${cfg})
+                set(has_loc TRUE)
+            endif()
+        endforeach()
+
+        if (has_loc)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} UNKNOWN IMPORTED)\n")
         else()
-            install(FILES ${omniORB4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${omniORB4_Dynamic4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${omniORB4_thread_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${omniORB4_COS4_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
-            install(FILES ${ZeroMQ_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+            STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+add_library(${tgt} INTERFACE IMPORTED)\n")
         endif()
     endif()
 
-    #pthreads
-    if (TANGO_USE_PTHREAD)
-        install(FILES ${pthread_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_static_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
-        install(FILES ${pthread_DBG_RELEASE} DESTINATION bin COMPONENT dynamic)
-        install(FILES ${pthread_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_static_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-        install(FILES ${pthread_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-        install(FILES ${pthread_DBG_DEBUG} DESTINATION bin COMPONENT dynamic)
-    endif()
+    # As we are installing all the include files to the same directory
+    # we do not need to copy an INTERFACE_INCLUDE_DIRECTORIES property
+    set(props_to_check
+        INTERFACE_LINK_LIBRARIES
+        INTERFACE_LINK_OPTIONS
+        STATIC_LIBRARY_OPTIONS
+        INTERFACE_COMPILE_FEATURES
+        INTERFACE_COMPILE_DEFINITIONS
+        INTERFACE_COMPILE_OPTIONS
+        )
 
-    #Jpeg
-    if (TANGO_USE_JPEG)
-        install(FILES ${JPEG_INCLUDE_DIRS}/jconfig.h DESTINATION include COMPONENT headers)
-        install(FILES ${JPEG_INCLUDE_DIRS}/jmorecfg.h DESTINATION include COMPONENT headers)
-        install(FILES ${JPEG_INCLUDE_DIRS}/jpeglib.h DESTINATION include COMPONENT headers)
-        install(FILES ${JPEG_INCLUDE_DIRS}/jerror.h DESTINATION include COMPONENT headers)
-        install(FILES ${JPEG_INCLUDE_DIRS}/turbojpeg.h DESTINATION include COMPONENT headers)
-        if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-            install(FILES ${JPEG_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-            install(FILES ${TURBO_JPEG_LIBRARY_STATIC_DEBUG} DESTINATION lib COMPONENT static)
-            install(FILES ${TURBO_JPEG_LIBRARY_DEBUG} DESTINATION lib COMPONENT static)
-
-            install(FILES ${JPEG_RUNTIME_DEBUG} DESTINATION bin COMPONENT dynamic)
-        else()
-            install(FILES ${JPEG_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-            install(FILES ${TURBO_JPEG_LIBRARY_RELEASE} DESTINATION lib COMPONENT static)
-            install(FILES ${TURBO_JPEG_LIBRARY_STATIC_RELEASE} DESTINATION lib COMPONENT static)
-
-            install(FILES ${JPEG_RUNTIME_RELEASE} DESTINATION bin COMPONENT dynamic)
+    set(props_copy_lines "")
+    foreach (prop ${props_to_check})
+        get_target_property(value ${tgt} ${prop})
+        if (value)
+            string(APPEND props_copy_lines "    ${prop} \"${value}\"\n")
         endif()
+    endforeach()
+
+    if (props_copy_lines)
+        STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+set_target_properties(${tgt} PROPERTIES\n\
+${props_copy_lines}    )\n")
     endif()
+
+    if (${type} STREQUAL SHARED_LIBRARY)
+        foreach(cfg ${imported_cfgs})
+            string(TOUPPER ${cfg} cfg)
+            if (loc_${cfg} AND implib_${cfg})
+                STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+    if(EXISTS \${TANGO_IMPORT_BINDIR}/${loc_name_${cfg}})\n\
+        set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${cfg})\n\
+        set_target_properties(${tgt} PROPERTIES\n\
+            IMPORTED_LOCATION_${cfg} \${TANGO_IMPORT_BINDIR}/${loc_name_${cfg}}\n\
+            IMPORTED_IMPLIB_${cfg} \${TANGO_IMPORT_LIBDIR}/${implib_name_${cfg}}\n\
+            )\n\
+    endif()\n")
+            endif()
+        endforeach()
+    else()
+        foreach(cfg ${imported_cfgs})
+            string(TOUPPER ${cfg} cfg)
+            if (loc_${cfg})
+                STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\
+if(EXISTS \${TANGO_IMPORT_LIBDIR}/${loc_name_${cfg}})\n\
+    set_property(TARGET ${tgt} APPEND PROPERTY IMPORTED_CONFIGURATIONS ${cfg})\n\
+    set_target_properties(${tgt} PROPERTIES\n\
+        IMPORTED_LOCATION_${cfg} \${TANGO_IMPORT_LIBDIR}/${loc_name_${cfg}}\n\
+        )\n\
+endif()\n")
+            endif()
+        endforeach()
+    endif()
+
+    STRING(APPEND TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "\n")
+    set(TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS ${TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS} PARENT_SCOPE)
+endfunction()
+
+# Recursively look through INTERFACE_LINK_LIBRARIES targets of `tgt` and append
+# them to the list `out` in the PARENT_SCOPE.
+function(tango_gather_dependencies out tgt)
+    if (NOT TARGET ${tgt} OR ${tgt} IN_LIST ${out})
+        return()
+    endif()
+    list(APPEND ${out} ${tgt})
+    get_target_property(iface_link_libs ${tgt} INTERFACE_LINK_LIBRARIES)
+    if (iface_link_libs)
+        foreach (dep ${iface_link_libs})
+            string(REGEX REPLACE "\\\$<LINK_ONLY:(.*)>" "\\1" stripped ${dep})
+            tango_gather_dependencies(${out} ${stripped})
+        endforeach()
+    endif()
+    set(${out} ${${out}} PARENT_SCOPE)
+endfunction()
+
+if (TANGO_INSTALL_DEPENDENCIES)
+    # We want to install all the lib/dll files for _all_ the targets Tango::Tango depends on
+    get_target_property(TANGO_LINK_LIBS tango LINK_LIBRARIES)
+    foreach (tgt ${TANGO_LINK_LIBS})
+        tango_gather_dependencies(TANGO_LINK_DEPENDENCIES ${tgt})
+    endforeach()
+
+    foreach (tgt ${TANGO_LINK_DEPENDENCIES})
+        tango_install_imported(${tgt})
+    endforeach()
+
+    # We only want to install the include files for the INTERFACE_LIBRARIES
+    get_target_property(TANGO_IFACE_LIBS tango INTERFACE_LINK_LIBRARIES)
+    foreach (tgt ${TANGO_IFACE_LIBS})
+        tango_gather_dependencies(TANGO_HEADER_DEPENDENCIES ${tgt})
+    endforeach()
+
+    foreach(tgt ${TANGO_HEADER_DEPENDENCIES})
+        tango_install_dependency_headers(${tgt})
+    endforeach()
 
     if(TANGO_USE_TELEMETRY)
-      if(BUILD_SHARED_LIBS)
-        message(FATAL_ERROR "Missing installation code")
-      else()
-        install(FILES ${ZLIB_ROOT}/include/zconf.h DESTINATION include COMPONENT headers)
-        install(FILES ${ZLIB_ROOT}/include/zlib.h DESTINATION include COMPONENT headers)
-        install(FILES ${ZLIB_ROOT}/include/zlib_name_mangling.h DESTINATION include COMPONENT headers)
+        if(BUILD_SHARED_LIBS)
+          message(FATAL_ERROR "Missing installation code")
+        else()
+            # This is a bit of hack because ZLIB::ZLIB is awkwardly defined as a UNKNOWN library
+            # and doesn't know about the DLL, so our logic above misses it.
+            # TODO: Somehow avoid this
+          if (NOT ZLIB_ROOT)
+            get_filename_component(ZLIB_LIBRARY_DIR ${ZLIB_LIBRARY} DIRECTORY)
+            get_filename_component(ZLIB_ROOT ${ZLIB_LIBRARY_DIR} DIRECTORY)
+          endif()
 
-        install(FILES ${ZLIB_ROOT}/bin/zlib1.dll DESTINATION bin)
-        install(FILES ${ZLIB_ROOT}/lib/zlib.lib DESTINATION lib)
-
-        if(NOT TANGO_OTEL_ROOT)
-          message(FATAL_ERROR "Missing TANGO_OTEL_ROOT variable")
-        endif()
-
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/lib/ DESTINATION lib)
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/cmake DESTINATION lib)
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/share/cmake DESTINATION lib)
-        install(DIRECTORY ${TANGO_OTEL_ROOT}/share/pkgconfig DESTINATION lib)
+          install(FILES ${ZLIB_ROOT}/bin/zlib1.dll DESTINATION ${CMAKE_INSTALL_BINDIR})
       endif()
     endif()
 endif()

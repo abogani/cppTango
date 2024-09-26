@@ -334,7 +334,7 @@ class DeviceProxy : public Tango::Connection
      *
      * @return The device name
      */
-    inline std::string dev_name() override
+    std::string dev_name() override
     {
         return device_name;
     }

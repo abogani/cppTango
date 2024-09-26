@@ -51,7 +51,7 @@ typedef void (*DeviceClassDeleter)(DeviceClass *);
 // Function pointer to a delete utility function
 // in CppTango it wraps simply the delete operator
 // It can be redefined by PyTango to allow better memory management
-extern DeviceClassDeleter wrapper_compatible_delete;
+TANGO_IMP extern DeviceClassDeleter wrapper_compatible_delete;
 
 struct MulticastParameters
 {
@@ -69,8 +69,9 @@ struct MulticastParameters
 //
 //=============================================================================
 
-typedef Tango::DeviceClass *(*Cpp_creator_ptr)(const char *);
 typedef void (*ClassFactoryFuncPtr)(DServer *);
+
+class KillThread;
 
 class DServer : public TANGO_BASE_CLASS
 {
@@ -116,6 +117,8 @@ class DServer : public TANGO_BASE_CLASS
     Tango::DevVarLongStringArray *get_logging_level(const Tango::DevVarStringArray *argin);
     void stop_logging();
     void start_logging();
+
+    static void wait_for_kill_thread();
 
     std::string &get_process_name()
     {
@@ -199,6 +202,8 @@ class DServer : public TANGO_BASE_CLASS
         this->create_cpp_class(c1, c2);
     }
 
+    void _create_cpp_class(const std::string &, const std::string &, const std::vector<std::string> &);
+
     void mcast_event_for_att(const std::string &, const std::string &, std::vector<std::string> &);
 
     ServerEventSubscriptionState get_event_subscription_state();
@@ -242,6 +247,7 @@ class DServer : public TANGO_BASE_CLASS
     TANGO_REV_EXP void class_factory();
     void add_class(DeviceClass *);
     void create_cpp_class(const char *, const char *);
+    void create_cpp_class(const std::string &, const std::string &, const std::vector<std::string> &);
     void get_dev_prop(Tango::Util *);
     void event_subscription(DeviceImpl &device,
                             const std::string &obj_name,
@@ -269,6 +275,9 @@ class DServer : public TANGO_BASE_CLASS
 
     bool polling_bef_9_def;
     bool polling_bef_9;
+
+    // Should not be delete'd, but join()'d instead.
+    static KillThread *kill_thread;
 };
 
 class KillThread : public omni_thread

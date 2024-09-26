@@ -1,6 +1,6 @@
 set(git_revision_cpp ${CMAKE_CURRENT_BINARY_DIR}/git_revision.cpp)
 configure_file(git_revision.cpp.in ${git_revision_cpp})
-set(SOURCES net.cpp utils.cpp assert.cpp $<$<BOOL:${TANGO_USE_TELEMETRY}>:${CMAKE_CURRENT_SOURCE_DIR}/telemetry.cpp> ${git_revision_cpp})
+set(SOURCES net.cpp utils.cpp assert.cpp $<$<BOOL:${TANGO_USE_TELEMETRY}>:${CMAKE_CURRENT_SOURCE_DIR}/telemetry/configuration.cpp ${CMAKE_CURRENT_SOURCE_DIR}/telemetry/telemetry.cpp> ${git_revision_cpp})
 
 add_library(common_objects OBJECT ${SOURCES})
 add_dependencies(common_objects idl_objects)
@@ -20,4 +20,4 @@ else()
     endif()
 endif()
 
-target_precompile_headers(common_objects PRIVATE ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h)
+target_precompile_headers(common_objects PRIVATE ${TANGO_SOURCE_DIR}/src/include/tango/tango.h)

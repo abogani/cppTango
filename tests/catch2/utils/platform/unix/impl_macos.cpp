@@ -1,6 +1,5 @@
 #include "utils/platform/unix/interface.h"
-
-#include "utils/platform/unix/interface.h"
+#include "utils/platform/platform.h"
 
 #include <functional>
 #include <thread>
@@ -13,7 +12,15 @@
 #include <sys/event.h>
 #include <iostream>
 
-namespace TangoTest::platform::unix
+namespace TangoTest::platform
+{
+
+std::vector<std::string> default_env()
+{
+    return {"PATH="};
+}
+
+namespace unix
 {
 
 struct FileWatcher::Impl
@@ -98,11 +105,6 @@ struct FileWatcher::Impl
         }
     }
 
-    ~Impl()
-    {
-        stop_watching_thread();
-    }
-
     void stop_watching()
     {
         stop_watching_thread();
@@ -116,6 +118,11 @@ struct FileWatcher::Impl
         watched_fds[0] = watched_fds[1] = -1;
         ::close(fds[1]);
         ::close(fds[0]);
+    }
+
+    ~Impl()
+    {
+        stop_watching();
     }
 
     const std::size_t number_of_watched_files{1};
@@ -172,4 +179,5 @@ void FileWatcher::pop_event()
 // effort to implement something that mimics it. The tests works without it.
 void kill_self_on_parent_death([[maybe_unused]] pid_t ppid) { }
 
-} // namespace TangoTest::platform::unix
+} // namespace unix
+} // namespace TangoTest::platform

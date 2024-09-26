@@ -20,19 +20,19 @@ variables: &variables
   BUILD_TESTING: "ON"
   TANGO_USE_TELEMETRY: "ON"
   # docker image names and versions
-  DEBIAN_12_IMAGE: "debian12:v8"
-  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v7"
-  DEBIAN_11_IMAGE: "debian11:v7"
-  UBUNTU_20_IMAGE: "ubuntu-20.04:v8"
-  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v7"
-  UBUNTU_22_IMAGE: "ubuntu-22.04:v10"
-  UBUNTU_24_IMAGE: "ubuntu-24.04:v9"
-  LLVM_LATEST_IMAGE: "llvm-latest:v12"
-  GCC_LATEST_IMAGE: "gcc-latest:v8"
-  FEDORA_IMAGE: "fedora37:v7"
-  ALPINE_IMAGE: "alpine-3.15:v7"
-  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v7"
-  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v8"
+  DEBIAN_12_IMAGE: "debian12:v9"
+  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v8"
+  DEBIAN_11_IMAGE: "debian11:v8"
+  UBUNTU_20_IMAGE: "ubuntu-20.04:v9"
+  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v8"
+  UBUNTU_22_IMAGE: "ubuntu-22.04:v11"
+  UBUNTU_24_IMAGE: "ubuntu-24.04:v10"
+  LLVM_LATEST_IMAGE: "llvm-latest:v15"
+  GCC_LATEST_IMAGE: "gcc-latest:v9"
+  FEDORA_IMAGE: "fedora37:v8"
+  ALPINE_IMAGE: "alpine-3.15:v8"
+  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v8"
+  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v9"
   GIT_SUBMODULE_STRATEGY: "recursive"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
@@ -41,6 +41,7 @@ workflow:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ /^release\/.*$/
 
 pre-commit:
   image: registry.gitlab.com/tango-controls/docker/pre-commit:3.7.0-2
@@ -351,7 +352,7 @@ clang-tidy:
     - >
       ${RUN_CLANG_TIDY}
       -p build -header-filter='.*' -config-file=ci/report.clang-tidy 'src' 'log4tango/src' 'tests/catch2*'
-      | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' > clang-tidy-output.txt
+      > clang-tidy-output.txt
   after_script:
     - set +o pipefail
     # Print error summary (check name and occurrence count).
@@ -426,16 +427,16 @@ cmake-with-locations-and-min-versions-env:
     # needs to be in-sync with scripts.git/install_minimum_versions.sh
     - INSTALL_PREFIX=/tmp/install
     - export PATH=${PATH}:${INSTALL_PREFIX}/cmake/bin
-    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/tango-idl/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
-    - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake"
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/omniORB/lib/pkgconfig:${INSTALL_PREFIX}/libjpeg/lib/pkgconfig:${INSTALL_PREFIX}/libzmq/lib/pkgconfig"
+    - export CMAKE_PREFIX_PATH="${INSTALL_PREFIX}/catch:${INSTALL_PREFIX}/abseil/lib/cmake:${INSTALL_PREFIX}/protobuf/lib/cmake:${INSTALL_PREFIX}/gRPC/lib/cmake:${INSTALL_PREFIX}/opentelemetry/lib/cmake:${INSTALL_PREFIX}/tango-idl/lib/cmake"
+    - export cppzmq_ROOT="${INSTALL_PREFIX}/cppzmq"
+    - export JPEG_ROOT="${INSTALL_PREFIX}/libjpeg"
     - >
       cmake
       -Werror=dev
       -B build
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-      -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
       -DTANGO_USE_JPEG=ON
-      -DJPEG_ROOT=${INSTALL_PREFIX}/libjpeg
       -DTANGO_USE_TELEMETRY=ON
     - ci/build.sh
 
@@ -470,6 +471,55 @@ doxygen-documentation:
     when: always
     paths:
       - build/doc_html
+
+publish-docs-tarball:
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+  needs:
+    - job: doxygen-documentation
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/
+      when: on_success
+  variables:
+      PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/docs/${CI_COMMIT_TAG}"
+  script:
+    - mv build/doc_html ${CI_COMMIT_TAG}
+    - ci/docs-site/patch-in-version-selector.sh ${CI_COMMIT_TAG}
+    - tar cjf docs.tar.bz2 ${CI_COMMIT_TAG}
+    - >
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --fail
+      --upload-file "docs.tar.bz2"
+      "${PACKAGE_REGISTRY_URL}/docs.tar.bz2"
+
+documentation-site:
+  image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+  needs:
+    - job: doxygen-documentation
+      artifacts: true
+  script:
+    - ci/docs-site/build.sh
+  artifacts:
+    when: always
+    paths:
+      - site
+
+pages:
+  needs:
+    - job: documentation-site
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^.*-rc.*$/
+      when: on_success
+    # Comment this out on main branch when in release phase
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
+  script:
+    - mv site public
+    - echo "Pages accessible through ${CI_PAGES_URL}"
+  artifacts:
+    when: always
+    paths:
+      - public
 
 sanitizer:
   <<: *job-template-with-tests
@@ -561,3 +611,40 @@ cmake-config:
     - ci/install.sh
     - cmake -S tests/cmake_config -B /tmp/cmake_config_test -DCMAKE_PREFIX_PATH="../../tango_install;tango_install"
     - cmake --build /tmp/cmake_config_test
+
+macos:
+  image: macos-13-xcode-14
+  tags:
+    - saas-macos-medium-m1
+  needs:
+    - job: pre-commit
+      artifacts: false
+  parallel:
+    matrix:
+      - PLATFORM: ["osx-arm64", "osx-64"]
+  before_script:
+    # Default shell is zsh on macOS but gitlab-runners are starting a bash shell
+    - curl -L micro.mamba.pm/install.sh | bash
+    - source /Users/gitlab/.bash_profile
+    - micromamba create -n cpptango-dev -f ci/cpptango-env-${PLATFORM}.txt
+    - micromamba activate cpptango-dev
+  script:
+    # Sometimes the PollThread on the macOS CI seems to stall for up to ~600 ms
+    # which can cause some tests to fail sporadically.  Increasing the
+    # TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD from 100 ms seems to make the tests
+    # more reliable.
+    - >
+      cmake $CMAKE_ARGS -GNinja
+      -DCMAKE_BUILD_TYPE=Debug
+      -DBUILD_TESTING=ON
+      -DTANGO_USE_TELEMETRY=ON
+      -DTANGO_WARNINGS_AS_ERRORS=ON
+      -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX"
+      -DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=1000
+      -S . -B build
+    - cmake --build build
+    - ctest --output-on-failure --test-dir build -R "^catch2.*$"
+  artifacts:
+    when: always
+    paths:
+      - build/tests/catch2_test_logs

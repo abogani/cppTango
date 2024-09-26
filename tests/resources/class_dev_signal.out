@@ -74,12 +74,12 @@
 </log4j:event>
 
 <log4j:event logger="DSERVER" timestamp="10" level="DEBUG" thread="1">
-<log4j:message><![CDATA[In get_monitor() cache, thread = 2, ctr = 0]]></log4j:message>
+<log4j:message><![CDATA[In get_monitor() DSERVER cache, thread = 2, ctr = 0]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
 
 <log4j:event logger="DSERVER" timestamp="10" level="DEBUG" thread="1">
-<log4j:message><![CDATA[In rel_monitor() cache, ctr = 1, thread = 2]]></log4j:message>
+<log4j:message><![CDATA[In rel_monitor() DSERVER cache, ctr = 1, thread = 2]]></log4j:message>
 <log4j:NDC><![CDATA[]]></log4j:NDC>
 </log4j:event>
 

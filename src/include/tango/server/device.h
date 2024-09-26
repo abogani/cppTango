@@ -96,51 +96,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     /**@name Constructors
      * Miscellaneous constructors */
     //@{
-    /**
-     * Constructs a newly allocated DeviceImpl object from its name.
-     *
-     * The device description field is set to <i>A Tango device</i>. The device
-     * state is set to unknown and the device status is set to
-     * <b>Not Initialised</b>
-     *
-     * @param     device_class    Pointer to the device class object
-     * @param    dev_name    The device name
-     *
-     */
-    DeviceImpl(DeviceClass *device_class, const std::string &dev_name);
 
-    /**
-     * Constructs a newly allocated DeviceImpl object from its name and its description.
-     *
-     * The device
-     * state is set to unknown and the device status is set to
-     * <i>Not Initialised</i>
-     *
-     * @param     device_class    Pointer to the device class object
-     * @param    dev_name    The device name
-     * @param    desc    The device description
-     *
-     */
-    DeviceImpl(DeviceClass *device_class, const std::string &dev_name, const std::string &desc);
-    /**
-     * Constructs a newly allocated DeviceImpl object from all its creation
-     * parameters.
-     *
-     * The device is constructed from its name, its description, an original state
-     * and status
-     *
-     * @param     device_class    Pointer to the device class object
-     * @param    dev_name    The device name
-     * @param    desc     The device description
-     * @param    dev_state     The device initial state
-     * @param    dev_status    The device initial status
-     *
-     */
-    DeviceImpl(DeviceClass *device_class,
-               const std::string &dev_name,
-               const std::string &desc,
-               Tango::DevState dev_state,
-               const std::string &dev_status);
     /**
      * Constructs a newly allocated DeviceImpl object from all its creation
      * parameters with some default values.
@@ -159,12 +115,11 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      */
 
-    DeviceImpl(DeviceClass *device_class,
-               const char *dev_name,
-               const char *desc = "A TANGO device",
+    DeviceImpl(DeviceClass *device_calss,
+               std::string_view dev_name,
+               std::string_view desc = "A TANGO device",
                Tango::DevState dev_state = Tango::UNKNOWN,
-               const char *dev_status = StatusNotSet);
-
+               std::string_view dev_status = StatusNotSet);
     //@}
 
     /**@name Destructor
@@ -591,21 +546,25 @@ class DeviceImpl : public virtual POA_Tango::Device
         (void) attr_list;
     }
 
-    /**
-     * Get device state.
+    /** Get the device state.
      *
-     * Default method to get device state. The behaviour of this method depends
-     * on the device state. If the device state is ON or ALARM, it reads
-     * the attribute(s) with an alarm level defined, check if the read value is
-     * above/below the alarm and eventually change the state to ALARM, return the
-     * device state. For all the other device state, this method simply returns
-     * the state
-     * This method can be redefined in
-     * sub-classes in case of the default behaviour does not fulfill the needs
+     * The default implementation depends on the device state.
+     *
+     * If the device state is ON or ALARM, it reads the attributes with an alarm
+     * level defined, determines the quality factor of each of these attributes
+     * by comparing the read value to the alarm levels. If any of the attributes
+     * are determined to have a quality factor of ATTR_ALARM, then it sets the
+     * state to ALARM, otherwise it sets the state to ON.  Finally, it returns
+     * the newly determined device state.
+     *
+     * For all the other device states, the default implementation simply
+     * returns the current state.
+     *
+     * This method can be overridden in sub-classes as required.
      *
      * @return The device state
-     * @exception DevFailed If it is necessary to read attribute(s) and a problem
-     * occurs during the reading.
+     * @exception DevFailed The default implementation of this method does not
+     * throw an exception and it is recommended that overrides do not either.
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
@@ -800,7 +759,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarCharArray type data
      */
-    inline Tango::DevVarCharArray *create_DevVarCharArray(unsigned char *ptr, long length)
+    Tango::DevVarCharArray *create_DevVarCharArray(unsigned char *ptr, long length)
     {
         return new Tango::DevVarCharArray(length, length, ptr, false);
     }
@@ -816,7 +775,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarShortArray type data
      */
-    inline Tango::DevVarShortArray *create_DevVarShortArray(short *ptr, long length)
+    Tango::DevVarShortArray *create_DevVarShortArray(short *ptr, long length)
     {
         return new Tango::DevVarShortArray(length, length, ptr, false);
     }
@@ -833,7 +792,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarLongArray type data
      */
 
-    inline Tango::DevVarLongArray *create_DevVarLongArray(DevLong *ptr, long length)
+    Tango::DevVarLongArray *create_DevVarLongArray(DevLong *ptr, long length)
     {
         return new Tango::DevVarLongArray(length, length, ptr, false);
     }
@@ -850,7 +809,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarLong64Array type data
      */
 
-    inline Tango::DevVarLong64Array *create_DevVarLong64Array(DevLong64 *ptr, long length)
+    Tango::DevVarLong64Array *create_DevVarLong64Array(DevLong64 *ptr, long length)
     {
         return new Tango::DevVarLong64Array(length, length, ptr, false);
     }
@@ -866,7 +825,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarFloatArray type data
      */
-    inline Tango::DevVarFloatArray *create_DevVarFloatArray(float *ptr, long length)
+    Tango::DevVarFloatArray *create_DevVarFloatArray(float *ptr, long length)
     {
         return new Tango::DevVarFloatArray(length, length, ptr, false);
     }
@@ -882,7 +841,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarDoubleArray type data
      */
-    inline Tango::DevVarDoubleArray *create_DevVarDoubleArray(double *ptr, long length)
+    Tango::DevVarDoubleArray *create_DevVarDoubleArray(double *ptr, long length)
     {
         return new Tango::DevVarDoubleArray(length, length, ptr, false);
     }
@@ -898,7 +857,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarUShortArray type data
      */
-    inline Tango::DevVarUShortArray *create_DevVarUShortArray(unsigned short *ptr, long length)
+    Tango::DevVarUShortArray *create_DevVarUShortArray(unsigned short *ptr, long length)
     {
         return new Tango::DevVarUShortArray(length, length, ptr, false);
     }
@@ -915,7 +874,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarULongArray type data
      */
 
-    inline Tango::DevVarULongArray *create_DevVarULongArray(DevULong *ptr, long length)
+    Tango::DevVarULongArray *create_DevVarULongArray(DevULong *ptr, long length)
     {
         return new Tango::DevVarULongArray(length, length, ptr, false);
     }
@@ -932,7 +891,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @return Pointer to the created DevVarULong64Array type data
      */
 
-    inline Tango::DevVarULong64Array *create_DevVarULong64Array(DevULong64 *ptr, long length)
+    Tango::DevVarULong64Array *create_DevVarULong64Array(DevULong64 *ptr, long length)
     {
         return new Tango::DevVarULong64Array(length, length, ptr, false);
     }
@@ -948,7 +907,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      *
      * @return Pointer to the created DevVarStringArray type data
      */
-    inline Tango::DevVarStringArray *create_DevVarStringArray(char **ptr, long length)
+    Tango::DevVarStringArray *create_DevVarStringArray(char **ptr, long length)
     {
         return new Tango::DevVarStringArray(length, length, ptr, false);
     }
@@ -2064,7 +2023,7 @@ class DeviceImpl : public virtual POA_Tango::Device
         }
     }
 
-    inline log4tango::Logger *get_logger()
+    log4tango::Logger *get_logger()
     {
         return logger != nullptr ? logger : get_logger_i();
     }
@@ -2082,7 +2041,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     void cleanup_telemetry_interface() noexcept;
 
     // get access to the telemetry interface.
-    inline Tango::telemetry::InterfacePtr &telemetry()
+    Tango::telemetry::InterfacePtr &telemetry()
     {
         if(!telemetry_interface)
         {
@@ -2095,25 +2054,25 @@ class DeviceImpl : public virtual POA_Tango::Device
     }
 
     // enable the telemetry interface (enable tracing).
-    inline void enable_telemetry() noexcept
+    void enable_telemetry() noexcept
     {
         telemetry()->enable();
     }
 
     // disable the telemetry interface (disable tracing).
-    inline void disable_telemetry() noexcept
+    void disable_telemetry() noexcept
     {
         telemetry()->disable();
     }
 
     // enable traces of the kernel api.
-    inline void enable_kernel_traces() noexcept
+    void enable_kernel_traces() noexcept
     {
         telemetry()->enable_kernel_traces();
     }
 
     // disable traces of the kernel api.
-    inline void disable_kernel_traces() noexcept
+    void disable_kernel_traces() noexcept
     {
         telemetry()->disable_kernel_traces();
     }
@@ -2153,16 +2112,16 @@ class DeviceImpl : public virtual POA_Tango::Device
     // Ported from the extension class
     //
 
-    log4tango::Logger *logger;
-    log4tango::Level::Value saved_log_level;
+    log4tango::Logger *logger{nullptr};
+    log4tango::Level::Value saved_log_level{log4tango::Level::WARN};
     size_t rft;
 
-    long poll_old_factor;
-    long idl_version;
+    long poll_old_factor{0};
+    long idl_version{1};
 
-    bool exported;
-    bool polled;
-    long poll_ring_depth;
+    bool exported{false};
+    bool polled{false};
+    long poll_ring_depth{0};
     std::vector<std::string> polled_cmd;
     std::vector<std::string> polled_attr;
     std::vector<std::string> non_auto_polled_cmd;
@@ -2176,43 +2135,43 @@ class DeviceImpl : public virtual POA_Tango::Device
     std::vector<std::string> cmd_poll_ring_depth;
     std::vector<std::string> attr_poll_ring_depth;
 
-    bool store_in_bb;
+    bool store_in_bb{true};
     TangoMonitor poll_mon;      // Polling list monitor
     TangoMonitor att_conf_mon;  // Attribute config monitor
     TangoMonitor pipe_conf_mon; // Pipe config monitor
-    bool state_from_read;
+    bool state_from_read{false};
     std::vector<long> alrmd_not_read;
 
     bool py_device;
     std::string alias_name_lower; // Alias name (if any)
 
-    bool device_locked;
-    client_addr *locker_client;
-    client_addr *old_locker_client;
+    bool device_locked{false};
+    client_addr *locker_client{nullptr};
+    client_addr *old_locker_client{nullptr};
     DevLong lock_validity;
     time_t locking_date;
     std::string lock_stat;
-    DevLong lock_ctr;
+    DevLong lock_ctr{0};
 
-    long min_poll_period;
+    long min_poll_period{0};
     std::vector<std::string> cmd_min_poll_period;
     std::vector<std::string> attr_min_poll_period;
 
-    bool run_att_conf_loop;
-    bool force_alarm_state;
+    bool run_att_conf_loop{true};
+    bool force_alarm_state{false};
     std::vector<std::string> att_wrong_db_conf;
     std::vector<std::string> att_mem_failed;
     std::vector<FwdWrongConf> fwd_att_wrong_conf;
-    bool with_fwd_att;
+    bool with_fwd_att{false};
     DevSource call_source;
 
     std::vector<Command *> command_list;
-    time_t event_intr_change_subscription;
-    bool intr_change_ev;
+    time_t event_intr_change_subscription{0};
+    bool intr_change_ev{false};
 
     TangoMonitor devintr_mon;
     ShDevIntrTh devintr_shared;
-    DevIntrThread *devintr_thread;
+    DevIntrThread *devintr_thread{nullptr};
 
     std::vector<int> client_lib; // Dev Intr change event client(s) IDL
 

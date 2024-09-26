@@ -1,6 +1,8 @@
 #ifndef TANGO_COMMON_TELEMETRY_KERNEL_MACROS_H
 #define TANGO_COMMON_TELEMETRY_KERNEL_MACROS_H
 
+#include <tango/common/tango_version.h>
+
 #if defined(TANGO_USE_TELEMETRY)
 
 //---------------------------------------------------------------------------------------------------------------------

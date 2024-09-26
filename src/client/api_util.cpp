@@ -1580,6 +1580,14 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
 
         int sock = socket(AF_INET, SOCK_STREAM, 0);
 
+        if(sock == INVALID_SOCKET)
+        {
+            int err = WSAGetLastError();
+            TangoSys_OMemStream desc;
+            desc << "Unable to create socket! Error = " << err;
+            TANGO_THROW_EXCEPTION(API_SystemCallFailed, desc.str().c_str());
+        }
+
         INTERFACE_INFO info[64]; // Assume max 64 interfaces
         DWORD retlen;
 

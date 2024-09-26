@@ -1747,7 +1747,7 @@ inline void Attribute::_extract_value(CORBA::Any &dest)
 {
     auto *ptr = *get_value_storage<T>();
     dest <<= *ptr;
-    delete ptr;
+    delete_seq();
 }
 
 } // namespace Tango

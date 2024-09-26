@@ -785,7 +785,7 @@ class WAttribute : public Attribute
     bool check_rds_alarm() override;
 
   private:
-    inline void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)
+    void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)
     {
         if(((y == 0u) && nb_data != x) || ((y != 0u) && nb_data != (x * y)))
         {

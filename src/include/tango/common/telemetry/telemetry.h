@@ -1,7 +1,11 @@
 #ifndef TANGO_COMMON_TELEMETRY_H
 #define TANGO_COMMON_TELEMETRY_H
 
+#include <tango/common/tango_version.h>
+
 #if defined(TANGO_USE_TELEMETRY)
+
+  #include <tango/common/telemetry/configuration.h>
 
   #include <map>
   #include <regex>
@@ -75,245 +79,8 @@ using AttributeValue = std::variant<bool, std::int32_t, std::int64_t, std::uint3
 //---------------------------------------------------------------------------------------------------------------------
 using Attributes = std::map<std::string, AttributeValue>;
 
-//-----------------------------------------------------------------------------------------------------------------
-//! The telemetry configuration class
-//-----------------------------------------------------------------------------------------------------------------
-struct Configuration
-{
-    //-----------------------------------------------------------------------------------------------------------------
-    //  CONFIGURATION
-    //-----------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The kinds of configuration.
-    //-----------------------------------------------------------------------------------------------------------------
-    enum class Kind
-    {
-        //- telemetry for pure Tango clients.
-        Client,
-        //- telemetry for Tango servers (i.e., Tango devices).
-        Server
-    };
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! Some specific configuration info for clients.
-    //-----------------------------------------------------------------------------------------------------------------
-    struct Client
-    {
-        // tell the world that this struct relies on default ctors and assignment operators
-        Client() = default;
-        Client(const Client &) = default;
-        Client &operator=(const Client &) = default;
-        Client &operator=(Client &&) = default;
-
-        //- the pure Tango client name: used as the "service name" (opentelemetry semantic convention)
-        std::string name{"undefined Tango client name"};
-    };
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! Some specific configuration info for servers (i.e. Tango devices).
-    //-----------------------------------------------------------------------------------------------------------------
-    struct Server
-    {
-        // tell the world that this struct relies on default ctors and assignment operators
-        Server() = default;
-        Server(const Server &) = default;
-        Server &operator=(const Server &) = default;
-        Server &operator=(Server &&) = default;
-
-        //- the Tango class name: used as the "service.name" (opentelemetry semantic convention)
-        std::string class_name{"undefined Tango class name"};
-        //- the Tango device name: used as the "service.instance.id" (opentelemetry semantic convention)
-        std::string device_name{"undefined Tango device name"};
-    };
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default gRPC endpoint to which the telemetry data is exported: grpc://localhost:4317
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::string DEFAULT_GRPC_TRACES_ENDPOINT;
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default HTTP endpoint to which the telemetry data is exported: http://localhost:4318/v1/traces
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::string DEFAULT_HTTP_TRACES_ENDPOINT;
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default console endpoint to which the telemetry data is exported: cout
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::string DEFAULT_CONSOLE_TRACES_ENDPOINT;
-
-    //-------------------------------------------------------------------------------------------------
-    //! The default endpoint to which logs are exported
-    //-------------------------------------------------------------------------------------------------
-    static const std::string DEFAULT_GRPC_LOGS_ENDPOINT;
-
-    //-------------------------------------------------------------------------------------------------
-    //! The default endpoint to which logs are exported
-    //-------------------------------------------------------------------------------------------------
-    static const std::string DEFAULT_HTTP_LOGS_ENDPOINT;
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default console endpoint to which the telemetry data is exported
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::string DEFAULT_CONSOLE_LOGS_ENDPOINT;
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default batch size for traces
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::size_t DEFAULT_TRACES_BATCH_SIZE;
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default batch size for logs
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::size_t DEFAULT_LOGS_BATCH_SIZE;
-
-    //--------------------------------------------------------s---------------------------------------------------------
-    //! The default max batch queue size (threshold above which signals are dropped - common to traces and logs)
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::size_t DEFAULT_MAX_BATCH_QUEUE_SIZE;
-
-    //-----------------------------------------------------------------------------------------------------------------
-    //! The default delay (in ms) after which a batch processing is scheduled whatever is the number of pending signals
-    //! in the queue (common to traces and logs)
-    //-----------------------------------------------------------------------------------------------------------------
-    static const std::size_t DEFAULT_BATCH_SCHEDULE_DELAY;
-
-    // tell the world that this struct relies on default ctors and assignment operators
-    Configuration() = default;
-    Configuration(const Configuration &) = default;
-    Configuration &operator=(const Configuration &) = default;
-    Configuration &operator=(Configuration &&) = default;
-
-    //! Set to true (the default) to enable to the interface at instantiation.
-    //! A disabled interface acts as a "no-op" one (i.e. signals, like traces, are silently dropped).
-    bool enabled{false};
-
-    //! Set to true to enable some of the kernel traces that are hidden by default.
-    bool kernel_traces_enabled{false};
-
-    //! An optional telemetry interface name (identifier)
-    std::string id{"unspecified interface name"};
-
-    //! The "name space" or "subsystem name" to which the Interface owner belongs to (for logical organisation of
-    //! the telemetry signals). Things like "diagnostics" or "power-supplies" are examples of name spaces.
-    std::string name_space{"tango"};
-
-    //! The client or server details.
-    //! \see Configuration::Client and Configuration::Server.
-    std::variant<Server, Client> details{Server()};
-
-    //! The telemetry data collector endpoint for traces - a string of the form: "http://addr:port/..." or
-    //! "grpc://addr:port"
-    std::string collector_traces_endpoint{};
-
-    //! The telemetry data collector endpoint for logs - a string of the form: "http://addr:port/..." or
-    //! "grpc://addr:port"
-    std::string collector_logs_endpoint{};
-
-    //! The batch size for traces
-    std::size_t traces_batch_size{Configuration::DEFAULT_TRACES_BATCH_SIZE};
-
-    //! The batch size for logs
-    std::size_t logs_batch_size{Configuration::DEFAULT_LOGS_BATCH_SIZE};
-
-    //! The max queue size for traces and logs - threshold above witch signals are dropped
-    std::size_t max_batch_queue_size{Configuration::DEFAULT_MAX_BATCH_QUEUE_SIZE};
-
-    //! The delay (in ms) after which a batch processing is scheduled whatever is the number of pending signals in the
-    //! queue
-    std::size_t batch_schedule_delay_in_milliseconds{Configuration::DEFAULT_BATCH_SCHEDULE_DELAY};
-
-    //! Get the 'kind' of the configuration.
-    //! \see Configuration::Kind.
-    Configuration::Kind get_kind() const noexcept;
-
-    //! Check the 'kind' of the configuration.
-    //! Returns true if the Configuration is of the specified Configuration::Kind, returns false otherwise.
-    //!
-    //! @param kind The Configuration::Kind to be compared to the actual kind of the configuration.
-    //!
-    //! \see Configuration::Kind.
-    bool is_a(const Configuration::Kind &kind) const noexcept;
-
-    //! Check the syntactic validity of the specified endpoint.
-    //! Returns true if the specified string contains a syntactically valid http endpoint, returns false otherwise.
-    //! A valid telemetry http data collector endpoint is of the form: "http://addr:port/...".
-    //!
-    //! @param endpoint The telemetry endpoint to be checked.
-    static bool is_valid_http_endpoint(const std::string &endpoint) noexcept;
-
-    //! Check the syntactic validity of the specified endpoint.
-    //! Returns true if the specified string contains a syntactically grpc endpoint, returns false otherwise.
-    //! A valid telemetry grpc data collector endpoint is of the form: "grpc://addr:port".
-    //!
-    //! @param endpoint The telemetry endpoint to be checked.
-    static bool is_valid_grpc_endpoint(const std::string &endpoint) noexcept;
-
-    //! Check the syntactic validity of the specified endpoint.
-    //! Returns true if the specified string contains a syntactically console endpoint, returns false otherwise.
-    //! A valid telemetry console data collector endpoint is of the form "cout" or "cerr"
-    //!
-    //! @param endpoint The telemetry endpoint to be checked.
-    static bool is_valid_console_endpoint(const std::string &endpoint) noexcept;
-
-    //! Extract "host:port" from specified grpc endpoint.
-    //! An empty string is returned if the specified endpoint is invalid.
-    //! A valid telemetry grpc data collector endpoint is of the form: "grpc://addr:port".
-    //!
-    //! @param endpoint The telemetry endpoint from which the 'host:port' substring is to extracted.
-    static std::string extract_grpc_host_port(const std::string &endpoint) noexcept;
-
-    ///! Available exporter types for logs and traces
-    ///!
-    ///! \see Configuration::get_exporter_from_env
-    enum class Exporter
-    {
-        grpc,
-        http,
-        console
-    };
-
-    static const Exporter kDefaultExporter{Exporter::console};
-
-    //! Check that endpoint describes a valid endpoint for the given exporter type, throws on error
-    static void
-        ensure_valid_endpoint(const char *env_var, Configuration::Exporter exporter_type, const std::string &endpoint);
-
-    //! Get the traces endpoint from the dedicated env. variable and the given exporter type
-    //! Uses a defaults value in case the env. variable is undefined.
-    //! A Tango::DevFailed exception will thrown in case the specified endpoint (i.e. the content of the
-    //! env. variable) is (syntactically) invalid. A valid telemetry data collector endpoint is of the
-    //! form: "http://addr:port/..." or "grpc://addr:port".
-    //!
-    //! \returns A std::string containing the traces endpoint.
-    //!
-    //! \see Interface::kEnvVarTelemetryTracesEndPoint.
-    //! \see Configuration::DEFAULT_GRPC_TRACES_ENDPOINT and Configuration::DEFAULT_HTTP_TRACES_ENDPOINT.
-    static std::string get_traces_endpoint_from_env(Exporter exporter_type);
-
-    //! Get the traces endpoint from the dedicated env. variable and the given exporter type
-    //!
-    //! Uses a defaults value in case the env. variable is undefined.
-    //! A Tango::DevFailed exception will thrown in case the specified endpoint
-    //! (i.e. the content of the env. variable) is (syntactically) invalid. A valid
-    //! telemetry data collector endpoint is of the form: "http://addr:port/..." or "grpc://addr:port".
-    //!
-    //! \returns A std::string containing the logs endpoint.
-    //!
-    //! \see Interface::kEnvVarTelemetryLogsEndPoint.
-    //! \see Configuration::DEFAULT_GRPC_LOGS_ENDPOINT and Configuration::DEFAULT_HTTP_LOGS_ENDPOINT.
-    static std::string get_logs_endpoint_from_env(Exporter exporter_type);
-
-    //! Parse the given string as Exporter, throws on error
-    static Exporter to_exporter(std::string_view str);
-
-    //! Fetch the exporter type from the given env. variable
-    //!
-    //! Defaults to Configuration::kDefaultExporter
-    static Exporter get_exporter_from_env(const char *env_var);
-};
-
 //---------------------------------------------------------------------------------------------------------------------
-//! Span
+// Span
 //---------------------------------------------------------------------------------------------------------------------
 //! A "Span" is a fundamental concept that represents a single 'operation' within a trace. Spans are the building
 //! blocks of a trace and can be thought of as individual units of work done in a distributed system.
@@ -482,12 +249,13 @@ using SpanPtr = std::unique_ptr<Span>;
 //---------------------------------------------------------------------------------------------------------------------
 // Scope
 //---------------------------------------------------------------------------------------------------------------------
-// In telemetry, the concept of "Scope" is crucial for context management, particularly in relation to Spans.
-// A Scope essentially defines the current active Span in a specific execution thread or context. Scope is a mechanism
-// for managing the active Span in the context of an execution thread, ensuring that Spans are correctly nested and the
-// trace is accurately constructed as the program executes. This concept is integral to distributed tracing, as it aids
-// in correctly associating the work being performed with the appropriate Span. Any Span instantiated in the context of
-// Scope becomes a child on the Span activated by the Scope. A Span created out of a Scope is considered as a root Span.
+//! In telemetry, the concept of "Scope" is crucial for context management, particularly in relation to Spans.
+//! A Scope essentially defines the current active Span in a specific execution thread or context. Scope is a mechanism
+//! for managing the active Span in the context of an execution thread, ensuring that Spans are correctly nested and the
+//! trace is accurately constructed as the program executes. This concept is integral to distributed tracing, as it aids
+//! in correctly associating the work being performed with the appropriate Span. Any Span instantiated in the context of
+//! Scope becomes a child on the Span activated by the Scope. A Span created out of a Scope is considered as a root
+//! Span.
 //---------------------------------------------------------------------------------------------------------------------
 class Scope final
 {
@@ -538,10 +306,10 @@ extern thread_local InterfacePtr current_telemetry_interface;
 //---------------------------------------------------------------------------------------------------------------------
 // Interface: an interface for Tango telemetry
 //---------------------------------------------------------------------------------------------------------------------
-// Any "entity" wanting to generate telemetry signals on its own (i.e. not on behalf of another entity) should hold its
-// own instance of the Tango::telemetry::Interface class. That's the case for any Tango device (per device telemetry
-// design). The same rule applies to a pure client. The interface configuration allows to distinguish the two cases.
-// See the thread_local Tango::telemetry::current_telemetry_interface variable for details.
+//! Any "entity" wanting to generate telemetry signals on its own (i.e. not on behalf of another entity) should hold its
+//! own instance of the Tango::telemetry::Interface class. That's the case for any Tango device (per device telemetry
+//! design). The same rule applies to a pure client. The interface configuration allows to distinguish the two cases.
+//! See the thread_local Tango::telemetry::current_telemetry_interface variable for details.
 //---------------------------------------------------------------------------------------------------------------------
 class Interface
 {
@@ -559,7 +327,7 @@ class Interface
     // internal helper function: forward declaration of the method returning the default interface.
     // see Interface::get_current for details regarding the semantic and usage of the default interface.
     //-----------------------------------------------------------------------------------------------------------------
-    static Tango::telemetry::InterfacePtr get_default_interface() noexcept;
+    static Tango::telemetry::InterfacePtr get_default_interface();
 
   public:
     //-----------------------------------------------------------------------------------------------------------------
@@ -577,7 +345,7 @@ class Interface
     //!
     //! \see Configuration
     //-----------------------------------------------------------------------------------------------------------------
-    Interface(const Configuration &cfg) noexcept;
+    Interface(const Configuration &cfg);
 
     //- some disabled features
     Interface(const Interface &) = delete;
@@ -773,7 +541,7 @@ class Interface
     //!
     //! \see Tango::telemetry::Interface::set_current
     //-----------------------------------------------------------------------------------------------------------------
-    static InterfacePtr get_current() noexcept
+    static InterfacePtr get_current()
     {
         return Tango::telemetry::current_telemetry_interface ? Tango::telemetry::current_telemetry_interface
                                                              : Interface::get_default_interface();
@@ -949,7 +717,7 @@ class InterfaceFactory
     //!
     //! \see Configuration
     //-----------------------------------------------------------------------------------------------------------------
-    static InterfacePtr create(const Tango::telemetry::Configuration &cfg) noexcept;
+    static InterfacePtr create(const Tango::telemetry::Configuration &cfg);
 
   private:
     InterfaceFactory() = delete;
@@ -1011,151 +779,156 @@ class InterfaceScope
     InterfacePtr previous_interface{nullptr};
 };
 
-    //-----------------------------------------------------------------------------------------
-    // MISC. MACROS FOR DEVICE DEVELOPER
-    //-----------------------------------------------------------------------------------------
-    //
-    //            THE FOLLOWING MACROS NOT ONLY EASE THE USAGE OF THE TELEMETRY API
-    //
-    //                    **** IT IS HIGHLY RECOMMENDED TO USE THEM ****
-    //
-    //------------------------------------------------------------------------------------------
-    //
-    // Usage example:
-    //
-    // void MyDeviceClass::read_some_attribute(Tango::Attribute &attr)
-    //  {
-    //     //-----------------------------------------------------------------------------------
-    //     // The telemetry interface of the device has been activated by the kernel upon
-    //     // reception of a "remote" call. We can consequently generate traces on behalf of
-    //     // our device in this context and contribute to the "end-to-end" observability.
-    //     // ----------------------------------------------------------------------------------
-    //     // Let's create a span then make it the active one using a scope.
-    //     // The scope makes use of teh RAII paradigm to control how long the span remains
-    //     // active. The active span will be the parent of any span created downstream.
-    //     //-----------------------------------------------------------------------------------
-    //     auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //     auto scope = TANGO_TELEMETRY_SCOPE(span);
-    //     // -----------------------------------------------------------------------------------
-    //     // Now, let's add an attribute (as a key/value pair) to the span. An attribute is
-    //     // purely user defined and there is no semantic convention to respect. This a contextual
-    //     // information that will be propagated together with the span and that will available
-    //     // as a meta-data in the backend (e.g., as a search criteria). We can do so using the
-    //     // span object or the TANGO_TELEMETRY_ADD_ATTRIBUTE macro. The key must be a std::string while
-    //     // the value must be one of the types supported by Tango::telemetry::AttributeValue.
-    //     //-----------------------------------------------------------------------------------
-    //     TANGO_TELEMETRY_ADD_ATTRIBUTE("data_update_counter", get_data_update_counter());
-    //     try
-    //     {
-    //          ...
-    //          // add an annotations to the span (an event in the OpenTelemetry jargon)
-    //          TANGO_TELEMETRY_ADD_EVENT("so far, so good...");
-    //          ...
-    //          // end the span for precise profiling
-    //          // will be ended automatically otherwise when it goes out of scope
-    //          span->End();
-    //      }
-    //      catch(...)
-    //      {
-    //          // tell the world that an error occurred in the span
-    //          auto err_msg = Tango::telemetry::extract_exception_info();
-    //          TANGO_TELEMETRY_SET_ERROR_STATUS(err_msg);
-    //          throw(...);
-    //      }
-    //
-    //      //------------------------------------------------------------------------
-    //      // the span and the scope goes out of (function) scope
-    //      //------------------------------------------------------------------------
-    //      // when released, the scope restores the previously active span
-    //      // when released, the span is automatically ended (if not already ended)
-    //      //------------------------------------------------------------------------
-    //  }
-    //-------------------------------------------------------------------------------
+    //! @defgroup TelMacros Telemetry macros
+    //!
+    //! The macros are the only supported way of interacting with the cppTango
+    //! telemetry infrastructure for device client/server authors. The underlying C++
+    //! interface can change without notice.
+    //!
+    //! Usage example:
+    //!
+    //! \code
+    //!
+    //! void MyDeviceClass::read_some_attribute(Tango::Attribute &attr)
+    //!  {
+    //!     //-----------------------------------------------------------------------------------
+    //!     // The telemetry interface of the device has been activated by the kernel upon
+    //!     // reception of a "remote" call. We can consequently generate traces on behalf of
+    //!     // our device in this context and contribute to the "end-to-end" observability.
+    //!     // ----------------------------------------------------------------------------------
+    //!     // Let's create a span then make it the active one using a scope.
+    //!     // The scope makes use of teh RAII paradigm to control how long the span remains
+    //!     // active. The active span will be the parent of any span created downstream.
+    //!     //-----------------------------------------------------------------------------------
+    //!     auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //!     auto scope = TANGO_TELEMETRY_SCOPE(span);
+    //!
+    //!     // -----------------------------------------------------------------------------------
+    //!     // Now, let's add an attribute (as a key/value pair) to the span. An attribute is
+    //!     // purely user defined and there is no semantic convention to respect. This a contextual
+    //!     // information that will be propagated together with the span and that will available
+    //!     // as a meta-data in the backend (e.g., as a search criteria). We can do so using the
+    //!     // span object or the TANGO_TELEMETRY_ADD_ATTRIBUTE macro. The key must be a std::string while
+    //!     // the value must be one of the types supported by Tango::telemetry::AttributeValue.
+    //!     //-----------------------------------------------------------------------------------
+    //!     TANGO_TELEMETRY_ADD_ATTRIBUTE("data_update_counter", get_data_update_counter());
+    //!
+    //!     try
+    //!     {
+    //!          ...
+    //!          // add an annotations to the span (an event in the OpenTelemetry jargon)
+    //!          TANGO_TELEMETRY_ADD_EVENT("so far, so good...");
+    //!          ...
+    //!          // end the span for precise profiling
+    //!          // will be ended automatically otherwise when it goes out of scope
+    //!          span->end();
+    //!      }
+    //!      catch(...)
+    //!      {
+    //!          // tell the world that an error occurred in the span
+    //!          auto err_msg = Tango::telemetry::extract_exception_info();
+    //!          TANGO_TELEMETRY_SET_ERROR_STATUS(err_msg);
+    //!          throw(...);
+    //!      }
+    //!
+    //!      //------------------------------------------------------------------------
+    //!      // the span and the scope goes out of (function) scope
+    //!      //------------------------------------------------------------------------
+    //!      // when released, the scope restores the previously active span
+    //!      // when released, the span is automatically ended (if not already ended)
+    //!      //------------------------------------------------------------------------
+    //!  }
+    //!
+    //! \endcode
+    //!
+    //! @ingroup TelMacros
 
-    //-------------------------------------------------------------------------------
-    // TANGO_TELEMETRY_ACTIVE_INTERFACE
-    //
-    // Snapshots which interface is currently attached to the current thread then attaches
-    // the specified one. Uses the magic provide by the C++11 "thread_local" keyword.
-    // The interface that was initially active is restored when the underlying InterfaceScope
-    // goes out of scope (RAII paradigm).
-    //
-    // Usage example:
-    //
-    //    void myClient()
-    //    {
-    //        Tango::telemetry::Configuration cfg{
-    //                                 true,
-    //                                 false,
-    //                                 "Some Diagnostics Application",
-    //                                 "diagnostics",
-    //                                 Tango::telemetry::Configuration::Client{"myDiagnosticsClientApp"},
-    //                                 Tango::telemetry::Configuration::DEFAULT_COLLECTOR_ENDPOINT};
-    //
-    //        Tango::telemetry::InterfacePtr tti = Tango::telemetry::InterfaceFactory(cfg);
-    //
-    //        // activate the interface (make it the "current" one for the thread executing this code)
-    //        auto interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(tti);
-    //
-    //        // create the client root span (i.e., the parent of any span created in this thread)
-    //        auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //        auto scope = TANGO_TELEMETRY_SCOPE(span);
-    //
-    //        while (go_on)
-    //        {
-    //            // generate traces on behalf of the client
-    //            ...
-    //        }
-    //    }
-    //
-    //-------------------------------------------------------------------------------
+    //! Snapshots which interface is currently attached to the current thread then attaches
+    //! the specified one. Uses the magic provide by the C++11 "thread_local" keyword.
+    //! The interface that was initially active is restored when the underlying InterfaceScope
+    //! goes out of scope (RAII paradigm).
+    //!
+    //! Usage example:
+    //!
+    //! \code
+    //!
+    //!    void myClient()
+    //!    {
+    //!        Tango::telemetry::Configuration cfg{
+    //!                                 true,
+    //!                                 false,
+    //!                                 "Some Diagnostics Application",
+    //!                                 "diagnostics",
+    //!                                 Tango::telemetry::Configuration::Client{"myDiagnosticsClientApp"},
+    //!                                 Tango::telemetry::Configuration::DEFAULT_COLLECTOR_ENDPOINT};
+    //!
+    //!        Tango::telemetry::InterfacePtr tti = Tango::telemetry::InterfaceFactory(cfg);
+    //!
+    //!        // activate the interface (make it the "current" one for the thread executing this code)
+    //!        auto interface_scope = TANGO_TELEMETRY_ACTIVE_INTERFACE(tti);
+    //!
+    //!        // create the client root span (i.e., the parent of any span created in this thread)
+    //!        auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //!        auto scope = TANGO_TELEMETRY_SCOPE(span);
+    //!
+    //!        while (go_on)
+    //!        {
+    //!            // generate traces on behalf of the client
+    //!            ...
+    //!        }
+    //!    }
+    //!
+    //! \endcode
+    //!
+    //! @param [in] TI -- Interface pointer
+    //!
+    //! @ingroup TelMacros
   #define TANGO_TELEMETRY_ACTIVE_INTERFACE(TI) Tango::telemetry::InterfaceScope(TI)
 
-    //-------------------------------------------------------------------------------
-    // MACRO: TANGO_TELEMETRY_SPAN
-    //
-    // Start a new span.
-    //
-    // The "location" (i.e., the file name and the line number) where the scope(i.e., the span)
-    // has been created is automatically added to the span attributes.
-    //
-    // Usage:
-    //
-    //    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //        `-> span name = TANGO_CURRENT_FUNCTION (the recommended span name for consistency reasons)
-    //        `-> no Tango::telemetry::Attributes (no 2nd  arg)
-    //
-    //    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"myKey", "myValue"}});
-    //        `-> span name = TANGO_CURRENT_FUNCTION (the recommended span name for consistency reasons)
-    //        `-> attributes = user defined key/value pairs (as string/AttributeValue pairs)
-    //-------------------------------------------------------------------------------
+    //! Start a new span.
+    //!
+    //! Usage:
+    //!
+    //! \code
+    //!
+    //!   auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //!   auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION, {{"myKey", "myValue"}});
+    //!
+    //! \endcode
+    //!
+    //!@ingroup TelMacros
   #define TANGO_TELEMETRY_SPAN(...) Tango::telemetry::Interface::get_current()->start_span(__VA_ARGS__)
 
-    //-------------------------------------------------------------------------------
-    // MACRO: TANGO_TELEMETRY_SCOPE
-    //
-    // Start a new scope (i.e., makes the specified span the active one).
-    //
-    // The "location" (i.e., the file name and the line number) where the scope has been created is automatically
-    // added to the span attributes.
-    //
-    // Usage:
-    //    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
-    //    auto scope = TANGO_TELEMETRY_SCOPE(span);
-    //    ...
-    //    span->End();
-    //-------------------------------------------------------------------------------
+    //! Start a new scope (i.e., makes the specified span the active one).
+    //!
+    //! The "location" (i.e., the file name and the line number) where the scope has been created is automatically
+    //! added to the span attributes.
+    //!
+    //! Usage:
+    //!
+    //! \code
+    //!
+    //!    auto span = TANGO_TELEMETRY_SPAN(TANGO_CURRENT_FUNCTION);
+    //!    auto scope = TANGO_TELEMETRY_SCOPE(span);
+    //!
+    //! \endcode
+    //!
+    //! @param [in] SPAN -- telemetry span
+    //! @ingroup TelMacros
   #define TANGO_TELEMETRY_SCOPE(SPAN) Tango::telemetry::Interface::get_current()->scope(SPAN, __FILE__, __LINE__)
 
-    //-------------------------------------------------------------------------------
-    // TANGO_TELEMETRY_ADD_EVENT
-    //
-    // Add an event to the current span.
-    //
-    // Usage:
-    //
-    //    TANGO_TELEMETRY_ADD_EVENT("this annotation will be attached to the current span");
-    //-------------------------------------------------------------------------------
+    //! Add an event to the current span.
+    //!
+    //! Usage:
+    //!
+    //! \code
+    //!
+    //!    TANGO_TELEMETRY_ADD_EVENT("this annotation will be attached to the current span");
+    //!
+    //! \endcode
+    //!
+    //! @param [in] MSG -- annotation to attach to the current span
+    //! @ingroup TelMacros
   #define TANGO_TELEMETRY_ADD_EVENT(MSG)                                                        \
       {                                                                                         \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
@@ -1165,18 +938,22 @@ class InterfaceScope
           }                                                                                     \
       }
 
-    //-------------------------------------------------------------------------------
-    // TANGO_TELEMETRY_ADD_ATTRIBUTE
-    //
-    // Add an attribute to the current span.
-    //
-    // The key must be a std::string while the value must be one of the types supported by
-    // Tango::telemetry::AttributeValue.
-    //
-    // Usage:
-    //
-    //    TANGO_TELEMETRY_ADD_ATTRIBUTE("somekey", someValue);
-    //-------------------------------------------------------------------------------
+    //! Add an attribute to the current span.
+    //!
+    //! The key must be a std::string while the value must be one of the types supported by
+    //! Tango::telemetry::AttributeValue.
+    //!
+    //! Usage:
+    //!
+    //! \code
+    //!
+    //!    TANGO_TELEMETRY_ADD_ATTRIBUTE("somekey", someValue);
+    //!
+    //! \endcode
+    //!
+    //! @param [in] KEY -- telemetry attribute key
+    //! @param [in] VALUE -- telemetry attribute value
+    //! @ingroup TelMacros
   #define TANGO_TELEMETRY_ADD_ATTRIBUTE(KEY, VALUE)                                             \
       {                                                                                         \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
@@ -1186,24 +963,27 @@ class InterfaceScope
           }                                                                                     \
       }
 
-    //-------------------------------------------------------------------------------
-    // TANGO_TELEMETRY_SET_ERROR_STATUS
-    //
-    // Set the error status of the current span.
-    //
-    // This is typically used in error/exception context.
-    //
-    // Usage:
-    //
-    //    try
-    //    {
-    //       do_some_job();
-    //    }
-    //    catch (...)
-    //    {
-    //      TANGO_TELEMETRY_SET_ERROR_STATUS("oops, an error occurred!");
-    //    }
-    //-------------------------------------------------------------------------------
+    //! Set the error status of the current span.
+    //!
+    //! This is typically used in error/exception context.
+    //!
+    //! Usage:
+    //!
+    //! \code
+    //!
+    //!    try
+    //!    {
+    //!       do_some_job();
+    //!    }
+    //!    catch (...)
+    //!    {
+    //!      TANGO_TELEMETRY_SET_ERROR_STATUS("oops, an error occurred!");
+    //!    }
+    //!
+    //! \endcode
+    //!
+    //! @param [in] DESC -- description of the error
+    //! @ingroup TelMacros
   #define TANGO_TELEMETRY_SET_ERROR_STATUS(DESC)                                                \
       {                                                                                         \
           auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \

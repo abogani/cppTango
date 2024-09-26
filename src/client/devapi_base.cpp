@@ -2036,7 +2036,7 @@ void DeviceProxy::parse_name(const std::string &full_name)
 {
     std::string name_wo_prot;
     std::string name_wo_db_mod;
-    std::string dev_name, object_name;
+    std::string object_name;
 
     //
     // Error of the string is empty
@@ -8751,7 +8751,6 @@ bool DeviceProxy::is_locked_by_me()
 
                 ApiUtil *au = ApiUtil::instance();
                 std::vector<std::string> adrs;
-                std::string at_least_one;
 
                 au->get_ip_from_if(adrs);
 

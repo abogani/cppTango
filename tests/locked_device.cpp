@@ -1,6 +1,6 @@
 // NOLINTBEGIN(*)
 
-#include "common.h"
+#include "old_common.h"
 
 /*
  * Small utility program to help testing locking features.

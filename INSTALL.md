@@ -4,7 +4,7 @@ The following software packages are required to build cppTango:
 
 - A C++17 compliant compiler like GCC, clang or Visual Studio (2019 or newer)
 - [cmake](https://cmake.org), 3.18 or newer
-- [tango-idl](https://gitlab.com/tango-controls/tango-idl)
+- [tango-idl](https://gitlab.com/tango-controls/tango-idl), 6.0.2 or newer
 - [omniORB](http://omniorb.sourceforge.net), 4.3.0 or newer
 - [libzmq](https://github.com/zeromq/libzmq), 4.0.5 or newer
 - [cppzmq](https://github.com/zeromq/cppzmq), 4.7.1 or newer
@@ -52,7 +52,7 @@ This repository uses git submodules.
 ## tango-idl
 
 ```bash
-git clone --depth 1 -b 6.0-alpha3 https://gitlab.com/tango-controls/tango-idl
+git clone --depth 1 -b 6.0.2 https://gitlab.com/tango-controls/tango-idl
 cd tango-idl
 mkdir build
 cd build
@@ -80,22 +80,15 @@ You can provide custom locations for the dependencies using [`<PackageName>_ROOT
 which can be both used as environment variables or directly as a cmake variable.
 e.g.:
 ```bash
-cmake -Dtangoidl_ROOT=/us/local ..
+cmake -Dtangoidl_ROOT=/usr/local ..
 ```
 
-On linux-based systems we leverage the use of `pkg-config`.
-Therefore you can also pass additional search locations via the
-`PKG_CONFIG_PATH` environment variable as in
+or alternatively use `CMAKE_PREFIX_PATH` to pass in the cmake package config locations.
 
-```
-PKG_CONFIG_PATH="/usr/local/libzmq:/usr/local/omniORB" cmake ..
-```
-
-the dependencies we need are:
+The dependencies we need are:
  * cppzmq
  * JPEG (optional)
  * omniORB4
- * pthread (optional, windows only)
  * tangoidl
  * ZeroMQ
  * opentelemetry-cpp, protobuf, grpc, abseil, libcurl, c-ares, libre2 (optional)
@@ -114,13 +107,13 @@ The following variable can be passed to cmake to tweak compilation. The general 
 | `CMAKE_VERBOSE_MAKEFILE`           | `OFF`                                           | Allows to increase the verbosity level with `ON`
 | `TANGO_ENABLE_COVERAGE`            | `OFF`                                           | Instrument code for coverage analysis
 | `TANGO_ENABLE_SANITIZER`           | *empty*                                         | Compile with sanitizers, one of: `ASAN`, `TSAN`, `UBSAN` or `MSAN` (Requires Clang/GCC)
-| `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                   | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
+| `TANGO_GIT_SUBMODULE_INIT`         | `ON`                                            | If cppTango is a git repository, automatically checkout TangoCMakeModules at CMake configure time.
 | `TANGO_INSTALL_DEPENDENCIES`       | `OFF`                                           | Install dependencies of tango as well (Windows only)
 | `TANGO_OMNIIDL_PATH`               |                                                 | omniORB4 search path for omniidl
+| `TANGO_SKIP_OLD_TESTS`             | `OFF`                                           | Do not build cxxtests or old_tests.  This can be slow to build, so if you are not planning to run them (but you do want the Catch2Tests) you can turn them off.
 | `TANGO_SKIP_OMNIORB_VERSION_CHECK` | `OFF`                                           | Do not check the version of omniORB.  Enable this at your own risk.
 | `TANGO_USE_JPEG`                   | `ON`                                            | Build with jpeg support, in this case a jpeg library implementation is needed.
 | `TANGO_USE_LIBCPP`                 | `OFF`                                           | Compile against libc++ instead of stdlibc++ (Requires Clang)
-| `TANGO_USE_PTHREAD`                | `OFF`                                           | On windows platforms, build with pthread library.
 | `TANGO_USE_TELEMETRY`              | `ON`                                            | Enable tracing for servers and clients
 | `TANGO_TELEMETRY_USE_GRPC`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable GRPC exporter for tracing
 | `TANGO_TELEMETRY_USE_HTTP`         | `OFF`, enabled if `TANGO_USE_TELEMETRY` == `ON` | Enable HTTP exporter for tracing
@@ -153,7 +146,7 @@ make [-j NUMBER_OF_CPUS]
 cmake should output `Target platform: Linux 32-bit`. You can also inspect the
 created library using `file` to check that you built it correctly.
 
-##  Installation with custom prefix
+## Installation with custom prefix
 
 It is possible to have multiple tango installations on one machine. It uses
 `CMAKE_PREFIX_PATH` for that.
@@ -167,7 +160,7 @@ sudo cmake --install build-XXX
 Compiling a tango DS against this installation can then be done with
 
 ```bash
-PKG_CONFIG_PATH=/usr/local/tango-XXX/lib/pkgconfig cmake -B build-YYY -S .
+cmake -B build-YYY -S . -DCMAKE_PREFIX_PATH=/usr/local/tango-XXX/lib/cmake
 cmake --build build-YYY
 ```
 
@@ -237,13 +230,31 @@ cd cppTango/build
 cmake ..
 ```
 
-if cmake does not find some of the dependencies, you can either add a custom `PKG_CONFIG_PATH` environment variable with
+if cmake does not find some of the dependencies, you can either add a custom
+`CMAKE_PREFIX_PATH` cmake variable with
 
 ```bash
-PKG_CONFIG_PATH=/usr/local/lib/pkgconfig cmake ..
+cmake -DCMAKE_PREFIX_PATH=<...> ..
 ```
 
 or use the the CMAKE variables `ZeroMQ_ROOT`, `cppzmq_ROOT`, `tangoidl_ROOT`, `omniORB4_ROOT` from [here](#cmake-variables).
+
+# Using cmake package support in packages requiring tango
+
+This is the modern way and should be preferred over pkg-config as it works on
+all platforms, is much shorter and more future-proof.
+
+```cmake
+cmake_minimum_required(VERSION 3.18...3.28 FATAL_ERROR)
+
+project(dummy LANGUAGES CXX)
+
+find_package(Tango CONFIG REQUIRED)
+
+add_executable(dummy dummy.cpp)
+
+target_link_libraries(dummy PUBLIC Tango::Tango)
+```
 
 # Using pkg-config in packages requiring tango
 
@@ -254,10 +265,6 @@ use it to resolve libtango dependencies:
 ```cmake
 include(FindPkgConfig)
 pkg_search_module(TANGO_PKG REQUIRED tango)
-
-if(NOT TANGO_PKG_FOUND)
-  message(FATAL_ERROR "Could not find tango")
-endif()
 
 link_directories(${TANGO_PKG_LIBRARY_DIRS})
 
@@ -274,6 +281,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${TANGO_PKG_LIBRARIES})
 pkg-config --variable=tangodsdir tango
 /usr/bin
 ```
+
 # Header file location in cppTango 9.4
 
 From cppTango version 9.4.0 on the header files will still be installed in `${prefix}/include/tango`, but they will not be installed in a single directory any more. The new directory structure for the header files follows discussion in issue [!735](https://gitlab.com/tango-controls/cppTango/-/issues/735):
@@ -298,7 +306,7 @@ Old device servers which include just `tango.h` can easily be recompiled after `
 For the majority of users using the prebuilt binaries from the release page is
 easier. The following documentation is targeted for developers.
 
-We assume Windows 10 and a Visual Studio 2017 development environment. In
+We assume Windows 10 and a Visual Studio 2022 development environment. In
 addition python 3.7 must be installed (this is required by omniidl), get it
 from [here](https://www.python.org/downloads/release/python-379). You need the
 same bitness as you want to compile tango for. And add python to the path
@@ -310,67 +318,31 @@ during installation as well.
 SET ARCH=x64-msvc15
 SET PYVER=py37
 https://github.com/tango-controls/omniorb-windows-ci/releases/download/4.3.0/omniorb-4.3.0_%ARCH%_%PYVER%.zip
-https://github.com/tango-controls/Pthread_WIN32/releases/download/2.9.1/pthreads-win32-2.9.1_%ARCH%.zip
 https://github.com/tango-controls/zmq-windows-ci/releases/download/4.0.5-2/zmq-4.0.5-2_%ARCH%.zip
-git clone --depth 1 -b 5.1.2 https://gitlab.com/tango-controls/tango-idl tango-idl-source
+git clone --depth 1 -b 6.0.2 https://gitlab.com/tango-controls/tango-idl tango-idl-source
 ```
 
-- Open a VS 2017 command prompt
+- Open a VS 2022 command prompt
 
 - Install tango-idl
 
 ```bat
 cd tango-idl-source
-cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="c:/projects/tango-idl"
+cmake -G "Visual Studio 17 2022" -A "x64" -DCMAKE_INSTALL_PREFIX="c:/projects/tango-idl"
 cmake --build . --target install
 ```
 
 - Switch to cppTango directory
-- `mkdir build`
-- `cd build`
 - Configure with
 
 ```
-cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release                             \
-      -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                               \
-      -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" \
-      -Dpthread_ROOT="c:/projects/pthreads-win32" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON -DBUILD_TESTING=OFF ..
+cmake -G "Visual Studio 17 2022" -A "x64" -DCMAKE_INSTALL_PREFIX=my-install-folder -DCMAKE_BUILD_TYPE=Release     ^
+      -B build -S .                                                                                               ^
+      -Dtangoidl_ROOT="c:/projects/tango-idl"                                                                     ^
+      -DomniORB4_ROOT="c:/projects/omniorb" -DZeroMQ_ROOT="c:/projects/zeromq" -Dcppzmq_ROOT="c:/projects/zeromq" ^
+      -DBUILD_TESTING=OFF -DTANGO_USE_TELEMETRY=OFF
 ```
 
-- Compile with `cmake --build .`
-- Install with `cmake --build . --target install`
-- You now have a full tango installation in `build/install`
-
-## Compiling device servers
-
-This is currently not very well integrated into cmake, therefore the command line looks a bit clumsy:
-
-shared/debug/x64:
-```bat
-    set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_shared_debug"
-    cmake -B build-shared -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-DTANGO_HAS_DLL" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="tangod;omniORB4_rtd;omnithread_rtd;COS4_rtd;omniDynamic4_rtd;libzmq-v141-mt-gd-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
-    cmake --build build-shared --config Debug
-```
-
-static/debug/x64:
-```bat
-    set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_static_debug"
-    cmake -B build-static -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-D_WINSTATIC" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="libtangod;omniORB4d;omnithreadd;COS4d;omniDynamic4d;libzmq-v141-mt-sgd-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
-    cmake --build build-static --config Debug
-```
-
-shared/release/x64:
-```bat
-    set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_shared_release"
-    cmake -B build-shared -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DTANGO_HAS_DLL" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="tango;omniORB4_rt;omnithread_rt;COS4_rt;omniDynamic4_rt;libzmq-v141-mt-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
-    cmake --build build-shared --config Release
-```
-
-static/release/x64:
-```bat
-    set BASE_FOLDER="C:\\Users\\Test\\projekte\\tango-projects\\libtango_9.3.5_v141_x64_static_release"
-    cmake -B build-static -S . -G "Visual Studio 15 2017" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-D_WINSTATIC" -DTANGO_PKG_LIBRARY_DIRS="%BASE_FOLDER%\\lib" -DTANGO_PKG_LIBRARIES="libtango;omniORB4;omnithread;COS4;omniDynamic4;libzmq-v141-mt-s-4_0_5;comctl32;wsock32;Ws2_32" -DTANGO_PKG_INCLUDE_DIRS="%BASE_FOLDER%\\include;%BASE_FOLDER%\\include\\tango"
-    cmake --build build-static --config Release
-```
-
-For 32-bit replace `-A x64` with `-A Win32`.
+- Compile with `cmake --build build`
+- Install with `cmake --build build --target install`
+- You now have a full tango installation in `my-install-folder`

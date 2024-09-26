@@ -1160,7 +1160,7 @@ class Util
 
     // thread specific storage key accessor for client information/identification
     // return: the (omni) thread specific storage key dedicated to client information/identification
-    static inline omni_thread::key_t get_tssk_client_info()
+    static omni_thread::key_t get_tssk_client_info()
     {
         return Util::tssk_client_info;
     }
@@ -1424,10 +1424,6 @@ inline void Util::event_name_2_event_type(const std::string &event_name, EventTy
     else if(event_name == "alarm")
     {
         et = ALARM_EVENT;
-    }
-    else if(event_name == "quality")
-    {
-        et = QUALITY_EVENT;
     }
     else if(event_name == "periodic")
     {

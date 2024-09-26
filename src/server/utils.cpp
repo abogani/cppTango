@@ -395,6 +395,12 @@ void Util::effective_job(int argc, char *argv[])
 
         check_args(argc, argv);
 
+#if defined(TANGO_USE_TELEMETRY)
+        // create a telemetry configuration early on, might throw in case the
+        // configuration is invalid
+        TANGO_UNUSED(telemetry::Configuration config);
+#endif
+
         //
         // Create the signal object
         // It is necessary to create this object before the ORB is initialised.
@@ -543,7 +549,7 @@ void Util::effective_job(int argc, char *argv[])
         //
         // Initialize logging stuffs
         //
-        Logging::init(ds_name, (int) _tracelevel, ((!_FileDb) && _UseDb), db, this);
+        Logging::init(ds_name, _tracelevel, ((!_FileDb) && _UseDb), db, this);
 
         if(log_client_orb_deleted)
         {
@@ -2304,6 +2310,18 @@ void Util::server_cleanup()
     {
         omni_thread::release_dummy();
     }
+
+    // We explicitly cleanup the DServerSignal singleton here rather than
+    // relying on the static object de-initialiser as there is no guarantee what
+    // order static objects get de-initialised between translation units.
+    //
+    // The DServerSignal::ThSig thread accesses logging static objects and these
+    // might not exist when the DServerSignal singleton is being de-initialised.
+    DServerSignal::cleanup_singleton();
+
+    // Similarly, if we were shutdown by the kill command, then we need to wait
+    // for the kill thread to be finished before we return.
+    DServer::wait_for_kill_thread();
 }
 
 //+------------------------------------------------------------------------------------------------------------------

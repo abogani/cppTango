@@ -13,13 +13,19 @@ else()
     set(VARIANT_TAG "static")
 endif()
 
+if(TANGO_USE_TELEMETRY)
+    set(OTEL_TAG "otel_")
+else()
+    set(OTEL_TAG "")
+endif()
+
 if(DEFINED ENV{CI_COMMIT_TAG})
   set(VERSION_TAG $ENV{CI_COMMIT_TAG})
 else()
   set(VERSION_TAG ${LIBRARY_VERSION})
 endif()
 
-set(CPACK_PACKAGE_FILE_NAME libtango_${VERSION_TAG}_${COMPILER_TAG}_${ARCH_TAG}_${VARIANT_TAG}_${BUILD_TYPE_TAG})
+set(CPACK_PACKAGE_FILE_NAME libtango_${VERSION_TAG}_${COMPILER_TAG}_${ARCH_TAG}_${VARIANT_TAG}_${OTEL_TAG}${BUILD_TYPE_TAG})
 
 #
 # CPACK macros below here

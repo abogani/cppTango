@@ -1,10 +1,8 @@
-#include <tango/tango.h>
-#include <memory>
-#include "utils/utils.h"
+#include "catch2_common.h"
 
 constexpr static Tango::DevBoolean k_initial_value = false;
 constexpr static Tango::DevBoolean k_new_value = true;
-constexpr static Tango::DevLong k_polling_period = 100; // 100 ms
+constexpr static Tango::DevLong k_polling_period = TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD;
 constexpr static const char *k_test_reason = "Test_Reason";
 constexpr static const char *k_a_helpful_desc = "A helpful description";
 
@@ -259,6 +257,13 @@ SCENARIO("Polled attributes generate change events")
                     // 2. Because we are the first subscriber to `"attr"`, the
                     // polling loop starts and sends an event because it is the
                     // first time it has read the attribute
+                    //
+                    // We do not assert anything about the second event, because
+                    // it might not be present.  There is a race condition in case 2
+                    // above: If the polling loop triggers _after_ the subscription
+                    // command (which sets up things on the server), but _before_ the
+                    // ZMQ client has subscribed to the topic then we will miss the
+                    // event.
 
                     auto maybe_initial_event = callback.pop_next_event();
                     REQUIRE(maybe_initial_event.has_value());
@@ -267,13 +272,6 @@ SCENARIO("Polled attributes generate change events")
                     REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
 
                     maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
-
-                    maybe_initial_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                    REQUIRE(!maybe_initial_event.has_value());
 
                     AND_WHEN("we write to the attribute")
                     {
@@ -345,9 +343,11 @@ SCENARIO("Subscribing to change events for an attribute with no polling fails")
             {
                 THEN("the subscription fails")
                 {
+                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback, false),
                                            Tango::DevFailed,
-                                           TangoTest::DevFailedReasonEquals(Tango::API_AttributePollingNotStarted));
+                                           FirstErrorMatches(Reason(Tango::API_AttributePollingNotStarted)));
                 }
             }
 

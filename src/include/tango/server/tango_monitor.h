@@ -49,25 +49,16 @@ namespace Tango
 class TangoMonitor : public omni_mutex
 {
   public:
-    TangoMonitor(const char *na) :
-        _timeout(DEFAULT_TIMEOUT),
+    TangoMonitor(std::string_view na = "unknown") :
         cond(this),
-        locking_thread(nullptr),
-        locked_ctr(0),
         name(na)
     {
     }
 
-    TangoMonitor() :
-        _timeout(DEFAULT_TIMEOUT),
-        cond(this),
-        locking_thread(nullptr),
-        locked_ctr(0),
-        name("unknown")
-    {
-    }
-
     ~TangoMonitor() { }
+
+    // Returned by get_locking_thread_id if no thread has the lock.
+    static constexpr const int NO_LOCKING_THREAD_ID = -1;
 
     void get_monitor();
     void rel_monitor();
@@ -108,10 +99,10 @@ class TangoMonitor : public omni_mutex
     }
 
   private:
-    long _timeout;
+    long _timeout{DEFAULT_TIMEOUT};
     omni_condition cond;
-    omni_thread *locking_thread;
-    long locked_ctr;
+    omni_thread *locking_thread{};
+    long locked_ctr{};
     std::string name;
 };
 
@@ -131,7 +122,7 @@ inline int TangoMonitor::get_locking_thread_id()
     }
     else
     {
-        return 0;
+        return NO_LOCKING_THREAD_ID;
     }
 }
 
@@ -176,8 +167,11 @@ inline void TangoMonitor::get_monitor()
             if(interupted == 0)
             {
                 TANGO_LOG_DEBUG << "TIME OUT for thread " << th->id() << std::endl;
-                TANGO_THROW_EXCEPTION(API_CommandTimedOut,
-                                      "Not able to acquire serialization (dev, class or process) monitor");
+                std::stringstream ss;
+                ss << "Thread " << th->id();
+                ss << " is not able to acquire serialization monitor \"" << name << "\", ";
+                ss << " it is currently held by thread " << get_locking_thread_id() << ".";
+                TANGO_THROW_EXCEPTION(API_CommandTimedOut, ss.str());
             }
         }
         locking_thread = th;

@@ -114,7 +114,7 @@ class AsynchRequest
     AsynchRequest &operator=(AsynchRequest &&);
 
     //- group_element_enabled accessor
-    inline bool group_element_enabled() const
+    bool group_element_enabled() const
     {
         return group_element_enabled_m;
     }
@@ -182,7 +182,7 @@ class GroupReply
      *
      * @return true if corresponding element is enabled, false otherwise
      */
-    inline bool group_element_enabled() const
+    bool group_element_enabled() const
     {
         return group_element_enabled_m;
     }
@@ -210,7 +210,7 @@ class GroupReply
      *
      * @return The error flag
      */
-    inline bool has_failed() const
+    bool has_failed() const
     {
         return has_failed_m;
     }
@@ -223,7 +223,7 @@ class GroupReply
      *
      * @return The device name
      */
-    inline const std::string &dev_name() const
+    const std::string &dev_name() const
     {
         return dev_name_m;
     }
@@ -236,7 +236,7 @@ class GroupReply
      *
      * @return The object name
      */
-    inline const std::string &obj_name() const
+    const std::string &obj_name() const
     {
         return obj_name_m;
     }
@@ -249,7 +249,7 @@ class GroupReply
      *
      * @return The error stack
      */
-    inline const DevErrorList &get_err_stack() const
+    const DevErrorList &get_err_stack() const
     {
         return exception_m.errors;
     }
@@ -471,7 +471,7 @@ class GroupReplyList : public std::vector<GroupReply>
      *
      * This methods empty the inherited vector and reset the error flag
      */
-    inline void reset()
+    void reset()
     {
         clear();
         has_failed_m = false;
@@ -549,7 +549,7 @@ class GroupCmdReplyList : public std::vector<GroupCmdReply>
      *
      * This methods empty the inherited vector and reset the error flag
      */
-    inline void reset()
+    void reset()
     {
         clear();
         has_failed_m = false;
@@ -626,7 +626,7 @@ class GroupAttrReplyList : public std::vector<GroupAttrReply>
      *
      * This methods empty the inherited vector and reset the error flag
      */
-    inline void reset()
+    void reset()
     {
         clear();
         has_failed_m = false;
@@ -707,13 +707,13 @@ class GroupElement
     //- Misc.
     //---------------------------------------------
     //-
-    inline const std::string &get_name() const
+    const std::string &get_name() const
     {
         return name;
     }
 
     //-
-    inline std::string get_fully_qualified_name() const
+    std::string get_fully_qualified_name() const
     {
         if(parent != nullptr)
         {
@@ -723,19 +723,19 @@ class GroupElement
     }
 
     //-
-    inline void enable()
+    void enable()
     {
         enabled = true;
     }
 
     //-
-    inline void disable()
+    void disable()
     {
         enabled = false;
     }
 
     //-
-    inline bool is_enabled() const
+    bool is_enabled() const
     {
         return enabled;
     }
@@ -1813,7 +1813,7 @@ class GroupDeviceElement : public GroupElement
     void disconnect();
 
     //- a trick to get a valid device proxy or an exception
-    inline DeviceProxy *dev_proxy()
+    DeviceProxy *dev_proxy()
     {
         return dp != nullptr ? dp : connect();
     }

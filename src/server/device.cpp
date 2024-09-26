@@ -44,6 +44,10 @@
 #include <tango/server/logging.h>
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
+#if defined(TANGO_USE_TELEMETRY)
+  #include <opentelemetry/version.h>
+#endif
+
 namespace Tango
 {
 
@@ -376,7 +380,7 @@ inline void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bo
 
     if(del_seq)
     {
-        delete ptr;
+        att.delete_seq();
     }
 }
 
@@ -398,146 +402,19 @@ inline void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bo
 //
 //--------------------------------------------------------------------------
 
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const char *d_name, const char *de, Tango::DevState st, const char *sta) :
-    device_name(d_name),
-    desc(de),
-    device_status(sta),
-    device_state(st),
-    device_class(cl_ptr),
-    ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
-    rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
-{
-    real_ctor();
-}
-
 DeviceImpl::DeviceImpl(
-    DeviceClass *cl_ptr, const std::string &d_name, const std::string &de, Tango::DevState st, const std::string &sta) :
+    DeviceClass *cl_ptr, std::string_view d_name, std::string_view de, Tango::DevState st, std ::string_view sta) :
     device_name(d_name),
     desc(de),
     device_status(sta),
     device_state(st),
     device_class(cl_ptr),
     ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
     rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name.c_str()),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
+    only_one(d_name),
+    poll_mon(std::string{d_name} + " cache"),
+    att_conf_mon(std::string{d_name} + " att_config")
 {
-    real_ctor();
-}
-
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name) :
-    device_name(d_name),
-    device_class(cl_ptr),
-    ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
-    rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name.c_str()),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
-{
-    desc = "A Tango device";
-    device_state = Tango::UNKNOWN;
-    device_status = StatusNotSet;
-
-    real_ctor();
-}
-
-DeviceImpl::DeviceImpl(DeviceClass *cl_ptr, const std::string &d_name, const std::string &description) :
-    device_name(d_name),
-    device_class(cl_ptr),
-    ext(new DeviceImplExt),
-    logger(nullptr),
-    saved_log_level(log4tango::Level::WARN),
-    rft(Tango::kDefaultRollingThreshold),
-    poll_old_factor(0),
-    idl_version(1),
-    exported(false),
-    polled(false),
-    poll_ring_depth(0),
-    only_one(d_name.c_str()),
-    store_in_bb(true),
-    poll_mon("cache"),
-    att_conf_mon("att_config"),
-    state_from_read(false),
-    device_locked(false),
-    locker_client(nullptr),
-    old_locker_client(nullptr),
-    lock_ctr(0),
-    min_poll_period(0),
-    run_att_conf_loop(true),
-    force_alarm_state(false),
-    with_fwd_att(false),
-    event_intr_change_subscription(0),
-    intr_change_ev(false),
-    devintr_thread(nullptr)
-{
-    desc = description;
-    device_state = Tango::UNKNOWN;
-    device_status = StatusNotSet;
-
     real_ctor();
 }
 
@@ -616,9 +493,13 @@ void DeviceImpl::real_ctor()
     add_version_info("cppTango", TgLibVers);
     add_version_info("cppTango.git_revision", Tango::git_revision());
     add_version_info("omniORB", omniORB::versionString());
-    std::ostringstream zmq_version;
-    zmq_version << ZMQ_VERSION_MAJOR << '.' << ZMQ_VERSION_MINOR << '.' << ZMQ_VERSION_PATCH;
-    add_version_info("zmq", zmq_version.str());
+    add_version_info("zmq", std::to_string(ZMQ_VERSION));
+    add_version_info("cppzmq", std::to_string(CPPZMQ_VERSION));
+    add_version_info("idl", TANGO_IDL_VERSION_STR);
+
+#if defined(TANGO_USE_TELEMETRY)
+    add_version_info("opentelemetry-cpp", OPENTELEMETRY_VERSION);
+#endif
 
     //
     // Init telemetry
@@ -1633,7 +1514,7 @@ Tango::DevState DeviceImpl::dev_state()
                 // Set attr value
                 //
 
-                long i, j;
+                long i;
                 std::vector<Tango::Attr *> &attr_vect = device_class->get_class_attr()->get_attr_list();
 
                 for(i = 0; i < nb_wanted_attr; i++)
@@ -1657,6 +1538,9 @@ Tango::DevState DeviceImpl::dev_state()
 
                     try
                     {
+                        att.wanted_date(false);
+                        att.set_value_flag(false);
+
                         if(vers < 3)
                         {
                             read_attr(att);
@@ -1666,9 +1550,6 @@ Tango::DevState DeviceImpl::dev_state()
                             //
                             // Otherwise, get it from device
                             //
-
-                            att.wanted_date(false);
-                            att.set_value_flag(false);
 
                             if(!attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::READ_REQ))
                             {
@@ -1699,29 +1580,14 @@ Tango::DevState DeviceImpl::dev_state()
                             att.set_quality(Tango::ATTR_INVALID);
                         }
 
-                        for(j = 0; j < i; j++)
+                        if(!att.get_wanted_date())
                         {
-                            long idx;
-                            if((vers >= 3) && (state_from_read))
+                            if(att.get_quality() != Tango::ATTR_INVALID)
                             {
-                                idx = attr_list_2[j];
+                                att.delete_seq();
                             }
-                            else
-                            {
-                                idx = attr_list[j];
-                            }
-                            Tango::Attribute &tmp_att = dev_attr->get_attr_by_ind(idx);
-                            if(!att.get_wanted_date())
-                            {
-                                if(tmp_att.get_quality() != Tango::ATTR_INVALID)
-                                {
-                                    tmp_att.delete_seq();
-                                }
-                                tmp_att.wanted_date(true);
-                            }
+                            att.wanted_date(true);
                         }
-                        att.wanted_date(true);
-                        //                       throw;
                     }
                 }
 
@@ -5935,10 +5801,6 @@ bool DeviceImpl::is_there_subscriber(const std::string &att_name, EventType even
 
     case ALARM_EVENT:
         ret = att.alarm_event_subscribed();
-        break;
-
-    case QUALITY_EVENT:
-        ret = att.quality_event_subscribed();
         break;
 
     case PERIODIC_EVENT:

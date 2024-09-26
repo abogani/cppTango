@@ -381,7 +381,6 @@ void LockThread::unlock_all_devs()
 {
     if(!locked_devices.empty())
     {
-        std::string cmd("UnLockDevice");
         DeviceData din;
         DevVarLongStringArray sent_data;
         unsigned int locked_devices_nb = locked_devices.size();

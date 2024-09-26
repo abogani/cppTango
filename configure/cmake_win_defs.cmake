@@ -19,7 +19,6 @@ endif()
 
 list(APPEND static_defs "_LIB")
 list(APPEND static_defs "_WINDOWS")
-list(APPEND static_defs "_WINSTATIC")
 list(APPEND static_defs "_TANGO_LIB")
 list(APPEND static_defs "_MBCS")
 list(APPEND static_defs "_CRT_SECURE_NO_DEPRECATE")

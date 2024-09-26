@@ -914,7 +914,7 @@ const char *const CmdArgTypeName[] = {"DevVoid",
                                       "Unknown"};
 
 /// Convert data types to strings
-inline constexpr const char *data_type_to_string(int type)
+constexpr const char *data_type_to_string(int type)
 {
     return (type >= DEV_VOID && type < (static_cast<int>(sizeof(CmdArgTypeName) / sizeof(CmdArgTypeName[0]))))
                ? CmdArgTypeName[type]
@@ -949,21 +949,23 @@ const char *const DevStateName[] = {"ON",
 
 enum EventType
 {
-    CHANGE_EVENT = 0,       ///< Change event
-    QUALITY_EVENT,          ///< Quality change event (deprecated - do not use)
-    PERIODIC_EVENT,         ///< Periodic event
-    ARCHIVE_EVENT,          ///< Archive event
-    USER_EVENT,             ///< User event
-    ATTR_CONF_EVENT,        ///< Attribute configuration change event
-    DATA_READY_EVENT,       ///< Data ready event
-    INTERFACE_CHANGE_EVENT, ///< Device interface change event
-    PIPE_EVENT,             ///< Device pipe event
-    ALARM_EVENT,            ///< Alarm event
+    CHANGE_EVENT = 0, ///< Change event
+    // We skip 1 deliberately here. This used to be the long time ago
+    // deprecated QUALITY_EVENT. By explicitly setting the values here we
+    // preserve binary compatibility for the later enum variants.
+    PERIODIC_EVENT = 2,         ///< Periodic event
+    ARCHIVE_EVENT = 3,          ///< Archive event
+    USER_EVENT = 4,             ///< User event
+    ATTR_CONF_EVENT = 5,        ///< Attribute configuration change event
+    DATA_READY_EVENT = 6,       ///< Data ready event
+    INTERFACE_CHANGE_EVENT = 7, ///< Device interface change event
+    PIPE_EVENT = 8,             ///< Device pipe event
+    ALARM_EVENT = 9,            ///< Alarm event
     numEventType
 };
 
 const char *const EventName[] = {"change",
-                                 "quality",
+                                 "_unused_event",
                                  "periodic",
                                  "archive",
                                  "user_event",
@@ -1262,6 +1264,11 @@ struct tango_type_traits<Tango::DevString>
     {
         return Tango::_tc_DevString;
     }
+};
+
+template <>
+struct tango_type_traits<std::string> : tango_type_traits<Tango::DevString>
+{
 };
 
 template <>

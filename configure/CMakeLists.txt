@@ -1,7 +1,6 @@
 include(GNUInstallDirs)
 
 option(TANGO_USE_JPEG "Build jpeg support" ON)
-option(TANGO_USE_PTHREAD "On windows platform, do we use the pthread library." OFF)
 
 set(TANGO_FIND_MODULES_PATH TangoCMakeModules)
 find_package(Git QUIET)
@@ -51,8 +50,18 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "cppTango: version ${TANGO_GIT_REVISION}")
 message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
+set(IDL_VERSION_REQUESTED 6.0.2)
+if(NOT tangoidl_FOUND)
+  # Intentional check if we found it first so that cmake super projects like the TangoSourceDistribution
+  # can fake the result. Once we require at least cmake 3.24 we can use the approach outlined at
+  # https://cmake.org/cmake/help/latest/module/FetchContent.html#integrating-with-find-package
+  find_package(tangoidl ${IDL_VERSION_REQUESTED} CONFIG REQUIRED)
+endif()
+
+set(IDL_VERSION_FOUND ${tangoidl_VERSION})
+message(STATUS "IDL: version ${IDL_VERSION_FOUND}")
+
 find_package(cppzmq REQUIRED)
-find_package(tangoidl REQUIRED)
 find_package(omniORB4 REQUIRED)
 
 if (TANGO_USE_TELEMETRY)
@@ -63,6 +72,12 @@ if (TANGO_USE_TELEMETRY)
     find_package(gRPC REQUIRED)
     message(STATUS "Tango telemetry (OpenTelemetry) enabled")
     find_package(opentelemetry-cpp REQUIRED)
+
+    if(TANGO_TELEMETRY_USE_GRPC AND NOT TARGET opentelemetry-cpp::otlp_grpc_exporter)
+        message(FATAL_ERROR "The opentelemetry-cpp library was compiled without grpc support but TANGO_TELEMETRY_USE_GRPC is enabled.")
+    elseif(TANGO_TELEMETRY_USE_HTTP AND NOT TARGET opentelemetry-cpp::otlp_http_exporter)
+      message(FATAL_ERROR "The opentelemetry-cpp library was compiled without http support but TANGO_TELEMETRY_USE_HTTP is enabled.")
+    endif()
 
     if(WIN32)
       find_package(CURL REQUIRED)
@@ -180,79 +195,6 @@ include(configure/check_omniidl.cmake)
 # Check for jpeg support
 if(TANGO_USE_JPEG)
     find_package(JPEG REQUIRED)
-
-    if (WIN32)
-        #We need to find the dll, and the turbojpeg files
-        get_filename_component(JPEG_LIBRARY_DIR ${JPEG_LIBRARY} DIRECTORY)
-        get_filename_component(JPEG_PREFIX ${JPEG_LIBRARY_DIR} DIRECTORY)
-
-        find_library(TURBO_JPEG_LIBRARY_DEBUG
-            NAMES turbojpeg${JPEG_DEBUG_POSTFIX}
-             PATHS "${JPEG_LIBRARY_DIR}")
-        find_library(TURBO_JPEG_LIBRARY_RELEASE
-            NAMES turbojpeg
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        find_library(TURBO_JPEG_LIBRARY_STATIC_DEBUG
-            NAMES turbojpeg-static${JPEG_DEBUG_POSTFIX}
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        find_library(TURBO_JPEG_LIBRARY_STATIC_RELEASE
-            NAMES turbojpeg-static
-             PATHS "${JPEG_LIBRARY_DIR}")
-
-        set(_extensions "dll" "pdb")
-
-        foreach(ext IN LISTS _extensions)
-            find_file(jpeg_${ext}_RELEASE
-                NAMES "jpeg62.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-
-            find_file(turbojpeg_${ext}_RELEASE
-                NAMES "turbojpeg.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-            find_file(jpeg_${ext}_DEBUG
-                NAMES "jpeg62${JPEG_DEBUG_POSTFIX}.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-
-            find_file(turbojpeg_${ext}_DEBUG
-                NAMES "turbojpeg${JPEG_DEBUG_POSTFIX}.${ext}"
-                 PATHS "${JPEG_PREFIX}"
-                PATH_SUFFIXES bin
-            )
-            if(jpeg_${ext}_RELEASE)
-                list(APPEND JPEG_RUNTIME_RELEASE "${jpeg_${ext}_RELEASE}")
-            endif()
-            if(turbojpeg_${ext}_RELEASE)
-                list(APPEND JPEG_RUNTIME_RELEASE "${turbojpeg_${ext}_RELEASE}")
-            endif()
-            if(jpeg_${ext}_DEBUG)
-                list(APPEND JPEG_RUNTIME_DEBUG "${jpeg_${ext}_DEBUG}")
-            endif()
-            if(turbojpeg_${ext}_DEBUG)
-                list(APPEND JPEG_RUNTIME_DEBUG "${turbojpeg_${ext}_DEBUG}")
-            endif()
-        endforeach(ext IN _extensions)
-
-        unset(_extensions)
-        unset(JPEG_PREFIX)
-        unset(JPEG_LIBRARY_DIR)
-    endif()
-endif()
-
-if(TANGO_USE_PTHREAD)
-    if(WIN32)
-        find_package(pthread REQUIRED)
-    else()
-        message(WARNING "You cannot use TANGO_USE_PTHREAD on non windows
-        platforms")
-    endif()
 endif()
 
 set(CPPZMQ_TRY_COMPILE_OUTPUT "" CACHE STRING "Compilation test for compatible cppzmq version")
@@ -346,7 +288,13 @@ if(NOT WIN32)
             add_compile_options(-stdlib=libc++)
             add_link_options(-stdlib=libc++)
             add_link_options(-fuse-ld=lld)
-            add_link_options(LINKER:--allow-shlib-undefined)
+            if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+                # This is unsupported by Apple's clang linker.
+                add_link_options(LINKER:--allow-shlib-undefined)
+            else()
+                # It needs to be --undefined dynamic_lookup instead.
+                add_link_options(-undefined dynamic_lookup)
+            endif()
         else()
             message(WARNING "TANGO_USE_LIBCPP=ON is only supported with clang.")
         endif()
@@ -363,6 +311,8 @@ endif()
 if(TANGO_WARNINGS_AS_ERRORS)
   if(WIN32)
     add_compile_options(/WX)
+    # LNK4099: PDB was not found
+    add_link_options(/WX /ignore:4099)
   else()
     add_compile_options(-Werror)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -374,7 +324,3 @@ endif()
 include(configure/functions.cmake)
 
 include(GNUInstallDirs)
-
-configure_file(tango.pc.cmake tango.pc @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tango.pc"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

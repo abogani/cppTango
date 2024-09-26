@@ -86,6 +86,8 @@ class PatternLayout : public Layout
      * <li><b>%%x</b> - the NDC</li>
      * <li><b>%%F</b> - the file name where the logging request was issued</li>
      * <li><b>%%L</b> - the line number from where the logging request was issued</li>
+     * <li><b>%%T</b> - the thread name where the logging request was issued</li>
+     * <li><b>%%t</b> - the thread id where the logging request was issued</li>
      * </ul>
      * @param conversionPattern the conversion pattern
      * @exception ConfigureFailure if the pattern is invalid
@@ -99,7 +101,7 @@ class PatternLayout : public Layout
     class PatternComponent
     {
       public:
-        inline virtual ~PatternComponent() { }
+        virtual ~PatternComponent() { }
 
         virtual void append(std::ostringstream &out, const LoggingEvent &event) = 0;
     };

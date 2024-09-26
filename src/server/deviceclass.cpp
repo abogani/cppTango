@@ -71,7 +71,7 @@ bool less_than_pipe(Pipe *a, Pipe *b)
 DeviceClass::DeviceClass(const std::string &s) :
     name(s),
     ext(new DeviceClassExt),
-    only_one("class")
+    only_one("class " + s)
 
 {
     TANGO_LOG_DEBUG << "Entering DeviceClass::DeviceClass for class " << name << std::endl;
@@ -1457,7 +1457,7 @@ void DeviceClass::device_destroyer(const std::string &dev_name)
 void DeviceClass::device_destroyer(const char *dev_name)
 {
     std::string name_str(dev_name);
-    return device_destroyer(name_str);
+    device_destroyer(name_str);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

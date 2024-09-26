@@ -102,16 +102,25 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
 #endif
 
-#ifndef _TG_WINDOWS_
-
         //
-        // Add a new signal to catch in the mask
+        // Respond to possible command from the DServerSignal object.  Either:
+        // - stop this thread
+        // - add a new signal to catch in the mask (Linux/macOS only)
         //
 
         {
             omni_mutex_lock sy(*ds);
             if(signo == SIGINT)
             {
+                // We check for a stop request first in case multiple SIGINT
+                // signals have been merged by the kernel
+                if(ds->sig_th_should_stop)
+                {
+                    TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
+                    break;
+                }
+
+#ifndef _TG_WINDOWS_
                 bool job_done = false;
 
                 if(ds->sig_to_install)
@@ -139,9 +148,9 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
                     ds->signal();
                     continue;
                 }
+#endif
             }
         }
-#endif
 
         DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
 

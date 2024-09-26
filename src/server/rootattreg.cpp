@@ -211,7 +211,6 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
                                 }
                                 else
                                 {
-                                    std::string root_att_name = att_name.substr(pos + 1);
                                     the_dev->update_wrong_conf_att(att_name, FWD_TOO_OLD_ROOT_DEVICE);
                                     the_dev->set_run_att_conf_loop(true);
                                 }
@@ -1346,10 +1345,6 @@ void RootAttRegistry::auto_unsub()
 
                     case PERIODIC_EVENT:
                         delta_t = now - att.get_periodic5_event_sub();
-                        break;
-
-                    case QUALITY_EVENT:
-                        delta_t = now - att.get_quality_event_sub();
                         break;
 
                     case ARCHIVE_EVENT:

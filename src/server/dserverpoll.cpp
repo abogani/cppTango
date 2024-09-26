@@ -299,7 +299,6 @@ Tango::DevVarStringArray *DServer::dev_poll_status(const std::string &dev_name)
 
         std::stringstream s;
         std::string tmp_str;
-        std::string per;
 
         auto po = poll_list[i]->get_upd();
 

@@ -1,6 +1,7 @@
 #include "utils/platform/platform.h"
 
 #include "utils/platform/unix/interface.h"
+#include "utils/platform/ready_string_finder.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -86,6 +87,31 @@ struct RedirectFile
 void handle_child(int)
 {
     // Do nothing, we want to handle the server exiting synchronously
+}
+
+ExitStatus convert_wait_status(int status)
+{
+    using Kind = ExitStatus::Kind;
+
+    ExitStatus result;
+
+    if(WIFEXITED(status))
+    {
+        result.kind = Kind::Normal;
+        result.code = WEXITSTATUS(status);
+    }
+    else if(WIFSIGNALED(status))
+    {
+        result.kind = Kind::Aborted;
+        result.signal = WTERMSIG(status);
+    }
+    else
+    {
+        // This should never happen, but just in case we fill something in here.
+        result.kind = Kind::AbortedNoSignal;
+    }
+
+    return result;
 }
 
 } // namespace
@@ -199,14 +225,7 @@ StartServerResult start_server(const std::vector<std::string> &args,
         sigset_t emptyset;
         sigemptyset(&emptyset);
 
-        std::ifstream redirect_file{redirect_filename};
-
-        if(redirect_file.bad())
-        {
-            std::stringstream ss;
-            ss << "failed to open \"" << redirect_filename << "\"";
-            throw std::runtime_error(ss.str());
-        }
+        ReadyStringFinder finder{redirect_filename};
 
         // Begin watching the device server's log file.
         // This is a no-op on Linux, only needed on macOS.
@@ -240,7 +259,7 @@ StartServerResult start_server(const std::vector<std::string> &args,
                 if(ret != 0)
                 {
                     result.kind = Kind::Exited;
-                    result.exit_status = WEXITSTATUS(status);
+                    result.exit_status = convert_wait_status(status);
                     return result;
                 }
             }
@@ -254,37 +273,11 @@ StartServerResult start_server(const std::vector<std::string> &args,
             {
                 watcher.pop_event();
 
-                while(true)
+                if(finder.check_for_ready_string(ready_string))
                 {
-                    std::string line;
-                    std::getline(redirect_file, line);
-
-                    // Didn't hit a \n, so "put the line back" so we can try again
-                    // next time.
-                    if(redirect_file.eof())
-                    {
-                        auto offset = -static_cast<ssize_t>(line.size());
-                        // clear needs to happen here.
-                        // The reason being that on macOS seekg fails when
-                        // fail bit is set. We hope that it is a libc++ thing
-                        // and not a implementation detail that could bite us
-                        // again when implementing the Windows version.
-                        redirect_file.clear();
-                        redirect_file.seekg(offset, std::ios_base::cur);
-                        break;
-                    }
-
-                    if(redirect_file.fail())
-                    {
-                        throw std::runtime_error("getline() failed");
-                    }
-
-                    if(line.find(ready_string) != std::string::npos)
-                    {
-                        result.kind = Kind::Started;
-                        result.handle = reinterpret_cast<TestServer::Handle *>(pid);
-                        return result;
-                    }
+                    result.kind = Kind::Started;
+                    result.handle = reinterpret_cast<TestServer::Handle *>(pid);
+                    return result;
                 }
             }
         }
@@ -296,7 +289,7 @@ StartServerResult start_server(const std::vector<std::string> &args,
     }
 }
 
-StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout)
+StopServerResult stop_server(TestServer::Handle *handle)
 {
     using std::chrono::steady_clock;
     using Kind = StopServerResult::Kind;
@@ -312,20 +305,34 @@ StopServerResult stop_server(TestServer::Handle *handle, std::chrono::millisecon
     if(pid != 0)
     {
         result.kind = Kind::ExitedEarly;
-        result.exit_status = WEXITSTATUS(status);
+        result.exit_status = convert_wait_status(status);
         return result;
     }
 
     kill(child, SIGTERM);
 
+    result.kind = Kind::Exiting;
+    return result;
+}
+
+WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::milliseconds timeout)
+{
+    using std::chrono::steady_clock;
+    using Kind = WaitForStopResult::Kind;
+
+    WaitForStopResult result;
+
+    pid_t child = static_cast<pid_t>(reinterpret_cast<ssize_t>(handle));
+
     auto end = steady_clock::now() + timeout;
     while(steady_clock::now() < end)
     {
-        pid = waitpid(pid, &status, WNOHANG);
+        int status = 0;
+        pid_t pid = waitpid(child, &status, WNOHANG);
         if(pid != 0)
         {
             result.kind = Kind::Exited;
-            result.exit_status = WEXITSTATUS(status);
+            result.exit_status = convert_wait_status(status);
             return result;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds{10});

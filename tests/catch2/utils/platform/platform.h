@@ -15,6 +15,10 @@ constexpr static const char *k_test_server_binary_path = TANGO_TEST_CATCH2_SERVE
 constexpr static const char *k_output_directory_path = TANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH;
 constexpr static const std::string_view k_resource_path = TANGO_TEST_CATCH2_RESOURCE_PATH;
 
+/** Return the platform specific default environment table
+ */
+std::vector<std::string> default_env();
+
 /** Called when the test run starts to do any setup required by the platform
  */
 void init();
@@ -36,7 +40,7 @@ struct StartServerResult
     union
     {
         TestServer::Handle *handle;
-        int exit_status;
+        ExitStatus exit_status;
     };
 };
 
@@ -67,27 +71,55 @@ struct StopServerResult
 {
     enum class Kind
     {
-        Timeout,     // Timed out waiting for the sever to exit, exit_status
-                     // undefined
-        ExitedEarly, // The server had already exited when `stop()` was called,
+        ExitedEarly, // The server had already exited when `stop_server()` was called,
                      // exit_status is set
-        Exited,      // The server stopped with exit_status
+        Exiting,     // The server has been signalled to stop, exit_status is
+                     // undefined
     };
 
     Kind kind;
-    int exit_status;
+    ExitStatus exit_status;
 };
 
 /**
- * @brief Stop a server
+ * @brief Signal to a server to stop a server
+ *
+ * If stop_server returns a StopServerResult with kind ExitedEarly,
+ * then the handle is no longer valid.  Otherwise, you must call
+ * wait_for_stop in order to free the handle.
  *
  * @param handle - a server returned by
  *                 TangoTest::platform::start_server
- * @param timeout - how long until we give up stopping the server
  * @return - the outcome of stopping the server. See
  *           TangoTest::platform::StopServerResult
  */
-StopServerResult stop_server(TestServer::Handle *handle, std::chrono::milliseconds timeout);
+StopServerResult stop_server(TestServer::Handle *handle);
+
+struct WaitForStopResult
+{
+    enum class Kind
+    {
+        Timeout, // Timed out waiting for the sever to exit, exit_status
+                 // undefined
+        Exited,  // The server stopped with exit_status
+    };
+
+    Kind kind;
+    ExitStatus exit_status;
+};
+
+/**
+ * @brief Wait for the server to stop.
+ *
+ * After this call the handle is no longer valid.
+ *
+ * @param handle - a server returned by
+ *                 TangoTest::platform::start_server
+ * @param timeout - how long until we give up waiting for the server
+ * @return - the outcome of waiting for the server. See
+ *           TangoTest::platform::WaitForStopResult
+ */
+WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::milliseconds timeout);
 
 } // namespace TangoTest::platform
 

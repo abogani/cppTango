@@ -42,7 +42,7 @@
 // Include IDL generated files which includes CORBA include files
 //
 
-#ifdef _TG_WINDOWS_
+#if defined(_TG_WINDOWS_) && defined(TANGO_HAS_DLL) && !defined(_TANGO_LIB)
   #define USE_stub_in_nt_dll
 #endif
 
@@ -78,7 +78,7 @@ inline char *string_dup(const char *s)
 // A short inline function to hide the CORBA::string_free function
 inline void string_free(char *s)
 {
-    return CORBA::string_free(s);
+    CORBA::string_free(s);
 }
 
 } // namespace Tango

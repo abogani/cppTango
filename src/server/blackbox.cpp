@@ -151,9 +151,9 @@ void client_call_interceptor(omniCallDescriptor *d, omniServant *s)
         // force error status on an dedicated "exit span"
         //--------------------------------------------------------------------------------------------------
         // extract exception info
-        std::string err = Tango::telemetry::Interface::extract_exception_info();
+        // std::string err = Tango::telemetry::Interface::extract_exception_info();
         // catch trace context (see Tango::utils::tss)
-        auto telemetry = Tango::telemetry::Interface::get_current();
+        // auto telemetry = Tango::telemetry::Interface::get_current();
         // unfortunately, we can't attach the telemetry context of the caller from this interceptor cause it's
         // called at a early stage of the RPC and almost nothing is accessible. However, the callee attached
         // its telemetry interface to the thread executing this code. We consequently have a change to be
@@ -1625,24 +1625,17 @@ void BlackBox::build_info_as_str(long index)
         {
             return;
         }
-        std::string ip1_str = full_ip_str.substr(0, pos);
-        std::string::size_type old_pos;
         pos++;
-        old_pos = pos;
         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
         {
             return;
         }
-        std::string ip2_str = full_ip_str.substr(old_pos, pos - old_pos);
         pos++;
-        old_pos = pos;
         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
         {
             return;
         }
-        std::string ip3_str = full_ip_str.substr(old_pos, pos - old_pos);
         pos++;
-        std::string ip4_str = full_ip_str.substr(pos);
 
         //
         // Finally, get host name
@@ -2122,29 +2115,21 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                 }
                 else
                 {
-                    std::string ip1_str = full_ip_str.substr(0, pos);
-
-                    std::string::size_type old_pos;
                     pos++;
-                    old_pos = pos;
                     if((pos = full_ip_str.find('.', pos)) == std::string::npos)
                     {
                         ret = -1;
                     }
                     else
                     {
-                        std::string ip2_str = full_ip_str.substr(old_pos, pos - old_pos);
                         pos++;
-                        old_pos = pos;
                         if((pos = full_ip_str.find('.', pos)) == std::string::npos)
                         {
                             ret = -1;
                         }
                         else
                         {
-                            std::string ip3_str = full_ip_str.substr(old_pos, pos - old_pos);
                             pos++;
-                            std::string ip4_str = full_ip_str.substr(pos);
 
                             struct sockaddr_in si;
                             si.sin_family = AF_INET;

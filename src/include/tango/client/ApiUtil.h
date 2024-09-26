@@ -216,7 +216,7 @@ class ApiUtil
         reset_already_executed_flag = in;
     }
 
-    static inline bool _is_instance_null()
+    static bool _is_instance_null()
     {
         return instance() == nullptr;
     }

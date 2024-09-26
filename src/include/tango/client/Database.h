@@ -1886,7 +1886,7 @@ class Database : public Tango::Connection
     void post_reconnection();
     ~Database() override;
 
-    inline Device_var &get_dbase()
+    Device_var &get_dbase()
     {
         return device;
     }

@@ -1376,6 +1376,8 @@ Tango::DevVarStringArray *DServer::query_dev_prop(std::string &class_name)
 //
 //-----------------------------------------------------------------------------------------------------------------
 
+KillThread *DServer::kill_thread = nullptr;
+
 void DServer::kill()
 {
     NoSyncModelTangoMonitor mon(this);
@@ -1386,9 +1388,9 @@ void DServer::kill()
     // Create the thread and start it
     //
 
-    KillThread *t = new KillThread;
+    kill_thread = new KillThread;
 
-    t->start();
+    kill_thread->start();
 }
 
 void *KillThread::run_undetached(TANGO_UNUSED(void *ptr))
@@ -1407,6 +1409,15 @@ void *KillThread::run_undetached(TANGO_UNUSED(void *ptr))
     return nullptr;
 }
 
+void DServer::wait_for_kill_thread()
+{
+    if(kill_thread != nullptr)
+    {
+        kill_thread->join(nullptr);
+        kill_thread = nullptr;
+    }
+}
+
 //+----------------------------------------------------------------------------------------------------------------
 //
 // method :
@@ -1416,17 +1427,49 @@ void *KillThread::run_undetached(TANGO_UNUSED(void *ptr))
 //        Create a Cpp Tango class from its name
 //
 //------------------------------------------------------------------------------------------------------------------
+void DServer::_create_cpp_class(const std::string &class_name,
+                                const std::string &param,
+                                const std::vector<std::string> &prefixes)
+{
+    create_cpp_class(class_name, param, prefixes);
+}
 
 void DServer::create_cpp_class(const char *cl_name, const char *par_name)
 {
-    TANGO_LOG_DEBUG << "In DServer::create_cpp_class for " << cl_name << ", " << par_name << std::endl;
-    std::string class_name(cl_name);
+    create_cpp_class(cl_name, par_name, {});
+}
+
+void DServer::create_cpp_class(const std::string &class_name,
+                               const std::string &par_name,
+                               const std::vector<std::string> &prefixes = {})
+{
+    typedef Tango::DeviceClass *(*Cpp_creator_ptr)(const char *);
+    TANGO_LOG_DEBUG << "In DServer::create_cpp_class for " << class_name << ", " << par_name << std::endl;
     std::string lib_name = class_name;
+    std::vector<std::string> local_prefixes = prefixes;
+
+    if(std::none_of(prefixes.cbegin(), prefixes.cend(), [](const std::string &prefix) { return prefix == "lib"; }))
+    {
+        local_prefixes.insert(local_prefixes.begin(), "lib");
+    }
+
+    std::map<std::string, std::string> error_msgs;
+    auto format_error = [&]()
+    {
+        std::stringstream ret;
+        ret << "Trying to load shared library " << class_name << " failed.\n";
+        for(auto const &[lib, error] : error_msgs)
+        {
+            ret << " - Library name: " << lib << " failed with error: " << error << "\n";
+        }
+        return ret.str();
+    };
 
 #ifdef _TG_WINDOWS_
+    bool lib_loaded = false;
     HMODULE mod;
 
-    if((mod = LoadLibrary(lib_name.c_str())) == NULL)
+    auto fetch_error_msg = [&error_msgs](const std::string &key)
     {
         char *str = 0;
 
@@ -1439,13 +1482,27 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
                         0,
                         NULL);
 
-        std::cerr << "Error: " << str << std::endl;
-
-        TangoSys_OMemStream o;
-        o << "Trying to load shared library " << lib_name << " failed. It returns error: " << str << std::ends;
+        error_msgs.emplace(key, str);
         ::LocalFree((HLOCAL) str);
-
-        TANGO_THROW_EXCEPTION(API_ClassNotFound, o.str());
+    };
+    if((mod = LoadLibrary(lib_name.c_str())) == NULL)
+    {
+        fetch_error_msg(lib_name);
+        for(const auto &prefix : prefixes)
+        {
+            lib_name = prefix + class_name;
+            if((mod = LoadLibrary(lib_name.c_str())) != NULL)
+            {
+                lib_loaded = true;
+                break;
+            }
+            fetch_error_msg(lib_name);
+        }
+        if(!lib_loaded)
+        {
+            std::string error = format_error();
+            TANGO_THROW_EXCEPTION(API_ClassNotFound, error);
+        }
     }
 
     TANGO_LOG_DEBUG << "GetModuleHandle is a success" << std::endl;
@@ -1460,7 +1517,8 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
     if((proc = GetProcAddress(mod, sym_name.c_str())) == NULL)
     {
         TangoSys_OMemStream o;
-        o << "Class " << cl_name << " does not have the C creator function (_create_<Class name>_class)" << std::ends;
+        o << "Class " << class_name << " does not have the C creator function (_create_<Class name>_class)"
+          << std::ends;
 
         TANGO_THROW_EXCEPTION(API_ClassNotFound, o.str());
     }
@@ -1475,13 +1533,27 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
     lib_name = lib_name + ".so";
   #endif
 
+    auto fetch_error_msg = [&error_msgs](const std::string &key) { error_msgs.emplace(key, dlerror()); };
+
     lib_ptr = dlopen(lib_name.c_str(), RTLD_NOW);
     if(lib_ptr == nullptr)
     {
-        TangoSys_OMemStream o;
-        o << "Trying to load shared library " << lib_name << " failed. It returns error: " << dlerror() << std::ends;
-
-        TANGO_THROW_EXCEPTION(API_ClassNotFound, o.str());
+        fetch_error_msg(lib_name);
+        for(const auto &prefix : prefixes)
+        {
+            auto tmp_lib_name = prefix + lib_name;
+            lib_ptr = dlopen(tmp_lib_name.c_str(), RTLD_NOW);
+            if(lib_ptr != nullptr)
+            {
+                break;
+            }
+            fetch_error_msg(lib_name);
+        }
+        if(lib_ptr == nullptr)
+        {
+            std::string error = format_error();
+            TANGO_THROW_EXCEPTION(API_ClassNotFound, error);
+        }
     }
 
     TANGO_LOG_DEBUG << "dlopen is a success" << std::endl;
@@ -1498,7 +1570,8 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
     if(sym == nullptr)
     {
         TangoSys_OMemStream o;
-        o << "Class " << cl_name << " does not have the C creator function (_create_<Class name>_class)" << std::ends;
+        o << "Class " << class_name << " does not have the C creator function (_create_<Class name>_class)"
+          << std::ends;
 
         TANGO_THROW_EXCEPTION(API_ClassNotFound, o.str());
     }
@@ -1507,7 +1580,7 @@ void DServer::create_cpp_class(const char *cl_name, const char *par_name)
 
     Cpp_creator_ptr mt = (Cpp_creator_ptr) sym;
 #endif /* _TG_WINDOWS_ */
-    Tango::DeviceClass *dc = (*mt)(par_name);
+    Tango::DeviceClass *dc = (*mt)(par_name.c_str());
     add_class(dc);
 }
 

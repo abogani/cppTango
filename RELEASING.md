@@ -38,6 +38,7 @@ in CMakeLists.txt) on `main`
       now on all merge requests for this release have to be done against this branch.
 - [ ] Change the target branch of all MRs which should be part of this release to the new
       release branch
+- [ ] Disable the `pages` job on the `main` branch
 
 #### RC phase:
 
@@ -63,5 +64,6 @@ and finally
 
 - [ ] Delete release branch
 - [ ] Revert the API/ABI non-fatal CI change if required
+- [ ] Allow the `pages` job to run on `main` again
 
 <!-- end of issue -->

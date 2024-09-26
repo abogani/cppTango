@@ -69,26 +69,15 @@ git_describe(GIT_DESCRIPTION SUFFIX_VERSION)
 
 #convenient versions
 set(LIBRARY_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}${SUFFIX_VERSION}")
-set(SO_VERSION "${MAJOR_VERSION}")
+set(SO_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
 
 set(TANGO_GIT_REVISION "${GIT_DESCRIPTION}")
 
 set(TANGO_HOST $ENV{TANGO_HOST})
 include(configure/CMakeLists.txt)
 
-SET(BUILD_TANGO_LOCAL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/include)
-message(STATUS "Using ${BUILD_TANGO_LOCAL_INCLUDE_DIR} as build-time include directory")
-include_directories($<BUILD_INTERFACE:${BUILD_TANGO_LOCAL_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/log4tango/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-#required for generated include/tango/idl/tango.h, include/tango/common/tango_const.h and config.h
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/include)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/log4tango/include)
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-include_directories($<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/log4tango/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set(TANGO_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(TANGO_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 #source code
 add_subdirectory("log4tango")
@@ -110,6 +99,17 @@ add_library(tango $<TARGET_OBJECTS:log4tango_objects>
 
 set_cflags_and_include(tango)
 
+target_include_directories(tango INTERFACE
+    $<BUILD_INTERFACE:${TANGO_SOURCE_DIR}/src/include>
+    $<BUILD_INTERFACE:${TANGO_SOURCE_DIR}/log4tango/include>
+    $<BUILD_INTERFACE:${TANGO_BINARY_DIR}/src/include>
+    $<BUILD_INTERFACE:${TANGO_BINARY_DIR}/log4tango/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+target_compile_features(tango INTERFACE cxx_std_17)
+
+target_compile_definitions(tango INTERFACE "$<$<AND:$<BOOL:${BUILD_SHARED_LIBS}>,$<CXX_COMPILER_ID:MSVC>>:TANGO_HAS_DLL>")
+
 add_library(Tango::Tango ALIAS tango)
 
 if(WIN32)
@@ -118,5 +118,7 @@ if(WIN32)
 else()
     include(configure/cmake_linux.cmake)
 endif()
+
+include(configure/install.cmake)
 
 include(CPack)

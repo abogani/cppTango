@@ -545,8 +545,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                short delta = (data_format == Tango::SCALAR) ? short_array_val[0] - tmp_sh[0]
-                                                             : short_array_val[i] - (*value.sh_seq)[i];
+                short delta = short_array_val[i] - (*value.sh_seq)[i];
                 if(abs(delta) >= delta_val.sh)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -563,8 +562,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong delta = (data_format == Tango::SCALAR) ? long_array_val[0] - tmp_lo[0]
-                                                               : long_array_val[i] - (*value.lg_seq)[i];
+                DevLong delta = long_array_val[i] - (*value.lg_seq)[i];
                 if(abs(delta) >= delta_val.lg)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -581,8 +579,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong64 delta = (data_format == Tango::SCALAR) ? long64_array_val[0] - get_tmp_scalar_long64()[0]
-                                                                 : long64_array_val[i] - (*value.lg64_seq)[i];
+                DevLong64 delta = long64_array_val[i] - (*value.lg64_seq)[i];
 
                 DevLong64 abs_delta;
                 if(delta < 0)
@@ -613,10 +610,10 @@ bool WAttribute::check_rds_alarm()
                 // check for NAN values
                 if(data_format == Tango::SCALAR)
                 {
-                    if(std::isnan(double_array_val[0]) || std::isnan(tmp_db[0]))
+                    if(std::isnan(double_array_val[0]) || std::isnan((*value.db_seq)[0]))
                     {
                         // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(double_array_val[0]) && std::isnan(tmp_db[0])))
+                        if(!(std::isnan(double_array_val[0]) && std::isnan((*value.db_seq)[0])))
                         {
                             quality = Tango::ATTR_ALARM;
                             alarm.set(rds);
@@ -640,8 +637,7 @@ bool WAttribute::check_rds_alarm()
                     }
                 }
 
-                double delta = (data_format == Tango::SCALAR) ? double_array_val[0] - tmp_db[0]
-                                                              : double_array_val[i] - (*value.db_seq)[i];
+                double delta = double_array_val[i] - (*value.db_seq)[i];
                 if(fabs(delta) >= delta_val.db)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -661,10 +657,10 @@ bool WAttribute::check_rds_alarm()
                 // check for NAN values
                 if(data_format == Tango::SCALAR)
                 {
-                    if(std::isnan(float_array_val[0]) || std::isnan(tmp_fl[0]))
+                    if(std::isnan(float_array_val[0]) || std::isnan((*value.fl_seq)[0]))
                     {
                         // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(float_array_val[0]) && std::isnan(tmp_fl[0])))
+                        if(!(std::isnan(float_array_val[0]) && std::isnan((*value.fl_seq)[0])))
                         {
                             quality = Tango::ATTR_ALARM;
                             alarm.set(rds);
@@ -688,8 +684,7 @@ bool WAttribute::check_rds_alarm()
                     }
                 }
 
-                float delta = (data_format == Tango::SCALAR) ? float_array_val[0] - tmp_fl[0]
-                                                             : float_array_val[i] - (*value.fl_seq)[i];
+                float delta = float_array_val[i] - (*value.fl_seq)[i];
                 double delta_d = (double) delta;
                 if(((float) fabs(delta_d)) >= delta_val.fl)
                 {
@@ -707,8 +702,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                unsigned short delta = (data_format == Tango::SCALAR) ? ushort_array_val[0] - tmp_ush[0]
-                                                                      : ushort_array_val[i] - (*value.ush_seq)[i];
+                unsigned short delta = ushort_array_val[i] - (*value.ush_seq)[i];
                 if(delta >= delta_val.ush)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -725,8 +719,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                unsigned char delta = (data_format == Tango::SCALAR) ? uchar_array_val[0] - tmp_cha[0]
-                                                                     : uchar_array_val[i] - (*value.cha_seq)[i];
+                unsigned char delta = uchar_array_val[i] - (*value.cha_seq)[i];
                 if(delta >= delta_val.uch)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -743,8 +736,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong delta = (data_format == Tango::SCALAR) ? ulong_array_val[0] - get_tmp_scalar_ulong()[0]
-                                                               : ulong_array_val[i] - (*value.ulg_seq)[i];
+                DevLong delta = ulong_array_val[i] - (*value.ulg_seq)[i];
                 if((unsigned int) abs(delta) >= delta_val.ulg)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -761,8 +753,7 @@ bool WAttribute::check_rds_alarm()
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong64 delta = (data_format == Tango::SCALAR) ? ulong64_array_val[0] - get_tmp_scalar_ulong64()[0]
-                                                                 : ulong64_array_val[i] - (*value.ulg64_seq)[i];
+                DevLong64 delta = ulong64_array_val[i] - (*value.ulg64_seq)[i];
 
                 DevULong64 abs_delta;
                 if(delta < 0)

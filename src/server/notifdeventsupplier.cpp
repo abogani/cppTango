@@ -695,7 +695,7 @@ void NotifdEventSupplier::connect_to_notifd(NotifService &ns,
 void NotifdEventSupplier::push_heartbeat_event()
 {
     CosNotification::StructuredEvent struct_event;
-    std::string event, domain_name;
+    std::string domain_name;
     time_t delta_time;
     time_t now_time;
     static int heartbeat_counter = 0;

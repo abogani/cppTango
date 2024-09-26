@@ -20,7 +20,7 @@ for corefile in build/tests/core.*; do
     # that will work but, in practice, we will probably only see a single match
     # anyway so it is not worth trying to work out which is the correct one here.
 
-    for bin_path in $(find . -name "${bin_name}*" -type f -executable); do
+    for bin_path in $(find -L . -name "${bin_name}*" -type f -executable); do
       echo -e "$dline\nBacktrace for corefile=$corefile (binary=$bin_path)\n$dline"
       gdb --cd=${SOURCE_DIR} --batch $bin_path ./$corefile -ex "thread apply all bt full"
       echo

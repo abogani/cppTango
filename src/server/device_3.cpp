@@ -787,61 +787,34 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
 
         if(state_wanted)
         {
-            //            long id = reading_state_necessary(wanted_attr);
-            long id = -1;
-            if(id == -1)
+            try
             {
-                try
+                alarmed_not_read(wanted_attr);
+                state_from_read = true;
+                if(is_alarm_state_forced())
                 {
-                    alarmed_not_read(wanted_attr);
-                    state_from_read = true;
-                    if(is_alarm_state_forced())
-                    {
-                        d_state = DeviceImpl::dev_state();
-                    }
-                    else
-                    {
-                        d_state = dev_state();
-                    }
-                    state_from_read = false;
-                }
-                catch(Tango::DevFailed &e)
-                {
-                    state_from_read = false;
-                    if(aid.data_5 != nullptr)
-                    {
-                        error_from_devfailed((*aid.data_5)[state_idx], e, names[state_idx]);
-                    }
-                    else if(aid.data_4 != nullptr)
-                    {
-                        error_from_devfailed((*aid.data_4)[state_idx], e, names[state_idx]);
-                    }
-                    else
-                    {
-                        error_from_devfailed((*aid.data_3)[state_idx], e, names[state_idx]);
-                    }
-                    TANGO_TELEMETRY_TRACK_BAD_ATTR(names[state_idx].in());
-                }
-            }
-            else
-            {
-                if(aid.data_5 != nullptr)
-                {
-                    error_from_errorlist((*aid.data_5)[state_idx],
-                                         (*aid.data_5)[wanted_attr[id].idx_in_names].err_list,
-                                         names[state_idx]);
-                }
-                else if(aid.data_4 != nullptr)
-                {
-                    error_from_errorlist((*aid.data_4)[state_idx],
-                                         (*aid.data_4)[wanted_attr[id].idx_in_names].err_list,
-                                         names[state_idx]);
+                    d_state = DeviceImpl::dev_state();
                 }
                 else
                 {
-                    error_from_errorlist((*aid.data_3)[state_idx],
-                                         (*aid.data_3)[wanted_attr[id].idx_in_names].err_list,
-                                         names[state_idx]);
+                    d_state = dev_state();
+                }
+                state_from_read = false;
+            }
+            catch(Tango::DevFailed &e)
+            {
+                state_from_read = false;
+                if(aid.data_5 != nullptr)
+                {
+                    error_from_devfailed((*aid.data_5)[state_idx], e, names[state_idx]);
+                }
+                else if(aid.data_4 != nullptr)
+                {
+                    error_from_devfailed((*aid.data_4)[state_idx], e, names[state_idx]);
+                }
+                else
+                {
+                    error_from_devfailed((*aid.data_3)[state_idx], e, names[state_idx]);
                 }
                 TANGO_TELEMETRY_TRACK_BAD_ATTR(names[state_idx].in());
             }
@@ -2519,7 +2492,7 @@ void Device_3Impl::set_attribute_config_3(const Tango::AttributeConfigList_3 &ne
     }
     store_in_bb = true;
 
-    return set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
+    set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -2805,57 +2778,6 @@ void Device_3Impl::add_alarmed(std::vector<long> &att_list)
             }
         }
     }
-}
-
-//+--------------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        Device_3Impl::reading_state_necessary
-//
-// description :
-//        Method to check if it is necessary to read state. If the device has some alarmed attribute and one of
-//        these attributes has already been read and failed, it is not necessary to read state. It will also fail.
-//
-// argument:
-//        in :
-//            - wanted_attr : The list of attribute to be read by this call
-//
-// return:
-//         This  method returns -1 if reading state is possible. Otherwise, it returns the index in the wanted_attr
-//         list of the alarmed attribute which failed
-//
-//--------------------------------------------------------------------------------------------------------------------
-
-long Device_3Impl::reading_state_necessary(const std::vector<AttIdx> &wanted_attr)
-{
-    std::vector<long> &alarmed_list = dev_attr->get_alarm_list();
-    long nb_alarmed_attr = alarmed_list.size();
-    long ret = -1;
-
-    if(nb_alarmed_attr == 0)
-    {
-        ret = -1;
-    }
-
-    else
-    {
-        long nb_attr = wanted_attr.size();
-        for(int j = 0; j < nb_alarmed_attr; j++)
-        {
-            for(int i = 0; i < nb_attr; i++)
-            {
-                if(alarmed_list[j] == wanted_attr[i].idx_in_multi_attr)
-                {
-                    if(wanted_attr[i].failed)
-                    {
-                        return i;
-                    }
-                }
-            }
-        }
-    }
-
-    return ret;
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

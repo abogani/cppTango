@@ -37,6 +37,15 @@ class Context
      * @brief Create a Tango Test Context with a single device server in nodb mode
      *
      * @param instance_name Name of the device server instance
+     * @param class_name Name of the device class to instantiate
+     * @param env environment entries of the form "key1=value1", "key2=value2"
+     */
+    Context(const std::string &instance_name, const std::string &class_name, std::vector<std::string> env = {});
+
+    /**
+     * @brief Create a Tango Test Context with a single device server in nodb mode
+     *
+     * @param instance_name Name of the device server instance
      * @param tmpl_name Name of the template device class to instantiate
      * @param idlversion IDL version of the device class to instantiate
      * @param env environment entries of the form "key1=value1", "key2=value2"
@@ -68,11 +77,27 @@ class Context
     ~Context();
 
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
+    std::unique_ptr<Tango::DeviceProxy> get_admin_proxy();
+
+    /** Wait until the server stops.
+     *
+     *  Intended to be called if the server is being stopped by some means
+     *  outside of the test infrastructure, e.g. the DServer Kill command.
+     *
+     *  @param timeout to wait for the server to stop
+     *
+     *  Returns the exit status of the server.
+     *
+     *  Throws: a `runtime_error` if the timeout is exceeded.
+     */
+    ExitStatus wait_for_exit(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
     /** Stop the associated TestServer instance if it has been started.
      *
      *  If the instance has a non-zero exit status, then diagnostics will be
      *  output with the Catch2 WARN macro.
+     *
+     *  Returns when the server has stopped or the timeout has been reached
      *
      *  @param timeout if the server takes longer than this timeout,
      *  a warning log will be generated
@@ -113,26 +138,9 @@ class Context
     std::vector<std::string> m_extra_env;
 };
 
-class DevFailedReasonMatcher : public Catch::Matchers::MatcherGenericBase
-{
-  public:
-    DevFailedReasonMatcher(const std::string &e);
-
-    bool match(const Tango::DevFailed &exception) const;
-
-    std::string describe() const override;
-
-  private:
-    const std::string reason;
-};
-
-inline DevFailedReasonMatcher DevFailedReasonEquals(std::string const &message)
-{
-    return DevFailedReasonMatcher(message);
-}
-
 namespace detail
 {
+constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 // Setup a log appender to the file specified in the environment variable
 // TANGO_TEST_LOG_FILE.  Each log is prefixed with `topic`, this allows
 // multiple processes to log to this file at the same time.

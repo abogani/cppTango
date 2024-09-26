@@ -1,11 +1,6 @@
-#include <tango/tango.h>
+#include "catch2_common.h"
 
-#include <memory>
 #include <filesystem>
-
-#include "utils/utils.h"
-
-#include "common.h"
 
 namespace
 {
@@ -506,8 +501,9 @@ SCENARIO("Check that unimplemented calls throw")
         {
             WHEN("we always throw")
             {
-                REQUIRE_THROWS_MATCHES(
-                    func(), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_NotSupported));
+                using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
+                REQUIRE_THROWS_MATCHES(func(), Tango::DevFailed, FirstErrorMatches(Reason(Tango::API_NotSupported)));
             }
         }
     }
@@ -655,9 +651,9 @@ SCENARIO("DbGetProperty throws exception")
 {
     GIVEN("a filedatabase")
     {
+        using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
         std::string device_name{"test/device/01"};
-        std::string object_name{Tango::CONTROL_SYSTEM};
-        std::string property_name{"property"};
 
         const auto db_filename = create_dbfile(device_name);
 
@@ -669,7 +665,7 @@ SCENARIO("DbGetProperty throws exception")
             auto any = as_any(i);
 
             REQUIRE_THROWS_MATCHES(
-                db.DbGetProperty(any), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_InvalidCorbaAny));
+                db.DbGetProperty(any), Tango::DevFailed, FirstErrorMatches(Reason(Tango::API_InvalidCorbaAny)));
         }
         AND_WHEN("or too few elements")
         {
@@ -678,7 +674,7 @@ SCENARIO("DbGetProperty throws exception")
             auto any = as_any({});
 
             REQUIRE_THROWS_MATCHES(
-                db.DbGetProperty(any), Tango::DevFailed, TangoTest::DevFailedReasonEquals(Tango::API_InvalidCorbaAny));
+                db.DbGetProperty(any), Tango::DevFailed, FirstErrorMatches(Reason(Tango::API_InvalidCorbaAny)));
         }
     }
 }

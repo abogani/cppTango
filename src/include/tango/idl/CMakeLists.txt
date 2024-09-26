@@ -20,15 +20,18 @@ if(WIN32)
     endforeach(file)
 endif()
 
-add_custom_target(idl_source DEPENDS ${BUILD_TANGO_LOCAL_INCLUDE_DIR}/tango/tango.h tangoSK.cpp tangoDynSK.cpp)
+add_custom_target(idl_source DEPENDS ${TANGO_SOURCE_DIR}/src/include/tango/tango.h tangoSK.cpp tangoDynSK.cpp)
 
 add_library(idl_objects OBJECT ${SOURCES})
 target_include_directories(idl_objects SYSTEM PUBLIC $<TARGET_PROPERTY:omniORB4::omniORB4,INTERFACE_INCLUDE_DIRECTORIES>)
+if (NOT BUILD_SHARED_LIBS AND TARGET omniORB4::thread-static)
+  target_compile_options(idl_objects PRIVATE $<TARGET_PROPERTY:omniORB4::thread-static,INTERFACE_COMPILE_OPTIONS>)
+else()
+  target_compile_options(idl_objects PRIVATE $<TARGET_PROPERTY:omniORB4::thread,INTERFACE_COMPILE_OPTIONS>)
+endif()
 add_dependencies(idl_objects idl_source)
 
-if(WIN32)
-    target_compile_definitions(idl_objects PRIVATE "${windows_defs};__x86__;__NT__;__OSVERSION__=4;__WIN32__;_WIN32_WINNT=0x0400;")
-else()
+if(NOT WIN32)
     target_compile_options(idl_objects PRIVATE -fPIC)
     target_compile_definitions(idl_objects PRIVATE OMNI_UNLOADABLE_STUBS)
 

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <optional>
 #include <vector>
 
 namespace TangoTest
@@ -16,6 +17,32 @@ class Logger
 
     virtual ~Logger() { }
 };
+
+struct ExitStatus
+{
+    enum class Kind
+    {
+        Normal,          // The TestServer exited normally, code is active.
+        Aborted,         // The TestServer was Aborted, signal is active.
+        AbortedNoSignal, // The TestServer was Aborted, neither code nor signal
+                         // are defined.
+    };
+
+    Kind kind;
+
+    union
+    {
+        int code;   // exit code of the TestServer
+        int signal; // signal used to abort the TestServer
+    };
+
+    bool is_success()
+    {
+        return kind == Kind::Normal && code == 0;
+    }
+};
+
+std::ostream &operator<<(std::ostream &os, const ExitStatus &status);
 
 /* RAII class for a TestServer process
  */
@@ -66,8 +93,24 @@ class TestServer
      *
      *  After the server has been stopped, it can be started again using the
      *  same port by calling `start`.
+     *
+     *  Does nothing if `!is_running()`.
+     *
+     *  @param timeout -- how long to wait for the server to exit
      */
     void stop(std::chrono::milliseconds timeout = k_default_timeout);
+
+    /** Wait until the server has exited.
+     *
+     *  Returns the exit status of the server.
+     *
+     *  Raises an exception if the timeout is exceed.
+     *
+     *  @param timeout -- how long to wait for the server to exit
+     *
+     *  Expects: `is_running()`
+     */
+    ExitStatus wait_for_exit(std::chrono::milliseconds timeout = k_default_timeout);
 
     ~TestServer();
 
@@ -101,6 +144,9 @@ class TestServer
     Handle *m_handle = nullptr;
     int m_port = -1;
     std::string m_redirect_file;
+
+    // Set if the test has called wait_for_exit() and it didn't timeout.
+    std::optional<ExitStatus> m_exit_status = std::nullopt;
 };
 
 } // namespace TangoTest

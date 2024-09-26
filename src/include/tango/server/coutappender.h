@@ -48,7 +48,7 @@ class CoutAppender : public log4tango::LayoutAppender
     /**
      *
      **/
-    inline bool reopen() override
+    bool reopen() override
     {
         return true;
     }
@@ -56,7 +56,7 @@ class CoutAppender : public log4tango::LayoutAppender
     /**
      *
      **/
-    inline void close() override
+    void close() override
     {
         // no-op
     }

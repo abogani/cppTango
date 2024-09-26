@@ -1,8 +1,6 @@
-#include <tango/tango.h>
-#include <memory>
-#include "utils/utils.h"
+#include "catch2_common.h"
 
-constexpr static Tango::DevLong k_polling_period = 100; // 100 ms
+constexpr static Tango::DevLong k_polling_period = TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD;
 
 template <class Base>
 class CmdPollingCfg : public Base

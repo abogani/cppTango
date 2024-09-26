@@ -1266,18 +1266,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                    const std::vector<std::string> &filters,
                                    bool stateless)
 {
-    std::string event_name;
-    if(event == QUALITY_EVENT)
-    {
-        TANGO_THROW_DETAILED_EXCEPTION(
-            EventSystemExcept,
-            API_InvalidArgs,
-            "The quality change event does not exist any more. A change event is fired on a quality change!");
-    }
-    else
-    {
-        event_name = EventName[event];
-    }
+    std::string event_name{EventName[event]};
 
     //
     // Following code is for the case of event subscription in one event callback
@@ -1902,7 +1891,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // Create a callback monitor and set its timeout to 1000ms not to block the event consumer for too long.
     //
 
-    new_event_callback.callback_monitor = new TangoMonitor();
+    new_event_callback.callback_monitor = new TangoMonitor(event_name + " callback");
     new_event_callback.callback_monitor->timeout(1000);
 
     //
@@ -3247,8 +3236,8 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
     std::this_thread::sleep_for(std::chrono::milliseconds(25));
 #endif
 
-    if((event == CHANGE_EVENT) || (event == ALARM_EVENT) || (event == QUALITY_EVENT) || (event == ARCHIVE_EVENT) ||
-       (event == USER_EVENT) || (event == PERIODIC_EVENT))
+    if((event == CHANGE_EVENT) || (event == ALARM_EVENT) || (event == ARCHIVE_EVENT) || (event == USER_EVENT) ||
+       (event == PERIODIC_EVENT))
     {
         DevErrorList err;
         err.length(0);

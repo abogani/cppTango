@@ -1,17 +1,178 @@
+<!-- Vim regex for creating markdown links from plain issue links: '<,'>s;, \(https://.\{-}\([0-9]\+\)\); [#\2](\1);g -->
+
+# Tango C++ library 10.0.0 Release Notes
+
+September 27th, 2024
+
+Table of Contents
+=================
+  - [What's New (Since Version 9.5.0)?](#whats-new-since-version-950)
+  - [10.0.0 - Bug Fixes](#1000-bug-fixes)
+  - [10.0.0 - Changes](#1000-changes)
+  - [10.0.0 - Source Code Comparison With Version 9.5.0](#1000-source-code-comparison-with-version-950)
+  - [10.0.0 - Milestone](#1000-milestone)
+  - [10.0.0 - Feedback](#1000-feedback)
+  - [10.0.0 - Contributions](#1000-contributions)
+  - [10.0.0 - Acknowledgement](#1000-acknowledgement)
+
+## What's New Since Version 9.5.0?
+
+This cppTango release is a major release. It contains new features, uses a new
+IDL version and has improvements in several areas that are relevant to the
+users of cppTango. Please refer to [features](#1000-features), [improvements
+and changes](#1000-changes) and [the selection of fixes](#1000-bug-fixes)
+where we highlight what was improved or modified.
+
+## 10.0.0 - Features
+
+### Experimental support for client/server tracing using OpenTelemetry [#1185](https://gitlab.com/tango-controls/cppTango/-/issues/1185), [#1323](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1323)
+
+cppTango 10.0.0 provides telemetry support for all device servers using IDLv4 or
+later and works on Linux, MacOSX and Windows.  For a description of the various
+concepts introduce by telemetry see the [OpenTelemerty
+website](https://opentelemetry.io/).  For more information about using telemetry
+with cppTango see [Telemetry Support](@ref telemetry) in the documentation.
+
+### New Alarm Event [#1030](https://gitlab.com/tango-controls/cppTango/-/issues/1030)
+
+cppTango 10.0.0 introduces support for the new alarm events.  Alarm events can
+be thought of as a subset of change events, only events which involve a
+transition to or from the `Tango::ATTR_ALARM` or `Tango::ATTR_WARNING` quality
+factors.
+
+The polling thread will send alarm events for all polled attributes to any
+clients that subscribe to alarm events with a call to
+`DeviceProxy::subscribe_event()`, passing `Tango::ALARM_EVENT`.
+
+Devices which manually push change events will automatically also push alarm
+events to clients which have subscribed to alarm events, unless the manual
+pushing of alarm events has been enabled for the attribute with
+`Tango::Attr::set_alarm_event()` or the `CtrlSystem` property
+`AutoAlarmOnChangeEvent` is defined and falsey.
+
+### Extended version information [#1155](https://gitlab.com/tango-controls/cppTango/-/issues/1155)
+
+cppTango 10.0.0 introduces support for more detailed version information which
+is also extendable by users.  Servers can add key/value pairs to the version
+information by calling `DeviceImpl::add_version_info()`.  cppTango 10.0.0
+adds version information about itself and the various dependencies it was
+compiled against.
+
+Clients can request this information with a call to `DeviceProxy::info()`
+where the assigned key/value pairs will be available in the
+`Tango::_DeviceInfo::version_info` member.
+
+### Other features
+
+- Introduce `Tango::Device_6Impl` class with support for new Tango IDLv6 features
+- `TANGO_BASE_CLASS` now points to `Tango::Device_6Impl`
+- Require at least C++17 for compilation [#1176](https://gitlab.com/tango-controls/cppTango/-/issues/1176)
+- Provide a cmake package configuration file on Linux/MacOSX/Windows [#857](https://gitlab.com/tango-controls/cppTango/-/issues/857), [#1277](https://gitlab.com/tango-controls/cppTango/-/issues/1277)
+- Add new test framework catch2, version 3.3.0 or newer, for faster and
+  dockerless testing supports FileDatabase, environment variables and runs on
+  Linux/MacOSX/Windows [#870](https://gitlab.com/tango-controls/cppTango/-/issues/870), [#1204](https://gitlab.com/tango-controls/cppTango/-/issues/1204).
+
+## 10.0.0 - Breaking Changes
+
+- Remove the QUALITY_EVENT enum member from EVENT_TYPE [#1260](https://gitlab.com/tango-controls/cppTango/-/issues/1260)
+
+## 10.0.0 - Other Changes
+
+- Run existing (pre-catch2) tests with older IDLv5 in addition to the current IDL version [#1036](https://gitlab.com/tango-controls/cppTango/-/issues/1036)
+- Implement DbPutProperty, DbDeleteProperty functions for free properties in the FileDatabase
+- Add support for device servers in dynamic libraries on MacOSX [#1244](https://gitlab.com/tango-controls/cppTango/-/issues/1244)
+- Add cmake presets [#1226](https://gitlab.com/tango-controls/cppTango/-/issues/1226)
+- Make the tests also work with the static cppTango library [#1213](https://gitlab.com/tango-controls/cppTango/-/issues/1213)
+- Introduce developer documentation for exception vs assert [#1041](https://gitlab.com/tango-controls/cppTango/-/issues/1041)
+- Add CI with Ubuntu 22.04/24.04 LTS versions [#1279](https://gitlab.com/tango-controls/cppTango/-/issues/1279), [#1280](https://gitlab.com/tango-controls/cppTango/-/issues/1280)
+- Update GCC version to 14.1 for testing [#1281](https://gitlab.com/tango-controls/cppTango/-/issues/1281)
+- Switch to MSVC 2022 as compiler on Windows [#1282](https://gitlab.com/tango-controls/cppTango/-/issues/1282)
+- Make passing UBSAN in CI required [#1175](https://gitlab.com/tango-controls/cppTango/-/issues/1175)
+- Add compilation testing CI with C++20/23 [#1283](https://gitlab.com/tango-controls/cppTango/-/issues/1283)
+- Prefer std::chrono over time(NULL) for accuracy reasons [#1080](https://gitlab.com/tango-controls/cppTango/-/issues/1080)
+- Include `-otel` as part of the windows package name if included [#1284](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1284)
+- Improve error messages when encountering a TangoMonitor timeout [#1215](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1215)
+- Include the minor version in the SOVERSION [#1285](https://gitlab.com/tango-controls/cppTango/-/issues/1285)
+- Improve core-dump reporting for Catch2Tests [#1296](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1296)
+- Update CI to use LLVM 18 [#1241](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1241)
+- Require tangoidl 6.0.2 and check for this at configure time [#1228](https://gitlab.com/tango-controls/cppTango/-/issues/1228)
+- Run Catch2Tests on Windows [#1223](https://gitlab.com/tango-controls/cppTango/-/issues/1223)
+- Install minimum required binaries when building Windows packages [#1290](https://gitlab.com/tango-controls/cppTango/-/issues/1290)
+- Publish multi-version documentation, available [here](https://tango-controls.gitlab.io/cppTango/) [#890](https://gitlab.com/tango-controls/cppTango/-/issues/890)
+- Improve install instructions [#1298](https://gitlab.com/tango-controls/cppTango/-/issues/1298)
+- Allow superprojects to override searching for tangoidl [#1318](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1318)
+- Improve set_value error message if data type is wrong [#1306](https://gitlab.com/tango-controls/cppTango/-/issues/1306)
+- Reduced code duplication for Attribute::fire_<>_event code [#1317](https://gitlab.com/tango-controls/cppTango/-/merge_requests/1317)
+- DServer::create_cpp_class now looks for filenames with user provided prefixes [#1245](https://gitlab.com/tango-controls/cppTango/-/issues/1245)
+
+## 10.0.0 - Bug fixes
+
+- Fix some memory leaks in the FileDatabase [#1261](https://gitlab.com/tango-controls/cppTango/-/issues/1261)
+- Avoid crash when listing the number of device classes where the admin device was deleted before [#1243](https://gitlab.com/tango-controls/cppTango/-/issues/1243)
+- Fix segfault during shutdown [#1218](https://gitlab.com/tango-controls/cppTango/-/issues/1218)
+- Fix a potential crash when running without Tango Database [#1080](https://gitlab.com/tango-controls/cppTango/-/issues/1080)
+- Fix crash with forwarded attributes for Spectrum and Image types [#1018](https://gitlab.com/tango-controls/cppTango/-/issues/1018)
+- Potential crash at server init when a device server uses groups in a thread [#867](https://gitlab.com/tango-controls/cppTango/-/issues/867)
+- Fix attribute polling in nodb mode [#1220](https://gitlab.com/tango-controls/cppTango/-/issues/1220)
+- Fix edge case in event handling in nodb mode
+- Fix Attribute::set_write_value when called with a std::string [#1256](https://gitlab.com/tango-controls/cppTango/-/issues/1256)
+- Fix segfault when calling check_alarm [#615](https://gitlab.com/tango-controls/pytango/-/issues/615)
+- Fix order of shutting down threads [#1278](https://gitlab.com/tango-controls/cppTango/-/issues/1278)
+- Fix change/archive event detection when transitioning to/from NaN [#1207](https://gitlab.com/tango-controls/cppTango/-/issues/1207)
+- Fix Attribute::check_alarm() to always return true if attribute in ALARM/WARNIGN [#1182](https://gitlab.com/tango-controls/cppTango/-/issues/1182)
+- Fix memory leak when pushing event from READ_WRITE attribute [#1292](https://gitlab.com/tango-controls/cppTango/-/issues/1292)
+- Fix memory leak when using set_value with release=true and ATTR_INVALID [#1265](https://gitlab.com/tango-controls/cppTango/-/issues/1265)
+- Fix linker warnings on Windows CI [#1302](https://gitlab.com/tango-controls/cppTango/-/issues/1302)
+- Fix State evaluation can raise segfault when exception raised during attribute read [#1311](https://gitlab.com/tango-controls/cppTango/-/issues/1311)
+
+## 10.0.0 - Source Code Comparison With Version 9.5.0
+
+You can view the source code comparison with Tango 9.5.0, as well as the
+commits and contributors on this page:
+https://gitlab.com/tango-controls/cppTango/-/compare/9.5.0...10.0.0
+
+## 10.0.0 - Milestone
+
+All the issues and Merge Requests associated to the 10.0.0 milestone can be
+found here: https://gitlab.com/tango-controls/cppTango/-/milestones/10.0.0
+
+## 10.0.0 - Feedback
+
+You can report issues on https://gitlab.com/tango-controls/cppTango/-/issues.
+If you find a problem which you think could also affect Tango Controls packages
+other than cppTango, e.g. cppTango and pyTango, or when you don't know where
+you should create the issue at all - Well, you know now! - then head over to
+https://gitlab.com/tango-controls/TangoTickets/-/issues.
+
+## 10.0.0 - Contributions
+
+Contributions are always welcome! Please do not hesitate to create new Merge
+Requests in [cppTango Gitlab
+repository](https://gitlab.com/tango-controls/cppTango). Please refer to
+[CONTRIBUTING.md](https://gitlab.com/tango-controls/cppTango/-/blob/main/CONTRIBUTING.md)
+to familiarise yourself with the easiest way to contribute to the cppTango
+project.
+
+## 10.0.0 - Acknowledgement
+
+Many thanks to all the persons who contributed to this release, to the Tango
+kernel team and to the Tango community for its ideas, feedback, bug reports and
+tests.
+
 # Tango C++ library 9.5.0 Release Notes
 
 October 10th, 2023
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.4.2)?](#whats-new-since-version-942)
-  * [9.5.0 - Bug Fixes](#950-bug-fixes)
-  * [9.5.0 - Changes](#950-changes)
-  * [9.5.0 - Source Code Comparison With Version 9.4.2](#950-source-code-comparison-with-version-942)
-  * [9.5.0 - Milestone](#950-milestone)
-  * [9.5.0 - Feedback](#950-feedback)
-  * [9.5.0 - Contributions](#950-contributions)
-  * [9.5.0 - Acknowledgement](#950-acknowledgement)
+  - [What's New (Since Version 9.4.2)?](#whats-new-since-version-942)
+  - [9.5.0 - Bug Fixes](#950-bug-fixes)
+  - [9.5.0 - Changes](#950-changes)
+  - [9.5.0 - Source Code Comparison With Version 9.4.2](#950-source-code-comparison-with-version-942)
+  - [9.5.0 - Milestone](#950-milestone)
+  - [9.5.0 - Feedback](#950-feedback)
+  - [9.5.0 - Contributions](#950-contributions)
+  - [9.5.0 - Acknowledgement](#950-acknowledgement)
 
 ## What's New Since Version 9.4.2?
 
@@ -32,7 +193,7 @@ This cppTango release is a bug fix release. It contains improvements in several 
 - Substitute TANGO_XXX_BASE flags with XXX_ROOT flags autogenerated by find_package in Cmake. ([#1043](https://gitlab.com/tango-controls/cppTango/-/issues/1043)).
 - Update minimum cmake version to 3.18. ([#975](https://gitlab.com/tango-controls/cppTango/-/issues/975)).
 - Fix for wrong hostname information in blackbox in some situations. ([#865](https://gitlab.com/tango-controls/cppTango/-/issues/865)).
-- Fix handling of ORB pointers by using _var objects. ([#842](https://gitlab.com/tango-controls/cppTango/-/issues/842)).
+- Fix handling of ORB pointers by using \_var objects. ([#842](https://gitlab.com/tango-controls/cppTango/-/issues/842)).
 - Fix for ownership handling of event data. ([#684](https://gitlab.com/tango-controls/cppTango/-/issues/684)).
 - Fix to not use case sensitive comparisons in MultiClassAttribute. ([#](https://gitlab.com/tango-controls/cppTango/-/issues/)).
 
@@ -77,14 +238,14 @@ June 19th, 2023
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.4.1)?](#whats-new-since-version-941)
-  * [9.4.2 - Bug Fixes](#942-bug-fixes)
-  * [9.4.2 - Changes](#942-changes)
-  * [9.4.2 - Source Code Comparison With Version 9.4.1](#942-source-code-comparison-with-version-941)
-  * [9.4.2 - Milestone](#942-milestone)
-  * [9.4.2 - Feedback](#942-feedback)
-  * [9.4.2 - Contributions](#942-contributions)
-  * [9.4.2 - Acknowledgement](#942-acknowledgement)
+  - [What's New (Since Version 9.4.1)?](#whats-new-since-version-941)
+  - [9.4.2 - Bug Fixes](#942-bug-fixes)
+  - [9.4.2 - Changes](#942-changes)
+  - [9.4.2 - Source Code Comparison With Version 9.4.1](#942-source-code-comparison-with-version-941)
+  - [9.4.2 - Milestone](#942-milestone)
+  - [9.4.2 - Feedback](#942-feedback)
+  - [9.4.2 - Contributions](#942-contributions)
+  - [9.4.2 - Acknowledgement](#942-acknowledgement)
 
 ## What's New Since Version 9.4.1?
 
@@ -143,16 +304,16 @@ February 2nd, 2023
 
 Table of Contents
 =================
-  * [What's New (Since Version 9.3.5)?](#whats-new-since-version-935)
-  * [9.4.0+ - Changes Which Might Have An Impact On Users](#940-changes-which-might-have-an-impact-on-users)
-  * [9.4.0 - Bug Fixes](#940-bug-fixes)
-  * [9.4.1 - Bug Fixes](#941-bug-fixes)
-  * [9.4.1 - Changes](#941-changes)
-  * [9.4.0+ - Source Code Comparison With Version 9.3.5](#940-source-code-comparison-with-version-935)
-  * [9.4.1 - Source Code Comparison With Version 9.4.0](#941-source-code-comparison-with-version-940)
-  * [9.4.1 - Feedback](#941-feedback)
-  * [9.4.1 - Contributions](#941-contributions)
-  * [9.4.1 - Acknowledgement](#941-acknowledgement)
+  - [What's New (Since Version 9.3.5)?](#whats-new-since-version-935)
+  - [9.4.0+ - Changes Which Might Have An Impact On Users](#940-changes-which-might-have-an-impact-on-users)
+  - [9.4.0 - Bug Fixes](#940-bug-fixes)
+  - [9.4.1 - Bug Fixes](#941-bug-fixes)
+  - [9.4.1 - Changes](#941-changes)
+  - [9.4.0+ - Source Code Comparison With Version 9.3.5](#940-source-code-comparison-with-version-935)
+  - [9.4.1 - Source Code Comparison With Version 9.4.0](#941-source-code-comparison-with-version-940)
+  - [9.4.1 - Feedback](#941-feedback)
+  - [9.4.1 - Contributions](#941-contributions)
+  - [9.4.1 - Acknowledgement](#941-acknowledgement)
 
 ## What's New Since Version 9.4.0?
 

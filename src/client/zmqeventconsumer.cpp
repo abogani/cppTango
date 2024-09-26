@@ -362,7 +362,7 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
             }
 
             zmq::message_t reply(ret_str.size());
-            ::memcpy((void *) reply.data(), ret_str.data(), ret_str.size());
+            ::memcpy(reply.data(), ret_str.data(), ret_str.size());
             result = control_sock->send(reply, zmq::send_flags::none);
             TANGO_ASSERT(result);
 
@@ -467,9 +467,9 @@ void ZmqEventConsumer::process_heartbeat(zmq::message_t &received_event_name,
     //
 
     unsigned char endian = ((char *) received_endian.data())[0];
-    std::string event_name((char *) received_event_name.data(), (size_t) received_event_name.size());
+    std::string event_name((char *) received_event_name.data(), received_event_name.size());
 
-    cdrMemoryStream call_info((char *) received_call.data(), (size_t) received_call.size());
+    cdrMemoryStream call_info((char *) received_call.data(), received_call.size());
     call_info.setByteSwapFlag(endian != 0u);
 
     ZmqCallInfo_var c_info_var = new ZmqCallInfo;
@@ -571,9 +571,9 @@ void ZmqEventConsumer::process_event(zmq::message_t &received_event_name,
     const ZmqCallInfo *receiv_call;
 
     unsigned char endian = ((char *) received_endian.data())[0];
-    std::string event_name((char *) received_event_name.data(), (size_t) received_event_name.size());
+    std::string event_name((char *) received_event_name.data(), received_event_name.size());
 
-    cdrMemoryStream call_info((char *) received_call.data(), (size_t) received_call.size());
+    cdrMemoryStream call_info((char *) received_call.data(), received_call.size());
     call_info.setByteSwapFlag(endian != 0u);
 
     ZmqCallInfo_var c_info_var = new ZmqCallInfo;
@@ -862,9 +862,6 @@ bool ZmqEventConsumer::process_ctrl(zmq::message_t &received_ctrl, zmq::pollitem
 
         const char *event_name = &(tmp_ptr[1]);
         std::string ev_name(event_name);
-
-        const char *endpoint = &(tmp_ptr[1 + ::strlen(event_name) + 1]);
-        std::string endpoint_str(endpoint);
 
         //
         // Check if it is a multicast event
@@ -1956,7 +1953,6 @@ void ZmqEventConsumer::push_zmq_event(
     bool no_db_dev = false;
 
     size_t pos = ev_name.find('/', 8);
-    std::string base_tango_host = ev_name.substr(0, pos + 1);
     std::string canon_ev_name = ev_name.substr(pos + 1);
 
     if(ev_name.find(MODIFIER_DBASE_NO) != std::string::npos)
@@ -2127,7 +2123,7 @@ void ZmqEventConsumer::push_zmq_event(
                 //
 
                 char *data_ptr = (char *) event_data.data();
-                size_t data_size = (size_t) event_data.size();
+                size_t data_size = event_data.size();
 
                 bool shift_zmq420 = false;
                 int shift_mem = reinterpret_cast<std::uintptr_t>(data_ptr) & 0x3;
@@ -2982,8 +2978,8 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         else
                         {
-                            DataReadyEventData *event_data_ = new DataReadyEventData(
-                                esspos->device, const_cast<AttDataReady *>(att_ready), event_name, errors);
+                            DataReadyEventData *event_data_ =
+                                new DataReadyEventData(esspos->device, att_ready, event_name, errors);
                             // if a callback method was specified, call it!
                             if(callback != nullptr)
                             {
@@ -3693,7 +3689,7 @@ void ZmqAttrValUnion::operator<<=(TangoCdrMemoryStream &_n)
     //
 
     AttributeDataType _pd__d = ATT_BOOL;
-    (AttributeDataType &) _pd__d <<= _n;
+    _pd__d <<= _n;
 
     if(_pd__d == ATT_STRING || _pd__d == DEVICE_STATE)
     {
@@ -3872,14 +3868,14 @@ void ZmqAttrValUnion::operator<<=(TangoCdrMemoryStream &_n)
 
 void Tango::ZmqAttributeValue_4::operator<<=(TangoCdrMemoryStream &_n)
 {
-    (ZmqAttrValUnion &) zvalue <<= _n;
-    (AttrQuality &) quality <<= _n;
-    (AttrDataFormat &) data_format <<= _n;
-    (TimeVal &) time <<= _n;
+    zvalue <<= _n;
+    quality <<= _n;
+    data_format <<= _n;
+    time <<= _n;
     name = _n.unmarshalString(0);
-    (AttributeDim &) r_dim <<= _n;
-    (AttributeDim &) w_dim <<= _n;
-    (DevErrorList &) err_list <<= _n;
+    r_dim <<= _n;
+    w_dim <<= _n;
+    err_list <<= _n;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -3896,15 +3892,15 @@ void Tango::ZmqAttributeValue_4::operator<<=(TangoCdrMemoryStream &_n)
 
 void Tango::ZmqAttributeValue_5::operator<<=(TangoCdrMemoryStream &_n)
 {
-    (ZmqAttrValUnion &) zvalue <<= _n;
-    (AttrQuality &) quality <<= _n;
-    (AttrDataFormat &) data_format <<= _n;
+    zvalue <<= _n;
+    quality <<= _n;
+    data_format <<= _n;
     data_type <<= _n;
-    (TimeVal &) time <<= _n;
+    time <<= _n;
     name = _n.unmarshalString(0);
-    (AttributeDim &) r_dim <<= _n;
-    (AttributeDim &) w_dim <<= _n;
-    (DevErrorList &) err_list <<= _n;
+    r_dim <<= _n;
+    w_dim <<= _n;
+    err_list <<= _n;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -3922,7 +3918,7 @@ void Tango::ZmqAttributeValue_5::operator<<=(TangoCdrMemoryStream &_n)
 void Tango::ZmqDevPipeData::operator<<=(TangoCdrMemoryStream &_n)
 {
     name = _n.unmarshalString(0);
-    (TimeVal &) time <<= _n;
+    time <<= _n;
     (ZmqDevPipeBlob &) data_blob <<= _n;
 }
 

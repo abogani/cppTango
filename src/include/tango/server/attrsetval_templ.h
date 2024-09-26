@@ -39,27 +39,121 @@
 namespace Tango
 {
 
-//+-------------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        Attribute::set_value
-//
-// description :
-//        Set the attribute read value and quality. This method automatically set the date when it has been called
-//
-//        This method is overloaded several times for all the supported attribute data type. Nevertheless, one
-//        template method is defined (this one) which will be called for all data types with no overload.
-//        This is the case for enumeration data type
-//
-// argument :
-//         in :
-//            - enum_ptr : The attribute read value
-//            - x : The attribute x dimension (default is 1)
-//            - y : The atttribute y dimension (default is 0)
-//            - release : A flag set to true if memory must be de-allocated (default is false)
-//
-//-------------------------------------------------------------------------------------------------------------------
+/// @cond DO_NOT_DOCUMENT
 
+/*
+ * method: Attribute::set_value
+ *
+ * These methods store the attribute value inside the Attribute object, set current time as readout time
+ * and calculate attribute quality factor (if warning/alarm levels are defined)
+ *
+ * The value will be later send to the client either as result of attribute readout of event value,
+ * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+ *
+ * After readout or in case of failure value will be destroyed.
+ *
+ * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+ * otherwise. For the DevString's, when release is true we expect value to have been allocated with Tango::string_dup or
+ * equivalent.
+ *
+ * @param T *p_data: pointer to value
+ * @param long x=1: the attribute x dimension
+ * @param long y=0: the attribute y dimension
+ * @param bool release: The release flag. If true, memory pointed to by p_data will be
+ *           freed after being send to the client. Default value is false.
+ * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data, or
+ * wrong Enum value.
+ *
+ */
+
+// General set_value realisation for almost all data types
+template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
+inline void Attribute::set_value(T *p_data, long x, long y, bool release)
+{
+    using ArrayType = typename tango_type_traits<T>::ArrayType;
+
+    //
+    // Throw exception if type is not correct
+    //
+
+    if(data_type != Tango::tango_type_traits<T>::type_value())
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Invalid incoming data type " << Tango::tango_type_traits<T>::type_value() << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
+    }
+
+    //
+    // Check that data size is less than the given max
+    //
+
+    if((x > max_x) || (y > max_y))
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
+          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
+    }
+
+    //
+    // Compute data size and set default quality to valid.
+    //
+
+    dim_x = x;
+    dim_y = y;
+    set_data_size();
+    quality = Tango::ATTR_VALID;
+
+    //
+    // Throw exception if pointer is null and data_size != 0
+    //
+
+    if(data_size != 0)
+    {
+        CHECK_PTR(p_data, name);
+    }
+
+    // Get proper storage
+    auto *tmp = get_value_storage<ArrayType>();
+
+    // Save data to proper seq
+    if((data_format == Tango::SCALAR) && (release))
+    {
+        T *tmp_ptr = new T[1];
+        *tmp_ptr = *p_data;
+        *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
+        delete_data_if_needed(p_data, release);
+    }
+    else
+    {
+        *tmp = new ArrayType(data_size, data_size, p_data, release);
+    }
+
+    value_flag = true;
+
+    //
+    // Reset alarm flags
+    //
+
+    alarm.reset();
+
+    //
+    // Get time
+    //
+
+    set_time();
+}
+
+// Special set_value realisation for scalar C++11 scoped enum with short as underlying data type or old enum
 template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 {
@@ -72,8 +166,9 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         delete_data_if_needed(enum_ptr, release);
 
         std::stringstream o;
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::DEV_ENUM << " got "
-          << (CmdArgType) data_type << std::ends;
+
+        o << "Invalid incoming data type " << Tango::DEV_ENUM << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
@@ -169,12 +264,6 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         CHECK_PTR(enum_ptr, name);
     }
 
-    //
-    // If the data is wanted from the DevState command, store it in a sequence. If the attribute  has an associated
-    // writable attribute, store data in a temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
-    //
-
     if(data_size > enum_nb)
     {
         if(enum_nb != 0)
@@ -206,37 +295,15 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 
     delete_data_if_needed(enum_ptr, release);
 
-    if(!date)
+    if((data_format == Tango::SCALAR) && (release))
     {
         value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
     }
     else
     {
-        if((is_writ_associated()))
-        {
-            if(data_format == Tango::SCALAR)
-            {
-                tmp_sh[0] = *loc_enum_ptr;
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size);
-                value.sh_seq->length(data_size);
-                ::memcpy(value.sh_seq->get_buffer(false), loc_enum_ptr, data_size * sizeof(Tango::DevShort));
-            }
-        }
-        else
-        {
-            if((data_format == Tango::SCALAR) && (release))
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, release);
-            }
-        }
+        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, release);
     }
+
     value_flag = true;
 
     //
@@ -252,183 +319,9 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     set_time();
 }
 
-template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
-inline void Attribute::set_value(T *p_data, long x, long y, bool release)
-{
-    using ArrayType = typename tango_type_traits<T>::ArrayType;
-
-    //
-    // Throw exception if type is not correct
-    //
-
-    if(data_type != Tango::tango_type_traits<T>::type_value())
-    {
-        delete_data_if_needed(p_data, release);
-
-        std::stringstream o;
-
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::tango_type_traits<T>::type_value()
-          << " got " << (CmdArgType) data_type << std::ends;
-
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
-    }
-
-    //
-    // Check that data size is less than the given max
-    //
-
-    if((x > max_x) || (y > max_y))
-    {
-        delete_data_if_needed(p_data, release);
-
-        std::stringstream o;
-
-        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
-          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
-
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
-    }
-
-    //
-    // Compute data size and set default quality to valid.
-    //
-
-    dim_x = x;
-    dim_y = y;
-    set_data_size();
-    quality = Tango::ATTR_VALID;
-
-    //
-    // Throw exception if pointer is null and data_size != 0
-    //
-
-    if(data_size != 0)
-    {
-        CHECK_PTR(p_data, name);
-    }
-
-    //
-    // If the data is wanted from the DevState command, store it in a sequence.
-    // If the attribute  has an associated writable attribute, store data in a
-    // temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
-    //
-
-    if(!date)
-    {
-        auto *tmp = get_value_storage<ArrayType>();
-        *tmp = new ArrayType(data_size, data_size, p_data, release);
-    }
-    else
-    {
-        if((is_writ_associated()))
-        {
-            if(data_format == Tango::SCALAR)
-            {
-                get_tmp_storage<T>()[0] = *p_data;
-                delete_data_if_needed(p_data, release);
-            }
-            else
-            {
-                auto *tmp = get_value_storage<ArrayType>();
-                *tmp = new ArrayType(data_size);
-                (*tmp)->length(data_size);
-                ::memcpy((*tmp)->get_buffer(false), p_data, data_size * sizeof(T));
-                if(release)
-                {
-                    delete[] p_data;
-                }
-            }
-        }
-        else
-        {
-            if((data_format == Tango::SCALAR) && (release))
-            {
-                T *tmp_ptr = new T[1];
-                *tmp_ptr = *p_data;
-                auto *tmp = get_value_storage<ArrayType>();
-                *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
-                if(is_fwd_att())
-                {
-                    delete[] p_data;
-                }
-                else
-                {
-                    delete p_data;
-                }
-            }
-            else
-            {
-                auto *tmp = get_value_storage<ArrayType>();
-                *tmp = new ArrayType(data_size, data_size, p_data, release);
-            }
-        }
-    }
-    value_flag = true;
-
-    //
-    // Reset alarm flags
-    //
-
-    alarm.reset();
-
-    //
-    // Get time
-    //
-
-    set_time();
-}
-
-template <class T>
-inline void
-    Attribute::set_value_date_quality(T *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
-{
-    set_value(p_data, x, y, release);
-    set_quality(qual, false);
-    set_date(t);
-
-    if(qual == Tango::ATTR_INVALID)
-    {
-        if(!(is_writ_associated()) || (data_format != Tango::SCALAR))
-        {
-            delete_seq();
-        }
-    }
-}
-
-template <class T>
-inline void Attribute::set_value_date_quality(
-    T *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
-{
-    set_value(p_data, x, y, release);
-    set_quality(qual, false);
-    set_date(t);
-
-    if(qual == Tango::ATTR_INVALID)
-    {
-        if(!(is_writ_associated()) || (data_format != Tango::SCALAR))
-        {
-            delete_seq();
-        }
-    }
-}
-
-//+-------------------------------------------------------------------------
-//
-// method :         Attribute::set_value
-//
-// description :     Set the attribute read value and quality. This method
-//            automatically set the date when it has been called
-//            This method is overloaded several times for all the
-//            supported attribute data type
-//
-// in :            p_data : The attribute read value
-//            x : The attribute x dimension (default is 1)
-//            y : The atttribute y dimension (default is 0)
-//            release : A flag set to true if memory must be
-//                  de-allocated (default is false)
-//
-//--------------------------------------------------------------------------
+// Special set_value realisation for Tango::DevShort due to the fact, that Tango::DevEnum
+// is effectively Tango::DevShort under hood and when one calls set_value for DevEnum -
+// cpp gives him Tango::DevShort realisation
 template <>
 inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool release)
 {
@@ -440,10 +333,12 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     {
         delete_data_if_needed(p_data, release);
 
-        std::stringstream ss;
-        ss << "Invalid data type for attribute " << name;
+        std::stringstream o;
 
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, ss.str());
+        o << "Invalid incoming data type " << Tango::DEV_SHORT << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
     //
@@ -511,59 +406,18 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
         }
     }
 
-    //
-    // If the data is wanted from the DevState command, store it in a sequence.
-    // If the attribute  has an associated writable attribute, store data in a
-    // temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
-    //
-
-    if(!date)
+    if((data_format == Tango::SCALAR) && (release))
     {
-        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
+        Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
+        *tmp_ptr = *p_data;
+        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, tmp_ptr, release);
+        delete_data_if_needed(p_data, release);
     }
     else
     {
-        if((is_writ_associated()))
-        {
-            if(data_format == Tango::SCALAR)
-            {
-                tmp_sh[0] = *p_data;
-                delete_data_if_needed(p_data, release);
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size);
-                value.sh_seq->length(data_size);
-                ::memcpy(value.sh_seq->get_buffer(false), p_data, data_size * sizeof(Tango::DevShort));
-                if(release)
-                {
-                    delete[] p_data;
-                }
-            }
-        }
-        else
-        {
-            if((data_format == Tango::SCALAR) && (release))
-            {
-                Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
-                *tmp_ptr = *p_data;
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, tmp_ptr, release);
-                if(is_fwd_att())
-                {
-                    delete[] p_data;
-                }
-                else
-                {
-                    delete p_data;
-                }
-            }
-            else
-            {
-                value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
-            }
-        }
+        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
     }
+
     value_flag = true;
 
     //
@@ -579,6 +433,8 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     set_time();
 }
 
+// Special set_value realisation for Tango::DevString due to different memory management of Tango::DevString (aka
+// char*[])
 template <>
 inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool release)
 {
@@ -592,8 +448,8 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
 
         std::stringstream o;
 
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::DEV_STRING << " got "
-          << (CmdArgType) data_type << std::ends;
+        o << "Invalid incoming data type " << Tango::DEV_STRING << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
@@ -632,114 +488,32 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
         CHECK_PTR(p_data, name);
     }
 
-    //
-    // If the data is wanted from the DevState command, store it in a sequence.
-    // If the attribute  has an associated writable attribute, store data in a
-    // temporary buffer (the write value must be added before the data is sent
-    // back to the caller)
-    //
-
-    if(!date)
+    if(release)
     {
-        if(release)
+        char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
+        if(is_fwd_att())
         {
-            char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
+            for(std::uint32_t i = 0; i < data_size; i++)
+            {
+                strvec[i] = Tango::string_dup(p_data[i]);
+            }
+        }
+        else
+        {
             for(std::uint32_t i = 0; i < data_size; i++)
             {
                 strvec[i] = p_data[i];
             }
-            value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
-            delete[] p_data;
         }
-        else
-        {
-            value.str_seq = new Tango::DevVarStringArray(data_size, data_size, p_data, release);
-        }
+        value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
     }
     else
     {
-        if((is_writ_associated()))
-        {
-            if(data_format == Tango::SCALAR)
-            {
-                tmp_str[0] = *p_data;
-                delete_data_if_needed(p_data, release);
-                scalar_str_attr_release = release;
-            }
-            else
-            {
-                value.str_seq = new Tango::DevVarStringArray(data_size);
-                value.str_seq->length(data_size);
-                for(std::uint32_t k = 0; k < data_size; k++)
-                {
-                    (*value.str_seq)[k] = Tango::string_dup(p_data[k]);
-                }
-                if(release)
-                {
-                    if(is_fwd_att())
-                    {
-                        Tango::DevVarStringArray::freebuf(p_data);
-                    }
-                    else
-                    {
-                        for(std::uint32_t k = 0; k < data_size; k++)
-                        {
-                            delete[] p_data[k];
-                        }
-                        delete[] p_data;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if(release)
-            {
-                char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
-                if(is_fwd_att())
-                {
-                    for(std::uint32_t i = 0; i < data_size; i++)
-                    {
-                        strvec[i] = Tango::string_dup(p_data[i]);
-                    }
-                }
-                else
-                {
-                    for(std::uint32_t i = 0; i < data_size; i++)
-                    {
-                        strvec[i] = p_data[i];
-                    }
-                }
-                value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
-                if(data_format == Tango::SCALAR)
-                {
-                    if(is_fwd_att())
-                    {
-                        Tango::DevVarStringArray::freebuf(p_data);
-                    }
-                    else
-                    {
-                        delete p_data;
-                    }
-                }
-                else
-                {
-                    if(is_fwd_att())
-                    {
-                        Tango::DevVarStringArray::freebuf(p_data);
-                    }
-                    else
-                    {
-                        delete[] p_data;
-                    }
-                }
-            }
-            else
-            {
-                value.str_seq = new Tango::DevVarStringArray(data_size, data_size, p_data, release);
-            }
-        }
+        value.str_seq = new Tango::DevVarStringArray(data_size, data_size, p_data, release);
     }
+
+    delete_data_if_needed(p_data, release);
+
     value_flag = true;
 
     //
@@ -749,6 +523,8 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
     set_time();
 }
 
+// Special set_value realisation for Tango::DevEncoded due to different memory management of Tango::DevString (aka
+// char*[])
 template <>
 inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool release)
 {
@@ -762,8 +538,8 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
 
         std::stringstream o;
 
-        o << "Invalid data type for attribute " << name << ". Expected: " << Tango::DEV_ENCODED << " got "
-          << (CmdArgType) data_type << std::ends;
+        o << "Invalid incoming data type " << Tango::DEV_ENCODED << " for attribute " << name
+          << ". Attribute data type is " << (CmdArgType) data_type << std::ends;
 
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
@@ -809,38 +585,25 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
     // back to the caller)
     //
 
-    if(!date)
+    if(release)
     {
-        value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
+        DevEncoded *tmp_ptr = new DevEncoded[1];
+
+        tmp_ptr->encoded_format = p_data->encoded_format;
+
+        unsigned long nb_data = p_data->encoded_data.length();
+        tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
+        p_data->encoded_data.replace(0, 0, nullptr, false);
+
+        value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, tmp_ptr, true);
     }
     else
     {
-        if((is_writ_associated()))
-        {
-            tmp_enc[0] = *p_data;
-            delete_data_if_needed(p_data, release);
-        }
-        else
-        {
-            if(release)
-            {
-                DevEncoded *tmp_ptr = new DevEncoded[1];
-
-                tmp_ptr->encoded_format = p_data->encoded_format;
-
-                unsigned long nb_data = p_data->encoded_data.length();
-                tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
-                p_data->encoded_data.replace(0, 0, nullptr, false);
-
-                value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, tmp_ptr, true);
-                delete p_data;
-            }
-            else
-            {
-                value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
-            }
-        }
+        value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
     }
+
+    delete_data_if_needed(p_data, release);
+
     value_flag = true;
 
     //
@@ -854,6 +617,43 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
     //
 
     set_time();
+}
+
+/*
+ * method: Attribute::set_value_date_quality
+ *
+ * These methods store the attribute value inside the Attribute object,
+ * with readout time and attribute quality factor provided by user.
+ *
+ *
+ */
+
+template <class T>
+inline void
+    Attribute::set_value_date_quality(T *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
+template <class T>
+inline void Attribute::set_value_date_quality(
+    T *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
 }
 
 template <>
@@ -873,6 +673,8 @@ inline void Attribute::set_value_date_quality(
     set_quality(qual, false);
     set_date(t);
 }
+
+/// @endcond
 
 } // namespace Tango
 #endif // _ATTRSETVAL_TPP

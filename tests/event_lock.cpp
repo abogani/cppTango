@@ -1,6 +1,6 @@
 // NOLINTBEGIN(*)
 
-#include "common.h"
+#include "old_common.h"
 
 // Testprogram to demonstrate a tango exit crash problem:
 // memory double free or corruption.

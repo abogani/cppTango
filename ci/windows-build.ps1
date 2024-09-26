@@ -1,27 +1,8 @@
-# From https://stackoverflow.com/questions/47032005
-function Invoke-NativeCommand() {
-    if ($args.Count -eq 0) {
-        throw "No arguments."
-    }
-
-    $command = $args[0]
-    $commandArgs = @()
-
-    if ($args.Count -gt 1) {
-        $commandArgs = $args[1..($args.Count - 1)]
-    }
-
-    & $command $commandArgs
-    $result = $LASTEXITCODE
-
-    if ($result -ne 0) {
-        throw "`"$command $commandArgs`" exited with exit code $result."
-    }
-}
+. $PSScriptRoot/windows-lib.ps1
 
 $CMAKE_BUILD_PARALLEL_LEVEL=$env:NUMBER_OF_PROCESSORS
 # avoid cmake warning about unknown escape sequences
-$cwd = $(pwd | Convert-Path).Replace("\\", "/")
+$cwd = $(pwd | Convert-Path).Replace("\", "/")
 
 Write-Host "== Get ZeroMQ" -ForegroundColor Blue
 $FILENAME="zmq-${ZMQ_VERSION}_${VC_ARCH_VER}.zip"
@@ -34,12 +15,6 @@ $FILENAME="omniorb-${OMNI_VERSION}_${VC_ARCH_VER}_${PYVER}.zip"
 Invoke-NativeCommand curl.exe -JOL https://github.com/tango-controls/omniorb-windows-ci/releases/download/${OMNI_VERSION}/${FILENAME}
 md -Force ${TANGO_OMNI_ROOT}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_OMNI_ROOT}
-
-Write-Host "== Get pthread" -ForegroundColor Blue
-$FILENAME="pthreads-win32-${PTHREAD_VERSION}_${VC_ARCH_VER}.zip"
-Invoke-NativeCommand curl.exe -JOL https://github.com/tango-controls/Pthread_WIN32/releases/download/${PTHREAD_VERSION}/${FILENAME}
-md -Force ${PTHREAD_ROOT}
-Expand-Archive -Path ${FILENAME} -DestinationPath ${PTHREAD_ROOT}
 
 Write-Host "== Get nasm" -ForegroundColor Blue
 Invoke-NativeCommand curl.exe -L ${NASM_DOWNLOAD_LINK} -o nasm.exe
@@ -64,7 +39,7 @@ Invoke-NativeCommand cmake `
   --config "${CMAKE_BUILD_TYPE}"
 
 Write-Host "== Get OTEL" -ForegroundColor Blue
-$FILENAME="opentelemetry-with-deps-static-${ARCHITECTURE}.zip"
+$FILENAME="opentelemetry-with-deps-static-${CMAKE_BUILD_TYPE}-${ARCHITECTURE}.zip"
 Invoke-NativeCommand curl.exe -JOL "https://gitlab.com/api/v4/projects/54003303/packages/generic/opentelemetry/${OTEL_VERSION}/${FILENAME}"
 md -Force ${OTEL_ROOT}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${OTEL_ROOT}
@@ -125,6 +100,10 @@ md -FORCE ${PYTHON_LOCATION}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${PYTHON_LOCATION}
 $env:Path += ";${cwd}/${PYTHON_LOCATION}"
 
+# On the Windows CI, we see the polling thread stall occasionally which causes
+# the tests to fail. Increasing the TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD here
+# avoids the failure when the stall occurs.
+
 Write-Host "== Build tango" -ForegroundColor Blue
 Invoke-NativeCommand cmake `
   -S . `
@@ -137,27 +116,29 @@ Invoke-NativeCommand cmake `
   -DTANGO_WARNINGS_AS_ERRORS="${TANGO_WARNINGS_AS_ERRORS}" `
   -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" `
   -Dtangoidl_ROOT="${cwd}/${TANGO_IDL_ROOT}" `
-  -DTANGO_INSTALL_DEPENDENCIES=ON `
+  -DTANGO_INSTALL_DEPENDENCIES="${TANGO_INSTALL_DEPENDENCIES}" `
   -DomniORB4_ROOT="${cwd}/${TANGO_OMNI_ROOT}" `
   -DZeroMQ_ROOT="${cwd}/${TANGO_ZMQ_ROOT}" `
   -Dcppzmq_ROOT="${cwd}/${TANGO_CPPZMQ_ROOT}" `
   -DJPEG_ROOT="${cwd}/${TANGO_JPEG_ROOT}" `
-  -Dpthread_ROOT="${PTHREAD_ROOT}" `
   -DCatch2_ROOT="${cwd}/${TANGO_CATCH_ROOT}" `
   -DZLIB_ROOT="${cwd}/${ZLIB_NG_ROOT}" `
-  -DTANGO_USE_PTHREAD=ON `
   -DTANGO_USE_JPEG=ON `
   -DJPEG_DEBUG_POSTFIX=d `
   -DBUILD_TESTING="${BUILD_TESTING}" `
   -DTANGO_USE_TELEMETRY="${TANGO_USE_TELEMETRY}" `
-  -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake" `
-  -DTANGO_OTEL_ROOT="${cwd}/${OTEL_ROOT}"
+  -DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=3000 `
+  -DCMAKE_PREFIX_PATH="${OTEL_ROOT}/cmake;${OTEL_ROOT}/lib/cmake;${OTEL_ROOT}/share/cmake"
 Invoke-NativeCommand cmake `
   --build build `
   --config "${CMAKE_BUILD_TYPE}"
 
-Write-Host "== Create archive" -ForegroundColor Blue
-# -B not working here, so we have to use cd
-cd build
-# space after `-D` is required
-Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
+# We only want to make packages with bundled dependencies
+if ($TANGO_INSTALL_DEPENDENCIES -eq "ON") {
+  Write-Host "== Create archive" -ForegroundColor Blue
+  # -B not working here, so we have to change directories
+  Push-Location build
+  # space after `-D` is required
+  Invoke-NativeCommand cpack -D CPACK_WIX_ROOT="${cwd}/${WIX_TOOLSET_LOCATION}" -C "${CMAKE_BUILD_TYPE}" -G "WIX;ZIP"
+  Pop-Location
+}

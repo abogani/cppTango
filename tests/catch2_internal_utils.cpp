@@ -1,9 +1,6 @@
-#include <tango/tango.h>
-#include <utils/utils.h>
+#include "catch2_common.h"
 
 #include <tango/internal/utils.h>
-
-#include "common.h"
 
 template <typename T>
 struct TestData
@@ -104,11 +101,13 @@ SCENARIO("get_boolean_env_var")
         const char *name = "testvar";
         WHEN("throws")
         {
+            using TangoTest::FirstErrorMatches, TangoTest::Reason;
+
             REQUIRE(set_env(name, "abcd", true) == 0);
 
             REQUIRE_THROWS_MATCHES(Tango::detail::get_boolean_env_var(name, true),
                                    Tango::DevFailed,
-                                   TangoTest::DevFailedReasonEquals(Tango::API_InvalidArgs));
+                                   FirstErrorMatches(Reason(Tango::API_InvalidArgs)));
             REQUIRE(unset_env(name) == 0);
         }
     }

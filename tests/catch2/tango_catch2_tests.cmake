@@ -6,7 +6,7 @@ set(TANGO_CATCH2_TESTS_DIR ${CMAKE_CURRENT_LIST_DIR})
 function(tango_catch2_tests_create)
     set(TEST_FILES ${ARGN})
 
-    set(PLATFORM_IMPL "")
+    set(PLATFORM_IMPL "${TANGO_CATCH2_TESTS_DIR}/utils/platform/ready_string_finder.cpp")
     if(WIN32)
         list(APPEND PLATFORM_IMPL ${TANGO_CATCH2_TESTS_DIR}/utils/platform/impl_win32.cpp)
     elseif(UNIX)
@@ -57,6 +57,7 @@ function(tango_catch2_tests_create)
     target_link_libraries(Catch2Tests PUBLIC Tango::Tango Catch2::Catch2 Threads::Threads)
     target_link_libraries(Catch2Tests PRIVATE $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
+    target_compile_options(Catch2Tests PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
     if (WIN32)
         # On Windows, we need to copy any dependent DLLs into the test directory
@@ -65,26 +66,10 @@ function(tango_catch2_tests_create)
         # When we move to CMake 3.22 (minimum) we can pass DL_PATHS to
         # catch_discover_tests to avoid this copying.
 
+        # TODO: Use -E copy -t when on CMake 3.26
         add_custom_command(TARGET Catch2Tests POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:Catch2Tests> $<TARGET_FILE_DIR:Catch2Tests>
+          COMMAND ${CMAKE_COMMAND} -E "$<IF:$<BOOL:$<TARGET_RUNTIME_DLLS:Catch2Tests>>,copy;$<TARGET_RUNTIME_DLLS:Catch2Tests>;$<TARGET_FILE_DIR:Catch2Tests>,true>"
           COMMAND_EXPAND_LISTS)
-
-        # The JPEG::JPEG target is an IMPORTED UNKNOWN library, which means it will not be found by TARGET_RUNTIME_DLLS
-        if (TANGO_USE_JPEG)
-            if (JPEG_RUNTIME_RELEASE AND JPEG_RUNTIME_DEBUG)
-                add_custom_command(TARGET Catch2Tests POST_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy $<$<CONFIG:Debug>:${JPEG_RUNTIME_DEBUG}:${JPEG_RUNTIME_RELEASE}> $<TARGET_FILE_DIR:Catch2Tests>
-                  COMMAND_EXPAND_LISTS)
-            elseif(JPEG_RUNTIME_RELEASE)
-                add_custom_command(TARGET Catch2Tests POST_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_RELEASE} $<TARGET_FILE_DIR:Catch2Tests>
-                  COMMAND_EXPAND_LISTS)
-            elseif(JPEG_RUNTIME_DEBUG)
-                add_custom_command(TARGET Catch2Tests POST_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy ${JPEG_RUNTIME_DEBUG} $<TARGET_FILE_DIR:Catch2Tests>
-                  COMMAND_EXPAND_LISTS)
-            endif()
-        endif()
 
         # copy zlib dll manually
         if (TANGO_USE_TELEMETRY)
@@ -120,14 +105,17 @@ function(tango_catch2_tests_create)
         set(SERVER_PATH "${CMAKE_CURRENT_BINARY_DIR}/${SERVER_NAME}")
     endif()
 
+    set(TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD 100 CACHE STRING "Default polling period to use for the Catch2Tests in milliseconds")
+
     target_compile_definitions(Catch2Tests PRIVATE
-        "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${CMAKE_CURRENT_BINARY_DIR}/TestServer\""
+        "-DTANGO_TEST_CATCH2_SERVER_BINARY_PATH=\"${SERVER_PATH}\""
         "-DTANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH=\"${TANGO_CATCH2_OUTPUT_DIR}\""
         "-DTANGO_TEST_CATCH2_RESOURCE_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/resources\""
         "-DTANGO_TEST_CATCH2_LOG_DIRECTORY_PATH=\"${TANGO_CATCH2_LOG_DIR}\""
         "-DTANGO_TEST_CATCH2_TEST_BINARY_NAME=\"$<TARGET_FILE_NAME:Catch2Tests>\""
         "-DTANGO_TEST_CATCH2_SERVER_BINARY_NAME=\"${SERVER_NAME}\""
         "-DTANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH=\"${TANGO_CATCH2_FILEDB_DIR}\""
+        "-DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=${TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD}"
         ${COMMON_TEST_DEFS})
 
     catch_discover_tests(Catch2Tests TEST_PREFIX "catch2::"

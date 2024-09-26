@@ -119,10 +119,36 @@ bool append_logs(std::istream &in, std::ostream &out)
     throw std::runtime_error(message);
 }
 
+void remove_file(const std::string &filename)
+{
+    if(std::remove(filename.c_str()) != 0)
+    {
+        TANGO_LOG_WARN << "Failed to remove \"" << filename << "\": " << strerror(errno);
+    }
+}
+
 } // namespace
 
 int TestServer::s_next_port;
 std::unique_ptr<Logger> TestServer::s_logger;
+
+std::ostream &operator<<(std::ostream &os, const ExitStatus &status)
+{
+    using Kind = ExitStatus::Kind;
+
+    switch(status.kind)
+    {
+    case Kind::Normal:
+        os << status.code;
+        break;
+    case Kind::Aborted:
+        os << "(Aborted by signal " << status.signal << ")";
+        break;
+    case Kind::AbortedNoSignal:
+        os << "(Aborted)";
+    }
+    return os;
+}
 
 void TestServer::start(const std::string &instance_name,
                        const std::vector<std::string> &extra_args,
@@ -137,7 +163,7 @@ void TestServer::start(const std::string &instance_name,
     m_redirect_file = g_filename_builder.build();
 
     std::vector<std::string> args{
-        "TestServer",
+        TANGO_TEST_CATCH2_SERVER_BINARY_NAME,
         instance_name.c_str(),
         "-ORBendPoint",
         "", // filled in later
@@ -148,11 +174,7 @@ void TestServer::start(const std::string &instance_name,
         args.push_back(arg);
     }
 
-    std::vector<std::string> env{
-#ifdef __APPLE__
-        "PATH="
-#endif
-    };
+    std::vector<std::string> env = platform::default_env();
 
     for(const auto &e : extra_env)
     {
@@ -217,7 +239,6 @@ void TestServer::start(const std::string &instance_name,
             std::ifstream f{m_redirect_file};
 
             m_handle = start_result.handle;
-            stop(timeout);
             append_logs(f, ss);
 
             throw_runtime_error(ss.str());
@@ -226,6 +247,7 @@ void TestServer::start(const std::string &instance_name,
         {
             std::stringstream ss;
             ss << "TestServer exited with exit status " << start_result.exit_status << ". Server output:\n";
+
             std::ifstream f{m_redirect_file};
             bool port_in_use = false;
             for(std::string line; std::getline(f, line);)
@@ -237,8 +259,9 @@ void TestServer::start(const std::string &instance_name,
                 }
                 ss << "\t" << line << "\n";
             }
+            f.close();
 
-            std::remove(m_redirect_file.c_str());
+            remove_file(m_redirect_file);
             if(!port_in_use)
             {
                 throw_runtime_error(ss.str());
@@ -252,7 +275,16 @@ TestServer::~TestServer()
 {
     if(is_running())
     {
-        stop();
+        try
+        {
+            stop();
+        }
+        catch(std::exception &e)
+        {
+            std::stringstream ss;
+            ss << "TestServer::stop() threw an exception during teardown: " << e.what();
+            s_logger->log(ss.str());
+        }
     }
 
     g_used_ports.push_back(m_port);
@@ -265,22 +297,69 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         return;
     }
 
-    using Kind = platform::StopServerResult::Kind;
-    auto stop_result = platform::stop_server(m_handle, timeout);
+    struct CombinedResult
+    {
+        enum Kind
+        {
+            Timeout, // exit_status undefined
+            ExitedEarlyUnexpected,
+            ExitedEarlyExpected,
+            Exited,
+        };
 
-    switch(stop_result.kind)
+        Kind kind;
+        ExitStatus exit_status;
+    };
+
+    using Kind = CombinedResult::Kind;
+    CombinedResult result;
+    {
+        if(m_exit_status.has_value())
+        {
+            result.kind = Kind::ExitedEarlyExpected;
+            result.exit_status = *m_exit_status;
+        }
+
+        using StopKind = platform::StopServerResult::Kind;
+        using WaitKind = platform::WaitForStopResult::Kind;
+        auto stop_result = platform::stop_server(m_handle);
+        if(stop_result.kind == StopKind::Exiting)
+        {
+            auto wait_result = platform::wait_for_stop(m_handle, timeout);
+
+            if(wait_result.kind == WaitKind::Timeout)
+            {
+                result.kind = Kind::Timeout;
+            }
+            else
+            {
+                result.kind = Kind::Exited;
+                result.exit_status = wait_result.exit_status;
+            }
+        }
+        else
+        {
+            result.kind = Kind::ExitedEarlyUnexpected;
+            result.exit_status = stop_result.exit_status;
+        }
+    }
+
+    switch(result.kind)
     {
     case Kind::Timeout:
     {
         std::stringstream ss;
-        ss << "Timeout waiting for TestServer to exit. Server output:";
+        ss << "Timeout waiting for TestServer to exit. Server output:\n";
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
         s_logger->log(ss.str());
         break;
     }
-    case Kind::ExitedEarly:
+
+    case Kind::ExitedEarlyUnexpected:
+        [[fallthrough]];
+    case Kind::ExitedEarlyExpected:
         [[fallthrough]];
     case Kind::Exited:
     {
@@ -291,11 +370,11 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         //  - some assertion has failed (where Catch2 will throw an exception)
         // In either case the test has failed.
         bool test_has_failed = std::uncaught_exceptions() > 0;
+        bool exited_early = result.kind == Kind::ExitedEarlyExpected || result.kind == Kind::ExitedEarlyUnexpected;
         std::stringstream ss;
-        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0)
+        if(exited_early || !result.exit_status.is_success())
         {
-            ss << "TestServer exited with exit status " << stop_result.exit_status
-               << " during the test. Server output:\n";
+            ss << "TestServer exited with exit status " << result.exit_status << " during the test. Server output:\n";
         }
         else if(test_has_failed)
         {
@@ -308,7 +387,11 @@ void TestServer::stop(std::chrono::milliseconds timeout)
         std::ifstream f{m_redirect_file};
         append_logs(f, ss);
 
-        if(stop_result.kind == Kind::ExitedEarly || stop_result.exit_status != 0 || test_has_failed)
+        // When we are ExitedEarlyExpected then the test knows what the exit
+        // status is. So, if it hasn't failed the test, then the exit code isn't
+        // suspicious even if it non-zero.
+        bool suspicious_exit_status = !result.exit_status.is_success() && result.kind != Kind::ExitedEarlyExpected;
+        if(result.kind == Kind::ExitedEarlyUnexpected || suspicious_exit_status || test_has_failed)
         {
             s_logger->log(ss.str());
         }
@@ -321,10 +404,34 @@ void TestServer::stop(std::chrono::milliseconds timeout)
     }
     }
 
-    std::remove(m_redirect_file.c_str());
+    remove_file(m_redirect_file.c_str());
 
     m_handle = nullptr;
     m_redirect_file = "";
+    m_exit_status = std::nullopt;
+}
+
+ExitStatus TestServer::wait_for_exit(std::chrono::milliseconds timeout)
+{
+    TANGO_ASSERT(is_running());
+
+    using Kind = platform::WaitForStopResult::Kind;
+
+    auto result = platform::wait_for_stop(m_handle, timeout);
+
+    if(result.kind == Kind::Timeout)
+    {
+        throw std::runtime_error("Timeout exceeded");
+    }
+
+    // We don't report the contents of the redirect file here as don't know if
+    // the test has failed or not at this point and we want to WARN with the
+    // server output if it has.
+    //
+    // We save the m_exit_status for later so we can report it during stop.
+    m_exit_status = result.exit_status;
+
+    return result.exit_status;
 }
 
 } // namespace TangoTest

@@ -143,7 +143,7 @@ class Except
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(const char *reason, const char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -176,7 +176,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(const char *reason, const char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -210,7 +210,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(const char *reason, char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -243,7 +243,7 @@ class Except
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(const char *reason, char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -278,7 +278,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(char *reason, const char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -312,7 +312,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(char *reason, const char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -347,7 +347,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(char *reason, char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -382,7 +382,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(char *reason, char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -417,10 +417,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const std::string &reason,
-                                                    const std::string &desc,
-                                                    const std::string &origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const std::string &reason,
+                                             const std::string &desc,
+                                             const std::string &origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -451,10 +451,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const std::string &reason,
-                                                    const std::string &desc,
-                                                    const char *origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const std::string &reason,
+                                             const std::string &desc,
+                                             const char *origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -485,10 +485,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const std::string &reason,
-                                                    const char *desc,
-                                                    const std::string &origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const std::string &reason,
+                                             const char *desc,
+                                             const std::string &origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -519,10 +519,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const std::string &reason,
-                                                    const char *desc,
-                                                    const char *origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const std::string &reason,
+                                             const char *desc,
+                                             const char *origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -553,10 +553,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const char *reason,
-                                                    const std::string &desc,
-                                                    const std::string &origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const char *reason,
+                                             const std::string &desc,
+                                             const std::string &origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -587,10 +587,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const char *reason,
-                                                    const std::string &desc,
-                                                    const char *origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const char *reason,
+                                             const std::string &desc,
+                                             const char *origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -621,10 +621,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const char *reason,
-                                                    const char *desc,
-                                                    const std::string &origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const char *reason,
+                                             const char *desc,
+                                             const std::string &origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -656,10 +656,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const std::string &reason,
-                                                    const std::string &desc,
-                                                    char *origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const std::string &reason,
+                                             const std::string &desc,
+                                             char *origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -692,10 +692,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(const std::string &reason,
-                                                    char *desc,
-                                                    const std::string &origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(const std::string &reason,
+                                             char *desc,
+                                             const std::string &origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -729,7 +729,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(const std::string &reason, char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -764,10 +764,10 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_exception(char *reason,
-                                                    const std::string &desc,
-                                                    const std::string &origin,
-                                                    Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_exception(char *reason,
+                                             const std::string &desc,
+                                             const std::string &origin,
+                                             Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
 
@@ -800,7 +800,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(char *reason, const std::string &desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -835,7 +835,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void
+    [[noreturn]] static void
         throw_exception(char *reason, char *desc, const std::string &origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::DevErrorList errors(1);
@@ -873,11 +873,11 @@ class Except
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const char *reason,
-                                                       const char *desc,
-                                                       const char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const char *reason,
+                                                const char *desc,
+                                                const char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -910,7 +910,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, const char *reason, const char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -945,7 +945,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, const char *reason, char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -979,7 +979,7 @@ class Except
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, const char *reason, char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -1015,7 +1015,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, char *reason, const char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -1050,7 +1050,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, char *reason, const char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -1086,7 +1086,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, char *reason, char *desc, const char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -1122,7 +1122,7 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(
+    [[noreturn]] static void re_throw_exception(
         Tango::DevFailed &ex, char *reason, char *desc, char *origin, Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
@@ -1158,11 +1158,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       const std::string &desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                const std::string &desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1194,11 +1194,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       const std::string &desc,
-                                                       const char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                const std::string &desc,
+                                                const char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1230,11 +1230,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       const char *desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                const char *desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1266,11 +1266,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       const char *desc,
-                                                       const char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                const char *desc,
+                                                const char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1302,11 +1302,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const char *reason,
-                                                       const std::string &desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const char *reason,
+                                                const std::string &desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1338,11 +1338,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const char *reason,
-                                                       const std::string &desc,
-                                                       const char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const char *reason,
+                                                const std::string &desc,
+                                                const char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1374,11 +1374,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const char *reason,
-                                                       const char *desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const char *reason,
+                                                const char *desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1411,11 +1411,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       const std::string &desc,
-                                                       char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                const std::string &desc,
+                                                char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1449,11 +1449,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       char *desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                char *desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1487,11 +1487,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       const std::string &reason,
-                                                       char *desc,
-                                                       char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                const std::string &reason,
+                                                char *desc,
+                                                char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1526,11 +1526,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       char *reason,
-                                                       const std::string &desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                char *reason,
+                                                const std::string &desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1564,11 +1564,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       char *reason,
-                                                       const std::string &desc,
-                                                       char *origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                char *reason,
+                                                const std::string &desc,
+                                                char *origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1603,11 +1603,11 @@ class Except
      * to read <b>DevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void re_throw_exception(Tango::DevFailed &ex,
-                                                       char *reason,
-                                                       char *desc,
-                                                       const std::string &origin,
-                                                       Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void re_throw_exception(Tango::DevFailed &ex,
+                                                char *reason,
+                                                char *desc,
+                                                const std::string &origin,
+                                                Tango::ErrSeverity sever = Tango::ERR)
     {
         long nb_err = ex.errors.length();
         ex.errors.length(nb_err + 1);
@@ -1710,11 +1710,11 @@ class Except
      * to read <b>MultiDevFailed</b> exception specification
      */
 
-    [[noreturn]] static inline void throw_named_exception(const char *att_name,
-                                                          const char *reason,
-                                                          const char *desc,
-                                                          const char *origin,
-                                                          Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_named_exception(const char *att_name,
+                                                   const char *reason,
+                                                   const char *desc,
+                                                   const char *origin,
+                                                   Tango::ErrSeverity sever = Tango::ERR)
     {
         Tango::NamedDevErrorList errors(1);
 
@@ -1751,11 +1751,11 @@ class Except
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>MultiDevFailed</b> exception specification
      */
-    [[noreturn]] static inline void throw_named_exception(std::vector<std::string> &atts,
-                                                          const char *reason,
-                                                          const char *desc,
-                                                          const char *origin,
-                                                          Tango::ErrSeverity sever = Tango::ERR)
+    [[noreturn]] static void throw_named_exception(std::vector<std::string> &atts,
+                                                   const char *reason,
+                                                   const char *desc,
+                                                   const char *origin,
+                                                   Tango::ErrSeverity sever = Tango::ERR)
     {
         unsigned int a_size = (unsigned int) atts.size();
         Tango::NamedDevErrorList errors(a_size);

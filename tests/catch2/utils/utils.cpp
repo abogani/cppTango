@@ -14,19 +14,22 @@
 #include <cstdlib>
 #include <cstdio>
 
-CATCH_TRANSLATE_EXCEPTION(const Tango::DevFailed &ex)
+CATCH_TRANSLATE_EXCEPTION(const CORBA::Exception &ex)
 {
     std::stringstream ss;
     Tango::Except::print_exception(ex, ss);
     return ss.str();
 }
 
+CATCH_TRANSLATE_EXCEPTION(const omni_thread_fatal &ex)
+{
+    std::stringstream ss;
+    ss << "omni_thread_fatal error: " << strerror(ex.error) << " (" << ex.error << ")";
+    return ss.str();
+}
+
 namespace
 {
-std::string reason(const Tango::DevFailed &e)
-{
-    return std::string(e.errors[0].reason.in());
-}
 
 std::string make_class_name(const std::string &tmpl_name, int idlversion)
 {
@@ -40,7 +43,6 @@ namespace TangoTest
 
 namespace
 {
-constexpr const char *k_log_file_env_var = "TANGO_TEST_LOG_FILE";
 constexpr const char *k_log_directory_path = TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH;
 constexpr const char *k_filedb_directory_path = TANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH;
 std::string g_current_log_file_path;
@@ -72,7 +74,7 @@ void append_std_entries_to_env(std::vector<std::string> &env, std::string_view c
         []()
         {
             std::stringstream ss;
-            ss << k_log_file_env_var << "=" << g_current_log_file_path;
+            ss << detail::k_log_file_env_var << "=" << g_current_log_file_path;
             return ss.str();
         }());
 
@@ -143,15 +145,11 @@ Context::Context(const std::string &instance_name,
     restart_server();
 }
 
-Context::Context(const std::string &instance_name,
-                 const std::string &tmpl_name,
-                 int idlversion,
-                 std::vector<std::string> env) :
+Context::Context(const std::string &instance_name, const std::string &class_name, std::vector<std::string> env) :
+    m_class_name{class_name},
     m_instance_name{instance_name},
     m_extra_env{std::move(env)}
 {
-    m_class_name = make_class_name(tmpl_name, idlversion);
-
     std::string dlist_arg = [&]()
     {
         std::stringstream ss;
@@ -167,6 +165,14 @@ Context::Context(const std::string &instance_name,
     m_extra_args = {"-nodb", "-dlist", dlist_arg};
 
     restart_server();
+}
+
+Context::Context(const std::string &instance_name,
+                 const std::string &tmpl_name,
+                 int idlversion,
+                 std::vector<std::string> env) :
+    Context{instance_name, make_class_name(tmpl_name, idlversion), env}
+{
 }
 
 void Context::restart_server(std::chrono::milliseconds timeout)
@@ -194,6 +200,13 @@ std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
 
+std::unique_ptr<Tango::DeviceProxy> Context::get_admin_proxy()
+{
+    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "dserver/TestServer/" + m_instance_name);
+
+    return std::make_unique<Tango::DeviceProxy>(fqtrl);
+}
+
 const std::string &Context::get_redirect_file() const
 {
     return m_server.get_redirect_file();
@@ -202,6 +215,11 @@ const std::string &Context::get_redirect_file() const
 void Context::stop_server(std::chrono::milliseconds timeout)
 {
     m_server.stop(timeout);
+}
+
+ExitStatus Context::wait_for_exit(std::chrono::milliseconds timeout)
+{
+    return m_server.wait_for_exit(timeout);
 }
 
 std::string Context::get_file_database_path()
@@ -273,6 +291,11 @@ class TangoListener : public Catch::EventListenerBase
 
             detail::setup_topic_log_appender("test", g_current_log_file_path.c_str());
         }
+        else
+        {
+            std::cout << "Logging to a file per test case.  Filename prefix is \"" << detail::g_log_filename_prefix
+                      << "\"\n";
+        }
 
         TANGO_LOG_INFO << "Test run \"" << info.name << "\" starting";
     }
@@ -338,21 +361,6 @@ class TangoListener : public Catch::EventListenerBase
 
 CATCH_REGISTER_LISTENER(TangoListener)
 
-DevFailedReasonMatcher::DevFailedReasonMatcher(const std::string &msg) :
-    reason{msg}
-{
-}
-
-bool DevFailedReasonMatcher::match(const Tango::DevFailed &exception) const
-{
-    return reason == ::reason(exception);
-}
-
-std::string DevFailedReasonMatcher::describe() const
-{
-    return "Exception reason is: " + reason;
-}
-
 namespace detail
 {
 std::string g_log_filename_prefix;
@@ -379,17 +387,38 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
 
     std::stringstream ss;
     ss << g_log_filename_prefix;
-    std::transform(test_case_name.begin(),
-                   end,
-                   std::ostream_iterator<char>(ss),
-                   [](char c)
-                   {
-                       if(c == ' ')
-                       {
-                           return '_';
-                       }
-                       return c;
-                   });
+    for(auto it = test_case_name.begin(); it != end; ++it)
+    {
+        switch(*it)
+        {
+        case '<':
+            [[fallthrough]];
+        case '>':
+            [[fallthrough]];
+        case ':':
+            [[fallthrough]];
+        case '"':
+            [[fallthrough]];
+        case '/':
+            [[fallthrough]];
+        case '\\':
+            [[fallthrough]];
+        case '|':
+            [[fallthrough]];
+        case '?':
+            [[fallthrough]];
+        case '*':
+            // None of these characters are allowed on all platforms we support
+            // so let's just skip them
+            continue;
+        case ' ':
+            // Spaces in filenames are annoying
+            ss << '_';
+            break;
+        default:
+            ss << *it;
+        }
+    }
     ss << suffix;
 
     std::string filename = ss.str();
@@ -420,7 +449,7 @@ void setup_topic_log_appender(std::string_view topic, const char *filename)
     auto *appender = new log4tango::FileAppender(k_appender_name, filename);
     auto *layout = new log4tango::PatternLayout();
     std::stringstream pattern;
-    pattern << std::setw(15) << topic << " %d{%H:%M:%S.%l} %p %F:%L %m%n";
+    pattern << std::setw(15) << topic << " %d{%H:%M:%S.%l} %p %T(%t) %F:%L %m%n";
     layout->set_conversion_pattern(pattern.str());
     appender->set_layout(layout);
     logger->add_appender(appender);
