@@ -6,7 +6,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "utils/type_traits.h"
+#include <tango/internal/type_traits.h>
 
 namespace TangoTest
 {
@@ -17,13 +17,13 @@ template <typename T>
 using attribute_factory_t = decltype(T::attribute_factory);
 
 template <typename T>
-constexpr bool has_attribute_factory = is_detected_v<attribute_factory_t, T>;
+constexpr bool has_attribute_factory = Tango::detail::is_detected_v<attribute_factory_t, T>;
 
 template <typename T>
 using command_factory_t = decltype(T::command_factory);
 
 template <typename T>
-constexpr bool has_command_factory = is_detected_v<command_factory_t, T>;
+constexpr bool has_command_factory = Tango::detail::is_detected_v<command_factory_t, T>;
 
 template <typename F>
 struct member_fn_traits;

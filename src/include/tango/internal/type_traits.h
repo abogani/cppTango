@@ -1,9 +1,9 @@
-#ifndef TANGO_TESTS_CATCH2_UTILS_TYPE_TRAITS_H
-#define TANGO_TESTS_CATCH2_UTILS_TYPE_TRAITS_H
+#ifndef TANGO_INTERNAL_TYPE_TRAITS_H
+#define TANGO_INTERNAL_TYPE_TRAITS_H
 
 #include <type_traits>
 
-namespace TangoTest::detail
+namespace Tango::detail
 {
 template <typename AlwaysVoid, template <typename...> class Op, typename... Args>
 struct is_detected : std::false_type
@@ -33,6 +33,6 @@ struct is_detected<std::void_t<Op<Args...>>, Op, Args...> : std::true_type
  */
 template <template <typename...> class Op, typename... Args>
 constexpr bool is_detected_v = is_detected<void, Op, Args...>::value;
-} // namespace TangoTest::detail
+} // namespace Tango::detail
 
 #endif
