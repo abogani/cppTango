@@ -311,10 +311,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we set the attribute to a " << data.final.name << " value")
                 {
@@ -374,10 +371,7 @@ SCENARIO("Alarm events are sent on a read attribute exception")
             TangoTest::CallbackMock<Tango::EventData> callback;
             REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-            // discard the two initial events we get when we subscribe
-            auto maybe_initial_event = callback.pop_next_event();
-            REQUIRE(maybe_initial_event.has_value());
-            maybe_initial_event = callback.pop_next_event();
+            require_initial_events(callback);
 
             WHEN("the attribute read callback throws an exception once")
             {
@@ -453,10 +447,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 std::string new_name = data.new_cmd + 4;
                 std::transform(new_name.begin(), new_name.end(), new_name.begin(), ::toupper);
@@ -508,9 +499,7 @@ SCENARIO("Alarm events can be pushed from code manually")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
+                require_event(callback);
 
                 WHEN("we push an alarm event from code")
                 {
@@ -668,9 +657,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                 {
                     REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                    // discard the initial event we get when we subscribe
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
+                    require_event(callback);
 
                     WHEN("we push a change event from code")
                     {
@@ -773,9 +760,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                 {
                     REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                    // discard the initial event we get when we subscribe
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
+                    require_event(callback);
 
                     WHEN("we push a change event from code")
                     {
@@ -878,10 +863,7 @@ SCENARIO("Alarm events work with stateless=true")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, true));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we set the attribute to a max WARNING value")
                 {
@@ -990,10 +972,7 @@ SCENARIO("Pushing events for a polled attribute works")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we push an alarm event from code")
                 {
@@ -1059,10 +1038,7 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("when we stop the server")
                 {
@@ -1157,10 +1133,7 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we push an alarm event from code")
                 {
@@ -1268,13 +1241,12 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
                 TangoTest::CallbackMock<Tango::EventData> callback_alarm;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback_alarm));
 
+                require_event(callback_alarm);
+
                 TangoTest::CallbackMock<Tango::EventData> callback_change;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
 
-                // discard the (atmost) initial events we get when we subscribe
-                auto maybe_initial_event = callback_alarm.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback_change.pop_next_event();
+                require_event(callback_change);
 
                 WHEN("we push a change event from code")
                 {
@@ -1309,9 +1281,7 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
                 TangoTest::CallbackMock<Tango::EventData> callback_change;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
 
-                // discard the (atmost) initial event we get when we subscribe
-                auto maybe_initial_event = callback_change.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
+                require_event(callback_change);
 
                 WHEN("we push a change event from code")
                 {
