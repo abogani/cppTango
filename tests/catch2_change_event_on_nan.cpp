@@ -261,6 +261,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+
                 THEN("we receive some events with the initial value")
                 {
                     using Catch::Matchers::IsNaN;
@@ -288,6 +289,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                     WHEN("we set the attribute value to NaN")
                     {
                         REQUIRE_NOTHROW(device->command_inout("set_rel_nan"));
+
                         THEN("a change event is generated")
                         {
                             auto maybe_new_event = callback.pop_next_event();
@@ -417,6 +419,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+
                 THEN("we receive some events with the initial value")
                 {
                     using Catch::Matchers::IsNaN;
@@ -444,6 +447,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
                     WHEN("we set the attribute value to NaN")
                     {
                         REQUIRE_NOTHROW(device->command_inout("set_rel_nan"));
+
                         THEN("a change event is generated")
                         {
                             auto maybe_new_event = callback.pop_next_event();
