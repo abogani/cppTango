@@ -7,5 +7,7 @@ set(TANGO_IMPORT_LIBDIR @PACKAGE_CMAKE_INSTALL_LIBDIR@)
 
 @TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS@
 
+find_package(Threads REQUIRED)
+
 include(CMakePackageConfigHelpers)
 check_required_components(Tango)

@@ -98,6 +98,11 @@ set(TANGO_INSTALLED_DEPENDENCIES_IMPORTED_TARGETS "")
 # TANGO_INSTALL_DEPENDENCIES_IMPORTED_TARGETS to reconstitute the IMPORTED target
 # once it has been installed.
 function(tango_install_imported tgt)
+
+    if(${tgt} EQUAL "Threads::Threads")
+        return()
+    endif()
+
     get_target_property(type ${tgt} TYPE)
     get_target_property(imported_cfgs ${tgt} IMPORTED_CONFIGURATIONS)
     if (imported_cfgs)

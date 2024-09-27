@@ -7,7 +7,8 @@ function(set_cflags_and_include target)
       omniORB4::omniORB4
       omniORB4::COS4
       omniORB4::Dynamic4
-      cppzmq::cppzmq)
+      cppzmq::cppzmq
+      Threads::Threads)
 
   foreach(lib IN LISTS libraries)
       if (WIN32 AND NOT BUILD_SHARED_LIBS AND TARGET ${lib}-static)
