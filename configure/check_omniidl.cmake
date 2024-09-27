@@ -26,7 +26,7 @@ function(test_omniidl)
           set(link_libs omniORB4::omniORB4;omniORB4::COS4;omniORB4::Dynamic4;ws2_32.lib)
         endif()
 
-        set(defs "-D__x86__" "-D__NT__" "-D__OSVERSION__=4" "-D__WIN32__" "-D_WIN32_WINNT=0x0400")
+        set(defs "")
         foreach(def ${static_defs})
             list(APPEND defs "-D${def}")
         endforeach()
