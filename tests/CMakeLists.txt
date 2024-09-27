@@ -100,7 +100,6 @@ function(CXX_GENERATE_TEST_EXEC name)
     target_include_directories(${name} PRIVATE cxxtest/include ${CMAKE_CURRENT_BINARY_DIR}/cxxtest/include)
     target_link_libraries(${name} PRIVATE Tango::Tango)
     target_compile_definitions(${name} PRIVATE ${COMMON_TEST_DEFS})
-    set_cflags_and_include(${name})
 
     target_precompile_headers(${name} REUSE_FROM conf_devtest)
 endfunction()
