@@ -24,7 +24,7 @@ set -e
 CI_API_V4_URL="${CI_API_V4_URL:-https://gitlab.com/api/v4}"
 CI_PROJECT_ID="${CI_PROJECT_ID:-24006041}"
 
-docs_packages=$(curl -s "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_name=docs&order_by=version&sort=desc")
+docs_packages=$(curl -s "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_name=doc" | jq 'sort_by(.version|split(".")|map(tonumber))|reverse')
 
 rm -rf site
 rm -rf build/doc-site
