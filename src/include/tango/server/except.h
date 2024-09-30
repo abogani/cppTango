@@ -122,6 +122,17 @@ class Except
      */
     static void print_error_stack(const Tango::DevErrorList &ex);
 
+    /**@name Error stack related method */
+    //@{
+    /**
+     * Print a TANGO error stack.
+     *
+     * Print all the details of a TANGO error stack to os.
+     *
+     * @param ex The error stack reference
+     */
+    static void print_error_stack(const Tango::DevErrorList &ex, std::ostream &os);
+
     //@}
 
     /**@name Throw exception inline methods (static) */
