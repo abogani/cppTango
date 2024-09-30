@@ -64,7 +64,8 @@ SCENARIO("Telemetry traces are outputted")
             auto contents = load_file(ctx.get_redirect_file());
             REQUIRE(!contents.empty());
 
-            using Catch::Matchers::ContainsSubstring;
+            using namespace Catch::Matchers;
+
             REQUIRE_THAT(contents, ContainsSubstring("code.filepath:"));
 
             if(idlver > 3)
@@ -108,8 +109,8 @@ SCENARIO("Telemetry does complain about invalid environment variables")
             // avoid parsing issues in REQUIRE_XXX macro
             auto f = [&idlver, &env]() { TangoTest::Context ctx{"telemetry", "TelemetryDS", idlver, env}; };
 
-            using Catch::Matchers::ContainsSubstring;
-            using Catch::Matchers::MessageMatches;
+            using namespace Catch::Matchers;
+
             REQUIRE_THROWS_MATCHES(
                 f(), std::runtime_error, MessageMatches(ContainsSubstring("Error reason = API_InvalidArgs")));
         }
@@ -177,7 +178,8 @@ SCENARIO("Telemetry traces/logs can be turned off")
             auto contents = load_file(ctx.get_redirect_file());
             REQUIRE(!contents.empty());
 
-            using Catch::Matchers::ContainsSubstring;
+            using namespace Catch::Matchers;
+
             REQUIRE_THAT(contents, !ContainsSubstring("code.filepath:"));
         }
     }

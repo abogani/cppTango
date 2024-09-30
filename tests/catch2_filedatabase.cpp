@@ -501,7 +501,7 @@ SCENARIO("Check that unimplemented calls throw")
         {
             WHEN("we always throw")
             {
-                using TangoTest::FirstErrorMatches, TangoTest::Reason;
+                using namespace TangoTest::Matchers;
 
                 REQUIRE_THROWS_MATCHES(func(), Tango::DevFailed, FirstErrorMatches(Reason(Tango::API_NotSupported)));
             }
@@ -651,7 +651,7 @@ SCENARIO("DbGetProperty throws exception")
 {
     GIVEN("a filedatabase")
     {
-        using TangoTest::FirstErrorMatches, TangoTest::Reason;
+        using namespace TangoTest::Matchers;
 
         std::string device_name{"test/device/01"};
 

@@ -87,10 +87,8 @@ SCENARIO("TangoMonitor provides good error messages")
             thread->wait_until_started();
             THEN("we timeout with a DevFailed that mentions the lock's name and the threads involved")
             {
-                using Catch::Matchers::ContainsSubstring;
-                using TangoTest::AnyErrorMatches;
-                using TangoTest::DescriptionMatches;
-                using TangoTest::Reason;
+                using namespace TangoTest::Matchers;
+                using namespace Catch::Matchers;
 
                 std::string self = "Thread " + std::to_string(omni_thread::self()->id());
                 std::string other = "held by thread " + std::to_string(thread->id());

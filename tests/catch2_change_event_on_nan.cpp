@@ -187,9 +187,9 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
 
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
+                    using namespace Catch::Matchers;
+                    using namespace TangoTest::Matchers;
+
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
                     //
@@ -214,6 +214,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
 
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
                             auto maybe_new_event = callback.pop_next_event();
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
@@ -264,9 +266,8 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
 
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
+                    using namespace Catch::Matchers;
+                    using namespace TangoTest::Matchers;
 
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
@@ -292,6 +293,9 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
 
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
@@ -303,6 +307,9 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
                                 REQUIRE_NOTHROW(device->command_inout("unset_rel_nan"));
                                 THEN("a change event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_new_event = callback.pop_next_event();
                                     REQUIRE(maybe_new_event.has_value());
                                     REQUIRE(!maybe_new_event->err);
@@ -344,9 +351,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
+                    using namespace Catch::Matchers;
+                    using namespace TangoTest::Matchers;
 
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
@@ -372,6 +378,9 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);
@@ -422,9 +431,8 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
 
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
+                    using namespace Catch::Matchers;
+                    using namespace TangoTest::Matchers;
 
                     // We get the following two initial events (the fact there
                     // are two is a side effect of the fix for #369):
@@ -450,6 +458,9 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
 
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
                             REQUIRE(maybe_new_event.has_value());
                             REQUIRE(!maybe_new_event->err);

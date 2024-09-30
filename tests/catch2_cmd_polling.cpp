@@ -62,10 +62,12 @@ SCENARIO("Command polling can be enabled")
 
                 AND_THEN("the device server reports the command is polled")
                 {
+                    using namespace TangoTest::Matchers;
+
                     Tango::DeviceData in, out;
                     in << cmd;
                     REQUIRE_NOTHROW(out = device->command_inout("IsCmdPolled", in));
-                    REQUIRE_THAT(out, TangoTest::AnyLikeContains(true));
+                    REQUIRE_THAT(out, AnyLikeContains(true));
                 }
             }
 
@@ -75,10 +77,12 @@ SCENARIO("Command polling can be enabled")
 
                 AND_THEN("the device server reports the correct polling period")
                 {
+                    using namespace TangoTest::Matchers;
+
                     Tango::DeviceData in, out;
                     in << cmd;
                     REQUIRE_NOTHROW(out = device->command_inout("CmdPollPeriod", in));
-                    REQUIRE_THAT(out, TangoTest::AnyLikeContains(k_polling_period));
+                    REQUIRE_THAT(out, AnyLikeContains(k_polling_period));
                 }
             }
         }
@@ -108,10 +112,12 @@ SCENARIO("Command polling period can be updated")
 
                     AND_THEN("the device server reports the correct polling period")
                     {
+                        using namespace TangoTest::Matchers;
+
                         Tango::DeviceData in, out;
                         in << cmd;
                         REQUIRE_NOTHROW(out = device->command_inout("CmdPollPeriod", in));
-                        REQUIRE_THAT(out, TangoTest::AnyLikeContains(2 * k_polling_period));
+                        REQUIRE_THAT(out, AnyLikeContains(2 * k_polling_period));
                     }
                 }
             }
@@ -142,10 +148,12 @@ SCENARIO("Command polling can be disabled")
 
                     AND_THEN("the device server reports the command is no longer polled")
                     {
+                        using namespace TangoTest::Matchers;
+
                         Tango::DeviceData in, out;
                         in << cmd;
                         REQUIRE_NOTHROW(out = device->command_inout("IsCmdPolled", in));
-                        REQUIRE_THAT(out, TangoTest::AnyLikeContains(false));
+                        REQUIRE_THAT(out, AnyLikeContains(false));
                     }
                 }
             }

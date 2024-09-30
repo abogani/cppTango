@@ -116,7 +116,7 @@ SCENARIO("check_alarm reports alarms correctly")
 
             THEN("the command returns true")
             {
-                using TangoTest::AnyLikeContains;
+                using namespace TangoTest::Matchers;
 
                 REQUIRE_THAT(result, AnyLikeContains(true));
             }
@@ -130,6 +130,9 @@ SCENARIO("check_alarm reports alarms correctly")
                 REQUIRE_NOTHROW(device->subscribe_event("attr", Tango::CHANGE_EVENT, &callback));
 
                 // discard the initial events we get when we subscribe
+                using namespace Catch::Matchers;
+                using namespace TangoTest::Matchers;
+
                 auto maybe_initial_event = callback.pop_next_event();
                 REQUIRE(maybe_initial_event.has_value());
 
@@ -151,7 +154,7 @@ SCENARIO("check_alarm reports alarms correctly")
 
                         AND_THEN("the command returns false")
                         {
-                            using TangoTest::AnyLikeContains;
+                            using namespace TangoTest::Matchers;
 
                             REQUIRE_THAT(result, AnyLikeContains(false));
                         }
@@ -165,6 +168,9 @@ SCENARIO("check_alarm reports alarms correctly")
 
                     THEN("we should receive an error event")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
                         REQUIRE(maybe_event.has_value());
@@ -173,7 +179,7 @@ SCENARIO("check_alarm reports alarms correctly")
 
                         AND_THEN("the command returns false")
                         {
-                            using TangoTest::AnyLikeContains;
+                            using namespace TangoTest::Matchers;
 
                             REQUIRE_THAT(result, AnyLikeContains(false));
                         }
@@ -189,7 +195,7 @@ SCENARIO("check_alarm reports alarms correctly")
 
             AND_THEN("the command returns false")
             {
-                using TangoTest::AnyLikeContains;
+                using namespace TangoTest::Matchers;
 
                 REQUIRE_THAT(result, AnyLikeContains(false));
             }
@@ -202,7 +208,7 @@ SCENARIO("check_alarm reports alarms correctly")
 
             THEN("the command returns true")
             {
-                using TangoTest::AnyLikeContains;
+                using namespace TangoTest::Matchers;
 
                 REQUIRE_THAT(result, AnyLikeContains(true));
             }
@@ -215,7 +221,7 @@ SCENARIO("check_alarm reports alarms correctly")
 
             THEN("the command returns true")
             {
-                using TangoTest::AnyLikeContains;
+                using namespace TangoTest::Matchers;
 
                 REQUIRE_THAT(result, AnyLikeContains(true));
             }

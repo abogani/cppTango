@@ -101,7 +101,7 @@ SCENARIO("get_boolean_env_var")
         const char *name = "testvar";
         WHEN("throws")
         {
-            using TangoTest::FirstErrorMatches, TangoTest::Reason;
+            using namespace TangoTest::Matchers;
 
             REQUIRE(set_env(name, "abcd", true) == 0);
 

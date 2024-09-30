@@ -34,6 +34,9 @@ using matchee_t = typename first_argument<decltype(&Matcher::match)>::type;
 
 } // namespace detail
 
+namespace Matchers
+{
+
 /**
  * @brief Matches an "any like" type that contains a specific value
  *
@@ -309,4 +312,7 @@ FirstErrorMatchesMatcher<ErrorMatcher> FirstErrorMatches(ErrorMatcher &&matcher)
 {
     return {CATCH_FORWARD(matcher)};
 }
+
+} // namespace Matchers
+
 } // namespace TangoTest
