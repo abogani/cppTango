@@ -3,7 +3,7 @@
 
 #include <tango/tango.h>
 
-#include "utils/type_traits.h"
+#include <tango/internal/type_traits.h>
 
 #include <type_traits>
 
@@ -16,7 +16,7 @@ template <typename AnyLike, typename T>
 using corba_extraction_result_t = decltype(std::declval<AnyLike>() >>= std::declval<T>());
 
 template <typename AnyLike, typename T>
-constexpr bool has_corba_extract_operator_to = is_detected_v<corba_extraction_result_t, AnyLike, T>;
+constexpr bool has_corba_extract_operator_to = Tango::detail::is_detected_v<corba_extraction_result_t, AnyLike, T>;
 
 template <typename>
 struct first_argument;
