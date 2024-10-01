@@ -10,6 +10,8 @@ set(TANGO_USE_TELEMETRY @TANGO_USE_TELEMETRY@)
 set(_module_path_save "${CMAKE_MODULE_PATH}")
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_LIST_DIR}/@TANGO_FIND_MODULES_PATH@")
 
+find_package(Threads REQUIRED)
+
 find_dependency(omniORB4)
 find_dependency(cppzmq)
 

@@ -61,6 +61,7 @@ endif()
 set(IDL_VERSION_FOUND ${tangoidl_VERSION})
 message(STATUS "IDL: version ${IDL_VERSION_FOUND}")
 
+find_package(Threads REQUIRED)
 find_package(cppzmq REQUIRED)
 find_package(omniORB4 REQUIRED)
 
