@@ -199,3 +199,34 @@ bool get_boolean_env_var(const char *env_var, bool default_value)
 }
 
 } // namespace Tango::detail
+
+namespace Tango
+{
+
+std::ostream &operator<<(std::ostream &os, const AttrQuality &quality)
+{
+    switch(quality)
+    {
+    case Tango::ATTR_VALID:
+        os << "VALID";
+        break;
+    case Tango::ATTR_INVALID:
+        os << "INVALID";
+        break;
+    case Tango::ATTR_ALARM:
+        os << "ALARM";
+        break;
+    case Tango::ATTR_CHANGING:
+        os << "CHANGING";
+        break;
+    case Tango::ATTR_WARNING:
+        os << "WARNING";
+        break;
+    default:
+        TANGO_ASSERT_ON_DEFAULT(quality);
+    }
+
+    return os;
+}
+
+} // namespace Tango

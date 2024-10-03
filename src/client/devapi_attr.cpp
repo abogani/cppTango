@@ -28,6 +28,9 @@
 //====================================================================================================================
 
 #include <tango/tango.h>
+
+#include <tango/internal/utils.h>
+
 #include <iomanip>
 #include <memory>
 
@@ -6097,29 +6100,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
         // Print quality
         //
 
-        o_str << "Data quality factor = ";
-        switch(da.quality)
-        {
-        case Tango::ATTR_VALID:
-            o_str << "VALID, ";
-            break;
-
-        case Tango::ATTR_INVALID:
-            o_str << "INVALID, ";
-            break;
-
-        case Tango::ATTR_ALARM:
-            o_str << "ALARM, ";
-            break;
-
-        case Tango::ATTR_CHANGING:
-            o_str << "CHANGING, ";
-            break;
-
-        case Tango::ATTR_WARNING:
-            o_str << "WARNING, ";
-            break;
-        }
+        o_str << "Data quality factor = " << da.quality << ", ";
 
         //
         // Print data format

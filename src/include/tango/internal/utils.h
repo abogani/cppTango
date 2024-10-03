@@ -1,6 +1,8 @@
 #ifndef _INTERNAL_UTILS_H
 #define _INTERNAL_UTILS_H
 
+#include <tango/tango.h>
+
 #include <iostream>
 #include <optional>
 #include <string>
@@ -70,5 +72,12 @@ std::optional<bool> to_boolean(std::string_view str);
 bool get_boolean_env_var(const char *env_var, bool default_value);
 
 } // namespace Tango::detail
+
+namespace Tango
+{
+
+std::ostream &operator<<(std::ostream &o_str, const AttrQuality &attr_quality);
+
+} // namespace Tango
 
 #endif // _INTERNAL_UTILS_H

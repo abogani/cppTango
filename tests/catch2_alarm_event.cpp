@@ -243,25 +243,6 @@ class AlarmEventDev : public Base
     Tango::AttrQuality attr_quality;
 };
 
-const char *attr_quality_name(Tango::AttrQuality qual)
-{
-    switch(qual)
-    {
-    case Tango::ATTR_VALID:
-        return "ATTR_VALID";
-    case Tango::ATTR_INVALID:
-        return "ATTR_INVALID";
-    case Tango::ATTR_ALARM:
-        return "ATTR_ALARM";
-    case Tango::ATTR_CHANGING:
-        return "ATTR_CHANGING";
-    case Tango::ATTR_WARNING:
-        return "ATTR_WARNING";
-    };
-
-    return "UNKNOWN";
-}
-
 // Alarm event is supported from IDL6 onwards
 TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AlarmEventDev, 6)
 
@@ -345,7 +326,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 
                     if(data.event_quality.has_value())
                     {
-                        THEN("an alarm event is generated with " << attr_quality_name(*data.event_quality))
+                        THEN("an alarm event is generated with " << *data.event_quality)
                         {
                             auto maybe_event = callback.pop_next_event();
 
@@ -482,7 +463,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                 {
                     REQUIRE_NOTHROW(device->command_inout(data.new_cmd));
 
-                    THEN("an alarm event is generated with " << attr_quality_name(data.event_quality))
+                    THEN("an alarm event is generated with " << data.event_quality)
                     {
                         auto maybe_event = callback.pop_next_event();
 

@@ -33,6 +33,8 @@
 #include <iomanip>
 #include <memory>
 
+#include <tango/internal/utils.h>
+
 using namespace CORBA;
 
 namespace Tango
@@ -764,29 +766,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
     // Print quality
     //
 
-    o_str << "Data quality factor = ";
-    switch(dah.quality)
-    {
-    case Tango::ATTR_VALID:
-        o_str << "VALID)" << std::endl;
-        break;
-
-    case Tango::ATTR_INVALID:
-        o_str << "INVALID)";
-        break;
-
-    case Tango::ATTR_ALARM:
-        o_str << "ALARM)" << std::endl;
-        break;
-
-    case Tango::ATTR_CHANGING:
-        o_str << "CHANGING)" << std::endl;
-        break;
-
-    case Tango::ATTR_WARNING:
-        o_str << "WARNING) " << std::endl;
-        break;
-    }
+    o_str << "Data quality factor = " << dah.quality << ")" << std::endl;
 
     //
     // Print data (if valid) or error stack
