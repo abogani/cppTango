@@ -9,6 +9,7 @@
 #include "utils/auto_device_class.h"
 #include "utils/test_server.h"
 #include "utils/callback_mock.h"
+#include "utils/stringmakers.h"
 #include "utils/matchers.h"
 #include "utils/generators.h"
 
