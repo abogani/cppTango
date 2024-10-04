@@ -167,68 +167,6 @@ Tango::t_attribute_property *search_class_attr_prop(Tango::t_tango_class *d, con
     return nullptr;
 }
 
-std::string &trim(string &str)
-{
-    // trim leading whitespace
-    string::size_type notwhite = str.find_first_not_of(" \t\n");
-    str.erase(0, notwhite);
-
-    // trim trailing whitespace
-    notwhite = str.find_last_not_of(" \t\n");
-    str.erase(notwhite + 1);
-    return str;
-}
-
-std::vector<std::string> &makeStringArray(const std::string &input, vector<string> &results)
-{
-    std::string delimiter = "\n";
-    int iPos = 0;
-    int sizeS2 = delimiter.size();
-    int isize = input.size();
-
-    std::vector<int> positions;
-
-    int newPos = input.find(delimiter, 0);
-
-    if(newPos < 0)
-    {
-        return results;
-    }
-
-    while(newPos > iPos)
-    {
-        positions.push_back(newPos);
-        iPos = newPos;
-        newPos = input.find(delimiter, iPos + sizeS2 + 1);
-    }
-
-    for(unsigned int i = 0; i <= positions.size(); i++)
-    {
-        string s;
-        if(i == 0)
-        {
-            s = input.substr(i, positions[i]);
-        }
-        int offset = positions[i - 1] + sizeS2;
-        if(offset < isize)
-        {
-            if(i == positions.size())
-            {
-                s = input.substr(offset);
-            }
-            else if(i > 0)
-            {
-                s = input.substr(positions[i - 1] + sizeS2, positions[i] - positions[i - 1] - sizeS2);
-            }
-        }
-        if(s.size() > 0)
-        {
-            results.push_back(trim(s));
-        }
-    }
-    return results;
-}
-
 char *to_corba_string(CORBA::ULong val)
 {
     auto str = std::to_string(val);
@@ -1655,8 +1593,6 @@ CORBA::Any_var FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
                         index++;
                     }
 
-                    // makeStringArray( string((*data_in)[index]), new_prop->value);index++;
-                    // new_prop->value.push_back( string((*data_in)[index]) );index++;
                     temp_attribute_property->properties.push_back(new_prop);
                     if(index >= data_in->length())
                     {
@@ -2127,8 +2063,6 @@ CORBA::Any_var FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
                         index++;
                     }
 
-                    // makeStringArray( string((*data_in)[index]), new_prop->value);index++;
-                    // new_prop->value.push_back( string((*data_in)[index]) );index++;
                     temp_attribute_property->properties.push_back(new_prop);
                     if(index >= data_in->length())
                     {
