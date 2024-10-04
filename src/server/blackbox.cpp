@@ -426,7 +426,7 @@ void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
     break;
     case Tango::CPP_6:
     {
-        Tango::CppClntIdent_6 eci = cl_ident.cpp_clnt_6();
+        const Tango::CppClntIdent_6 &eci = cl_ident.cpp_clnt_6();
         cl_addr->client_pid = eci.cpp_clnt;
         std::string str(cl_addr->client_ip);
         if(str.find(":unix:") != std::string::npos)

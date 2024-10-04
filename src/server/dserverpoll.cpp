@@ -1005,7 +1005,7 @@ void DServer::add_obj_polling(const Tango::DevVarLongStringArray *argin, bool wi
 
             for(iter = ppc.begin(); iter != ppc.end(); ++iter)
             {
-                std::string v_entry = *iter;
+                const std::string &v_entry = *iter;
                 unsigned int length = v_entry.size();
                 int nb_lines = (length / MaxDevPropLength) + 1;
 

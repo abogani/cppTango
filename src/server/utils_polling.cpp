@@ -1780,7 +1780,7 @@ void Util::upd_polling_prop(const std::vector<DevDbUpd> &upd_devs, DServer *admi
 
                     for(iter = poll_pool_conf.begin(); iter != poll_pool_conf.end(); ++iter)
                     {
-                        std::string v_entry = *iter;
+                        const std::string &v_entry = *iter;
                         unsigned int length = v_entry.size();
                         int nb_lines = (length / MaxDevPropLength) + 1;
                         if(nb_lines > 1)
@@ -1992,7 +1992,7 @@ int Util::get_dev_entry_in_pool_conf(const std::string &dev_name)
 
     for(iter = poll_pool_conf.begin(); iter != poll_pool_conf.end(); ++iter)
     {
-        std::string tmp = *iter;
+        const std::string &tmp = *iter;
         std::string::size_type pos, end_pos;
         pos = tmp.find(dev_name);
         if(pos != std::string::npos)
