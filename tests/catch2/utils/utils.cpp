@@ -387,6 +387,8 @@ std::string filename_from_test_case_name(std::string_view test_case_name, std::s
 
     std::stringstream ss;
     ss << g_log_filename_prefix;
+
+    // NOLINTNEXTLINE(readability-qualified-auto)
     for(auto it = test_case_name.begin(); it != end; ++it)
     {
         switch(*it)
