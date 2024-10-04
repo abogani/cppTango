@@ -72,19 +72,8 @@
 
 using namespace std;
 
-namespace Tango
+namespace
 {
-
-const char *FileDatabase::lexical_word_null = "NULL";
-const char *FileDatabase::lexical_word_number = "NUMBER";
-const char *FileDatabase::lexical_word_string = "STRING";
-const char *FileDatabase::lexical_word_coma = "COMA";
-const char *FileDatabase::lexical_word_colon = "COLON";
-const char *FileDatabase::lexical_word_slash = "SLASH";
-const char *FileDatabase::lexical_word_backslash = "BackSLASH";
-const char *FileDatabase::lexical_word_arrow = "->";
-int FileDatabase::ReadBufferSize = 4069;
-int FileDatabase::MaxWordLength = 256;
 
 char chartolower(const char c)
 {
@@ -117,7 +106,7 @@ bool equalsIgnoreCase(const string &s1, const string &s2)
     return ret;
 }
 
-t_device *search_device(t_server &s, string &name)
+Tango::t_device *search_device(Tango::t_server &s, string &name)
 {
     for(unsigned int j = 0; j < s.devices.size(); j++)
     {
@@ -130,7 +119,7 @@ t_device *search_device(t_server &s, string &name)
     return nullptr;
 }
 
-t_tango_class *search_class(t_server &s, string &name)
+Tango::t_tango_class *search_class(Tango::t_server &s, string &name)
 {
     for(unsigned int i = 0; i < s.classes.size(); i++)
     {
@@ -142,7 +131,7 @@ t_tango_class *search_class(t_server &s, string &name)
     return nullptr;
 }
 
-t_free_object *search_free_object(t_server &s, string &name)
+Tango::t_free_object *search_free_object(Tango::t_server &s, string &name)
 {
     for(unsigned int i = 0; i < s.free_objects.size(); i++)
     {
@@ -154,7 +143,7 @@ t_free_object *search_free_object(t_server &s, string &name)
     return nullptr;
 }
 
-t_attribute_property *search_dev_attr_prop(t_device *d, const string &name)
+Tango::t_attribute_property *search_dev_attr_prop(Tango::t_device *d, const string &name)
 {
     for(unsigned int i = 0; i < d->attribute_properties.size(); i++)
     {
@@ -166,7 +155,7 @@ t_attribute_property *search_dev_attr_prop(t_device *d, const string &name)
     return nullptr;
 }
 
-t_attribute_property *search_class_attr_prop(t_tango_class *d, const string &name)
+Tango::t_attribute_property *search_class_attr_prop(Tango::t_tango_class *d, const string &name)
 {
     for(unsigned int i = 0; i < d->attribute_properties.size(); i++)
     {
@@ -240,21 +229,6 @@ std::vector<std::string> &makeStringArray(const std::string &input, vector<strin
     return results;
 }
 
-template <class T>
-bool hasName<T>::operator()(T *obj)
-{
-    return (Tango::equalsIgnoreCase(obj->name, name));
-}
-
-template <class T>
-bool hasAttributeName<T>::operator()(T *obj)
-{
-    return (Tango::equalsIgnoreCase(obj->attribute_name, attribute_name));
-}
-
-namespace
-{
-
 char *to_corba_string(CORBA::ULong val)
 {
     auto str = std::to_string(val);
@@ -262,6 +236,31 @@ char *to_corba_string(CORBA::ULong val)
 }
 
 } // anonymous namespace
+
+namespace Tango
+{
+const char *FileDatabase::lexical_word_null = "NULL";
+const char *FileDatabase::lexical_word_number = "NUMBER";
+const char *FileDatabase::lexical_word_string = "STRING";
+const char *FileDatabase::lexical_word_coma = "COMA";
+const char *FileDatabase::lexical_word_colon = "COLON";
+const char *FileDatabase::lexical_word_slash = "SLASH";
+const char *FileDatabase::lexical_word_backslash = "BackSLASH";
+const char *FileDatabase::lexical_word_arrow = "->";
+int FileDatabase::ReadBufferSize = 4069;
+int FileDatabase::MaxWordLength = 256;
+
+template <class T>
+bool hasName<T>::operator()(T *obj)
+{
+    return (equalsIgnoreCase(obj->name, name));
+}
+
+template <class T>
+bool hasAttributeName<T>::operator()(T *obj)
+{
+    return (equalsIgnoreCase(obj->attribute_name, attribute_name));
+}
 
 FileDatabaseExt::FileDatabaseExt() { }
 
