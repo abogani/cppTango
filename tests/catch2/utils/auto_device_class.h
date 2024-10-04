@@ -302,12 +302,12 @@ class AutoEnumAttr : public Tango::Attr
         }
     }
 
-    virtual bool same_type(const std::type_info &in_type) override
+    bool same_type(const std::type_info &in_type) override
     {
         return typeid(EnumType) == in_type;
     }
 
-    virtual std::string get_enum_type() override
+    std::string get_enum_type() override
     {
         return typeid(EnumType).name();
     }
@@ -374,12 +374,12 @@ class AutoEnumSpectrumAttr : public Tango::SpectrumAttr
         }
     }
 
-    virtual bool same_type(const std::type_info &in_type) override
+    bool same_type(const std::type_info &in_type) override
     {
         return typeid(EnumType) == in_type;
     }
 
-    virtual std::string get_enum_type() override
+    std::string get_enum_type() override
     {
         return typeid(EnumType).name();
     }
@@ -446,12 +446,12 @@ class AutoEnumImageAttr : public Tango::ImageAttr
         }
     }
 
-    virtual bool same_type(const std::type_info &in_type) override
+    bool same_type(const std::type_info &in_type) override
     {
         return typeid(EnumType) == in_type;
     }
 
-    virtual std::string get_enum_type() override
+    std::string get_enum_type() override
     {
         return typeid(EnumType).name();
     }
