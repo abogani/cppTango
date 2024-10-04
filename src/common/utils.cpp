@@ -198,6 +198,238 @@ bool get_boolean_env_var(const char *env_var, bool default_value)
     return result.value();
 }
 
+void stringify_any(std::ostream &os, const CORBA::Any &any)
+{
+    CORBA::TypeCode_ptr tc;
+    CORBA::TypeCode_var tc_al;
+    CORBA::TypeCode_var tc_seq;
+    CORBA::TypeCode_var tc_field;
+
+    tc = any.type();
+
+    if(tc->equal(CORBA::_tc_null))
+    {
+        os << "empty";
+        CORBA::release(tc);
+        return;
+    }
+
+    switch(tc->kind())
+    {
+    case CORBA::tk_boolean:
+        bool bo_tmp;
+        any >>= CORBA::Any::to_boolean(bo_tmp);
+        if(bo_tmp)
+        {
+            os << "true";
+        }
+        else
+        {
+            os << "false";
+        }
+        break;
+
+    case CORBA::tk_short:
+        short tmp;
+        any >>= tmp;
+        os << tmp;
+        break;
+
+    case CORBA::tk_long:
+        Tango::DevLong l_tmp;
+        any >>= l_tmp;
+        os << l_tmp;
+        break;
+
+    case CORBA::tk_longlong:
+        Tango::DevLong64 ll_tmp;
+        any >>= ll_tmp;
+        os << ll_tmp;
+        break;
+
+    case CORBA::tk_float:
+        float f_tmp;
+        any >>= f_tmp;
+        os << f_tmp;
+        break;
+
+    case CORBA::tk_double:
+        double db_tmp;
+        any >>= db_tmp;
+        os << db_tmp;
+        break;
+
+    case CORBA::tk_ushort:
+        unsigned short us_tmp;
+        any >>= us_tmp;
+        os << us_tmp;
+        break;
+
+    case CORBA::tk_ulong:
+        Tango::DevULong ul_tmp;
+        any >>= ul_tmp;
+        os << ul_tmp;
+        break;
+
+    case CORBA::tk_ulonglong:
+        Tango::DevULong64 ull_tmp;
+        any >>= ull_tmp;
+        os << ull_tmp;
+        break;
+
+    case CORBA::tk_string:
+        const char *str_tmp;
+        any >>= str_tmp;
+        os << str_tmp;
+        break;
+
+    case CORBA::tk_alias:
+        tc_al = tc->content_type();
+        tc_seq = tc_al->content_type();
+        switch(tc_seq->kind())
+        {
+        case CORBA::tk_octet:
+            Tango::DevVarCharArray *ch_arr;
+            any >>= ch_arr;
+            os << *ch_arr;
+            break;
+
+        case CORBA::tk_boolean:
+            Tango::DevVarBooleanArray *bl_arr;
+            any >>= bl_arr;
+            os << *bl_arr;
+            break;
+
+        case CORBA::tk_short:
+            Tango::DevVarShortArray *sh_arr;
+            any >>= sh_arr;
+            os << *sh_arr;
+            break;
+
+        case CORBA::tk_long:
+            Tango::DevVarLongArray *lg_arr;
+            any >>= lg_arr;
+            os << *lg_arr;
+            break;
+
+        case CORBA::tk_longlong:
+            Tango::DevVarLong64Array *llg_arr;
+            any >>= llg_arr;
+            os << *llg_arr;
+            break;
+
+        case CORBA::tk_float:
+            Tango::DevVarFloatArray *fl_arr;
+            any >>= fl_arr;
+            os << *fl_arr;
+            break;
+
+        case CORBA::tk_double:
+            Tango::DevVarDoubleArray *db_arr;
+            any >>= db_arr;
+            os << *db_arr;
+            break;
+
+        case CORBA::tk_ushort:
+            Tango::DevVarUShortArray *us_arr;
+            any >>= us_arr;
+            os << *us_arr;
+            break;
+
+        case CORBA::tk_ulong:
+            Tango::DevVarULongArray *ul_arr;
+            any >>= ul_arr;
+            os << *ul_arr;
+            break;
+
+        case CORBA::tk_ulonglong:
+            Tango::DevVarULong64Array *ull_arr;
+            any >>= ull_arr;
+            os << *ull_arr;
+            break;
+
+        case CORBA::tk_string:
+            Tango::DevVarStringArray *str_arr;
+            any >>= str_arr;
+            os << *str_arr;
+            break;
+
+        default:
+            TangoSys_OMemStream desc;
+            desc << "'any' with unexpected sequence kind '" << tc_seq->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+        }
+        break;
+
+    case CORBA::tk_struct:
+        tc_field = tc->member_type(0);
+        tc_al = tc_field->content_type();
+        switch(tc_al->kind())
+        {
+        case CORBA::tk_sequence:
+            tc_seq = tc_al->content_type();
+            switch(tc_seq->kind())
+            {
+            case CORBA::tk_long:
+                Tango::DevVarLongStringArray *lgstr_arr;
+                any >>= lgstr_arr;
+                os << lgstr_arr->lvalue << std::endl;
+                os << lgstr_arr->svalue;
+                break;
+
+            case CORBA::tk_double:
+                Tango::DevVarDoubleStringArray *dbstr_arr;
+                any >>= dbstr_arr;
+                os << dbstr_arr->dvalue << std::endl;
+                os << dbstr_arr->svalue;
+                break;
+
+            default:
+                TangoSys_OMemStream desc;
+                desc << "'any' with unexpected struct field sequence kind '" << tc_seq->kind() << "'.";
+                TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+            }
+            break;
+
+        case CORBA::tk_string:
+            Tango::DevEncoded *enc;
+            any >>= enc;
+            os << "Encoding string: " << enc->encoded_format << std::endl;
+            {
+                long nb_data_elt = enc->encoded_data.length();
+                for(long i = 0; i < nb_data_elt; i++)
+                {
+                    os << "Data element number [" << i << "] = " << (int) enc->encoded_data[i];
+                    if(i < (nb_data_elt - 1))
+                    {
+                        os << '\n';
+                    }
+                }
+            }
+            break;
+
+        default:
+            TangoSys_OMemStream desc;
+            desc << "'any' with unexpected struct field alias kind '" << tc_al->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+        }
+        break;
+
+    case CORBA::tk_enum:
+        Tango::DevState tmp_state;
+        any >>= tmp_state;
+        os << Tango::DevStateName[tmp_state];
+        break;
+
+    default:
+        TangoSys_OMemStream desc;
+        desc << "'any' with unexpected kind '" << tc->kind() << "'.";
+        TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+    }
+
+    CORBA::release(tc);
+}
+
 } // namespace Tango::detail
 
 namespace Tango

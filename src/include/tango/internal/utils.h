@@ -71,6 +71,8 @@ std::optional<bool> to_boolean(std::string_view str);
 /// Return `default_value` in case it is not present, throws for unkonwn content
 bool get_boolean_env_var(const char *env_var, bool default_value);
 
+void stringify_any(std::ostream &os, const CORBA::Any &any);
+
 } // namespace Tango::detail
 
 namespace Tango
