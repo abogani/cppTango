@@ -3,6 +3,7 @@
 
 #include <tango/tango.h>
 
+#include <tango/common/utils/type_info.h>
 #include <tango/internal/stl_corba_helpers.h>
 #include <tango/internal/type_traits.h>
 
@@ -33,6 +34,17 @@ struct first_argument<bool (Matcher::*)(Arg) const>
 // Some Catch2 matchers are generic, in which case this will not work.
 template <typename Matcher>
 using matchee_t = typename first_argument<decltype(&Matcher::match)>::type;
+
+/// @brief Return the name of the type T
+template <typename T>
+std::string get_ref_type(T val)
+{
+    Tango::DeviceData dd;
+
+    dd << val;
+
+    return Tango::detail::corba_any_to_type_name(dd.any);
+}
 
 } // namespace detail
 
@@ -88,17 +100,12 @@ struct AnyLikeContainsMatcher : Catch::Matchers::MatcherGenericBase
         return other == value;
     }
 
-    // TODO: Improve the output here.
-    //
-    // In addition to the values we show, ideally, we need to include:
-    //  - A name for AnyLike
-    //  - A name for T
-    //  - A name for the type actually stored in the AnyLike
-    //
-    //  This will involve writing our own Catch::StringMaker specialisations
     std::string describe() const override
     {
-        return "== " + Catch::StringMaker<T>::convert(value);
+        std::ostringstream os;
+        os << "contains (" << detail::get_ref_type(T{}) << ") " << Catch::StringMaker<T>::convert(value);
+
+        return os.str();
     }
 
   private:
@@ -160,17 +167,11 @@ struct AnyLikeMatchesMatcher : Catch::Matchers::MatcherGenericBase
         return m_matcher.match(other);
     }
 
-    // TODO: Improve the output here.
-    //
-    // In addition to the values we show, ideally, we need to include:
-    //  - A name for AnyLike
-    //  - A name for T
-    //  - A name for the type actually stored in the AnyLike
-    //
-    //  This will involve writing our own Catch::StringMaker specialisations
     std::string describe() const override
     {
-        return "contains a value that " + m_matcher.describe();
+        std::ostringstream os;
+        os << "contains (" << detail::get_ref_type(T{}) << ") that " << m_matcher.describe();
+        return os.str();
     }
 
   private:

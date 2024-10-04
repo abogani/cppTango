@@ -22,9 +22,27 @@ struct StringMaker<Tango::DeviceProxy *>
 };
 
 template <>
+struct StringMaker<Tango::DeviceProxy>
+{
+    static std::string convert(const Tango::DeviceProxy &dev);
+};
+
+template <>
 struct StringMaker<Tango::DeviceAttribute *>
 {
     static std::string convert(Tango::DeviceAttribute *da);
+};
+
+template <>
+struct StringMaker<Tango::DeviceAttribute>
+{
+    static std::string convert(const Tango::DeviceAttribute &da);
+};
+
+template <>
+struct StringMaker<Tango::DeviceData>
+{
+    static std::string convert(const Tango::DeviceData &dd);
 };
 
 template <>
@@ -37,6 +55,12 @@ template <>
 struct StringMaker<Tango::EventData>
 {
     static std::string convert(Tango::EventData const &value);
+};
+
+template <>
+struct StringMaker<CORBA::Any>
+{
+    static std::string convert(CORBA::Any const &any);
 };
 
 } // namespace Catch
