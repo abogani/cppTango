@@ -913,8 +913,7 @@ void test_release_flag(const std::string &attr_name,
         for(bool release_flag : release_flags)
         //        bool release_flag = GENERATE(true, false);
         {
-            std::string flag_str = release_flag ? "true" : "false";
-            AND_GIVEN("Testing " + attr_name + " with release=" + flag_str)
+            AND_GIVEN("Testing " + attr_name + " with release=" << std::boolalpha << release_flag)
             {
                 set_release_flag(device, release_flag);
                 read_and_compare_attribute_value(
