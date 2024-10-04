@@ -321,11 +321,6 @@ PollCmdType PollThread::get_command()
 //
 //------------------------------------------------------------------------------------------------------------------
 
-bool pred_dev(const WorkItem &w)
-{
-    return w.dev == PollThread::dev_to_del;
-}
-
 void PollThread::execute_cmd()
 {
     WorkItem wo;
@@ -496,9 +491,13 @@ void PollThread::execute_cmd()
             }
         }
 #else
-        works.remove_if(pred_dev);
+        {
+            auto pred_dev = [](const WorkItem &w) { return w.dev == PollThread::dev_to_del; };
+            works.remove_if(pred_dev);
 
-        ext_trig_works.erase(remove_if(ext_trig_works.begin(), ext_trig_works.end(), pred_dev), ext_trig_works.end());
+            ext_trig_works.erase(remove_if(ext_trig_works.begin(), ext_trig_works.end(), pred_dev),
+                                 ext_trig_works.end());
+        }
 #endif
 
         break;

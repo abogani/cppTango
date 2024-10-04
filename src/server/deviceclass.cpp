@@ -53,11 +53,6 @@ static void lower_cmd_name(std::string &cmd)
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
 }
 
-bool less_than_pipe(Pipe *a, Pipe *b)
-{
-    return a->get_name() < b->get_name();
-}
-
 //+------------------------------------------------------------------------------------------------------------------
 //
 // method :
@@ -1736,7 +1731,7 @@ void DeviceClass::create_device_pipe(DeviceClass *cl, DeviceImpl *dev)
         c_pipe->init_class_pipe(this);
     }
 
-    sort(pipe_list.begin(), pipe_list.end(), less_than_pipe);
+    sort(pipe_list.begin(), pipe_list.end(), [](Pipe *a, Pipe *b) { return a->get_name() < b->get_name(); });
 
     std::string dev_name = dev->get_name_lower();
     ext->dev_pipe_list.insert(make_pair(dev_name, pipe_list));

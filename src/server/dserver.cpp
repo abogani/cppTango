@@ -113,11 +113,6 @@ DServer::DServer(DeviceClass *cl_ptr, const char *n, const char *d, Tango::DevSt
     TANGO_LOG_DEBUG << "Leaving DServer::DServer constructor" << std::endl;
 }
 
-bool less_than(Command *a, Command *b)
-{
-    return a->get_name() < b->get_name();
-}
-
 void DServer::init_device()
 {
     //
@@ -219,8 +214,9 @@ void DServer::init_device()
                 // Sort the Command list array
                 //
 
-                sort(class_list[i]->get_command_list().begin(), class_list[i]->get_command_list().end(), less_than);
-
+                sort(class_list[i]->get_command_list().begin(),
+                     class_list[i]->get_command_list().end(),
+                     [](Command *a, Command *b) { return a->get_name() < b->get_name(); });
                 //
                 // Build class attributes
                 //
