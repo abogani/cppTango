@@ -8308,7 +8308,7 @@ Database *DeviceProxy::get_device_db()
 //
 //-----------------------------------------------------------------------------
 
-void clean_lock()
+static void clean_lock()
 {
     if(!ApiUtil::_is_instance_null())
     {
