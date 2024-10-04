@@ -14,7 +14,8 @@ namespace detail
 {
 
 template <typename AnyLike, typename T>
-using corba_extraction_result_t = decltype(std::declval<AnyLike>() >>= std::declval<T>());
+using corba_extraction_result_t =
+    decltype(std::declval<const AnyLike>() >>= std::declval<std::add_lvalue_reference_t<T>>());
 
 template <typename AnyLike, typename T>
 constexpr bool has_corba_extract_operator_to = Tango::detail::is_detected_v<corba_extraction_result_t, AnyLike, T>;
