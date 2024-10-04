@@ -6063,7 +6063,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
     if(da.has_failed())
     {
         o_str << "Exception stored in DeviceAttribute object" << std::endl;
-        Except::print_error_stack(da.err_list);
+        Except::print_error_stack(da.err_list, o_str);
     }
     else
     {
