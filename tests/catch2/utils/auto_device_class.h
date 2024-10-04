@@ -84,7 +84,7 @@ class AutoDeviceClass : public Tango::DeviceClass
 
     static AutoDeviceClass *init(const char *s)
     {
-        if(!_instance)
+        if(_instance == nullptr)
         {
             _instance = new AutoDeviceClass{s};
         }
