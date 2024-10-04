@@ -662,13 +662,13 @@ class DtypeDev : public Base
     {
         Tango::UserDefaultAttrProp props;
         std::vector<std::string> labels;
-        labels.push_back("ONE");
-        labels.push_back("TWO");
-        labels.push_back("THREE");
-        labels.push_back("FOUR");
-        labels.push_back("FIVE");
-        labels.push_back("SIX");
-        labels.push_back("SEVEN");
+        labels.emplace_back("ONE");
+        labels.emplace_back("TWO");
+        labels.emplace_back("THREE");
+        labels.emplace_back("FOUR");
+        labels.emplace_back("FIVE");
+        labels.emplace_back("SIX");
+        labels.emplace_back("SEVEN");
         props.set_enum_labels(labels);
 
         if(is_spectrum)
