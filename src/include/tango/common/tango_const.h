@@ -961,7 +961,7 @@ enum EventType
     INTERFACE_CHANGE_EVENT = 7, ///< Device interface change event
     PIPE_EVENT = 8,             ///< Device pipe event
     ALARM_EVENT = 9,            ///< Alarm event
-    numEventType
+    numEventType = 10
 };
 
 const char *const EventName[] = {"change",
