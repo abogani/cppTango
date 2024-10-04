@@ -173,8 +173,8 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
         TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());
     }
 
-    bool short_enum = std::is_same<short, std::underlying_type_t<T>>::value;
-    bool uns_int_enum = std::is_same<unsigned int, std::underlying_type_t<T>>::value;
+    bool short_enum = std::is_same_v<short, std::underlying_type_t<T>>;
+    bool uns_int_enum = std::is_same_v<unsigned int, std::underlying_type_t<T>>;
 
     if(!short_enum && !uns_int_enum)
     {
@@ -192,7 +192,7 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
     // Check if the input type is an enum and if it is from the valid type
     //
 
-    if(std::is_enum<T>::value == false)
+    if(std::is_enum_v<T> == false)
     {
         delete_data_if_needed(enum_ptr, release);
         TANGO_THROW_EXCEPTION(API_IncompatibleArgumentType, "The input argument data type is not an enumeration");
