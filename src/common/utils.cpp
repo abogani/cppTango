@@ -81,6 +81,58 @@ std::string corba_any_to_type_name(const CORBA::Any &any)
     {
         goto end;
     }
+    if(try_type<Tango::DevShort>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevUShort>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevLong>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevULong>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevLong64>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevULong64>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevDouble>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevString>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevUChar>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevFloat>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevBoolean>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevState>(type, result))
+    {
+        goto end;
+    }
+    if(try_type<Tango::DevEncoded>(type, result))
+    {
+        goto end;
+    }
 
     {
         TangoSys_OMemStream oss;
