@@ -2215,10 +2215,7 @@ Tango::DevAttrHistoryList_3 *Device_3Impl::read_attribute_history_3(const char *
     //
 
     long in_buf = polled_attr->get_elt_nb_in_buffer();
-    if(n > in_buf)
-    {
-        n = in_buf;
-    }
+    n = std::min<long>(n, in_buf);
 
     //
     // Allocate memory for the returned value

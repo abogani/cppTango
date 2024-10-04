@@ -1814,15 +1814,8 @@ Tango::DevVarStringArray *BlackBox::read(long wanted_elt)
     // Limit wanted element to a reasonable value
     //
 
-    if(wanted_elt > max_elt)
-    {
-        wanted_elt = max_elt;
-    }
-
-    if(wanted_elt > nb_elt)
-    {
-        wanted_elt = nb_elt;
-    }
+    wanted_elt = std::min(wanted_elt, max_elt);
+    wanted_elt = std::min(wanted_elt, nb_elt);
 
     //
     // Read black box elements

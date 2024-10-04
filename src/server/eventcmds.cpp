@@ -878,10 +878,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
             TANGO_THROW_EXCEPTION(API_CommandNotFound, o.str());
         }
 
-        if(client_release > idl_vers)
-        {
-            client_release = idl_vers;
-        }
+        client_release = std::min<long>(client_release, idl_vers);
 
         //
         // Call common method (common between old and new command)

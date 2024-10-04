@@ -174,10 +174,7 @@ void Util::polling_configure()
                 }
                 else
                 {
-                    if(upd < smallest_upd)
-                    {
-                        smallest_upd = upd;
-                    }
+                    smallest_upd = std::min(upd, smallest_upd);
                 }
 
                 v_poll_cmd.push_back(send);
@@ -226,10 +223,7 @@ void Util::polling_configure()
                     }
                     else
                     {
-                        if(upd < smallest_upd)
-                        {
-                            smallest_upd = upd;
-                        }
+                        smallest_upd = std::min(upd, smallest_upd);
                     }
                     v_poll_cmd.push_back(send);
                 }
@@ -905,10 +899,8 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
         if(smallest_upd != -1)
         {
             PollingThreadInfo *th_info = get_polling_thread_info_by_id(ite->second);
-            if(smallest_upd < th_info->smallest_upd)
-            {
-                th_info->smallest_upd = smallest_upd;
-            }
+
+            th_info->smallest_upd = std::min(smallest_upd, th_info->smallest_upd);
         }
         return ret;
     }
@@ -951,10 +943,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
                     th_info->nb_polled_objects++;
                     if(smallest_upd != -1)
                     {
-                        if(smallest_upd < th_info->smallest_upd)
-                        {
-                            th_info->smallest_upd = smallest_upd;
-                        }
+                        th_info->smallest_upd = std::min(smallest_upd, th_info->smallest_upd);
                     }
                     ret = ind;
                     return ret;
@@ -1022,10 +1011,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
                         PollingThreadInfo *th_info = get_polling_thread_info_by_id(ite->second);
                         th_info->polled_devices.push_back(local_dev_name);
                         th_info->nb_polled_objects++;
-                        if(smallest_upd < th_info->smallest_upd)
-                        {
-                            th_info->smallest_upd = smallest_upd;
-                        }
+                        th_info->smallest_upd = std::min(smallest_upd, th_info->smallest_upd);
                     }
                     ret = ind;
                     return ret;
@@ -1098,10 +1084,7 @@ int Util::create_poll_thread(const char *dev_name, bool startup, bool polling_9,
         dev_poll_th_map.insert(make_pair(local_dev_name, (*lower_iter)->thread_id));
         if(smallest_upd != -1)
         {
-            if(smallest_upd < (*lower_iter)->smallest_upd)
-            {
-                (*lower_iter)->smallest_upd = smallest_upd;
-            }
+            (*lower_iter)->smallest_upd = std::min(smallest_upd, (*lower_iter)->smallest_upd);
         }
         ret = ind;
     }
