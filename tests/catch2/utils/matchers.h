@@ -169,7 +169,7 @@ struct AnyLikeMatchesMatcher : Catch::Matchers::MatcherGenericBase
     //  This will involve writing our own Catch::StringMaker specialisations
     std::string describe() const override
     {
-        return "has contents matching " + m_matcher.describe();
+        return "contains a value that " + m_matcher.describe();
     }
 
   private:
@@ -235,7 +235,7 @@ class DescriptionMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::Dev
 
     std::string describe() const override
     {
-        return "description " + m_matcher.describe();
+        return "contains a description that " + m_matcher.describe();
     }
 
   private:
@@ -264,7 +264,7 @@ class FirstErrorMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevF
 
     std::string describe() const override
     {
-        return "has a first error matching " + m_matcher.describe();
+        return "has a first error that " + m_matcher.describe();
     }
 
   private:
