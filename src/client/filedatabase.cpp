@@ -1549,7 +1549,7 @@ CORBA::Any_var FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
     }
     else
     {
-        data_out->length(index + 2 * num_attr);
+        data_out->length(index + (2 * num_attr));
         for(unsigned int i = 0; i < num_attr; i++)
         {
             (*data_out)[index] = Tango::string_dup((*data_in)[i + 1]);
@@ -1967,7 +1967,7 @@ CORBA::Any_var FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
     if(it == m_server.classes.end())
     {
         TANGO_LOG_DEBUG << "Nome classe " << (*data_in)[0] << " non trovato. " << endl;
-        data_out->length(index + num_attr * 2);
+        data_out->length(index + (num_attr * 2));
         for(unsigned int j = 0; j < num_attr; j++)
         {
             (*data_out)[index] = Tango::string_dup((*data_in)[j + 1]);
@@ -2405,7 +2405,7 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
     //
     // Later we allocate more space if we find that there are multiple elements
     // for a value.
-    data_out->length(2 + 3 * num_prop);
+    data_out->length(2 + (3 * num_prop));
 
     size_t out_index = 0;
     (*data_out)[out_index] = Tango::string_dup(obj_name);

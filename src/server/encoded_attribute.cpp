@@ -154,7 +154,7 @@ void EncodedAttribute::encode_jpeg_rgb24(unsigned char *rgb24, int width, int he
 
 void EncodedAttribute::encode_gray8(const unsigned char *gray8, int width, int height)
 {
-    long unsigned int newSize = width * height + 4;
+    long unsigned int newSize = (width * height) + 4;
 
     if(manage_exclusion)
     {
@@ -186,7 +186,7 @@ void EncodedAttribute::encode_gray8(const unsigned char *gray8, int width, int h
 
 void EncodedAttribute::encode_gray16(const unsigned short *gray16, int width, int height)
 {
-    long unsigned int newSize = width * height * 2 + 4;
+    long unsigned int newSize = (width * height * 2) + 4;
 
     if(manage_exclusion)
     {
@@ -228,7 +228,7 @@ void EncodedAttribute::encode_gray16(const unsigned short *gray16, int width, in
 
 void EncodedAttribute::encode_rgb24(const unsigned char *rgb24, int width, int height)
 {
-    long unsigned int newSize = width * height * 3 + 4;
+    long unsigned int newSize = (width * height * 3) + 4;
 
     if(manage_exclusion)
     {
