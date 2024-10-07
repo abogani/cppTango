@@ -567,4 +567,25 @@ std::ostream &operator<<(std::ostream &os, const AttrQuality &quality)
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const ErrSeverity &error_severity)
+{
+    switch(error_severity)
+    {
+    case Tango::WARN:
+        os << "WARNING";
+        break;
+    case Tango::ERR:
+        os << "ERROR";
+        break;
+    case Tango::PANIC:
+        os << "PANIC";
+        break;
+    default:
+        // backwards compatibility
+        os << "Unknown";
+    }
+
+    return os;
+}
+
 } // namespace Tango

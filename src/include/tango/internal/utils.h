@@ -82,6 +82,8 @@ namespace Tango
 
 std::ostream &operator<<(std::ostream &o_str, const AttrQuality &attr_quality);
 
+std::ostream &operator<<(std::ostream &os, const ErrSeverity &error_severity);
+
 } // namespace Tango
 
 #endif // _INTERNAL_UTILS_H
