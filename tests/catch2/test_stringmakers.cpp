@@ -94,6 +94,11 @@ SCENARIO("catch2 stringmakers specialications")
     {
         Tango::DeviceAttribute da;
 
+        auto errors = new Tango::DevErrorList;
+        errors->length(1);
+        (*errors)[0].severity = Tango::WARN;
+        da.set_error_list(errors);
+
         WHEN("we can convert it to a string")
         {
             using namespace Catch::Matchers;
@@ -147,6 +152,46 @@ SCENARIO("catch2 stringmakers specialications")
         err.severity = Tango::WARN;
 
         auto result = Catch::StringMaker<Tango::DevError>::convert(err);
+        REQUIRE_THAT(result, !IsEmpty());
+    }
+
+    GIVEN("a DevError_var")
+    {
+        using namespace Catch::Matchers;
+
+        auto err = new Tango::DevError;
+        err->severity = Tango::WARN;
+
+        Tango::DevError_var var = err;
+
+        auto result = Catch::StringMaker<Tango::DevError>::convert(var);
+        REQUIRE_THAT(result, !IsEmpty());
+    }
+
+    GIVEN("a DevErrorList")
+    {
+        using namespace Catch::Matchers;
+
+        Tango::DevErrorList err_list;
+        err_list.length(2);
+        err_list[0].severity = Tango::WARN;
+        err_list[1].severity = Tango::PANIC;
+
+        auto result = Catch::StringMaker<Tango::DevErrorList>::convert(err_list);
+        REQUIRE_THAT(result, !IsEmpty());
+    }
+
+    GIVEN("a DevErrorList_var")
+    {
+        using namespace Catch::Matchers;
+
+        auto err_list = new Tango::DevErrorList;
+        err_list->length(1);
+        (*err_list)[0].severity = Tango::WARN;
+
+        Tango::DevErrorList_var var = err_list;
+
+        auto result = Catch::StringMaker<Tango::DevErrorList>::convert(var);
         REQUIRE_THAT(result, !IsEmpty());
     }
 }

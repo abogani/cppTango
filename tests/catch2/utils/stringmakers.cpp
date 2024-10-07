@@ -7,15 +7,9 @@
 
 namespace
 {
-
-/// separator between entries
-const std::string sep{", "};
-
-/// opening curly brace
-const std::string opc{"{ "};
-
-// closing curly brace
-const std::string clc{" }"};
+using TangoTest::detail::clc;
+using TangoTest::detail::opc;
+using TangoTest::detail::sep;
 
 } // namespace
 
@@ -85,10 +79,8 @@ std::string StringMaker<Tango::DeviceAttribute>::convert(const Tango::DeviceAttr
 
     if(da.has_failed())
     {
-        os << opc;
-        Tango::Except::print_error_stack(da.err_list, os);
+        os << StringMaker<Tango::DevErrorList>::convert(da.err_list);
         // no return as we want to output all elements for debug purposes
-        os << clc;
     }
     else
     {
@@ -159,7 +151,7 @@ std::string StringMaker<Tango::EventData>::convert(Tango::EventData const &value
     os << sep;
     os << "err: " << std::boolalpha << value.err;
     os << sep;
-    os << "errors: " << opc << StringMaker<Tango::DevErrorList>::convert(value.errors) << clc;
+    os << "errors: " << StringMaker<Tango::DevErrorList>::convert(value.errors);
     os << clc;
 
     return os.str();
