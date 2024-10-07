@@ -704,9 +704,9 @@ void Logging::remove_logging_target(const Tango::DevVarStringArray *argin)
                             logger->remove_appender(al[a]->get_name());
                         }
                     } // for each appender in <al>
-                }     // else (if remove_all_targets)
-            }         // for each device in <dl>
-        }             // for each tuple
+                } // else (if remove_all_targets)
+            } // for each device in <dl>
+        } // for each tuple
         // trace
         TANGO_LOG_DEBUG << "Leaving Logging::remove_logging_target" << std::endl;
     }
@@ -847,7 +847,7 @@ void Logging::set_logging_level(const DevVarLongStringArray *argin)
                 // set logger's level
                 logger->set_level(log4tango_level);
             } // for j
-        }     // for i
+        } // for i
         // trace
         TANGO_LOG_DEBUG << "Leaving Logging::set_logging_level" << std::endl;
     }
@@ -918,7 +918,7 @@ DevVarLongStringArray *Logging::get_logging_level(const DevVarStringArray *argin
                 ret->svalue[ret->svalue.length() - 1] = Tango::string_dup(dl[j]->get_name().c_str());
                 ret->lvalue[ret->lvalue.length() - 1] = tango_level;
             } // for j
-        }     // for i
+        } // for i
         // trace
         TANGO_LOG_DEBUG << "Leaving Logging::get_logging_level" << std::endl;
     }
@@ -992,8 +992,8 @@ void Logging::kill_zombie_appenders()
                     logger->remove_appender(al[j]);
                 }
             } // for each appender in <al>
-        }     // if logger
-    }         // for each device in <dl>
+        } // if logger
+    } // for each device in <dl>
     TANGO_LOG_DEBUG << "Leaving kill_zombie_appenders" << std::endl;
 }
 

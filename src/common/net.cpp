@@ -43,9 +43,7 @@ std::vector<std::string> resolve_hostname_address(const std::string &hostname)
         TANGO_THROW_EXCEPTION(Tango::API_InvalidArgs, "Can not work with an empty hostname");
     }
 
-    struct addrinfo hints
-    {
-    };
+    struct addrinfo hints{};
 
     hints.ai_flags = AI_ADDRCONFIG;
     hints.ai_family = AF_INET;

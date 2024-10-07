@@ -69,6 +69,7 @@ namespace TestCppTango1022_ns
 {
 /*----- PROTECTED REGION ID(TestCppTango1022::Additional Class Declarations) ENABLED START -----*/
 /* clang-format on */
+
 //	Additional Class Declarations
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::Additional Class Declarations

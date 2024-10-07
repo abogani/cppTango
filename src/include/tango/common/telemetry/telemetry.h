@@ -929,13 +929,13 @@ class InterfaceScope
     //!
     //! @param [in] MSG -- annotation to attach to the current span
     //! @ingroup TelMacros
-  #define TANGO_TELEMETRY_ADD_EVENT(MSG)                                                        \
-      {                                                                                         \
-          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
-          if(current_span)                                                                      \
-          {                                                                                     \
-              current_span->add_event(MSG);                                                     \
-          }                                                                                     \
+  #define TANGO_TELEMETRY_ADD_EVENT(MSG)                                                      \
+      {                                                                                       \
+          auto current_span = Tango::telemetry::Interface::get_current()->get_current_span(); \
+          if(current_span)                                                                    \
+          {                                                                                   \
+              current_span->add_event(MSG);                                                   \
+          }                                                                                   \
       }
 
     //! Add an attribute to the current span.
@@ -954,13 +954,13 @@ class InterfaceScope
     //! @param [in] KEY -- telemetry attribute key
     //! @param [in] VALUE -- telemetry attribute value
     //! @ingroup TelMacros
-  #define TANGO_TELEMETRY_ADD_ATTRIBUTE(KEY, VALUE)                                             \
-      {                                                                                         \
-          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
-          if(current_span)                                                                      \
-          {                                                                                     \
-              current_span->set_attribute(KEY, VALUE);                                          \
-          }                                                                                     \
+  #define TANGO_TELEMETRY_ADD_ATTRIBUTE(KEY, VALUE)                                           \
+      {                                                                                       \
+          auto current_span = Tango::telemetry::Interface::get_current()->get_current_span(); \
+          if(current_span)                                                                    \
+          {                                                                                   \
+              current_span->set_attribute(KEY, VALUE);                                        \
+          }                                                                                   \
       }
 
     //! Set the error status of the current span.
@@ -984,13 +984,13 @@ class InterfaceScope
     //!
     //! @param [in] DESC -- description of the error
     //! @ingroup TelMacros
-  #define TANGO_TELEMETRY_SET_ERROR_STATUS(DESC)                                                \
-      {                                                                                         \
-          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span(); \
-          if(current_span->get_status() != Tango::telemetry::Span::Status::kError)              \
-          {                                                                                     \
-              current_span->set_status(Tango::telemetry::Span::Status::kError, DESC);           \
-          }                                                                                     \
+  #define TANGO_TELEMETRY_SET_ERROR_STATUS(DESC)                                              \
+      {                                                                                       \
+          auto current_span = Tango::telemetry::Interface::get_current()->get_current_span(); \
+          if(current_span->get_status() != Tango::telemetry::Span::Status::kError)            \
+          {                                                                                   \
+              current_span->set_status(Tango::telemetry::Span::Status::kError, DESC);         \
+          }                                                                                   \
       }
 
 } // namespace Tango::telemetry

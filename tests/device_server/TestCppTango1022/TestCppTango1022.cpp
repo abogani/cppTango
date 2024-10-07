@@ -70,6 +70,7 @@ namespace TestCppTango1022_ns
 {
 /*----- PROTECTED REGION ID(TestCppTango1022::namespace_starting) ENABLED START -----*/
 /* clang-format on */
+
 //	static initializations
 /* clang-format off */
 /*----- PROTECTED REGION END -----*/	//	TestCppTango1022::namespace_starting
