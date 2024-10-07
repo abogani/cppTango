@@ -179,4 +179,21 @@ std::string StringMaker<CORBA::Any>::convert(CORBA::Any const &any)
     return os.str();
 }
 
+std::string StringMaker<Tango::DevError>::convert(Tango::DevError const &err)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "reason: " << StringMaker<const char *>::convert(err.reason.in());
+    os << sep;
+    os << "severity: " << StringMaker<Tango::ErrSeverity>::convert(err.severity);
+    os << sep;
+    os << "desc: " << StringMaker<const char *>::convert(err.desc.in());
+    os << sep;
+    os << "origin: " << StringMaker<const char *>::convert(err.origin.in());
+    os << clc;
+
+    return os.str();
+}
+
 } // namespace Catch

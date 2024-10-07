@@ -138,4 +138,15 @@ SCENARIO("catch2 stringmakers specialications")
         REQUIRE_THAT(a, AnyLikeContains(1.0));
         REQUIRE_THAT(a, AnyLikeMatches(WithinAbs(1.0, 0.0000001)));
     }
+
+    GIVEN("a DevError")
+    {
+        using namespace Catch::Matchers;
+
+        Tango::DevError err;
+        err.severity = Tango::WARN;
+
+        auto result = Catch::StringMaker<Tango::DevError>::convert(err);
+        REQUIRE_THAT(result, !IsEmpty());
+    }
 }

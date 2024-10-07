@@ -63,6 +63,12 @@ struct StringMaker<CORBA::Any>
     static std::string convert(CORBA::Any const &any);
 };
 
+template <>
+struct StringMaker<Tango::DevError>
+{
+    static std::string convert(Tango::DevError const &err);
+};
+
 } // namespace Catch
 
 #endif // CATCH_UTILS_STRINGMAKERS_H
