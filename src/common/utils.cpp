@@ -12,7 +12,7 @@ bool IDLVersionIsTooOld(int version, int desiredVersion)
 namespace
 {
 template <class T>
-bool try_type(const CORBA::TypeCode_ptr type, std::string &result)
+bool try_type(const CORBA::TypeCode_ptr &type, std::string &result)
 {
     if(type->equivalent(tango_type_traits<T>::corba_type_code()))
     {
@@ -26,138 +26,132 @@ bool try_type(const CORBA::TypeCode_ptr type, std::string &result)
 
 std::string corba_any_to_type_name(const CORBA::Any &any)
 {
-    CORBA::TypeCode_ptr type = any.type();
+    CORBA::TypeCode_var type = any.type();
 
     std::string result;
     if(try_type<Tango::DevVarShortArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarUShortArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarLongArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarULongArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarLong64Array>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarULong64Array>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarDoubleArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarStringArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarUCharArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarFloatArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarBooleanArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarStateArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarEncodedArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevShort>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevUShort>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevLong>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevULong>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevLong64>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevULong64>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevDouble>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevString>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevUChar>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevFloat>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevBoolean>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevState>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevEncoded>(type, result))
     {
-        goto end;
+        return result;
     }
 
+    TangoSys_OMemStream oss;
+    oss << "UnknownCorbaAny<kind=" << type->kind();
+
+    // `TypeCode`s for basic data types do not have a `name()`, as they can
+    // be distinguished with only their `kind()`.
+
+    try
     {
-        TangoSys_OMemStream oss;
-        oss << "UnknownCorbaAny<kind=" << type->kind();
-
-        // `TypeCode`s for basic data types do not have a `name()`, as they can
-        // be distinguished with only their `kind()`.
-
-        try
-        {
-            const char *name = type->name();
-            oss << ",name=" << name;
-        }
-        catch(const CORBA::TypeCode::BadKind &)
-        {
-            /* ignore */
-        }
-
-        oss << ">" << std::ends;
-        result = oss.str();
+        const char *name = type->name();
+        oss << ",name=" << name;
+    }
+    catch(const CORBA::TypeCode::BadKind &)
+    {
+        /* ignore */
     }
 
-end:
-    CORBA::release(type);
-    return result;
+    oss << ">" << std::ends;
+    return oss.str();
 }
 
 std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d)
