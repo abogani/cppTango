@@ -6120,62 +6120,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttribute &da)
 
         if(da.quality != Tango::ATTR_INVALID)
         {
-            if(da.LongSeq.operator->() != nullptr)
-            {
-                o_str << *(da.LongSeq.operator->());
-            }
-            else if(da.Long64Seq.operator->() != nullptr)
-            {
-                o_str << *(da.Long64Seq.operator->());
-            }
-            else if(da.ShortSeq.operator->() != nullptr)
-            {
-                o_str << *(da.ShortSeq.operator->());
-            }
-            else if(da.DoubleSeq.operator->() != nullptr)
-            {
-                o_str << *(da.DoubleSeq.operator->());
-            }
-            else if(da.FloatSeq.operator->() != nullptr)
-            {
-                o_str << *(da.FloatSeq.operator->());
-            }
-            else if(da.BooleanSeq.operator->() != nullptr)
-            {
-                o_str << *(da.BooleanSeq.operator->());
-            }
-            else if(da.UShortSeq.operator->() != nullptr)
-            {
-                o_str << *(da.UShortSeq.operator->());
-            }
-            else if(da.UCharSeq.operator->() != nullptr)
-            {
-                o_str << *(da.UCharSeq.operator->());
-            }
-            else if(da.StringSeq.operator->() != nullptr)
-            {
-                o_str << *(da.StringSeq.operator->());
-            }
-            else if(da.ULongSeq.operator->() != nullptr)
-            {
-                o_str << *(da.ULongSeq.operator->());
-            }
-            else if(da.ULong64Seq.operator->() != nullptr)
-            {
-                o_str << *(da.ULong64Seq.operator->());
-            }
-            else if(da.StateSeq.operator->() != nullptr)
-            {
-                o_str << *(da.StateSeq.operator->());
-            }
-            else if(da.EncodedSeq.operator->() != nullptr)
-            {
-                o_str << *(da.EncodedSeq.operator->());
-            }
-            else
-            {
-                o_str << DevStateName[da.d_state];
-            }
+            detail::stringify_attribute_data(o_str, da);
         }
     }
 

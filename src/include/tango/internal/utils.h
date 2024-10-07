@@ -73,6 +73,8 @@ bool get_boolean_env_var(const char *env_var, bool default_value);
 
 void stringify_any(std::ostream &os, const CORBA::Any &any);
 
+void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da);
+
 } // namespace Tango::detail
 
 namespace Tango

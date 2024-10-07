@@ -476,6 +476,66 @@ void stringify_any(std::ostream &os, const CORBA::Any &any)
     CORBA::release(tc);
 }
 
+void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da)
+{
+    if(da.LongSeq.operator->() != nullptr)
+    {
+        os << *(da.LongSeq.operator->());
+    }
+    else if(da.Long64Seq.operator->() != nullptr)
+    {
+        os << *(da.Long64Seq.operator->());
+    }
+    else if(da.ShortSeq.operator->() != nullptr)
+    {
+        os << *(da.ShortSeq.operator->());
+    }
+    else if(da.DoubleSeq.operator->() != nullptr)
+    {
+        os << *(da.DoubleSeq.operator->());
+    }
+    else if(da.FloatSeq.operator->() != nullptr)
+    {
+        os << *(da.FloatSeq.operator->());
+    }
+    else if(da.BooleanSeq.operator->() != nullptr)
+    {
+        os << *(da.BooleanSeq.operator->());
+    }
+    else if(da.UShortSeq.operator->() != nullptr)
+    {
+        os << *(da.UShortSeq.operator->());
+    }
+    else if(da.UCharSeq.operator->() != nullptr)
+    {
+        os << *(da.UCharSeq.operator->());
+    }
+    else if(da.StringSeq.operator->() != nullptr)
+    {
+        os << *(da.StringSeq.operator->());
+    }
+    else if(da.ULongSeq.operator->() != nullptr)
+    {
+        os << *(da.ULongSeq.operator->());
+    }
+    else if(da.ULong64Seq.operator->() != nullptr)
+    {
+        os << *(da.ULong64Seq.operator->());
+    }
+    else if(da.StateSeq.operator->() != nullptr)
+    {
+        os << *(da.StateSeq.operator->());
+    }
+    else if(da.EncodedSeq.operator->() != nullptr)
+    {
+        os << *(da.EncodedSeq.operator->());
+    }
+    else
+    {
+        os << DevStateName[da.d_state];
+    }
+}
+
 } // namespace Tango::detail
 
 namespace Tango
