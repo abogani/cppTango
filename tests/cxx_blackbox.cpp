@@ -165,6 +165,7 @@ class BlackboxTestSuite : public CxxTest::TestSuite
 
             TS_ASSERT_EQUALS(out_str, reference_str);
         }
+        delete blackbox_out;
 
         // removing properties of memorized attributes
         string query =
@@ -211,6 +212,7 @@ class BlackboxTestSuite : public CxxTest::TestSuite
             {
                 TEST_LOG << "===> first element: " << (*bb)[0] << endl;
             }
+            delete bb;
         }
         catch(DevFailed &e)
         {
@@ -275,12 +277,15 @@ class BlackboxTestSuite : public CxxTest::TestSuite
                     }
                     TEST_LOG << "===> Nothing yet stored in blackbox, error reason = " << reas << endl;
                     TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
+                    delete dev;
                 }
             }
             else
             {
                 TS_ASSERT_EQUALS(reas, API_BlackBoxEmpty);
             }
+
+            delete dev;
         }
         catch(...)
         {
@@ -298,6 +303,7 @@ class BlackboxTestSuite : public CxxTest::TestSuite
         out_str = (*blackbox_out)[0];
         out_str.erase(0, out_str.rfind(": ") + 2);
         TS_ASSERT_EQUALS(out_str, reference_str);
+        delete blackbox_out;
     }
 };
 

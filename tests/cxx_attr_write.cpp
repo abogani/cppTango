@@ -177,6 +177,8 @@ class AttrWriteTestSuite : public CxxTest::TestSuite
         attributes.push_back(double_attr_w);
         attributes.push_back(string_attr_w);
         TS_ASSERT_THROWS_NOTHING(device1->write_attributes(attributes));
+
+        delete attributes_vec;
     }
 
     // Short_attr_w, String_attr_w and Boolean_attr_w are memorized attributes
@@ -207,6 +209,8 @@ class AttrWriteTestSuite : public CxxTest::TestSuite
         attributes[2] >> bl;
         TS_ASSERT_EQUALS(attributes[2].name, "Boolean_attr_w");
         TS_ASSERT_EQUALS(bl, false);
+
+        delete attributes_vec;
     }
 };
 

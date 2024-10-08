@@ -67,6 +67,7 @@ class DevicePipeBlobTestSuite : public CxxTest::TestSuite
 
         // insert datum in the middle element
         TS_ASSERT_THROWS_NOTHING(pipe["test2"] << datum);
+        CORBA::string_free(datum);
 
         auto *data = pipe.get_insert_data();
 
@@ -75,6 +76,8 @@ class DevicePipeBlobTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS((*data)[1].inner_blob_name.in(), scalar);
         TS_ASSERT_DIFFERS((*data)[0].inner_blob_name.in(), scalar);
         TS_ASSERT_DIFFERS((*data)[2].inner_blob_name.in(), scalar);
+
+        delete data;
     }
 };
 

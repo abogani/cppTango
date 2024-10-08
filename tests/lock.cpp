@@ -465,6 +465,8 @@ int main(int argc, char **argv)
         assert(WEXITSTATUS(ret) == 0);
 
         TEST_LOG << "  Lock validity --> OK" << endl;
+
+        delete admin;
     }
     catch(Tango::DevFailed &e)
     {

@@ -589,6 +589,8 @@ int main(int argc, char **argv)
         assert(sta3 == Tango::ALARM);
 
         TEST_LOG << "   Reading State with alarmed and polled attribute(s) --> OK" << endl;
+
+        delete att_conf2;
     }
     catch(CORBA::Exception &e)
     {
@@ -599,6 +601,8 @@ int main(int argc, char **argv)
         device->set_attribute_config(*att_conf2);
         device->stop_poll_attribute("SlowAttr");
         device->stop_poll_attribute("Long_attr");
+
+        delete att_conf2;
 
         exit(-1);
     }

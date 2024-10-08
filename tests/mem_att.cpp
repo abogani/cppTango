@@ -84,6 +84,8 @@ int main(int argc, char **argv)
         (*r_att)[0] >> read_sh;
         (*r_att)[1] >> read_str;
         (*r_att)[2] >> read_bo;
+        delete r_att;
+        r_att = nullptr;
 
         TEST_LOG << "Read value for Short_attr_w = " << read_sh << endl;
         TEST_LOG << "Read value for String_attr_w = " << read_str << endl;

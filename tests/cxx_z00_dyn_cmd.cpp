@@ -105,6 +105,8 @@ class DynCmdTestSuite : public CxxTest::TestSuite
             }
         }
 
+        delete cil;
+
         TS_ASSERT(found);
 
         // Command also in command list for device 2
@@ -120,6 +122,8 @@ class DynCmdTestSuite : public CxxTest::TestSuite
                 found = true;
             }
         }
+
+        delete cil2;
 
         TS_ASSERT(found);
 
@@ -166,6 +170,8 @@ class DynCmdTestSuite : public CxxTest::TestSuite
             }
         }
 
+        delete cil;
+
         TS_ASSERT(found);
 
         // Command should not be in command list for device 2
@@ -181,6 +187,8 @@ class DynCmdTestSuite : public CxxTest::TestSuite
                 found = true;
             }
         }
+
+        delete cil2;
 
         TS_ASSERT(!found);
 

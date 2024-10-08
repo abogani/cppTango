@@ -274,6 +274,9 @@ class WriteAttrHardware : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(read_after_att2[0], Tango::STANDBY);
         TS_ASSERT_EQUALS(read_after_att1.size(), 1u);
         TS_ASSERT_EQUALS(read_after_att1[0], 111);
+
+        delete read_bef;
+        delete read_after;
     }
 };
 

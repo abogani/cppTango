@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
     }
 
     delete dev;
+    delete eventCallback;
 
     TEST_LOG << "   Memory corruption at process exit--> ??" << std::endl;
 

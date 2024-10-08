@@ -278,6 +278,7 @@ class AttrConfTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(att_inf.min_alarm, "Not specified");
         TS_ASSERT_EQUALS(att_inf.max_alarm, "Not specified");
         TS_ASSERT_EQUALS(att_inf.writable_attr_name, "None");
+        delete att_inf_list;
     }
 
     // Add one attribute on the fly and get its config
