@@ -430,7 +430,7 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 
     std::string describe() const override
     {
-        return "cotains errors that " + m_matcher.describe();
+        return "contains errors that " + m_matcher.describe();
     }
 
   private:
