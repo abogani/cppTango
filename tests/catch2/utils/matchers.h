@@ -348,7 +348,7 @@ inline AttrQualityMatcher AttrQuality(Tango::AttrQuality attr_quality)
 }
 
 template <typename Matcher>
-class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+class EventValueMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     EventValueMatchesMatcher(Matcher matcher) :
@@ -356,7 +356,7 @@ class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const override
+    bool match(const std::optional<Tango::EventData> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
@@ -366,6 +366,18 @@ class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
         }
 
         return event->attr_value != nullptr && m_matcher.match(*event->attr_value);
+    }
+
+    bool match(std::optional<TangoTest::AttrReadEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->argout);
     }
 
     std::string describe() const override
@@ -384,7 +396,7 @@ EventValueMatchesMatcher<Matcher> EventValueMatches(Matcher &&matcher)
 }
 
 template <typename Matcher>
-class EventErrorMatchesMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     EventErrorMatchesMatcher(Matcher matcher) :
@@ -392,7 +404,19 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const override
+    bool match(const std::optional<Tango::EventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
+    bool match(const std::optional<TangoTest::AttrReadEventCopyable> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
