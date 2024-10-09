@@ -81,10 +81,12 @@ SCENARIO("Attribute polling can be enabled")
 
                 AND_THEN("the device server reports the attribute is polled")
                 {
+                    using namespace TangoTest::Matchers;
+
                     Tango::DeviceData in, out;
                     in << attr;
                     REQUIRE_NOTHROW(out = device->command_inout("IsAttrPolled", in));
-                    REQUIRE_THAT(out, TangoTest::AnyLikeContains(true));
+                    REQUIRE_THAT(out, AnyLikeContains(true));
                 }
             }
 
@@ -94,10 +96,12 @@ SCENARIO("Attribute polling can be enabled")
 
                 AND_THEN("the device server reports the correct polling period")
                 {
+                    using namespace TangoTest::Matchers;
+
                     Tango::DeviceData in, out;
                     in << attr;
                     REQUIRE_NOTHROW(out = device->command_inout("AttrPollPeriod", in));
-                    REQUIRE_THAT(out, TangoTest::AnyLikeContains(k_polling_period));
+                    REQUIRE_THAT(out, AnyLikeContains(k_polling_period));
                 }
             }
         }
@@ -127,10 +131,12 @@ SCENARIO("Attribute polling period can be updated")
 
                     AND_THEN("the device server reports the correct polling period")
                     {
+                        using namespace TangoTest::Matchers;
+
                         Tango::DeviceData in, out;
                         in << attr;
                         REQUIRE_NOTHROW(out = device->command_inout("AttrPollPeriod", in));
-                        REQUIRE_THAT(out, TangoTest::AnyLikeContains(2 * k_polling_period));
+                        REQUIRE_THAT(out, AnyLikeContains(2 * k_polling_period));
                     }
                 }
             }
@@ -161,10 +167,12 @@ SCENARIO("Attribute polling can be disabled")
 
                     AND_THEN("the device server reports the attribute is no longer polled")
                     {
+                        using namespace TangoTest::Matchers;
+
                         Tango::DeviceData in, out;
                         in << attr;
                         REQUIRE_NOTHROW(out = device->command_inout("IsAttrPolled", in));
-                        REQUIRE_THAT(out, TangoTest::AnyLikeContains(false));
+                        REQUIRE_THAT(out, AnyLikeContains(false));
                     }
                 }
             }
@@ -249,29 +257,7 @@ SCENARIO("Polled attributes generate change events")
 
                 THEN("we receive some events with the initial value")
                 {
-                    // We get the following two initial events (the fact there
-                    // are two is a side effect of the fix for #369):
-                    //
-                    // 1. In `subscribe_event` we do a `read_attribute` to
-                    // generate the first event
-                    // 2. Because we are the first subscriber to `"attr"`, the
-                    // polling loop starts and sends an event because it is the
-                    // first time it has read the attribute
-                    //
-                    // We do not assert anything about the second event, because
-                    // it might not be present.  There is a race condition in case 2
-                    // above: If the polling loop triggers _after_ the subscription
-                    // command (which sets up things on the server), but _before_ the
-                    // ZMQ client has subscribed to the topic then we will miss the
-                    // event.
-
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value, TangoTest::AnyLikeContains(k_initial_value));
-
-                    maybe_initial_event = callback.pop_next_event();
+                    require_initial_events(callback, k_initial_value);
 
                     AND_WHEN("we write to the attribute")
                     {
@@ -279,15 +265,15 @@ SCENARIO("Polled attributes generate change events")
 
                         THEN("we receive an event with the new value")
                         {
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
 
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, TangoTest::AnyLikeContains(k_new_value));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeContains(k_new_value)));
 
                             maybe_new_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                            REQUIRE(!maybe_new_event.has_value());
+                            REQUIRE(maybe_new_event == std::nullopt);
                         }
                     }
 
@@ -297,26 +283,25 @@ SCENARIO("Polled attributes generate change events")
 
                         THEN("we recieve an event with information about the exception")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_ex_event = callback.pop_next_event();
 
-                            REQUIRE(maybe_ex_event.has_value());
-                            REQUIRE(maybe_ex_event->err);
-                            REQUIRE(maybe_ex_event->errors.length() == 1);
-                            REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
-                            REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                            REQUIRE(maybe_ex_event != std::nullopt);
+                            REQUIRE_THAT(maybe_ex_event,
+                                         EventErrorMatches(AllMatch(Reason(k_test_reason) &&
+                                                                    DescriptionMatches(Equals(k_a_helpful_desc)))));
 
                             AND_THEN("we recieve a good event when the next read succeeds")
                             {
                                 auto maybe_good_event = callback.pop_next_event();
 
-                                REQUIRE(maybe_good_event.has_value());
-                                REQUIRE(!maybe_good_event->err);
-                                REQUIRE(maybe_good_event->attr_value != nullptr);
-                                REQUIRE_THAT(*maybe_good_event->attr_value,
-                                             TangoTest::AnyLikeContains(k_initial_value));
+                                REQUIRE(maybe_good_event != std::nullopt);
+                                REQUIRE_THAT(maybe_good_event, EventValueMatches(AnyLikeContains(k_initial_value)));
 
                                 maybe_good_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                                REQUIRE(!maybe_good_event.has_value());
+                                REQUIRE(maybe_good_event == std::nullopt);
                             }
                         }
                     }
@@ -343,7 +328,7 @@ SCENARIO("Subscribing to change events for an attribute with no polling fails")
             {
                 THEN("the subscription fails")
                 {
-                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback, false),
                                            Tango::DevFailed,
@@ -359,11 +344,13 @@ SCENARIO("Subscribing to change events for an attribute with no polling fails")
 
                     AND_THEN("we receive an error event")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_initial_event = callback.pop_next_event();
-                        REQUIRE(maybe_initial_event.has_value());
-                        REQUIRE(maybe_initial_event->err);
-                        REQUIRE(std::string(Tango::API_AttributePollingNotStarted) ==
-                                maybe_initial_event->errors[0].reason.in());
+                        REQUIRE(maybe_initial_event != std::nullopt);
+                        REQUIRE_THAT(maybe_initial_event,
+                                     EventErrorMatches(AnyMatch(Reason(Tango::API_AttributePollingNotStarted))));
                     }
                 }
             }

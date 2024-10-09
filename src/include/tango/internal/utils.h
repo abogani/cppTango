@@ -1,6 +1,8 @@
 #ifndef _INTERNAL_UTILS_H
 #define _INTERNAL_UTILS_H
 
+#include <tango/tango.h>
+
 #include <iostream>
 #include <optional>
 #include <string>
@@ -69,6 +71,19 @@ std::optional<bool> to_boolean(std::string_view str);
 /// Return `default_value` in case it is not present, throws for unkonwn content
 bool get_boolean_env_var(const char *env_var, bool default_value);
 
+void stringify_any(std::ostream &os, const CORBA::Any &any);
+
+void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da);
+
 } // namespace Tango::detail
+
+namespace Tango
+{
+
+std::ostream &operator<<(std::ostream &o_str, const AttrQuality &attr_quality);
+
+std::ostream &operator<<(std::ostream &os, const ErrSeverity &error_severity);
+
+} // namespace Tango
 
 #endif // _INTERNAL_UTILS_H

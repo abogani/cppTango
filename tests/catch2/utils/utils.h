@@ -9,12 +9,15 @@
 #include "utils/auto_device_class.h"
 #include "utils/test_server.h"
 #include "utils/callback_mock.h"
+#include "utils/stringmakers.h"
 #include "utils/matchers.h"
 #include "utils/generators.h"
+#include <tango/internal/stl_corba_helpers.h>
 
 #include <tango/tango.h>
 
 #include <memory>
+#include <type_traits>
 
 namespace TangoTest
 {
@@ -163,6 +166,54 @@ extern std::string g_log_filename_prefix;
 // ('_').
 std::string filename_from_test_case_name(std::string_view test_case_name, std::string_view suffix);
 } // namespace detail
+
+template <typename T>
+void require_event(T &callback)
+{
+    // discard the event we get when we subscribe again
+    auto maybe_initial_event = callback.pop_next_event();
+    REQUIRE(maybe_initial_event != std::nullopt);
+}
+
+template <typename T>
+void require_initial_events(T &callback)
+{
+    auto maybe_initial_event = callback.pop_next_event();
+    REQUIRE(maybe_initial_event != std::nullopt);
+
+    maybe_initial_event = callback.pop_next_event();
+}
+
+template <typename T, typename U>
+void require_initial_events(T &callback, U initial_value)
+{
+    using namespace Catch::Matchers;
+    using namespace TangoTest::Matchers;
+
+    // We get the following two initial events (the fact there
+    // are two is a side effect of the fix for #369):
+    //
+    // 1. In `subscribe_event` we do a `read_attribute` to
+    // generate the first event
+    // 2. Because we are the first subscriber to `"attr"`, the
+    // polling loop starts and sends an event because it is the
+    // first time it has read the attribute
+
+    auto maybe_initial_event = callback.pop_next_event();
+    REQUIRE(maybe_initial_event != std::nullopt);
+
+    if constexpr(std::is_floating_point_v<U>)
+    {
+        REQUIRE_THAT(maybe_initial_event,
+                     EventValueMatches(AnyLikeMatches<U>(WithinAbs(initial_value, static_cast<U>(0.0000001)))));
+    }
+    else
+    {
+        REQUIRE_THAT(maybe_initial_event, EventValueMatches(AnyLikeContains(initial_value)));
+    }
+
+    maybe_initial_event = callback.pop_next_event();
+}
 
 } // namespace TangoTest
 

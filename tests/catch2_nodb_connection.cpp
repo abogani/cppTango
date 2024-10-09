@@ -80,7 +80,7 @@ SCENARIO("Test connection and reading a double RO attribute on a nodb device")
             double_val = 0.0;
             THEN("We can no longer read the double_value attribute")
             {
-                using TangoTest::FirstErrorMatches, TangoTest::Reason;
+                using namespace TangoTest::Matchers;
 
                 REQUIRE_THROWS_MATCHES(
                     [&]()

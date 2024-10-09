@@ -15,7 +15,8 @@ SCENARIO("Call set_write_value with a std::string")
             Tango::DevString res;
             REQUIRE_NOTHROW(attr.get_write_value(res));
 
-            using Catch::Matchers::Equals;
+            using namespace Catch::Matchers;
+
             REQUIRE_THAT(res, Equals("Not initialised"));
         }
         WHEN("Calling set_write_value with a vector of string")
@@ -28,7 +29,8 @@ SCENARIO("Call set_write_value with a std::string")
                 Tango::DevString res;
                 REQUIRE_NOTHROW(attr.get_write_value(res));
 
-                using Catch::Matchers::Equals;
+                using namespace Catch::Matchers;
+
                 REQUIRE_THAT(res, Equals("val_1"));
             }
         }

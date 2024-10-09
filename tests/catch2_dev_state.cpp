@@ -225,7 +225,7 @@ SCENARIO("dev_state works with exceptions")
 
                 THEN("we find an " << Tango::DevStateName[data.expected] << " state")
                 {
-                    using TangoTest::AnyLikeContains;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THAT(dd, AnyLikeContains(data.expected));
                 }
@@ -242,7 +242,7 @@ SCENARIO("dev_state works with exceptions")
 
                     THEN("we find an " << Tango::DevStateName[data.expected] << " state")
                     {
-                        using TangoTest::AnyLikeContains;
+                        using namespace TangoTest::Matchers;
 
                         REQUIRE_THAT(da, AnyLikeContains(data.expected));
                     }
@@ -257,7 +257,7 @@ SCENARIO("user dev_state is always called")
     int idlver = GENERATE(TangoTest::idlversion(3));
     GIVEN("a device proxy to a simple IDLv" << idlver << " device in ALARM state")
     {
-        using TangoTest::AnyLikeContains;
+        using namespace TangoTest::Matchers;
 
         TangoTest::Context ctx{"state", "DevStateExcept", idlver};
         std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
@@ -290,9 +290,7 @@ SCENARIO("user dev_state is always called")
             AND_WHEN("we read the throwing attribute and State")
             {
                 using UniquePtr = std::unique_ptr<std::vector<Tango::DeviceAttribute>>;
-                using TangoTest::AnyErrorMatches;
-                using TangoTest::AnyLikeContains;
-                using TangoTest::Reason;
+                using namespace TangoTest::Matchers;
 
                 UniquePtr das;
                 REQUIRE_NOTHROW(das = UniquePtr{device->read_attributes({"attr1", "State"})});
@@ -301,13 +299,13 @@ SCENARIO("user dev_state is always called")
                 {
                     Tango::DevDouble value;
                     REQUIRE_THROWS_MATCHES(
-                        (*das)[0] >> value, Tango::DevFailed, AnyErrorMatches(Reason(k_test_reason)));
+                        (*das)[0] >> value, Tango::DevFailed, ErrorListMatches(AnyMatch(Reason(k_test_reason))));
 
                     REQUIRE_THAT((*das)[1], AnyLikeContains(Tango::ALARM));
 
                     AND_THEN("we find that dev_state() has been called")
                     {
-                        using TangoTest::AnyLikeContains;
+                        using namespace TangoTest::Matchers;
 
                         Tango::DeviceData dd;
                         REQUIRE_NOTHROW(dd = device->command_inout("has_dev_state_been_called"));

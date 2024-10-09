@@ -33,6 +33,8 @@
 #include <iomanip>
 #include <memory>
 
+#include <tango/internal/utils.h>
+
 using namespace CORBA;
 
 namespace Tango
@@ -272,26 +274,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceDataHistory &dh)
         for(unsigned long i = 0; i < nb_err; i++)
         {
             o_str << "Tango error stack" << std::endl;
-            o_str << "Severity = ";
-            switch((dh.err.in())[i].severity)
-            {
-            case Tango::WARN:
-                o_str << "WARNING ";
-                break;
-
-            case Tango::ERR:
-                o_str << "ERROR ";
-                break;
-
-            case Tango::PANIC:
-                o_str << "PANIC ";
-                break;
-
-            default:
-                o_str << "Unknown severity code";
-                break;
-            }
-            o_str << std::endl;
+            o_str << "Severity = " << (dh.err.in())[i].severity << std::endl;
             o_str << "Error reason = " << (dh.err.in())[i].reason.in() << std::endl;
             o_str << "Desc : " << (dh.err.in())[i].desc.in() << std::endl;
             o_str << "Origin : " << (dh.err.in())[i].origin.in();
@@ -764,29 +747,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
     // Print quality
     //
 
-    o_str << "Data quality factor = ";
-    switch(dah.quality)
-    {
-    case Tango::ATTR_VALID:
-        o_str << "VALID)" << std::endl;
-        break;
-
-    case Tango::ATTR_INVALID:
-        o_str << "INVALID)";
-        break;
-
-    case Tango::ATTR_ALARM:
-        o_str << "ALARM)" << std::endl;
-        break;
-
-    case Tango::ATTR_CHANGING:
-        o_str << "CHANGING)" << std::endl;
-        break;
-
-    case Tango::ATTR_WARNING:
-        o_str << "WARNING) " << std::endl;
-        break;
-    }
+    o_str << "Data quality factor = " << dah.quality << ")" << std::endl;
 
     //
     // Print data (if valid) or error stack
@@ -798,26 +759,7 @@ std::ostream &operator<<(std::ostream &o_str, const DeviceAttributeHistory &dah)
         for(unsigned long i = 0; i < nb_err; i++)
         {
             o_str << "Tango error stack" << std::endl;
-            o_str << "Severity = ";
-            switch(dah.err_list.in()[i].severity)
-            {
-            case Tango::WARN:
-                o_str << "WARNING ";
-                break;
-
-            case Tango::ERR:
-                o_str << "ERROR ";
-                break;
-
-            case Tango::PANIC:
-                o_str << "PANIC ";
-                break;
-
-            default:
-                o_str << "Unknown severity code";
-                break;
-            }
-            o_str << std::endl;
+            o_str << "Severity = " << dah.err_list.in()[i].severity << std::endl;
             o_str << "Error reason = " << dah.err_list.in()[i].reason.in() << std::endl;
             o_str << "Desc : " << dah.err_list.in()[i].desc.in() << std::endl;
             o_str << "Origin : " << dah.err_list.in()[i].origin.in();

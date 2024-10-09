@@ -47,10 +47,12 @@ function(tango_catch2_tests_create)
         ${TANGO_CATCH2_TESTS_DIR}/test_test_server.cpp
         ${TANGO_CATCH2_TESTS_DIR}/test_auto_command.cpp
         ${TANGO_CATCH2_TESTS_DIR}/test_auto_attr.cpp
+        ${TANGO_CATCH2_TESTS_DIR}/test_stringmakers.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/auto_device_class.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/test_server.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/entry_points.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/utils.cpp
+        ${TANGO_CATCH2_TESTS_DIR}/utils/stringmakers.cpp
         common.cpp
         ${PLATFORM_IMPL})
 
@@ -58,6 +60,7 @@ function(tango_catch2_tests_create)
     target_link_libraries(Catch2Tests PRIVATE $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
     target_compile_options(Catch2Tests PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+    target_compile_definitions(Catch2Tests PRIVATE "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS")
 
     if (WIN32)
         # On Windows, we need to copy any dependent DLLs into the test directory

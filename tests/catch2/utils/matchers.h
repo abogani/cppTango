@@ -3,6 +3,8 @@
 
 #include <tango/tango.h>
 
+#include <tango/common/utils/type_info.h>
+#include <tango/internal/stl_corba_helpers.h>
 #include <tango/internal/type_traits.h>
 
 #include <type_traits>
@@ -13,7 +15,8 @@ namespace detail
 {
 
 template <typename AnyLike, typename T>
-using corba_extraction_result_t = decltype(std::declval<AnyLike>() >>= std::declval<T>());
+using corba_extraction_result_t =
+    decltype(std::declval<const AnyLike>() >>= std::declval<std::add_lvalue_reference_t<T>>());
 
 template <typename AnyLike, typename T>
 constexpr bool has_corba_extract_operator_to = Tango::detail::is_detected_v<corba_extraction_result_t, AnyLike, T>;
@@ -32,7 +35,21 @@ struct first_argument<bool (Matcher::*)(Arg) const>
 template <typename Matcher>
 using matchee_t = typename first_argument<decltype(&Matcher::match)>::type;
 
+/// @brief Return the name of the type T
+template <typename T>
+std::string get_ref_type(T val)
+{
+    Tango::DeviceData dd;
+
+    dd << val;
+
+    return Tango::detail::corba_any_to_type_name(dd.any);
+}
+
 } // namespace detail
+
+namespace Matchers
+{
 
 /**
  * @brief Matches an "any like" type that contains a specific value
@@ -83,17 +100,12 @@ struct AnyLikeContainsMatcher : Catch::Matchers::MatcherGenericBase
         return other == value;
     }
 
-    // TODO: Improve the output here.
-    //
-    // In addition to the values we show, ideally, we need to include:
-    //  - A name for AnyLike
-    //  - A name for T
-    //  - A name for the type actually stored in the AnyLike
-    //
-    //  This will involve writing our own Catch::StringMaker specialisations
     std::string describe() const override
     {
-        return "== " + Catch::StringMaker<T>::convert(value);
+        std::ostringstream os;
+        os << "contains (" << detail::get_ref_type(T{}) << ") " << Catch::StringMaker<T>::convert(value);
+
+        return os.str();
     }
 
   private:
@@ -155,17 +167,11 @@ struct AnyLikeMatchesMatcher : Catch::Matchers::MatcherGenericBase
         return m_matcher.match(other);
     }
 
-    // TODO: Improve the output here.
-    //
-    // In addition to the values we show, ideally, we need to include:
-    //  - A name for AnyLike
-    //  - A name for T
-    //  - A name for the type actually stored in the AnyLike
-    //
-    //  This will involve writing our own Catch::StringMaker specialisations
     std::string describe() const override
     {
-        return "has contents matching " + m_matcher.describe();
+        std::ostringstream os;
+        os << "contains (" << detail::get_ref_type(T{}) << ") that " << m_matcher.describe();
+        return os.str();
     }
 
   private:
@@ -231,7 +237,7 @@ class DescriptionMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::Dev
 
     std::string describe() const override
     {
-        return "description " + m_matcher.describe();
+        return "contains a description that " + m_matcher.describe();
     }
 
   private:
@@ -240,43 +246,6 @@ class DescriptionMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::Dev
 
 template <typename StringMatcher>
 DescriptionMatchesMatcher<StringMatcher> DescriptionMatches(StringMatcher &&matcher)
-{
-    return {CATCH_FORWARD(matcher)};
-}
-
-template <typename ErrorMatcher>
-class AnyErrorMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFailed>
-{
-  public:
-    AnyErrorMatchesMatcher(ErrorMatcher matcher) :
-        m_matcher{CATCH_MOVE(matcher)}
-    {
-    }
-
-    bool match(const Tango::DevFailed &ex) const override
-    {
-        for(size_t i = 0; i < ex.errors.length(); ++i)
-        {
-            if(m_matcher.match(ex.errors[i]))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    std::string describe() const override
-    {
-        return "has error matching " + m_matcher.describe();
-    }
-
-  private:
-    ErrorMatcher m_matcher;
-};
-
-template <typename ErrorMatcher>
-AnyErrorMatchesMatcher<ErrorMatcher> AnyErrorMatches(ErrorMatcher &&matcher)
 {
     return {CATCH_FORWARD(matcher)};
 }
@@ -297,7 +266,7 @@ class FirstErrorMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevF
 
     std::string describe() const override
     {
-        return "has a first error matching " + m_matcher.describe();
+        return "has a first error that " + m_matcher.describe();
     }
 
   private:
@@ -309,4 +278,174 @@ FirstErrorMatchesMatcher<ErrorMatcher> FirstErrorMatches(ErrorMatcher &&matcher)
 {
     return {CATCH_FORWARD(matcher)};
 }
+
+class EventTypeMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+{
+  public:
+    EventTypeMatcher(Tango::EventType event_type) :
+        m_event_type{CATCH_MOVE(event_type)}
+    {
+    }
+
+    bool match(const std::optional<Tango::EventData> &event) const override
+    {
+        TANGO_ASSERT(event.has_value());
+        return event->event == Tango::EventName[m_event_type];
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has event type that equals \"" << Tango::EventName[m_event_type] << "\"";
+        return os.str();
+    }
+
+  private:
+    Tango::EventType m_event_type;
+};
+
+inline EventTypeMatcher EventType(Tango::EventType event_type)
+{
+    REQUIRE(event_type >= 0);
+    REQUIRE(event_type < Tango::numEventType);
+
+    return {CATCH_FORWARD(event_type)};
+}
+
+class AttrQualityMatcher : public Catch::Matchers::MatcherBase<Tango::DeviceAttribute>
+{
+  public:
+    AttrQualityMatcher(Tango::AttrQuality attr_quality) :
+        m_attr_quality{CATCH_MOVE(attr_quality)}
+    {
+    }
+
+    bool match(const Tango::DeviceAttribute &attr) const override
+    {
+        return const_cast<Tango::DeviceAttribute &>(attr).get_quality() == m_attr_quality;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has attribute quality that equals \"" << m_attr_quality << "\"";
+        return os.str();
+    }
+
+  private:
+    Tango::AttrQuality m_attr_quality;
+};
+
+inline AttrQualityMatcher AttrQuality(Tango::AttrQuality attr_quality)
+{
+    REQUIRE(attr_quality >= 0);
+    // hardcoded limit for IDL 6.0.2
+    REQUIRE(attr_quality < 5);
+
+    return {CATCH_FORWARD(attr_quality)};
+}
+
+template <typename Matcher>
+class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+{
+  public:
+    EventValueMatchesMatcher(Matcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const std::optional<Tango::EventData> &event) const override
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return event->attr_value != nullptr && m_matcher.match(*event->attr_value);
+    }
+
+    std::string describe() const override
+    {
+        return "has attr_value that " + m_matcher.describe();
+    }
+
+  private:
+    Matcher m_matcher;
+};
+
+template <typename Matcher>
+EventValueMatchesMatcher<Matcher> EventValueMatches(Matcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
+
+template <typename Matcher>
+class EventErrorMatchesMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+{
+  public:
+    EventErrorMatchesMatcher(Matcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const std::optional<Tango::EventData> &event) const override
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
+    std::string describe() const override
+    {
+        return "cotains errors that " + m_matcher.describe();
+    }
+
+  private:
+    Matcher m_matcher;
+};
+
+template <typename Matcher>
+EventErrorMatchesMatcher<Matcher> EventErrorMatches(Matcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
+
+template <typename Matcher>
+class ErrorListMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFailed>
+{
+  public:
+    ErrorListMatchesMatcher(Matcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const Tango::DevFailed &e) const override
+    {
+        return m_matcher.match(e.errors);
+    }
+
+    std::string describe() const override
+    {
+        return "contains errors that " + m_matcher.describe();
+    }
+
+  private:
+    Matcher m_matcher;
+};
+
+template <typename Matcher>
+ErrorListMatchesMatcher<Matcher> ErrorListMatches(Matcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
+
+} // namespace Matchers
+
 } // namespace TangoTest

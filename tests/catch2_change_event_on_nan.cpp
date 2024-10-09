@@ -187,26 +187,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
 
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
-                    // We get the following two initial events (the fact there
-                    // are two is a side effect of the fix for #369):
-                    //
-                    // 1. In `subscribe_event` we do a `read_attribute` to
-                    // generate the first event
-                    // 2. Because we are the first subscriber to `"attr"`, the
-                    // polling loop starts and sends an event because it is the
-                    // first time it has read the attribute
-
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value,
-                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
-
-                    maybe_initial_event = callback.pop_next_event();
+                    require_initial_events(callback, ATTR_INIT_VALUE);
 
                     WHEN("we set the attribute value to NaN")
                     {
@@ -214,23 +195,26 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
 
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches(IsNaN())));
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_abs_nan"));
 
                                 THEN("a change event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(
+                                        maybe_new_event,
+                                        EventValueMatches(AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001))));
                                 }
                             }
                         }
@@ -261,52 +245,37 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
-
-                    // We get the following two initial events (the fact there
-                    // are two is a side effect of the fix for #369):
-                    //
-                    // 1. In `subscribe_event` we do a `read_attribute` to
-                    // generate the first event
-                    // 2. Because we are the first subscriber to `"attr"`, the
-                    // polling loop starts and sends an event because it is the
-                    // first time it has read the attribute
-
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value,
-                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
-
-                    maybe_initial_event = callback.pop_next_event();
+                    require_initial_events(callback, ATTR_INIT_VALUE);
 
                     WHEN("we set the attribute value to NaN")
                     {
                         REQUIRE_NOTHROW(device->command_inout("set_rel_nan"));
+
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches(IsNaN())));
 
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_rel_nan"));
                                 THEN("a change event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(
+                                        maybe_new_event,
+                                        EventValueMatches(AnyLikeMatches(WithinAbs(ATTR_INIT_VALUE, 0.0000001))));
                                 }
                             }
                         }
@@ -342,27 +311,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
-
-                    // We get the following two initial events (the fact there
-                    // are two is a side effect of the fix for #369):
-                    //
-                    // 1. In `subscribe_event` we do a `read_attribute` to
-                    // generate the first event
-                    // 2. Because we are the first subscriber to `"attr"`, the
-                    // polling loop starts and sends an event because it is the
-                    // first time it has read the attribute
-
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value,
-                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
-
-                    maybe_initial_event = callback.pop_next_event();
+                    require_initial_events(callback, static_cast<float>(ATTR_INIT_VALUE));
 
                     WHEN("we set the attribute value to NaN")
                     {
@@ -370,23 +319,26 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
 
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches<float>(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches<float>(IsNaN())));
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_abs_nan"));
 
                                 THEN("a change event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_new_event,
+                                                 EventValueMatches(
+                                                     AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f))));
                                 }
                             }
                         }
@@ -417,52 +369,37 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+
                 THEN("we receive some events with the initial value")
                 {
-                    using Catch::Matchers::IsNaN;
-                    using Catch::Matchers::WithinAbs;
-                    using TangoTest::AnyLikeMatches;
-
-                    // We get the following two initial events (the fact there
-                    // are two is a side effect of the fix for #369):
-                    //
-                    // 1. In `subscribe_event` we do a `read_attribute` to
-                    // generate the first event
-                    // 2. Because we are the first subscriber to `"attr"`, the
-                    // polling loop starts and sends an event because it is the
-                    // first time it has read the attribute
-
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
-                    REQUIRE(!maybe_initial_event->err);
-                    REQUIRE(maybe_initial_event->attr_value != nullptr);
-                    REQUIRE_THAT(*maybe_initial_event->attr_value,
-                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
-
-                    maybe_initial_event = callback.pop_next_event();
+                    require_initial_events(callback, static_cast<float>(ATTR_INIT_VALUE));
 
                     WHEN("we set the attribute value to NaN")
                     {
                         REQUIRE_NOTHROW(device->command_inout("set_rel_nan"));
+
                         THEN("a change event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_new_event = callback.pop_next_event();
-                            REQUIRE(maybe_new_event.has_value());
-                            REQUIRE(!maybe_new_event->err);
-                            REQUIRE(maybe_new_event->attr_value != nullptr);
-                            REQUIRE_THAT(*maybe_new_event->attr_value, AnyLikeMatches<float>(IsNaN()));
+                            REQUIRE(maybe_new_event != std::nullopt);
+                            REQUIRE_THAT(maybe_new_event, EventValueMatches(AnyLikeMatches<float>(IsNaN())));
 
                             AND_WHEN("we unset the attribute value from NaN")
                             {
                                 REQUIRE_NOTHROW(device->command_inout("unset_rel_nan"));
                                 THEN("a change event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_new_event = callback.pop_next_event();
-                                    REQUIRE(maybe_new_event.has_value());
-                                    REQUIRE(!maybe_new_event->err);
-                                    REQUIRE(maybe_new_event->attr_value != nullptr);
-                                    REQUIRE_THAT(*maybe_new_event->attr_value,
-                                                 AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f)));
+                                    REQUIRE(maybe_new_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_new_event,
+                                                 EventValueMatches(
+                                                     AnyLikeMatches<float>(WithinAbs(ATTR_INIT_VALUE, 0.0000001f))));
                                 }
                             }
                         }

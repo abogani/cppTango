@@ -22,6 +22,9 @@ static_assert(Tango::detail::is_corba_var_from_seq_v<Var>);
 // it is var class but does not have an underlying sequence
 static_assert(!Tango::detail::is_corba_var_from_seq_v<Tango::DevString_var>);
 
+static_assert(TangoTest::detail::has_corba_extract_operator_to<CORBA::Any, CORBA::Long>);
+static_assert(TangoTest::detail::has_corba_extract_operator_to<CORBA::Any, CORBA::Boolean>);
+
 } // anonymous namespace
 
 SCENARIO("STL helpers for CORBA classes")

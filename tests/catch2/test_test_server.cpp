@@ -115,7 +115,7 @@ SCENARIO("test servers can be started and stopped")
 
                 AND_THEN("the logs should only (maybe) contain messages about ports in use")
                 {
-                    using Catch::Matchers::IsEmpty;
+                    using namespace Catch::Matchers;
                     logger->remove_port_in_use_logs();
                     REQUIRE_THAT(logger->logs, IsEmpty());
                 }
@@ -165,8 +165,7 @@ SCENARIO("test servers can be started and stopped")
 
                 AND_THEN("we find a warning about the port being in use")
                 {
-                    using Catch::Matchers::IsEmpty;
-                    using Catch::Matchers::StartsWith;
+                    using namespace Catch::Matchers;
 
                     REQUIRE_THAT(logger->logs, !IsEmpty());
 
@@ -183,7 +182,7 @@ SCENARIO("test servers can be started and stopped")
 
                     AND_THEN("we only find logs about other ports in use (if any)")
                     {
-                        using Catch::Matchers::IsEmpty;
+                        using namespace Catch::Matchers;
                         logger->remove_port_in_use_logs();
                         REQUIRE_THAT(logger->logs, IsEmpty());
                     }
@@ -199,7 +198,7 @@ SCENARIO("test servers can be started and stopped")
 
             THEN("there should be no logs generated")
             {
-                using Catch::Matchers::IsEmpty;
+                using namespace Catch::Matchers;
                 REQUIRE_THAT(logger->logs, IsEmpty());
             }
         }
@@ -335,7 +334,7 @@ SCENARIO("test server crashes and timeouts are reported")
 
             THEN("a exception should be raised, reporting the helpful message and exit status")
             {
-                using Catch::Matchers::ContainsSubstring;
+                using namespace Catch::Matchers;
                 REQUIRE(what);
                 REQUIRE_THAT(*what, ContainsSubstring(k_helpful_message));
                 REQUIRE_THAT(*what, ContainsSubstring("exit status 0"));
@@ -343,7 +342,7 @@ SCENARIO("test server crashes and timeouts are reported")
 
             THEN("there should be no (non-port-in-use) logs")
             {
-                using Catch::Matchers::IsEmpty;
+                using namespace Catch::Matchers;
                 logger->remove_port_in_use_logs();
                 REQUIRE_THAT(logger->logs, IsEmpty());
             }
@@ -372,8 +371,7 @@ SCENARIO("test server crashes and timeouts are reported")
 
                 THEN("there should be a single (non-port-in-use) log containing the helpful diagnostic and exit status")
                 {
-                    using Catch::Matchers::ContainsSubstring;
-                    using Catch::Matchers::SizeIs;
+                    using namespace Catch::Matchers;
 
                     logger->remove_port_in_use_logs();
                     REQUIRE_THAT(logger->logs, SizeIs(1));
@@ -398,8 +396,7 @@ SCENARIO("test server crashes and timeouts are reported")
 
             THEN("there should be a single (non-port-in-use) log containing the helpful diagnostic and exit status")
             {
-                using Catch::Matchers::ContainsSubstring;
-                using Catch::Matchers::SizeIs;
+                using namespace Catch::Matchers;
 
                 logger->remove_port_in_use_logs();
                 REQUIRE_THAT(logger->logs, SizeIs(1));
@@ -424,8 +421,7 @@ SCENARIO("test server crashes and timeouts are reported")
 
             THEN("there should be a single (non-port-in-use) log, reporting the timeout the helpful diagnostic")
             {
-                using Catch::Matchers::ContainsSubstring;
-                using Catch::Matchers::SizeIs;
+                using namespace Catch::Matchers;
 
                 logger->remove_port_in_use_logs();
                 REQUIRE_THAT(logger->logs, SizeIs(1));
@@ -463,7 +459,7 @@ SCENARIO("test server timeouts during startup are reported", "[!mayfail]")
 
             THEN("a exception should be raised, reporting the timeout and the helpful message")
             {
-                using Catch::Matchers::ContainsSubstring;
+                using namespace Catch::Matchers;
                 REQUIRE(what);
                 REQUIRE_THAT(*what, ContainsSubstring("Timeout waiting for TestServer to start"));
                 REQUIRE_THAT(*what, ContainsSubstring(k_helpful_message));
@@ -471,7 +467,7 @@ SCENARIO("test server timeouts during startup are reported", "[!mayfail]")
 
             THEN("there should be no (non-port-in-use) logs")
             {
-                using Catch::Matchers::IsEmpty;
+                using namespace Catch::Matchers;
                 logger->remove_port_in_use_logs();
                 REQUIRE_THAT(logger->logs, IsEmpty());
             }

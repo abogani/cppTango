@@ -141,8 +141,7 @@ SCENARIO("Images can be converted to and from jpeg")
                 {
                     THEN("An exception is thrown")
                     {
-                        using TangoTest::FirstErrorMatches;
-                        using TangoTest::Reason;
+                        using namespace TangoTest::Matchers;
 
                         REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb32(test.raw_32bits.data(), 512, 512, 100),
                                                Tango::DevFailed,
@@ -154,8 +153,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_gray8(test.raw_8bits.data(), 0, 0, 100),
                                            Tango::DevFailed,
@@ -166,8 +164,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb24(test.raw_24bits.data(), 0, 0, 100),
                                            Tango::DevFailed,
@@ -180,8 +177,7 @@ SCENARIO("Images can be converted to and from jpeg")
                 {
                     THEN("An exception is thrown")
                     {
-                        using TangoTest::FirstErrorMatches;
-                        using TangoTest::Reason;
+                        using namespace TangoTest::Matchers;
 
                         REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb32(test.raw_32bits.data(), 0, 0, 100),
                                                Tango::DevFailed,
@@ -196,8 +192,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_gray8(test.raw_8bits.data(), 512, 512, 100),
                                            Tango::DevFailed,
@@ -208,8 +203,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb24(test.raw_24bits.data(), 512, 512, 100),
                                            Tango::DevFailed,
@@ -220,8 +214,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->encode_jpeg_rgb32(test.raw_32bits.data(), 512, 512, 100),
                                            Tango::DevFailed,
@@ -278,8 +271,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_rgb32(&da_error, &width, &height, &color_buffer),
                                            Tango::DevFailed,
@@ -290,8 +282,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_gray8(&da_error, &width, &height, &color_buffer),
                                            Tango::DevFailed,
@@ -305,8 +296,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_rgb32(&da_rgb, &width, &height, &color_buffer),
                                            Tango::DevFailed,
@@ -317,8 +307,7 @@ SCENARIO("Images can be converted to and from jpeg")
             {
                 THEN("An exception is thrown")
                 {
-                    using TangoTest::FirstErrorMatches;
-                    using TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(test.encoder->decode_gray8(&da_gray, &width, &height, &gray_buffer),
                                            Tango::DevFailed,

@@ -12,7 +12,7 @@ bool IDLVersionIsTooOld(int version, int desiredVersion)
 namespace
 {
 template <class T>
-bool try_type(const CORBA::TypeCode_ptr type, std::string &result)
+bool try_type(const CORBA::TypeCode_ptr &type, std::string &result)
 {
     if(type->equivalent(tango_type_traits<T>::corba_type_code()))
     {
@@ -26,86 +26,132 @@ bool try_type(const CORBA::TypeCode_ptr type, std::string &result)
 
 std::string corba_any_to_type_name(const CORBA::Any &any)
 {
-    CORBA::TypeCode_ptr type = any.type();
+    CORBA::TypeCode_var type = any.type();
 
     std::string result;
     if(try_type<Tango::DevVarShortArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarUShortArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarLongArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarULongArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarLong64Array>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarULong64Array>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarDoubleArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarStringArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarUCharArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarFloatArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarBooleanArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarStateArray>(type, result))
     {
-        goto end;
+        return result;
     }
     if(try_type<Tango::DevVarEncodedArray>(type, result))
     {
-        goto end;
+        return result;
     }
-
+    if(try_type<Tango::DevShort>(type, result))
     {
-        TangoSys_OMemStream oss;
-        oss << "UnknownCorbaAny<kind=" << type->kind();
-
-        // `TypeCode`s for basic data types do not have a `name()`, as they can
-        // be distinguished with only their `kind()`.
-
-        try
-        {
-            const char *name = type->name();
-            oss << ",name=" << name;
-        }
-        catch(const CORBA::TypeCode::BadKind &)
-        {
-            /* ignore */
-        }
-
-        oss << ">" << std::ends;
-        result = oss.str();
+        return result;
+    }
+    if(try_type<Tango::DevUShort>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevLong>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevULong>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevLong64>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevULong64>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevDouble>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevString>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevUChar>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevFloat>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevBoolean>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevState>(type, result))
+    {
+        return result;
+    }
+    if(try_type<Tango::DevEncoded>(type, result))
+    {
+        return result;
     }
 
-end:
-    CORBA::release(type);
-    return result;
+    TangoSys_OMemStream oss;
+    oss << "UnknownCorbaAny<kind=" << type->kind();
+
+    // `TypeCode`s for basic data types do not have a `name()`, as they can
+    // be distinguished with only their `kind()`.
+
+    try
+    {
+        const char *name = type->name();
+        oss << ",name=" << name;
+    }
+    catch(const CORBA::TypeCode::BadKind &)
+    {
+        /* ignore */
+    }
+
+    oss << ">" << std::ends;
+    return oss.str();
 }
 
 std::string attr_union_dtype_to_type_name(Tango::AttributeDataType d)
@@ -198,4 +244,348 @@ bool get_boolean_env_var(const char *env_var, bool default_value)
     return result.value();
 }
 
+void stringify_any(std::ostream &os, const CORBA::Any &any)
+{
+    CORBA::TypeCode_ptr tc;
+    CORBA::TypeCode_var tc_al;
+    CORBA::TypeCode_var tc_seq;
+    CORBA::TypeCode_var tc_field;
+
+    tc = any.type();
+
+    if(tc->equal(CORBA::_tc_null))
+    {
+        os << "empty";
+        CORBA::release(tc);
+        return;
+    }
+
+    switch(tc->kind())
+    {
+    case CORBA::tk_boolean:
+        bool bo_tmp;
+        any >>= CORBA::Any::to_boolean(bo_tmp);
+        if(bo_tmp)
+        {
+            os << "true";
+        }
+        else
+        {
+            os << "false";
+        }
+        break;
+
+    case CORBA::tk_short:
+        short tmp;
+        any >>= tmp;
+        os << tmp;
+        break;
+
+    case CORBA::tk_long:
+        Tango::DevLong l_tmp;
+        any >>= l_tmp;
+        os << l_tmp;
+        break;
+
+    case CORBA::tk_longlong:
+        Tango::DevLong64 ll_tmp;
+        any >>= ll_tmp;
+        os << ll_tmp;
+        break;
+
+    case CORBA::tk_float:
+        float f_tmp;
+        any >>= f_tmp;
+        os << f_tmp;
+        break;
+
+    case CORBA::tk_double:
+        double db_tmp;
+        any >>= db_tmp;
+        os << db_tmp;
+        break;
+
+    case CORBA::tk_ushort:
+        unsigned short us_tmp;
+        any >>= us_tmp;
+        os << us_tmp;
+        break;
+
+    case CORBA::tk_ulong:
+        Tango::DevULong ul_tmp;
+        any >>= ul_tmp;
+        os << ul_tmp;
+        break;
+
+    case CORBA::tk_ulonglong:
+        Tango::DevULong64 ull_tmp;
+        any >>= ull_tmp;
+        os << ull_tmp;
+        break;
+
+    case CORBA::tk_string:
+        const char *str_tmp;
+        any >>= str_tmp;
+        os << str_tmp;
+        break;
+
+    case CORBA::tk_alias:
+        tc_al = tc->content_type();
+        tc_seq = tc_al->content_type();
+        switch(tc_seq->kind())
+        {
+        case CORBA::tk_octet:
+            Tango::DevVarCharArray *ch_arr;
+            any >>= ch_arr;
+            os << *ch_arr;
+            break;
+
+        case CORBA::tk_boolean:
+            Tango::DevVarBooleanArray *bl_arr;
+            any >>= bl_arr;
+            os << *bl_arr;
+            break;
+
+        case CORBA::tk_short:
+            Tango::DevVarShortArray *sh_arr;
+            any >>= sh_arr;
+            os << *sh_arr;
+            break;
+
+        case CORBA::tk_long:
+            Tango::DevVarLongArray *lg_arr;
+            any >>= lg_arr;
+            os << *lg_arr;
+            break;
+
+        case CORBA::tk_longlong:
+            Tango::DevVarLong64Array *llg_arr;
+            any >>= llg_arr;
+            os << *llg_arr;
+            break;
+
+        case CORBA::tk_float:
+            Tango::DevVarFloatArray *fl_arr;
+            any >>= fl_arr;
+            os << *fl_arr;
+            break;
+
+        case CORBA::tk_double:
+            Tango::DevVarDoubleArray *db_arr;
+            any >>= db_arr;
+            os << *db_arr;
+            break;
+
+        case CORBA::tk_ushort:
+            Tango::DevVarUShortArray *us_arr;
+            any >>= us_arr;
+            os << *us_arr;
+            break;
+
+        case CORBA::tk_ulong:
+            Tango::DevVarULongArray *ul_arr;
+            any >>= ul_arr;
+            os << *ul_arr;
+            break;
+
+        case CORBA::tk_ulonglong:
+            Tango::DevVarULong64Array *ull_arr;
+            any >>= ull_arr;
+            os << *ull_arr;
+            break;
+
+        case CORBA::tk_string:
+            Tango::DevVarStringArray *str_arr;
+            any >>= str_arr;
+            os << *str_arr;
+            break;
+
+        default:
+            TangoSys_OMemStream desc;
+            desc << "'any' with unexpected sequence kind '" << tc_seq->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+        }
+        break;
+
+    case CORBA::tk_struct:
+        tc_field = tc->member_type(0);
+        tc_al = tc_field->content_type();
+        switch(tc_al->kind())
+        {
+        case CORBA::tk_sequence:
+            tc_seq = tc_al->content_type();
+            switch(tc_seq->kind())
+            {
+            case CORBA::tk_long:
+                Tango::DevVarLongStringArray *lgstr_arr;
+                any >>= lgstr_arr;
+                os << lgstr_arr->lvalue << std::endl;
+                os << lgstr_arr->svalue;
+                break;
+
+            case CORBA::tk_double:
+                Tango::DevVarDoubleStringArray *dbstr_arr;
+                any >>= dbstr_arr;
+                os << dbstr_arr->dvalue << std::endl;
+                os << dbstr_arr->svalue;
+                break;
+
+            default:
+                TangoSys_OMemStream desc;
+                desc << "'any' with unexpected struct field sequence kind '" << tc_seq->kind() << "'.";
+                TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+            }
+            break;
+
+        case CORBA::tk_string:
+            Tango::DevEncoded *enc;
+            any >>= enc;
+            os << "Encoding string: " << enc->encoded_format << std::endl;
+            {
+                long nb_data_elt = enc->encoded_data.length();
+                for(long i = 0; i < nb_data_elt; i++)
+                {
+                    os << "Data element number [" << i << "] = " << (int) enc->encoded_data[i];
+                    if(i < (nb_data_elt - 1))
+                    {
+                        os << '\n';
+                    }
+                }
+            }
+            break;
+
+        default:
+            TangoSys_OMemStream desc;
+            desc << "'any' with unexpected struct field alias kind '" << tc_al->kind() << "'.";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+        }
+        break;
+
+    case CORBA::tk_enum:
+        Tango::DevState tmp_state;
+        any >>= tmp_state;
+        os << Tango::DevStateName[tmp_state];
+        break;
+
+    default:
+        TangoSys_OMemStream desc;
+        desc << "'any' with unexpected kind '" << tc->kind() << "'.";
+        TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+    }
+
+    CORBA::release(tc);
+}
+
+void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da)
+{
+    if(da.LongSeq.operator->() != nullptr)
+    {
+        os << *(da.LongSeq.operator->());
+    }
+    else if(da.Long64Seq.operator->() != nullptr)
+    {
+        os << *(da.Long64Seq.operator->());
+    }
+    else if(da.ShortSeq.operator->() != nullptr)
+    {
+        os << *(da.ShortSeq.operator->());
+    }
+    else if(da.DoubleSeq.operator->() != nullptr)
+    {
+        os << *(da.DoubleSeq.operator->());
+    }
+    else if(da.FloatSeq.operator->() != nullptr)
+    {
+        os << *(da.FloatSeq.operator->());
+    }
+    else if(da.BooleanSeq.operator->() != nullptr)
+    {
+        os << *(da.BooleanSeq.operator->());
+    }
+    else if(da.UShortSeq.operator->() != nullptr)
+    {
+        os << *(da.UShortSeq.operator->());
+    }
+    else if(da.UCharSeq.operator->() != nullptr)
+    {
+        os << *(da.UCharSeq.operator->());
+    }
+    else if(da.StringSeq.operator->() != nullptr)
+    {
+        os << *(da.StringSeq.operator->());
+    }
+    else if(da.ULongSeq.operator->() != nullptr)
+    {
+        os << *(da.ULongSeq.operator->());
+    }
+    else if(da.ULong64Seq.operator->() != nullptr)
+    {
+        os << *(da.ULong64Seq.operator->());
+    }
+    else if(da.StateSeq.operator->() != nullptr)
+    {
+        os << *(da.StateSeq.operator->());
+    }
+    else if(da.EncodedSeq.operator->() != nullptr)
+    {
+        os << *(da.EncodedSeq.operator->());
+    }
+    else
+    {
+        os << DevStateName[da.d_state];
+    }
+}
+
 } // namespace Tango::detail
+
+namespace Tango
+{
+
+std::ostream &operator<<(std::ostream &os, const AttrQuality &quality)
+{
+    switch(quality)
+    {
+    case Tango::ATTR_VALID:
+        os << "VALID";
+        break;
+    case Tango::ATTR_INVALID:
+        os << "INVALID";
+        break;
+    case Tango::ATTR_ALARM:
+        os << "ALARM";
+        break;
+    case Tango::ATTR_CHANGING:
+        os << "CHANGING";
+        break;
+    case Tango::ATTR_WARNING:
+        os << "WARNING";
+        break;
+    default:
+        TANGO_ASSERT_ON_DEFAULT(quality);
+    }
+
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const ErrSeverity &error_severity)
+{
+    switch(error_severity)
+    {
+    case Tango::WARN:
+        os << "WARNING";
+        break;
+    case Tango::ERR:
+        os << "ERROR";
+        break;
+    case Tango::PANIC:
+        os << "PANIC";
+        break;
+    default:
+        // backwards compatibility
+        os << "Unknown";
+    }
+
+    return os;
+}
+
+} // namespace Tango

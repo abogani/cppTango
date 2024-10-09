@@ -243,25 +243,6 @@ class AlarmEventDev : public Base
     Tango::AttrQuality attr_quality;
 };
 
-const char *attr_quality_name(Tango::AttrQuality qual)
-{
-    switch(qual)
-    {
-    case Tango::ATTR_VALID:
-        return "ATTR_VALID";
-    case Tango::ATTR_INVALID:
-        return "ATTR_INVALID";
-    case Tango::ATTR_ALARM:
-        return "ATTR_ALARM";
-    case Tango::ATTR_CHANGING:
-        return "ATTR_CHANGING";
-    case Tango::ATTR_WARNING:
-        return "ATTR_WARNING";
-    };
-
-    return "UNKNOWN";
-}
-
 // Alarm event is supported from IDL6 onwards
 TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AlarmEventDev, 6)
 
@@ -330,13 +311,13 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we set the attribute to a " << data.final.name << " value")
                 {
+                    using namespace Catch::Matchers;
+                    using namespace TangoTest::Matchers;
+
                     Tango::DeviceAttribute v;
                     v.set_name(att);
 
@@ -345,19 +326,18 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
 
                     if(data.event_quality.has_value())
                     {
-                        THEN("an alarm event is generated with " << attr_quality_name(*data.event_quality))
+                        THEN("an alarm event is generated with " << *data.event_quality)
                         {
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_event = callback.pop_next_event();
 
-                            REQUIRE(maybe_event.has_value());
-                            REQUIRE(!maybe_event->err);
-                            REQUIRE(maybe_event->event == "alarm");
-
-                            REQUIRE(maybe_event->attr_value != nullptr);
-                            REQUIRE(maybe_event->attr_value->get_quality() == *data.event_quality);
+                            REQUIRE(maybe_event != std::nullopt);
+                            REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                            REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(*data.event_quality)));
 
                             std::vector<Tango::DevDouble> expected{data.final.value, data.final.value};
-                            REQUIRE_THAT(*maybe_event->attr_value, TangoTest::AnyLikeContains(expected));
+                            REQUIRE_THAT(maybe_event, EventValueMatches(AnyLikeContains(expected)));
                         }
                     }
                     else
@@ -365,7 +345,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
                         THEN("no event is generated")
                         {
                             auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                            REQUIRE(!maybe_event.has_value());
+                            REQUIRE(maybe_event == std::nullopt);
                         }
                     }
                 }
@@ -391,10 +371,7 @@ SCENARIO("Alarm events are sent on a read attribute exception")
             TangoTest::CallbackMock<Tango::EventData> callback;
             REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-            // discard the two initial events we get when we subscribe
-            auto maybe_initial_event = callback.pop_next_event();
-            REQUIRE(maybe_initial_event.has_value());
-            maybe_initial_event = callback.pop_next_event();
+            require_initial_events(callback);
 
             WHEN("the attribute read callback throws an exception once")
             {
@@ -402,28 +379,27 @@ SCENARIO("Alarm events are sent on a read attribute exception")
 
                 THEN("we recieve an error alarm event")
                 {
+                    using namespace Catch::Matchers;
+                    using namespace TangoTest::Matchers;
+
                     auto maybe_ex_event = callback.pop_next_event();
-                    REQUIRE(maybe_ex_event.has_value());
-                    REQUIRE(maybe_ex_event->err);
-                    REQUIRE(maybe_ex_event->event == "alarm");
-                    REQUIRE(maybe_ex_event->errors.length() == 1);
-                    REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
-                    REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+
+                    REQUIRE(maybe_ex_event != std::nullopt);
+                    REQUIRE_THAT(maybe_ex_event, EventType(Tango::ALARM_EVENT));
+                    REQUIRE_THAT(maybe_ex_event,
+                                 EventErrorMatches(
+                                     AllMatch(Reason(k_test_reason) && DescriptionMatches(Equals(k_a_helpful_desc)))));
 
                     AND_THEN("we recieve a normal alarm event")
                     {
                         auto maybe_good_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_good_event.has_value());
-                        REQUIRE(!maybe_good_event->err);
-                        REQUIRE(maybe_good_event->attr_value != nullptr);
-                        REQUIRE(maybe_good_event->event == "alarm");
-
-                        REQUIRE(maybe_good_event->attr_value != nullptr);
-                        REQUIRE(maybe_good_event->attr_value->get_quality() == Tango::ATTR_VALID);
+                        REQUIRE(maybe_good_event != std::nullopt);
+                        REQUIRE_THAT(maybe_good_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_good_event, EventValueMatches(AttrQuality(Tango::ATTR_VALID)));
 
                         maybe_good_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                        REQUIRE(!maybe_good_event.has_value());
+                        REQUIRE(maybe_good_event == std::nullopt);
                     }
                 }
             }
@@ -471,10 +447,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 std::string new_name = data.new_cmd + 4;
                 std::transform(new_name.begin(), new_name.end(), new_name.begin(), ::toupper);
@@ -482,16 +455,15 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
                 {
                     REQUIRE_NOTHROW(device->command_inout(data.new_cmd));
 
-                    THEN("an alarm event is generated with " << attr_quality_name(data.event_quality))
+                    THEN("an alarm event is generated with " << data.event_quality)
                     {
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "alarm");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == data.event_quality);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(data.event_quality)));
                     }
                 }
             }
@@ -527,9 +499,7 @@ SCENARIO("Alarm events can be pushed from code manually")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
+                require_event(callback);
 
                 WHEN("we push an alarm event from code")
                 {
@@ -537,14 +507,13 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                     THEN("an alarm event is generated")
                     {
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "alarm");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
 
                         AND_WHEN("we push another alarm event from code")
                         {
@@ -556,12 +525,9 @@ SCENARIO("Alarm events can be pushed from code manually")
                                 {
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(maybe_event.has_value());
-                                    REQUIRE(!maybe_event->err);
-                                    REQUIRE(maybe_event->event == "alarm");
-
-                                    REQUIRE(maybe_event->attr_value != nullptr);
-                                    REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                                    REQUIRE(maybe_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                                    REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                                 }
                             }
                             else
@@ -570,7 +536,7 @@ SCENARIO("Alarm events can be pushed from code manually")
                                 {
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(!maybe_event.has_value());
+                                    REQUIRE(maybe_event == std::nullopt);
                                 }
                             }
                         }
@@ -584,13 +550,16 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                     THEN("an error alarm event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_ex_event = callback.pop_next_event();
-                        REQUIRE(maybe_ex_event.has_value());
-                        REQUIRE(maybe_ex_event->err);
-                        REQUIRE(maybe_ex_event->event == "alarm");
-                        REQUIRE(maybe_ex_event->errors.length() == 1);
-                        REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
-                        REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+
+                        REQUIRE(maybe_ex_event != std::nullopt);
+                        REQUIRE_THAT(maybe_ex_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_ex_event,
+                                     EventErrorMatches(AllMatch(Reason(k_test_reason) &&
+                                                                DescriptionMatches(Equals(k_a_helpful_desc)))));
 
                         AND_WHEN("we push a normal event")
                         {
@@ -598,14 +567,13 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                             THEN("a normal alarm event is generated")
                             {
+                                using namespace TangoTest::Matchers;
+
                                 auto maybe_event = callback.pop_next_event();
 
-                                REQUIRE(maybe_event.has_value());
-                                REQUIRE(!maybe_event->err);
-                                REQUIRE(maybe_event->event == "alarm");
-
-                                REQUIRE(maybe_event->attr_value != nullptr);
-                                REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                                REQUIRE(maybe_event != std::nullopt);
+                                REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                                REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                             }
                         }
 
@@ -617,14 +585,17 @@ SCENARIO("Alarm events can be pushed from code manually")
                             {
                                 THEN("an error alarm event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(maybe_event.has_value());
-                                    REQUIRE(maybe_event->err);
-                                    REQUIRE(maybe_event->event == "alarm");
-                                    REQUIRE(maybe_event->errors.length() == 1);
-                                    REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_test_reason});
-                                    REQUIRE(maybe_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                    REQUIRE(maybe_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                                    REQUIRE_THAT(
+                                        maybe_event,
+                                        EventErrorMatches(AllMatch(Reason(k_test_reason) &&
+                                                                   DescriptionMatches(Equals(k_a_helpful_desc)))));
                                 }
                             }
                             else
@@ -633,7 +604,7 @@ SCENARIO("Alarm events can be pushed from code manually")
                                 {
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(!maybe_event.has_value());
+                                    REQUIRE(maybe_event == std::nullopt);
                                 }
                             }
                         }
@@ -645,14 +616,16 @@ SCENARIO("Alarm events can be pushed from code manually")
 
                             THEN("an error alarm event is generated")
                             {
+                                using namespace Catch::Matchers;
+                                using namespace TangoTest::Matchers;
+
                                 auto maybe_event = callback.pop_next_event();
 
-                                REQUIRE(maybe_event.has_value());
-                                REQUIRE(maybe_event->err);
-                                REQUIRE(maybe_event->event == "alarm");
-                                REQUIRE(maybe_event->errors.length() == 1);
-                                REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_alt_test_reason});
-                                REQUIRE(maybe_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                REQUIRE(maybe_event != std::nullopt);
+                                REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                                REQUIRE_THAT(maybe_event,
+                                             EventErrorMatches(AllMatch(Reason(k_alt_test_reason) &&
+                                                                        DescriptionMatches(Equals(k_a_helpful_desc)))));
                             }
                         }
                     }
@@ -684,9 +657,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                 {
                     REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                    // discard the initial event we get when we subscribe
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
+                    require_event(callback);
 
                     WHEN("we push a change event from code")
                     {
@@ -694,14 +665,14 @@ SCENARIO("Alarm events are pushed together with manual change events")
 
                         THEN("an alarm events are generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_event = callback.pop_next_event();
 
-                            REQUIRE(maybe_event.has_value());
-                            REQUIRE(!maybe_event->err);
-                            REQUIRE(maybe_event->event == "alarm");
-
-                            REQUIRE(maybe_event->attr_value != nullptr);
-                            REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                            REQUIRE(maybe_event != std::nullopt);
+                            REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                            REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                         }
                     }
 
@@ -712,13 +683,15 @@ SCENARIO("Alarm events are pushed together with manual change events")
 
                         THEN("an error alarm event is generated")
                         {
+                            using namespace Catch::Matchers;
+                            using namespace TangoTest::Matchers;
+
                             auto maybe_ex_event = callback.pop_next_event();
-                            REQUIRE(maybe_ex_event.has_value());
-                            REQUIRE(maybe_ex_event->err);
-                            REQUIRE(maybe_ex_event->event == "alarm");
-                            REQUIRE(maybe_ex_event->errors.length() == 1);
-                            REQUIRE(maybe_ex_event->errors[0].reason.in() == std::string{k_test_reason});
-                            REQUIRE(maybe_ex_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                            REQUIRE(maybe_ex_event != std::nullopt);
+                            REQUIRE_THAT(maybe_ex_event, EventType(Tango::ALARM_EVENT));
+                            REQUIRE_THAT(maybe_ex_event,
+                                         EventErrorMatches(AllMatch(Reason(k_test_reason) &&
+                                                                    DescriptionMatches(Equals(k_a_helpful_desc)))));
 
                             AND_WHEN("we push a normal event")
                             {
@@ -726,14 +699,14 @@ SCENARIO("Alarm events are pushed together with manual change events")
 
                                 THEN("a normal alarm event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(maybe_event.has_value());
-                                    REQUIRE(!maybe_event->err);
-                                    REQUIRE(maybe_event->event == "alarm");
-
-                                    REQUIRE(maybe_event->attr_value != nullptr);
-                                    REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                                    REQUIRE(maybe_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                                    REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                                 }
                             }
 
@@ -745,7 +718,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                                 {
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(!maybe_event.has_value());
+                                    REQUIRE(maybe_event == std::nullopt);
                                 }
                             }
 
@@ -756,14 +729,17 @@ SCENARIO("Alarm events are pushed together with manual change events")
 
                                 THEN("an error alarm event is generated")
                                 {
+                                    using namespace Catch::Matchers;
+                                    using namespace TangoTest::Matchers;
+
                                     auto maybe_event = callback.pop_next_event();
 
-                                    REQUIRE(maybe_event.has_value());
-                                    REQUIRE(maybe_event->err);
-                                    REQUIRE(maybe_event->event == "alarm");
-                                    REQUIRE(maybe_event->errors.length() == 1);
-                                    REQUIRE(maybe_event->errors[0].reason.in() == std::string{k_alt_test_reason});
-                                    REQUIRE(maybe_event->errors[0].desc.in() == std::string{k_a_helpful_desc});
+                                    REQUIRE(maybe_event != std::nullopt);
+                                    REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                                    REQUIRE_THAT(
+                                        maybe_event,
+                                        EventErrorMatches(AllMatch(Reason(k_alt_test_reason) &&
+                                                                   DescriptionMatches(Equals(k_a_helpful_desc)))));
                                 }
                             }
                         }
@@ -784,9 +760,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                 {
                     REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                    // discard the initial event we get when we subscribe
-                    auto maybe_initial_event = callback.pop_next_event();
-                    REQUIRE(maybe_initial_event.has_value());
+                    require_event(callback);
 
                     WHEN("we push a change event from code")
                     {
@@ -795,7 +769,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                         THEN("no alarm event is generated")
                         {
                             auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                            REQUIRE(!maybe_event.has_value());
+                            REQUIRE(maybe_event == std::nullopt);
                         }
                     }
 
@@ -806,7 +780,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
                         THEN("no alarm event is generated")
                         {
                             auto maybe_event = callback.pop_next_event(std::chrono::milliseconds{200});
-                            REQUIRE(!maybe_event.has_value());
+                            REQUIRE(maybe_event == std::nullopt);
                         }
                     }
                 }
@@ -832,7 +806,7 @@ SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
             {
                 THEN("the subscription fails")
                 {
-                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, false),
                                            Tango::DevFailed,
@@ -848,11 +822,14 @@ SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
 
                     AND_THEN("we receive an error event")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_initial_event = callback.pop_next_event();
-                        REQUIRE(maybe_initial_event.has_value());
-                        REQUIRE(maybe_initial_event->err);
-                        REQUIRE(std::string(Tango::API_AttributePollingNotStarted) ==
-                                maybe_initial_event->errors[0].reason.in());
+
+                        REQUIRE(maybe_initial_event != std::nullopt);
+                        REQUIRE_THAT(maybe_initial_event->errors,
+                                     !IsEmpty() && AnyMatch(Reason(Tango::API_AttributePollingNotStarted)));
                     }
                 }
             }
@@ -886,10 +863,7 @@ SCENARIO("Alarm events work with stateless=true")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, true));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we set the attribute to a max WARNING value")
                 {
@@ -900,17 +874,17 @@ SCENARIO("Alarm events work with stateless=true")
 
                     THEN("an alarm event is generated with ATTR_WARNING")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "alarm");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_WARNING);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_WARNING)));
 
                         std::vector<Tango::DevDouble> expected{ATTR_MAX_WARNING + 1, ATTR_MAX_WARNING + 1};
-                        REQUIRE_THAT(*maybe_event->attr_value, TangoTest::AnyLikeContains(expected));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AnyLikeContains(expected)));
                     }
                 }
             }
@@ -940,7 +914,7 @@ SCENARIO("Auto alarm on change events can be disabled")
             {
                 THEN("the subscription fails")
                 {
-                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
                                            Tango::DevFailed,
@@ -968,7 +942,7 @@ SCENARIO("Subscribing to alarm events from a missing attribute fails")
             {
                 THEN("the subscription fails")
                 {
-                    using TangoTest::FirstErrorMatches, TangoTest::Reason;
+                    using namespace TangoTest::Matchers;
 
                     REQUIRE_THROWS_MATCHES(device->subscribe_event(att, Tango::ALARM_EVENT, &callback),
                                            Tango::DevFailed,
@@ -998,10 +972,7 @@ SCENARIO("Pushing events for a polled attribute works")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we push an alarm event from code")
                 {
@@ -1009,14 +980,14 @@ SCENARIO("Pushing events for a polled attribute works")
 
                     THEN("an alarm event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "alarm");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                     }
                 }
 
@@ -1026,14 +997,14 @@ SCENARIO("Pushing events for a polled attribute works")
 
                     THEN("an alarm event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "alarm");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                     }
                 }
             }
@@ -1067,10 +1038,7 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("when we stop the server")
                 {
@@ -1078,11 +1046,13 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
 
                     THEN("a error event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event(std::chrono::seconds{20});
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(maybe_event->err);
-                        REQUIRE(std::string(Tango::API_EventTimeout) == maybe_event->errors[0].reason.in());
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventErrorMatches(AllMatch(Reason(Tango::API_EventTimeout))));
 
                         AND_WHEN("we restart the server")
                         {
@@ -1090,16 +1060,18 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
 
                             THEN("an alarm event is generated after another error event")
                             {
+                                using namespace Catch::Matchers;
+                                using namespace TangoTest::Matchers;
+
                                 auto maybe_event = callback.pop_next_event(std::chrono::seconds{20});
-                                REQUIRE(maybe_event.has_value());
-                                REQUIRE(maybe_event->err);
-                                REQUIRE(std::string(Tango::API_EventTimeout) == maybe_event->errors[0].reason.in());
+
+                                REQUIRE(maybe_event != std::nullopt);
+                                REQUIRE_THAT(maybe_event, EventErrorMatches(AllMatch(Reason(Tango::API_EventTimeout))));
 
                                 maybe_event = callback.pop_next_event(std::chrono::seconds{20});
 
-                                REQUIRE(maybe_event.has_value());
-                                REQUIRE(!maybe_event->err);
-                                REQUIRE(maybe_event->event == "alarm");
+                                REQUIRE(maybe_event != std::nullopt);
+                                REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
                             }
                         }
                     }
@@ -1111,11 +1083,13 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
 
                     THEN("a error event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event(std::chrono::seconds{20});
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(maybe_event->err);
-                        REQUIRE(std::string(Tango::API_PollObjNotFound) == maybe_event->errors[0].reason.in());
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventErrorMatches(AllMatch(Reason(Tango::API_PollObjNotFound))));
 
                         AND_WHEN("we reenable polling")
                         {
@@ -1123,11 +1097,13 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
 
                             THEN("an alarm event is generated")
                             {
+                                using namespace Catch::Matchers;
+                                using namespace TangoTest::Matchers;
+
                                 maybe_event = callback.pop_next_event();
 
-                                REQUIRE(maybe_event.has_value());
-                                REQUIRE(!maybe_event->err);
-                                REQUIRE(maybe_event->event == "alarm");
+                                REQUIRE(maybe_event != std::nullopt);
+                                REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
                             }
                         }
                     }
@@ -1157,10 +1133,7 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
 
-                // discard the (atmost) two initial events we get when we subscribe
-                auto maybe_initial_event = callback.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback.pop_next_event();
+                require_initial_events(callback);
 
                 WHEN("we push an alarm event from code")
                 {
@@ -1168,14 +1141,14 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
 
                     THEN("an alarm event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "alarm");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                     }
                 }
 
@@ -1185,9 +1158,12 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
 
                     THEN("no alarm event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback.pop_next_event();
 
-                        REQUIRE(!maybe_event.has_value());
+                        REQUIRE(maybe_event == std::nullopt);
                     }
                 }
             }
@@ -1265,13 +1241,12 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
                 TangoTest::CallbackMock<Tango::EventData> callback_alarm;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback_alarm));
 
+                require_event(callback_alarm);
+
                 TangoTest::CallbackMock<Tango::EventData> callback_change;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
 
-                // discard the (atmost) initial events we get when we subscribe
-                auto maybe_initial_event = callback_alarm.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
-                maybe_initial_event = callback_change.pop_next_event();
+                require_event(callback_change);
 
                 WHEN("we push a change event from code")
                 {
@@ -1279,26 +1254,23 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
 
                     THEN("alarm and change events are generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         {
                             auto maybe_event = callback_alarm.pop_next_event();
 
-                            REQUIRE(maybe_event.has_value());
-                            REQUIRE(!maybe_event->err);
-                            REQUIRE(maybe_event->event == "alarm");
-
-                            REQUIRE(maybe_event->attr_value != nullptr);
-                            REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                            REQUIRE(maybe_event != std::nullopt);
+                            REQUIRE_THAT(maybe_event, EventType(Tango::ALARM_EVENT));
+                            REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                         }
 
                         {
                             auto maybe_event = callback_change.pop_next_event();
 
-                            REQUIRE(maybe_event.has_value());
-                            REQUIRE(!maybe_event->err);
-                            REQUIRE(maybe_event->event == "change");
-
-                            REQUIRE(maybe_event->attr_value != nullptr);
-                            REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                            REQUIRE(maybe_event != std::nullopt);
+                            REQUIRE_THAT(maybe_event, EventType(Tango::CHANGE_EVENT));
+                            REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                         }
                     }
                 }
@@ -1309,9 +1281,7 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
                 TangoTest::CallbackMock<Tango::EventData> callback_change;
                 REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
 
-                // discard the (atmost) initial event we get when we subscribe
-                auto maybe_initial_event = callback_change.pop_next_event();
-                REQUIRE(maybe_initial_event.has_value());
+                require_event(callback_change);
 
                 WHEN("we push a change event from code")
                 {
@@ -1319,14 +1289,14 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
 
                     THEN("a change event is generated")
                     {
+                        using namespace Catch::Matchers;
+                        using namespace TangoTest::Matchers;
+
                         auto maybe_event = callback_change.pop_next_event();
 
-                        REQUIRE(maybe_event.has_value());
-                        REQUIRE(!maybe_event->err);
-                        REQUIRE(maybe_event->event == "change");
-
-                        REQUIRE(maybe_event->attr_value != nullptr);
-                        REQUIRE(maybe_event->attr_value->get_quality() == Tango::ATTR_ALARM);
+                        REQUIRE(maybe_event != std::nullopt);
+                        REQUIRE_THAT(maybe_event, EventType(Tango::CHANGE_EVENT));
+                        REQUIRE_THAT(maybe_event, EventValueMatches(AttrQuality(Tango::ATTR_ALARM)));
                     }
                 }
             }
