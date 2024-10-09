@@ -76,8 +76,11 @@ class CmdQueryTestSuite : public CxxTest::TestSuite
 
     void test_command_list_query(void)
     {
-        TS_ASSERT_THROWS_NOTHING(cmd_inf_list = *dserver->command_list_query());
-        TS_ASSERT_EQUALS(cmd_inf_list.size(), 32u);
+        CommandInfoList *ptr{nullptr};
+        TS_ASSERT_THROWS_NOTHING(ptr = dserver->command_list_query());
+        TS_ASSERT_EQUALS(ptr->size(), 32u);
+        cmd_inf_list = *ptr;
+        delete ptr;
     }
 
     // Test Status command

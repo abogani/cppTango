@@ -159,5 +159,7 @@ int main(int argc, char *argv[])
         std::cout << tests[i] << results[i] << " us" << std::endl;
     }
 
+    delete[] buffer;
+
     return 0;
 }

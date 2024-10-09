@@ -199,7 +199,7 @@ void test_level()
 
     // This appender was not attached to the logger, nothing should happen.
     cat_1.remove_appender(appender_3);
-
+    delete appender_3;
 } /* end test_level() */
 
 int main(int /*argc*/, char ** /*argv*/)

@@ -15,7 +15,7 @@
 
 int main(int argc, char **argv)
 {
-    DeviceProxy *device;
+    std::unique_ptr<DeviceProxy> device;
 
     if((argc == 1) || (argc > 3))
     {
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
     try
     {
-        device = new DeviceProxy(device_name);
+        device = std::make_unique<DeviceProxy>(device_name);
     }
     catch(CORBA::Exception &)
     {
@@ -178,7 +178,6 @@ int main(int argc, char **argv)
         }
     }
 
-    delete device;
     return 0;
 }
 

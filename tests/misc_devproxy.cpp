@@ -267,6 +267,7 @@ int main(int argc, char **argv)
         assert((*cmd_conf_ptr)[1].cmd_name == "Status");
         assert((*cmd_conf_ptr)[1].in_type == DEV_VOID);
         assert((*cmd_conf_ptr)[1].out_type == DEV_STRING);
+        delete cmd_conf_ptr;
 
         TEST_LOG << "   Get command config --> OK" << endl;
 

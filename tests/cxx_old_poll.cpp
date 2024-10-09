@@ -128,7 +128,9 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
 
         if(CxxTest::TangoPrinter::is_restore_set("dev2_poll_PollLong_attr_1000"))
         {
-            stop_poll_att_no_except(new DeviceProxy(device2_name), "PollLong_attr");
+            auto dev = new DeviceProxy(device2_name);
+            stop_poll_att_no_except(dev, "PollLong_attr");
+            delete dev;
         }
 
         //    TEST_LOG << endl << "new DeviceProxy(" << device->name() << ") returned" << endl << endl;
@@ -895,6 +897,8 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
         TEST_LOG << endl;
 
         TS_ASSERT_EQUALS(v_str.size(), nb_polled);
+
+        delete admin_dev;
     }
 
     void test_get_command_poll_period(void)
@@ -1193,6 +1197,9 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
 
         auto iter = find(polled_devs.begin(), polled_devs.end(), new_dev);
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
+
+        delete dev2;
+        delete admin_dev;
     }
 
     void test_change_polling_thread_number_and_add_2_more_devices(void)
@@ -1252,6 +1259,8 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
 
         iter = find(polled_devs.begin(), polled_devs.end(), new_dev2_th2);
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
+
+        delete admin_dev;
     }
 
     void test_change_polling_thread_number_to_3_and_add_1_more_device(void)
@@ -1304,6 +1313,7 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
 
         auto iter = find(polled_devs.begin(), polled_devs.end(), new_dev1_th3);
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
+        delete admin_dev;
     }
 
     void test_delete_1_device_to_check_automatic_polling_pool_reconfiguration(void)
@@ -1339,6 +1349,7 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
 
         iter = find(polled_devs.begin(), polled_devs.end(), new_dev2_th2);
         TS_ASSERT_DIFFERS(iter, polled_devs.end());
+        delete admin_dev;
     }
 
     void reset_device_server()
@@ -1366,6 +1377,7 @@ class OldPollTestSuite__loop : public CxxTest::TestSuite
         admin_dev->command_inout("RestartServer");
 
         this_thread::sleep_for(chrono::seconds{5});
+        delete admin_dev;
     }
 };
 

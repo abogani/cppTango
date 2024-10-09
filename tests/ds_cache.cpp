@@ -236,6 +236,7 @@ int main(int, char **)
         TEST_LOG << "   Getting class property --> OK" << endl;
 
         delete db;
+        delete dbserver;
     }
 
     catch(Tango::DevFailed &e)

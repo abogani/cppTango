@@ -201,6 +201,8 @@ int main(int argc, char **argv)
     assert(dev_att_get[0].is_empty() == true);
 
     TEST_LOG << "   Delete device attribute property --> OK" << std::endl;
+
+    delete device;
 }
 
 // NOLINTEND(*)

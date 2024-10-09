@@ -15,7 +15,7 @@
 
 int main(int argc, char **argv)
 {
-    DeviceProxy *device;
+    std::unique_ptr<DeviceProxy> device;
 
     if((argc < 3) || (argc > 4))
     {
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
     try
     {
-        device = new DeviceProxy(device_name);
+        device = std::make_unique<DeviceProxy>(device_name);
     }
     catch(CORBA::Exception &e)
     {
@@ -39,10 +39,9 @@ int main(int argc, char **argv)
 
     try
     {
-        DeviceProxy *admin;
         string adm_name = device->adm_name();
 
-        admin = new DeviceProxy(adm_name);
+        auto admin = std::make_unique<DeviceProxy>(adm_name);
 
         DeviceData din;
         if(cmd_name == "devrestart")
@@ -130,7 +129,6 @@ int main(int argc, char **argv)
         }
     }
 
-    delete device;
     return 0;
 }
 

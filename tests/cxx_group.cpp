@@ -880,6 +880,8 @@ class GroupTestSuite : public CxxTest::TestSuite
         }
 
         CxxTest::TangoPrinter::restore_unset("double_attr_value");
+
+        delete test_group;
     }
 
     // Test command execution when server starts after client

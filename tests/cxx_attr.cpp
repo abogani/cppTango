@@ -154,6 +154,8 @@ class AttrTestSuite : public CxxTest::TestSuite
         name_vec.push_back("Long_attr");
         name_vec.push_back("Short_attr");
 
+        delete attr_vec;
+
         TS_ASSERT_THROWS_NOTHING(attr_vec = device1->read_attributes(name_vec));
 
         string_attr = (*attr_vec)[0];
@@ -187,6 +189,8 @@ class AttrTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(short_attr.get_dim_y(), 0);
         short_attr >> sh;
         TS_ASSERT_EQUALS(sh, 12);
+
+        delete attr_vec;
     }
 
     // Test one attribute at a time for all SPECTRUM types
@@ -278,6 +282,8 @@ class AttrTestSuite : public CxxTest::TestSuite
         double_attr >> db;
         TS_ASSERT_EQUALS(db[0], 1.11);
         TS_ASSERT_EQUALS(db[1], 2.22);
+
+        delete attr_vec;
     }
 
     // Test one attribute at a time for all IMAGE types
@@ -378,6 +384,8 @@ class AttrTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(lg[3], 3);
         TS_ASSERT_EQUALS(lg[4], 4);
         TS_ASSERT_EQUALS(lg[5], 5);
+
+        delete attr_vec;
     }
 
     // Test attributes written using the set value date and quality method

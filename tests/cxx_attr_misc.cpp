@@ -112,6 +112,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
 
         delete device1;
         delete dserver;
+        delete init_attr_conf;
     }
 
     static SUITE_NAME *createSuite()
@@ -801,6 +802,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         long_attr_with_w >> lg_array;
         TS_ASSERT_EQUALS((*lg_array)[0], 1246);
         TS_ASSERT_EQUALS((*lg_array)[1], 0);
+        delete lg_array;
 
         TS_ASSERT_THROWS_NOTHING(long_attr_w = device1->read_attribute("Long_attr_w"));
         TS_ASSERT_EQUALS(long_attr_w.get_name(), "Long_attr_w");
@@ -809,6 +811,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(long_attr_w.get_dim_y(), 0);
         long_attr_w >> lg_array;
         TS_ASSERT_EQUALS((*lg_array)[0], 0);
+        delete lg_array;
 
         TS_ASSERT_THROWS_NOTHING(short_attr_rw = device1->read_attribute("Short_attr_rw"));
         TS_ASSERT_EQUALS(short_attr_rw.get_name(), "Short_attr_rw");
@@ -818,6 +821,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         short_attr_rw >> sh_array;
         TS_ASSERT_EQUALS((*sh_array)[0], 66);
         TS_ASSERT_EQUALS((*sh_array)[1], 0);
+        delete sh_array;
 
         TS_ASSERT_THROWS_NOTHING(float_attr_w = device1->read_attribute("Float_attr_w"));
         TS_ASSERT_EQUALS(float_attr_w.get_name(), "Float_attr_w");
@@ -826,6 +830,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(float_attr_w.get_dim_y(), 0);
         float_attr_w >> fl_array;
         TS_ASSERT_EQUALS((*fl_array)[0], 0);
+        delete fl_array;
 
         TS_ASSERT_THROWS_NOTHING(ushort_attr_w = device1->read_attribute("UShort_attr_w"));
         TS_ASSERT_EQUALS(ushort_attr_w.get_name(), "UShort_attr_w");
@@ -834,6 +839,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(ushort_attr_w.get_dim_y(), 0);
         ushort_attr_w >> ush_array;
         TS_ASSERT_EQUALS((*ush_array)[0], 0);
+        delete ush_array;
 
         TS_ASSERT_THROWS_NOTHING(uchar_attr_w = device1->read_attribute("UChar_attr_w"));
         TS_ASSERT_EQUALS(uchar_attr_w.get_name(), "UChar_attr_w");
@@ -842,6 +848,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(uchar_attr_w.get_dim_y(), 0);
         uchar_attr_w >> uch_array;
         TS_ASSERT_EQUALS((*uch_array)[0], 0);
+        delete uch_array;
     }
 
     // Test read attribute on write type attribute
@@ -861,6 +868,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(short_attr_w2.get_dim_y(), 0);
         short_attr_w2 >> sh_array;
         TS_ASSERT_EQUALS((*sh_array)[0], 0);
+        delete sh_array;
 
         TS_ASSERT_THROWS_NOTHING(long_attr_w = device1->read_attribute("Long_attr_w"));
         TS_ASSERT_EQUALS(long_attr_w.get_name(), "Long_attr_w");
@@ -869,6 +877,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(long_attr_w.get_dim_y(), 0);
         long_attr_w >> lg_array;
         TS_ASSERT_EQUALS((*lg_array)[0], 0);
+        delete lg_array;
 
         TS_ASSERT_THROWS_NOTHING(double_attr_w = device1->read_attribute("Double_attr_w"));
         TS_ASSERT_EQUALS(double_attr_w.get_name(), "Double_attr_w");
@@ -877,6 +886,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(double_attr_w.get_dim_y(), 0);
         double_attr_w >> db_array;
         TS_ASSERT_EQUALS((*db_array)[0], 0);
+        delete db_array;
 
         TS_ASSERT_THROWS_NOTHING(string_attr_w2 = device1->read_attribute("String_attr_w2"));
         TS_ASSERT_EQUALS(string_attr_w2.get_name(), "String_attr_w2");
@@ -885,6 +895,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(string_attr_w2.get_dim_y(), 0);
         string_attr_w2 >> str_array;
         TS_ASSERT_EQUALS(string((*str_array)[0].in()), "Not initialised");
+        delete str_array;
     }
 
     void test_write_attribute_error_message(void)
@@ -930,6 +941,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(short_attr_w.get_dim_y(), 0);
         short_attr_w >> sh_array;
         TS_ASSERT_EQUALS((*sh_array)[0], 10);
+        delete sh_array;
 
         TS_ASSERT_THROWS_NOTHING(long_attr_w = device1->read_attribute("Long_attr_w"));
         TS_ASSERT_EQUALS(long_attr_w.get_name(), "Long_attr_w");
@@ -938,6 +950,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(long_attr_w.get_dim_y(), 0);
         long_attr_w >> lg_array;
         TS_ASSERT_EQUALS((*lg_array)[0], 100);
+        delete lg_array;
 
         TS_ASSERT_THROWS_NOTHING(double_attr_w = device1->read_attribute("Double_attr_w"));
         TS_ASSERT_EQUALS(double_attr_w.get_name(), "Double_attr_w");
@@ -946,6 +959,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(double_attr_w.get_dim_y(), 0);
         double_attr_w >> db_array;
         TS_ASSERT_EQUALS((*db_array)[0], 1.1);
+        delete db_array;
 
         TS_ASSERT_THROWS_NOTHING(string_attr_w = device1->read_attribute("String_attr_w"));
         TS_ASSERT_EQUALS(string_attr_w.get_name(), "String_attr_w");
@@ -954,6 +968,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(string_attr_w.get_dim_y(), 0);
         string_attr_w >> str_array;
         TS_ASSERT_EQUALS(string((*str_array)[0].in()), "Init");
+        delete str_array;
     }
 
     // Test read attribute on initialised read/write type attribute
@@ -1014,6 +1029,7 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         TS_ASSERT_EQUALS(long_attr.get_dim_y(), 0);
         long_attr >> lg_array;
         TS_ASSERT_EQUALS((*lg_array)[0], 1246);
+        delete lg_array;
 
         lg = 900;
         din << lg;
