@@ -722,6 +722,10 @@ DeviceImpl::~DeviceImpl()
         delete(poll_obj_list[i]);
     }
 
+#if defined(TANGO_USE_TELEMETRY)
+    cleanup_telemetry_interface();
+#endif
+
     if((logger != nullptr) && logger != Logging::get_core_logger())
     {
         logger->remove_all_appenders();
@@ -731,10 +735,6 @@ DeviceImpl::~DeviceImpl()
 
     delete locker_client;
     delete old_locker_client;
-
-#if defined(TANGO_USE_TELEMETRY)
-    cleanup_telemetry_interface();
-#endif
 
     //
     // Delete the extension class instance
