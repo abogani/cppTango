@@ -111,8 +111,13 @@ abi-api-compliance-check:
     GIT_STRATEGY: "none"
     TANGO_USE_TELEMETRY: "OFF"
   rules:
-    # This job runs only for merge requests.
+    # This job runs only for merge requests
+    - if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_LABELS =~ /Allow API ABI Break/'
+      # allow the job to fail with the special label
+      allow_failure: true
+      when: on_success
     - if: $CI_MERGE_REQUEST_IID
+      when: on_success
   # allow failures for next release cycle which is allowed to break ABI
   allow_failure: false
   script: # override
