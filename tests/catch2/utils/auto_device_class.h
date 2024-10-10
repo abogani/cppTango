@@ -476,6 +476,8 @@ struct ClassRegistrarBase
 
     virtual Tango::DeviceClass *init_class() = 0;
 
+    virtual ~ClassRegistrarBase() = default;
+
     // We use a pointer here so that the first `ClassRegistrarBase` constructs
     // the vector.  This avoids the static initialisation order fiasco.
     static std::vector<ClassRegistrarBase *> *registrars;

@@ -8,6 +8,7 @@
 #include "utils/utils.h"
 
 // A thread that holds a TangoMonitor for the duration it is running.
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class HoldMonitorThread : public omni_thread
 {
   public:

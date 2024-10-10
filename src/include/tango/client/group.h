@@ -67,6 +67,7 @@ typedef std::vector<std::string> DeviceNames;
 class AsynchRequest
 {
     //- An asynch. request repository is maintain by each GroupDeviceElement
+    // NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
     friend class GroupDeviceElement;
 
   public:
@@ -678,6 +679,7 @@ class GroupElementFactory
 //=============================================================================
 // class GroupElement: base class for all tango group element
 //=============================================================================
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class GroupElement
 {
     friend class Group;
@@ -1755,6 +1757,7 @@ class Group : public GroupElement
 //=============================================================================
 // class GroupDeviceElement: a device element
 //=============================================================================
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class GroupDeviceElement : public GroupElement
 {
     friend class Group;
