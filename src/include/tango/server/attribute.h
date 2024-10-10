@@ -1484,7 +1484,7 @@ class Attribute
     /**
      * The attribute value
      */
-    Tango::Attr_Value value;
+    Tango::Attr_Value value{nullptr};
     /**
      * The attribute data size
      */
