@@ -134,7 +134,7 @@ class AttrReadEvent
     ///@publicsection
     Tango::DeviceProxy *device;           ///< The DeviceProxy object on which the call was executed
     std::vector<std::string> &attr_names; ///< The attribute name list
-    std::vector<DeviceAttribute> *argout; ///< The attribute data
+    std::vector<DeviceAttribute> *argout; ///< The attribute data (callback function owns the memory)
     bool err;                             ///< A boolean flag set to true if the request failed. False otherwise
     DevErrorList &errors;                 ///< The error stack
 
