@@ -150,7 +150,7 @@ void DevTest::init_device()
     attr_qua_event[0] = 1.2;
     attr_qua_event[1] = 2.4;
     attr_event_qua = Tango::ATTR_VALID;
-    remote_dev = NULL;
+    remote_dev = nullptr;
 
     slow_actua_write.tv_sec = 0;
     slow_actua = 0;
@@ -333,7 +333,7 @@ Tango::DevLong DevTest::IOSubscribeEvent(const Tango::DevVarStringArray *in_data
 
     //	vector<string> filters;
     //
-    //	if (remote_dev == NULL)
+    //	if (remote_dev == nullptr)
     //	{
     //    	Tango::Util *tg = Tango::Util::instance();
     //		vector<Tango::DeviceImpl *> &dev_list = tg->get_device_list_by_class("DevTest");
@@ -357,7 +357,7 @@ Tango::DevLong DevTest::IOSubscribeEvent(const Tango::DevVarStringArray *in_data
 
     std::vector<std::string> filters;
 
-    if(remote_dev == NULL)
+    if(remote_dev == nullptr)
     {
         remote_dev = new Tango::DeviceProxy((*in_data)[0]);
     }
@@ -1360,10 +1360,10 @@ void DevTest::read_Double_attr(Tango::Attribute &att)
 
 void DevTest::read_String_attr(Tango::Attribute &att)
 {
-    static Tango::DevString s = NULL;
+    static Tango::DevString s = nullptr;
 
     TANGO_LOG << "[DevTest::read_attr] attribute name String_attr" << std::endl;
-    if(s == NULL)
+    if(s == nullptr)
     {
         s = Tango::string_dup("test_string");
     }
@@ -1637,7 +1637,7 @@ void DevTest::read_attr_dq_db(Tango::Attribute &att)
 
 void DevTest::read_attr_dq_str(Tango::Attribute &att)
 {
-    static Tango::DevString s = NULL;
+    static Tango::DevString s = nullptr;
 
     TANGO_LOG << "[DevTest::read_attr] attribute name attr_dq_str" << std::endl;
     s = attr_dq_str;

@@ -1969,7 +1969,7 @@ class DevTestClass : public Tango::DeviceClass
 
     ~DevTestClass()
     {
-        _instance = NULL;
+        _instance = nullptr;
     }
 
     virtual void device_name_factory(std::vector<std::string> &);

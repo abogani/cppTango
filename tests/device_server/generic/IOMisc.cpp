@@ -170,7 +170,7 @@ CORBA::Any *IODevListByClass::execute(TANGO_UNUSED(Tango::DeviceImpl *device), c
 
         CORBA::String_var d_name = d_list[0]->name();
         char *t = strrchr(d_name.inout(), '/');
-        if(t != NULL)
+        if(t != nullptr)
         {
             *t = '\0';
         }
@@ -1432,7 +1432,7 @@ void *AcquisitionThread::run_undetached(TANGO_UNUSED(void *arg))
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //+----------------------------------------------------------------------------
@@ -1851,7 +1851,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         TangoSys_MemStream str;
         std::vector<std::string> alarms_vec;
         Tango::AttributeConfig_5 conf;
-        Tango::Attribute *attr_ptr = NULL;
+        Tango::Attribute *attr_ptr = nullptr;
 
         try
         {
@@ -1893,7 +1893,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -1942,7 +1942,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -1990,7 +1990,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2039,7 +2039,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2088,7 +2088,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2136,7 +2136,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2185,7 +2185,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2234,7 +2234,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2283,7 +2283,7 @@ CORBA::Any *SetGetAlarms::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -2364,7 +2364,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         TangoSys_MemStream str;
         std::vector<std::string> ranges_vec;
         Tango::AttributeConfig conf;
-        Tango::WAttribute *wattr_ptr = NULL;
+        Tango::WAttribute *wattr_ptr = nullptr;
 
         try
         {
@@ -2393,7 +2393,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2429,7 +2429,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2465,7 +2465,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2501,7 +2501,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2537,7 +2537,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2573,7 +2573,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2609,7 +2609,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2645,7 +2645,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2681,7 +2681,7 @@ CORBA::Any *SetGetRanges::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const 
         }
         catch(Tango::DevFailed &e)
         {
-            if(wattr_ptr != NULL)
+            if(wattr_ptr != nullptr)
             {
                 wattr_ptr->set_upd_properties(conf);
             }
@@ -2772,7 +2772,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
 
         std::vector<std::string> props_vec;
         Tango::AttributeConfig_5 conf;
-        Tango::Attribute *attr_ptr = NULL;
+        Tango::Attribute *attr_ptr = nullptr;
         std::vector<Tango::DevDouble> changes;
 
         try
@@ -2893,7 +2893,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3016,7 +3016,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3139,7 +3139,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3262,7 +3262,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3385,7 +3385,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3508,7 +3508,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3631,7 +3631,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3754,7 +3754,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -3877,7 +3877,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -4000,7 +4000,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         catch(Tango::DevFailed &e)
         {
             db->set_timeout_millis(Tango::DB_TIMEOUT);
-            if(attr_ptr != NULL)
+            if(attr_ptr != nullptr)
             {
                 attr_ptr->set_upd_properties(conf);
             }
@@ -4067,7 +4067,7 @@ CORBA::Any *SetGetProperties::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
         //		catch(Tango::DevFailed &e)
         //		{
         //			db->set_timeout_millis(Tango::DB_TIMEOUT);
-        //			if(attr_ptr != NULL)
+        //			if(attr_ptr != nullptr)
         //				attr_ptr->set_upd_properties(conf);
         //			throw e;
         //		}

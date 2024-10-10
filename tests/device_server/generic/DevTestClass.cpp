@@ -20,7 +20,7 @@
 #include "IOSetAttr.h"
 #include "IOAddAttribute.h"
 
-DevTestClass *DevTestClass::_instance = NULL;
+DevTestClass *DevTestClass::_instance = nullptr;
 
 //+----------------------------------------------------------------------------
 //
@@ -55,7 +55,7 @@ DevTestClass::DevTestClass(std::string &s) :
 
 DevTestClass *DevTestClass::init(const char *name)
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         try
         {
@@ -72,7 +72,7 @@ DevTestClass *DevTestClass::init(const char *name)
 
 DevTestClass *DevTestClass::instance()
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         std::cerr << "Class is not initialised !!" << std::endl;
         exit(-1);

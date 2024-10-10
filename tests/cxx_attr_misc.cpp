@@ -258,10 +258,10 @@ class AttrMiscTestSuite : public CxxTest::TestSuite
         time_t ti = Tango::get_current_system_datetime();
         TEST_LOG << "Calling SetGetProperties at " << ctime(&ti) << endl;
         struct timeval start,stop;
-        gettimeofday(&start,NULL);
+        gettimeofday(&start,nullptr);
                 TS_ASSERT_THROWS_NOTHING(dout = device1->command_inout("SetGetProperties"));
                 TS_ASSERT_THROWS_NOTHING(dout >> props);
-        gettimeofday(&stop,NULL);
+        gettimeofday(&stop,nullptr);
         double elapsed = (double)(stop.tv_sec - start.tv_sec) + (double)(stop.tv_usec - start.tv_usec) / 1000000.0;
         TEST_LOG << "required time for command SetGetProperties = " << elapsed << endl;
 

@@ -133,7 +133,7 @@ namespace CxxTest
 
         void openDisplay()
         {
-            _display = XOpenDisplay( NULL );
+            _display = XOpenDisplay( nullptr );
         }
 
         void createColors()
@@ -190,7 +190,7 @@ namespace CxxTest
 
         void freeFontInfo()
         {
-            XFreeFontInfo( NULL, _fontInfo, 1 );
+            XFreeFontInfo( nullptr, _fontInfo, 1 );
         }
 
         void initializeEvents()

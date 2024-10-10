@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         // Try to change min_value then max_value with non-coherent value
         // The memorized value is 345
 
-        AttributeInfoListEx *att_conf = NULL;
+        AttributeInfoListEx *att_conf = nullptr;
 
         vector<string> att_conf_list;
         att_conf_list.push_back(short_att_name);
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         assert(except == true);
         except = false;
 
-        AttributeInfoListEx *att_conf2 = NULL;
+        AttributeInfoListEx *att_conf2 = nullptr;
         att_conf2 = device->get_attribute_config_ex(att_conf_list);
 
         assert((*att_conf)[0].min_value == (*att_conf2)[0].min_value);
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
         assert(except == true);
         except = false;
 
-        AttributeInfoListEx *att_conf3 = NULL;
+        AttributeInfoListEx *att_conf3 = nullptr;
         att_conf3 = device->get_attribute_config_ex(att_conf_list);
 
         assert((*att_conf2)[0].min_value == (*att_conf3)[0].min_value);
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 
         // Read conf
 
-        AttributeInfoListEx *att_conf4 = NULL;
+        AttributeInfoListEx *att_conf4 = nullptr;
         att_conf4 = device->get_attribute_config_ex(att_conf_list);
 
         assert((*att_conf4)[0].min_value == "200");

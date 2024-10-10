@@ -47,21 +47,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     }
     catch(std::bad_alloc)
     {
-        MessageBox((HWND) NULL, "Memory error", "Command line", MB_ICONSTOP);
+        MessageBox((HWND) nullptr, "Memory error", "Command line", MB_ICONSTOP);
         return (FALSE);
     }
     catch(Tango::DevFailed &e)
     {
-        MessageBox((HWND) NULL, e.errors[0].desc.in(), "Command line", MB_ICONSTOP);
+        MessageBox((HWND) nullptr, e.errors[0].desc.in(), "Command line", MB_ICONSTOP);
         return (FALSE);
     }
     catch(CORBA::Exception &)
     {
-        MessageBox((HWND) NULL, "CORBA Exception", "Command line", MB_ICONSTOP);
+        MessageBox((HWND) nullptr, "CORBA Exception", "Command line", MB_ICONSTOP);
         return (FALSE);
     }
 
-    while(GetMessage(&msg, NULL, 0, 0))
+    while(GetMessage(&msg, nullptr, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
