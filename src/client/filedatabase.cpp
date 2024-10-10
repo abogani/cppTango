@@ -2367,7 +2367,6 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
     CORBA::Any_var any = new CORBA::Any();
 
     const DevVarStringArray *data_in = nullptr;
-    auto *data_out = new DevVarStringArray;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetProperty" << endl;
 
@@ -2381,13 +2380,13 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
 
     if(data_in->length() < 1)
     {
-        delete data_out;
-
         std::stringstream ss;
         ss << "Invalid number of arguments passed to FileDatabase::DbGetProperty. Expecting at least 1, found "
            << data_in->length();
         TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, ss.str().c_str());
     }
+
+    auto *data_out = new DevVarStringArray;
 
     const auto &free_objects = m_server.free_objects;
     const char *obj_name = (*data_in)[0].in();
