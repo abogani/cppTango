@@ -1467,6 +1467,7 @@ CORBA::Any_var FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
             {
                 // TANGO_LOG << "found " << (*itp)->name << endl;
                 device_trovato.properties.erase(itp, itp + 1);
+                delete *itp;
             }
         }
     }
@@ -1705,6 +1706,7 @@ CORBA::Any_var FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
                         //                        TANGO_LOG << "found property" << (*itp)->name << "for attribute " <<
                         //                        device_trovato.attribute_properties[j]->attribute_name << endl;
                         device_trovato.attribute_properties[j]->properties.erase(itp, itp + 1);
+                        delete *itp;
                     }
                 }
             }
@@ -2603,6 +2605,7 @@ CORBA::Any_var FileDatabase::DbDeleteProperty(CORBA::Any &send)
         }
 
         prop_list.erase(prop);
+        delete *prop;
     }
 
     write_file();
