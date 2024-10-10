@@ -981,7 +981,7 @@ class Group : public GroupElement
     /**
      * Returns a reference to the specified device
      *
-     * Returns a reference to the specified device or NULL if there is no device by that name in the group. This
+     * Returns a reference to the specified device or nullptr if there is no device by that name in the group. This
      * method may throw an exception in case the specified device belongs to the group but can’t be reached (not
      * registered, down...). See example below. See also the Tango::DeviceProxy class documentation for details.
      * @code
@@ -1011,7 +1011,7 @@ class Group : public GroupElement
     /**
      * Returns a reference to the "idx-th" device in the hierarchy
      *
-     * Returns a reference to the "idx-th" device in the hierarchy or NULL if the hierarchy contains less than
+     * Returns a reference to the "idx-th" device in the hierarchy or nullptr if the hierarchy contains less than
      * "idx" devices. This method may throw an exception in case the specified device belongs to the group but
      * can’t be reached (not registered, down...). See previous example. See also the Tango::DeviceProxy class
      * documentation for details.
@@ -1028,7 +1028,7 @@ class Group : public GroupElement
     /**
      * Returns a reference to the "idx-th" device in the hierarchy
      *
-     * Returns a reference to the "idx-th" device in the hierarchy or NULL if the hierarchy contains less than "idx"
+     * Returns a reference to the "idx-th" device in the hierarchy or nullptr if the hierarchy contains less than "idx"
      * devices. See the Tango::DeviceProxy class documentation for details.
      * The request is systematically forwarded to subgroups (i.e. if the local set of devices contains less than
      * "idx" devices, the request is forwarded to subgroups).
@@ -1043,7 +1043,7 @@ class Group : public GroupElement
     /**
      * Returns a reference to the specified group
      *
-     * Returns a reference to the specified group or NULL if there is no group by that name. The group_name
+     * Returns a reference to the specified group or nullptr if there is no group by that name. The group_name
      * can be a fully qualified name.
      * Considering the following group:
      * @verbatim

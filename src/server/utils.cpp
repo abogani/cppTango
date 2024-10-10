@@ -275,7 +275,7 @@ Util *Util::init(int argc, char *argv[])
 #ifdef _TG_WINDOWS_
 Util *Util::init(HINSTANCE hi, int nCmd)
 {
-    if(_instance == NULL)
+    if(_instance == nullptr)
     {
         _instance = new Util(hi, nCmd);
     }
@@ -321,25 +321,25 @@ Util *Util::instance(bool exit)
 
 #ifdef _TG_WINDOWS
 Util::Util(int argc, char *argv[]) :
-    cl_list_ptr(NULL),
+    cl_list_ptr(nullptr),
     mon("Windows startup"),
     ext(new UtilExt),
-    heartbeat_th(NULL),
+    heartbeat_th(nullptr),
     heartbeat_th_id(0),
     poll_mon("utils_poll"),
     poll_on(false),
     ser_model(BY_DEVICE),
     only_one("process"),
-    nd_event_supplier(NULL),
-    inter(NULL),
+    nd_event_supplier(nullptr),
+    inter(nullptr),
     svr_starting(true),
     svr_stopping(false),
     poll_pool_size(ULONG_MAX),
     conf_needs_db_upd(false),
-    ev_loop_func(NULL),
+    ev_loop_func(nullptr),
     shutdown_server(false),
     _dummy_thread(false),
-    zmq_event_supplier(NULL),
+    zmq_event_supplier(nullptr),
     endpoint_specified(false),
     user_pub_hwm(-1),
     wattr_nan_allowed(false),
@@ -726,25 +726,25 @@ void Util::create_CORBA_objects()
 //-------------------------------------------------------------------------------------------------------------------
 
 Util::Util(HINSTANCE hInst, int nCmdShow) :
-    cl_list_ptr(NULL),
+    cl_list_ptr(nullptr),
     mon("Windows startup"),
     ext(new UtilExt),
-    heartbeat_th(NULL),
+    heartbeat_th(nullptr),
     heartbeat_th_id(0),
     poll_mon("utils_poll"),
     poll_on(false),
     ser_model(BY_DEVICE),
     only_one("process"),
-    nd_event_supplier(NULL),
-    inter(NULL),
+    nd_event_supplier(nullptr),
+    inter(nullptr),
     svr_starting(true),
     svr_stopping(false),
     poll_pool_size(ULONG_MAX),
     conf_needs_db_upd(false),
-    ev_loop_func(NULL),
+    ev_loop_func(nullptr),
     shutdown_server(false),
     _dummy_thread(false),
-    zmq_event_supplier(NULL),
+    zmq_event_supplier(nullptr),
     endpoint_specified(false),
     user_pub_hwm(-1),
     wattr_nan_allowed(false),
@@ -1844,7 +1844,7 @@ void Util::create_zmq_event_supplier()
 Util::~Util()
 {
 #ifdef _TG_WINDOWS_
-    if(ds_window != NULL)
+    if(ds_window != nullptr)
     {
         stop_all_polling_threads();
         stop_heartbeat_thread();
@@ -2035,7 +2035,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
     }
 
     omni_thread *th = omni_thread::self();
-    if(th == NULL)
+    if(th == nullptr)
     {
         th = omni_thread::create_dummy();
         _dummy_thread = true;
@@ -2295,7 +2295,7 @@ void Util::server_cleanup()
         _constructed = false;
     }
 #else
-    if(ds_window == NULL)
+    if(ds_window == nullptr)
     {
         if(_constructed == true)
         {
@@ -2547,7 +2547,7 @@ DeviceImpl *Util::find_device_name_core(const std::string &dev_name)
     }
 
     //
-    // Return to caller. The returned value is NULL if the device is not found
+    // Return to caller. The returned value is nullptr if the device is not found
     //
 
     return ret_ptr;
@@ -2788,11 +2788,11 @@ void Util::print_err_message(const char *err_mess, TANGO_UNUSED(Tango::MessBoxTy
         switch(type)
         {
         case Tango::STOP:
-            MessageBox((HWND) NULL, err_mess, MessBoxTitle, MB_ICONSTOP);
+            MessageBox((HWND) nullptr, err_mess, MessBoxTitle, MB_ICONSTOP);
             break;
 
         case Tango::INFO:
-            MessageBox((HWND) NULL, err_mess, MessBoxTitle, MB_ICONINFORMATION);
+            MessageBox((HWND) nullptr, err_mess, MessBoxTitle, MB_ICONINFORMATION);
             break;
         }
         TANGO_THROW_EXCEPTION(API_StartupSequence, "Error in device server startup sequence");
@@ -3110,7 +3110,7 @@ void Util::build_argc_argv()
         //
 
         int i = 1;
-        while((tmp = strtok(NULL, " ")) != NULL)
+        while((tmp = strtok(nullptr, " ")) != nullptr)
         {
             argv[i] = new char[strlen(tmp) + 1];
             strcpy(argv[i], tmp);
@@ -3182,7 +3182,7 @@ void *Util::ORBWin32Loop::run_undetached(void *ptr)
     }
     catch(std::bad_alloc)
     {
-        MessageBox((HWND) NULL, "Memory error", "Device creation failed", MB_ICONSTOP);
+        MessageBox((HWND) nullptr, "Memory error", "Device creation failed", MB_ICONSTOP);
         ::exit(-1);
     }
     catch(Tango::DevFailed &e)
@@ -3190,12 +3190,12 @@ void *Util::ORBWin32Loop::run_undetached(void *ptr)
         std::string str(e.errors[0].desc.in());
         str = str + '\n';
         str = str + e.errors[0].origin.in();
-        MessageBox((HWND) NULL, str.c_str(), "Device creation failed", MB_ICONSTOP);
+        MessageBox((HWND) nullptr, str.c_str(), "Device creation failed", MB_ICONSTOP);
         ::exit(-1);
     }
     catch(CORBA::Exception &)
     {
-        MessageBox((HWND) NULL, "CORBA exception", "Device creation failed", MB_ICONSTOP);
+        MessageBox((HWND) nullptr, "CORBA exception", "Device creation failed", MB_ICONSTOP);
         ::exit(-1);
     }
 
@@ -3227,7 +3227,7 @@ void *Util::ORBWin32Loop::run_undetached(void *ptr)
 
     util->get_orb()->run();
 
-    return NULL;
+    return nullptr;
 }
 
 void Util::ORBWin32Loop::wait_for_go()

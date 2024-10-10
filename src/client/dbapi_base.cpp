@@ -93,10 +93,10 @@ Database::Database(CORBA::ORB_var orb_in) :
 Database::Database(CORBA::ORB_var orb_in, std::string &ds_exec_name, std::string &ds_inst_name) :
     Connection(orb_in),
     ext(new DatabaseExt),
-    access_proxy(NULL),
+    access_proxy(nullptr),
     access_checked(false),
     access_service_defined(false),
-    db_tg(NULL)
+    db_tg(nullptr)
 {
     //
     // get host and port from environment variable TANGO_HOST
@@ -107,10 +107,10 @@ Database::Database(CORBA::ORB_var orb_in, std::string &ds_exec_name, std::string
 
     if(get_tango_host_from_reg(&tango_host_env_c_str, ds_exec_name, ds_inst_name) == -1)
     {
-        tango_host_env_c_str = NULL;
+        tango_host_env_c_str = nullptr;
     }
 
-    if(tango_host_env_c_str == NULL)
+    if(tango_host_env_c_str == nullptr)
     {
         TangoSys_MemStream desc;
         desc << "TANGO_HOST env. variable not set, set it and retry (e.g. TANGO_HOST=<host>:<port>)" << std::ends;
@@ -602,7 +602,7 @@ long Database::get_tango_host_from_reg(char **buffer, std::string &ds_exec_name,
     DWORD type, size;
     char tmp_buf[128];
     size = 127;
-    if(::RegQueryValueEx(keyHandle, "TangoHost", NULL, &type, (unsigned char *) tmp_buf, &size) != ERROR_SUCCESS)
+    if(::RegQueryValueEx(keyHandle, "TangoHost", nullptr, &type, (unsigned char *) tmp_buf, &size) != ERROR_SUCCESS)
     {
         return -1;
     }

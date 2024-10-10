@@ -748,7 +748,7 @@ DeviceImpl::~DeviceImpl()
     auto ite = find(dev_vect.begin(), dev_vect.end(), this);
     if(ite != dev_vect.end())
     {
-        *ite = NULL;
+        *ite = nullptr;
     }
 
     TANGO_LOG_DEBUG << "Leaving DeviceImpl destructor for device " << device_name << std::endl;

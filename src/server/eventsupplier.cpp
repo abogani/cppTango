@@ -124,7 +124,7 @@ EventSupplier::EventSupplier(Util *tg)
 //        in :
 //            - device_impl : The device
 //            - attr_value : The attribute value
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //            - attr_name : The attribute name
 //          - time_bef_attr : Exact date when the attribute has been read
 //
@@ -366,7 +366,7 @@ SendEventType EventSupplier::detect_and_push_events(DeviceImpl *device_impl,
 //            - attr_value : The attribute value
 //            - attr : The attribute object
 //            - attr_name : The attribute name
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //             - user_push : Flag set to true if it is a user push
 //
 //--------------------------------------------------------------------------------------------------------------------
@@ -575,7 +575,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
  *      - attr_value: The attribute value
  *      - attr: The attribute object
  *      - attr_name: The attribute name
- *      - except: The exception thrown during the last attribute reading. NULL
+ *      - except: The exception thrown during the last attribute reading. nullptr
  *                  if no exception.
  *      - user_push : Flag set to true if it is a user push. Note that this
  *                  flag is ignored because alarm events cannot be manually
@@ -712,7 +712,7 @@ bool EventSupplier::detect_and_push_alarm_event(DeviceImpl *device_impl,
 //            - attr_value : The attribute value
 //            - attr : The attribute object
 //            - attr_name : The attribute name
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //            - time_bef_attr : Date before the attribute was read
 //            - user_push : Flag set to true if it's the user who fires the event
 //
@@ -985,7 +985,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
 //            - attr_value : The attribute value
 //            - attr : The attribute object
 //            - attr_name : The attribute name
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //            - time_bef_attr : Date before the attribute was read
 //
 //------------------------------------------------------------------------------------------------------------------
@@ -1148,7 +1148,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
 //            - archive :
 //            - delta_change_rel :
 //            - delta_change_abs :
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //            - force_change : A flag set to true if the change is due to a non mathematical reason
 //                       (array size change, from exception to classic...)
 //            - dev : Pointer to the device
@@ -2455,7 +2455,7 @@ void EventSupplier::push_att_data_ready_event(DeviceImpl *device_impl,
 //        in :
 //            - device_impl : The device
 //            - attr_conf : The attribute configuration
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //          - attr_name : The attribute name
 //
 //------------------------------------------------------------------------------------------------------------------

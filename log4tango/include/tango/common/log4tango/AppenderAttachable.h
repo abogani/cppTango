@@ -69,7 +69,7 @@ class AppenderAttachable
     virtual ~AppenderAttachable();
 
     /**
-     * Adds an Appender. Does nothing if the appender is NULL
+     * Adds an Appender. Does nothing if the appender is nullptr
      * or already attached.
      **/
     void add_appender(Appender *appender);

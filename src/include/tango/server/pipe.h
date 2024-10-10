@@ -589,7 +589,7 @@ Pipe &operator<<(Pipe &, DataElement<T> &);
 //
 
 #define PIPE_CHECK_PTR(A, B, C)                                                      \
-    if(A == NULL)                                                                    \
+    if(A == nullptr)                                                                 \
     {                                                                                \
         std::stringstream o;                                                         \
         o << "Data pointer for pipe " << B << ", data element " << C << " is NULL!"; \

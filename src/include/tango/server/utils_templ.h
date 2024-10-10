@@ -103,7 +103,7 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
     }
 
     //
-    // If the attribute is not READ_WRITE, the ptr to written part should always be NULL
+    // If the attribute is not READ_WRITE, the ptr to written part should always be nullptr
     //
 
     size_t nb_elt = data.length();

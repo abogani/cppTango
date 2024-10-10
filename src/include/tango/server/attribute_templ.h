@@ -222,7 +222,7 @@ void Attribute::set_min_alarm(const T &new_min_alarm)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -449,7 +449,7 @@ void Attribute::set_max_alarm(const T &new_max_alarm)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -676,7 +676,7 @@ void Attribute::set_min_warning(const T &new_min_warning)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -903,7 +903,7 @@ void Attribute::set_max_warning(const T &new_max_warning)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -1093,7 +1093,7 @@ void Attribute::get_properties(Tango::MultiAttrProp<T> &props)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, gives a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, gives a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -1220,7 +1220,7 @@ void Attribute::set_properties(Tango::MultiAttrProp<T> &props)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();

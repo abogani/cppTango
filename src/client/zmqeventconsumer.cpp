@@ -3361,7 +3361,7 @@ bool ZmqEventConsumer::check_zmq_endpoint(const std::string &endpoint)
             // Because socket is in non-blocking mode, call select to get connection status
             //
 
-            res = select(sockfd + 1, NULL, &myset, NULL, &tv);
+            res = select(sockfd + 1, nullptr, &myset, nullptr, &tv);
 
             if(res == 0)
             {
@@ -3409,7 +3409,7 @@ bool ZmqEventConsumer::check_zmq_endpoint(const std::string &endpoint)
     // Put socket in non-blocking mode
     //
 
-    if((arg = fcntl(sockfd, F_GETFL, NULL)) < 0)
+    if((arg = fcntl(sockfd, F_GETFL, nullptr)) < 0)
     {
         close(sockfd);
         return false;

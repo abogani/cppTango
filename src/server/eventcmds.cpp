@@ -106,7 +106,7 @@ DevLong DServer::event_subscription_change(const Tango::DevVarStringArray *argin
     //
     // Check if the request comes from a Tango 6 client (without client identification)
     // If true, the event has to be sent using AttributeValue_3 data structure
-    // If cl is NULL, this means that the call is local (Two tango classes within the same process and with events
+    // If cl is nullptr, this means that the call is local (Two tango classes within the same process and with events
     // between device from class 1 and device from classs 2)
     //
 
@@ -796,8 +796,8 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                         //
                         // Check if the request comes from a Tango 6 client (without client identification)
                         // If true, the event has to be sent using AttributeValue_3 data structure
-                        // If cl is NULL, this means that the call is local (Two tango classes within the same process
-                        // and with events between device from class 1 and device from classs 2)
+                        // If cl is nullptr, this means that the call is local (Two tango classes within the same
+                        // process and with events between device from class 1 and device from classs 2)
                         //
 
                         client_addr *cl = get_client_ident();

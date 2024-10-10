@@ -998,7 +998,7 @@ void ZmqEventSupplier::push_heartbeat_event()
 //            - filterable_data :
 //            - attr_value : The attribute value
 //            - obj_name : The attribute/pipe name
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1736,7 +1736,7 @@ bool ZmqEventSupplier::update_connected_client(client_addr *cl)
 //            - filterable_data :
 //            - attr_value : The attribute value
 //            - att : The attribute object reference
-//            - except : The exception thrown during the last attribute reading. NULL if no exception
+//            - except : The exception thrown during the last attribute reading. nullptr if no exception
 //
 //-------------------------------------------------------------------------------------------------------------------
 

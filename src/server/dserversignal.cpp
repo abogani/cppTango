@@ -46,7 +46,7 @@ std::unique_ptr<DServerSignal> DServerSignal::_instance = nullptr;
 DevSigAction DServerSignal::reg_sig[_NSIG];
 std::string DServerSignal::sig_name[_NSIG];
 #ifdef _TG_WINDOWS_
-HANDLE DServerSignal::win_ev = NULL;
+HANDLE DServerSignal::win_ev = nullptr;
 int DServerSignal::win_signo = 0;
 #endif
 
@@ -218,7 +218,7 @@ DServerSignal::DServerSignal() :
     sigdelset(&sigs_to_block, SIGUSR2);
     sigprocmask(SIG_BLOCK, &sigs_to_block, nullptr);
 #else  /* _TG_WINDOWS_ */
-    win_ev = CreateEvent(NULL, FALSE, FALSE, NULL);
+    win_ev = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
     register_handler(SIGINT);
     register_handler(SIGTERM);

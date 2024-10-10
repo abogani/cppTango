@@ -1355,7 +1355,7 @@ void Device_3Impl::read_attributes_from_cache(const Tango::DevVarStringArray &na
 
         //
         // In some cases where data from polling are required by a DS for devices marked as polled but for which the
-        // polling is not sarted yet, polled_attr could be NULL at the end of this loop. Return "No data yet" in
+        // polling is not sarted yet, polled_attr could be nullptr at the end of this loop. Return "No data yet" in
         // this case
         //
 

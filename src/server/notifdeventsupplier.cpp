@@ -883,7 +883,7 @@ void NotifdEventSupplier::disconnect_from_notifd()
 //                    filterable_data :
 //                    attr_value : The attribute value
 //                    except : The exception thrown during the last
-//                        attribute reading. NULL if no exception
+//                        attribute reading. nullptr if no exception
 //
 //-----------------------------------------------------------------------------
 

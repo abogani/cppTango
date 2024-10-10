@@ -1471,23 +1471,23 @@ void DServer::create_cpp_class(const std::string &class_name,
 
         DWORD l_err = GetLastError();
         ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                        NULL,
+                        nullptr,
                         l_err,
                         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                         (char *) &str,
                         0,
-                        NULL);
+                        nullptr);
 
         error_msgs.emplace(key, str);
         ::LocalFree((HLOCAL) str);
     };
-    if((mod = LoadLibrary(lib_name.c_str())) == NULL)
+    if((mod = LoadLibrary(lib_name.c_str())) == nullptr)
     {
         fetch_error_msg(lib_name);
         for(const auto &prefix : prefixes)
         {
             lib_name = prefix + class_name;
-            if((mod = LoadLibrary(lib_name.c_str())) != NULL)
+            if((mod = LoadLibrary(lib_name.c_str())) != nullptr)
             {
                 lib_loaded = true;
                 break;
@@ -1510,7 +1510,7 @@ void DServer::create_cpp_class(const std::string &class_name,
     TANGO_LOG_DEBUG << "Symbol name = " << sym_name << std::endl;
     FARPROC proc;
 
-    if((proc = GetProcAddress(mod, sym_name.c_str())) == NULL)
+    if((proc = GetProcAddress(mod, sym_name.c_str())) == nullptr)
     {
         TangoSys_OMemStream o;
         o << "Class " << class_name << " does not have the C creator function (_create_<Class name>_class)"

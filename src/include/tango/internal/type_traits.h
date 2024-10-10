@@ -44,6 +44,9 @@ using corba_var_t = decltype(&T::_retn);
 /// Determine the underlying type of a CORBA var class
 template <typename T>
 using corba_ut_from_var_t = std::remove_pointer_t<std::invoke_result_t<corba_var_t<T>, T>>;
+/// Determine if T has the `_retn` member function aka T is a CORBA var class
+template <typename T>
+using corba_var_t = decltype(&T::_retn);
 
 /// Determine if T is a CORBA var class
 template <typename T>

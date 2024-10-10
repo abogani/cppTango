@@ -57,7 +57,7 @@ static LOGFONT user_font;
 
 W32Win::W32Win(Util *ptr, int nCmd)
 {
-    HINSTANCE hInstance = GetModuleHandle(NULL);
+    HINSTANCE hInstance = GetModuleHandle(nullptr);
     hInst = hInstance;
 
     RegisterTangoClass(hInstance);
@@ -79,7 +79,7 @@ void W32Win::RegisterTangoClass(HINSTANCE hInstance)
     wc.cbWndExtra = 0;
     wc.hInstance = hInstance;
     wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(TANGO_ICON1));
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     wc.lpszMenuName = (LPCSTR) TANGO_MENU1;
     wc.lpszClassName = szWindowClass;
@@ -109,8 +109,17 @@ void W32Win::InitInstance(HINSTANCE hInstance, int nCmdShow)
     // Create window
     //
 
-    hWnd = CreateWindow(
-        szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+    hWnd = CreateWindow(szWindowClass,
+                        szTitle,
+                        WS_OVERLAPPEDWINDOW,
+                        CW_USEDEFAULT,
+                        0,
+                        CW_USEDEFAULT,
+                        0,
+                        nullptr,
+                        nullptr,
+                        hInstance,
+                        nullptr);
 
     if(!hWnd)
     {
@@ -198,7 +207,7 @@ LRESULT CALLBACK TangoWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
         case ID_VIEW_CONSOLE:
             hMenu = GetMenu(hWnd);
-            if(tg->get_console_window() == NULL)
+            if(tg->get_console_window() == nullptr)
             {
                 tg->get_debug_object()->CreateWin(tg->get_ds_name().c_str());
             }

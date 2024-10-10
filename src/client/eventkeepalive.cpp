@@ -1590,7 +1590,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                         au->print_error_message(ss.str().c_str());
                     }
 
-                    // event_data->attr_value = NULL;
+                    // event_data->attr_value = nullptr;
                     delete event_data;
                 }
 
@@ -2010,7 +2010,7 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
                 au->print_error_message(ss.str().c_str());
             }
 
-            // event_data->attr_conf = NULL;
+            // event_data->attr_conf = nullptr;
             delete event_data;
         }
 
