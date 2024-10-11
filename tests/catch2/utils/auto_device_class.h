@@ -65,11 +65,28 @@ struct member_fn_traits<R (C::*)(Args... args)>
  *
  *  class MyDevice : public Tango::Device
  *  {
- *    static void attribute_factory(std::vector<Tango::Attr *> attrs)
+ *    void read_attr(Tango::Attribute &att)
  *    {
- *      // ... Add attributes here
+ *        att.set_value(&value);
  *    }
- *  };
+ *
+ *    void write_attr(Tango::Attribute &att)
+ *    {
+ *        att.get_write_value(value);
+ *    }
+ *
+ *    static void attribute_factory(std::vector<Tango::Attr *> &attrs)
+ *    {
+ *        // From IDLv3 onwards the naming of the read and write functions can be
+ *        // freely choosen, only for IDL v1/v2 the name of `read_attr` is hardcoded.
+ *        // For writeable attributes there is no write function involved for IDL v1/v2,
+ *        // see catch2_attr_read_write_simple.cpp for how this is done
+ *        attrs.push_back(new TangoTest::AutoAttr<&MyDevice::read_attr, &AutoAttrDev::write_attr>("value",
+ * Tango::DEV_DOUBLE));
+ *        // ... Add more attributes
+ *    }
+ *  }
+ *
  *
  *  TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(MyDevice)
  *
