@@ -127,3 +127,49 @@ SCENARIO("get_boolean_env_var")
         }
     }
 }
+
+SCENARIO("stringify_any")
+{
+    GIVEN("an empty any")
+    {
+        CORBA::Any_var any = new CORBA::Any;
+
+        WHEN("works")
+        {
+            std::ostringstream os;
+            REQUIRE_NOTHROW(Tango::detail::stringify_any(os, any));
+            REQUIRE(os.str() == "empty");
+        }
+    }
+
+    GIVEN("a filled any")
+    {
+        CORBA::Any_var any = new CORBA::Any;
+
+        any <<= 123.4;
+
+        WHEN("works")
+        {
+            std::ostringstream os;
+            REQUIRE_NOTHROW(Tango::detail::stringify_any(os, any));
+            REQUIRE(os.str() == "123.4");
+        }
+    }
+    GIVEN("a filled Any with an incompatible type")
+    {
+        CORBA::Any_var any = new CORBA::Any;
+        CORBA::Any_var in = new CORBA::Any;
+        any <<= in;
+
+        WHEN("we throw")
+        {
+            using namespace Catch::Matchers;
+            using namespace TangoTest::Matchers;
+
+            std::ostringstream os;
+            REQUIRE_THROWS_MATCHES(Tango::detail::stringify_any(os, any),
+                                   Tango::DevFailed,
+                                   FirstErrorMatches(Reason(Tango::API_InvalidCorbaAny)));
+        }
+    }
+}
