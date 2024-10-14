@@ -50,6 +50,7 @@
  * @ingroup Client
  */
 
+// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class ApiUtil
 {
   public:
