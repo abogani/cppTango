@@ -317,8 +317,8 @@ tango_catch2_tests_create(
     catch2_tango_monitor.cpp
     catch2_w_attribute_set_write_value.cpp
     # These currrently fail on Windows and need investigating
-    $<$<NOT:$<BOOL:WIN32>>:catch2_filedatabase.cpp>
-    $<$<NOT:$<BOOL:WIN32>>:catch2_jpeg_encoding.cpp>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_filedatabase.cpp>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_jpeg_encoding.cpp>
     )
 
 if (NOT TANGO_SKIP_OLD_TESTS)

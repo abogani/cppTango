@@ -1217,8 +1217,8 @@ CORBA::Any_var FileDatabase ::DbGetDeviceProperty(CORBA::Any &send)
 
     send >>= data_in;
 
-    CORBA::Any *any_ptr;
-    any_ptr = new CORBA::Any();
+    CORBA::Any_var any;
+    any = new CORBA::Any();
     int index = 0;
 
     data_out->length(2);
@@ -1300,19 +1300,19 @@ CORBA::Any_var FileDatabase ::DbGetDeviceProperty(CORBA::Any &send)
         }
     }
 
-    (*any_ptr) <<= data_out;
+    any.inout() <<= data_out;
 
     // for (unsigned int i = 0; i < data_out->length(); i++)
     //     TANGO_LOG << "data_out[" << i << "] = " << (*data_out)[i] << endl;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbPutDeviceProperty(CORBA::Any &send)
 {
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbPutDeviceProperty" << endl;
 
-    CORBA::Any *any_ptr = new CORBA::Any;
+    CORBA::Any_var any = new CORBA::Any;
 
     const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int n_properties = 0;
@@ -1329,7 +1329,7 @@ CORBA::Any_var FileDatabase ::DbPutDeviceProperty(CORBA::Any &send)
         if(it == m_server.devices.end())
         {
             TANGO_LOG_DEBUG << "Nome device " << (*data_in)[0] << " non trovato. " << endl;
-            return any_ptr;
+            return any;
         }
         t_device &device_trovato = *(*(it));
 
@@ -1373,7 +1373,7 @@ CORBA::Any_var FileDatabase ::DbPutDeviceProperty(CORBA::Any &send)
     }
 
     write_file();
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
@@ -1404,14 +1404,15 @@ CORBA::Any_var FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
             {
                 // TANGO_LOG << "found " << (*itp)->name << endl;
                 device_trovato.properties.erase(itp, itp + 1);
+                delete *itp;
             }
         }
     }
 
-    CORBA::Any *any_ptr = new CORBA::Any;
+    CORBA::Any_var any = new CORBA::Any;
 
     write_file();
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
@@ -1419,8 +1420,8 @@ CORBA::Any_var FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
     auto *data_out = new DevVarStringArray;
     const Tango::DevVarStringArray *data_in = nullptr;
 
-    CORBA::Any *any_ptr;
-    any_ptr = new CORBA::Any();
+    CORBA::Any_var any;
+    any = new CORBA::Any();
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetDeviceAttributeProperty" << endl;
 
@@ -1499,9 +1500,9 @@ CORBA::Any_var FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
     // for(unsigned int i = 0; i < data_out->length(); i++)
     //     TANGO_LOG << "data_out[" << i << "] = " << (*data_out)[i] << endl;
 
-    (*any_ptr) <<= data_out;
+    any.inout() <<= data_out;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
@@ -1511,7 +1512,7 @@ CORBA::Any_var FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
     unsigned int num_attr = 0;
     unsigned int num_vals = 0;
 
-    CORBA::Any *ret = new CORBA::Any;
+    CORBA::Any_var any = new CORBA::Any;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbPutDeviceAttributeProperty" << endl;
 
@@ -1574,7 +1575,7 @@ CORBA::Any_var FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
                         if(index >= data_in->length())
                         {
                             write_file();
-                            return ret;
+                            return any;
                         }
                         exist = true;
                     }
@@ -1597,14 +1598,14 @@ CORBA::Any_var FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
                     if(index >= data_in->length())
                     {
                         write_file();
-                        return ret;
+                        return any;
                     }
                 }
             }
         }
     }
     write_file();
-    return ret;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
@@ -1640,15 +1641,16 @@ CORBA::Any_var FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
                         //                        TANGO_LOG << "found property" << (*itp)->name << "for attribute " <<
                         //                        device_trovato.attribute_properties[j]->attribute_name << endl;
                         device_trovato.attribute_properties[j]->properties.erase(itp, itp + 1);
+                        delete *itp;
                     }
                 }
             }
         }
     }
 
-    CORBA::Any *ret = new CORBA::Any;
+    CORBA::Any_var any = new CORBA::Any;
     write_file();
-    return ret;
+    return any;
 }
 
 /*
@@ -1684,7 +1686,7 @@ CORBA::Any_var FileDatabase ::DbGetClassProperty(CORBA::Any &send)
 
     send >>= data_in;
 
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
     int index = 0;
     int seq_length = 2;
 
@@ -1760,16 +1762,16 @@ CORBA::Any_var FileDatabase ::DbGetClassProperty(CORBA::Any &send)
         }
     }
 
-    (*any_ptr) <<= data_out;
+    any.inout() <<= data_out;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: ending DbGetClassProperty" << endl;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbPutClassProperty(CORBA::Any &send)
 {
-    CORBA::Any *ret = new CORBA::Any;
+    CORBA::Any_var any = new CORBA::Any;
     const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int n_properties = 0;
     int n_values = 0;
@@ -1788,7 +1790,7 @@ CORBA::Any_var FileDatabase ::DbPutClassProperty(CORBA::Any &send)
         if(it == m_server.classes.end())
         {
             TANGO_LOG_DEBUG << "Nome classe " << (*data_in)[0] << " non trovato. " << endl;
-            return ret;
+            return any;
         }
         t_tango_class &classe_trovata = *(*(it));
 
@@ -1832,14 +1834,14 @@ CORBA::Any_var FileDatabase ::DbPutClassProperty(CORBA::Any &send)
                 if(index >= data_in->length())
                 {
                     write_file();
-                    return ret;
+                    return any;
                 }
             }
         }
     }
 
     write_file();
-    return ret;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbDeleteClassProperty(CORBA::Any &send)
@@ -1870,18 +1872,19 @@ CORBA::Any_var FileDatabase ::DbDeleteClassProperty(CORBA::Any &send)
             {
                 // TANGO_LOG << "found " << (*itp)->name << endl;
                 classe_trovata.properties.erase(itp, itp + 1);
+                delete *itp;
             }
         }
     }
 
-    CORBA::Any *ret = new CORBA::Any;
+    CORBA::Any_var any = new CORBA::Any;
     write_file();
-    return ret;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
     auto *data_out = new DevVarStringArray;
     const Tango::DevVarStringArray *data_in = nullptr;
 
@@ -1910,9 +1913,9 @@ CORBA::Any_var FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
             (*data_out)[index] = Tango::string_dup("0");
             index++;
         }
-        (*any_ptr) <<= data_out;
+        any.inout() <<= data_out;
 
-        return any_ptr;
+        return any;
     }
     t_tango_class &classe_trovata = *(*(it));
 
@@ -1965,14 +1968,14 @@ CORBA::Any_var FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
     // for(unsigned int i = 0; i < data_out->length(); i++)
     //     TANGO_LOG << "data_out[" << i << "] = " << (*data_out)[i] << endl;
 
-    (*any_ptr) <<= data_out;
+    any.inout() <<= data_out;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
 {
-    CORBA::Any *ret = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
     const Tango::DevVarStringArray *data_in = nullptr;
     unsigned int num_attr = 0;
     unsigned int num_prop = 0;
@@ -2044,7 +2047,7 @@ CORBA::Any_var FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
                         if(index >= data_in->length())
                         {
                             write_file();
-                            return ret;
+                            return any;
                         }
                         exist = true;
                     }
@@ -2067,7 +2070,7 @@ CORBA::Any_var FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
                     if(index >= data_in->length())
                     {
                         write_file();
-                        return ret;
+                        return any;
                     }
                 }
             }
@@ -2075,7 +2078,7 @@ CORBA::Any_var FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
     }
 
     write_file();
-    return ret;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbDeleteClassAttributeProperty(CORBA::Any &)
@@ -2085,7 +2088,7 @@ CORBA::Any_var FileDatabase ::DbDeleteClassAttributeProperty(CORBA::Any &)
 
 CORBA::Any_var FileDatabase ::DbGetDeviceList(CORBA::Any &send)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
     const Tango::DevVarStringArray *data_in = nullptr;
     auto *data_out = new DevVarStringArray;
 
@@ -2114,7 +2117,6 @@ CORBA::Any_var FileDatabase ::DbGetDeviceList(CORBA::Any &send)
 
             if(i == m_server.classes.size())
             {
-                delete any_ptr;
                 delete data_out;
 
                 TangoSys_MemStream desc;
@@ -2125,7 +2127,6 @@ CORBA::Any_var FileDatabase ::DbGetDeviceList(CORBA::Any &send)
         }
         else
         {
-            delete any_ptr;
             delete data_out;
 
             TangoSys_MemStream desc;
@@ -2135,13 +2136,13 @@ CORBA::Any_var FileDatabase ::DbGetDeviceList(CORBA::Any &send)
         }
     }
 
-    (*any_ptr) <<= data_out;
-    return any_ptr;
+    any.inout() <<= data_out;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbInfo(CORBA::Any &)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
 
     auto generate_string = [](std::string prefix, CORBA::ULong size) -> char *
     {
@@ -2177,9 +2178,9 @@ CORBA::Any_var FileDatabase ::DbInfo(CORBA::Any &)
     (*data_out)[12] =
         generate_string("Device attribute properties defined = ", accumulate(m_server.devices, prop_attr_func));
 
-    (*any_ptr) <<= data_out;
+    any.inout() <<= data_out;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbImportDevice(CORBA::Any &)
@@ -2234,14 +2235,14 @@ CORBA::Any_var FileDatabase ::DbGetServerInfo(CORBA::Any &)
 
 CORBA::Any_var FileDatabase ::DbGetDeviceMemberList(CORBA::Any &)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
 
     auto *argout = new Tango::DevVarStringArray();
     argout->length(1);
     (*argout)[0] = Tango::string_dup("NoMember");
-    (*any_ptr) <<= argout;
+    any.inout() <<= argout;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbGetDeviceWideList(CORBA::Any &)
@@ -2256,26 +2257,26 @@ CORBA::Any_var FileDatabase ::DbGetDeviceExportedList(CORBA::Any &)
 
 CORBA::Any_var FileDatabase ::DbGetDeviceFamilyList(CORBA::Any &)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
 
     auto *argout = new Tango::DevVarStringArray();
     argout->length(1);
     (*argout)[0] = Tango::string_dup("NoDevice");
-    (*any_ptr) <<= argout;
+    any.inout() <<= argout;
 
-    return any_ptr;
+    return any;
 }
 
 CORBA::Any_var FileDatabase ::DbGetDeviceDomainList(CORBA::Any &)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
 
     auto *argout = new Tango::DevVarStringArray();
     argout->length(1);
     (*argout)[0] = Tango::string_dup("NoDevice");
-    (*any_ptr) <<= argout;
+    any.inout() <<= argout;
 
-    return any_ptr;
+    return any;
 }
 
 /**
@@ -2298,10 +2299,9 @@ CORBA::Any_var FileDatabase ::DbGetDeviceDomainList(CORBA::Any &)
  */
 CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
 {
-    CORBA::Any *any_ptr = new CORBA::Any();
+    CORBA::Any_var any = new CORBA::Any();
 
     const DevVarStringArray *data_in = nullptr;
-    auto *data_out = new DevVarStringArray;
 
     TANGO_LOG_DEBUG << "FILEDATABASE: entering DbGetProperty" << endl;
 
@@ -2320,6 +2320,8 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
            << data_in->length();
         TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, ss.str().c_str());
     }
+
+    auto *data_out = new DevVarStringArray;
 
     const auto &free_objects = m_server.free_objects;
     const char *obj_name = (*data_in)[0].in();
@@ -2393,8 +2395,8 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
         }
     }
 
-    (*any_ptr) <<= data_out;
-    return any_ptr;
+    any.inout() <<= data_out;
+    return any;
 }
 
 //--------------------------------------------------------
@@ -2536,6 +2538,7 @@ CORBA::Any_var FileDatabase::DbDeleteProperty(CORBA::Any &send)
         }
 
         prop_list.erase(prop);
+        delete *prop;
     }
 
     write_file();

@@ -40,7 +40,7 @@ CORBA::Any as_any(std::vector<std::string> values)
 
 std::vector<std::string> from_any(const CORBA::Any_var &any)
 {
-    auto *varstringarray = new Tango::DevVarStringArray();
+    const Tango::DevVarStringArray *varstringarray = nullptr;
     any >>= varstringarray;
     std::vector<std::string> values;
     for(std::size_t i = 0; i != varstringarray->length(); i++)
