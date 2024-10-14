@@ -47,24 +47,29 @@
   #include <process.h>
 #endif
 
-namespace Tango
+namespace
 {
 
-ApiUtil *ApiUtil::_instance = nullptr;
-
-omni_mutex ApiUtil::inst_mutex;
-
-void _killproc_()
+void killproc()
 {
     ::exit(-1);
 }
 
 void _t_handler(TANGO_UNUSED(int signum))
 {
-    std::thread t(_killproc_);
+    std::thread t(killproc);
     t.detach();
     std::this_thread::sleep_for(std::chrono::seconds(3));
 }
+
+} // anonymous namespace
+
+namespace Tango
+{
+
+ApiUtil *ApiUtil::_instance = nullptr;
+
+omni_mutex ApiUtil::inst_mutex;
 
 ApiUtil *ApiUtil::instance()
 {

@@ -205,8 +205,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
 
         TEST_LOG << endl
                  << "test_device_server_zmq_event_port_ephemeral: new DeviceProxy("
-                 << device1->name() + "[" + device1_name + "]"
-                 << ") returned" << endl;
+                 << device1->name() + "[" + device1_name + "]" << ") returned" << endl;
 
         // setup a subscription so that the event port is woken up
         exercise_subscription_event(device1);
@@ -250,8 +249,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
 
         TEST_LOG << endl
                  << "test_device_server_zmq_event_port_configured: new DeviceProxy("
-                 << device1->name() + "[" + device1_name + "]"
-                 << ") returned" << endl;
+                 << device1->name() + "[" + device1_name + "]" << ") returned" << endl;
 
         // setup a subscription so that the event port is woken up
         exercise_subscription_event(device1);
@@ -292,8 +290,7 @@ class ServerConfigureEventTestSuite : public CxxTest::TestSuite
         // setup a subscription so that the event port is woken up - check it that it fails
         TEST_LOG << endl
                  << "test_device_server_zmq_event_invalid_port_configured: new DeviceProxy("
-                 << device1->name() + "[" + device1_name + "]"
-                 << ") returned" << endl;
+                 << device1->name() + "[" + device1_name + "]" << ") returned" << endl;
 
         EventCallback<Tango::EventData> callback{};
         std::string attribute_name = "event_change_tst";

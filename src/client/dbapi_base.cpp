@@ -998,12 +998,12 @@ void Database::add_server(const std::string &server, const DbDevInfos &dev_infos
     check_access_and_get();
 
     DevVarStringArray *dev_info_list = new DevVarStringArray;
-    dev_info_list->length(2 * dev_infos.size() + 1);
+    dev_info_list->length((2 * dev_infos.size()) + 1);
     (*dev_info_list)[0] = string_dup(server.c_str());
     for(unsigned int i = 0; i < dev_infos.size(); i++)
     {
-        (*dev_info_list)[i * 2 + 1] = string_dup(dev_infos[i].name.c_str());
-        (*dev_info_list)[i * 2 + 2] = string_dup(dev_infos[i]._class.c_str());
+        (*dev_info_list)[(i * 2) + 1] = string_dup(dev_infos[i].name.c_str());
+        (*dev_info_list)[(i * 2) + 2] = string_dup(dev_infos[i]._class.c_str());
     }
     send <<= dev_info_list;
     if(filedb != nullptr)
@@ -1061,13 +1061,13 @@ void Database::export_server(const DbDevExportInfos &dev_export)
     for(unsigned int i = 0; i < dev_export.size(); i++)
     {
         (*dev_export_list)[i * 5] = string_dup(dev_export[i].name.c_str());
-        (*dev_export_list)[i * 5 + 1] = string_dup(dev_export[i].ior.c_str());
-        (*dev_export_list)[i * 5 + 2] = string_dup(dev_export[i].host.c_str());
+        (*dev_export_list)[(i * 5) + 1] = string_dup(dev_export[i].ior.c_str());
+        (*dev_export_list)[(i * 5) + 2] = string_dup(dev_export[i].host.c_str());
         ostream << dev_export[i].pid << std::ends;
 
         std::string st = ostream.str();
-        (*dev_export_list)[i * 5 + 3] = string_dup(st.c_str());
-        (*dev_export_list)[i * 5 + 4] = string_dup(dev_export[i].version.c_str());
+        (*dev_export_list)[(i * 5) + 3] = string_dup(st.c_str());
+        (*dev_export_list)[(i * 5) + 4] = string_dup(dev_export[i].version.c_str());
     }
     send <<= dev_export_list;
 
@@ -1470,7 +1470,7 @@ void Database::get_device_attribute_property(std::string dev, DbData &db_data, s
     index = 2;
     if(serv_version < 230)
     {
-        db_data.resize((property_values->length()) / 2 - 1);
+        db_data.resize((property_values->length() / 2) - 1);
     }
 
     i_total_props = 0;
@@ -2058,7 +2058,7 @@ void Database::get_class_attribute_property(std::string device_class,
     index = 2;
     if(serv_version < 230)
     {
-        db_data.resize((property_values->length()) / 2 - 1);
+        db_data.resize((property_values->length() / 2) - 1);
     }
     i_total_props = 0;
 

@@ -1286,11 +1286,6 @@ DServerClass *DServerClass::_instance = nullptr;
 //
 //-----------------------------------------------------------------------------
 
-bool less_than_dserver(Command *a, Command *b)
-{
-    return a->get_name() < b->get_name();
-}
-
 DServerClass::DServerClass(const std::string &s) :
     DeviceClass(s)
 {
@@ -1307,7 +1302,9 @@ DServerClass::DServerClass(const std::string &s) :
         // Sort commands
         //
 
-        sort(get_command_list().begin(), get_command_list().end(), less_than_dserver);
+        sort(get_command_list().begin(),
+             get_command_list().end(),
+             [](Command *a, Command *b) { return a->get_name() < b->get_name(); });
 
         //
         // Create device name from device server name

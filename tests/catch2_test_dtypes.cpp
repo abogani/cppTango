@@ -86,7 +86,7 @@ struct is_scalar_state_boolean_string_enum : std::false_type
 
 // Specialization for enums
 template <typename T>
-struct is_scalar_state_boolean_string_enum<T, std::enable_if_t<std::is_enum<T>::value>> : std::true_type
+struct is_scalar_state_boolean_string_enum<T, std::enable_if_t<std::is_enum_v<T>>> : std::true_type
 {
 };
 
@@ -249,11 +249,11 @@ void get_value_for_test<Tango::DevEncoded>(const ValueToTest &requested_value, T
     }
 }
 
-template <typename T,
-          typename std::enable_if<(std::is_arithmetic<T>::value ||
-                                   tango_traits::is_scalar_state_boolean_string_enum<T>::value ||
-                                   std::is_same<T, Tango::DevEncoded>::value),
-                                  T>::type * = nullptr>
+template <
+    typename T,
+    typename std::enable_if_t<(std::is_arithmetic_v<T> || tango_traits::is_scalar_state_boolean_string_enum<T>::value ||
+                               std::is_same_v<T, Tango::DevEncoded>),
+                              T> * = nullptr>
 void get_value_quality_for_test(const ValueToTest &requested_value, T &value, Tango::AttrQuality &quality)
 {
     get_value_for_test(requested_value, value);
@@ -281,10 +281,10 @@ void get_value_quality_for_test(const ValueToTest &requested_value, T &value, Ta
 }
 
 template <typename T,
-          typename std::enable_if<(!std::is_arithmetic<T>::value &&
-                                   !tango_traits::is_scalar_state_boolean_string_enum<T>::value &&
-                                   !std::is_same<T, Tango::DevEncoded>::value),
-                                  T>::type * = nullptr>
+          typename std::enable_if_t<(!std::is_arithmetic_v<T> &&
+                                     !tango_traits::is_scalar_state_boolean_string_enum<T>::value &&
+                                     !std::is_same_v<T, Tango::DevEncoded>),
+                                    T> * = nullptr>
 void get_value_quality_for_test(const ValueToTest &requested_value, T &value, Tango::AttrQuality &quality)
 {
     value.resize(N_ELEMENTS_IN_SPECTRUM_ATTRS);
@@ -662,13 +662,13 @@ class DtypeDev : public Base
     {
         Tango::UserDefaultAttrProp props;
         std::vector<std::string> labels;
-        labels.push_back("ONE");
-        labels.push_back("TWO");
-        labels.push_back("THREE");
-        labels.push_back("FOUR");
-        labels.push_back("FIVE");
-        labels.push_back("SIX");
-        labels.push_back("SEVEN");
+        labels.emplace_back("ONE");
+        labels.emplace_back("TWO");
+        labels.emplace_back("THREE");
+        labels.emplace_back("FOUR");
+        labels.emplace_back("FIVE");
+        labels.emplace_back("SIX");
+        labels.emplace_back("SEVEN");
         props.set_enum_labels(labels);
 
         if(is_spectrum)
@@ -803,19 +803,19 @@ void set_tested_value(std::unique_ptr<Tango::DeviceProxy> &device, const ValueTo
 
 // compare read value with expected
 
-template <typename T,
-          typename std::enable_if<(std::is_arithmetic<T>::value ||
-                                   tango_traits::is_scalar_state_boolean_string_enum<T>::value),
-                                  T>::type * = nullptr>
+template <
+    typename T,
+    typename std::enable_if_t<(std::is_arithmetic_v<T> || tango_traits::is_scalar_state_boolean_string_enum<T>::value),
+                              T> * = nullptr>
 void compare_attribute_value(const T &got_val, const T &expected_val)
 {
     REQUIRE(got_val == expected_val);
 }
 
 template <typename T,
-          typename std::enable_if<((!std::is_arithmetic<T>::value &&
-                                    !tango_traits::is_scalar_state_boolean_string_enum<T>::value)),
-                                  T>::type * = nullptr>
+          typename std::enable_if_t<((!std::is_arithmetic_v<T> &&
+                                      !tango_traits::is_scalar_state_boolean_string_enum<T>::value)),
+                                    T> * = nullptr>
 void compare_attribute_value(const T &got_val, const T &expected_val)
 {
     CHECK(got_val.size() >= expected_val.size());
@@ -913,8 +913,7 @@ void test_release_flag(const std::string &attr_name,
         for(bool release_flag : release_flags)
         //        bool release_flag = GENERATE(true, false);
         {
-            std::string flag_str = release_flag ? "true" : "false";
-            AND_GIVEN("Testing " + attr_name + " with release=" + flag_str)
+            AND_GIVEN("Testing " + attr_name + " with release=" << std::boolalpha << release_flag)
             {
                 set_release_flag(device, release_flag);
                 read_and_compare_attribute_value(

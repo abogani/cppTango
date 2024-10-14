@@ -22,7 +22,7 @@ SCENARIO("Call set_write_value with a std::string")
         WHEN("Calling set_write_value with a vector of string")
         {
             std::vector<std::string> values;
-            values.push_back("val_1");
+            values.emplace_back("val_1");
             REQUIRE_NOTHROW(attr.set_write_value(values));
             THEN("the setpoint is properly set")
             {

@@ -63,9 +63,7 @@ struct FileWatcher::Impl
 
     void thread_run()
     {
-        struct timespec timeout
-        {
-        };
+        struct timespec timeout{};
 
         while(!stop_thread)
         {
@@ -134,10 +132,7 @@ struct FileWatcher::Impl
     std::array<struct kevent64_s, 1> events_to_monitor{};
     std::array<struct kevent64_s, 1> event_data{};
 
-    struct timespec timeout
-    {
-        1, 0
-    };
+    struct timespec timeout{1, 0};
 
     unsigned int wanted_events;
 };

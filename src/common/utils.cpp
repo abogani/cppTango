@@ -1,5 +1,6 @@
 #include <tango/tango.h>
 #include <tango/internal/utils.h>
+#include <tango/common/utils/type_info.h>
 
 namespace Tango::detail
 {

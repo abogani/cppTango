@@ -98,7 +98,7 @@ class SilentKernelScope
           std::string type;                                                                                    \
           std::string msg;                                                                                     \
           Tango::telemetry::Interface::extract_exception_info(type, msg);                                      \
-          auto current_span = Tango::telemetry::Interface::get_current() -> get_current_span();                \
+          auto current_span = Tango::telemetry::Interface::get_current()->get_current_span();                  \
           current_span->add_event("exception caught", {{"exception.type", type}, {"exception.message", msg}}); \
           TANGO_TELEMETRY_SET_ERROR_STATUS("exception caught (see associated event)");                         \
           throw;                                                                                               \

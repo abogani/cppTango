@@ -183,9 +183,7 @@ void DServer::class_factory()
         const std::string full_path{path + "/" + shortened_exe_name};
         // Check if the executable exists in the path and that it is not
         // a directory of the same name.
-        struct stat exec_file_stat
-        {
-        };
+        struct stat exec_file_stat{};
         if((stat(full_path.c_str(), &exec_file_stat) == 0) && ((exec_file_stat.st_mode & S_IFDIR) == 0))
         {
             // full_path should contain the full path to the Device

@@ -27,7 +27,7 @@ variables: &variables
   UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v8"
   UBUNTU_22_IMAGE: "ubuntu-22.04:v11"
   UBUNTU_24_IMAGE: "ubuntu-24.04:v10"
-  LLVM_LATEST_IMAGE: "llvm-latest:v15"
+  LLVM_LATEST_IMAGE: "llvm-latest:v16"
   GCC_LATEST_IMAGE: "gcc-latest:v9"
   FEDORA_IMAGE: "fedora37:v8"
   ALPINE_IMAGE: "alpine-3.15:v8"
@@ -111,8 +111,13 @@ abi-api-compliance-check:
     GIT_STRATEGY: "none"
     TANGO_USE_TELEMETRY: "OFF"
   rules:
-    # This job runs only for merge requests.
+    # This job runs only for merge requests
+    - if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_LABELS =~ /Allow API ABI Break/'
+      # allow the job to fail with the special label
+      allow_failure: true
+      when: on_success
     - if: $CI_MERGE_REQUEST_IID
+      when: on_success
   # allow failures for next release cycle which is allowed to break ABI
   allow_failure: false
   script: # override

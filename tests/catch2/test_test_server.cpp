@@ -521,6 +521,9 @@ SCENARIO("The env parameter for starting the server works")
         std::string fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
 
         auto device = std::make_unique<Tango::DeviceProxy>(fqtrl);
+
+        REQUIRE(idlver == device->get_idl_version());
+
         WHEN("we read the attribute")
         {
             std::string att{"env"};

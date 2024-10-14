@@ -426,7 +426,7 @@ void BlackBox::add_cl_ident(const ClntIdent &cl_ident, client_addr *cl_addr)
     break;
     case Tango::CPP_6:
     {
-        Tango::CppClntIdent_6 eci = cl_ident.cpp_clnt_6();
+        const Tango::CppClntIdent_6 &eci = cl_ident.cpp_clnt_6();
         cl_addr->client_pid = eci.cpp_clnt;
         std::string str(cl_addr->client_ip);
         if(str.find(":unix:") != std::string::npos)
@@ -1814,15 +1814,8 @@ Tango::DevVarStringArray *BlackBox::read(long wanted_elt)
     // Limit wanted element to a reasonable value
     //
 
-    if(wanted_elt > max_elt)
-    {
-        wanted_elt = max_elt;
-    }
-
-    if(wanted_elt > nb_elt)
-    {
-        wanted_elt = nb_elt;
-    }
+    wanted_elt = std::min(wanted_elt, max_elt);
+    wanted_elt = std::min(wanted_elt, nb_elt);
 
     //
     // Read black box elements

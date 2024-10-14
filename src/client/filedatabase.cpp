@@ -72,19 +72,8 @@
 
 using namespace std;
 
-namespace Tango
+namespace
 {
-
-const char *FileDatabase::lexical_word_null = "NULL";
-const char *FileDatabase::lexical_word_number = "NUMBER";
-const char *FileDatabase::lexical_word_string = "STRING";
-const char *FileDatabase::lexical_word_coma = "COMA";
-const char *FileDatabase::lexical_word_colon = "COLON";
-const char *FileDatabase::lexical_word_slash = "SLASH";
-const char *FileDatabase::lexical_word_backslash = "BackSLASH";
-const char *FileDatabase::lexical_word_arrow = "->";
-int FileDatabase::ReadBufferSize = 4069;
-int FileDatabase::MaxWordLength = 256;
 
 char chartolower(const char c)
 {
@@ -117,7 +106,7 @@ bool equalsIgnoreCase(const string &s1, const string &s2)
     return ret;
 }
 
-t_device *search_device(t_server &s, string &name)
+Tango::t_device *search_device(Tango::t_server &s, string &name)
 {
     for(unsigned int j = 0; j < s.devices.size(); j++)
     {
@@ -130,7 +119,7 @@ t_device *search_device(t_server &s, string &name)
     return nullptr;
 }
 
-t_tango_class *search_class(t_server &s, string &name)
+Tango::t_tango_class *search_class(Tango::t_server &s, string &name)
 {
     for(unsigned int i = 0; i < s.classes.size(); i++)
     {
@@ -142,7 +131,7 @@ t_tango_class *search_class(t_server &s, string &name)
     return nullptr;
 }
 
-t_free_object *search_free_object(t_server &s, string &name)
+Tango::t_free_object *search_free_object(Tango::t_server &s, string &name)
 {
     for(unsigned int i = 0; i < s.free_objects.size(); i++)
     {
@@ -154,7 +143,7 @@ t_free_object *search_free_object(t_server &s, string &name)
     return nullptr;
 }
 
-t_attribute_property *search_dev_attr_prop(t_device *d, const string &name)
+Tango::t_attribute_property *search_dev_attr_prop(Tango::t_device *d, const string &name)
 {
     for(unsigned int i = 0; i < d->attribute_properties.size(); i++)
     {
@@ -166,7 +155,7 @@ t_attribute_property *search_dev_attr_prop(t_device *d, const string &name)
     return nullptr;
 }
 
-t_attribute_property *search_class_attr_prop(t_tango_class *d, const string &name)
+Tango::t_attribute_property *search_class_attr_prop(Tango::t_tango_class *d, const string &name)
 {
     for(unsigned int i = 0; i < d->attribute_properties.size(); i++)
     {
@@ -177,83 +166,6 @@ t_attribute_property *search_class_attr_prop(t_tango_class *d, const string &nam
     }
     return nullptr;
 }
-
-std::string &trim(string &str)
-{
-    // trim leading whitespace
-    string::size_type notwhite = str.find_first_not_of(" \t\n");
-    str.erase(0, notwhite);
-
-    // trim trailing whitespace
-    notwhite = str.find_last_not_of(" \t\n");
-    str.erase(notwhite + 1);
-    return str;
-}
-
-std::vector<std::string> &makeStringArray(const std::string &input, vector<string> &results)
-{
-    std::string delimiter = "\n";
-    int iPos = 0;
-    int sizeS2 = delimiter.size();
-    int isize = input.size();
-
-    std::vector<int> positions;
-
-    int newPos = input.find(delimiter, 0);
-
-    if(newPos < 0)
-    {
-        return results;
-    }
-
-    while(newPos > iPos)
-    {
-        positions.push_back(newPos);
-        iPos = newPos;
-        newPos = input.find(delimiter, iPos + sizeS2 + 1);
-    }
-
-    for(unsigned int i = 0; i <= positions.size(); i++)
-    {
-        string s;
-        if(i == 0)
-        {
-            s = input.substr(i, positions[i]);
-        }
-        int offset = positions[i - 1] + sizeS2;
-        if(offset < isize)
-        {
-            if(i == positions.size())
-            {
-                s = input.substr(offset);
-            }
-            else if(i > 0)
-            {
-                s = input.substr(positions[i - 1] + sizeS2, positions[i] - positions[i - 1] - sizeS2);
-            }
-        }
-        if(s.size() > 0)
-        {
-            results.push_back(trim(s));
-        }
-    }
-    return results;
-}
-
-template <class T>
-bool hasName<T>::operator()(T *obj)
-{
-    return (Tango::equalsIgnoreCase(obj->name, name));
-}
-
-template <class T>
-bool hasAttributeName<T>::operator()(T *obj)
-{
-    return (Tango::equalsIgnoreCase(obj->attribute_name, attribute_name));
-}
-
-namespace
-{
 
 char *to_corba_string(CORBA::ULong val)
 {
@@ -262,6 +174,31 @@ char *to_corba_string(CORBA::ULong val)
 }
 
 } // anonymous namespace
+
+namespace Tango
+{
+const char *FileDatabase::lexical_word_null = "NULL";
+const char *FileDatabase::lexical_word_number = "NUMBER";
+const char *FileDatabase::lexical_word_string = "STRING";
+const char *FileDatabase::lexical_word_coma = "COMA";
+const char *FileDatabase::lexical_word_colon = "COLON";
+const char *FileDatabase::lexical_word_slash = "SLASH";
+const char *FileDatabase::lexical_word_backslash = "BackSLASH";
+const char *FileDatabase::lexical_word_arrow = "->";
+int FileDatabase::ReadBufferSize = 4069;
+int FileDatabase::MaxWordLength = 256;
+
+template <class T>
+bool hasName<T>::operator()(T *obj)
+{
+    return (equalsIgnoreCase(obj->name, name));
+}
+
+template <class T>
+bool hasAttributeName<T>::operator()(T *obj)
+{
+    return (equalsIgnoreCase(obj->attribute_name, attribute_name));
+}
 
 FileDatabaseExt::FileDatabaseExt() { }
 
@@ -1549,7 +1486,7 @@ CORBA::Any_var FileDatabase ::DbGetDeviceAttributeProperty(CORBA::Any &send)
     }
     else
     {
-        data_out->length(index + 2 * num_attr);
+        data_out->length(index + (2 * num_attr));
         for(unsigned int i = 0; i < num_attr; i++)
         {
             (*data_out)[index] = Tango::string_dup((*data_in)[i + 1]);
@@ -1656,8 +1593,6 @@ CORBA::Any_var FileDatabase ::DbPutDeviceAttributeProperty(CORBA::Any &send)
                         index++;
                     }
 
-                    // makeStringArray( string((*data_in)[index]), new_prop->value);index++;
-                    // new_prop->value.push_back( string((*data_in)[index]) );index++;
                     temp_attribute_property->properties.push_back(new_prop);
                     if(index >= data_in->length())
                     {
@@ -1967,7 +1902,7 @@ CORBA::Any_var FileDatabase ::DbGetClassAttributeProperty(CORBA::Any &send)
     if(it == m_server.classes.end())
     {
         TANGO_LOG_DEBUG << "Nome classe " << (*data_in)[0] << " non trovato. " << endl;
-        data_out->length(index + num_attr * 2);
+        data_out->length(index + (num_attr * 2));
         for(unsigned int j = 0; j < num_attr; j++)
         {
             (*data_out)[index] = Tango::string_dup((*data_in)[j + 1]);
@@ -2128,8 +2063,6 @@ CORBA::Any_var FileDatabase ::DbPutClassAttributeProperty(CORBA::Any &send)
                         index++;
                     }
 
-                    // makeStringArray( string((*data_in)[index]), new_prop->value);index++;
-                    // new_prop->value.push_back( string((*data_in)[index]) );index++;
                     temp_attribute_property->properties.push_back(new_prop);
                     if(index >= data_in->length())
                     {
@@ -2405,7 +2338,7 @@ CORBA::Any_var FileDatabase::DbGetProperty(CORBA::Any &send)
     //
     // Later we allocate more space if we find that there are multiple elements
     // for a value.
-    data_out->length(2 + 3 * num_prop);
+    data_out->length(2 + (3 * num_prop));
 
     size_t out_index = 0;
     (*data_out)[out_index] = Tango::string_dup(obj_name);

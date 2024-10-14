@@ -1014,7 +1014,7 @@ void ZmqEventSupplier::push_heartbeat_event()
 // value. Setting the value of the promise (i.e., of the underlying std::future) will wakeup any thread waiting on this
 // future. Contrary to what could happen with a condition variable, the std::future garantees that the thread calling
 // std::future::wait will never be deadlocked.
-void tg_unlock(TANGO_UNUSED(void *data), void *hint)
+static void tg_unlock(TANGO_UNUSED(void *data), void *hint)
 {
     std::promise<void> *p = static_cast<std::promise<void> *>(hint);
     p->set_value();

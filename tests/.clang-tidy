@@ -1,0 +1,13 @@
+# vim: filetype=yaml
+
+InheritParentConfig: true
+Checks: >
+  -bugprone-chained-comparison,
+  -bugprone-unchecked-optional-access,
+  -misc-use-internal-linkage,
+
+# All the suppressed warnings above must be duplicated below
+WarningsAsErrors: >
+  -bugprone-chained-comparison,
+  -bugprone-unchecked-optional-access,
+  -misc-use-internal-linkage,
