@@ -5327,7 +5327,7 @@ void DeviceImpl::data_into_net_object(
             }
             if(del_seq)
             {
-                delete ptr;
+                att.delete_seq();
             }
         }
         break;

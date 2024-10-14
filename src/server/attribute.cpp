@@ -233,6 +233,8 @@ Attribute::Attribute(std::vector<AttrProperty> &prop_list, Attr &tmp_attr, const
 
 Attribute::~Attribute()
 {
+    delete_seq();
+
     try
     {
         delete ext;
