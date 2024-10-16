@@ -45,6 +45,23 @@
 #include <opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_factory.h>
 #include <opentelemetry/exporters/otlp/otlp_http_log_record_exporter_factory.h>
 
+namespace Tango::detail
+{
+
+/// @brief Helper template to check if the type T is one of the contained types in the variant U
+///
+/// @code
+/// static_assert(Tango::detail::is_one_of<bool, myVarientType, "Unsupported type");
+/// @endcode
+template <class T, class U>
+struct is_one_of;
+
+template <class T, class... Ts>
+struct is_one_of<T, opentelemetry::nostd::variant<Ts...>> : std::bool_constant<(std::is_same_v<T, Ts> || ...)>
+{
+};
+} // namespace Tango::detail
+
 namespace Tango::telemetry
 {
 
