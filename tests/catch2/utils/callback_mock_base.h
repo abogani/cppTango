@@ -28,6 +28,7 @@ class CallbackMockBase : public Tango::CallBack
 
     constexpr static const std::chrono::milliseconds k_default_timeout{(2 * TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD) +
                                                                        300};
+    constexpr static const size_t k_max_num_events{32};
 
     std::optional<TEventCopyable> pop_next_event(std::chrono::milliseconds timeout = k_default_timeout)
     {
@@ -51,6 +52,28 @@ class CallbackMockBase : public Tango::CallBack
         }
 
         return std::nullopt;
+    }
+
+    /// Return a vector of all events which arrive during the waiting time of
+    /// pop_next_event, stops at the first timeout
+    std::vector<std::optional<TEventCopyable>> pop_events(size_t max_elements = k_max_num_events)
+    {
+        std::vector<std::optional<TEventCopyable>> events;
+        events.reserve(max_elements);
+
+        for(size_t i = 0; i < max_elements; i++)
+        {
+            auto event = pop_next_event();
+
+            if(!event.has_value())
+            {
+                break;
+            }
+
+            events.emplace_back(event);
+        }
+
+        return events;
     }
 
   protected:
