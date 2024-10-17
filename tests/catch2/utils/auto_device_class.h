@@ -197,7 +197,7 @@ class AutoCommand : public Tango::Command
             {
                 if constexpr(std::is_same_v<arg_type, typename Tango::tango_type_traits<arg_type>::ArrayType>)
                 {
-                    arg_type *arg;
+                    const arg_type *arg;
                     extract(in_any, arg);
                     return std::invoke(cmd_fn, static_cast<Device *>(dev), *arg);
                 }
