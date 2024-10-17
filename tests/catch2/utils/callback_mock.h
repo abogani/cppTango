@@ -11,22 +11,18 @@ namespace TangoTest
 
 /// Common callback class for mocking in tests
 ///
-/// Steps for supporting new types:
-/// - Introduce a specialization for your event data type here and override the
-///   designated function
-/// - If your new event data class is not-copyable, write a wrapper class in
-///   callback_mock_helpers.h and use that as second template argument
+/// Specializations are only needed if the event data class is not-copyable, to handle that
+/// write a wrapper class in callback_mock_helpers.h and use that as second template argument
 template <typename TEvent, typename TEventCopyable = TEvent>
-class CallbackMock;
-
-template <>
-class CallbackMock<Tango::EventData> : public CallbackMockBase<Tango::EventData>
+class CallbackMock : public CallbackMockBase<TEvent>
 {
+    static_assert(std::is_same_v<TEvent, TEventCopyable>, "Non-matching types require specialization");
+
   public:
-    void push_event(Tango::EventData *event) override
+    void push_event(TEvent *event) override
     {
         REQUIRE(event != nullptr);
-        collect_event(*event);
+        this->collect_event(*event);
     }
 };
 
