@@ -49,13 +49,13 @@ using corba_ut_from_var_t = std::remove_pointer_t<std::invoke_result_t<corba_var
 template <typename T>
 constexpr bool is_corba_var_v = Tango::detail::is_detected_v<corba_var_t, T>;
 
-/// Determine if T has the `NP_data` member function aka T is a CORBA sequence class
+/// Determine if T has the `allocbuf` member function aka T is a CORBA sequence class
 template <typename T>
-using corba_seq_t = decltype(&T::NP_data);
+using corba_seq_t = decltype(T::allocbuf);
 
 /// Determine the underlying type of a CORBA sequence class
 template <typename T>
-using corba_ut_from_seq_t = std::remove_pointer_t<std::invoke_result_t<corba_seq_t<T>, T>>;
+using corba_ut_from_seq_t = std::remove_pointer_t<std::invoke_result_t<corba_seq_t<T>, CORBA::ULong>>;
 
 /// Determine if T is a CORBA sequence class
 template <typename T>

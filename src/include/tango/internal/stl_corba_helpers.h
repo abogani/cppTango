@@ -15,50 +15,82 @@ namespace Tango
 /// Overloads for CORBA Sequences
 ///@{
 
-template <typename T>
-inline size_t size(const _CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline size_t size(const T &seq)
 {
     return seq.length();
 }
 
-template <typename T>
-inline bool empty(const _CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline bool empty(const T &seq)
 {
     return size(seq) == 0u;
 }
 
-template <typename T>
-inline auto begin(_CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline decltype(auto) begin(T &seq)
 {
-    return seq.NP_data();
+    using ElementPtr = std::add_pointer_t<detail::corba_ut_from_seq_t<T>>;
+
+    auto len = seq.length();
+    if(len == 0u)
+    {
+        return static_cast<ElementPtr>(nullptr);
+    }
+
+    return seq.get_buffer();
 }
 
-template <typename T>
-inline auto begin(const _CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline decltype(auto) begin(const T &seq)
 {
-    return seq.NP_data();
+    using ConstElementPtr = std::add_pointer_t<std::add_const_t<detail::corba_ut_from_seq_t<T>>>;
+
+    auto len = seq.length();
+    if(len == 0u)
+    {
+        return static_cast<ConstElementPtr>(nullptr);
+    }
+
+    return const_cast<ConstElementPtr>(seq.get_buffer());
 }
 
-template <typename T>
-inline auto cbegin(const _CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline decltype(auto) cbegin(const T &seq)
 {
     return begin(seq);
 }
 
-template <typename T>
-inline auto end(_CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline decltype(auto) end(T &seq)
 {
-    return seq.NP_data() + seq.length();
+    using ElementPtr = std::add_pointer_t<detail::corba_ut_from_seq_t<T>>;
+
+    auto len = seq.length();
+    if(len == 0u)
+    {
+        return static_cast<ElementPtr>(nullptr);
+    }
+
+    return seq.get_buffer() + len;
 }
 
-template <typename T>
-inline auto end(const _CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline decltype(auto) end(const T &seq)
 {
-    return seq.NP_data() + seq.length();
+    using ConstElementPtr = std::add_pointer_t<std::add_const_t<detail::corba_ut_from_seq_t<T>>>;
+
+    auto len = seq.length();
+    if(len == 0u)
+    {
+        return static_cast<ConstElementPtr>(nullptr);
+    }
+
+    return const_cast<ConstElementPtr>(seq.get_buffer() + len);
 }
 
-template <typename T>
-inline auto cend(const _CORBA_Sequence<T> &seq)
+template <typename T, typename std::enable_if_t<detail::is_corba_seq_v<T>, bool> = true>
+inline decltype(auto) cend(const T &seq)
 {
     return end(seq);
 }
@@ -98,7 +130,7 @@ inline decltype(auto) begin(const T &var)
     auto cont = var.operator->();
     if(cont == nullptr)
     {
-        using ConstElementPtr = std::add_const_t<std::add_pointer_t<detail::corba_ut_from_var_from_seq_t<T>>>;
+        using ConstElementPtr = std::add_pointer_t<std::add_const_t<detail::corba_ut_from_var_from_seq_t<T>>>;
         return static_cast<ConstElementPtr>(nullptr);
     }
 
@@ -143,7 +175,7 @@ inline decltype(auto) end(const T &var)
     auto cont = var.operator->();
     if(cont == nullptr)
     {
-        using ConstElementPtr = std::add_const_t<std::add_pointer_t<detail::corba_ut_from_var_from_seq_t<T>>>;
+        using ConstElementPtr = std::add_pointer_t<std::add_const_t<detail::corba_ut_from_var_from_seq_t<T>>>;
         return static_cast<ConstElementPtr>(nullptr);
     }
 
