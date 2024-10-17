@@ -1667,6 +1667,42 @@ struct tango_type_traits<Tango::DevVarEncodedArray>
     }
 };
 
+template <>
+struct tango_type_traits<Tango::DevVarLongStringArray>
+{
+    using ArrayType = Tango::DevVarLongStringArray;
+
+    static constexpr auto type_value()
+    {
+        return DEVVAR_LONGSTRINGARRAY;
+    }
+
+    // no att_type_value member as it is commands only
+
+    static auto corba_type_code()
+    {
+        return Tango::_tc_DevVarLongStringArray;
+    }
+};
+
+template <>
+struct tango_type_traits<Tango::DevVarDoubleStringArray>
+{
+    using ArrayType = Tango::DevVarDoubleStringArray;
+
+    static constexpr auto type_value()
+    {
+        return DEVVAR_DOUBLESTRINGARRAY;
+    }
+
+    // no att_type_value member as it is commands only
+
+    static auto corba_type_code()
+    {
+        return Tango::_tc_DevVarDoubleStringArray;
+    }
+};
+
 } // namespace Tango
 
 #endif /* TANGO_CONST_H */
