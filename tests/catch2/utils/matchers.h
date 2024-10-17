@@ -282,7 +282,7 @@ FirstErrorMatchesMatcher<ErrorMatcher> FirstErrorMatches(ErrorMatcher &&matcher)
     return {CATCH_FORWARD(matcher)};
 }
 
-class EventTypeMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+class EventTypeMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     EventTypeMatcher(Tango::EventType event_type) :
@@ -290,7 +290,8 @@ class EventTypeMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const override
+    template <typename T>
+    bool match(const std::optional<T> &event) const
     {
         TANGO_ASSERT(event.has_value());
         return event->event == Tango::EventName[m_event_type];
@@ -313,6 +314,72 @@ inline EventTypeMatcher EventType(Tango::EventType event_type)
     REQUIRE(event_type < Tango::numEventType);
 
     return {CATCH_FORWARD(event_type)};
+}
+
+class EventCounterMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventCounterMatcher(int counter) :
+        m_counter{CATCH_MOVE(counter)}
+    {
+    }
+
+    virtual bool match(const std::optional<Tango::DataReadyEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return event->ctr == m_counter;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has counter that equals \"" << m_counter << "\"";
+        return os.str();
+    }
+
+  private:
+    int m_counter;
+};
+
+inline EventCounterMatcher EventCounter(int counter)
+{
+    return {CATCH_FORWARD(counter)};
+}
+
+class EventAttrTypeMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventAttrTypeMatcher(int attr_type) :
+        m_attr_type{CATCH_MOVE(attr_type)}
+    {
+    }
+
+    virtual bool match(const std::optional<Tango::DataReadyEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+        return event->attr_data_type == m_attr_type;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has attribute data type that equals \"" << Tango::data_type_to_string(m_attr_type) << "\"";
+        return os.str();
+    }
+
+  private:
+    int m_attr_type;
+};
+
+inline EventAttrTypeMatcher EventAttrType(int attr_type)
+{
+    return {CATCH_FORWARD(attr_type)};
 }
 
 class AttrQualityMatcher : public Catch::Matchers::MatcherBase<Tango::DeviceAttribute>
@@ -418,6 +485,18 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
     }
 
     bool match(const std::optional<TangoTest::AttrReadEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
+    bool match(const std::optional<Tango::DataReadyEventData> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
