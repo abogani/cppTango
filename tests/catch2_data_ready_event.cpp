@@ -128,6 +128,7 @@ SCENARIO("DataReadyEvent works")
             THEN("fire a data ready event")
             {
                 using namespace TangoTest::Matchers;
+                using namespace std::literals::chrono_literals;
 
                 const int counter = 10;
 
@@ -138,19 +139,26 @@ SCENARIO("DataReadyEvent works")
                 dvlsa.svalue[0] = Tango::string_dup(attr_name.c_str());
                 Tango::DeviceData in;
                 in << dvlsa;
+
                 REQUIRE_NOTHROW(device->command_inout("PushDataReady", in));
+                auto now = Tango::make_TimeVal(std::chrono::system_clock::now());
+
+                // we only want to check if the date is set, so we use a large margin
+                auto margin = 1s;
 
                 auto event1 = cb.pop_next_event();
                 REQUIRE(event1 != std::nullopt);
                 REQUIRE_THAT(event1, EventType(Tango::DATA_READY_EVENT));
                 REQUIRE_THAT(event1, EventCounter(counter));
                 REQUIRE_THAT(event1, EventAttrType(Tango::DEV_SHORT));
+                REQUIRE_THAT(event1->get_date(), WithinTimeAbsMatcher(now, margin));
 
                 auto event2 = cb.pop_next_event();
                 REQUIRE(event2 != std::nullopt);
                 REQUIRE_THAT(event2, EventType(Tango::DATA_READY_EVENT));
                 REQUIRE_THAT(event2, EventCounter(counter));
                 REQUIRE_THAT(event2, EventAttrType(Tango::DEV_SHORT));
+                REQUIRE_THAT(event2->get_date(), WithinTimeAbsMatcher(now, margin));
             }
 
             THEN("push a couple more events")
