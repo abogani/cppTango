@@ -45,6 +45,34 @@
 #include <opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_factory.h>
 #include <opentelemetry/exporters/otlp/otlp_http_log_record_exporter_factory.h>
 
+namespace
+{
+
+template <typename T>
+opentelemetry::nostd::shared_ptr<T> StdUniqueToNostdShared(std::unique_ptr<T> &&other)
+{
+    return opentelemetry::nostd::shared_ptr<T>{std::shared_ptr<T>{other.release()}};
+}
+
+} //  anonymous namespace
+
+namespace Tango::detail
+{
+
+/// @brief Helper template to check if the type T is one of the contained types in the variant U
+///
+/// @code
+/// static_assert(Tango::detail::is_one_of<bool, myVarientType, "Unsupported type");
+/// @endcode
+template <class T, class U>
+struct is_one_of;
+
+template <class T, class... Ts>
+struct is_one_of<T, opentelemetry::nostd::variant<Ts...>> : std::bool_constant<(std::is_same_v<T, Ts> || ...)>
+{
+};
+} // namespace Tango::detail
+
 namespace Tango::telemetry
 {
 
@@ -531,7 +559,8 @@ class InterfaceImplementation final
         auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
 
         TANGO_ASSERT(processor);
-        provider = opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource);
+        provider = StdUniqueToNostdShared(
+            opentelemetry::sdk::trace::TracerProviderFactory::Create(std::move(processor), resource));
 
         tracer = provider->GetTracer(tracer_name, tracer_version);
     }
@@ -890,8 +919,8 @@ class Appender : public log4tango::Appender
         auto resource = opentelemetry::sdk::resource::Resource::Create(resource_attributes);
 
         TANGO_ASSERT(processor);
-        interface->logger_provider =
-            opentelemetry::sdk::logs::LoggerProviderFactory::Create(std::move(processor), resource);
+        interface->logger_provider = StdUniqueToNostdShared(
+            opentelemetry::sdk::logs::LoggerProviderFactory::Create(std::move(processor), resource));
 
         // set the global logger provider
         opentelemetry::logs::Provider::SetLoggerProvider(interface->logger_provider);

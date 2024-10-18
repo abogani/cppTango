@@ -25,7 +25,7 @@ windows-build:
     OMNI_VERSION: 4.3.0
     CATCH_VERSION: 3.5.1
     PYTHON_VERSION: 3.7.8 # omniidl.exe was built against 3.7, so it also depends on python37.dll
-    OTEL_VERSION: v7
+    OTEL_VERSION: v8
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 17 2022"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"

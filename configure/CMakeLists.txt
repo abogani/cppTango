@@ -80,6 +80,8 @@ if (TANGO_USE_TELEMETRY)
       message(FATAL_ERROR "The opentelemetry-cpp library was compiled without http support but TANGO_TELEMETRY_USE_HTTP is enabled.")
     endif()
 
+    message(STATUS "opentelemetry-cpp: version ${OPENTELEMETRY_VERSION}")
+
     if(WIN32)
       find_package(CURL REQUIRED)
       find_package(nlohmann_json REQUIRED)
@@ -104,17 +106,7 @@ if (TANGO_USE_TELEMETRY)
                     LINK_LIBRARIES opentelemetry-cpp::otlp_grpc_log_record_exporter)
       endif()
 
-      message(DEBUG "opentelemetry-cpp uses new exporter name: ${TANGO_TELEMETRY_EXPORTER_OPTION_NEW}")
-    endif()
-
-    if(NOT DEFINED TANGO_TELEMETRY_ABSL_VARIANT)
-      try_compile(TANGO_TELEMETRY_ABSL_VARIANT ${CMAKE_CURRENT_BINARY_DIR}/test_opentelemetry_absl_variant
-                  SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/configure/test_opentelemetry_absl_variant.cpp
-                  LINK_LIBRARIES opentelemetry-cpp::common)
-    endif()
-
-    if(NOT TANGO_TELEMETRY_ABSL_VARIANT)
-      message(FATAL_ERROR "opentelemetry-cpp must be compiled with -DCMAKE_CXX_STANDARD=17 -DWITH_STL=ON as cppTango needs std::variant and not opentelemetry::nostd::variant.")
+      message(STATUS "opentelemetry-cpp uses new exporter name: ${TANGO_TELEMETRY_EXPORTER_OPTION_NEW}")
     endif()
 
     if(NOT TANGO_TELEMETRY_USE_GRPC AND NOT TANGO_TELEMETRY_USE_HTTP)
