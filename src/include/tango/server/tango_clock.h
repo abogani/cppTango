@@ -104,6 +104,11 @@ inline std::chrono::system_clock::time_point make_system_time(::timeval tv)
     return detail::make_system_time(tv.tv_sec, tv.tv_usec, 0);
 }
 
+inline std::chrono::system_clock::time_point make_system_time(TimeVal tv)
+{
+    return detail::make_system_time(tv.tv_sec, tv.tv_usec, tv.tv_nsec);
+}
+
 template <typename Rep, typename Period>
 double constexpr duration_s(std::chrono::duration<Rep, Period> dur)
 {
