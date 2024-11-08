@@ -580,6 +580,45 @@ inline IsSuccessMatcher IsSuccess()
     return IsSuccessMatcher();
 }
 
+template <typename Rep, typename Period>
+class WithinTimeAbsMatcher : public Catch::Matchers::MatcherBase<Tango::TimeVal>
+{
+  public:
+    WithinTimeAbsMatcher(const Tango::TimeVal &ref, std::chrono::duration<Rep, Period> margin) :
+        m_margin{CATCH_MOVE(margin)},
+        m_ref{CATCH_MOVE(ref)}
+    {
+    }
+
+    bool match(const Tango::TimeVal &val) const override
+    {
+        auto ref_chrono_tp = Tango::make_system_time(m_ref);
+        auto val_chrono_tp = Tango::make_system_time(val);
+
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(ref_chrono_tp - val_chrono_tp) <= m_margin;
+    }
+
+    std::string describe() const override
+    {
+        const auto margin_ns = std::chrono::nanoseconds(m_margin).count();
+
+        std::ostringstream os;
+        os << "has TimeVal which is within \"" << margin_ns << " [ns] \" of the reference TimeVal \""
+           << Catch::StringMaker<Tango::TimeVal>::convert(m_ref) << "\"";
+        return os.str();
+    }
+
+  private:
+    std::chrono::duration<Rep, Period> m_margin;
+    Tango::TimeVal m_ref;
+};
+
+template <typename Rep, typename Period>
+inline WithinTimeAbsMatcher<Rep, Period> WithinTimeAbs(Tango::TimeVal ref, std::chrono::duration<Rep, Period> margin)
+{
+    return {CATCH_FORWARD(ref, margin)};
+}
+
 } // namespace Matchers
 
 } // namespace TangoTest
