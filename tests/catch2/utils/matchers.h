@@ -444,7 +444,7 @@ EventErrorMatchesMatcher<Matcher> EventErrorMatches(Matcher &&matcher)
 }
 
 template <typename Matcher>
-class ErrorListMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFailed>
+class ErrorListMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     ErrorListMatchesMatcher(Matcher matcher) :
@@ -452,9 +452,14 @@ class ErrorListMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFa
     {
     }
 
-    bool match(const Tango::DevFailed &e) const override
+    bool match(const Tango::DevFailed &e) const
     {
         return m_matcher.match(e.errors);
+    }
+
+    bool match(Tango::DeviceAttribute &e) const
+    {
+        return m_matcher.match(e.get_error_list());
     }
 
     std::string describe() const override
