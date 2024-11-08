@@ -4,6 +4,7 @@
 
 namespace
 {
+const std::string TestExceptReason = "Ahhh!";
 using CallbackMockType = TangoTest::CallbackMock<Tango::DataReadyEventData>;
 
 } // anonymous namespace
@@ -31,6 +32,10 @@ class DataReadyDev : public Base
         {
             att.set_value(&short_value);
         }
+        else
+        {
+            TANGO_THROW_EXCEPTION(TestExceptReason, "This is a test");
+        }
     }
 
     static void attribute_factory(std::vector<Tango::Attr *> &attrs)
@@ -46,6 +51,14 @@ class DataReadyDev : public Base
             short_attr->set_default_properties(props);
             short_attr->set_data_ready_event(true);
             attrs.push_back(short_attr);
+        }
+
+        {
+            auto throw_attr = new TangoTest::AutoAttr<&DataReadyDev::read_attribute>("throw_attr", Tango::DEV_DOUBLE);
+            Tango::UserDefaultAttrProp props;
+            throw_attr->set_default_properties(props);
+            throw_attr->set_data_ready_event(true);
+            attrs.push_back(throw_attr);
         }
     }
 
@@ -203,3 +216,52 @@ SCENARIO("push_data_ready_event on non-existing attribute")
         }
     }
 }
+
+SCENARIO("push_data_ready_event on throwing attribute read function")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"dr", "DataReadyDev", idlver};
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        std::string attr_name{"throw_attr"};
+
+        WHEN("we subscribe to the attribute " << attr_name << " supporting data ready event")
+        {
+            CallbackMockType cb;
+            TangoTest::Subscription sub{device, attr_name, Tango::DATA_READY_EVENT, &cb};
+
+            THEN("fire a data ready event")
+            {
+                using namespace Catch::Matchers;
+                using namespace TangoTest::Matchers;
+
+                const int counter = 4711;
+
+                Tango::DevVarLongStringArray dvlsa;
+                dvlsa.svalue.length(1);
+                dvlsa.lvalue.length(1);
+                dvlsa.svalue[0] = Tango::string_dup(attr_name.c_str());
+                dvlsa.lvalue[0] = counter;
+                Tango::DeviceData in;
+                in << dvlsa;
+
+                REQUIRE_NOTHROW(device->command_inout("PushDataReady", in));
+
+                // data ready event does not read the attribute but only provides a TLR to it in attr_name
+                // so it does not matter here that the read function throws.
+                auto event = cb.pop_next_event();
+                REQUIRE(event != std::nullopt);
+                REQUIRE_THAT(event, EventType(Tango::DATA_READY_EVENT));
+                REQUIRE_THAT(event, EventCounter(counter));
+                REQUIRE_THAT(event, EventAttrType(Tango::DEV_DOUBLE));
+                REQUIRE_THAT(event->errors, IsEmpty());
+            }
+        }
+    }
+}
+
+// we never get an exception from the data ready event when fetching the reult as
+// EventSupplier::push_att_data_ready_event always passes a null pointer for except to
+// ZmqEventSupplier::push_event
