@@ -12,6 +12,29 @@
 
 #include <tango/internal/stl_corba_helpers.h>
 
+CATCH_REGISTER_ENUM(Tango::AttrMemorizedType,
+                    Tango::AttrMemorizedType::NOT_KNOWN,
+                    Tango::AttrMemorizedType::NONE,
+                    Tango::AttrMemorizedType::MEMORIZED,
+                    Tango::AttrMemorizedType::MEMORIZED_WRITE_INIT)
+
+CATCH_REGISTER_ENUM(Tango::AttrWriteType,
+                    Tango::AttrWriteType::READ,
+                    Tango::AttrWriteType::READ_WITH_WRITE,
+                    Tango::AttrWriteType::READ_WRITE,
+                    Tango::AttrWriteType::WT_UNKNOWN)
+
+CATCH_REGISTER_ENUM(Tango::AttrDataFormat,
+                    Tango::AttrDataFormat::SCALAR,
+                    Tango::AttrDataFormat::SPECTRUM,
+                    Tango::AttrDataFormat::IMAGE,
+                    Tango::AttrDataFormat::FMT_UNKNOWN)
+
+CATCH_REGISTER_ENUM(Tango::DispLevel,
+                    Tango::DispLevel::OPERATOR,
+                    Tango::DispLevel::EXPERT,
+                    Tango::DispLevel::DL_UNKNOWN)
+
 namespace TangoTest::detail
 {
 
@@ -86,6 +109,54 @@ template <>
 struct StringMaker<TangoTest::AttrReadEventCopyable>
 {
     static std::string convert(TangoTest::AttrReadEventCopyable const &value);
+};
+
+template <>
+struct StringMaker<Tango::DevIntrChangeEventData>
+{
+    static std::string convert(Tango::DevIntrChangeEventData const &value);
+};
+
+template <>
+struct StringMaker<Tango::CommandInfo>
+{
+    static std::string convert(Tango::CommandInfo const &value);
+};
+
+template <>
+struct StringMaker<Tango::AttributeAlarmInfo>
+{
+    static std::string convert(Tango::AttributeAlarmInfo const &value);
+};
+
+template <>
+struct StringMaker<Tango::ChangeEventInfo>
+{
+    static std::string convert(Tango::ChangeEventInfo const &value);
+};
+
+template <>
+struct StringMaker<Tango::PeriodicEventInfo>
+{
+    static std::string convert(Tango::PeriodicEventInfo const &value);
+};
+
+template <>
+struct StringMaker<Tango::ArchiveEventInfo>
+{
+    static std::string convert(Tango::ArchiveEventInfo const &value);
+};
+
+template <>
+struct StringMaker<Tango::AttributeEventInfo>
+{
+    static std::string convert(Tango::AttributeEventInfo const &value);
+};
+
+template <>
+struct StringMaker<Tango::AttributeInfoEx>
+{
+    static std::string convert(Tango::AttributeInfoEx const &value);
 };
 
 template <>

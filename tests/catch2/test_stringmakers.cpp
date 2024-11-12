@@ -27,6 +27,41 @@ Tango::DeviceAttribute GetDefault()
     return da;
 }
 
+template <>
+Tango::CommandInfo GetDefault()
+{
+    Tango::CommandInfo var;
+    var.disp_level = Tango::DL_UNKNOWN;
+    var.in_type = Tango::DEV_VOID;
+    var.out_type = Tango::DEV_VOID;
+
+    return var;
+}
+
+template <>
+Tango::AttributeInfoEx GetDefault()
+{
+    Tango::AttributeInfoEx var;
+    var.memorized = Tango::NOT_KNOWN;
+    var.disp_level = Tango::DL_UNKNOWN;
+    var.writable = Tango::WT_UNKNOWN;
+    var.data_format = Tango::FMT_UNKNOWN;
+    var.data_type = Tango::DEV_VOID;
+
+    return var;
+}
+
+template <>
+Tango::DevIntrChangeEventData GetDefault()
+{
+    Tango::DevIntrChangeEventData var;
+
+    var.cmd_list.emplace_back(GetDefault<Tango::CommandInfo>());
+    var.att_list.emplace_back(GetDefault<Tango::AttributeInfoEx>());
+
+    return var;
+}
+
 } // anonymous namespace
 
 template <class Base>
@@ -242,4 +277,22 @@ SCENARIO("catch2 stringmakers specialications")
         auto result = Catch::StringMaker<Tango::DevErrorList>::convert(var);
         REQUIRE_THAT(result, !IsEmpty());
     }
+}
+
+using PrintableType = std::tuple<Tango::AttributeAlarmInfo,
+                                 Tango::DevIntrChangeEventData,
+                                 Tango::AttributeEventInfo,
+                                 Tango::PeriodicEventInfo,
+                                 Tango::CommandInfo,
+                                 Tango::ChangeEventInfo,
+                                 Tango::ArchiveEventInfo,
+                                 Tango::AttributeInfoEx>;
+
+TEMPLATE_LIST_TEST_CASE("Test print all types for which we have string maker specializations", "", PrintableType)
+{
+    auto var = GetDefault<TestType>();
+    using namespace Catch::Matchers;
+
+    auto result = Catch::StringMaker<TestType>::convert(var);
+    REQUIRE_THAT(result, !IsEmpty());
 }
