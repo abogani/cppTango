@@ -62,6 +62,28 @@ Tango::DevIntrChangeEventData GetDefault()
     return var;
 }
 
+template <>
+Tango::TimeVal GetDefault()
+{
+    Tango::TimeVal val;
+    val.tv_sec = 1;
+    val.tv_usec = 2;
+    val.tv_nsec = 3;
+
+    return val;
+}
+
+template <>
+TangoTest::AttrReadEventCopyable GetDefault()
+{
+    std::vector<std::string> att_names;
+    Tango::DevErrorList errors;
+    Tango::AttrReadEvent event(nullptr, att_names, nullptr, errors);
+    TangoTest::AttrReadEventCopyable var(&event);
+
+    return var;
+}
+
 } // anonymous namespace
 
 template <class Base>
@@ -75,92 +97,8 @@ class EmptyDS : public Base
 
 TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(EmptyDS, 1)
 
-SCENARIO("catch2 stringmakers specialications")
+SCENARIO("catch2 stringmakers specialications (non-standard)")
 {
-    GIVEN("a TimeVal")
-    {
-        Tango::TimeVal val;
-        val.tv_sec = 1;
-        val.tv_usec = 2;
-        val.tv_nsec = 3;
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<Tango::TimeVal>::convert(val);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
-    GIVEN("a EventData")
-    {
-        Tango::EventData evData;
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<Tango::EventData>::convert(evData);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
-    GIVEN("a AttrReadEventCopyable")
-    {
-        std::vector<std::string> att_names;
-        Tango::DevErrorList errors;
-        Tango::AttrReadEvent event(nullptr, att_names, nullptr, errors);
-        TangoTest::AttrReadEventCopyable event_copyable(&event);
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<TangoTest::AttrReadEventCopyable>::convert(event_copyable);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
-    GIVEN("a DataReadyEventData")
-    {
-        Tango::DataReadyEventData ready_data;
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<Tango::DataReadyEventData>::convert(ready_data);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
-    GIVEN("a DeviceInfo")
-    {
-        Tango::DeviceInfo info;
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<Tango::DeviceInfo>::convert(info);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
-    GIVEN("a DeviceData")
-    {
-        Tango::DeviceData da;
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<Tango::DeviceData>::convert(da);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
     int idlver = GENERATE(TangoTest::idlversion(6));
     GIVEN("a DeviceProxy to a simple IDLv" << idlver << " device")
     {
@@ -174,19 +112,6 @@ SCENARIO("catch2 stringmakers specialications")
             using namespace Catch::Matchers;
 
             auto result = Catch::StringMaker<Tango::DeviceProxy>::convert(*device);
-            REQUIRE_THAT(result, !IsEmpty());
-        }
-    }
-
-    GIVEN("a DeviceAttribute")
-    {
-        auto var = GetDefault<Tango::DeviceAttribute>();
-
-        WHEN("we can convert it to a string")
-        {
-            using namespace Catch::Matchers;
-
-            auto result = Catch::StringMaker<Tango::DeviceAttribute>::convert(var);
             REQUIRE_THAT(result, !IsEmpty());
         }
     }
@@ -279,16 +204,27 @@ SCENARIO("catch2 stringmakers specialications")
     }
 }
 
-using PrintableType = std::tuple<Tango::AttributeAlarmInfo,
-                                 Tango::DevIntrChangeEventData,
-                                 Tango::AttributeEventInfo,
-                                 Tango::PeriodicEventInfo,
-                                 Tango::CommandInfo,
-                                 Tango::ChangeEventInfo,
+// clang-format off
+using PrintableType = std::tuple<
                                  Tango::ArchiveEventInfo,
-                                 Tango::AttributeInfoEx>;
+                                 Tango::AttributeAlarmInfo,
+                                 Tango::AttributeEventInfo,
+                                 Tango::AttributeInfoEx,
+                                 Tango::ChangeEventInfo,
+                                 Tango::CommandInfo,
+                                 Tango::DataReadyEventData,
+                                 Tango::DevIntrChangeEventData,
+                                 Tango::DeviceAttribute,
+                                 Tango::DeviceData,
+                                 Tango::DeviceInfo,
+                                 Tango::EventData,
+                                 Tango::PeriodicEventInfo,
+                                 Tango::TimeVal,
+                                 TangoTest::AttrReadEventCopyable
+                                 >;
+// clang-format on
 
-TEMPLATE_LIST_TEST_CASE("Test print all types for which we have string maker specializations", "", PrintableType)
+TEMPLATE_LIST_TEST_CASE("catch2 stringmakers specialications", "", PrintableType)
 {
     auto var = GetDefault<TestType>();
     using namespace Catch::Matchers;
