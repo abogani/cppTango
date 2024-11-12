@@ -2020,7 +2020,7 @@ std::ostream &operator<<(std::ostream &o_str, const AttributeInfoEx &p)
             break;
 
         default:
-            TANGO_ASSERT_ON_DEFAULT(p.data_format);
+            TANGO_ASSERT_ON_DEFAULT(p.memorized);
         }
     }
 
