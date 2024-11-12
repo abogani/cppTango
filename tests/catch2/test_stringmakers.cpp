@@ -2,6 +2,33 @@
 
 #include "utils/utils.h"
 
+#include <catch2/catch_template_test_macros.hpp>
+
+namespace
+{
+
+// return a instance of a class suitable for printing
+template <typename T>
+T GetDefault()
+{
+    return T{};
+}
+
+template <>
+Tango::DeviceAttribute GetDefault()
+{
+    Tango::DeviceAttribute da;
+
+    auto errors = new Tango::DevErrorList;
+    errors->length(1);
+    (*errors)[0].severity = Tango::WARN;
+    da.set_error_list(errors);
+
+    return da;
+}
+
+} // anonymous namespace
+
 template <class Base>
 class EmptyDS : public Base
 {
@@ -118,18 +145,13 @@ SCENARIO("catch2 stringmakers specialications")
 
     GIVEN("a DeviceAttribute")
     {
-        Tango::DeviceAttribute da;
-
-        auto errors = new Tango::DevErrorList;
-        errors->length(1);
-        (*errors)[0].severity = Tango::WARN;
-        da.set_error_list(errors);
+        auto var = GetDefault<Tango::DeviceAttribute>();
 
         WHEN("we can convert it to a string")
         {
             using namespace Catch::Matchers;
 
-            auto result = Catch::StringMaker<Tango::DeviceAttribute>::convert(da);
+            auto result = Catch::StringMaker<Tango::DeviceAttribute>::convert(var);
             REQUIRE_THAT(result, !IsEmpty());
         }
     }
