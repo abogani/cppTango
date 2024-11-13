@@ -141,6 +141,9 @@ int main(int argc, char **argv)
 
     //    TEST_LOG << endl;
     TEST_LOG << "   Resetting attribute event configuration parameters --> OK" << endl;
+
+    delete configChangedEventCallback;
+
     return rc;
 }
 

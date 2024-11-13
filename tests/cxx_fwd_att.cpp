@@ -578,9 +578,11 @@ class FwdAttTestSuite : public CxxTest::TestSuite
         (*confs)[0].label = "Hai Hai Hai";
         fwd_device->set_attribute_config(*confs);
 
+        delete confs;
         confs = fwd_device->get_attribute_config_ex(att_names);
         TS_ASSERT_EQUALS((*confs)[0].label, "Hai Hai Hai");
 
+        delete confs_root;
         confs_root = device1->get_attribute_config_ex(att_names_root);
         TS_ASSERT_EQUALS((*confs_root)[0].label, "Ca marche?");
 
