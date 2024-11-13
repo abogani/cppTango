@@ -100,6 +100,9 @@ relevant cmake documentation.
 The presets file requires at least cmake 3.28.0 and ninja. The ninja generator
 uses all CPU cores by default.
 
+The `ci-debug-linux-asan` preset allows to run the catch2 tests with adress sanitizer enabled for finding
+memory leaks.
+
 ### Examples
 
 Configuring, building and executing the tests in debug mode:
