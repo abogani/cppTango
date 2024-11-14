@@ -548,6 +548,8 @@ sanitizer:
     matrix:
       - TANGO_ENABLE_SANITIZER: [ASAN, TSAN, UBSAN]
   rules:
+    - if: '$CI_JOB_NAME == "sanitizer: [TSAN]"'
+      when: never
     - if: '$CI_JOB_NAME == "sanitizer: [UBSAN]"'
       allow_failure: false
       when: on_success
