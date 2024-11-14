@@ -13,7 +13,6 @@ if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG:NONE")
 endif()
 
-#TODO different OS
 set(SERV_NAME "DevTest")
 set(FWD_SERV_NAME "FwdTest")
 set(INST_NAME "test")
