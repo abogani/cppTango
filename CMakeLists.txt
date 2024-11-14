@@ -86,10 +86,6 @@ add_subdirectory("log4tango")
 add_subdirectory("src")
 
 if(BUILD_TESTING)
-  find_program(DOCKER_BINARY docker)
-  if(NOT DOCKER_BINARY)
-      message(WARNING "The tests can not be run as docker is missing.")
-  endif()
   add_subdirectory("tests")
 endif()
 

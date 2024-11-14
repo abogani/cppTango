@@ -4,6 +4,11 @@ if (TANGO_SKIP_OLD_TESTS)
   return()
 endif()
 
+find_program(DOCKER_BINARY docker)
+if(NOT DOCKER_BINARY)
+    message(WARNING "The tests can not be run as docker is missing.")
+endif()
+
 find_package(Python3 COMPONENTS Interpreter)
 
 if(NOT Python3_FOUND)
