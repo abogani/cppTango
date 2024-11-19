@@ -3680,6 +3680,7 @@ EventData &EventData::operator=(const EventData &ri)
     event = ri.event;
     if(ri.attr_value != nullptr)
     {
+        delete attr_value;
         attr_value = new DeviceAttribute(*(ri.attr_value));
     }
     else

@@ -751,6 +751,13 @@ DeviceImpl::~DeviceImpl()
         *ite = NULL;
     }
 
+    // remove any device level dynamic commands
+    for(auto *entry : get_local_command_list())
+    {
+        delete entry;
+        entry = nullptr;
+    }
+
     TANGO_LOG_DEBUG << "Leaving DeviceImpl destructor for device " << device_name << std::endl;
 }
 

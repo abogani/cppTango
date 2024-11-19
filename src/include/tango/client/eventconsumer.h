@@ -692,10 +692,21 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
 
     static void cleanup()
     {
+        omni_mutex_lock guard(ev_consumer_inst_mutex);
+
         if(_instance != nullptr)
         {
+            delete _instance;
             _instance = nullptr;
         }
+    }
+
+    ~ZmqEventConsumer() override
+    {
+        delete event_sub_sock;
+        event_sub_sock = nullptr;
+
+        zmq_context.shutdown();
     }
 
     void cleanup_EventChannel_map() override;
