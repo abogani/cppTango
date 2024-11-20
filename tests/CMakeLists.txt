@@ -30,6 +30,7 @@ tango_catch2_tests_create(
     catch2_alarm.cpp
     catch2_attr_manip.cpp
     catch2_attr_polling.cpp
+    catch2_attr_read_write_simple.cpp
     catch2_cmd_polling.cpp
     catch2_test_dtypes.cpp
     catch2_dev_state.cpp
