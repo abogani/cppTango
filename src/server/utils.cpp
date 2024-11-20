@@ -1788,7 +1788,7 @@ void Util::create_notifd_event_supplier()
             nd_event_supplier = nullptr;
             if(_FileDb)
             {
-                std::cerr << "Can't create notifd event supplier. Notifd event not available" << std::endl;
+                TANGO_LOG_ERROR << "Can't create notifd event supplier. Notifd event not available" << std::endl;
             }
         }
     }
@@ -1819,7 +1819,7 @@ void Util::create_zmq_event_supplier()
         zmq_event_supplier = nullptr;
         if(_FileDb)
         {
-            std::cerr << "Can't create zmq event supplier. Zmq event not available" << std::endl;
+            TANGO_LOG_ERROR << "Can't create zmq event supplier. Zmq event not available" << std::endl;
         }
         throw;
     }
