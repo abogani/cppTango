@@ -4,9 +4,12 @@
 
 #include "utils/utils.h"
 
+#include <tango/internal/stl_corba_helpers.h>
+
 static constexpr double CMD_RET_VOID_RETURN_VALUE = 42.0;
 static constexpr double CMD_VOID_ARG_TEST_VALUE = 84.0;
 static constexpr double CMD_RET_ARG_TEST_VALUE = 168.0;
+static constexpr Tango::DevLong CMD_LONG_TEST_VALUE = 4711;
 
 // Test device class
 template <class Base>
@@ -47,6 +50,16 @@ class AutoCmdDev : public Base
         return v;
     }
 
+    void cmd_void_long_array(const Tango::DevVarLongArray &in)
+    {
+        long_value = in[0];
+    }
+
+    Tango::DevLong cmd_ret_long_array(const Tango::DevVarLongArray &in)
+    {
+        return in[0] + 1;
+    }
+
     // a flag attribute for void-void command
     void read_cmd_run(Tango::Attribute &att)
     {
@@ -59,10 +72,17 @@ class AutoCmdDev : public Base
         att.set_value_date_quality(&value, std::chrono::system_clock::now(), Tango::ATTR_VALID);
     }
 
+    // long_value attribute for cmd_void_long_array/cmd_ret_long_array
+    void read_long_value(Tango::Attribute &att)
+    {
+        att.set_value_date_quality(&long_value, std::chrono::system_clock::now(), Tango::ATTR_VALID);
+    }
+
     static void attribute_factory(std::vector<Tango::Attr *> &attrs)
     {
         attrs.push_back(new TangoTest::AutoAttr<&AutoCmdDev::read_cmd_run>("cmd_run", Tango::DEV_BOOLEAN));
         attrs.push_back(new TangoTest::AutoAttr<&AutoCmdDev::read_value>("value", Tango::DEV_DOUBLE));
+        attrs.push_back(new TangoTest::AutoAttr<&AutoCmdDev::read_long_value>("long_value", Tango::DEV_LONG));
     }
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
@@ -71,11 +91,14 @@ class AutoCmdDev : public Base
         cmds.push_back(new TangoTest::AutoCommand<&AutoCmdDev::cmd_ret_void>("ret_void"));
         cmds.push_back(new TangoTest::AutoCommand<&AutoCmdDev::cmd_void_arg>("void_arg"));
         cmds.push_back(new TangoTest::AutoCommand<&AutoCmdDev::cmd_ret_arg>("ret_arg"));
+        cmds.push_back(new TangoTest::AutoCommand<&AutoCmdDev::cmd_void_long_array>("cmd_void_long_array"));
+        cmds.push_back(new TangoTest::AutoCommand<&AutoCmdDev::cmd_ret_long_array>("cmd_ret_long_array"));
     }
 
   private:
     Tango::DevBoolean cmd_run;
     Tango::DevDouble value;
+    Tango::DevLong long_value;
 };
 
 TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(AutoCmdDev, 3)
@@ -167,6 +190,73 @@ SCENARIO("AutoCommand executes correctly")
                     out >> r;
                     REQUIRE(r == CMD_RET_ARG_TEST_VALUE);
                 }
+            }
+        }
+        AND_GIVEN("a command with no-return but accepting a long array")
+        {
+            std::string cmd{"cmd_void_long_array"};
+
+            WHEN("we execute the command")
+            {
+                Tango::DeviceData dd;
+                Tango::DevVarLongArray_var arr = new Tango::DevVarLongArray();
+                arr->length(1);
+                arr[0] = 42;
+                dd << arr;
+
+                REQUIRE_NOTHROW(device->command_inout(cmd, dd));
+
+                std::string att{"long_value"};
+                Tango::DeviceAttribute da;
+                REQUIRE_NOTHROW(da = device->read_attribute(att));
+                Tango::DevLong val;
+                da >> val;
+
+                REQUIRE(val == 42);
+            }
+        }
+
+        AND_GIVEN("a command with no-return but accepting a long array")
+        {
+            std::string cmd{"cmd_void_long_array"};
+
+            WHEN("we execute the command")
+            {
+                Tango::DeviceData in;
+                Tango::DevVarLongArray_var arr = new Tango::DevVarLongArray();
+                arr->length(1);
+                arr[0] = CMD_LONG_TEST_VALUE;
+                in << arr;
+
+                REQUIRE_NOTHROW(device->command_inout(cmd, in));
+
+                std::string att{"long_value"};
+                Tango::DeviceAttribute da;
+                REQUIRE_NOTHROW(da = device->read_attribute(att));
+                Tango::DevLong val;
+                da >> val;
+
+                REQUIRE(val == CMD_LONG_TEST_VALUE);
+            }
+        }
+        AND_GIVEN("a command with long return and accepting a long array")
+        {
+            std::string cmd{"cmd_ret_long_array"};
+
+            WHEN("we execute the command")
+            {
+                Tango::DeviceData in;
+                Tango::DeviceData out;
+                Tango::DevVarLongArray_var in_arr = new Tango::DevVarLongArray();
+                in_arr->length(1);
+                in_arr[0] = CMD_LONG_TEST_VALUE;
+                in << in_arr;
+
+                REQUIRE_NOTHROW(out = device->command_inout(cmd, in));
+
+                Tango::DevLong val;
+                out >> val;
+                REQUIRE(val == CMD_LONG_TEST_VALUE + 1);
             }
         }
     }

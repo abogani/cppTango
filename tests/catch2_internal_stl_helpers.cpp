@@ -19,11 +19,23 @@ static_assert(Tango::detail::is_corba_var_v<Var>);
 static_assert(Tango::detail::is_corba_seq_v<Seq>);
 static_assert(Tango::detail::is_corba_var_from_seq_v<Var>);
 
+static_assert(Tango::detail::is_corba_var_v<Tango::DevVarStringArray_var>);
+static_assert(Tango::detail::is_corba_seq_v<Tango::DevVarStringArray>);
+static_assert(std::is_same_v<Tango::detail::corba_ut_from_seq_t<Tango::DevVarStringArray>, Tango::DevString>);
+static_assert(
+    std::is_same_v<Tango::detail::corba_ut_from_var_from_seq_t<Tango::DevVarStringArray_var>, Tango::DevString>);
+
 // it is var class but does not have an underlying sequence
 static_assert(!Tango::detail::is_corba_var_from_seq_v<Tango::DevString_var>);
 
 static_assert(TangoTest::detail::has_corba_extract_operator_to<CORBA::Any, CORBA::Long>);
 static_assert(TangoTest::detail::has_corba_extract_operator_to<CORBA::Any, CORBA::Boolean>);
+
+// check iterator types
+static_assert(std::is_same_v<decltype(begin(std::declval<Tango::DevVarStringArray &>())), Tango::DevString *>);
+static_assert(std::is_same_v<decltype(end(std::declval<Tango::DevVarStringArray &>())), Tango::DevString *>);
+static_assert(std::is_same_v<decltype(cbegin(std::declval<Tango::DevVarStringArray &>())), const Tango::DevString *>);
+static_assert(std::is_same_v<decltype(cend(std::declval<Tango::DevVarStringArray &>())), const Tango::DevString *>);
 
 } // anonymous namespace
 
@@ -130,6 +142,51 @@ SCENARIO("STL helpers for CORBA classes")
                     i++;
                 }
                 REQUIRE(i == size(cvar));
+            }
+        }
+    }
+    GIVEN("an empty DevVarStringArray")
+    {
+        Tango::DevVarStringArray list;
+
+        WHEN("we can check that the sequence is empty")
+        {
+            REQUIRE(size(list) == 0u);
+            REQUIRE(empty(list));
+            REQUIRE(cbegin(list) == cend(list));
+            REQUIRE(begin(list) == end(list));
+        }
+    }
+    GIVEN("a filled DevVarStringArray")
+    {
+        Tango::DevVarStringArray list;
+        list.length(3);
+
+        WHEN("we can check its size")
+        {
+            REQUIRE(size(list) == 3u);
+            REQUIRE(!empty(list));
+            REQUIRE(cbegin(list) < cend(list));
+            REQUIRE(begin(list) < end(list));
+
+            {
+                size_t i = 0;
+                for([[maybe_unused]] auto &elem : list)
+                {
+                    i++;
+                }
+                REQUIRE(i == size(list));
+            }
+
+            // const overloads
+            {
+                const auto &clist = list;
+                size_t i = 0;
+                for([[maybe_unused]] auto &elem : clist)
+                {
+                    i++;
+                }
+                REQUIRE(i == size(clist));
             }
         }
     }
