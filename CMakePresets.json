@@ -43,6 +43,23 @@
         "value": "Debug"
      }
     }
+   },
+   {
+    "name": "default-sanitizer",
+    "hidden": true,
+    "cacheVariables": {
+      "CMAKE_BUILD_TYPE": "Debug",
+      "CMAKE_DISABLE_PRECOMPILE_HEADERS" : true,
+      "TANGO_SKIP_OLD_TESTS": true
+    }
+   },
+   {
+    "name": "ci-debug-linux-asan",
+    "inherits": ["default-sanitizer"],
+    "binaryDir": "${sourceDir}/build/debug-asan",
+    "cacheVariables": {
+      "TANGO_ENABLE_SANITIZER" : "ASAN"
+    }
    }
   ],
   "buildPresets": [
@@ -59,7 +76,12 @@
       "name": "ci-rel-linux",
       "inherits" : ["default"],
       "configurePreset": "ci-rel-linux"
-    }
+    },
+   {
+    "name": "ci-debug-linux-asan",
+    "inherits": ["default"],
+    "configurePreset": "ci-debug-linux-asan"
+   }
   ],
   "testPresets": [
     {
@@ -77,6 +99,14 @@
       "name" : "ci-rel-linux",
       "inherits" : ["default"],
       "configurePreset": "ci-rel-linux"
+    },
+    {
+      "name" : "ci-debug-linux-asan",
+      "inherits" : ["default"],
+      "configurePreset": "ci-debug-linux-asan",
+      "environment" : {
+        "ASAN_OPTIONS" : "detect_stack_use_after_return=1"
+      }
     }
   ],
   "workflowPresets": [
@@ -111,6 +141,23 @@
         {
           "type": "test",
           "name": "ci-rel-linux"
+        }
+      ]
+    },
+    {
+      "name": "ci-debug-linux-asan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug-linux-asan"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug-linux-asan"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-linux-asan"
         }
       ]
     }
