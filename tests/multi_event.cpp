@@ -276,7 +276,7 @@ int main(int argc, char **argv)
 
         try
         {
-            device->subscribe_event(att_name, Tango::CHANGE_EVENT, (CallBack *) NULL, filters);
+            device->subscribe_event(att_name, Tango::CHANGE_EVENT, (CallBack *) nullptr, filters);
         }
         catch(Tango::DevFailed &e)
         {
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
         assert(cb.cb_executed == 12);
         assert(ex == true);
 
-        TEST_LOG << "   Two CallBacks executed after a try to subscribe to one attribute with a NULL callback --> OK"
+        TEST_LOG << "   Two CallBacks executed after a try to subscribe to one attribute with a nullptr callback --> OK"
                  << std::endl;
 
         //

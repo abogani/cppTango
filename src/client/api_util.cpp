@@ -1552,7 +1552,7 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
                 /*              if(family == AF_INET || family == AF_INET6)
                                 {
                                     s = getnameinfo(ifa->ifa_addr,(family == AF_INET) ? sizeof(struct sockaddr_in) :
-                   sizeof(struct sockaddr_in6), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);*/
+                   sizeof(struct sockaddr_in6), host, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST);*/
 
                 if(family == AF_INET)
                 {
@@ -1596,9 +1596,15 @@ void ApiUtil::get_ip_from_if(std::vector<std::string> &ip_adr_list)
         INTERFACE_INFO info[64]; // Assume max 64 interfaces
         DWORD retlen;
 
-        if(WSAIoctl(
-               sock, SIO_GET_INTERFACE_LIST, NULL, 0, (LPVOID) &info, sizeof(info), (LPDWORD) &retlen, NULL, NULL) ==
-           SOCKET_ERROR)
+        if(WSAIoctl(sock,
+                    SIO_GET_INTERFACE_LIST,
+                    nullptr,
+                    0,
+                    (LPVOID) &info,
+                    sizeof(info),
+                    (LPDWORD) &retlen,
+                    nullptr,
+                    nullptr) == SOCKET_ERROR)
         {
             closesocket(sock);
 

@@ -991,7 +991,7 @@ int Connection::get_env_var(const char *env_var_name, std::string &env_var)
         char *env_tango_root;
 
         env_tango_root = getenv(WindowsEnvVariable);
-        if(env_tango_root != NULL)
+        if(env_tango_root != nullptr)
         {
             std::string home_file(env_tango_root);
             home_file = home_file + "/" + WINDOWS_ENV_VAR_FILE;
@@ -8834,7 +8834,7 @@ bool DeviceProxy::get_locker(LockerInfo &lock_info)
             si.sin_port = 0;
 #ifdef _TG_WINDOWS_
             int slen = sizeof(si);
-            WSAStringToAddress((char *) full_ip.c_str(), AF_INET, NULL, (SOCKADDR *) &si, &slen);
+            WSAStringToAddress((char *) full_ip.c_str(), AF_INET, nullptr, (SOCKADDR *) &si, &slen);
 #else
             inet_pton(AF_INET, full_ip.c_str(), &si.sin_addr);
 #endif

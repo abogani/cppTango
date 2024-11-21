@@ -243,7 +243,7 @@ void WAttribute::set_min_value(const T &new_min_value)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -460,7 +460,7 @@ void WAttribute::set_max_value(const T &new_max_value)
 
     //
     // Get the monitor protecting device att config
-    // If the server is in its starting phase, give a NULL ptr to the AutoLock object
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
     //
 
     Tango::Util *tg = Tango::Util::instance();
@@ -638,7 +638,7 @@ void WAttribute::check_data_limits(const size_t nb_data,
     const T &min_value = min.get_value<T>();
     const T &max_value = max.get_value<T>();
     //
-    // If the server is in its starting phase, gives a NULL ptr
+    // If the server is in its starting phase, gives a nullptr
     // to the AutoLock object
     //
 
@@ -698,7 +698,7 @@ void WAttribute::check_data_limits<Tango::DevEncoded>(const size_t nb_data,
     const Tango::DevUChar &min_value = min.uch;
     const Tango::DevUChar &max_value = max.uch;
     //
-    // If the server is in its starting phase, gives a NULL ptr
+    // If the server is in its starting phase, gives a nullptr
     // to the AutoLock object
     //
 

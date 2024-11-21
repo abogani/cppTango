@@ -61,7 +61,7 @@ namespace TestCppTango1022_ns
 //===================================================================
 //	Initialize pointer for singleton pattern
 //===================================================================
-TestCppTango1022Class *TestCppTango1022Class::_instance = NULL;
+TestCppTango1022Class *TestCppTango1022Class::_instance = nullptr;
 
 //===================================================================
 //	Class constants
@@ -101,7 +101,7 @@ TestCppTango1022Class::~TestCppTango1022Class()
     /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	TestCppTango1022Class::destructor
 
-	_instance = NULL;
+	_instance = nullptr;
 }
 
 
@@ -116,7 +116,7 @@ TestCppTango1022Class::~TestCppTango1022Class()
 //--------------------------------------------------------
 TestCppTango1022Class *TestCppTango1022Class::init(const char *name)
 {
-	if (_instance == NULL)
+	if (_instance == nullptr)
 	{
 		try
 		{
@@ -140,7 +140,7 @@ TestCppTango1022Class *TestCppTango1022Class::init(const char *name)
 //--------------------------------------------------------
 TestCppTango1022Class *TestCppTango1022Class::instance()
 {
-	if (_instance == NULL)
+	if (_instance == nullptr)
 	{
 		std::cerr << "Class is not initialised !!" << std::endl;
 		exit(-1);
@@ -463,7 +463,7 @@ Tango::Attr *TestCppTango1022Class::get_attr_object_by_name(std::vector<Tango::A
 		if ((*it)->get_name()==attname)
 			return (*it);
 	//	Attr does not exist
-	return NULL;
+	return nullptr;
 }
 
 

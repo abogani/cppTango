@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     //        TEST_LOG << "[main]: This program assumes that  \"TangoTest test\"  is running" << endl;
     //        TEST_LOG << "[main]: connect to " << dn
     //             << "  TANGO_HOST="
-    //             << (getenv( "TANGO_HOST" ) != NULL ? getenv( "TANGO_HOST" ) : "not set")
+    //             << (getenv( "TANGO_HOST" ) != nullptr ? getenv( "TANGO_HOST" ) : "not set")
     //             << endl;
 
     dev = new Tango::DeviceProxy(dn);

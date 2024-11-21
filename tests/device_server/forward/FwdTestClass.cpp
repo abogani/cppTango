@@ -65,7 +65,7 @@ namespace FwdTest_ns
 //===================================================================
 //	Initialize pointer for singleton pattern
 //===================================================================
-FwdTestClass *FwdTestClass::_instance = NULL;
+FwdTestClass *FwdTestClass::_instance = nullptr;
 
 //===================================================================
 //	Class constants
@@ -107,7 +107,7 @@ FwdTestClass::~FwdTestClass()
     /* clang-format off */
 	/*----- PROTECTED REGION END -----*/	//	FwdTestClass::destructor
 
-	_instance = NULL;
+	_instance = nullptr;
 }
 
 
@@ -122,7 +122,7 @@ FwdTestClass::~FwdTestClass()
 //--------------------------------------------------------
 FwdTestClass *FwdTestClass::init(const char *name)
 {
-	if (_instance == NULL)
+	if (_instance == nullptr)
 	{
 		try
 		{
@@ -146,7 +146,7 @@ FwdTestClass *FwdTestClass::init(const char *name)
 //--------------------------------------------------------
 FwdTestClass *FwdTestClass::instance()
 {
-	if (_instance == NULL)
+	if (_instance == nullptr)
 	{
 		std::cerr << "Class is not initialized !!" << std::endl;
 		exit(-1);
@@ -505,7 +505,7 @@ Tango::Attr *FwdTestClass::get_attr_object_by_name(std::vector<Tango::Attr *> &a
 		if ((*it)->get_name()==attname)
 			return (*it);
 	//	Attr does not exist
-	return NULL;
+	return nullptr;
 }
 
 

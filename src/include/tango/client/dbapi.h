@@ -1269,7 +1269,7 @@ class DbServerData
     {                                                \
         bool retry_mac = true;                       \
         long db_retries = 0;                         \
-        if(db_tg != NULL)                            \
+        if(db_tg != nullptr)                         \
         {                                            \
             if(db_tg->is_svr_starting() == true)     \
                 db_retries = DB_START_PHASE_RETRIES; \
@@ -1289,7 +1289,7 @@ class DbServerData
     {                                                \
         bool retry_mac = true;                       \
         long db_retries = 0;                         \
-        if(db_tg != NULL)                            \
+        if(db_tg != nullptr)                         \
         {                                            \
             if(db_tg->is_svr_starting() == true)     \
                 db_retries = DB_START_PHASE_RETRIES; \

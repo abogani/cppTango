@@ -748,7 +748,7 @@ DeviceImpl::~DeviceImpl()
     auto ite = find(dev_vect.begin(), dev_vect.end(), this);
     if(ite != dev_vect.end())
     {
-        *ite = NULL;
+        *ite = nullptr;
     }
 
     // remove any device level dynamic commands

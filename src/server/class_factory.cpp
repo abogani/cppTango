@@ -101,7 +101,7 @@ void DServer::class_factory()
     convertor conv;
     PTR tmp;
 
-    if((mod = GetModuleHandle(exe_name.c_str())) == NULL)
+    if((mod = GetModuleHandle(exe_name.c_str())) == nullptr)
     {
         std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;
         exit(-1);
@@ -115,9 +115,9 @@ void DServer::class_factory()
     //
 
   #ifdef _WIN64
-    if((proc = GetProcAddress(mod, "?class_factory@DServer@Tango@@AEAAXXZ")) == NULL)
+    if((proc = GetProcAddress(mod, "?class_factory@DServer@Tango@@AEAAXXZ")) == nullptr)
   #elif defined(_WIN32) /* WIN32 */
-    if((proc = GetProcAddress(mod, "?class_factory@DServer@Tango@@AAEXXZ")) == NULL)
+    if((proc = GetProcAddress(mod, "?class_factory@DServer@Tango@@AAEXXZ")) == nullptr)
   #endif
     {
         std::cerr << "Oops, no class defined in this server. Exiting ..." << std::endl;

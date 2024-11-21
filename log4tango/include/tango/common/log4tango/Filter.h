@@ -98,7 +98,7 @@ class Filter
 
     /**
      * Get the next Filter in the Filter chain
-     * @return The next Filter or NULL if the current filter
+     * @return The next Filter or nullptr if the current filter
      * is the last in the chain
      **/
     inline Filter *Filter::get_chained_filter(void)

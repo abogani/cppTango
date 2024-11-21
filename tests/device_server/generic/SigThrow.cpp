@@ -339,7 +339,7 @@ CORBA::Any *IORegSigOwn::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_
         throw;
     }
 #else
-    CORBA::Any *out = NULL;
+    CORBA::Any *out = nullptr;
     return out;
 #endif
 }

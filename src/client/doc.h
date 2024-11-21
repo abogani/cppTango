@@ -467,7 +467,7 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * the CORBA notification service
  * @li @b API_EventNotFound This error occurs when you are using an incorrect event_id in the unsubscribe_event()
  * method
- * @li @b API_InvalidArgs This error occurs when NULL pointers are passed to the subscribe or unsubscribe event
+ * @li @b API_InvalidArgs This error occurs when nullptrs are passed to the subscribe or unsubscribe event
  * methods
  * @li @b API_MethodArgument This error occurs when trying to subscribe to an event which has already been
  * subscribed to

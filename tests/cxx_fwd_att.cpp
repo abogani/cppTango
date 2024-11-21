@@ -52,8 +52,8 @@ class FwdAttTestSuite : public CxxTest::TestSuite
         // Initialization --------------------------------------------------
         //
 
-        confs_init = NULL;
-        confs_root_init = NULL;
+        confs_init = nullptr;
+        confs_root_init = nullptr;
 
         try
         {

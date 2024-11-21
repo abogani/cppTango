@@ -44,8 +44,8 @@ int main(int argc, char **argv)
     string dnUrl = argv[1];
     string devnm = argv[1];
     string an = "Double_attr";
-    Tango::DeviceProxy *dev = NULL;
-    Tango::DeviceProxy *adm_dev = NULL;
+    Tango::DeviceProxy *dev = nullptr;
+    Tango::DeviceProxy *adm_dev = nullptr;
     Tango::AttributeInfoListEx ail;
     Tango::AttributeInfoEx ai_orig;
     Tango::AttributeInfoEx ai_act;

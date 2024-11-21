@@ -43,7 +43,7 @@ namespace Tango
 
 static HINSTANCE hAppInst;
 static HWND hWndDebug;
-static HWND hWndDebugList = NULL;
+static HWND hWndDebugList = nullptr;
 
 //+----------------------------------------------------------------------------
 //
@@ -76,9 +76,9 @@ CoutBuf::CoutBuf(HINSTANCE hInstance, int nCmdShow, HWND parent, LPCSTR svc_name
 
     wc.lpszClassName = "Debug";
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-    wc.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
-    wc.lpszMenuName = NULL;
+    wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+    wc.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
+    wc.lpszMenuName = nullptr;
     wc.hbrBackground = ::CreateSolidBrush(RGB(255, 255, 255));
     wc.hInstance = hInstance;
     wc.lpfnWndProc = DebugWndProc;
@@ -120,7 +120,7 @@ void CoutBuf::CreateWin(LPCSTR svc_name)
                              parent_window,
                              0,
                              hAppInst,
-                             NULL);
+                             nullptr);
 
     if(!hWndDebug)
     {
@@ -190,7 +190,7 @@ int CoutBuf::dbg_out(LPCSTR buf)
 LRESULT CALLBACK DebugWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
-    HWND hWndList = NULL;
+    HWND hWndList = nullptr;
     HWND hMainWnd;
     HMENU hMenu;
     BOOL bo;
@@ -214,11 +214,11 @@ LRESULT CALLBACK DebugWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                                      hWnd,
                                      (HMENU) IDC_LIST,
                                      hAppInst,
-                                     (LPSTR) NULL);
+                                     (LPSTR) nullptr);
         break;
 
     case WM_SIZE:
-        SetWindowPos(hWndDebugList, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOZORDER);
+        SetWindowPos(hWndDebugList, nullptr, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOZORDER);
         break;
 
     case WM_SETFOCUS:
@@ -239,7 +239,7 @@ LRESULT CALLBACK DebugWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_DESTROY:
-        hWndDebug = NULL;
+        hWndDebug = nullptr;
         Tango::Util::instance()->get_debug_object()->clear_debug_window();
 
         hMainWnd = Tango::Util::instance()->get_ds_main_window();
@@ -307,7 +307,7 @@ void DrawDebugItem(HWND hWnd, LPDRAWITEMSTRUCT lpDI)
         //        SetBkMode(hDC,TRANSPARENT);
         SendMessage(lpDI->hwndItem, LB_GETTEXT, lpDI->itemID, (LPARAM) (LPSTR) buf);
 
-        ExtTextOut(hDC, rc.left + 2, rc.top, ETO_CLIPPED, &rc, buf, lstrlen(buf), NULL);
+        ExtTextOut(hDC, rc.left + 2, rc.top, ETO_CLIPPED, &rc, buf, lstrlen(buf), nullptr);
 
         break;
     }

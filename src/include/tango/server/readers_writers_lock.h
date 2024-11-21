@@ -50,7 +50,7 @@ class ReadersWritersLock
         mut.lock();
 
         // In the case of usage with another threading library, omni_thread::self() might
-        // return a NULL pointer!
+        // return a nullptr pointer!
         int threadId = 0;
         omni_thread *th = omni_thread::self();
         if(th != nullptr)
@@ -96,7 +96,7 @@ class ReadersWritersLock
         mut.lock();
 
         // In the case of usage with another threading library, omni_thread::self() might
-        // return a NULL pointer!
+        // return a nullptr pointer!
         int threadId = 0;
         omni_thread *th = omni_thread::self();
         if(th != nullptr)
@@ -151,7 +151,7 @@ class ReadersWritersLock
 
   private:
     // in the case of usage with another threading library, omni_thread::self() might
-    // return a NULL pointer!
+    // return a nullptr pointer!
     // To avoid this problem we use the class ensure_self to get a dummy thread ID!
     //
     // The class ensure_self should be created on the stack. If created in

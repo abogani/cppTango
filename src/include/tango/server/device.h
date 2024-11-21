@@ -943,7 +943,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * In case of an exception, the exception is pushed as a change event for the attribute.
      *
      * @param attr_name The name of the attribute
-     * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
+     * @param except Pointer to a Tango::DevFailed exception. Default value is nullptr.
      */
     void push_change_event(const std::string &attr_name, DevFailed *except = nullptr);
 
@@ -1090,7 +1090,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * In case of an exception, the exception is pushed as an alarm event for the attribute.
      *
      * @param attr_name The name of the attribute
-     * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
+     * @param except Pointer to a Tango::DevFailed exception. Default value is nullptr.
      */
     void push_alarm_event(const std::string &attr_name, DevFailed *except = nullptr);
 
@@ -1235,7 +1235,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * In case of an exception, the exception is pushed as an archive event for the attribute.
      *
      * @param attr_name The name of the attribute
-     * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
+     * @param except Pointer to a Tango::DevFailed exception. Default value is nullptr.
      */
     void push_archive_event(const std::string &attr_name, DevFailed *except = nullptr);
 
@@ -1371,7 +1371,7 @@ class DeviceImpl : public virtual POA_Tango::Device
      * @param attr_name The name of the attribute
      * @param filt_names The filterable fields name
      * @param filt_vals The filterable fields value (as double)
-     * @param except Pointer to a Tango::DevFailed exception. Default value is NULL.
+     * @param except Pointer to a Tango::DevFailed exception. Default value is nullptr.
      */
     void push_event(const std::string &attr_name,
                     const std::vector<std::string> &filt_names,

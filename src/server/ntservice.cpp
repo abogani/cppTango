@@ -68,11 +68,11 @@ void NTEventLogger::emitMessage(int eventType, const char *msg)
                   eventType,    // event type
                   0,            // event logger
                   eventId_,     // event ID
-                  NULL,         // current user's SID
+                  nullptr,      // current user's SID
                   1,            // strings in lpszStrings
                   0,            // no bytes of raw data
                   strings,      // array of error strings
-                  NULL);        // no raw data
+                  nullptr);     // no raw data
 }
 
 bool NTEventLogger::installValues(HKEY key)
@@ -83,7 +83,7 @@ bool NTEventLogger::installValues(HKEY key)
     // Get path to executable.
     //
 
-    if(::GetModuleFileName(NULL, path, sizeof(path)) == 0)
+    if(::GetModuleFileName(nullptr, path, sizeof(path)) == 0)
     {
         CORBA::String_var err = GetErrorText();
         std::cerr << "GetModuleFileName failed: " << err.in() << std::endl;
@@ -123,7 +123,7 @@ NTEventLogger::NTEventLogger(const char *service, DWORD eventId) :
     service_(service),
     eventId_(eventId)
 {
-    eventSource_ = ::RegisterEventSource(NULL, service);
+    eventSource_ = ::RegisterEventSource(nullptr, service);
     if(eventSource_ == 0)
     {
         TANGO_THROW_EXCEPTION(API_DatabaseAccess, "RegisterEventsource failed");
@@ -388,7 +388,7 @@ void NTService::main(int argc, char **argv)
         DWORD type, size;
         char buf[128];
         size = 127;
-        if((errcode = ::RegQueryValueEx(keyHandle, "InstanceName", NULL, &type, (unsigned char *) buf, &size)) !=
+        if((errcode = ::RegQueryValueEx(keyHandle, "InstanceName", nullptr, &type, (unsigned char *) buf, &size)) !=
            ERROR_SUCCESS)
         {
             s.seekp(0);
@@ -503,7 +503,7 @@ bool NTService::install(char *inst_name, bool autoStart)
     // Get path to executable.
     //
 
-    if(::GetModuleFileName(NULL, path, sizeof(path)) == 0)
+    if(::GetModuleFileName(nullptr, path, sizeof(path)) == 0)
     {
         CORBA::String_var err = GetErrorText();
         std::cerr << "GetModuleFileName failed: " << err.in() << std::endl;
@@ -514,7 +514,7 @@ bool NTService::install(char *inst_name, bool autoStart)
     // Open the service manager.
     //
 
-    SC_HANDLE managerHandle = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    SC_HANDLE managerHandle = ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
     if(!managerHandle)
     {
         CORBA::String_var err = GetErrorText();
@@ -543,11 +543,11 @@ bool NTService::install(char *inst_name, bool autoStart)
                                               start,                     // start type
                                               SERVICE_ERROR_NORMAL,      // error control type
                                               path,                      // service's binary
-                                              NULL,                      // no load ordering group
-                                              NULL,                      // no tag identifier
+                                              nullptr,                   // no load ordering group
+                                              nullptr,                   // no tag identifier
                                               "",                        // dependencies
-                                              NULL,                      // LocalSystem account
-                                              NULL);                     // no password
+                                              nullptr,                   // LocalSystem account
+                                              nullptr);                  // no password
 
     if(serviceHandle)
     {
@@ -624,7 +624,7 @@ bool NTService::install(char *inst_name, bool autoStart)
     }
 
     char *env = getenv(EnvVariable);
-    if(env == NULL)
+    if(env == nullptr)
     {
         std::cerr << "Tango_host environment variable not defined !!!" << std::endl;
         return false;
@@ -645,7 +645,7 @@ bool NTService::uninstall(char *inst_name)
 {
     bool rc = false;
 
-    SC_HANDLE managerHandle = ::OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    SC_HANDLE managerHandle = ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
     if(!managerHandle)
     {
         CORBA::String_var err = GetErrorText();
@@ -739,7 +739,7 @@ void NTService::run(int argc, char **argv)
         //
 
         SERVICE_TABLE_ENTRY dispatchTable[] = {
-            {const_cast<char *>(name_.c_str()), (LPSERVICE_MAIN_FUNCTION) _OB_serviceMain}, {NULL, NULL}};
+            {const_cast<char *>(name_.c_str()), (LPSERVICE_MAIN_FUNCTION) _OB_serviceMain}, {nullptr, nullptr}};
 
         //
         // Start the service.

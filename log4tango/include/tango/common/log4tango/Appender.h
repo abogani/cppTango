@@ -147,7 +147,7 @@ class Appender
 
     /**
      * Get the Filter for this appender.
-     * @returns the filter, or NULL if no filter has been set.
+     * @returns the filter, or nullptr if no filter has been set.
      **/
     virtual Filter *get_filter(void);
   #endif // APPENDERS_HAVE_FILTERS

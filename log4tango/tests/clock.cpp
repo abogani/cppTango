@@ -100,7 +100,7 @@ usec_t Clock::time(void)
     {
         struct timeval tv;
 
-        gettimeofday(&tv, NULL);
+        gettimeofday(&tv, nullptr);
         return (usec_t) (tv.tv_sec * UsecPerSec + tv.tv_usec);
     }
 }

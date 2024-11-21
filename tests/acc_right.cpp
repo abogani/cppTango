@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     string admin_device(argv[5]);
 
     struct hostent *my_addr;
-    if((my_addr = gethostbyname(host.c_str())) == NULL)
+    if((my_addr = gethostbyname(host.c_str())) == nullptr)
     {
         cerr << "Can't get IP address for given host!" << endl;
         exit(-1);
@@ -975,7 +975,7 @@ TangoSys_Pid start_ds(const std::string &path, const std::string &name, const st
     STARTUPINFO si;
     PROCESS_INFORMATION info;
 
-    if(!CreateProcess(path.c_str(), cmdline, NULL, NULL, FALSE, 0, NULL, NULL, &si, &info))
+    if(!CreateProcess(path.c_str(), cmdline, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &info))
     {
         TEST_LOG << "Error !!!!!!!!!!" << GetLastError() << endl;
         exit(-1);

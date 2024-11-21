@@ -59,7 +59,7 @@ class CoutBuf
 
     void clear_debug_window()
     {
-        DbgWin = NULL;
+        DbgWin = nullptr;
     }
 
     void CreateWin(LPCSTR);

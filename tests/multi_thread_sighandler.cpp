@@ -107,7 +107,7 @@ class StepperMotorClass : public Tango::DeviceClass
 
     ~StepperMotorClass()
     {
-        _instance = NULL;
+        _instance = nullptr;
     }
 
   protected:
@@ -140,7 +140,7 @@ class StepperMotorClass : public Tango::DeviceClass
     }
 };
 
-StepperMotorClass *StepperMotorClass::_instance = NULL;
+StepperMotorClass *StepperMotorClass::_instance = nullptr;
 
 void Tango::DServer::class_factory()
 {

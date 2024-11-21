@@ -2597,7 +2597,7 @@ inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString 
 //
 
 #define CHECK_PTR(A, B)                                         \
-    if(A == NULL)                                               \
+    if(A == nullptr)                                            \
     {                                                           \
         std::stringstream o;                                    \
         o << "Data pointer for attribute " << B << " is NULL!"; \

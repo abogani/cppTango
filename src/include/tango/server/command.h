@@ -1533,7 +1533,7 @@ TemplCommandInOut<INARG, OUTARG>::TemplCommandInOut(const std::string &s,
     exe_ptr_inout(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
     init_types();
 }
 
@@ -1560,7 +1560,7 @@ TemplCommandInOut<INARG, OUTARG>::TemplCommandInOut(const std::string &s,
     exe_ptr_inout(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
     init_types();
 }
 
@@ -1795,7 +1795,7 @@ TemplCommandIn<INARG>::TemplCommandIn(const std::string &s, void (DeviceImpl::*f
     exe_ptr_in(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
     init_types();
 }
 
@@ -1822,7 +1822,7 @@ TemplCommandIn<INARG>::TemplCommandIn(const std::string &s,
     exe_ptr_in(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
     init_types();
 }
 
@@ -2053,7 +2053,7 @@ TemplCommandOut<OUTARG>::TemplCommandOut(const std::string &s, OUTARG (DeviceImp
     exe_ptr_out(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
     init_types();
 }
 
@@ -2080,7 +2080,7 @@ TemplCommandOut<OUTARG>::TemplCommandOut(const std::string &s,
     exe_ptr_out(f),
     ext(nullptr)
 {
-    allowed_ptr = NULL;
+    allowed_ptr = nullptr;
     init_types();
 }
 

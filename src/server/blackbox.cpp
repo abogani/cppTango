@@ -1646,7 +1646,7 @@ void BlackBox::build_info_as_str(long index)
         si.sin_port = 0;
 #ifdef _TG_WINDOWS_
         int slen = sizeof(si);
-        WSAStringToAddress((char *) full_ip_str.c_str(), AF_INET, NULL, (SOCKADDR *) &si, &slen);
+        WSAStringToAddress((char *) full_ip_str.c_str(), AF_INET, nullptr, (SOCKADDR *) &si, &slen);
 #else
         inet_pton(AF_INET, full_ip_str.c_str(), &si.sin_addr);
 #endif
@@ -2129,7 +2129,7 @@ int client_addr::client_ip_2_client_name(std::string &cl_host_name) const
                             si.sin_port = 0;
 #ifdef _TG_WINDOWS_
                             int slen = sizeof(si);
-                            WSAStringToAddress((char *) full_ip_str.c_str(), AF_INET, NULL, (SOCKADDR *) &si, &slen);
+                            WSAStringToAddress((char *) full_ip_str.c_str(), AF_INET, nullptr, (SOCKADDR *) &si, &slen);
 #else
                             inet_pton(AF_INET, full_ip_str.c_str(), &si.sin_addr);
 #endif
