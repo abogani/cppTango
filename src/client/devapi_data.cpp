@@ -176,9 +176,8 @@ bool DeviceData::is_empty()
 bool DeviceData::any_is_null() const
 {
     ext->ext_state.reset(isempty_flag);
-    CORBA::TypeCode_ptr tc;
 
-    tc = any->type();
+    CORBA::TypeCode_var tc = any->type();
     if(tc->equal(CORBA::_tc_null))
     {
         ext->ext_state.set(isempty_flag);
@@ -189,7 +188,6 @@ bool DeviceData::any_is_null() const
         }
         return (true);
     }
-    CORBA::release(tc);
 
     return (false);
 }
@@ -210,12 +208,11 @@ int DeviceData::get_type()
     }
     else
     {
-        CORBA::TypeCode_ptr tc;
         CORBA::TypeCode_var tc_al;
         CORBA::TypeCode_var tc_seq;
         CORBA::TypeCode_var tc_field;
 
-        tc = any->type();
+        CORBA::TypeCode_var tc = any->type();
         switch(tc->kind())
         {
         case CORBA::tk_boolean:
@@ -358,8 +355,6 @@ int DeviceData::get_type()
             desc << "'this->any' with unexpected kind '" << tc->kind() << "'.";
             TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
         }
-
-        CORBA::release(tc);
     }
 
     return data_type;

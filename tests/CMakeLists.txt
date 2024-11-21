@@ -40,6 +40,7 @@ tango_catch2_tests_create(
     catch2_change_event_on_nan.cpp
     $<$<BOOL:${TANGO_USE_TELEMETRY}>:${CMAKE_CURRENT_SOURCE_DIR}/catch2_telemetry.cpp>
     catch2_tango_monitor.cpp
+    catch2_unit_test_device_data.cpp
     catch2_w_attribute_set_write_value.cpp
     # These currrently fail on Windows and need investigating
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_filedatabase.cpp>

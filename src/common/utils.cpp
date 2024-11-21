@@ -247,17 +247,15 @@ bool get_boolean_env_var(const char *env_var, bool default_value)
 
 void stringify_any(std::ostream &os, const CORBA::Any &any)
 {
-    CORBA::TypeCode_ptr tc;
     CORBA::TypeCode_var tc_al;
     CORBA::TypeCode_var tc_seq;
     CORBA::TypeCode_var tc_field;
 
-    tc = any.type();
+    CORBA::TypeCode_var tc = any.type();
 
     if(tc->equal(CORBA::_tc_null))
     {
         os << "empty";
-        CORBA::release(tc);
         return;
     }
 
@@ -473,8 +471,6 @@ void stringify_any(std::ostream &os, const CORBA::Any &any)
         desc << "'any' with unexpected kind '" << tc->kind() << "'.";
         TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
     }
-
-    CORBA::release(tc);
 }
 
 void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da)
