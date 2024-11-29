@@ -215,6 +215,12 @@ class event
     }
 };
 
+// The device server sends SIGUSR1 to the parent process to let it know it's ready to handle signals
+#ifndef _TG_WINDOWS_
+static event device_server_started_event;
+static pid_t parent_pid;
+#endif
+
 // Start thread (and wait for it to start) that waits on stop event if do_start_thread, otherwise, do nothing
 std::thread start_thread(event &stop_event, bool do_start_thread)
 {
@@ -249,7 +255,10 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
         tg->server_init();
         std::cout << "Device server initialised" << std::endl;
 
-        std::cout << "Ready to accept request" << std::endl;
+        std::cout << "Ready to accept request, notifying parent process and running server\n";
+#ifndef _TG_WINDOWS_
+        kill(parent_pid, SIGUSR1);
+#endif
         tg->server_run();
         tg->server_cleanup();
         std::cout << "Server stopped" << std::endl;
@@ -277,12 +286,29 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
         stop_event.set();
         thread.join();
     }
+    exit(EXIT_SUCCESS);
+}
+
+void install_sigusr1_handler()
+{
+#ifndef _TG_WINDOWS_
+    struct sigaction sig;
+    sig.sa_flags = SA_RESTART;
+    sig.sa_handler = [](int) { device_server_started_event.set(); };
+    if(sigaction(SIGUSR1, &sig, nullptr) == -1)
+    {
+        perror("sigaction");
+        exit(1);
+    }
+#endif
 }
 
 // Fork the device server and send it SIGTERM.
 void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
 {
 #ifndef _TG_WINDOWS_
+    parent_pid = getpid();
+    install_sigusr1_handler();
     int pid = fork();
     if(pid < 0)
     {
@@ -295,8 +321,9 @@ void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
     }
     else
     {
-        sleep(3); // Wait for device server to initialise
         std::cout << "PARENT pid=" << getpid() << " CHILD pid=" << pid << std::endl;
+        device_server_started_event.wait();
+        device_server_started_event.clear();
 
         std::cout << "PARENT sending SIGTERM to " << pid << "..." << std::endl;
         kill(pid, SIGTERM);
