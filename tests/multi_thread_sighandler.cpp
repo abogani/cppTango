@@ -1,5 +1,6 @@
 // NOLINTBEGIN(*)
 
+#include <chrono>
 #include <condition_variable>
 #include <csignal>
 #include <thread>
@@ -279,30 +280,48 @@ void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
 
         std::cout << "PARENT sending SIGTERM to " << pid << "..." << std::endl;
         kill(pid, SIGTERM);
-        sleep(1); // Wait for child to process the signal
 
+        const std::chrono::milliseconds WAIT_TIMEOUT{5000};
+        const std::chrono::milliseconds WAIT_RETRY_PERIOD{100};
+        std::cout << "Waiting for " << pid << " for " << WAIT_TIMEOUT.count() << " ms...\n";
+        auto start = std::chrono::steady_clock::now();
         int status = 0;
-        std::cout << "Waiting for " << pid << "...\n";
-        pid_t wait_result = waitpid(pid, &status, WNOHANG);
+        while(true)
+        {
+            pid_t wait_result = waitpid(pid, &status, WNOHANG);
+            if(wait_result == pid)
+            {
+                break;
+            }
+            auto now = std::chrono::steady_clock::now();
+            if((now - start) > WAIT_TIMEOUT)
+            {
+                std::cout << "CHILD process " << pid << " didn't exit within " << WAIT_TIMEOUT.count()
+                          << " ms, sending SIGKILL\n";
+                kill(pid, SIGKILL);
+                assert(false);
+            }
+            std::this_thread::sleep_for(WAIT_RETRY_PERIOD);
+        }
 
-        std::cout << "wait()=" << wait_result << "\n  WIFEXITED=" << WIFEXITED(status)
-                  << "\n  WEXITSTATUS=" << WEXITSTATUS(status) << "\n  WIFSIGNALED=" << WIFSIGNALED(status);
+        std::cout << "waitpid() status\n";
+        std::cout << "  WIFEXITED=" << WIFEXITED(status) << '\n';
+        if(WIFEXITED(status))
+        {
+            std::cout << "    WEXITSTATUS=" << WEXITSTATUS(status) << '\n';
+        }
+        std::cout << "  WIFSIGNALED=" << WIFSIGNALED(status) << '\n';
         if(WIFSIGNALED(status))
         {
-            std::cout << "\n  WTERMSIG=" << WTERMSIG(status) << "\n  WCOREDUMP=" << WCOREDUMP(status);
+            std::cout << "    WTERMSIG=" << WTERMSIG(status) << '\n';
+  #ifdef WCOREDUMP
+            std::cout << "    WCOREDUMP=" << WCOREDUMP(status) << '\n';
+  #endif
         }
-        std::cout << "\n  WIFSTOPPED=" << WIFSTOPPED(status) << "\n  WSTOPSIG=" << WSTOPSIG(status)
-                  << "\n  WIFCONTINUED=" << WIFCONTINUED(status) << std::endl;
-
-        // Device server should already be terminated, therefore kill() should return -1
-        // and not zero.
-        std::cout << "PARENT sending SIGINT to " << pid << "..." << std::endl;
-        int result = kill(pid, SIGINT);
-        std::cout << "kill(" << pid << ", SIGINT) == " << result << std::endl;
-        if(result != -1)
+        std::cout << "  WIFSTOPPED=" << WIFSTOPPED(status) << '\n';
+        if(WIFSTOPPED(status))
         {
-            int dev_server_stopped = 0;
-            assert(dev_server_stopped);
+            std::cout << "    WSTOPSIG=" << WSTOPSIG(status) << '\n';
         }
     }
 #endif
