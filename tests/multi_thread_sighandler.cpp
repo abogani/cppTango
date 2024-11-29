@@ -8,14 +8,7 @@
 
 #include <tango/tango.h>
 
-#ifdef _TG_WINDOWS_
-  #include <windows.h>
-
-static inline void sleep(DWORD seconds)
-{
-    Sleep(seconds * 1000);
-}
-#else
+#ifndef _TG_WINDOWS_
   #include <sys/wait.h>
 #endif
 
