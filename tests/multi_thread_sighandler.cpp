@@ -3,6 +3,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <csignal>
+#include <mutex>
 #include <thread>
 
 #include <tango/tango.h>
@@ -185,15 +186,37 @@ void install_signal_handler(int handlers)
 #endif
 }
 
-struct condition
+class event
 {
-    bool stopped{false};
+  private:
+    bool flag{false};
     std::condition_variable cv;
     std::mutex mutex;
+
+  public:
+    void set()
+    {
+        {
+            std::lock_guard<std::mutex> lock{mutex};
+            flag = true;
+        }
+        cv.notify_one();
+    }
+
+    void wait()
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        cv.wait(lock, [this] { return flag; });
+    }
+
+    void clear()
+    {
+        flag = false;
+    }
 };
 
-// Start thread if do_start_thread and wait for condition to be stopped, otherwise, do nothing
-std::thread start_thread(condition &c, bool do_start_thread)
+// Start thread that waits on stop event if do_start_thread, otherwise, do nothing
+std::thread start_thread(event &stop_event, bool do_start_thread)
 {
     if(do_start_thread)
     {
@@ -201,9 +224,7 @@ std::thread start_thread(condition &c, bool do_start_thread)
             [&]()
             {
                 std::cout << "Started background thread\n";
-                std::unique_lock<std::mutex> lock{c.mutex};
-                c.cv.wait(lock, [&] { return c.stopped; });
-                lock.unlock();
+                stop_event.wait();
                 std::cout << "Exiting background thread\n";
             });
     }
@@ -214,8 +235,8 @@ std::thread start_thread(condition &c, bool do_start_thread)
 // do this before initialising the device server.
 void create_device_server(int argc, char *argv[], bool do_start_thread, int handlers)
 {
-    struct condition c;
-    auto thread = start_thread(c, do_start_thread);
+    event stop_event;
+    auto thread = start_thread(stop_event, do_start_thread);
     sleep(1); // Wait for thread to start.
     install_signal_handler(handlers);
 
@@ -249,12 +270,8 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
 
     if(thread.joinable())
     {
-        {
-            std::cout << "Stopping thread..." << std::endl;
-            std::lock_guard<std::mutex> guard(c.mutex);
-            c.stopped = true;
-        }
-        c.cv.notify_one();
+        std::cout << "Stopping thread...\n";
+        stop_event.set();
         thread.join();
     }
 }
