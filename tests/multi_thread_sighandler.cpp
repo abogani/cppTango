@@ -339,7 +339,7 @@ void run_test(int argc, char *argv[], bool do_start_thread, int handlers, int si
                 std::cout << "CHILD process " << pid << " didn't exit within " << WAIT_TIMEOUT.count()
                           << " ms, sending SIGKILL\n";
                 kill(pid, SIGKILL);
-                assert(false);
+                throw std::runtime_error("Child process had to be killed");
             }
             std::this_thread::sleep_for(WAIT_RETRY_PERIOD);
         }
