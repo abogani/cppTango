@@ -215,18 +215,22 @@ class event
     }
 };
 
-// Start thread that waits on stop event if do_start_thread, otherwise, do nothing
+// Start thread (and wait for it to start) that waits on stop event if do_start_thread, otherwise, do nothing
 std::thread start_thread(event &stop_event, bool do_start_thread)
 {
     if(do_start_thread)
     {
-        return std::thread(
+        event start_event;
+        auto thread = std::thread(
             [&]()
             {
+                start_event.set();
                 std::cout << "Started background thread\n";
                 stop_event.wait();
                 std::cout << "Exiting background thread\n";
             });
+        start_event.wait();
+        return thread;
     }
     return std::thread{};
 }
@@ -237,7 +241,6 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
 {
     event stop_event;
     auto thread = start_thread(stop_event, do_start_thread);
-    sleep(1); // Wait for thread to start.
     install_signal_handler(handlers);
 
     try
