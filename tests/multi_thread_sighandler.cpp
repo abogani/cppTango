@@ -227,7 +227,7 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
         std::cout << "Ready to accept request" << std::endl;
         tg->server_run();
         tg->server_cleanup();
-        std::cout << "Server running" << std::endl;
+        std::cout << "Server stopped" << std::endl;
     }
     catch(std::bad_alloc &)
     {
