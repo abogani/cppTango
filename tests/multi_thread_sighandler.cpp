@@ -296,8 +296,8 @@ void install_sigusr1_handler()
 #endif
 }
 
-// Fork the device server and send it SIGTERM.
-void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
+// Fork the device server and send it a signal
+void run_test(int argc, char *argv[], bool do_start_thread, int handlers, int signal_no)
 {
 #ifndef _TG_WINDOWS_
     parent_pid = getpid();
@@ -318,8 +318,8 @@ void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
         device_server_started_event.wait();
         device_server_started_event.clear();
 
-        std::cout << "PARENT sending SIGTERM to " << pid << "..." << std::endl;
-        kill(pid, SIGTERM);
+        std::cout << "PARENT sending " << strsignal(signal_no) << " to " << pid << "..." << std::endl;
+        kill(pid, signal_no);
 
         const std::chrono::milliseconds WAIT_TIMEOUT{5000};
         const std::chrono::milliseconds WAIT_RETRY_PERIOD{100};
@@ -373,8 +373,19 @@ int main()
     // use the database.
     char *args[5] = {
         (char *) "SignalTest", (char *) "test", (char *) "-nodb", (char *) "-ORBendPoint", (char *) "giop:tcp::11000"};
-    run_test(5, args, true, SIGTERM);
-
+    for(auto do_start_thread : {true, false})
+    {
+        for(auto handlers : {SIGTERM, SIGINT, -1})
+        {
+            for(auto signal_no : {SIGTERM, SIGINT})
+            {
+                std::cout << "==========================\n";
+                std::cout << "Server bg thread: " << do_start_thread << "; server signal handlers: " << handlers
+                          << "; signal received: " << signal_no << '\n';
+                run_test(5, args, do_start_thread, handlers, signal_no);
+            }
+        }
+    }
     return 0;
 }
 
