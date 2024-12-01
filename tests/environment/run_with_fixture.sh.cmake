@@ -11,11 +11,6 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-if ! hash docker 2>/dev/null; then
-  echo "Can not run the tests as docker is missing"
-  exit 1
-fi
-
 # Construct unique name for this test execution. We are using current date with
 # nanosecond precision to ensure that subsequent test runs will get a new name.
 tc_program="$1"
@@ -28,6 +23,12 @@ if [ $# -gt 0 ]; then
         *) ;;
     esac
 fi
+
+if [ -n "$TANGO_TEST_CASE_SKIP_FIXTURE" ] && ! hash docker 2>/dev/null; then
+  echo "Can not run the tests as docker is missing"
+  exit 1
+fi
+
 
 tc_mysql_container="mysql_db_${tc_run_name}"
 tc_tango_container="tango_cs_${tc_run_name}"

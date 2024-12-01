@@ -1,19 +1,14 @@
 // NOLINTBEGIN(*)
 
+#include <chrono>
 #include <condition_variable>
 #include <csignal>
+#include <mutex>
 #include <thread>
 
 #include <tango/tango.h>
 
-#ifdef _TG_WINDOWS_
-  #include <windows.h>
-
-static inline void sleep(DWORD seconds)
-{
-    Sleep(seconds * 1000);
-}
-#else
+#ifndef _TG_WINDOWS_
   #include <sys/wait.h>
 #endif
 
@@ -184,27 +179,57 @@ void install_signal_handler(int handlers)
 #endif
 }
 
-struct condition
+class event
 {
-    bool stopped{false};
+  private:
+    bool flag{false};
     std::condition_variable cv;
     std::mutex mutex;
+
+  public:
+    void set()
+    {
+        {
+            std::lock_guard<std::mutex> lock{mutex};
+            flag = true;
+        }
+        cv.notify_one();
+    }
+
+    void wait()
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        cv.wait(lock, [this] { return flag; });
+    }
+
+    void clear()
+    {
+        flag = false;
+    }
 };
 
-// Start thread if do_start_thread and wait for condition to be stopped, otherwise, do nothing
-std::thread start_thread(condition &c, bool do_start_thread)
+// The device server sends SIGUSR1 to the parent process to let it know it's ready to handle signals
+#ifndef _TG_WINDOWS_
+static event device_server_started_event;
+static pid_t parent_pid;
+#endif
+
+// Start thread (and wait for it to start) that waits on stop event if do_start_thread, otherwise, do nothing
+std::thread start_thread(event &stop_event, bool do_start_thread)
 {
     if(do_start_thread)
     {
-        return std::thread(
+        event start_event;
+        auto thread = std::thread(
             [&]()
             {
+                start_event.set();
                 std::cout << "Started background thread\n";
-                std::unique_lock<std::mutex> lock{c.mutex};
-                c.cv.wait(lock, [&] { return c.stopped; });
-                lock.unlock();
+                stop_event.wait();
                 std::cout << "Exiting background thread\n";
             });
+        start_event.wait();
+        return thread;
     }
     return std::thread{};
 }
@@ -213,9 +238,8 @@ std::thread start_thread(condition &c, bool do_start_thread)
 // do this before initialising the device server.
 void create_device_server(int argc, char *argv[], bool do_start_thread, int handlers)
 {
-    struct condition c;
-    auto thread = start_thread(c, do_start_thread);
-    sleep(1); // Wait for thread to start.
+    event stop_event;
+    auto thread = start_thread(stop_event, do_start_thread);
     install_signal_handler(handlers);
 
     try
@@ -224,10 +248,13 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
         tg->server_init();
         std::cout << "Device server initialised" << std::endl;
 
-        std::cout << "Ready to accept request" << std::endl;
+        std::cout << "Ready to accept request, notifying parent process and running server\n";
+#ifndef _TG_WINDOWS_
+        kill(parent_pid, SIGUSR1);
+#endif
         tg->server_run();
         tg->server_cleanup();
-        std::cout << "Server running" << std::endl;
+        std::cout << "Server stopped" << std::endl;
     }
     catch(std::bad_alloc &)
     {
@@ -248,20 +275,33 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
 
     if(thread.joinable())
     {
-        {
-            std::cout << "Stopping thread..." << std::endl;
-            std::lock_guard<std::mutex> guard(c.mutex);
-            c.stopped = true;
-        }
-        c.cv.notify_one();
+        std::cout << "Stopping thread...\n";
+        stop_event.set();
         thread.join();
     }
+    exit(EXIT_SUCCESS);
 }
 
-// Fork the device server and send it SIGTERM.
-void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
+void install_sigusr1_handler()
 {
 #ifndef _TG_WINDOWS_
+    struct sigaction sig;
+    sig.sa_flags = SA_RESTART;
+    sig.sa_handler = [](int) { device_server_started_event.set(); };
+    if(sigaction(SIGUSR1, &sig, nullptr) == -1)
+    {
+        perror("sigaction");
+        exit(1);
+    }
+#endif
+}
+
+// Fork the device server and send it a signal
+void run_test(int argc, char *argv[], bool do_start_thread, int handlers, int signal_no)
+{
+#ifndef _TG_WINDOWS_
+    parent_pid = getpid();
+    install_sigusr1_handler();
     int pid = fork();
     if(pid < 0)
     {
@@ -274,35 +314,54 @@ void run_test(int argc, char *argv[], bool do_start_thread, int handlers)
     }
     else
     {
-        sleep(3); // Wait for device server to initialise
         std::cout << "PARENT pid=" << getpid() << " CHILD pid=" << pid << std::endl;
+        device_server_started_event.wait();
+        device_server_started_event.clear();
 
-        std::cout << "PARENT sending SIGTERM to " << pid << "..." << std::endl;
-        kill(pid, SIGTERM);
-        sleep(1); // Wait for child to process the signal
+        std::cout << "PARENT sending " << strsignal(signal_no) << " to " << pid << "..." << std::endl;
+        kill(pid, signal_no);
 
+        const std::chrono::milliseconds WAIT_TIMEOUT{5000};
+        const std::chrono::milliseconds WAIT_RETRY_PERIOD{100};
+        std::cout << "Waiting for " << pid << " for " << WAIT_TIMEOUT.count() << " ms...\n";
+        auto start = std::chrono::steady_clock::now();
         int status = 0;
-        std::cout << "Waiting for " << pid << "...\n";
-        pid_t wait_result = waitpid(pid, &status, WNOHANG);
+        while(true)
+        {
+            pid_t wait_result = waitpid(pid, &status, WNOHANG);
+            if(wait_result == pid)
+            {
+                break;
+            }
+            auto now = std::chrono::steady_clock::now();
+            if((now - start) > WAIT_TIMEOUT)
+            {
+                std::cout << "CHILD process " << pid << " didn't exit within " << WAIT_TIMEOUT.count()
+                          << " ms, sending SIGKILL\n";
+                kill(pid, SIGKILL);
+                throw std::runtime_error("Child process had to be killed");
+            }
+            std::this_thread::sleep_for(WAIT_RETRY_PERIOD);
+        }
 
-        std::cout << "wait()=" << wait_result << "\n  WIFEXITED=" << WIFEXITED(status)
-                  << "\n  WEXITSTATUS=" << WEXITSTATUS(status) << "\n  WIFSIGNALED=" << WIFSIGNALED(status);
+        std::cout << "waitpid() status\n";
+        std::cout << "  WIFEXITED=" << WIFEXITED(status) << '\n';
+        if(WIFEXITED(status))
+        {
+            std::cout << "    WEXITSTATUS=" << WEXITSTATUS(status) << '\n';
+        }
+        std::cout << "  WIFSIGNALED=" << WIFSIGNALED(status) << '\n';
         if(WIFSIGNALED(status))
         {
-            std::cout << "\n  WTERMSIG=" << WTERMSIG(status) << "\n  WCOREDUMP=" << WCOREDUMP(status);
+            std::cout << "    WTERMSIG=" << WTERMSIG(status) << '\n';
+  #ifdef WCOREDUMP
+            std::cout << "    WCOREDUMP=" << WCOREDUMP(status) << '\n';
+  #endif
         }
-        std::cout << "\n  WIFSTOPPED=" << WIFSTOPPED(status) << "\n  WSTOPSIG=" << WSTOPSIG(status)
-                  << "\n  WIFCONTINUED=" << WIFCONTINUED(status) << std::endl;
-
-        // Device server should already be terminated, therefore kill() should return -1
-        // and not zero.
-        std::cout << "PARENT sending SIGINT to " << pid << "..." << std::endl;
-        int result = kill(pid, SIGINT);
-        std::cout << "kill(" << pid << ", SIGINT) == " << result << std::endl;
-        if(result != -1)
+        std::cout << "  WIFSTOPPED=" << WIFSTOPPED(status) << '\n';
+        if(WIFSTOPPED(status))
         {
-            int dev_server_stopped = 0;
-            assert(dev_server_stopped);
+            std::cout << "    WSTOPSIG=" << WSTOPSIG(status) << '\n';
         }
     }
 #endif
@@ -314,8 +373,19 @@ int main()
     // use the database.
     char *args[5] = {
         (char *) "SignalTest", (char *) "test", (char *) "-nodb", (char *) "-ORBendPoint", (char *) "giop:tcp::11000"};
-    run_test(5, args, true, SIGTERM);
-
+    for(auto do_start_thread : {true, false})
+    {
+        for(auto handlers : {SIGTERM, SIGINT, -1})
+        {
+            for(auto signal_no : {SIGTERM, SIGINT})
+            {
+                std::cout << "==========================\n";
+                std::cout << "Server bg thread: " << do_start_thread << "; server signal handlers: " << handlers
+                          << "; signal received: " << signal_no << '\n';
+                run_test(5, args, do_start_thread, handlers, signal_no);
+            }
+        }
+    }
     return 0;
 }
 
