@@ -1402,8 +1402,8 @@ CORBA::Any_var FileDatabase ::DbDeleteDeviceProperty(CORBA::Any &send)
 
             if(itp != device_trovato.properties.end())
             {
-                device_trovato.properties.erase(itp, itp + 1);
                 delete *itp;
+                device_trovato.properties.erase(itp, itp + 1);
             }
         }
     }
@@ -1637,8 +1637,8 @@ CORBA::Any_var FileDatabase ::DbDeleteDeviceAttributeProperty(CORBA::Any &send)
 
                     if(itp != device_trovato.attribute_properties[j]->properties.end())
                     {
-                        device_trovato.attribute_properties[j]->properties.erase(itp, itp + 1);
                         delete *itp;
+                        device_trovato.attribute_properties[j]->properties.erase(itp, itp + 1);
                     }
                 }
             }
@@ -1867,8 +1867,8 @@ CORBA::Any_var FileDatabase ::DbDeleteClassProperty(CORBA::Any &send)
 
             if(itp != classe_trovata.properties.end())
             {
-                classe_trovata.properties.erase(itp, itp + 1);
                 delete *itp;
+                classe_trovata.properties.erase(itp, itp + 1);
             }
         }
     }
@@ -2533,8 +2533,8 @@ CORBA::Any_var FileDatabase::DbDeleteProperty(CORBA::Any &send)
             continue;
         }
 
-        prop_list.erase(prop);
         delete *prop;
+        prop_list.erase(prop);
     }
 
     write_file();
