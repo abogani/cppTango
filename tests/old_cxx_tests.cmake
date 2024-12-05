@@ -183,8 +183,7 @@ endfunction()
 # CXX_GENERATE_TEST(cxx_zmcast02_local_remote)
 # CXX_GENERATE_TEST(cxx_zmcast03_svr_local_remote)
 
-set(TESTS asyn_attr_cb
-          asyn_attr
+set(TESTS asyn_attr
           asyn_attr_multi
           asyn_cb2
           asyn_cb_cmd
@@ -289,7 +288,6 @@ tango_add_test(NAME "asyn::asyn_write_attr_multi"  COMMAND $<TARGET_FILE:asyn_wr
 tango_add_test(NAME "asyn::asyn_cb"  COMMAND $<TARGET_FILE:asyn_cb> ${DEV1} ${DEV2})
 tango_add_test(NAME "asyn::asyn_cb2"  COMMAND $<TARGET_FILE:asyn_cb2> ${DEV1} ${DEV2})
 tango_add_test(NAME "asyn::asyn_cb_cmd"  COMMAND $<TARGET_FILE:asyn_cb_cmd> ${DEV1})
-tango_add_test(NAME "asyn::asyn_attr_cb"  COMMAND $<TARGET_FILE:asyn_attr_cb> ${DEV1})
 tango_add_test(NAME "asyn::asyn_write_cb"  COMMAND $<TARGET_FILE:asyn_write_cb> ${DEV1})
 tango_add_test(NAME "asyn::auto_asyn_cmd"  COMMAND $<TARGET_FILE:auto_asyn_cmd> ${DEV1})
 

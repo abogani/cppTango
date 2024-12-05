@@ -1,70 +1,63 @@
 #include <tango/tango.h>
 
-#include <chrono>
-#include <condition_variable>
-#include <deque>
-#include <mutex>
-#include <optional>
+#include <functional>
 
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_container_properties.hpp>
+#include "callback_mock_base.h"
+
+#include "callback_mock_helpers.h"
 
 namespace TangoTest
 {
 
-template <typename TEvent>
-class CallbackMock : public Tango::CallBack
+/// Common callback class for mocking in tests
+///
+/// Steps for supporting new types:
+/// - Introduce a specialization for your event data type here and override the
+///   designated function
+/// - If your new event data class is not-copyable, write a wrapper class in
+///   callback_mock_helpers.h and use that as second template argument
+template <typename TEvent, typename TEventCopyable = TEvent>
+class CallbackMock;
+
+template <>
+class CallbackMock<Tango::EventData> : public CallbackMockBase<Tango::EventData>
 {
   public:
-    using Event = TEvent;
-
-    explicit CallbackMock() = default;
-    CallbackMock(const CallbackMock &) = delete;
-    CallbackMock(CallbackMock &&) = delete;
-    CallbackMock &operator=(const CallbackMock &) = delete;
-    CallbackMock &operator=(CallbackMock &&) = delete;
-
-    constexpr static const std::chrono::milliseconds k_default_timeout{(2 * TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD) +
-                                                                       300};
-
-    void push_event(TEvent *event) override
+    void push_event(Tango::EventData *event) override
     {
-        {
-            std::unique_lock<std::mutex> lk(m);
-            events.emplace_back(*event);
-        }
+        REQUIRE(event != nullptr);
+        collect_event(*event);
+    }
+};
 
-        cv.notify_one();
+template <>
+class CallbackMock<Tango::AttrReadEvent, AttrReadEventCopyable>
+    : public CallbackMockBase<Tango::AttrReadEvent, AttrReadEventCopyable>
+{
+  public:
+    void attr_read(Tango::AttrReadEvent *event) override
+    {
+        collect_event(AttrReadEventCopyable(event));
     }
 
-    std::optional<TEvent> pop_next_event(std::chrono::milliseconds timeout = k_default_timeout)
+    std::optional<AttrReadEventCopyable> pop_next_event(const std::function<void()> &poll_func)
     {
-        auto doit = [&]()
-        {
-            TEvent event = events.front();
-            events.pop_front();
-            return event;
-        };
+        constexpr std::chrono::milliseconds time_slice{100};
+        constexpr size_t num_slices{50};
 
-        std::unique_lock<std::mutex> lk(m);
-
-        if(!events.empty())
+        for(size_t i = 0; i < num_slices; i++)
         {
-            return doit();
-        }
+            poll_func();
+            auto event = CallbackMockBase<Tango::AttrReadEvent, AttrReadEventCopyable>::pop_next_event(time_slice);
 
-        if(cv.wait_for(lk, timeout, [this] { return !events.empty(); }))
-        {
-            return doit();
+            if(event.has_value())
+            {
+                return event;
+            }
         }
 
         return std::nullopt;
     }
-
-  private:
-    std::deque<TEvent> events{};
-    std::mutex m;
-    std::condition_variable cv;
 };
 
 } // namespace TangoTest

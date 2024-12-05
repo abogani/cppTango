@@ -1,6 +1,8 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_templated.hpp>
 
+#include "callback_mock_helpers.h"
+
 #include <tango/tango.h>
 
 #include <tango/common/utils/type_info.h>
@@ -346,7 +348,7 @@ inline AttrQualityMatcher AttrQuality(Tango::AttrQuality attr_quality)
 }
 
 template <typename Matcher>
-class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+class EventValueMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     EventValueMatchesMatcher(Matcher matcher) :
@@ -354,7 +356,7 @@ class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const override
+    bool match(const std::optional<Tango::EventData> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
@@ -364,6 +366,18 @@ class EventValueMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
         }
 
         return event->attr_value != nullptr && m_matcher.match(*event->attr_value);
+    }
+
+    bool match(std::optional<TangoTest::AttrReadEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->argout);
     }
 
     std::string describe() const override
@@ -382,7 +396,7 @@ EventValueMatchesMatcher<Matcher> EventValueMatches(Matcher &&matcher)
 }
 
 template <typename Matcher>
-class EventErrorMatchesMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     EventErrorMatchesMatcher(Matcher matcher) :
@@ -390,7 +404,19 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const override
+    bool match(const std::optional<Tango::EventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
+    bool match(const std::optional<TangoTest::AttrReadEventCopyable> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
@@ -404,7 +430,7 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherBase<std::option
 
     std::string describe() const override
     {
-        return "cotains errors that " + m_matcher.describe();
+        return "contains errors that " + m_matcher.describe();
     }
 
   private:
@@ -418,7 +444,7 @@ EventErrorMatchesMatcher<Matcher> EventErrorMatches(Matcher &&matcher)
 }
 
 template <typename Matcher>
-class ErrorListMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFailed>
+class ErrorListMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     ErrorListMatchesMatcher(Matcher matcher) :
@@ -426,9 +452,14 @@ class ErrorListMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevFa
     {
     }
 
-    bool match(const Tango::DevFailed &e) const override
+    bool match(const Tango::DevFailed &e) const
     {
         return m_matcher.match(e.errors);
+    }
+
+    bool match(Tango::DeviceAttribute &e) const
+    {
+        return m_matcher.match(e.get_error_list());
     }
 
     std::string describe() const override

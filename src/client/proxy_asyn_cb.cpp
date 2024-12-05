@@ -483,7 +483,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
                 }
 
                 //
-                // Add an error in the error stack in case there is one
+                // Add an error in the event error stack in case the attribute has an error
                 //
 
                 DevErrorList_var &err_list = (*dev_attr)[i].get_error_list();
@@ -494,12 +494,13 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
                     desc << "Failed to read_attributes on device " << dev_name();
                     desc << ", attribute " << (*dev_attr)[i].name << std::ends;
 
-                    err_list.inout().length(nb_except + 1);
-                    err_list[nb_except].reason = Tango::string_dup(API_AttributeFailed);
-                    err_list[nb_except].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+                    const auto idx = errors.length();
+                    errors.length(idx + 1);
+                    errors[idx].reason = Tango::string_dup(API_AttributeFailed);
+                    errors[idx].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
                     std::string st = desc.str();
-                    err_list[nb_except].desc = Tango::string_dup(st.c_str());
-                    err_list[nb_except].severity = Tango::ERR;
+                    errors[idx].desc = Tango::string_dup(st.c_str());
+                    errors[idx].severity = Tango::ERR;
                 }
             }
             else
