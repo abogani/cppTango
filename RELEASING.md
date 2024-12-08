@@ -5,6 +5,27 @@ October).
 
 To document the progress it is easiest to copy everything below into an issue.
 
+If the automatic windows binary upload does not work, or you need to do it manually for other reasons, the
+following snippet uploads all zip and msi files from the current folder:
+
+```sh
+#!/bin/sh
+
+set -e
+
+TOKEN= # adapt me
+PROJECT_ID=24006041
+PACKAGE_NAME=windows
+PACKAGE_VERSION= # adapt me
+
+for file in `ls *zip *msi`
+do
+  echo "Uploading $file"
+  curl --header "PRIVATE-TOKEN: ${TOKEN}" --upload-file $file                \
+       https://gitlab.com/api/v4/projects/${PROJECT_ID}/packages/generic/${PACKAGE_NAME}/${PACKAGE_VERSION}/$file
+done
+```
+
 <!-- start of issue -->
 
 ### When the previous release branch is created:
