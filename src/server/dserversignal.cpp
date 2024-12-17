@@ -824,34 +824,7 @@ pid_t DServerSignal::get_sig_thread_pid()
 void DServerSignal::main_sig_handler(int signo)
 {
     TANGO_LOG_DEBUG << "In main sig_handler !!!!" << std::endl;
-
-    DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
-
-    //
-    // First, execute all the handlers installed at the class level
-    //
-
-    if(!act_ptr->registered_classes.empty())
-    {
-        long nb_class = act_ptr->registered_classes.size();
-        for(long j = 0; j < nb_class; j++)
-        {
-            act_ptr->registered_classes[j]->signal_handler((long) signo);
-        }
-    }
-
-    //
-    // Then, execute all the handlers installed at the device level
-    //
-
-    if(!act_ptr->registered_devices.empty())
-    {
-        long nb_dev = act_ptr->registered_devices.size();
-        for(long j = 0; j < nb_dev; j++)
-        {
-            act_ptr->registered_devices[j]->signal_handler((long) signo);
-        }
-    }
+    deliver_to_registered_handlers(signo);
 }
 #else
 void DServerSignal::main_sig_handler(int signo)
@@ -862,5 +835,22 @@ void DServerSignal::main_sig_handler(int signo)
     SetEvent(win_ev);
 }
 #endif
+
+void DServerSignal::deliver_to_registered_handlers(int signo)
+{
+    //
+    // First, execute all the handlers installed at the class level,
+    // then those at the device level
+    //
+    DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
+    for(auto *class_ : act_ptr->registered_classes)
+    {
+        class_->signal_handler((long) signo);
+    }
+    for(auto *device : act_ptr->registered_devices)
+    {
+        device->signal_handler((long) signo);
+    }
+}
 
 } // namespace Tango

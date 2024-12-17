@@ -152,33 +152,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
             }
         }
 
-        DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
-
-        //
-        // First, execute all the handlers installed at the class level
-        //
-
-        if(!act_ptr->registered_classes.empty())
-        {
-            long nb_class = act_ptr->registered_classes.size();
-            for(long j = 0; j < nb_class; j++)
-            {
-                act_ptr->registered_classes[j]->signal_handler((long) signo);
-            }
-        }
-
-        //
-        // Then, execute all the handlers installed at the device level
-        //
-
-        if(!act_ptr->registered_devices.empty())
-        {
-            long nb_dev = act_ptr->registered_devices.size();
-            for(long j = 0; j < nb_dev; j++)
-            {
-                act_ptr->registered_devices[j]->signal_handler((long) signo);
-            }
-        }
+        DServerSignal::deliver_to_registered_handlers(signo);
 
         //
         // For the automatically installed signal, unregister servers from database,
