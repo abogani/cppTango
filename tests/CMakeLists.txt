@@ -39,6 +39,7 @@ tango_catch2_tests_create(
     catch2_internal_stl_helpers.cpp
     catch2_nodb_connection.cpp
     catch2_change_event_on_nan.cpp
+    catch2_synchronised_queue.cpp
     $<$<BOOL:${TANGO_USE_TELEMETRY}>:${CMAKE_CURRENT_SOURCE_DIR}/catch2_telemetry.cpp>
     catch2_tango_monitor.cpp
     catch2_unit_test_device_data.cpp

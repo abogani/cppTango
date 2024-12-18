@@ -37,6 +37,8 @@
 #ifndef _DSERVERSIGNAL_H
 #define _DSERVERSIGNAL_H
 
+#include <condition_variable>
+#include <deque>
 #include <tango/tango.h>
 #include <signal.h>
 
@@ -62,6 +64,34 @@ typedef struct
     std::vector<DeviceImpl *> registered_devices;
     bool own_handler;
 } DevSigAction;
+
+template <typename T>
+class SynchronisedQueue
+{
+    std::condition_variable cv;
+    std::mutex mutex;
+    std::deque<T> values;
+
+  public:
+    void put(T value)
+    {
+        {
+            std::lock_guard<std::mutex> lock{mutex};
+            values.push_back(value);
+        }
+        cv.notify_one();
+    }
+
+    T get()
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        cv.wait(lock, [this] { return !values.empty(); });
+        auto value = values.front();
+        values.pop_front();
+        lock.unlock();
+        return value;
+    }
+};
 
 class DServerSignal : public TangoMonitor
 {
