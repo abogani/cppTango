@@ -353,15 +353,7 @@ void DServerSignal::register_class_signal(long signo, bool handler, DeviceClass 
 
 std::vector<DeviceClass *>::iterator DServerSignal::find_class(long signo, DeviceClass *cl_ptr)
 {
-    std::vector<DeviceClass *>::iterator p;
-    for(p = reg_sig[signo].registered_classes.begin(); p < reg_sig[signo].registered_classes.end(); ++p)
-    {
-        if((*p) == cl_ptr)
-        {
-            break;
-        }
-    }
-    return p;
+    return std::find(reg_sig[signo].registered_classes.begin(), reg_sig[signo].registered_classes.end(), cl_ptr);
 }
 
 //+-----------------------------------------------------------------------------------------------------------------
@@ -455,15 +447,7 @@ void DServerSignal::register_dev_signal(long signo, bool handler, DeviceImpl *de
 
 std::vector<DeviceImpl *>::iterator DServerSignal::find_device(long signo, DeviceImpl *dev_ptr)
 {
-    std::vector<DeviceImpl *>::iterator p;
-    for(p = reg_sig[signo].registered_devices.begin(); p < reg_sig[signo].registered_devices.end(); ++p)
-    {
-        if((*p) == dev_ptr)
-        {
-            break;
-        }
-    }
-    return p;
+    return std::find(reg_sig[signo].registered_devices.begin(), reg_sig[signo].registered_devices.end(), dev_ptr);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
