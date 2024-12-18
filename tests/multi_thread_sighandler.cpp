@@ -363,6 +363,11 @@ void run_test(int argc, const char *argv[], bool do_start_thread, int handlers, 
         {
             std::cout << "    WSTOPSIG=" << WSTOPSIG(status) << '\n';
         }
+
+        if(!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+        {
+            throw std::runtime_error("child process didn't exit successfully");
+        }
     }
 #endif
 }

@@ -46,24 +46,20 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
     is_tango_library_thread = true;
 
 #ifndef _TG_WINDOWS_
-    sigset_t sigs_to_catch;
+    //
+    // Block all signals on this thread.
+    // This avoids running into a potential deadlock where a signal is delivered
+    // to this thread while signal_queue.get() is temporarily holding the
+    // underlying mutex. This mutext in turn is also locked by the signal handler when
+    // putting the signo into the queue via signal_queue.put(int)
+    //
+    sigset_t sigs_to_block;
+    sigfillset(&sigs_to_block);
+    pthread_sigmask(SIG_BLOCK, &sigs_to_block, nullptr);
 
     //
-    // Catch main signals
+    // Init pid (for linux !!)
     //
-
-    sigemptyset(&sigs_to_catch);
-
-    sigaddset(&sigs_to_catch, SIGINT);
-    sigaddset(&sigs_to_catch, SIGTERM);
-    sigaddset(&sigs_to_catch, SIGHUP);
-    sigaddset(&sigs_to_catch, SIGQUIT);
-
-    //
-    // Init thread id and pid (for linux !!)
-    //
-
-    my_thread = pthread_self();
     {
         omni_mutex_lock syn(*ds);
         my_pid = getpid();
@@ -80,14 +76,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
     while(true)
     {
 #ifndef _TG_WINDOWS_
-        int ret = sigwait(&sigs_to_catch, &signo);
-        // sigwait() under linux might return an errno number without initialising the
-        // signo variable. Do a ckeck here to avoid problems!!!
-        if(ret != 0)
-        {
-            TANGO_LOG_DEBUG << "Signal thread awaken on error " << ret << std::endl;
-            continue;
-        }
+        signo = ds->signal_queue.get();
 
         TANGO_LOG_DEBUG << "Signal thread awaken for signal " << sig_name[signo] << std::endl;
 
@@ -103,52 +92,16 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
 #endif
 
         //
-        // Respond to possible command from the DServerSignal object.  Either:
-        // - stop this thread
-        // - add a new signal to catch in the mask (Linux/macOS only)
+        // Respond to a possible command from the DServerSignal object to stop this thread
         //
-
+        if(signo == SIGINT)
         {
-            omni_mutex_lock sy(*ds);
-            if(signo == SIGINT)
+            // We check for a stop request first in case multiple SIGINT
+            // signals have been merged by the kernel
+            if(ds->sig_th_should_stop)
             {
-                // We check for a stop request first in case multiple SIGINT
-                // signals have been merged by the kernel
-                if(ds->sig_th_should_stop)
-                {
-                    TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
-                    break;
-                }
-
-#ifndef _TG_WINDOWS_
-                bool job_done = false;
-
-                if(ds->sig_to_install)
-                {
-                    ds->sig_to_install = false;
-                    sigaddset(&sigs_to_catch, ds->inst_sig);
-                    TANGO_LOG_DEBUG << "signal " << ds->inst_sig << " installed" << std::endl;
-                    job_done = true;
-                }
-
-                //
-                // Remove a signal from the catched one
-                //
-
-                if(ds->sig_to_remove)
-                {
-                    ds->sig_to_remove = false;
-                    sigdelset(&sigs_to_catch, ds->rem_sig);
-                    TANGO_LOG_DEBUG << "signal " << ds->rem_sig << " removed" << std::endl;
-                    job_done = true;
-                }
-
-                if(job_done)
-                {
-                    ds->signal();
-                    continue;
-                }
-#endif
+                TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
+                break;
             }
         }
 

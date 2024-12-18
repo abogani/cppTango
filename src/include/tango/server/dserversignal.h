@@ -62,7 +62,6 @@ typedef struct
 {
     std::vector<DeviceClass *> registered_classes;
     std::vector<DeviceImpl *> registered_devices;
-    bool own_handler;
 } DevSigAction;
 
 template <typename T>
@@ -141,10 +140,6 @@ class DServerSignal : public TangoMonitor
         ~ThSig() override { }
 
         TangoSys_Pid my_pid;
-        bool th_data_created{false};
-#ifndef _TG_WINDOWS_
-        pthread_t my_thread;
-#endif
         void *run_undetached(void *) override;
 
         void start()
@@ -160,11 +155,7 @@ class DServerSignal : public TangoMonitor
     static DevSigAction reg_sig[_NSIG];
     static void deliver_to_registered_handlers(int signo);
 
-    bool sig_to_install = false;
-    bool sig_to_remove = false;
     bool sig_th_should_stop = false;
-    int inst_sig;
-    int rem_sig;
 #ifdef _TG_WINDOWS_
     static HANDLE win_ev;
     static int win_signo;
@@ -188,6 +179,17 @@ class DServerSignal : public TangoMonitor
     }
 
     static std::string sig_name[_NSIG];
+#ifndef _TG_WINDOWS_
+    struct sigaction enqueueing_sa;
+    struct sigaction direct_sa;
+    struct sigaction default_sa;
+
+    void handle_on_signal_thread(int signo);
+    void handle_directly(int signo);
+    void handle_with_default(int signo);
+
+    SynchronisedQueue<int> signal_queue;
+#endif
 };
 
 } // End of namespace Tango
