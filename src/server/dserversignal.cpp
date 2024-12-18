@@ -580,36 +580,9 @@ void DServerSignal::unregister_dev_signal(long signo, DeviceImpl *dev_ptr)
 
 void DServerSignal::unregister_dev_signal(DeviceImpl *dev_ptr)
 {
-    long i;
-
-    for(i = 0; i < _NSIG; i++)
+    for(long i = 1; i < _NSIG; i++)
     {
-        //
-        // Check if device is registered for this signal. If yes, remove it. Otherwise, go to next signal
-        //
-
-        auto f = find_device(i, dev_ptr);
-
-        if(f == reg_sig[i].registered_devices.end())
-        {
-            continue;
-        }
-        else
-        {
-            reg_sig[i].registered_devices.erase(f);
-        }
-
-        //
-        // If nothing is registered for this signal, unregister the OS signal handler
-        //
-
-        if(!auto_signal(i))
-        {
-            if((reg_sig[i].registered_classes.empty()) && (reg_sig[i].registered_devices.empty()))
-            {
-                unregister_handler(i);
-            }
-        }
+        unregister_dev_signal(i, dev_ptr);
     }
 }
 
@@ -629,36 +602,9 @@ void DServerSignal::unregister_dev_signal(DeviceImpl *dev_ptr)
 
 void DServerSignal::unregister_class_signal(DeviceClass *cl_ptr)
 {
-    long i;
-
-    for(i = 0; i < _NSIG; i++)
+    for(long i = 1; i < _NSIG; i++)
     {
-        //
-        // Check if classes is registered for this signal. If yes, remove it. Otherwise, go to next signal
-        //
-
-        auto f = find_class(i, cl_ptr);
-
-        if(f == reg_sig[i].registered_classes.end())
-        {
-            continue;
-        }
-        else
-        {
-            reg_sig[i].registered_classes.erase(f);
-        }
-
-        //
-        // If nothing is registered for this signal, unregister the OS signal handler
-        //
-
-        if(!auto_signal(i))
-        {
-            if((reg_sig[i].registered_classes.empty()) && (reg_sig[i].registered_devices.empty()))
-            {
-                unregister_handler(i);
-            }
-        }
+        unregister_class_signal(i, cl_ptr);
     }
 }
 
