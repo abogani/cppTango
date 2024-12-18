@@ -236,7 +236,7 @@ std::thread start_thread(event &stop_event, bool do_start_thread)
 
 // Create the device server; if do_start_thread or signal handlers specified, then
 // do this before initialising the device server.
-void create_device_server(int argc, char *argv[], bool do_start_thread, int handlers)
+void create_device_server(int argc, const char *argv[], bool do_start_thread, int handlers)
 {
     event stop_event;
     auto thread = start_thread(stop_event, do_start_thread);
@@ -244,7 +244,7 @@ void create_device_server(int argc, char *argv[], bool do_start_thread, int hand
 
     try
     {
-        Tango::Util *tg = Tango::Util::init(argc, argv);
+        Tango::Util *tg = Tango::Util::init(argc, const_cast<char **>(argv));
         tg->server_init();
         std::cout << "Device server initialised" << std::endl;
 
@@ -297,7 +297,7 @@ void install_sigusr1_handler()
 }
 
 // Fork the device server and send it a signal
-void run_test(int argc, char *argv[], bool do_start_thread, int handlers, int signal_no)
+void run_test(int argc, const char *argv[], bool do_start_thread, int handlers, int signal_no)
 {
 #ifndef _TG_WINDOWS_
     parent_pid = getpid();
@@ -371,8 +371,7 @@ int main()
 {
     // This test only concerns the signal handling, therefore we don't need to
     // use the database.
-    char *args[5] = {
-        (char *) "SignalTest", (char *) "test", (char *) "-nodb", (char *) "-ORBendPoint", (char *) "giop:tcp::11000"};
+    const char *args[] = {"SignalTest", "test", "-nodb", "-ORBendPoint", "giop:tcp::11000"};
     for(auto do_start_thread : {true, false})
     {
         for(auto handlers : {SIGTERM, SIGINT, -1})
