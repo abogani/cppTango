@@ -89,7 +89,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
             continue;
         }
 
-        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
+        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << sig_name[signo] << std::endl;
 
         if(signo == SIGHUP)
         {
@@ -99,7 +99,7 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
         WaitForSingleObject(ds->win_ev, INFINITE);
         signo = ds->win_signo;
 
-        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
+        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << sig_name[signo] << std::endl;
 #endif
 
         //
