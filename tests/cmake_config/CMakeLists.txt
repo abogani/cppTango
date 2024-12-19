@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.18...3.28 FATAL_ERROR)
 
 project(dummy LANGUAGES CXX)
 
-find_package(Tango REQUIRED)
+find_package(Tango CONFIG REQUIRED)
 
 add_executable(dummy dummy.cpp)
 
