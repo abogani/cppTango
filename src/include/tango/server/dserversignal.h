@@ -42,6 +42,13 @@
 #include <tango/tango.h>
 #include <signal.h>
 
+#ifdef _TG_WINDOWS_
+struct sigaction
+{
+    void (*sa_handler)(int);
+};
+#endif
+
 namespace Tango
 {
 
@@ -123,8 +130,6 @@ class DServerSignal : public TangoMonitor
 
     void unregister_handler(long);
 
-    static void main_sig_handler(int);
-
     class ThSig : public omni_thread
     {
         DServerSignal *ds;
@@ -156,10 +161,6 @@ class DServerSignal : public TangoMonitor
     static void deliver_to_registered_handlers(int signo);
 
     bool sig_th_should_stop = false;
-#ifdef _TG_WINDOWS_
-    static HANDLE win_ev;
-    static int win_signo;
-#endif
 
   private:
     static std::unique_ptr<DServerSignal> _instance;
@@ -179,7 +180,6 @@ class DServerSignal : public TangoMonitor
     }
 
     static std::string sig_name[_NSIG];
-#ifndef _TG_WINDOWS_
     struct sigaction enqueueing_sa;
     struct sigaction direct_sa;
     struct sigaction default_sa;
@@ -189,7 +189,6 @@ class DServerSignal : public TangoMonitor
     void handle_with_default(int signo);
 
     SynchronisedQueue<int> signal_queue;
-#endif
 };
 
 } // End of namespace Tango
