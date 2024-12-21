@@ -65,6 +65,7 @@ DServerSignal *DServerSignal::instance()
 {
     if(_instance == nullptr)
     {
+        DServerSignal::initialise_signal_names();
         try
         {
             _instance.reset(new DServerSignal());
@@ -82,21 +83,8 @@ void DServerSignal::cleanup_singleton()
     _instance.reset(nullptr);
 }
 
-//+-----------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        DServerSignal::DServerSignal()
-//
-// description :
-//        constructor for DServerSignal object. As this class is a singleton, this method is protected
-//
-//-----------------------------------------------------------------------------------------------------------------
-
-DServerSignal::DServerSignal() :
-    TangoMonitor("signal")
+void DServerSignal::initialise_signal_names()
 {
-    TANGO_LOG_DEBUG << "Entering DServerSignal constructor" << std::endl;
-
     //
     // Set array of signal name
     //
@@ -155,17 +143,29 @@ DServerSignal::DServerSignal() :
   #endif     /* linux */
 #endif       /* _TG_WINDOWS_ */
 
-    TangoSys_OMemStream o;
     for(long i = 0; i < _NSIG; i++)
     {
-        if(sig_name[i].size() == 0)
+        if(sig_name[i].empty())
         {
-            o << i << std::ends;
-            sig_name[i] = o.str();
-            o.seekp(0);
-            o.clear();
+            sig_name[i] = std::to_string(i);
         }
     }
+}
+
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        DServerSignal::DServerSignal()
+//
+// description :
+//        constructor for DServerSignal object. As this class is a singleton, this method is protected
+//
+//-----------------------------------------------------------------------------------------------------------------
+
+DServerSignal::DServerSignal() :
+    TangoMonitor("signal")
+{
+    TANGO_LOG_DEBUG << "Entering DServerSignal constructor" << std::endl;
 
 #ifndef _TG_WINDOWS_
     //

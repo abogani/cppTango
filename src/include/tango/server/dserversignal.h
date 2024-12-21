@@ -68,6 +68,7 @@ class DServerSignal : public TangoMonitor
   public:
     static DServerSignal *instance();
     static void cleanup_singleton();
+    static void initialise_signal_names();
 
     ~DServerSignal();
 
