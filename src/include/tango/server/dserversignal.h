@@ -127,8 +127,8 @@ class DServerSignal : public TangoMonitor
     static DevSigAction reg_sig[_NSIG];
     static void deliver_to_registered_handlers(int signo);
 
-    bool sig_to_install;
-    bool sig_to_remove;
+    bool sig_to_install = false;
+    bool sig_to_remove = false;
     bool sig_th_should_stop = false;
     int inst_sig;
     int rem_sig;

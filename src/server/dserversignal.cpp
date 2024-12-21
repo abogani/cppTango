@@ -167,9 +167,6 @@ DServerSignal::DServerSignal() :
         }
     }
 
-    sig_to_install = false;
-    sig_to_remove = false;
-
 #ifndef _TG_WINDOWS_
     //
     // With Solaris/Linux, the SIGINT and SIGQUIT default actions are set to SIG_IGN for all processes started in the
