@@ -220,8 +220,7 @@ DServerSignal::~DServerSignal()
     // waiting forever for a signal.
     if(bool(sig_th))
     {
-        sig_th_should_stop = true;
-        signal_queue.put(SIGINT);
+        signal_queue.put(STOP_SIGNAL_THREAD);
         try
         {
             sig_th->join(nullptr);

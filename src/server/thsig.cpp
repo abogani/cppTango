@@ -76,6 +76,11 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
     while(true)
     {
         signo = ds->signal_queue.get();
+        if(signo == STOP_SIGNAL_THREAD)
+        {
+            TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
+            break;
+        }
 
         TANGO_LOG_DEBUG << "Signal thread awaken for signal " << sig_name[signo] << std::endl;
 
@@ -85,20 +90,6 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
             continue;
         }
 #endif
-
-        //
-        // Respond to a possible command from the DServerSignal object to stop this thread
-        //
-        if(signo == SIGINT)
-        {
-            // We check for a stop request first in case multiple SIGINT
-            // signals have been merged by the kernel
-            if(ds->sig_th_should_stop)
-            {
-                TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
-                break;
-            }
-        }
 
         DServerSignal::deliver_to_registered_handlers(signo);
 

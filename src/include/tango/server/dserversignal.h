@@ -160,8 +160,6 @@ class DServerSignal : public TangoMonitor
     static DevSigAction reg_sig[_NSIG];
     static void deliver_to_registered_handlers(int signo);
 
-    bool sig_th_should_stop = false;
-
   private:
     static std::unique_ptr<DServerSignal> _instance;
     std::vector<DeviceImpl *>::iterator find_device(long, DeviceImpl *);
@@ -189,6 +187,7 @@ class DServerSignal : public TangoMonitor
     void handle_with_default(int signo);
 
     SynchronisedQueue<int> signal_queue;
+    static constexpr int STOP_SIGNAL_THREAD = -1;
 };
 
 } // End of namespace Tango
