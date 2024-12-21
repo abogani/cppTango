@@ -144,24 +144,14 @@ class DServerSignal : public TangoMonitor
     std::vector<DeviceClass *>::iterator find_class(long, DeviceClass *);
     std::vector<DeviceClass *>::iterator find_delayed_class(long, DeviceClass *);
 
-#ifdef _TG_WINDOWS_
-    static inline bool auto_signal(long s)
-    {
-        if((s == SIGINT) || (s == SIGTERM) || (s == SIGABRT) || (s == SIGBREAK))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-#else
     static bool auto_signal(long s)
     {
-        return (s == SIGQUIT) || (s == SIGINT) || (s == SIGHUP) || (s == SIGTERM);
-    }
+#ifdef _TG_WINDOWS_
+        return (s == SIGINT) || (s == SIGTERM) || (s == SIGABRT) || (s == SIGBREAK);
+#else
+        return (s == SIGINT) || (s == SIGTERM) || (s == SIGQUIT) || (s == SIGHUP);
 #endif
+    }
 
     static std::string sig_name[_NSIG];
 };
