@@ -226,14 +226,13 @@ DServerSignal::DServerSignal() :
     }
 #endif /* _TG_WINDOWS_ */
 
-    //
-    // Start the thread dedicated to signal
-    //
+    TANGO_LOG_DEBUG << "leaving DServerSignal constructor" << std::endl;
+}
 
+void DServerSignal::initialise()
+{
     sig_th = new ThSig(this);
     sig_th->start();
-
-    TANGO_LOG_DEBUG << "leaving DServerSignal constructor" << std::endl;
 }
 
 DServerSignal::~DServerSignal()
@@ -241,21 +240,24 @@ DServerSignal::~DServerSignal()
     // Request that ThSig stops just in case we have got here because some other
     // thread is shutting the server down, in which case the ThSig might be
     // waiting forever for a signal.
-    sig_th_should_stop = true;
+    if(bool(sig_th))
+    {
+        sig_th_should_stop = true;
 #ifndef _TG_WINDOWS_
-    pthread_kill(sig_th->my_thread, SIGINT);
+        pthread_kill(sig_th->my_thread, SIGINT);
 #else
-    win_signo = SIGINT;
-    SetEvent(win_ev);
+        win_signo = SIGINT;
+        SetEvent(win_ev);
 #endif
-    try
-    {
-        sig_th->join(nullptr);
-    }
-    catch(...)
-    {
-        // We are in the middle of shutting down and we don't care if we cannot
-        // join the thread, so we just continue here.
+        try
+        {
+            sig_th->join(nullptr);
+        }
+        catch(...)
+        {
+            // We are in the middle of shutting down and we don't care if we cannot
+            // join the thread, so we just continue here.
+        }
     }
 }
 

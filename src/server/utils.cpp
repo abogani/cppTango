@@ -406,10 +406,12 @@ void Util::effective_job(int argc, char *argv[])
         // It is necessary to create this object before the ORB is initialised.
         // Otherwise, threads created by thread started by the ORB_init will not have
         // the correct signal mask (set by the DServerSignal object) and the device
-        // server signal feature will not work
+        // server signal feature will not work.
+        // The call to initialise() will create the background thread that
+        // dispatches signals to user-provided handlers.
         //
 
-        DServerSignal::instance();
+        DServerSignal::instance()->initialise();
 
         //
         // Check if the user specified a endPoint on the command line or using one

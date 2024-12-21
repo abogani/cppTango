@@ -72,6 +72,8 @@ class DServerSignal : public TangoMonitor
 
     ~DServerSignal();
 
+    void initialise();
+
 #ifndef _TG_WINDOWS_
     void register_class_signal(long, bool, DeviceClass *);
     void register_dev_signal(long, bool, DeviceImpl *);
