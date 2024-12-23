@@ -247,13 +247,18 @@ log4tango::LoggerStream &operator<<(log4tango::LoggerStream &ls, const Attribute
         break;
     }
 
-    if(conf.writable == static_cast<unsigned char>(true))
+    switch(conf.writable)
     {
+    case WRITE:
+    case READ_WITH_WRITE:
+    case READ_WRITE:
         ls << "Attribute is writable" << std::endl;
-    }
-    else
-    {
+        break;
+    case READ:
+    case WT_UNKNOWN:
+    default:
         ls << "Attribute is not writable" << std::endl;
+        break;
     }
     ls << "Attribute label: " << conf.label.in() << std::endl;
     ls << "Attribute description: " << conf.description.in() << std::endl;
