@@ -6,6 +6,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <shlwapi.h>
+#include <signal.h>
 
 #include <stdexcept>
 #include <memory>
@@ -319,6 +320,36 @@ StartServerResult start_server(const std::vector<std::string> &args,
             result.exit_status = convert_exit_code(exit_code);
             return result;
         }
+    }
+}
+
+std::vector<int> relevant_sendable_signals()
+{
+    return {SIGINT, SIGBREAK};
+}
+
+void send_signal(TestServer::Handle *handle, int signo)
+{
+    HANDLE child = static_cast<HANDLE>(handle);
+    DWORD pid = GetProcessId(child);
+
+    BOOL success;
+    if(signo == SIGINT)
+    {
+        success = GenerateConsoleCtrlEvent(CTRL_C_EVENT, pid);
+    }
+    else if(signo == SIGBREAK)
+    {
+        success = GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, pid);
+    }
+    else
+    {
+        throw_last_error("signal not supported in windows");
+    }
+
+    if(success == 0)
+    {
+        throw_last_error("GenerateConsoleCtrlEvent");
     }
 }
 

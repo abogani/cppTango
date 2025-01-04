@@ -290,6 +290,16 @@ TestServer::~TestServer()
     g_used_ports.push_back(m_port);
 }
 
+std::vector<int> TestServer::relevant_sendable_signals()
+{
+    return platform::relevant_sendable_signals();
+}
+
+void TestServer::send_signal(int signo)
+{
+    platform::send_signal(m_handle, signo);
+}
+
 void TestServer::stop(std::chrono::milliseconds timeout)
 {
     if(m_handle == nullptr)

@@ -101,6 +101,18 @@ class TestServer
      */
     void stop(std::chrono::milliseconds timeout = k_default_timeout);
 
+    /**
+     * The list of signals that can be sent from one process to another
+     * that are of relevance to the Tango server signal handling logic.
+     */
+    static std::vector<int> relevant_sendable_signals();
+
+    /** Send a signal to the server process.
+     *
+     *  @param signo -- the signal number
+     */
+    void send_signal(int signo);
+
     /** Wait until the server has exited.
      *
      *  Returns the exit status of the server.
