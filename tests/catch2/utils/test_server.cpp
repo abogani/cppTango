@@ -319,28 +319,30 @@ void TestServer::stop(std::chrono::milliseconds timeout)
             result.kind = Kind::ExitedEarlyExpected;
             result.exit_status = *m_exit_status;
         }
-
-        using StopKind = platform::StopServerResult::Kind;
-        using WaitKind = platform::WaitForStopResult::Kind;
-        auto stop_result = platform::stop_server(m_handle);
-        if(stop_result.kind == StopKind::Exiting)
+        else
         {
-            auto wait_result = platform::wait_for_stop(m_handle, timeout);
-
-            if(wait_result.kind == WaitKind::Timeout)
+            using StopKind = platform::StopServerResult::Kind;
+            using WaitKind = platform::WaitForStopResult::Kind;
+            auto stop_result = platform::stop_server(m_handle);
+            if(stop_result.kind == StopKind::Exiting)
             {
-                result.kind = Kind::Timeout;
+                auto wait_result = platform::wait_for_stop(m_handle, timeout);
+
+                if(wait_result.kind == WaitKind::Timeout)
+                {
+                    result.kind = Kind::Timeout;
+                }
+                else
+                {
+                    result.kind = Kind::Exited;
+                    result.exit_status = wait_result.exit_status;
+                }
             }
             else
             {
-                result.kind = Kind::Exited;
-                result.exit_status = wait_result.exit_status;
+                result.kind = Kind::ExitedEarlyUnexpected;
+                result.exit_status = stop_result.exit_status;
             }
-        }
-        else
-        {
-            result.kind = Kind::ExitedEarlyUnexpected;
-            result.exit_status = stop_result.exit_status;
         }
     }
 
