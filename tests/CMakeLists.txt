@@ -40,6 +40,7 @@ tango_catch2_tests_create(
     catch2_internal_utils.cpp
     catch2_internal_stl_helpers.cpp
     catch2_misc.cpp
+    catch2_multi_thread_sighandler.cpp
     catch2_nodb_connection.cpp
     catch2_change_event_on_nan.cpp
     catch2_server.cpp
