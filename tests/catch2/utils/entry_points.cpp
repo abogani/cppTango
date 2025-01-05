@@ -7,6 +7,7 @@
 
 #include <string_view>
 #include <iostream>
+#include <thread>
 
 namespace TangoTest
 {
@@ -30,8 +31,76 @@ int test_main(int argc, const char *argv[])
     return session.run(argc, argv);
 }
 
+class event
+{
+  private:
+    bool flag{false};
+    std::condition_variable cv;
+    std::mutex mutex;
+
+  public:
+    void set()
+    {
+        {
+            std::lock_guard<std::mutex> lock{mutex};
+            flag = true;
+        }
+        cv.notify_one();
+    }
+
+    void wait()
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        cv.wait(lock, [this] { return flag; });
+    }
+
+    void clear()
+    {
+        flag = false;
+    }
+};
+
+class DummyBackgroundThread
+{
+  public:
+    DummyBackgroundThread()
+    {
+        auto *start_bg_thread = std::getenv(TestServer::k_start_bg_thread);
+        if(start_bg_thread && strncmp(start_bg_thread, "1", 1) == 0)
+        {
+            start_thread();
+        }
+    }
+
+    ~DummyBackgroundThread()
+    {
+        m_stop_event.set();
+        if(m_thread.joinable())
+        {
+            m_thread.join();
+        }
+    }
+
+  private:
+    void start_thread()
+    {
+        event start_event;
+        m_thread = std::thread(
+            [&]()
+            {
+                start_event.set();
+                m_stop_event.wait();
+            });
+        start_event.wait();
+    }
+
+    std::thread m_thread;
+    event m_stop_event;
+};
+
 int server_main(int argc, const char *argv[])
 {
+    DummyBackgroundThread bg_thread;
     try
     {
         auto *tg = Tango::Util::init(argc, (char **) argv);

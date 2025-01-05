@@ -52,6 +52,7 @@ class TestServer
     constexpr static const int k_num_port_tries = 5;
     constexpr static const char *k_ready_string = "Ready to accept request";
     constexpr static const char *k_port_in_use_string = "INITIALIZE_TransportError";
+    constexpr static const char *k_start_bg_thread = "TANGO_TEST_SERVER_START_BG_THREAD";
     constexpr static std::chrono::milliseconds k_default_timeout{5000};
 
     TestServer() = default;
