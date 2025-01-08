@@ -1522,26 +1522,17 @@ void Util::misc_init()
     //
     // Get PID
     //
-
-    TangoSys_OMemStream o;
-
 #ifdef _TG_WINDOWS_
     pid = _getpid();
 #else
     pid = getpid();
 #endif
-
-    o << pid << std::ends;
-    pid_str = o.str();
+    pid_str = std::to_string(pid);
 
     //
     // Convert Tango version number to string (for device export)
     //
-
-    o.seekp(0, std::ios_base::beg);
-    o.clear();
-    o << DevVersion << std::ends;
-    version_str = o.str();
+    version_str = std::to_string(DevVersion);
 
     //
     // Init server version to a default value
