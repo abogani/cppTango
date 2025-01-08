@@ -145,21 +145,6 @@ void DServerSignal::initialise_signal_names()
     }
 }
 
-//+-----------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        DServerSignal::DServerSignal()
-//
-// description :
-//        constructor for DServerSignal object. As this class is a singleton, this method is protected
-//
-//-----------------------------------------------------------------------------------------------------------------
-
-DServerSignal::DServerSignal() :
-    TangoMonitor("signal")
-{
-}
-
 void DServerSignal::initialise()
 {
     // Initialise sigaction structs

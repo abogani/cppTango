@@ -99,7 +99,7 @@ class SynchronisedQueue
     }
 };
 
-class DServerSignal : public TangoMonitor
+class DServerSignal
 {
   public:
     static DServerSignal *instance();
@@ -152,7 +152,7 @@ class DServerSignal : public TangoMonitor
     ThSig *sig_th;
 
   protected:
-    DServerSignal();
+    DServerSignal() = default;
     static DevSigAction reg_sig[_NSIG];
     static void deliver_to_registered_handlers(int signo);
 
