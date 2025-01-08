@@ -656,19 +656,6 @@ void DServerSignal::unregister_handler(long signo)
     handle_with_default(signo);
 }
 
-#ifndef _TG_WINDOWS_
-pid_t DServerSignal::get_sig_thread_pid()
-{
-    omni_mutex_lock syn(*this);
-
-    if(sig_th->my_pid == 0)
-    {
-        wait(1000);
-    }
-    return sig_th->my_pid;
-}
-#endif
-
 void DServerSignal::deliver_to_registered_handlers(int signo)
 {
     //

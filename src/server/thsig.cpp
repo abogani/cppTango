@@ -56,15 +56,6 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
     sigset_t sigs_to_block;
     sigfillset(&sigs_to_block);
     pthread_sigmask(SIG_BLOCK, &sigs_to_block, nullptr);
-
-    //
-    // Init pid (for linux !!)
-    //
-    {
-        omni_mutex_lock syn(*ds);
-        my_pid = getpid();
-        ds->signal();
-    }
 #endif
 
     int signo = 0;

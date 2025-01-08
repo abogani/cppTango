@@ -1528,7 +1528,7 @@ void Util::misc_init()
 #ifdef _TG_WINDOWS_
     pid = _getpid();
 #else
-    pid = DServerSignal::instance()->get_sig_thread_pid();
+    pid = getpid();
 #endif
 
     o << pid << std::ends;
