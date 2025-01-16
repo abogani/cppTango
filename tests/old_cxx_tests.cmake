@@ -243,8 +243,6 @@ set(TESTS asyn_attr
           prop_list
           rds
           read_hist_ext
-          reconnect_attr
-          reconnect
           restart_device
           ring_depth
           state_attr
