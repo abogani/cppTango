@@ -133,8 +133,13 @@ void AttributeProxy::real_constructor(std::string &name)
     }
     catch(Tango::DevFailed &dfe)
     {
-        delete db_attr;
-        delete dev_proxy;
+        if(strcmp(dfe.errors[0].reason.in(), API_CantConnectToDevice) != 0)
+        {
+            delete db_attr;
+            db_attr = nullptr;
+            delete dev_proxy;
+            dev_proxy = nullptr;
+        }
 
         if(strcmp(dfe.errors[0].reason.in(), API_AttrNotFound) == 0)
         {
@@ -212,8 +217,13 @@ void AttributeProxy::ctor_from_dp(const DeviceProxy *dev_ptr, const std::string 
     }
     catch(Tango::DevFailed &dfe)
     {
-        delete db_attr;
-        delete dev_proxy;
+        if(strcmp(dfe.errors[0].reason.in(), API_CantConnectToDevice) != 0)
+        {
+            delete db_attr;
+            db_attr = nullptr;
+            delete dev_proxy;
+            dev_proxy = nullptr;
+        }
 
         if(strcmp(dfe.errors[0].reason.in(), API_AttrNotFound) == 0)
         {
