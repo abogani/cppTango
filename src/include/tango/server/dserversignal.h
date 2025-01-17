@@ -37,8 +37,17 @@
 #ifndef _DSERVERSIGNAL_H
 #define _DSERVERSIGNAL_H
 
+#include <condition_variable>
+#include <deque>
 #include <tango/tango.h>
 #include <signal.h>
+
+#ifdef _TG_WINDOWS_
+struct sigaction
+{
+    void (*sa_handler)(int);
+};
+#endif
 
 namespace Tango
 {
@@ -60,16 +69,46 @@ typedef struct
 {
     std::vector<DeviceClass *> registered_classes;
     std::vector<DeviceImpl *> registered_devices;
-    bool own_handler;
 } DevSigAction;
+
+template <typename T>
+class SynchronisedQueue
+{
+    std::condition_variable cv;
+    std::mutex mutex;
+    std::deque<T> values;
+
+  public:
+    void put(T value)
+    {
+        {
+            std::lock_guard<std::mutex> lock{mutex};
+            values.push_back(value);
+        }
+        cv.notify_one();
+    }
+
+    T get()
+    {
+        std::unique_lock<std::mutex> lock{mutex};
+        cv.wait(lock, [this] { return !values.empty(); });
+        auto value = values.front();
+        values.pop_front();
+        lock.unlock();
+        return value;
+    }
+};
 
 class DServerSignal : public TangoMonitor
 {
   public:
     static DServerSignal *instance();
     static void cleanup_singleton();
+    static void initialise_signal_names();
 
     ~DServerSignal();
+
+    void initialise();
 
 #ifndef _TG_WINDOWS_
     void register_class_signal(long, bool, DeviceClass *);
@@ -91,8 +130,6 @@ class DServerSignal : public TangoMonitor
 
     void unregister_handler(long);
 
-    static void main_sig_handler(int);
-
     class ThSig : public omni_thread
     {
         DServerSignal *ds;
@@ -108,10 +145,6 @@ class DServerSignal : public TangoMonitor
         ~ThSig() override { }
 
         TangoSys_Pid my_pid;
-        bool th_data_created{false};
-#ifndef _TG_WINDOWS_
-        pthread_t my_thread;
-#endif
         void *run_undetached(void *) override;
 
         void start()
@@ -125,16 +158,7 @@ class DServerSignal : public TangoMonitor
   protected:
     DServerSignal();
     static DevSigAction reg_sig[_NSIG];
-
-    bool sig_to_install;
-    bool sig_to_remove;
-    bool sig_th_should_stop = false;
-    int inst_sig;
-    int rem_sig;
-#ifdef _TG_WINDOWS_
-    static HANDLE win_ev;
-    static int win_signo;
-#endif
+    static void deliver_to_registered_handlers(int signo);
 
   private:
     static std::unique_ptr<DServerSignal> _instance;
@@ -144,26 +168,26 @@ class DServerSignal : public TangoMonitor
     std::vector<DeviceClass *>::iterator find_class(long, DeviceClass *);
     std::vector<DeviceClass *>::iterator find_delayed_class(long, DeviceClass *);
 
-#ifdef _TG_WINDOWS_
-    static inline bool auto_signal(long s)
-    {
-        if((s == SIGINT) || (s == SIGTERM) || (s == SIGABRT) || (s == SIGBREAK))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-#else
     static bool auto_signal(long s)
     {
-        return (s == SIGQUIT) || (s == SIGINT) || (s == SIGHUP) || (s == SIGTERM);
-    }
+#ifdef _TG_WINDOWS_
+        return (s == SIGINT) || (s == SIGTERM) || (s == SIGABRT) || (s == SIGBREAK);
+#else
+        return (s == SIGINT) || (s == SIGTERM) || (s == SIGQUIT) || (s == SIGHUP);
 #endif
+    }
 
     static std::string sig_name[_NSIG];
+    struct sigaction enqueueing_sa;
+    struct sigaction direct_sa;
+    struct sigaction default_sa;
+
+    void handle_on_signal_thread(int signo);
+    void handle_directly(int signo);
+    void handle_with_default(int signo);
+
+    SynchronisedQueue<int> signal_queue;
+    static constexpr int STOP_SIGNAL_THREAD = -1;
 };
 
 } // End of namespace Tango

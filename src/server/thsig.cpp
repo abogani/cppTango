@@ -46,24 +46,20 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
     is_tango_library_thread = true;
 
 #ifndef _TG_WINDOWS_
-    sigset_t sigs_to_catch;
+    //
+    // Block all signals on this thread.
+    // This avoids running into a potential deadlock where a signal is delivered
+    // to this thread while signal_queue.get() is temporarily holding the
+    // underlying mutex. This mutext in turn is also locked by the signal handler when
+    // putting the signo into the queue via signal_queue.put(int)
+    //
+    sigset_t sigs_to_block;
+    sigfillset(&sigs_to_block);
+    pthread_sigmask(SIG_BLOCK, &sigs_to_block, nullptr);
 
     //
-    // Catch main signals
+    // Init pid (for linux !!)
     //
-
-    sigemptyset(&sigs_to_catch);
-
-    sigaddset(&sigs_to_catch, SIGINT);
-    sigaddset(&sigs_to_catch, SIGTERM);
-    sigaddset(&sigs_to_catch, SIGHUP);
-    sigaddset(&sigs_to_catch, SIGQUIT);
-
-    //
-    // Init thread id and pid (for linux !!)
-    //
-
-    my_thread = pthread_self();
     {
         omni_mutex_lock syn(*ds);
         my_pid = getpid();
@@ -79,106 +75,23 @@ void *DServerSignal::ThSig::run_undetached(TANGO_UNUSED(void *ptr))
 
     while(true)
     {
-#ifndef _TG_WINDOWS_
-        int ret = sigwait(&sigs_to_catch, &signo);
-        // sigwait() under linux might return an errno number without initialising the
-        // signo variable. Do a ckeck here to avoid problems!!!
-        if(ret != 0)
+        signo = ds->signal_queue.get();
+        if(signo == STOP_SIGNAL_THREAD)
         {
-            TANGO_LOG_DEBUG << "Signal thread awaken on error " << ret << std::endl;
-            continue;
+            TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
+            break;
         }
 
-        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
+        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << sig_name[signo] << std::endl;
 
+#ifndef _TG_WINDOWS_
         if(signo == SIGHUP)
         {
             continue;
         }
-#else
-        WaitForSingleObject(ds->win_ev, INFINITE);
-        signo = ds->win_signo;
-
-        TANGO_LOG_DEBUG << "Signal thread awaken for signal " << signo << std::endl;
 #endif
 
-        //
-        // Respond to possible command from the DServerSignal object.  Either:
-        // - stop this thread
-        // - add a new signal to catch in the mask (Linux/macOS only)
-        //
-
-        {
-            omni_mutex_lock sy(*ds);
-            if(signo == SIGINT)
-            {
-                // We check for a stop request first in case multiple SIGINT
-                // signals have been merged by the kernel
-                if(ds->sig_th_should_stop)
-                {
-                    TANGO_LOG_DEBUG << "ThSig stop requested by DSignalServer singleton" << std::endl;
-                    break;
-                }
-
-#ifndef _TG_WINDOWS_
-                bool job_done = false;
-
-                if(ds->sig_to_install)
-                {
-                    ds->sig_to_install = false;
-                    sigaddset(&sigs_to_catch, ds->inst_sig);
-                    TANGO_LOG_DEBUG << "signal " << ds->inst_sig << " installed" << std::endl;
-                    job_done = true;
-                }
-
-                //
-                // Remove a signal from the catched one
-                //
-
-                if(ds->sig_to_remove)
-                {
-                    ds->sig_to_remove = false;
-                    sigdelset(&sigs_to_catch, ds->rem_sig);
-                    TANGO_LOG_DEBUG << "signal " << ds->rem_sig << " removed" << std::endl;
-                    job_done = true;
-                }
-
-                if(job_done)
-                {
-                    ds->signal();
-                    continue;
-                }
-#endif
-            }
-        }
-
-        DevSigAction *act_ptr = &(DServerSignal::reg_sig[signo]);
-
-        //
-        // First, execute all the handlers installed at the class level
-        //
-
-        if(!act_ptr->registered_classes.empty())
-        {
-            long nb_class = act_ptr->registered_classes.size();
-            for(long j = 0; j < nb_class; j++)
-            {
-                act_ptr->registered_classes[j]->signal_handler((long) signo);
-            }
-        }
-
-        //
-        // Then, execute all the handlers installed at the device level
-        //
-
-        if(!act_ptr->registered_devices.empty())
-        {
-            long nb_dev = act_ptr->registered_devices.size();
-            for(long j = 0; j < nb_dev; j++)
-            {
-                act_ptr->registered_devices[j]->signal_handler((long) signo);
-            }
-        }
+        DServerSignal::deliver_to_registered_handlers(signo);
 
         //
         // For the automatically installed signal, unregister servers from database,
