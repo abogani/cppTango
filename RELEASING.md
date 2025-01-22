@@ -55,6 +55,8 @@ in CMakeLists.txt) on `main`
 
 ### 4 weeks before the release date:
 
+- [ ] Determine if we have broken API/ABI compatibility for this release and
+      make sure that the SO_VERSION is correct in the base CMakeLists.txt.
 - [ ] Create a release branch named `release/$major.$minor.$patch` off `main`. From
       now on all merge requests for this release have to be done against this branch.
 - [ ] Change the target branch of all MRs which should be part of this release to the new
