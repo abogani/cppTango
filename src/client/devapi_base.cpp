@@ -266,6 +266,8 @@ Connection &Connection::operator=(const Connection &rval)
 
     device_5 = rval.device_5;
 
+    device_6 = rval.device_6;
+
     if(rval.ext != nullptr)
     {
         ext = std::make_unique<ConnectionExt>();
