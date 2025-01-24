@@ -99,7 +99,7 @@ class SynchronisedQueue
     }
 };
 
-class DServerSignal : public TangoMonitor
+class DServerSignal
 {
   public:
     static DServerSignal *instance();
@@ -115,7 +115,6 @@ class DServerSignal : public TangoMonitor
     void register_dev_signal(long, bool, DeviceImpl *);
 
     void register_handler(long, bool);
-    pid_t get_sig_thread_pid();
 #else
     void register_class_signal(long, DeviceClass *);
     void register_dev_signal(long, DeviceImpl *);
@@ -136,15 +135,12 @@ class DServerSignal : public TangoMonitor
 
       public:
         ThSig(DServerSignal *d) :
-            ds(d),
-            my_pid(0)
-
+            ds(d)
         {
         }
 
         ~ThSig() override { }
 
-        TangoSys_Pid my_pid;
         void *run_undetached(void *) override;
 
         void start()
@@ -156,7 +152,7 @@ class DServerSignal : public TangoMonitor
     ThSig *sig_th;
 
   protected:
-    DServerSignal();
+    DServerSignal() = default;
     static DevSigAction reg_sig[_NSIG];
     static void deliver_to_registered_handlers(int signo);
 

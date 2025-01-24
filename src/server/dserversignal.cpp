@@ -145,21 +145,6 @@ void DServerSignal::initialise_signal_names()
     }
 }
 
-//+-----------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        DServerSignal::DServerSignal()
-//
-// description :
-//        constructor for DServerSignal object. As this class is a singleton, this method is protected
-//
-//-----------------------------------------------------------------------------------------------------------------
-
-DServerSignal::DServerSignal() :
-    TangoMonitor("signal")
-{
-}
-
 void DServerSignal::initialise()
 {
     // Initialise sigaction structs
@@ -655,19 +640,6 @@ void DServerSignal::unregister_handler(long signo)
     TANGO_LOG_DEBUG << "Removing OS signal handler for signal " << sig_name[signo] << std::endl;
     handle_with_default(signo);
 }
-
-#ifndef _TG_WINDOWS_
-pid_t DServerSignal::get_sig_thread_pid()
-{
-    omni_mutex_lock syn(*this);
-
-    if(sig_th->my_pid == 0)
-    {
-        wait(1000);
-    }
-    return sig_th->my_pid;
-}
-#endif
 
 void DServerSignal::deliver_to_registered_handlers(int signo)
 {
