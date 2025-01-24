@@ -1,6 +1,10 @@
 #include "catch2_common.h"
 
 #include <memory>
+#include <chrono>
+#include <thread>
+
+using namespace std::literals::chrono_literals;
 
 template <class Base>
 class ConnectionTest : public Base
@@ -110,6 +114,60 @@ SCENARIO("DeviceProxy objects can be copied and assigned")
             {
                 Tango::DeviceData dd = assignee->command_inout("next");
                 REQUIRE_THAT(dd, AnyLikeContains(static_cast<Tango::DevLong>(1)));
+            }
+        }
+    }
+}
+
+template <class Base>
+class TimeoutAttrRead : public Base
+{
+  public:
+    using Base::Base;
+
+    ~TimeoutAttrRead() override { }
+
+    void init_device() override { }
+
+    void read_attr(Tango::Attribute &att) override
+    {
+        std::this_thread::sleep_for(500ms);
+        att.set_value(&m_value);
+    }
+
+    static void attribute_factory(std::vector<Tango::Attr *> &attrs)
+    {
+        attrs.push_back(new TangoTest::AutoAttr<&TimeoutAttrRead::read_attr>("slow_attr", Tango::DEV_LONG));
+    }
+
+  private:
+    Tango::DevLong m_value = 0;
+};
+
+TANGO_TEST_AUTO_DEV_TMPL_INSTANTIATE(TimeoutAttrRead, 1)
+
+SCENARIO("DeviceProxy objects can have the timeout set")
+{
+    int idlver = GENERATE(TangoTest::idlversion(1));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        using namespace TangoTest::Matchers;
+
+        TangoTest::Context ctx{"connection_test", "TimeoutAttrRead", idlver};
+        auto device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        WHEN("we set a short timeout for the device proxy")
+        {
+            device->set_timeout_millis(100);
+
+            THEN("a slow attribute read times out as expected")
+            {
+                Tango::DeviceAttribute result;
+                REQUIRE_THROWS_MATCHES(result = device->read_attribute("slow_attr"),
+                                       Tango::DevFailed,
+                                       ErrorListMatches(AnyMatch(Reason(Tango::API_DeviceTimedOut))));
             }
         }
     }
