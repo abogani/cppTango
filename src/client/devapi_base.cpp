@@ -266,6 +266,8 @@ Connection &Connection::operator=(const Connection &rval)
 
     device_5 = rval.device_5;
 
+    device_6 = rval.device_6;
+
     if(rval.ext != nullptr)
     {
         ext = std::make_unique<ConnectionExt>();
@@ -1218,35 +1220,6 @@ void Connection::set_timeout_millis(int millisecs)
         }
 
         omniORB::setClientCallTimeout(device, millisecs);
-
-        switch(version)
-        {
-        case 5:
-            omniORB::setClientCallTimeout(device_5, millisecs);
-            omniORB::setClientCallTimeout(device_4, millisecs);
-            omniORB::setClientCallTimeout(device_3, millisecs);
-            omniORB::setClientCallTimeout(device_2, millisecs);
-            break;
-
-        case 4:
-            omniORB::setClientCallTimeout(device_4, millisecs);
-            omniORB::setClientCallTimeout(device_3, millisecs);
-            omniORB::setClientCallTimeout(device_2, millisecs);
-            break;
-
-        case 3:
-            omniORB::setClientCallTimeout(device_3, millisecs);
-            omniORB::setClientCallTimeout(device_2, millisecs);
-            break;
-
-        case 2:
-            omniORB::setClientCallTimeout(device_2, millisecs);
-            break;
-
-        default:
-            // do nothing
-            break;
-        }
     }
     catch(Tango::DevFailed &)
     {
