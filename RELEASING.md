@@ -86,3 +86,43 @@ and finally
 - [ ] Allow the `pages` job to run on `main` again
 
 <!-- end of issue -->
+
+## Patch release steps
+
+We make patch (0.0.X) releases of the last stable/LTS version available on a on-demand basis.
+
+Criteria for acceptance of fixes:
+- Regression
+- Major bugs (crash, new functionality does not work, new memory leak, etc.)
+- Compilation failure or other breakage with newer versions of dependencies (decided on a case-by-case basis)
+
+<!-- start of issue -->
+
+### Once it is decided to do a patch release
+
+- [ ] Appoint a release manager
+- [ ] Create a milestone with due date
+- [ ] Fill the milestone with issues
+- [ ] Create an issue to update RELEASE_NOTES.md and assign it to someone else
+- [ ] Create a release branch named `release/$major.$minor.$patch` off the tag of the last stable/LTS version
+- [ ] Raise the library version (`PATCH_VERSION` in CMakeLists.txt)
+
+### One week before the release date
+
+- [ ] Get all merge requests merged
+- [ ] Tag the repo (`$major.$minor.$patch-rc$X`), this automatically creates a
+      release and uploads the windows packages
+- [ ] \(TSD maintainer\) Update TSD to use the new tag, merge it and tag as well
+- [ ] Advertise the new release candidate on the `tango-info` mailing list and slack (channel: `general`)
+
+### At the release date:
+
+- [ ] Tag the release (`$major.$minor.$patch`)
+- [ ] Update for TSD
+- [ ] Advertise new release
+
+and finally
+
+- [ ] Delete release branch
+
+<!-- end of issue -->
