@@ -41,9 +41,6 @@ in CMakeLists.txt) on `main`
       the `start of issue`/`end of issue` comments
 - [ ] Create a milestone with due date
 - [ ] Fill the milestone with issues
-- [ ] If the next release is a major release and will break API/ABI make the
-      responsible CI job non-fatal, see fd8cbddf (.gitlab-ci.yml: Allow failures
-      for the ABI-API check, 2023-05-25) for an example
 
 ### 6 weeks before the release date:
 
@@ -86,7 +83,6 @@ All steps from the release candidate phase above:
 and finally
 
 - [ ] Delete release branch
-- [ ] Revert the API/ABI non-fatal CI change if required
 - [ ] Allow the `pages` job to run on `main` again
 
 <!-- end of issue -->
