@@ -552,6 +552,7 @@ class FwdAttTestSuite : public CxxTest::TestSuite
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
+        delete confs_root;
         confs_root = device1->get_attribute_config_ex(att_names_root);
         TS_ASSERT_EQUALS((*confs_root)[0].min_value, "0");
 
