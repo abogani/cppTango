@@ -21,23 +21,49 @@ namespace TangoTest::platform
 namespace
 {
 
-std::wstring to_wstring(const std::string &str)
+std::wstring to_wstring(std::string_view str)
 {
-    int len = MultiByteToWideChar(CP_UTF8,     // CodePage
-                                  0,           // dwFlags,
-                                  str.c_str(), // lpMultiByteStr
-                                  str.size(),  // cbMultiByte
-                                  nullptr,     // lpWideCharStr
-                                  0            // cchWideChar
+    int len = MultiByteToWideChar(CP_UTF8,    // CodePage
+                                  0,          // dwFlags,
+                                  str.data(), // lpMultiByteStr
+                                  str.size(), // cbMultiByte
+                                  nullptr,    // lpWideCharStr
+                                  0           // cchWideChar
     );
     std::wstring result(static_cast<size_t>(len), L'\0');
 
     MultiByteToWideChar(CP_UTF8,       // CodePage
                         0,             // dwFlags,
-                        str.c_str(),   // lpMultiByteStr
+                        str.data(),    // lpMultiByteStr
                         str.size(),    // cbMultiByte
                         result.data(), // lpWideCharStr
                         len            // cchWideChar
+    );
+
+    return result;
+}
+
+std::string to_string(std::wstring_view wstr)
+{
+    size_t len = WideCharToMultiByte(CP_UTF8,     // CodePage
+                                     0,           // dwFlags
+                                     wstr.data(), // lpWideCharStr
+                                     wstr.size(), // cchWideChar
+                                     nullptr,     // lpMultiByteStr
+                                     0,           // cbMultiByte
+                                     nullptr,     // lpDefaultChar
+                                     nullptr      // lpUsedDefaultChar
+    );
+    std::string result(static_cast<size_t>(len), '\0');
+
+    WideCharToMultiByte(CP_UTF8,       // CodePage
+                        0,             // dwFlags
+                        wstr.data(),   // lpWideCharStr
+                        wstr.size(),   // cchWideChar
+                        result.data(), // lpMultiByteStr
+                        len,           // cbMultiByte
+                        nullptr,       // lpDefaultChar
+                        nullptr        // lpUsedDefaultChar
     );
 
     return result;
@@ -59,7 +85,7 @@ void append_last_error(std::ostream &os)
 
     if(error_text != nullptr)
     {
-        os << ": " << error_text;
+        os << ": " << to_string(error_text);
         LocalFree(error_text);
     }
     else
