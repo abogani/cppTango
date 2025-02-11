@@ -259,9 +259,9 @@ StartServerResult start_server(const std::vector<std::string> &args,
     startup_info.hStdError = redirect_file.get();
 
     // We create a new process group here so that we can later
-    // GenerateConsoleCtrlEvent (which results in a SIGINT) to request that the
+    // GenerateConsoleCtrlEvent (which results in a SIGBREAK) to request that the
     // this specific server stops.  The process group id will match the process
-    // id of this process.
+    // id of this process and the process will be connected to a new console.
 
     BOOL success = CreateProcess(to_wstring(k_test_server_binary_path).c_str(),         // lpApplicationName
                                  command_line.get(),                                    // lpCommandLine
@@ -351,7 +351,7 @@ StartServerResult start_server(const std::vector<std::string> &args,
 
 std::vector<int> relevant_sendable_signals()
 {
-    return {SIGINT, SIGBREAK};
+    return {SIGBREAK};
 }
 
 void send_signal(TestServer::Handle *handle, int signo)
@@ -360,11 +360,7 @@ void send_signal(TestServer::Handle *handle, int signo)
     DWORD pid = GetProcessId(child);
 
     BOOL success;
-    if(signo == SIGINT)
-    {
-        success = GenerateConsoleCtrlEvent(CTRL_C_EVENT, pid);
-    }
-    else if(signo == SIGBREAK)
+    if(signo == SIGBREAK)
     {
         success = GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, pid);
     }
