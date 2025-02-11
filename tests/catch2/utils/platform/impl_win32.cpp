@@ -424,7 +424,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
 {
     using Kind = WaitForStopResult::Kind;
 
-    std::unique_ptr<void, decltype(&CloseHandle)> process = {static_cast<HANDLE>(handle), &CloseHandle};
+    HANDLE process = static_cast<HANDLE>(handle);
 
     WaitForStopResult result;
 
@@ -433,7 +433,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
     {
         DWORD remaining_timeout =
             std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now()).count();
-        DWORD retcode = WaitForSingleObject(process.get(), timeout.count());
+        DWORD retcode = WaitForSingleObject(process, timeout.count());
 
         if(retcode == WAIT_FAILED)
         {
@@ -449,7 +449,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
         if(retcode == WAIT_OBJECT_0)
         {
             DWORD exit_code;
-            if(GetExitCodeProcess(process.get(), &exit_code) == 0)
+            if(GetExitCodeProcess(process, &exit_code) == 0)
             {
                 throw_last_error("GetExitCodeProcess");
             }
@@ -468,13 +468,13 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
         {
             // We need to terminate the process here so that it releases the
             // redirect file handle.
-            if(TerminateProcess(process.get(), 0) == 0)
+            if(TerminateProcess(process, 0) == 0)
             {
                 throw_last_error("TerminateProcess after timeout on stop");
             }
 
             // Block until the process has actually stopped.
-            WaitForSingleObject(process.get(), INFINITE);
+            WaitForSingleObject(process, INFINITE);
             result.kind = Kind::Timeout;
             return result;
         }
