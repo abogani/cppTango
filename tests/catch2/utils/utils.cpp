@@ -60,35 +60,6 @@ const char *get_current_log_file_path()
     return g_current_log_file_path.c_str();
 }
 
-namespace
-{
-/**
- * @brief Append standard environment entries to the env vector
- *
- * @param env environment vector containing entries of the form "key=value"
- * @param class_name name of the Tango device class
- */
-void append_std_entries_to_env(std::vector<std::string> &env, std::string_view class_name)
-{
-    env.emplace_back(
-        []()
-        {
-            std::stringstream ss;
-            ss << detail::k_log_file_env_var << "=" << g_current_log_file_path;
-            return ss.str();
-        }());
-
-    env.emplace_back(
-        [&]()
-        {
-            std::stringstream ss;
-            ss << detail::k_enabled_classes_env_var << "=" << class_name;
-            return ss.str();
-        }());
-}
-
-} // namespace
-
 std::string get_next_file_database_location()
 {
     static int filedb_count = 0;

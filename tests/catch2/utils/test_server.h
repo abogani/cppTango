@@ -44,6 +44,17 @@ struct ExitStatus
 
 std::ostream &operator<<(std::ostream &os, const ExitStatus &status);
 
+/**
+ * @brief Append standard environment entries to the env vector.
+ *
+ * These are the typical environment variables to set up logging to the correct
+ * file and to ensure that only one device class is regsitered with Tango.
+ *
+ * @param env environment vector containing entries of the form "key=value"
+ * @param class_name name of the Tango device class to register with Tango
+ */
+void append_std_entries_to_env(std::vector<std::string> &env, std::string_view class_name);
+
 /* RAII class for a TestServer process
  */
 class TestServer

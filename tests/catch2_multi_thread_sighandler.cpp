@@ -11,18 +11,17 @@ SCENARIO("Device server handles exiting signals correctly")
     GIVEN("A device server " << (start_background_thread ? "with" : "without") << " a dummy background thread")
     {
         TestServer server;
-        std::vector<std::string> extra_args = {"-nodb"};
-        auto env = TangoTest::platform::default_env();
-        {
-            std::stringstream ss;
-            ss << TestServer::k_start_bg_thread << "=" << (start_background_thread ? "1" : "0");
-            env.emplace_back(ss.str());
-        }
-        {
-            std::stringstream ss;
-            ss << TangoTest::detail::k_log_file_env_var << "=" << TangoTest::get_current_log_file_path();
-            env.emplace_back(ss.str());
-        }
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "Empty::TestServer/tests/1"};
+        std::vector<std::string> env;
+        TangoTest::append_std_entries_to_env(env, "Empty");
+        env.emplace_back(
+            [&start_background_thread]()
+            {
+                std::stringstream ss;
+                ss << TestServer::k_start_bg_thread << "=" << (start_background_thread ? "1" : "0");
+                return ss.str();
+            }());
+
         server.start("test_signal_handler", extra_args, env);
 
         WHEN("we send signal " << signal_to_send)
