@@ -205,4 +205,38 @@ std::string StringMaker<Tango::DevError>::convert(Tango::DevError const &err)
     return os.str();
 }
 
+std::string StringMaker<TangoTest::ExitStatus>::convert(TangoTest::ExitStatus const &status)
+{
+    using Kind = TangoTest::ExitStatus::Kind;
+
+    std::ostringstream os;
+    os << opc;
+    os << "kind: ";
+    switch(status.kind)
+    {
+    case Kind::Normal:
+    {
+        os << "Normal";
+        os << sep;
+        os << "code: " << status.code;
+        break;
+    }
+    case Kind::Aborted:
+    {
+        os << "Aborted";
+        os << sep;
+        os << "signal: " << status.signal;
+        break;
+    }
+    case Kind::AbortedNoSignal:
+    {
+        os << "AbortedNoSignal";
+        break;
+    }
+    };
+    os << clc;
+
+    return os.str();
+}
+
 } // namespace Catch

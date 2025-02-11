@@ -13,7 +13,9 @@ SCENARIO("The device server can be killed")
 
             THEN("the device server stops soon")
             {
-                REQUIRE(ctx.wait_for_exit().is_success());
+                using namespace TangoTest::Matchers;
+
+                REQUIRE_THAT(ctx.wait_for_exit(), IsSuccess());
             }
         }
     }

@@ -29,7 +29,9 @@ SCENARIO("Device server handles exiting signals correctly")
             server.send_signal(signal_to_send);
             THEN("the server exits successfully")
             {
-                REQUIRE(server.wait_for_exit().is_success());
+                using namespace TangoTest::Matchers;
+
+                REQUIRE_THAT(server.wait_for_exit(), IsSuccess());
             }
         }
     }

@@ -36,7 +36,7 @@ struct ExitStatus
         int signal; // signal used to abort the TestServer
     };
 
-    bool is_success()
+    bool is_success() const
     {
         return kind == Kind::Normal && code == 0;
     }

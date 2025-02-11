@@ -2,6 +2,7 @@
 #include <catch2/matchers/catch_matchers_templated.hpp>
 
 #include "callback_mock_helpers.h"
+#include "test_server.h"
 
 #include <tango/tango.h>
 
@@ -475,6 +476,29 @@ template <typename Matcher>
 ErrorListMatchesMatcher<Matcher> ErrorListMatches(Matcher &&matcher)
 {
     return {CATCH_FORWARD(matcher)};
+}
+
+class IsSuccessMatcher : public Catch::Matchers::MatcherBase<TangoTest::ExitStatus>
+{
+  public:
+    IsSuccessMatcher() = default;
+
+    bool match(const TangoTest::ExitStatus &status) const override
+    {
+        return status.is_success();
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "is successful";
+        return os.str();
+    }
+};
+
+inline IsSuccessMatcher IsSuccess()
+{
+    return IsSuccessMatcher();
 }
 
 } // namespace Matchers
