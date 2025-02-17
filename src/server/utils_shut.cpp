@@ -63,7 +63,6 @@ void Util::shutdown_ds()
     //          they have been started to receive events
     //        - Force writing file database in case of
     //        - Shutdown the ORB
-    //        - Cleanup Logging
     //
 
     set_svr_shutting_down(true);
@@ -164,11 +163,6 @@ void Util::shutdown_ds()
     loc_orb->shutdown(true);
 
     TANGO_LOG_DEBUG << "ORB shutdown" << std::endl;
-
-    // clean-up the logging system
-
-    Logging::cleanup();
-    TANGO_LOG_DEBUG << "Logging cleaned-up" << std::endl;
 }
 
 } // namespace Tango

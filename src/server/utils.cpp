@@ -2315,6 +2315,9 @@ void Util::server_cleanup()
     // Similarly, if we were shutdown by the kill command, then we need to wait
     // for the kill thread to be finished before we return.
     DServer::wait_for_kill_thread();
+
+    // clean-up the logging system
+    Logging::cleanup();
 }
 
 //+------------------------------------------------------------------------------------------------------------------
