@@ -233,7 +233,6 @@ set(TESTS asyn_attr
           misc_devattr
           misc_devdata
           misc_devproxy
-          multi_thread_sighandler # FIXME: Windows
           new_devproxy
           obj_prop
           poll_except
@@ -309,7 +308,6 @@ tango_add_test(NAME "event::user_event"  COMMAND $<TARGET_FILE:user_event> ${DEV
 tango_add_test(NAME "old_tests::ConfEventBugClient"  COMMAND $<TARGET_FILE:ConfEventBugClient> ${DEV3})
 tango_add_test(NAME "old_tests::att_conf"  COMMAND $<TARGET_FILE:att_conf> ${DEV1})
 tango_add_test(NAME "old_tests::attr_conf_test"  COMMAND $<TARGET_FILE:attr_conf_test> ${DEV1})
-tango_add_test(NAME "old_tests::multi_thread_sighandler"  COMMAND $<TARGET_FILE:multi_thread_sighandler> --skip-fixtures)
 tango_add_test(NAME "old_tests::attr_misc"  COMMAND $<TARGET_FILE:attr_misc> ${DEV1})
 tango_add_test(NAME "old_tests::attr_proxy"  COMMAND $<TARGET_FILE:attr_proxy> ${DEV1}/Short_attr_rw)
 tango_add_test(NAME "old_tests::attr_types"  COMMAND $<TARGET_FILE:attr_types> ${DEV1} 10)

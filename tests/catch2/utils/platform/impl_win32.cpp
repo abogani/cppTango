@@ -6,6 +6,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <shlwapi.h>
+#include <signal.h>
 
 #include <stdexcept>
 #include <memory>
@@ -20,23 +21,49 @@ namespace TangoTest::platform
 namespace
 {
 
-std::wstring to_wstring(const std::string &str)
+std::wstring to_wstring(std::string_view str)
 {
-    int len = MultiByteToWideChar(CP_UTF8,     // CodePage
-                                  0,           // dwFlags,
-                                  str.c_str(), // lpMultiByteStr
-                                  str.size(),  // cbMultiByte
-                                  nullptr,     // lpWideCharStr
-                                  0            // cchWideChar
+    int len = MultiByteToWideChar(CP_UTF8,    // CodePage
+                                  0,          // dwFlags,
+                                  str.data(), // lpMultiByteStr
+                                  str.size(), // cbMultiByte
+                                  nullptr,    // lpWideCharStr
+                                  0           // cchWideChar
     );
     std::wstring result(static_cast<size_t>(len), L'\0');
 
     MultiByteToWideChar(CP_UTF8,       // CodePage
                         0,             // dwFlags,
-                        str.c_str(),   // lpMultiByteStr
+                        str.data(),    // lpMultiByteStr
                         str.size(),    // cbMultiByte
                         result.data(), // lpWideCharStr
                         len            // cchWideChar
+    );
+
+    return result;
+}
+
+std::string to_string(std::wstring_view wstr)
+{
+    size_t len = WideCharToMultiByte(CP_UTF8,     // CodePage
+                                     0,           // dwFlags
+                                     wstr.data(), // lpWideCharStr
+                                     wstr.size(), // cchWideChar
+                                     nullptr,     // lpMultiByteStr
+                                     0,           // cbMultiByte
+                                     nullptr,     // lpDefaultChar
+                                     nullptr      // lpUsedDefaultChar
+    );
+    std::string result(static_cast<size_t>(len), '\0');
+
+    WideCharToMultiByte(CP_UTF8,       // CodePage
+                        0,             // dwFlags
+                        wstr.data(),   // lpWideCharStr
+                        wstr.size(),   // cchWideChar
+                        result.data(), // lpMultiByteStr
+                        len,           // cbMultiByte
+                        nullptr,       // lpDefaultChar
+                        nullptr        // lpUsedDefaultChar
     );
 
     return result;
@@ -58,7 +85,7 @@ void append_last_error(std::ostream &os)
 
     if(error_text != nullptr)
     {
-        os << ": " << error_text;
+        os << ": " << to_string(error_text);
         LocalFree(error_text);
     }
     else
@@ -232,9 +259,9 @@ StartServerResult start_server(const std::vector<std::string> &args,
     startup_info.hStdError = redirect_file.get();
 
     // We create a new process group here so that we can later
-    // GenerateConsoleCtrlEvent (which results in a SIGINT) to request that the
+    // GenerateConsoleCtrlEvent (which results in a SIGBREAK) to request that the
     // this specific server stops.  The process group id will match the process
-    // id of this process.
+    // id of this process and the process will be connected to a new console.
 
     BOOL success = CreateProcess(to_wstring(k_test_server_binary_path).c_str(),         // lpApplicationName
                                  command_line.get(),                                    // lpCommandLine
@@ -322,6 +349,32 @@ StartServerResult start_server(const std::vector<std::string> &args,
     }
 }
 
+std::vector<int> relevant_sendable_signals()
+{
+    return {SIGBREAK};
+}
+
+void send_signal(TestServer::Handle *handle, int signo)
+{
+    HANDLE child = static_cast<HANDLE>(handle);
+    DWORD pid = GetProcessId(child);
+
+    BOOL success;
+    if(signo == SIGBREAK)
+    {
+        success = GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, pid);
+    }
+    else
+    {
+        throw_last_error("signal not supported in windows");
+    }
+
+    if(success == 0)
+    {
+        throw_last_error("GenerateConsoleCtrlEvent");
+    }
+}
+
 StopServerResult stop_server(TestServer::Handle *handle)
 {
     using Kind = StopServerResult::Kind;
@@ -367,7 +420,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
 {
     using Kind = WaitForStopResult::Kind;
 
-    std::unique_ptr<void, decltype(&CloseHandle)> process = {static_cast<HANDLE>(handle), &CloseHandle};
+    HANDLE process = static_cast<HANDLE>(handle);
 
     WaitForStopResult result;
 
@@ -376,7 +429,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
     {
         DWORD remaining_timeout =
             std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now()).count();
-        DWORD retcode = WaitForSingleObject(process.get(), timeout.count());
+        DWORD retcode = WaitForSingleObject(process, timeout.count());
 
         if(retcode == WAIT_FAILED)
         {
@@ -392,7 +445,7 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
         if(retcode == WAIT_OBJECT_0)
         {
             DWORD exit_code;
-            if(GetExitCodeProcess(process.get(), &exit_code) == 0)
+            if(GetExitCodeProcess(process, &exit_code) == 0)
             {
                 throw_last_error("GetExitCodeProcess");
             }
@@ -411,13 +464,13 @@ WaitForStopResult wait_for_stop(TestServer::Handle *handle, std::chrono::millise
         {
             // We need to terminate the process here so that it releases the
             // redirect file handle.
-            if(TerminateProcess(process.get(), 0) == 0)
+            if(TerminateProcess(process, 0) == 0)
             {
                 throw_last_error("TerminateProcess after timeout on stop");
             }
 
             // Block until the process has actually stopped.
-            WaitForSingleObject(process.get(), INFINITE);
+            WaitForSingleObject(process, INFINITE);
             result.kind = Kind::Timeout;
             return result;
         }

@@ -150,6 +150,25 @@ std::ostream &operator<<(std::ostream &os, const ExitStatus &status)
     return os;
 }
 
+void append_std_entries_to_env(std::vector<std::string> &env, std::string_view class_name)
+{
+    env.emplace_back(
+        []()
+        {
+            std::stringstream ss;
+            ss << detail::k_log_file_env_var << "=" << TangoTest::get_current_log_file_path();
+            return ss.str();
+        }());
+
+    env.emplace_back(
+        [&]()
+        {
+            std::stringstream ss;
+            ss << detail::k_enabled_classes_env_var << "=" << class_name;
+            return ss.str();
+        }());
+}
+
 void TestServer::start(const std::string &instance_name,
                        const std::vector<std::string> &extra_args,
                        const std::vector<std::string> &extra_env,
@@ -290,6 +309,16 @@ TestServer::~TestServer()
     g_used_ports.push_back(m_port);
 }
 
+std::vector<int> TestServer::relevant_sendable_signals()
+{
+    return platform::relevant_sendable_signals();
+}
+
+void TestServer::send_signal(int signo)
+{
+    platform::send_signal(m_handle, signo);
+}
+
 void TestServer::stop(std::chrono::milliseconds timeout)
 {
     if(m_handle == nullptr)
@@ -319,28 +348,30 @@ void TestServer::stop(std::chrono::milliseconds timeout)
             result.kind = Kind::ExitedEarlyExpected;
             result.exit_status = *m_exit_status;
         }
-
-        using StopKind = platform::StopServerResult::Kind;
-        using WaitKind = platform::WaitForStopResult::Kind;
-        auto stop_result = platform::stop_server(m_handle);
-        if(stop_result.kind == StopKind::Exiting)
+        else
         {
-            auto wait_result = platform::wait_for_stop(m_handle, timeout);
-
-            if(wait_result.kind == WaitKind::Timeout)
+            using StopKind = platform::StopServerResult::Kind;
+            using WaitKind = platform::WaitForStopResult::Kind;
+            auto stop_result = platform::stop_server(m_handle);
+            if(stop_result.kind == StopKind::Exiting)
             {
-                result.kind = Kind::Timeout;
+                auto wait_result = platform::wait_for_stop(m_handle, timeout);
+
+                if(wait_result.kind == WaitKind::Timeout)
+                {
+                    result.kind = Kind::Timeout;
+                }
+                else
+                {
+                    result.kind = Kind::Exited;
+                    result.exit_status = wait_result.exit_status;
+                }
             }
             else
             {
-                result.kind = Kind::Exited;
-                result.exit_status = wait_result.exit_status;
+                result.kind = Kind::ExitedEarlyUnexpected;
+                result.exit_status = stop_result.exit_status;
             }
-        }
-        else
-        {
-            result.kind = Kind::ExitedEarlyUnexpected;
-            result.exit_status = stop_result.exit_status;
         }
     }
 

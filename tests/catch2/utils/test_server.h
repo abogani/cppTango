@@ -36,13 +36,24 @@ struct ExitStatus
         int signal; // signal used to abort the TestServer
     };
 
-    bool is_success()
+    bool is_success() const
     {
         return kind == Kind::Normal && code == 0;
     }
 };
 
 std::ostream &operator<<(std::ostream &os, const ExitStatus &status);
+
+/**
+ * @brief Append standard environment entries to the env vector.
+ *
+ * These are the typical environment variables to set up logging to the correct
+ * file and to ensure that only one device class is regsitered with Tango.
+ *
+ * @param env environment vector containing entries of the form "key=value"
+ * @param class_name name of the Tango device class to register with Tango
+ */
+void append_std_entries_to_env(std::vector<std::string> &env, std::string_view class_name);
 
 /* RAII class for a TestServer process
  */
@@ -52,6 +63,7 @@ class TestServer
     constexpr static const int k_num_port_tries = 5;
     constexpr static const char *k_ready_string = "Ready to accept request";
     constexpr static const char *k_port_in_use_string = "INITIALIZE_TransportError";
+    constexpr static const char *k_start_bg_thread = "TANGO_TEST_SERVER_START_BG_THREAD";
     constexpr static std::chrono::milliseconds k_default_timeout{5000};
 
     TestServer() = default;
@@ -99,6 +111,18 @@ class TestServer
      *  @param timeout -- how long to wait for the server to exit
      */
     void stop(std::chrono::milliseconds timeout = k_default_timeout);
+
+    /**
+     * The list of signals that can be sent from one process to another
+     * that are of relevance to the Tango server signal handling logic.
+     */
+    static std::vector<int> relevant_sendable_signals();
+
+    /** Send a signal to the server process.
+     *
+     *  @param signo -- the signal number
+     */
+    void send_signal(int signo);
 
     /** Wait until the server has exited.
      *

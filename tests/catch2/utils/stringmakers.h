@@ -8,6 +8,7 @@
 #include <catch2/catch_tostring.hpp>
 
 #include "callback_mock_helpers.h"
+#include "test_server.h"
 
 #include <tango/internal/stl_corba_helpers.h>
 
@@ -137,6 +138,12 @@ struct StringMaker<T, std::enable_if_t<Tango::detail::is_corba_seq_v<T>>>
 
 // No generic output routine for CORBA var classes
 // as this is available via implicit conversion
+
+template <>
+struct StringMaker<TangoTest::ExitStatus>
+{
+    static std::string convert(TangoTest::ExitStatus const &status);
+};
 
 } // namespace Catch
 

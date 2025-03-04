@@ -15,6 +15,12 @@ constexpr static const char *k_test_server_binary_path = TANGO_TEST_CATCH2_SERVE
 constexpr static const char *k_output_directory_path = TANGO_TEST_CATCH2_OUTPUT_DIRECTORY_PATH;
 constexpr static const std::string_view k_resource_path = TANGO_TEST_CATCH2_RESOURCE_PATH;
 
+/**
+ * The list of signals that can be sent from one process to another
+ * that are of relevance to the Tango signal handling logic.
+ */
+std::vector<int> relevant_sendable_signals();
+
 /** Return the platform specific default environment table
  */
 std::vector<std::string> default_env();
@@ -80,6 +86,16 @@ struct StopServerResult
     Kind kind;
     ExitStatus exit_status;
 };
+
+/**
+ * @brief Send a signal to the given server.
+ *
+ * @param handle - a server returned by
+ *                 TangoTest::platform::start_server
+ *
+ *  @param signo -- the signal number
+ */
+void send_signal(TestServer::Handle *handle, int signo);
 
 /**
  * @brief Signal to a server to stop a server
