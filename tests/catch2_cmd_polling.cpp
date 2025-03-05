@@ -160,3 +160,33 @@ SCENARIO("Command polling can be disabled")
         }
     }
 }
+
+SCENARIO("The command polling ring can be set")
+{
+    int idlver = GENERATE(TangoTest::idlversion(4));
+    GIVEN("a device proxy to a IDLv" << idlver << " device with cmd_poll_ring_depth set")
+    {
+        TangoTest::Context ctx{"cmd_polling",
+                               "CmdPollingCfg",
+                               idlver,
+                               "TestServer/tests/1->cmd_poll_ring_depth: ServerEnabledPolling,\\ 5\n"};
+        auto device = ctx.get_proxy();
+        REQUIRE(idlver == device->get_idl_version());
+
+        WHEN("we read the polling status")
+        {
+            auto *poll_status = device->polling_status();
+            REQUIRE(poll_status->size() == 1);
+            const std::string polling_item = poll_status->at(0);
+            delete poll_status;
+            THEN("The polling ring depth is indeed set")
+            {
+                if(polling_item.find("name = ServerEnabledPolling") != std::string::npos)
+                {
+                    using Catch::Matchers::ContainsSubstring;
+                    REQUIRE_THAT(polling_item, ContainsSubstring("Polling ring buffer depth = 5"));
+                }
+            }
+        }
+    }
+}
