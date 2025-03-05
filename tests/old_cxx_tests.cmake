@@ -242,7 +242,6 @@ set(TESTS asyn_attr
           rds
           read_hist_ext
           restart_device
-          ring_depth
           state_attr
           sub_dev
           unlock
@@ -324,7 +323,6 @@ tango_add_test(NAME "old_tests::obj_prop"  COMMAND $<TARGET_FILE:obj_prop>)
 tango_add_test(NAME "old_tests::print_data"  COMMAND $<TARGET_FILE:print_data> ${DEV1})
 tango_add_test(NAME "old_tests::rds"  COMMAND $<TARGET_FILE:rds> ${DEV1})
 tango_add_test(NAME "old_tests::read_hist_ext"  COMMAND $<TARGET_FILE:read_hist_ext> ${DEV1})
-tango_add_test(NAME "old_tests::ring_depth"  COMMAND $<TARGET_FILE:ring_depth> ${DEV1})
 tango_add_test(NAME "old_tests::state_attr"  COMMAND $<TARGET_FILE:state_attr> ${DEV1})
 tango_add_test(NAME "old_tests::sub_dev"  COMMAND $<TARGET_FILE:sub_dev> ${DEV1} ${DEV2} ${DEV3})
 tango_add_test(NAME "old_tests::w_r_attr"  COMMAND $<TARGET_FILE:w_r_attr> ${DEV1})
