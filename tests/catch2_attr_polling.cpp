@@ -357,3 +357,33 @@ SCENARIO("Subscribing to change events for an attribute with no polling fails")
         }
     }
 }
+
+SCENARIO("The attribute polling ring can be set")
+{
+    int idlver = GENERATE(TangoTest::idlversion(4));
+    GIVEN("a device proxy to a IDLv" << idlver << " device with attr_poll_ring_depth set")
+    {
+        TangoTest::Context ctx{"attr_polling",
+                               "AttrPollingCfg",
+                               idlver,
+                               "TestServer/tests/1->attr_poll_ring_depth: server_enabled_polling,\\ 5\n"};
+        auto device = ctx.get_proxy();
+        REQUIRE(idlver == device->get_idl_version());
+
+        WHEN("we read the polling status")
+        {
+            auto *poll_status = device->polling_status();
+            REQUIRE(poll_status->size() == 1);
+            const std::string polling_item = poll_status->at(0);
+            delete poll_status;
+            THEN("The polling ring depth is indeed set")
+            {
+                if(polling_item.find("name = server_enabled_polling") != std::string::npos)
+                {
+                    using Catch::Matchers::ContainsSubstring;
+                    REQUIRE_THAT(polling_item, ContainsSubstring("Polling ring buffer depth = 5"));
+                }
+            }
+        }
+    }
+}
