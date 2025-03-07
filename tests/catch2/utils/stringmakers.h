@@ -77,6 +77,12 @@ struct StringMaker<Tango::EventData>
 };
 
 template <>
+struct StringMaker<Tango::DataReadyEventData>
+{
+    static std::string convert(Tango::DataReadyEventData const &value);
+};
+
+template <>
 struct StringMaker<TangoTest::AttrReadEventCopyable>
 {
     static std::string convert(TangoTest::AttrReadEventCopyable const &value);

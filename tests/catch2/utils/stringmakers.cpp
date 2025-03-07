@@ -174,6 +174,31 @@ std::string StringMaker<TangoTest::AttrReadEventCopyable>::convert(TangoTest::At
     return os.str();
 }
 
+std::string StringMaker<Tango::DataReadyEventData>::convert(Tango::DataReadyEventData const &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "reception_date: " << StringMaker<Tango::TimeVal>::convert(value.reception_date);
+    os << sep;
+    os << "device: " << StringMaker<Tango::DeviceProxy *>::convert(value.device);
+    os << sep;
+    os << "attr_name: " << value.attr_name;
+    os << sep;
+    os << "event: " << value.event;
+    os << sep;
+    os << "attr_data_type: " << Tango::data_type_to_string(value.attr_data_type);
+    os << sep;
+    os << "ctr: " << value.ctr;
+    os << sep;
+    os << "err: " << std::boolalpha << value.err;
+    os << sep;
+    os << "errors: " << StringMaker<Tango::DevErrorList>::convert(value.errors);
+    os << clc;
+
+    return os.str();
+}
+
 std::string StringMaker<CORBA::Any>::convert(CORBA::Any const &any)
 {
     std::ostringstream os;

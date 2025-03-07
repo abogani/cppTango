@@ -1,6 +1,23 @@
 #include "catch2_common.h"
 
 #include <tango/internal/utils.h>
+#include <tango/internal/base_classes.h>
+
+#include <type_traits>
+
+namespace
+{
+class Derived : public Tango::detail::NonCopyable
+{
+};
+
+static_assert(std::is_default_constructible_v<Derived>);
+static_assert(!std::is_copy_constructible_v<Derived>);
+static_assert(!std::is_copy_assignable_v<Derived>);
+static_assert(!std::is_move_constructible_v<Derived>);
+static_assert(!std::is_move_assignable_v<Derived>);
+
+} // namespace
 
 template <typename T>
 struct TestData

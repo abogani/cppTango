@@ -282,7 +282,7 @@ FirstErrorMatchesMatcher<ErrorMatcher> FirstErrorMatches(ErrorMatcher &&matcher)
     return {CATCH_FORWARD(matcher)};
 }
 
-class EventTypeMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango::EventData>>
+class EventTypeMatcher : public Catch::Matchers::MatcherGenericBase
 {
   public:
     EventTypeMatcher(Tango::EventType event_type) :
@@ -290,7 +290,8 @@ class EventTypeMatcher : public Catch::Matchers::MatcherBase<std::optional<Tango
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const override
+    template <typename T>
+    bool match(const std::optional<T> &event) const
     {
         TANGO_ASSERT(event.has_value());
         return event->event == Tango::EventName[m_event_type];
@@ -313,6 +314,72 @@ inline EventTypeMatcher EventType(Tango::EventType event_type)
     REQUIRE(event_type < Tango::numEventType);
 
     return {CATCH_FORWARD(event_type)};
+}
+
+class EventCounterMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventCounterMatcher(int counter) :
+        m_counter{CATCH_MOVE(counter)}
+    {
+    }
+
+    virtual bool match(const std::optional<Tango::DataReadyEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return event->ctr == m_counter;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has counter that equals \"" << m_counter << "\"";
+        return os.str();
+    }
+
+  private:
+    int m_counter;
+};
+
+inline EventCounterMatcher EventCounter(int counter)
+{
+    return {CATCH_FORWARD(counter)};
+}
+
+class EventAttrTypeMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventAttrTypeMatcher(int attr_type) :
+        m_attr_type{CATCH_MOVE(attr_type)}
+    {
+    }
+
+    virtual bool match(const std::optional<Tango::DataReadyEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+        return event->attr_data_type == m_attr_type;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has attribute data type that equals \"" << Tango::data_type_to_string(m_attr_type) << "\"";
+        return os.str();
+    }
+
+  private:
+    int m_attr_type;
+};
+
+inline EventAttrTypeMatcher EventAttrType(int attr_type)
+{
+    return {CATCH_FORWARD(attr_type)};
 }
 
 class AttrQualityMatcher : public Catch::Matchers::MatcherBase<Tango::DeviceAttribute>
@@ -429,6 +496,18 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
         return m_matcher.match(event->errors);
     }
 
+    bool match(const std::optional<Tango::DataReadyEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
     std::string describe() const override
     {
         return "contains errors that " + m_matcher.describe();
@@ -499,6 +578,45 @@ class IsSuccessMatcher : public Catch::Matchers::MatcherBase<TangoTest::ExitStat
 inline IsSuccessMatcher IsSuccess()
 {
     return IsSuccessMatcher();
+}
+
+template <typename Rep, typename Period>
+class WithinTimeAbsMatcher : public Catch::Matchers::MatcherBase<Tango::TimeVal>
+{
+  public:
+    WithinTimeAbsMatcher(const Tango::TimeVal &ref, std::chrono::duration<Rep, Period> margin) :
+        m_margin{CATCH_MOVE(margin)},
+        m_ref{CATCH_MOVE(ref)}
+    {
+    }
+
+    bool match(const Tango::TimeVal &val) const override
+    {
+        auto ref_chrono_tp = Tango::make_system_time(m_ref);
+        auto val_chrono_tp = Tango::make_system_time(val);
+
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(ref_chrono_tp - val_chrono_tp) <= m_margin;
+    }
+
+    std::string describe() const override
+    {
+        const auto margin_ns = std::chrono::nanoseconds(m_margin).count();
+
+        std::ostringstream os;
+        os << "has TimeVal which is within \"" << margin_ns << " [ns] \" of the reference TimeVal \""
+           << Catch::StringMaker<Tango::TimeVal>::convert(m_ref) << "\"";
+        return os.str();
+    }
+
+  private:
+    std::chrono::duration<Rep, Period> m_margin;
+    Tango::TimeVal m_ref;
+};
+
+template <typename Rep, typename Period>
+inline WithinTimeAbsMatcher<Rep, Period> WithinTimeAbs(Tango::TimeVal ref, std::chrono::duration<Rep, Period> margin)
+{
+    return {CATCH_FORWARD(ref, margin)};
 }
 
 } // namespace Matchers

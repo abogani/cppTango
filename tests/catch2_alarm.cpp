@@ -107,7 +107,7 @@ SCENARIO("check_alarm reports alarms correctly")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm", "AlarmDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         WHEN("we call check_alarm after setting alarming value")
         {

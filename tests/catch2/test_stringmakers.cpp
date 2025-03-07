@@ -63,6 +63,20 @@ SCENARIO("catch2 stringmakers specialications")
         }
     }
 
+    GIVEN("a DataReadyEventData")
+    {
+        Tango::DataReadyEventData ready_data;
+        ready_data.device = nullptr;
+
+        WHEN("we can convert it to a string")
+        {
+            using namespace Catch::Matchers;
+
+            auto result = Catch::StringMaker<Tango::DataReadyEventData>::convert(ready_data);
+            REQUIRE_THAT(result, !IsEmpty());
+        }
+    }
+
     GIVEN("a DeviceInfo")
     {
         Tango::DeviceInfo info;

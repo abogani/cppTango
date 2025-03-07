@@ -188,7 +188,7 @@ SCENARIO("dev_state works with exceptions")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"state", "DevStateExcept", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         struct TestData
         {
@@ -260,7 +260,7 @@ SCENARIO("user dev_state is always called")
         using namespace TangoTest::Matchers;
 
         TangoTest::Context ctx{"state", "DevStateExcept", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         Tango::DeviceData args;
         Tango::DevVarStringArray actions;

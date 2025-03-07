@@ -252,7 +252,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -360,7 +360,7 @@ SCENARIO("Alarm events are sent on a read attribute exception")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -413,7 +413,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -477,7 +477,7 @@ SCENARIO("Alarm events can be pushed from code manually")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -641,7 +641,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -795,7 +795,7 @@ SCENARIO("Subscribing to alarm events for an attribute with no polling fails")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"no_polling", "AttrPollingEvents", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
         AND_GIVEN("an attribute with no polling")
         {
             std::string att{"attr_no_polling"};
@@ -843,7 +843,7 @@ SCENARIO("Alarm events work with stateless=true")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -900,7 +900,7 @@ SCENARIO("Auto alarm on change events can be disabled")
         TangoTest::Context ctx{
             "alarm_event", "AlarmEventDev", idlver, "FREE/CtrlSystem->AutoAlarmOnChangeEvent: false\n"};
 
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -931,7 +931,7 @@ SCENARIO("Subscribing to alarm events from a missing attribute fails")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
         AND_GIVEN("a missing attribute")
         {
             std::string att{"attr_missing"};
@@ -959,7 +959,7 @@ SCENARIO("Pushing events for a polled attribute works")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -1018,7 +1018,7 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -1120,7 +1120,7 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
     {
         TangoTest::Context ctx{
             "alarm_event", "AlarmEventDev", idlver, "FREE/CtrlSystem->AutoAlarmOnChangeEvent: false\n"};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -1228,7 +1228,7 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "SpectrumAlarmEvent", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 

@@ -317,7 +317,7 @@ SCENARIO("Subscribing to change events for an attribute with no polling fails")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"no_polling", "AttrPollingEvents", idlver};
-        std::unique_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+        auto device = ctx.get_proxy();
         AND_GIVEN("an attribute with no polling")
         {
             std::string att{"attr_no_polling"};

@@ -12,6 +12,7 @@
 #include "utils/stringmakers.h"
 #include "utils/matchers.h"
 #include "utils/generators.h"
+#include <tango/internal/base_classes.h>
 #include <tango/internal/stl_corba_helpers.h>
 
 #include <tango/tango.h>
@@ -214,6 +215,27 @@ void require_initial_events(T &callback, U initial_value)
 
     maybe_initial_event = callback.pop_next_event();
 }
+
+/// RAII class for event subscription
+class Subscription : public Tango::detail::NonCopyable
+{
+  public:
+    template <typename... Args>
+    explicit Subscription(std::shared_ptr<Tango::DeviceProxy> dev, Args &&...args) :
+        m_dev(dev),
+        m_id(dev->subscribe_event(std::forward<Args>(args)...))
+    {
+    }
+
+    ~Subscription()
+    {
+        m_dev->unsubscribe_event(m_id);
+    }
+
+  private:
+    std::shared_ptr<Tango::DeviceProxy> m_dev;
+    int m_id;
+};
 
 } // namespace TangoTest
 
