@@ -30,7 +30,7 @@ variables: &variables
   UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v9"
   UBUNTU_22_IMAGE: "ubuntu-22.04:v12"
   UBUNTU_24_IMAGE: "ubuntu-24.04:v11"
-  LLVM_LATEST_IMAGE: "llvm-latest:v17"
+  LLVM_LATEST_IMAGE: "llvm-latest:v18"
   GCC_LATEST_IMAGE: "gcc-latest:v11"
   FEDORA_IMAGE: "fedora37:v9"
   ALPINE_IMAGE: "alpine-3.15:v9"
