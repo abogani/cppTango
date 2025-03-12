@@ -1510,15 +1510,8 @@ int EventConsumer::connect_event(DeviceProxy *device,
     get_subscription_info(adm_dev, device, obj_name_lower, event_name, dd, zmq_used);
 
     const DevVarLongStringArray *dvlsa;
-    bool dd_extract_ok = true;
-
-    if(!(dd >> dvlsa))
-    {
-        dd_extract_ok = false;
-    }
-
     int idl_version = detail::INVALID_IDL_VERSION;
-    if(dd_extract_ok)
+    if(dd >> dvlsa)
     {
         if(dvlsa->lvalue.length() < 2)
         {
