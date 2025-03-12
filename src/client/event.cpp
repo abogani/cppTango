@@ -1429,18 +1429,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     TANGO_LOG_DEBUG << "Tango::EventConsumer::connect_event(" << device_name << "," << obj_name << "," << event
                     << ")\n";
 
-    bool inter_event = false;
-    if(event == INTERFACE_CHANGE_EVENT)
-    {
-        inter_event = true;
-    }
-
-    bool pipe_event = false;
-    if(event == PIPE_EVENT)
-    {
-        pipe_event = true;
-    }
-
     //
     // Build callback map key and local device name from fqdn
     device_name = detail::build_device_trl(device, env_var_fqdn_prefix);
@@ -1626,7 +1614,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     new_event_callback.alias_used = false;
     new_event_callback.client_attribute_name = get_client_attribute_name(local_callback_key, filters);
 
-    if(inter_event)
+    if(event == INTERFACE_CHANGE_EVENT)
     {
         new_event_callback.fully_qualified_event_name = device_name + '.' + event_name;
     }
@@ -1651,7 +1639,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     //
 
     new_event_callback.fwd_att = false;
-    if(!inter_event && !pipe_event)
+    if(event != INTERFACE_CHANGE_EVENT && event != PIPE_EVENT)
     {
         ApiUtil *au = ApiUtil::instance();
         if(au->in_server())
