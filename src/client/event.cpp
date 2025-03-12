@@ -41,6 +41,7 @@
 #include <tango/internal/utils.h>
 
 #include <cstdio>
+#include <memory>
 
 #ifdef _TG_WINDOWS_
   #include <process.h>
@@ -1498,8 +1499,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     subscriber_info.emplace_back("subscribe");
     subscriber_info.push_back(event_name);
 
-    DeviceProxy *adm_dev = nullptr;
-    bool allocated = false;
+    std::shared_ptr<DeviceProxy> adm_dev{nullptr};
 
     auto ipos = device_channel_map.find(device_name);
     auto evt_it = channel_map.end();
@@ -1511,8 +1511,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         try
         {
             adm_name = device->adm_name();
-            adm_dev = new DeviceProxy(adm_name);
-            allocated = true;
+            adm_dev = std::make_shared<DeviceProxy>(adm_name);
         }
         catch(...)
         {
@@ -1591,10 +1590,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     }
     catch(Tango::DevFailed &e)
     {
-        if(allocated)
-        {
-            delete adm_dev;
-        }
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
@@ -1679,27 +1674,11 @@ int EventConsumer::connect_event(DeviceProxy *device,
         TANGO_LOG_DEBUG << "device " << device_name << " is not connected, going to connect to the event channel !\n";
         bool new_entry_in_channel_map = false;
 
-        try
-        {
-            connect(device, device_name, dd, received_from_admin.channel_name, new_entry_in_channel_map);
-        }
-        catch(Tango::DevFailed &)
-        {
-            if(allocated)
-            {
-                delete adm_dev;
-            }
-            throw;
-        }
+        connect(device, device_name, dd, received_from_admin.channel_name, new_entry_in_channel_map);
 
         ipos = device_channel_map.find(device_name);
         if(ipos == device_channel_map.end())
         {
-            if(allocated)
-            {
-                delete adm_dev;
-            }
-
             TangoSys_OMemStream o;
 
             o << "Failed to connect to event channel for device " << device_name << std::ends;
@@ -1716,10 +1695,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
             {
                 AutoTangoMonitor _mon(evt_it->second.channel_monitor);
                 evt_it->second.adm_device_proxy = adm_dev;
-            }
-            else
-            {
-                delete adm_dev;
             }
         }
     }
@@ -2112,9 +2087,6 @@ void EventConsumer::unsubscribe_event(int event_id)
                                             deleted_channel_name, evt_ch.endpoint, deleted_event_endpoint);
                                     }
                                 }
-
-                                delete evt_ch.adm_device_proxy;
-                                delete evt_ch.channel_monitor;
 
                                 channel_map.erase(chan_pos);
                                 break;

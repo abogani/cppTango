@@ -41,6 +41,7 @@
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
+#include <memory>
 
 #include <tango/server/readers_writers_lock.h>
 #include <tango/common/pointer_with_lock.h>
@@ -451,12 +452,12 @@ typedef struct event_callback : public EventCallBackBase, public EventCallBackZm
 
 typedef struct event_channel_base
 {
-    DeviceProxy *adm_device_proxy;
+    std::shared_ptr<DeviceProxy> adm_device_proxy;
     std::string full_adm_name;
     time_t last_subscribed;
     time_t last_heartbeat;
     bool heartbeat_skipped;
-    TangoMonitor *channel_monitor;
+    std::shared_ptr<TangoMonitor> channel_monitor;
     ChannelType channel_type;
 } EventChannelBase;
 
