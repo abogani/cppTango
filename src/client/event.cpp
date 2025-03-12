@@ -1445,8 +1445,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     std::string local_device_name(device->dev_name());
     device_name = detail::build_device_trl(device, env_var_fqdn_prefix);
 
-    obj_name_lower = obj_name;
-    std::transform(obj_name_lower.begin(), obj_name_lower.end(), obj_name_lower.begin(), ::tolower);
+    obj_name_lower = detail::to_lower(obj_name);
     std::string local_callback_key(device_name);
 
     std::string::size_type pos;
