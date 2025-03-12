@@ -613,6 +613,42 @@ void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::
     }
 }
 
+std::string build_device_trl(DeviceProxy *device, const std::vector<std::string> &prefixes)
+{
+    std::string local_device_name = device->dev_name();
+
+    if(!device->get_from_env_var())
+    {
+        std::string prot("tango://");
+        if(!device->is_dbase_used())
+        {
+            std::string &ho = device->get_dev_host();
+            if(ho.find('.') == std::string::npos)
+            {
+                Connection::get_fqdn(ho);
+            }
+            prot = prot + ho + ':' + device->get_dev_port() + '/';
+        }
+        else
+        {
+            prot = prot + device->get_db_host() + ':' + device->get_db_port() + '/';
+        }
+        local_device_name.insert(0, prot);
+        if(!device->is_dbase_used())
+        {
+            local_device_name = local_device_name + MODIFIER_DBASE_NO;
+        }
+    }
+    else
+    {
+        local_device_name.insert(0, prefixes[0]);
+    }
+
+    std::transform(local_device_name.begin(), local_device_name.end(), local_device_name.begin(), ::tolower);
+
+    return local_device_name;
+}
+
 } // namespace Tango::detail
 
 namespace Tango

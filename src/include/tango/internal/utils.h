@@ -12,6 +12,7 @@
 namespace Tango
 {
 class DeviceAttribute;
+class DeviceProxy;
 class Database;
 } // namespace Tango
 
@@ -77,6 +78,19 @@ std::vector<std::string> gather_fqdn_prefixes_from_env(Database *db);
 /// @param vs       Return value from get_databases_from_control_system()
 /// @param prefixes Vector with existing prefixes
 void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::vector<std::string> &prefixes);
+
+/// @brief Given a device proxy with name `A/B/C` construct a fully qualified TRL
+///
+/// With SQL Database on host `my-db-host.eu` and port `10000`:
+/// - tango://my-db-host.eu:10000/a/b/c
+///
+/// Without the SQL Database (either FileDatabase or no database at all)
+/// and the DS on host `ds-host.eu` and port `12000`:
+/// - tango://ds-host.eu:12000/a/b/c#dbase=no
+///
+/// The prefixes vector is returned by detail::gather_fqdn_prefixes_from_env and/or
+/// detail::append_fqdn_host_prefixes_from_db.
+std::string build_device_trl(DeviceProxy *device, const std::vector<std::string> &prefixes);
 
 } // namespace Tango::detail
 

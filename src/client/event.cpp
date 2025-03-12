@@ -1425,7 +1425,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
                                  int event_id)
 {
     int ret_event_id = event_id;
-    device_name = device->dev_name(); // TODO convert to local
     TANGO_LOG_DEBUG << "Tango::EventConsumer::connect_event(" << device_name << "," << obj_name << "," << event
                     << ")\n";
 
@@ -1443,37 +1442,8 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     //
     // Build callback map key and local device name from fqdn
-    //
-
-    std::string local_device_name(device_name);
-    if(!device->get_from_env_var())
-    {
-        std::string prot("tango://");
-        if(!device->is_dbase_used())
-        {
-            std::string &ho = device->get_dev_host();
-            if(ho.find('.') == std::string::npos)
-            {
-                Connection::get_fqdn(ho);
-            }
-            prot = prot + ho + ':' + device->get_dev_port() + '/';
-        }
-        else
-        {
-            prot = prot + device->get_db_host() + ':' + device->get_db_port() + '/';
-        }
-        device_name.insert(0, prot);
-        if(!device->is_dbase_used())
-        {
-            device_name = device_name + MODIFIER_DBASE_NO;
-        }
-    }
-    else
-    {
-        device_name.insert(0, env_var_fqdn_prefix[0]);
-    }
-
-    std::transform(device_name.begin(), device_name.end(), device_name.begin(), ::tolower);
+    std::string local_device_name(device->dev_name());
+    device_name = detail::build_device_trl(device, env_var_fqdn_prefix);
 
     obj_name_lower = obj_name;
     std::transform(obj_name_lower.begin(), obj_name_lower.end(), obj_name_lower.begin(), ::tolower);
