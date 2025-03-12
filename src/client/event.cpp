@@ -1466,13 +1466,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // DS, we should find it in map. Otherwise, get it.
     //
 
-    DeviceData subscriber_in;
-    std::vector<std::string> subscriber_info;
-    subscriber_info.push_back(local_device_name);
-    subscriber_info.push_back(obj_name_lower);
-    subscriber_info.emplace_back("subscribe");
-    subscriber_info.push_back(event_name);
-
     std::shared_ptr<DeviceProxy> adm_dev{nullptr};
 
     auto ipos = device_channel_map.find(device_name);
@@ -1514,69 +1507,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     }
 
     Tango::DeviceData dd;
-    bool zmq_used = false;
-
-    try
-    {
-        std::string cmd_name;
-        get_subscription_command_name(cmd_name);
-
-        if(cmd_name.find("Zmq") != std::string::npos)
-        {
-            zmq_used = true;
-            std::stringstream ss;
-            ss << DevVersion;
-            subscriber_info.push_back(ss.str());
-        }
-
-        subscriber_in << subscriber_info;
-        dd = adm_dev->command_inout(cmd_name, subscriber_in);
-
-        dd.reset_exceptions(DeviceData::isempty_flag);
-
-        //
-        // DS before Tango 7.1 does not send their Tango_host in the event
-        // Refuse to subscribe to an event from a DS before Tango 7.1 if the device is in another CS than the one
-        // defined by the TANGO_HOST env. variable
-        //
-
-        if(dd.is_empty())
-        {
-            if(!device->get_from_env_var())
-            {
-                std::string::size_type pos = device_name.find("://");
-                pos = pos + 3;
-                pos = device_name.find('/', pos);
-                std::string fqdn_prefix = device_name.substr(0, pos + 1);
-                std::transform(fqdn_prefix.begin(), fqdn_prefix.end(), fqdn_prefix.begin(), ::tolower);
-
-                if(fqdn_prefix != env_var_fqdn_prefix[0])
-                {
-                    TangoSys_OMemStream o;
-                    o << "Device server for device " << device_name;
-                    o << " is too old to generate event in a multi TANGO_HOST environment. Please, use Tango >= 7.1"
-                      << std::ends;
-
-                    TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept, API_DSFailedRegisteringEvent, o.str());
-                }
-            }
-        }
-    }
-    catch(Tango::DevFailed &e)
-    {
-        std::string reason(e.errors[0].reason.in());
-        if(reason == API_CommandNotFound)
-        {
-            throw;
-        }
-        else
-        {
-            TANGO_RETHROW_DETAILED_EXCEPTION(EventSystemExcept,
-                                             e,
-                                             API_DSFailedRegisteringEvent,
-                                             "Device server send exception while trying to register event");
-        }
-    }
 
     std::string local_callback_key(device_name);
 
@@ -1610,6 +1540,8 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // This code is Tango 9 or more. If the remote device is IDL 5 (or more), insert tango IDL release number
     // at the beginning of event name.
     //
+    bool zmq_used;
+    get_subscription_info(adm_dev, device, obj_name_lower, event_name, dd, zmq_used);
 
     const DevVarLongStringArray *dvlsa;
     bool dd_extract_ok = true;
@@ -3535,6 +3467,83 @@ ChannelType EventConsumer::get_event_system_for_event_id(int event_id)
     }
 
     return ret;
+}
+
+void EventConsumer::get_subscription_info(const std::shared_ptr<Tango::DeviceProxy> &adm_dev,
+                                          Tango::DeviceProxy *device,
+                                          std::string obj_name_lower,
+                                          std::string event_name,
+                                          Tango::DeviceData &dd,
+                                          bool &zmq_used)
+{
+    DeviceData subscriber_in;
+    std::vector<std::string> subscriber_info;
+    subscriber_info.push_back(device->dev_name());
+    subscriber_info.push_back(obj_name_lower);
+    subscriber_info.emplace_back("subscribe");
+    subscriber_info.push_back(event_name);
+
+    try
+    {
+        std::string cmd_name;
+        get_subscription_command_name(cmd_name);
+
+        if(cmd_name.find("Zmq") != std::string::npos)
+        {
+            zmq_used = true;
+            std::stringstream ss;
+            ss << DevVersion;
+            subscriber_info.push_back(ss.str());
+        }
+
+        subscriber_in << subscriber_info;
+        dd = adm_dev->command_inout(cmd_name, subscriber_in);
+
+        dd.reset_exceptions(DeviceData::isempty_flag);
+
+        //
+        // DS before Tango 7.1 does not send their Tango_host in the event
+        // Refuse to subscribe to an event from a DS before Tango 7.1 if the device is in another CS than the one
+        // defined by the TANGO_HOST env. variable
+        //
+
+        if(dd.is_empty())
+        {
+            if(!device->get_from_env_var())
+            {
+                std::string::size_type pos = device_name.find("://");
+                pos = pos + 3;
+                pos = device_name.find('/', pos);
+                std::string fqdn_prefix = device_name.substr(0, pos + 1);
+                std::transform(fqdn_prefix.begin(), fqdn_prefix.end(), fqdn_prefix.begin(), ::tolower);
+
+                if(fqdn_prefix != env_var_fqdn_prefix[0])
+                {
+                    TangoSys_OMemStream o;
+                    o << "Device server for device " << device_name;
+                    o << " is too old to generate event in a multi TANGO_HOST environment. Please, use Tango >= 7.1"
+                      << std::ends;
+
+                    TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept, API_DSFailedRegisteringEvent, o.str());
+                }
+            }
+        }
+    }
+    catch(Tango::DevFailed &e)
+    {
+        std::string reason(e.errors[0].reason.in());
+        if(reason == API_CommandNotFound)
+        {
+            throw;
+        }
+        else
+        {
+            TANGO_RETHROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                             e,
+                                             API_DSFailedRegisteringEvent,
+                                             "Device server send exception while trying to register event");
+        }
+    }
 }
 
 /************************************************************************/

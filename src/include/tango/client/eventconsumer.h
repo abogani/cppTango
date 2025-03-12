@@ -629,6 +629,12 @@ class EventConsumer
                                                              const std::string &local_callback_key,
                                                              const std::string &adm_name,
                                                              bool device_from_env_var) = 0;
+    void get_subscription_info(const std::shared_ptr<Tango::DeviceProxy> &adm_dev,
+                               Tango::DeviceProxy *device,
+                               std::string obj_name_lower,
+                               std::string event_name,
+                               Tango::DeviceData &dd,
+                               bool &zmq_used);
 };
 
 /********************************************************************************
