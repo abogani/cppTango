@@ -1302,10 +1302,10 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         {
             if(!stateless)
             {
-                TANGO_THROW_DETAILED_EXCEPTION(
-                    EventSystemExcept,
-                    API_InvalidArgs,
-                    "When subscribing to event within a event callback, only stateless subscription is allowed");
+                TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                               API_InvalidArgs,
+                                               "When subscribing to an event from within an event callback, only "
+                                               "stateless subscription is allowed");
             }
 
             subscribe_event_id++;
