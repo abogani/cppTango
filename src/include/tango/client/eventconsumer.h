@@ -635,6 +635,10 @@ class EventConsumer
                                std::string event_name,
                                Tango::DeviceData &dd,
                                bool &zmq_used);
+    std::string get_callback_key(const std::string &device_name,
+                                 const std::string &obj_name_lower,
+                                 EventType event_type,
+                                 const std::string &event_name);
 };
 
 /********************************************************************************

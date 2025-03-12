@@ -1443,7 +1443,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     //
     // Build callback map key and local device name from fqdn
-    std::string local_device_name(device->dev_name());
     device_name = detail::build_device_trl(device, env_var_fqdn_prefix);
 
     obj_name_lower = detail::to_lower(obj_name);
@@ -1507,39 +1506,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     }
 
     Tango::DeviceData dd;
-
-    std::string local_callback_key(device_name);
-
-    std::string::size_type pos;
-    if((pos = local_callback_key.find('#')) == std::string::npos)
-    {
-        if(inter_event)
-        {
-            local_callback_key = local_callback_key + "." + event_name;
-        }
-        else
-        {
-            local_callback_key = local_callback_key + "/" + obj_name_lower + "." + event_name;
-        }
-    }
-    else
-    {
-        local_callback_key.erase(pos);
-        if(inter_event)
-        {
-            local_callback_key = local_callback_key + MODIFIER_DBASE_NO + '.' + event_name;
-        }
-        else
-        {
-            local_callback_key = local_callback_key + "/" + obj_name_lower + MODIFIER_DBASE_NO + '.' + event_name;
-        }
-    }
-
-    //
-    // Change event name if it is IDL 5 compatible:
-    // This code is Tango 9 or more. If the remote device is IDL 5 (or more), insert tango IDL release number
-    // at the beginning of event name.
-    //
     bool zmq_used;
     get_subscription_info(adm_dev, device, obj_name_lower, event_name, dd, zmq_used);
 
@@ -1551,12 +1517,22 @@ int EventConsumer::connect_event(DeviceProxy *device,
         dd_extract_ok = false;
     }
 
-    if(dd_extract_ok && add_compat_info && dvlsa->lvalue[1] >= MIN_IDL_CONF5)
+    int idl_version = detail::INVALID_IDL_VERSION;
+    if(dd_extract_ok)
+    {
+        idl_version = dvlsa->lvalue[1];
+    }
+
+    // Change event name if it is IDL 5 compatible:
+    // This code is Tango 9 or more. If the remote device is IDL 5 (or more), insert tango IDL release number
+    // at the beginning of event name.
+
+    if(add_compat_info && idl_version >= MIN_IDL_CONF5)
     {
         event_name = EVENT_COMPAT_IDL5 + event_name;
-        std::string::size_type pos = local_callback_key.rfind('.');
-        local_callback_key.insert(pos + 1, EVENT_COMPAT_IDL5);
     }
+
+    std::string local_callback_key = get_callback_key(device_name, obj_name_lower, event, event_name);
 
     ReceivedFromAdmin received_from_admin =
         initialize_received_from_admin(dvlsa, local_callback_key, adm_name, device->get_from_env_var());
@@ -1742,7 +1718,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
     // If we have a CS for which TANGO_HOST is one alias (host name in alias map), set flag in map
     //
 
-    pos = local_callback_key.find(':', 6);
+    auto pos = local_callback_key.find(':', 6);
     std::string tg_host = local_callback_key.substr(8, pos - 8);
     auto ite = alias_map.find(tg_host);
     if(ite != alias_map.end())
@@ -3544,6 +3520,41 @@ void EventConsumer::get_subscription_info(const std::shared_ptr<Tango::DevicePro
                                              "Device server send exception while trying to register event");
         }
     }
+}
+
+std::string EventConsumer::get_callback_key(const std::string &device_name,
+                                            const std::string &obj_name_lower,
+                                            EventType event_type,
+                                            const std::string &event_name)
+{
+    std::string local_callback_key{device_name};
+
+    std::string::size_type pos;
+    if((pos = local_callback_key.find('#')) == std::string::npos)
+    {
+        if(event_type == INTERFACE_CHANGE_EVENT)
+        {
+            local_callback_key = local_callback_key + "." + event_name;
+        }
+        else
+        {
+            local_callback_key = local_callback_key + "/" + obj_name_lower + "." + event_name;
+        }
+    }
+    else
+    {
+        local_callback_key.erase(pos);
+        if(event_type == INTERFACE_CHANGE_EVENT)
+        {
+            local_callback_key = local_callback_key + MODIFIER_DBASE_NO + '.' + event_name;
+        }
+        else
+        {
+            local_callback_key = local_callback_key + "/" + obj_name_lower + MODIFIER_DBASE_NO + '.' + event_name;
+        }
+    }
+
+    return local_callback_key;
 }
 
 /************************************************************************/
