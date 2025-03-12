@@ -1806,15 +1806,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     }
 
     //
-    // Init device proxy in channel event map
-    //
-
-    /*    {
-            AutoTangoMonitor _mon(evt_it->second.channel_monitor);
-            evt_it->second.adm_device_proxy = adm_dev;
-        }*/
-
-    //
     // Now, connect to the event system
     //
 
