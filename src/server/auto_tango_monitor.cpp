@@ -122,6 +122,11 @@ AutoTangoMonitor::~AutoTangoMonitor()
     }
 }
 
+AutoTangoMonitor::AutoTangoMonitor(const std::shared_ptr<Tango::TangoMonitor> &m) :
+    AutoTangoMonitor(m.get())
+{
+}
+
 //---------------------------------------------------------------------------------------------------------------
 //
 // class :
