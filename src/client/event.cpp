@@ -1520,6 +1520,13 @@ int EventConsumer::connect_event(DeviceProxy *device,
     int idl_version = detail::INVALID_IDL_VERSION;
     if(dd_extract_ok)
     {
+        if(dvlsa->lvalue.length() < 2)
+        {
+            TANGO_THROW_DETAILED_EXCEPTION(EventSystemExcept,
+                                           API_InvalidArgs,
+                                           "Received too little data from EventConsumer::get_subscription_info()");
+        }
+
         idl_version = dvlsa->lvalue[1];
     }
 
@@ -1636,21 +1643,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
         new_event_callback.fully_qualified_event_name = device_name + '/' + obj_name_lower + '.' + event_name;
     }
 
-    if(!dd_extract_ok)
-    {
-        new_event_callback.device_idl = 0;
-    }
-    else
-    {
-        if(dvlsa->lvalue.length() >= 2)
-        {
-            new_event_callback.device_idl = dvlsa->lvalue[1];
-        }
-        else
-        {
-            new_event_callback.device_idl = 0;
-        }
-    }
+    new_event_callback.device_idl = idl_version;
     new_event_callback.ctr = 0;
     new_event_callback.discarded_event = false;
     if(zmq_used)
