@@ -1618,7 +1618,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     //
 
     EventCallBackStruct new_event_callback;
-    EventSubscribeStruct new_ess{};
 
     new_event_callback.received_from_admin = received_from_admin;
     new_event_callback.obj_name = obj_name_lower;
@@ -1643,10 +1642,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     {
         new_event_callback.endpoint = dvlsa->svalue[(valid_endpoint_nb << 1) + 1].in();
     }
-
-    new_ess.callback = callback;
-    new_ess.ev_queue = ev_queue;
-    new_ess.device = device;
 
     connect_event_system(
         device_name, obj_name_lower, event_name, filters, evt_it, new_event_callback, dd, valid_endpoint_nb);
@@ -1689,6 +1684,11 @@ int EventConsumer::connect_event(DeviceProxy *device,
         subscribe_event_id++;
         ret_event_id = subscribe_event_id;
     }
+
+    EventSubscribeStruct new_ess{};
+    new_ess.callback = callback;
+    new_ess.ev_queue = ev_queue;
+    new_ess.device = device;
     new_ess.id = ret_event_id;
 
     new_event_callback.callback_list.push_back(new_ess);
