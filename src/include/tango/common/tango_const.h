@@ -262,7 +262,7 @@ const int ATT_CONF_REL_NB = 1; // Number of att. conf release on top of original
 
 const char *const EVENT_COMPAT = "idl";
 const char *const EVENT_COMPAT_IDL5 = "idl5_";
-const int EVENT_COMPAT_IDL5_SIZE = 5; // strlen of previsou string
+const int EVENT_COMPAT_IDL5_SIZE = 5; // strlen of previous string
 
 //
 // For device interface change event
