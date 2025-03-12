@@ -639,6 +639,7 @@ class EventConsumer
                                  const std::string &obj_name_lower,
                                  EventType event_type,
                                  const std::string &event_name);
+    int get_new_event_id();
 };
 
 /********************************************************************************

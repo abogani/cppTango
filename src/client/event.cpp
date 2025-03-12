@@ -1264,8 +1264,7 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                                "stateless subscription is allowed");
             }
 
-            subscribe_event_id++;
-            int ret_event_id = subscribe_event_id;
+            int ret_event_id = get_new_event_id();
 
             auto *th =
                 new DelayedEventSubThread(this, device, attribute, event, callback, ev_queue, event_name, ret_event_id);
@@ -1318,16 +1317,15 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         }
         // protect the vector as the other maps!
 
-        // create and save the unique event ID
-        subscribe_event_id++;
-        conn_params.event_id = subscribe_event_id;
+        int ret_event_id = get_new_event_id();
+        conn_params.event_id = ret_event_id;
 
         event_not_connected.push_back(conn_params);
 
         auto vpos = event_not_connected.end() - 1;
         const time_t now = Tango::get_current_system_datetime();
         keep_alive_thread->stateless_subscription_failed(vpos, e, now);
-        return subscribe_event_id;
+        return ret_event_id;
     }
 }
 
@@ -1669,8 +1667,7 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     if(ret_event_id <= 0)
     {
-        subscribe_event_id++;
-        ret_event_id = subscribe_event_id;
+        ret_event_id = get_new_event_id();
     }
 
     EventSubscribeStruct new_ess{};
@@ -2991,8 +2988,7 @@ int EventConsumer::add_new_callback(
 
     if(ret_event_id <= 0)
     {
-        subscribe_event_id++;
-        ret_event_id = subscribe_event_id;
+        ret_event_id = get_new_event_id();
     }
 
     ess.device = device;
@@ -3529,6 +3525,11 @@ std::string EventConsumer::get_callback_key(const std::string &device_name,
     }
 
     return local_callback_key;
+}
+
+int EventConsumer::get_new_event_id()
+{
+    return ++subscribe_event_id;
 }
 
 /************************************************************************/
