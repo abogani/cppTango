@@ -1447,32 +1447,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
     device_name = detail::build_device_trl(device, env_var_fqdn_prefix);
 
     obj_name_lower = detail::to_lower(obj_name);
-    std::string local_callback_key(device_name);
-
-    std::string::size_type pos;
-    if((pos = local_callback_key.find('#')) == std::string::npos)
-    {
-        if(inter_event)
-        {
-            local_callback_key = local_callback_key + "." + event_name;
-        }
-        else
-        {
-            local_callback_key = local_callback_key + "/" + obj_name_lower + "." + event_name;
-        }
-    }
-    else
-    {
-        local_callback_key.erase(pos);
-        if(inter_event)
-        {
-            local_callback_key = local_callback_key + MODIFIER_DBASE_NO + '.' + event_name;
-        }
-        else
-        {
-            local_callback_key = local_callback_key + "/" + obj_name_lower + MODIFIER_DBASE_NO + '.' + event_name;
-        }
-    }
 
     //
     // Do we have to support event compatibility ?
@@ -1601,6 +1575,33 @@ int EventConsumer::connect_event(DeviceProxy *device,
                                              e,
                                              API_DSFailedRegisteringEvent,
                                              "Device server send exception while trying to register event");
+        }
+    }
+
+    std::string local_callback_key(device_name);
+
+    std::string::size_type pos;
+    if((pos = local_callback_key.find('#')) == std::string::npos)
+    {
+        if(inter_event)
+        {
+            local_callback_key = local_callback_key + "." + event_name;
+        }
+        else
+        {
+            local_callback_key = local_callback_key + "/" + obj_name_lower + "." + event_name;
+        }
+    }
+    else
+    {
+        local_callback_key.erase(pos);
+        if(inter_event)
+        {
+            local_callback_key = local_callback_key + MODIFIER_DBASE_NO + '.' + event_name;
+        }
+        else
+        {
+            local_callback_key = local_callback_key + "/" + obj_name_lower + MODIFIER_DBASE_NO + '.' + event_name;
         }
     }
 
