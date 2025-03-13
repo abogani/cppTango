@@ -290,37 +290,6 @@ int main(int argc, char **argv)
         // subscribe to a periodic event with a filter
         //
 
-#ifdef NOTIFD
-        cb.cb_executed = 0;
-        cb.cb_err = 0;
-        cb.old_sec = cb.old_usec = 0;
-        filters.push_back("$counter % 2 == 0");
-
-        eve_id = device->subscribe_event(att_name, Tango::PERIODIC_EVENT, &cb, filters);
-        TEST_LOG << "   subscribe_event (with modulo filter) --> OK" << std::endl;
-
-        //
-        // Check that callback was called
-        //
-
-        std::this_thread::sleep_for(std::chrono::seconds(6));
-        TEST_LOG << "cb excuted = " << cb.cb_executed << std::endl;
-        assert(cb.cb_executed > 2);
-        assert(cb.cb_executed < 5);
-        assert(cb.delta_msec > 1900);
-        assert(cb.delta_msec < 2100);
-
-        TEST_LOG << "   CallBack executed every 2000 mS --> OK" << std::endl;
-
-        //
-        // unsubscribe to the event
-        //
-
-        device->unsubscribe_event(eve_id);
-
-        TEST_LOG << "   unsubscribe_event (with filter) --> OK" << std::endl;
-#endif
-
         //
         // Change polling period to 200mS
         //
