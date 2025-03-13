@@ -1311,20 +1311,13 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         conn_params.ev_queue = ev_queue;
         conn_params.filters = filters;
         conn_params.last_heartbeat = Tango::get_current_system_datetime();
-        if(!env_var_fqdn_prefix.empty())
-        {
-            conn_params.prefix = env_var_fqdn_prefix[0];
-        }
         // protect the vector as the other maps!
 
         int ret_event_id = get_new_event_id();
         conn_params.event_id = ret_event_id;
 
-        event_not_connected.push_back(conn_params);
+        add_not_connected_event(e, conn_params);
 
-        auto vpos = event_not_connected.end() - 1;
-        const time_t now = Tango::get_current_system_datetime();
-        keep_alive_thread->stateless_subscription_failed(vpos, e, now);
         return ret_event_id;
     }
 }
