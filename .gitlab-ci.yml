@@ -387,11 +387,6 @@ clang-tidy:
       cat clang-tidy-output.txt
       | ./ci/clang-tidy-to-code-climate.py "$(pwd)/"
       > code-quality-report.json
-    # Produce a report in HTML format.
-    - >
-      cat code-quality-report.json
-      | ruby -I/home/tango/dependencies/codeclimate/lib ci/code-climate-json-to-html.rb "$(pwd)"
-      > code-quality-report.html
   artifacts:
     when: always
     reports:
@@ -399,7 +394,6 @@ clang-tidy:
     paths:
       - clang-tidy-output.txt
       - code-quality-report.json
-      - code-quality-report.html
 
 # job to build against custom library locations and minimum supported versions of dependent libraries
 # using <PackageName>_ROOT
