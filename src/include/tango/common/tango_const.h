@@ -252,6 +252,8 @@ const int MIN_IDL_CONF5 = 5;
 const int MIN_IDL_DEV_INTR = 5;
 const int ALL_EVENTS = 0;
 
+const int MIN_IDL_ZMQ_EVENT = 4;
+
 //
 // For event compatibility
 //

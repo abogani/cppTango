@@ -872,7 +872,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         }
 
         long idl_vers = dev->get_dev_idl_version();
-        if(idl_vers < 4)
+        if(idl_vers < MIN_IDL_ZMQ_EVENT)
         {
             TangoSys_OMemStream o;
 
