@@ -312,23 +312,30 @@ void require_initial_events(T &callback, U initial_value)
 }
 
 /// RAII class for event subscription
+/// Can be used for DeviceProxy and AttributeProxy
+template <typename T = Tango::DeviceProxy>
 class Subscription : public Tango::detail::NonCopyable
 {
   public:
     template <typename... Args>
-    explicit Subscription(std::shared_ptr<Tango::DeviceProxy> dev, Args &&...args) :
-        m_dev(dev),
-        m_id(dev->subscribe_event(std::forward<Args>(args)...))
+    explicit Subscription(std::shared_ptr<T> proxy, Args &&...args) :
+        m_proxy(proxy),
+        m_id(proxy->subscribe_event(std::forward<Args>(args)...))
     {
     }
 
     ~Subscription()
     {
-        m_dev->unsubscribe_event(m_id);
+        m_proxy->unsubscribe_event(m_id);
+    }
+
+    int get_id() const
+    {
+        return m_id;
     }
 
   private:
-    std::shared_ptr<Tango::DeviceProxy> m_dev;
+    std::shared_ptr<T> m_proxy;
     int m_id;
 };
 
