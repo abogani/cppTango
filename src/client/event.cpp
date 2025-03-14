@@ -1264,13 +1264,13 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
                                                "stateless subscription is allowed");
             }
 
-            int ret_event_id = get_new_event_id();
+            int event_id = get_new_event_id();
 
             auto *th =
-                new DelayedEventSubThread(this, device, attribute, event, callback, ev_queue, event_name, ret_event_id);
+                new DelayedEventSubThread(this, device, attribute, event, callback, ev_queue, event_name, event_id);
             th->start();
 
-            return ret_event_id;
+            return event_id;
         }
     }
 
@@ -1284,9 +1284,12 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
     DelayEvent de(this);
     WriterLock w(map_modification_lock);
 
+    int event_id = get_new_event_id();
+
     try
     {
-        int event_id = connect_event(device, attribute, event, callback, ev_queue, filters, event_name);
+        connect_event(device, attribute, event, callback, ev_queue, filters, event_name, event_id);
+
         return event_id;
     }
     catch(Tango::DevFailed &e)
@@ -1313,12 +1316,11 @@ int EventConsumer::subscribe_event(DeviceProxy *device,
         conn_params.last_heartbeat = Tango::get_current_system_datetime();
         // protect the vector as the other maps!
 
-        int ret_event_id = get_new_event_id();
-        conn_params.event_id = ret_event_id;
+        conn_params.event_id = event_id;
 
         add_not_connected_event(e, conn_params);
 
-        return ret_event_id;
+        return event_id;
     }
 }
 
@@ -1407,16 +1409,15 @@ int EventConsumer::subscribe_event(DeviceProxy *device, EventType event, int eve
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-int EventConsumer::connect_event(DeviceProxy *device,
-                                 const std::string &obj_name,
-                                 EventType event,
-                                 CallBack *callback,
-                                 EventQueue *ev_queue,
-                                 const std::vector<std::string> &filters,
-                                 std::string &event_name,
-                                 int event_id)
+void EventConsumer::connect_event(DeviceProxy *device,
+                                  const std::string &obj_name,
+                                  EventType event,
+                                  CallBack *callback,
+                                  EventQueue *ev_queue,
+                                  const std::vector<std::string> &filters,
+                                  std::string &event_name,
+                                  int event_id)
 {
-    int ret_event_id = event_id;
     TANGO_LOG_DEBUG << "Tango::EventConsumer::connect_event(" << device_name << "," << obj_name << "," << event
                     << ")\n";
 
@@ -1540,10 +1541,10 @@ int EventConsumer::connect_event(DeviceProxy *device,
 
     if(iter != event_callback_map.end())
     {
-        int new_event_id = add_new_callback(device, iter, callback, ev_queue, event_id);
+        add_new_callback(device, iter, callback, ev_queue, event_id);
         get_fire_sync_event(
             device, callback, ev_queue, event, event_name, obj_name, iter->second, received_from_admin.event_name);
-        return new_event_id;
+        return;
     }
 
     //
@@ -1654,20 +1655,11 @@ int EventConsumer::connect_event(DeviceProxy *device,
         new_event_callback.fwd_att = false;
     }
 
-    //
-    // if an event ID was passed to the method, reuse it!
-    //
-
-    if(ret_event_id <= 0)
-    {
-        ret_event_id = get_new_event_id();
-    }
-
     EventSubscribeStruct new_ess{};
     new_ess.callback = callback;
     new_ess.ev_queue = ev_queue;
     new_ess.device = device;
-    new_ess.id = ret_event_id;
+    new_ess.id = event_id;
 
     new_event_callback.callback_list.push_back(new_ess);
 
@@ -1721,8 +1713,6 @@ int EventConsumer::connect_event(DeviceProxy *device,
 #else
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 #endif
-
-    return ret_event_id;
 }
 
 std::string EventConsumer::get_client_attribute_name(const std::string &local_callback_key,
@@ -2973,25 +2963,17 @@ TimeVal EventConsumer::get_last_event_date(int event_id)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-int EventConsumer::add_new_callback(
+void EventConsumer::add_new_callback(
     DeviceProxy *device, EvCbIte &iter, CallBack *callback, EventQueue *ev_queue, int event_id)
 {
     EventSubscribeStruct ess{};
-    int ret_event_id = event_id;
-
-    if(ret_event_id <= 0)
-    {
-        ret_event_id = get_new_event_id();
-    }
 
     ess.device = device;
-    ess.id = ret_event_id;
+    ess.id = event_id;
     ess.callback = callback;
     ess.ev_queue = ev_queue;
 
     iter->second.callback_list.push_back(ess);
-
-    return ret_event_id;
 }
 
 //+------------------------------------------------------------------------------------------------------------------

@@ -497,14 +497,14 @@ class EventConsumer
 
     virtual ~EventConsumer() { }
 
-    int connect_event(DeviceProxy *,
-                      const std::string &,
-                      EventType,
-                      CallBack *,
-                      EventQueue *,
-                      const std::vector<std::string> &,
-                      std::string &,
-                      int event_id = 0);
+    void connect_event(DeviceProxy *,
+                       const std::string &,
+                       EventType,
+                       CallBack *,
+                       EventQueue *,
+                       const std::vector<std::string> &,
+                       std::string &,
+                       int event_id);
     void connect(DeviceProxy *, const std::string &, DeviceData &, const std::string &, bool &);
 
     void shutdown();
@@ -593,7 +593,7 @@ class EventConsumer
     std::string obj_name_lower;
     int thread_id;
 
-    int add_new_callback(DeviceProxy *, EvCbIte &, CallBack *, EventQueue *, int);
+    void add_new_callback(DeviceProxy *, EvCbIte &, CallBack *, EventQueue *, int);
     void get_fire_sync_event(DeviceProxy *,
                              CallBack *,
                              EventQueue *,
