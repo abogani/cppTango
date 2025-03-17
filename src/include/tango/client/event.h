@@ -79,7 +79,7 @@ class EventData
               Tango::DeviceAttribute *attr_value_in,
               const DevErrorList &errors_in);
 
-    ~EventData();
+    virtual ~EventData();
     EventData(const EventData &);
     EventData &operator=(const EventData &);
     /**
@@ -208,7 +208,7 @@ class AttrConfEventData
                       const std::string &evt,
                       Tango::AttributeInfoEx *attr_conf_in,
                       const DevErrorList &errors_in);
-    ~AttrConfEventData();
+    virtual ~AttrConfEventData();
     AttrConfEventData(const AttrConfEventData &);
     AttrConfEventData &operator=(const AttrConfEventData &);
     /**
