@@ -32,6 +32,29 @@ const char *get_current_log_file_path();
  */
 std::string get_next_file_database_location();
 
+// TODO: Multiple devices per server
+struct ServerDescriptor
+{
+    // Name of the device server instance
+    std::string instance_name;
+    // IDL version to instantiate the template with
+    std::string class_name;
+    // File database contents
+    std::optional<int> idlversion{std::nullopt};
+    // Name of the device class to instantiate if idlversion!=nullopt
+    // or name of the class template to use
+    std::optional<std::string> extra_filedb_contents{std::nullopt};
+    // Additional environment entries of the form "key1=value1"
+    // For some gcc (for at least 14.2.1) complains with
+    // -Wmissing-field-initializers if we don't add the "{}" here.
+    std::vector<std::string> extra_env{}; // NOLINT(readability-redundant-member-init)
+};
+
+struct ContextDescriptor
+{
+    std::vector<ServerDescriptor> servers;
+};
+
 // TODO: Multiple devices and/or multiple device servers
 // TODO: Maybe we want a builder API for this
 class Context
@@ -75,6 +98,13 @@ class Context
             const std::string &extra_filedb_contents,
             std::vector<std::string> env = {});
 
+    /**
+     * @brief Create TangoTest servers as specified by the descriptor
+     *
+     * @param desc Description of device servers to start
+     */
+    explicit Context(const ContextDescriptor &desc);
+
     Context(const Context &) = delete;
     Context &operator=(Context &) = delete;
 
@@ -93,6 +123,8 @@ class Context
      *  Returns the exit status of the server.
      *
      *  Throws: a `runtime_error` if the timeout is exceeded.
+     *
+     *  Expects: there was only one server specified at construction
      */
     ExitStatus wait_for_exit(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
@@ -105,21 +137,29 @@ class Context
      *
      *  @param timeout if the server takes longer than this timeout,
      *  a warning log will be generated
+     *
+     *  Expects: there was only one server specified at construction
      */
     void stop_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
     /*
      * Return the disc location of the FileDatabase, throws if there is none.
+     *
+     * Expects: there was only one server specified at construction
      */
     std::string get_file_database_path();
 
     /*
      * Return the name of the Tango device class
+     *
+     * Expects: there was only one server specified at construction
      */
     std::string get_class_name();
 
     /**
      * Get the server redirection file
+     *
+     * Expects: there was only one server specified at construction
      */
     const std::string &get_redirect_file() const;
 
@@ -130,16 +170,31 @@ class Context
      * Throws: a `runtime_error` if the server cannot be restarted
      *
      * Expects: `stop_server()` has been called previously
+     *          there was only one server specified at construction
      */
     void restart_server(std::chrono::milliseconds timeout = TestServer::k_default_timeout);
 
   private:
-    std::optional<std::string> m_filedb_path = std::nullopt;
-    TestServer m_server;
-    std::string m_class_name;
-    std::string m_instance_name;
-    std::vector<std::string> m_extra_args;
-    std::vector<std::string> m_extra_env;
+    void add_server_job(const ServerDescriptor &desc);
+
+    struct ServerJob
+    {
+        TestServer process;
+        std::string instance_name;
+        std::string class_name;
+        std::string device_name;
+        std::vector<std::string> extra_args;
+        std::vector<std::string> extra_env;
+        std::optional<std::string> filedb_path = std::nullopt;
+    };
+
+    ServerJob &get_only_job();
+    const ServerJob &get_only_job() const;
+
+    ServerJob &get_job(std::string_view instance);
+    const ServerJob &get_job(std::string_view instance) const;
+
+    std::vector<ServerJob> m_server_jobs;
 };
 
 namespace detail

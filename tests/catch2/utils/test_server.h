@@ -68,6 +68,9 @@ class TestServer
 
     TestServer() = default;
 
+    TestServer(TestServer &&) = default;
+    TestServer &operator=(TestServer &&) = default;
+
     TestServer(const TestServer &) = delete;
     TestServer &operator=(TestServer &) = delete;
 

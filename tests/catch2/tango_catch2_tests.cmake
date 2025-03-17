@@ -49,6 +49,7 @@ function(tango_catch2_tests_create)
         ${TANGO_CATCH2_TESTS_DIR}/test_auto_attr.cpp
         ${TANGO_CATCH2_TESTS_DIR}/test_matchers.cpp
         ${TANGO_CATCH2_TESTS_DIR}/test_stringmakers.cpp
+        ${TANGO_CATCH2_TESTS_DIR}/test_context.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/auto_device_class.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/test_server.cpp
         ${TANGO_CATCH2_TESTS_DIR}/utils/entry_points.cpp
