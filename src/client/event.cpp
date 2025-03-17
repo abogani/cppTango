@@ -3199,6 +3199,10 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         }
 
         auto *event_data = new DevIntrChangeEventData(device, ev_name, device_name, c_list, a_list, true, err);
+        delete c_list;
+        c_list = nullptr;
+        delete a_list;
+        a_list = nullptr;
 
         AutoTangoMonitor _mon(cb.callback_monitor);
 
@@ -3219,8 +3223,6 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
             }
 
             delete event_data;
-            delete c_list;
-            delete a_list;
         }
 
         //
