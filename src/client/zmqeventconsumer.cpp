@@ -1089,6 +1089,67 @@ void ZmqEventConsumer::multi_tango_host(zmq::socket_t *sock, SocketCmd cmd, cons
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        ZmqEventConsumer::query_event_system()
+//
+// description :
+//  Report information about the event consumer as a JSON object.
+//
+// argument :
+//        in :
+//          - os : Output stream to write the JSON object to
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void ZmqEventConsumer::query_event_system(std::ostream &os)
+{
+    ReaderLock l(map_modification_lock);
+    os << "{\"event_callbacks\":{";
+    {
+        bool first = true;
+        for(const auto &[name, obj] : event_callback_map)
+        {
+            if(!first)
+            {
+                os << ",";
+            }
+            os << "\"" << name << "\":{";
+            os << R"("channel_name":")" << obj.channel_name << "\"";
+            os << R"(,"callback_count":)" << obj.callback_list.size();
+            os << R"(,"server_counter":)" << obj.ctr;
+            os << R"(,"last_resubscribed":)";
+            if(obj.last_subscribed == 0)
+            {
+                os << "null";
+            }
+            else
+            {
+                os << "\"" << std::put_time(std::gmtime(&obj.last_subscribed), "%Y-%m-%dT%H:%M:%S") << "\"";
+            }
+            os << "}";
+            first = false;
+        }
+    }
+    os << R"(},"event_channels":{)";
+    {
+        bool first = true;
+        for(const auto &[name, obj] : channel_map)
+        {
+            if(!first)
+            {
+                os << ",";
+            }
+            os << "\"" << name << "\":{";
+            os << R"("endpoint":")" << obj.endpoint << "\"";
+            os << "}";
+            first = false;
+        }
+    }
+    os << "}}";
+}
+
 //--------------------------------------------------------------------------------------------------------------------
 //
 // method :

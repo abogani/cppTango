@@ -836,6 +836,41 @@ void ZmqEventSupplier::init_event_cptr(const std::string &event_name)
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        ZmqEventSupplier::query_event_system()
+//
+// description :
+//  Report information about the event supplier as a JSON object.
+//
+// argument :
+//        in :
+//          - os : Output stream to write the JSON object to
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void ZmqEventSupplier::query_event_system(std::ostream &os)
+{
+    // We don't need to lock access to `event_cptr` because the only time the
+    // map is modified is during the ZmqEventSubscriptionChange() command
+    // where we are holding the `DServer` lock, which we are holding now.  We
+    // might miss an increment of the value from a `push_event` if it is called
+    // from some other thread, but that doesn't really matter.
+    os << R"({"event_counters":{)";
+    bool first = true;
+    for(const auto &pair : event_cptr)
+    {
+        if(!first)
+        {
+            os << ",";
+        }
+        os << "\"" << pair.first << "\":" << pair.second;
+        first = false;
+    }
+    os << "}}";
+}
+
 //+-------------------------------------------------------------------------------------------------------------------
 //
 // method :

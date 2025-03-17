@@ -82,6 +82,7 @@ class DServer : public TANGO_BASE_CLASS
     Tango::DevVarStringArray *query_class();
     Tango::DevVarStringArray *query_device();
     Tango::DevVarStringArray *query_sub_device();
+    Tango::DevString query_event_system();
     void kill();
     void restart(const std::string &);
     void restart_server();

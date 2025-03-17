@@ -397,6 +397,8 @@ class ZmqEventSupplier : public EventSupplier
                                        const std::string &obj_name_lower,
                                        bool intr_change);
 
+    void query_event_system(std::ostream &os);
+
   protected:
     ZmqEventSupplier(Util *);
 

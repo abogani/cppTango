@@ -715,6 +715,61 @@ Tango::DevVarStringArray *DServer::query_sub_device()
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
+//        DServer::query_event_system()
+//
+// description :
+//        command to query debugging information about the event system
+//
+// returns :
+//        The information about the ZMQ event supplier and consumer in a JSON
+//        string
+//
+//------------------------------------------------------------------------------------------------------------------
+
+Tango::DevString DServer::query_event_system()
+{
+    NoSyncModelTangoMonitor mon(this);
+
+    TANGO_LOG_DEBUG << "In query_event_system command" << std::endl;
+
+    std::stringstream out;
+    out << "{\"version\":1";
+
+    out << ",\"server\":";
+    Tango::Util *tg = Tango::Util::instance();
+    auto *supplier = tg->get_zmq_event_supplier();
+    if(supplier == nullptr)
+    {
+        out << "null";
+    }
+    else
+    {
+        supplier->query_event_system(out);
+    }
+
+    out << ",\"client\":";
+
+    Tango::ApiUtil *api = Tango::ApiUtil::instance();
+    auto *consumer = api->get_zmq_event_consumer();
+    if(consumer == nullptr)
+    {
+        out << "null";
+    }
+    else
+    {
+        consumer->query_event_system(out);
+    }
+
+    out << "}";
+
+    Tango::DevString ret = string_dup(out.str());
+
+    return ret;
+}
+
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
 //        DServer::restart()
 //
 // description :

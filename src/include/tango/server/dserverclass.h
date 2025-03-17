@@ -153,6 +153,27 @@ class DevQuerySubDeviceCmd : public Command
 
 //=============================================================================
 //
+//            The DevQueryEventSystemCmd class
+//
+// description :    Class to implement the DevQueryEventSystem command. This
+//            command does not take any input argument and returns a
+//            single string containing a JSON object holding information about
+//            the ZMQ event supplier and consumer.
+//
+//=============================================================================
+
+class DevQueryEventSystemCmd : public Command
+{
+  public:
+    DevQueryEventSystemCmd(const char *cmd_name, Tango::CmdArgType argin, Tango::CmdArgType argout, const char *desc);
+
+    ~DevQueryEventSystemCmd() override = default;
+
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
+};
+
+//=============================================================================
+//
 //            The DevKillCmd class
 //
 // description :    Class to implement the DevKill command. This
