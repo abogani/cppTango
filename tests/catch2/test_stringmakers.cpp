@@ -34,9 +34,6 @@ SCENARIO("catch2 stringmakers specialications")
     GIVEN("a EventData")
     {
         Tango::EventData evData;
-        evData.device = nullptr;
-        evData.attr_value = nullptr;
-        evData.err = false;
 
         WHEN("we can convert it to a string")
         {
@@ -66,7 +63,6 @@ SCENARIO("catch2 stringmakers specialications")
     GIVEN("a DataReadyEventData")
     {
         Tango::DataReadyEventData ready_data;
-        ready_data.device = nullptr;
 
         WHEN("we can convert it to a string")
         {
