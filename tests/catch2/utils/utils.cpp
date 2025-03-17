@@ -99,10 +99,15 @@ ContextDescriptor make_descriptor(const std::string &instance_name,
 
 } // namespace
 
-std::string make_nodb_fqtrl(int port, std::string_view device_name)
+std::string make_nodb_fqtrl(int port, std::string_view device_name, std::string_view attr_name)
 {
     std::stringstream ss;
-    ss << "tango://127.0.0.1:" << port << "/" << device_name << "#dbase=no";
+    ss << "tango://127.0.0.1:" << port << "/" << device_name;
+    if(!attr_name.empty())
+    {
+        ss << "/" << attr_name;
+    }
+    ss << "#dbase=no";
     return ss.str();
 }
 
@@ -252,6 +257,13 @@ Context::~Context()
     }
 }
 
+std::string Context::get_fqtrl(std::string_view instance, std::string_view attr_name)
+{
+    const auto &job = get_job(instance);
+
+    return make_nodb_fqtrl(job.process.get_port(), job.device_name, attr_name);
+}
+
 std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 {
     auto &job = get_only_job();
@@ -261,9 +273,27 @@ std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
 
+std::unique_ptr<Tango::DeviceProxy> Context::get_proxy(std::string_view instance)
+{
+    const auto &job = get_job(instance);
+
+    std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), job.device_name);
+
+    return std::make_unique<Tango::DeviceProxy>(fqtrl);
+}
+
 std::unique_ptr<Tango::DeviceProxy> Context::get_admin_proxy()
 {
     auto &job = get_only_job();
+
+    std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), "dserver/TestServer/" + job.instance_name);
+
+    return std::make_unique<Tango::DeviceProxy>(fqtrl);
+}
+
+std::unique_ptr<Tango::DeviceProxy> Context::get_admin_proxy(std::string_view instance)
+{
+    auto &job = get_job(instance);
 
     std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), "dserver/TestServer/" + job.instance_name);
 
@@ -320,6 +350,21 @@ Context::ServerJob &Context::get_only_job()
 const Context::ServerJob &Context::get_only_job() const
 {
     return const_cast<Context *>(this)->get_only_job();
+}
+
+Context::ServerJob &Context::get_job(std::string_view instance)
+{
+    auto job = std::find_if(
+        m_server_jobs.begin(), m_server_jobs.end(), [=](const ServerJob &j) { return j.instance_name == instance; });
+
+    TANGO_ASSERT(job != m_server_jobs.end());
+
+    return *job;
+}
+
+const Context::ServerJob &Context::get_job(std::string_view instance) const
+{
+    return const_cast<Context *>(this)->get_job(instance);
 }
 
 // Listener to cleanup the Tango client ApiUtil singleton

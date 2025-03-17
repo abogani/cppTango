@@ -25,6 +25,12 @@ include(old_cxx_tests.cmake)
 
 include(catch2/tango_catch2_tests.cmake)
 
+find_package(nlohmann_json QUIET)
+
+if (NOT nlohmann_json_FOUND)
+    message(STATUS "JSON library not found, skipping QueryEventSystem() test")
+endif()
+
 tango_catch2_tests_create(
     catch2_alarm_event.cpp
     catch2_alarm.cpp
@@ -47,6 +53,7 @@ tango_catch2_tests_create(
     catch2_server.cpp
     catch2_synchronised_queue.cpp
     catch2_configure_zmq_ports.cpp
+    $<$<BOOL:${nlohmann_json_FOUND}>:${CMAKE_CURRENT_SOURCE_DIR}/catch2_query_event_system.cpp>
     $<$<BOOL:${TANGO_USE_TELEMETRY}>:${CMAKE_CURRENT_SOURCE_DIR}/catch2_telemetry.cpp>
     catch2_tango_monitor.cpp
     catch2_unit_test_device_data.cpp
@@ -57,3 +64,5 @@ tango_catch2_tests_create(
     catch2_loggerstream_attribute.cpp
     catch2_device_proxy.cpp
     )
+
+target_link_libraries(Catch2Tests PRIVATE $<$<BOOL:${nlohmann_json_FOUND}>:nlohmann_json::nlohmann_json>)

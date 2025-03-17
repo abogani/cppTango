@@ -23,7 +23,7 @@
 namespace TangoTest
 {
 
-std::string make_nodb_fqtrl(int port, std::string_view device_name);
+std::string make_nodb_fqtrl(int port, std::string_view device_name, std::string_view attr_name = "");
 
 const char *get_current_log_file_path();
 
@@ -110,8 +110,48 @@ class Context
 
     ~Context();
 
+    // TODO: These should also take the device_name, however, we should also
+    // allow the device name to be specified in the ServerDescriptor if we do
+    // this.
+
+    /** Return the fully qualified tango resource locator for a device or
+     *  attribute.
+     *
+     *  @param instance server instance to provide the device for
+     *  @param attr_name name of the attribute to be included in the FQTRL. If
+     *  empty a FQTRL for the device will be returned
+     *
+     *  Expects: the instance to have been specified at construction
+     */
+    std::string get_fqtrl(std::string_view instance, std::string_view attr_name = "");
+
+    /** Return a device proxy to the device in the only server
+     *
+     *  Expects: there was only one server specified at construction
+     */
     std::unique_ptr<Tango::DeviceProxy> get_proxy();
+
+    /** Return a device proxy to the device a server
+     *
+     *  @param instance server instance to provide the device for
+     *
+     *  Expects: the instance to have been specified at construction
+     */
+    std::unique_ptr<Tango::DeviceProxy> get_proxy(std::string_view instance);
+
+    /** Return an admin device proxy to the device in the only server
+     *
+     *  Expects: there was only one server specified at construction
+     */
     std::unique_ptr<Tango::DeviceProxy> get_admin_proxy();
+
+    /** Return an admin device proxy to the device a server
+     *
+     *  @param instance server instance to provide the device for
+     *
+     *  Expects: the instance to have been specified at construction
+     */
+    std::unique_ptr<Tango::DeviceProxy> get_admin_proxy(std::string_view instance);
 
     /** Wait until the server stops.
      *
