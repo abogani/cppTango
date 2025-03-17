@@ -157,6 +157,86 @@ std::string StringMaker<Tango::EventData>::convert(Tango::EventData const &value
     return os.str();
 }
 
+std::string StringMaker<Tango::FwdEventData>::convert(Tango::FwdEventData const &value)
+{
+    std::ostringstream os;
+
+    auto non_const_value = const_cast<Tango::FwdEventData &>(value);
+
+    os << opc;
+    os << "base class:" << StringMaker<Tango::EventData>::convert(dynamic_cast<Tango::EventData const &>(value));
+    os << sep;
+    os << "av_5: " << StringMaker<const Tango::AttributeValue_5 *>::convert(non_const_value.get_av_5());
+    os << sep;
+    os << "event_data: " << std::hex << non_const_value.get_zmq_mess_ptr();
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::AttrConfEventData>::convert(Tango::AttrConfEventData const &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "reception_date: " << StringMaker<Tango::TimeVal>::convert(value.reception_date);
+    os << sep;
+    os << "device: " << StringMaker<Tango::DeviceProxy *>::convert(value.device);
+    os << sep;
+    os << "attr_name: " << value.attr_name;
+    os << sep;
+    os << "event: " << value.event;
+    os << sep;
+    os << "attr_conf: " << opc << StringMaker<Tango::AttributeInfoEx *>::convert(value.attr_conf) << clc;
+    os << sep;
+    os << "err: " << std::boolalpha << value.err;
+    os << sep;
+    os << "errors: " << StringMaker<Tango::DevErrorList>::convert(value.errors);
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::FwdAttrConfEventData>::convert(Tango::FwdAttrConfEventData const &value)
+{
+    std::ostringstream os;
+
+    auto non_const_value = const_cast<Tango::FwdAttrConfEventData &>(value);
+
+    os << opc;
+    os << "base class:"
+       << StringMaker<Tango::AttrConfEventData>::convert(dynamic_cast<Tango::AttrConfEventData const &>(value));
+    os << sep;
+    os << "av_5: " << StringMaker<Tango::AttributeConfig_5 *>::convert(non_const_value.get_fwd_attr_conf());
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::PipeEventData>::convert(Tango::PipeEventData const &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "reception_date: " << StringMaker<Tango::TimeVal>::convert(value.reception_date);
+    os << sep;
+    os << "device: " << StringMaker<Tango::DeviceProxy *>::convert(value.device);
+    os << sep;
+    os << "pipe_name: " << value.pipe_name;
+    os << sep;
+    os << "event: " << value.event;
+    os << sep;
+    // As pipes are about to removed, we don't create a stringmaker for Tango::DevicePipe
+    os << "pipe_value: " << opc << std::hex << value.pipe_value;
+    os << sep;
+    os << "err: " << std::boolalpha << value.err;
+    os << sep;
+    os << "errors: " << StringMaker<Tango::DevErrorList>::convert(value.errors);
+    os << clc;
+
+    return os.str();
+}
+
 std::string StringMaker<TangoTest::AttrReadEventCopyable>::convert(TangoTest::AttrReadEventCopyable const &value)
 {
     std::ostringstream os;
@@ -452,6 +532,208 @@ std::string StringMaker<TangoTest::ExitStatus>::convert(TangoTest::ExitStatus co
         break;
     }
     };
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::AttributeAlarm>::convert(const Tango::AttributeAlarm &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "min_alarm: " << value.min_alarm;
+    os << sep;
+    os << "max_alarm: " << value.max_alarm;
+    os << sep;
+    os << "min_warning: " << value.min_warning;
+    os << sep;
+    os << "max_warning: " << value.max_warning;
+    os << sep;
+    os << "delta_t: " << value.delta_t;
+    os << sep;
+    os << "delta_val: " << value.delta_val;
+    os << sep;
+    os << "extensions: " << StringMaker<Tango::DevVarStringArray>::convert(value.extensions);
+    os << sep;
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::EventProperties>::convert(const Tango::EventProperties &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "ch_event: " << StringMaker<Tango::ChangeEventProp>::convert(value.ch_event);
+    os << sep;
+    os << "per_event: " << StringMaker<Tango::PeriodicEventProp>::convert(value.per_event);
+    os << sep;
+    os << "arch_event: " << StringMaker<Tango::ArchiveEventProp>::convert(value.arch_event);
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::ChangeEventProp>::convert(const Tango::ChangeEventProp &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "rel_change: " << value.rel_change;
+    os << sep;
+    os << "abs_change: " << value.abs_change;
+    os << sep;
+    os << "extensions: " << StringMaker<Tango::DevVarStringArray>::convert(value.extensions);
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::PeriodicEventProp>::convert(const Tango::PeriodicEventProp &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "period: " << value.period;
+    os << sep;
+    os << "extensions: " << StringMaker<Tango::DevVarStringArray>::convert(value.extensions);
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::ArchiveEventProp>::convert(const Tango::ArchiveEventProp &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "rel_change: " << value.rel_change;
+    os << sep;
+    os << "abs_change: " << value.abs_change;
+    os << sep;
+    os << "period: " << value.period;
+    os << sep;
+    os << "extensions: " << StringMaker<Tango::DevVarStringArray>::convert(value.extensions);
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::AttributeDim>::convert(const Tango::AttributeDim &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "dim_x: " << value.dim_x;
+    os << sep;
+    os << "dim_y: " << value.dim_y;
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::AttributeValue_5 *>::convert(const Tango::AttributeValue_5 *attr_val)
+{
+    if(attr_val == nullptr)
+    {
+        return Catch::StringMaker<std::nullptr_t>::convert(nullptr);
+    }
+
+    return Catch::StringMaker<Tango::AttributeValue_5>::convert(*attr_val);
+}
+
+std::string StringMaker<Tango::AttributeValue_5>::convert(const Tango::AttributeValue_5 &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "value: (not yet supported)";
+    os << sep;
+    os << "quality: " << StringMaker<Tango::AttrQuality>::convert(value.quality);
+    os << sep;
+    os << "data_format: " << StringMaker<Tango::AttrDataFormat>::convert(value.data_format);
+    os << sep;
+    os << "data_type: " << Tango::data_type_to_string(value.data_type);
+    os << sep;
+    os << "time: " << StringMaker<Tango::TimeVal>::convert(value.time);
+    os << sep;
+    os << "name: " << value.name;
+    os << sep;
+    os << "r_dim: " << StringMaker<Tango::AttributeDim>::convert(value.r_dim);
+    os << sep;
+    os << "w_dim: " << StringMaker<Tango::AttributeDim>::convert(value.w_dim);
+    os << sep;
+    os << "err_list: " << StringMaker<Tango::DevErrorList>::convert(value.err_list);
+    os << clc;
+
+    return os.str();
+}
+
+std::string StringMaker<Tango::AttributeConfig_5 *>::convert(const Tango::AttributeConfig_5 *attr_conf)
+{
+    if(attr_conf == nullptr)
+    {
+        return Catch::StringMaker<std::nullptr_t>::convert(nullptr);
+    }
+
+    return Catch::StringMaker<Tango::AttributeConfig_5>::convert(*attr_conf);
+}
+
+std::string StringMaker<Tango::AttributeConfig_5>::convert(Tango::AttributeConfig_5 const &value)
+{
+    std::ostringstream os;
+
+    os << opc;
+    os << "name: " << value.name;
+    os << sep;
+    os << "writable: " << StringMaker<Tango::AttrWriteType>::convert(value.writable);
+    os << sep;
+    os << "data_format: " << StringMaker<Tango::AttrDataFormat>::convert(value.data_format);
+    os << sep;
+    os << "data_type: " << Tango::data_type_to_string(value.data_type);
+    os << sep;
+    os << "memorized: " << std::boolalpha << value.memorized;
+    os << sep;
+    os << "mem_init: " << std::boolalpha << value.mem_init;
+    os << sep;
+    os << "max_dim_x: " << value.max_dim_x;
+    os << sep;
+    os << "max_dim_y: " << value.max_dim_y;
+    os << sep;
+    os << "description: " << value.description;
+    os << sep;
+    os << "label: " << value.label;
+    os << sep;
+    os << "unit: " << value.unit;
+    os << sep;
+    os << "standard_unit: " << value.standard_unit;
+    os << sep;
+    os << "display_unit: " << value.display_unit;
+    os << sep;
+    os << "format: " << value.format;
+    os << sep;
+    os << "min_value: " << value.min_value;
+    os << sep;
+    os << "max_value: " << value.max_value;
+    os << sep;
+    os << "writable_attr_name: " << value.writable_attr_name;
+    os << sep;
+    os << "level: " << StringMaker<Tango::DispLevel>::convert(value.level);
+    os << sep;
+    os << "root_attr_name: " << value.root_attr_name;
+    os << sep;
+    os << "enum_labels: " << StringMaker<Tango::DevVarStringArray>::convert(value.enum_labels);
+    os << sep;
+    os << "att_alarm: " << StringMaker<Tango::AttributeAlarm>::convert(value.att_alarm);
+    os << sep;
+    os << "event_prop: " << StringMaker<Tango::EventProperties>::convert(value.event_prop);
+    os << sep;
+    os << "extensions: " << StringMaker<Tango::DevVarStringArray>::convert(value.extensions);
+    os << sep;
+    os << "sys_extensions: " << StringMaker<Tango::DevVarStringArray>::convert(value.sys_extensions);
+    os << sep;
     os << clc;
 
     return os.str();

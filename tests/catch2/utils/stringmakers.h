@@ -35,6 +35,12 @@ CATCH_REGISTER_ENUM(Tango::DispLevel,
                     Tango::DispLevel::EXPERT,
                     Tango::DispLevel::DL_UNKNOWN)
 
+CATCH_REGISTER_ENUM(Tango::AttrQuality,
+                    Tango::AttrQuality::ATTR_INVALID,
+                    Tango::AttrQuality::ATTR_ALARM,
+                    Tango::AttrQuality::ATTR_CHANGING,
+                    Tango::AttrQuality::ATTR_WARNING)
+
 namespace TangoTest::detail
 {
 
@@ -160,6 +166,30 @@ struct StringMaker<Tango::AttributeInfoEx>
 };
 
 template <>
+struct StringMaker<Tango::FwdEventData>
+{
+    static std::string convert(Tango::FwdEventData const &value);
+};
+
+template <>
+struct StringMaker<Tango::AttrConfEventData>
+{
+    static std::string convert(Tango::AttrConfEventData const &value);
+};
+
+template <>
+struct StringMaker<Tango::FwdAttrConfEventData>
+{
+    static std::string convert(Tango::FwdAttrConfEventData const &value);
+};
+
+template <>
+struct StringMaker<Tango::PipeEventData>
+{
+    static std::string convert(Tango::PipeEventData const &value);
+};
+
+template <>
 struct StringMaker<CORBA::Any>
 {
     static std::string convert(CORBA::Any const &any);
@@ -220,6 +250,66 @@ template <>
 struct StringMaker<TangoTest::ExitStatus>
 {
     static std::string convert(TangoTest::ExitStatus const &status);
+};
+
+template <>
+struct StringMaker<Tango::AttributeAlarm>
+{
+    static std::string convert(Tango::AttributeAlarm const &value);
+};
+
+template <>
+struct StringMaker<Tango::EventProperties>
+{
+    static std::string convert(Tango::EventProperties const &value);
+};
+
+template <>
+struct StringMaker<Tango::ChangeEventProp>
+{
+    static std::string convert(Tango::ChangeEventProp const &value);
+};
+
+template <>
+struct StringMaker<Tango::PeriodicEventProp>
+{
+    static std::string convert(Tango::PeriodicEventProp const &value);
+};
+
+template <>
+struct StringMaker<Tango::ArchiveEventProp>
+{
+    static std::string convert(Tango::ArchiveEventProp const &value);
+};
+
+template <>
+struct StringMaker<Tango::AttributeDim>
+{
+    static std::string convert(Tango::AttributeDim const &value);
+};
+
+template <>
+struct StringMaker<Tango::AttributeValue_5 *>
+{
+    static std::string convert(const Tango::AttributeValue_5 *attr_conf);
+};
+
+template <>
+struct StringMaker<Tango::AttributeValue_5>
+{
+    static std::string convert(Tango::AttributeValue_5 const &attr_conf);
+};
+
+template <>
+struct StringMaker<Tango::AttributeConfig_5 *>
+{
+    static std::string convert(const Tango::AttributeConfig_5 *attr_conf);
+};
+
+template <>
+struct StringMaker<Tango::AttributeConfig_5>
+{
+    static std::string convert(Tango::AttributeConfig_5 const &attr_conf);
 };
 
 } // namespace Catch

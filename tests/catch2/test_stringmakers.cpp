@@ -210,6 +210,7 @@ using PrintableType = std::tuple<
                                  Tango::AttributeAlarmInfo,
                                  Tango::AttributeEventInfo,
                                  Tango::AttributeInfoEx,
+                                 Tango::AttrConfEventData,
                                  Tango::ChangeEventInfo,
                                  Tango::CommandInfo,
                                  Tango::DataReadyEventData,
@@ -218,9 +219,21 @@ using PrintableType = std::tuple<
                                  Tango::DeviceData,
                                  Tango::DeviceInfo,
                                  Tango::EventData,
+                                 Tango::FwdAttrConfEventData,
+                                 Tango::FwdEventData,
                                  Tango::PeriodicEventInfo,
+                                 Tango::PipeEventData,
                                  Tango::TimeVal,
-                                 TangoTest::AttrReadEventCopyable
+                                 TangoTest::AttrReadEventCopyable,
+                                 // IDL classes
+                                 Tango::AttributeDim,
+                                 Tango::AttributeValue_5,
+                                 Tango::AttributeConfig_5,
+                                 Tango::ArchiveEventProp,
+                                 Tango::AttributeAlarm,
+                                 Tango::ChangeEventProp,
+                                 Tango::EventProperties,
+                                 Tango::PeriodicEventProp
                                  >;
 // clang-format on
 
