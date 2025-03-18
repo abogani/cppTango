@@ -9,6 +9,9 @@
 namespace TangoTest::platform::unix
 {
 
+// TODO: Reimplement the entire macos implementation using the kqueue rather
+// than sharing this unix file with the linux implementation
+
 template <typename... Args>
 [[noreturn]] void throw_strerror(Args... args)
 {
@@ -70,6 +73,13 @@ class FileWatcher
 // Arranges for this process to die if this process's parent is not `ppid`,
 // i.e. because they parent has died and this process has been re-parented.
 void kill_self_on_parent_death(pid_t ppid);
+
+// Wait for fd to be ready for reading or signal to be received
+// Returns:
+//  - > 0 if fd is ready to be read
+//  - 0 if timed out
+//  - -1 if error, check errno
+int wait_for_fd_or_signal(int fd, struct timespec *timeout, sigset_t *sigmask);
 
 } // namespace TangoTest::platform::unix
 

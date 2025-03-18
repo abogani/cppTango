@@ -4,6 +4,7 @@
 #include <csignal>
 #include <sys/inotify.h>
 #include <sys/prctl.h>
+#include <poll.h>
 #include <unistd.h>
 
 namespace TangoTest::platform
@@ -95,6 +96,15 @@ void kill_self_on_parent_death(pid_t ppid)
     {
         exit(0);
     }
+}
+
+int wait_for_fd_or_signal(int fd, struct timespec *timeout, sigset_t *sigmask)
+{
+    struct pollfd fds;
+    fds.fd = fd;
+    fds.events = POLLIN;
+
+    return ppoll(&fds, 1, timeout, sigmask);
 }
 
 } // namespace unix
