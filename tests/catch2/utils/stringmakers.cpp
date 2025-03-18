@@ -108,7 +108,7 @@ std::string StringMaker<Tango::DeviceAttribute>::convert(const Tango::DeviceAttr
     os << sep;
     os << "data_format: " << da.data_format;
     os << sep;
-    os << "data_type: " << (Tango::CmdArgType) da.get_type();
+    os << "data_type: " << Tango::data_type_to_string(da.data_type);
     os << sep;
     os << "value: ";
     os << opc;
