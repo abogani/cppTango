@@ -4,6 +4,8 @@
   #define _DEV_TEST_H
   #include <tango/tango.h>
 
+  #include <memory>
+
 class EventCallBack : public Tango::CallBack
 {
     void push_event(Tango::EventData *);
@@ -348,7 +350,7 @@ class DevTest : public TANGO_BASE_CLASS
     Tango::AttrQuality attr_event_qua;
 
     EventCallBack cb;
-    Tango::DeviceProxy *remote_dev;
+    std::shared_ptr<Tango::DeviceProxy> remote_dev;
     std::map<int, std::string> event_atts;
 
     Tango::DevFloat attr_float;
