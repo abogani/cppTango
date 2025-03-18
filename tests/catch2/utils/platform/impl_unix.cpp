@@ -286,14 +286,6 @@ StartServerResult start_server(const std::vector<std::string> &args,
     }
 }
 
-static void kill(pid_t pid, int signo)
-{
-    if(::kill(pid, signo))
-    {
-        perror("kill()");
-    }
-}
-
 std::vector<int> relevant_sendable_signals()
 {
     return {SIGINT, SIGTERM};
@@ -302,7 +294,10 @@ std::vector<int> relevant_sendable_signals()
 void send_signal(TestServer::Handle *handle, int signo)
 {
     pid_t child = static_cast<pid_t>(reinterpret_cast<ssize_t>(handle));
-    kill(child, signo);
+    if(kill(child, signo) != 0)
+    {
+        unix::throw_strerror("kill()");
+    }
 }
 
 StopServerResult stop_server(TestServer::Handle *handle)
