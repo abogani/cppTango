@@ -28,13 +28,8 @@ typedef _CardinalPoints CardinalPoints;
     #define TANGO_BASE_CLASS TANGO_TEST_BASE_CLASS
   #endif
 
-  #ifndef COMPAT
 class DevTest : public TANGO_BASE_CLASS
 {
-  #else
-class DevTest : public Tango::Device_3Impl
-{
-  #endif
   public:
     DevTest(Tango::DeviceClass *, std::string &);
     DevTest(Tango::DeviceClass *, const char *);
@@ -377,13 +372,11 @@ class DevTest : public Tango::Device_3Impl
 
     Tango::DevShort wattr_throw;
 
-  #ifndef COMPAT
     Tango::EncodedAttribute jpeg;
     Tango::DevEncoded enc_attr;
     Tango::DevEncoded *enc_attr_ptr;
     Tango::DevString enc_format;
     unsigned char enc_data[10];
-  #endif
 
     Tango::DevLong att_conf;
     CardinalPoints cp;

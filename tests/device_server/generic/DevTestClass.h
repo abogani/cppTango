@@ -641,7 +641,6 @@ class Short_attr_w2Attr : public Tango::Attr
     }
 };
 
-  #ifndef COMPAT
 class Encoded_attr_rwAttr : public Tango::Attr
 {
   public:
@@ -678,7 +677,6 @@ class Encoded_attr_image : public Tango::Attr
         (static_cast<DevTest *>(dev))->read_Encoded_attr_image(att);
     }
 };
-  #endif
 
 //  --------------------------------------------------------------------------------
 

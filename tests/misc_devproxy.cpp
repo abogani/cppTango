@@ -321,12 +321,10 @@ int main(int argc, char **argv)
 
         // Test device version
 
-#ifndef COMPAT
         int vers = device->get_idl_version();
         assert(vers == idlver);
 
         TEST_LOG << "   Get IDL version --> OK" << endl;
-#endif
 
         // Test source
 
@@ -342,7 +340,6 @@ int main(int argc, char **argv)
 
         // Test get property list
 
-#ifndef COMPAT
         vector<string> props;
         device->get_property_list("*", props);
 
@@ -359,7 +356,6 @@ int main(int argc, char **argv)
         //        assert (props[3] == "__SubDevices");
 
         TEST_LOG << "   Get property list --> OK" << endl;
-#endif
     }
     catch(Tango::DevFailed &e)
     {

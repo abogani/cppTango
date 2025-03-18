@@ -1593,7 +1593,6 @@ CORBA::Any *OLongString::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_
 //
 //-----------------------------------------------------------------------------
 
-#ifndef COMPAT
 IOEncoded::IOEncoded(
     const char *name, Tango::CmdArgType in, Tango::CmdArgType out, const char *in_desc, const char *out_desc) :
     Tango::Command(name, in, out, in_desc, out_desc)
@@ -1710,6 +1709,5 @@ CORBA::Any *OEncoded::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO_UNU
         throw;
     }
 }
-#endif
 
 // NOLINTEND(*)

@@ -70,7 +70,6 @@ int main(int argc, char **argv)
         // The attribute used to test DevEncoded does not have any
         // "sleep" in its code -> Do not check the nb_not_arrived data
 
-#ifndef COMPAT
         id = device->read_attribute_asynch("encoded_attr");
 
         // Check if attribute returned
@@ -103,7 +102,6 @@ int main(int argc, char **argv)
         delete received;
 
         TEST_LOG << "   Asynchronous read_attribute (DevEncoded data type) in polling mode --> OK" << std::endl;
-#endif
 
         // Read attribute to check polling with blocking with timeout
 

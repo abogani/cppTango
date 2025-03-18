@@ -36,9 +36,7 @@ int main(int argc, char **argv)
         DeviceProxy dev2(*device);
 
         assert(dev2.name() == device1_name);
-#ifndef COMPAT
         assert(dev2.get_idl_version() == idlver);
-#endif
     }
     catch(Tango::DevFailed &e)
     {
@@ -56,9 +54,7 @@ int main(int argc, char **argv)
     dev3 = *device;
 
     assert(dev3.name() == device1_name);
-#ifndef COMPAT
     assert(dev3.get_idl_version() == idlver);
-#endif
 
     TEST_LOG << "   Assignement operator --> OK" << endl;
 
