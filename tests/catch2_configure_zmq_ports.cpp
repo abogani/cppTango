@@ -165,11 +165,14 @@ SCENARIO("ZmqEventSupplier reports an error when event port invalid")
             WHEN("we fail to subscribe to attribute change events")
             {
                 using namespace TangoTest::Matchers;
+                using namespace Catch::Matchers;
 
                 TangoTest::CallbackMock<Tango::EventData> callback;
                 REQUIRE_THROWS_MATCHES(device->subscribe_event("attr", Tango::CHANGE_EVENT, &callback),
                                        Tango::DevFailed,
-                                       FirstErrorMatches(Reason(Tango::API_ZmqInitFailed)));
+                                       FirstErrorMatches(Reason(Tango::API_ZmqInitFailed) &&
+                                                         DescriptionMatches(ContainsSubstring(event_port)) &&
+                                                         DescriptionMatches(ContainsSubstring(strerror(EINVAL)))));
 
                 THEN("the admin device reports being bound to the specified ports regardless")
                 {
@@ -226,8 +229,11 @@ SCENARIO("ZmqEventSupplier reports an error when heartbeat port invalid")
             THEN("the device server fails to start")
             {
                 using namespace Catch::Matchers;
-                REQUIRE_THROWS_MATCHES(
-                    start_server(), std::runtime_error, MessageMatches(ContainsSubstring(Tango::API_ZmqInitFailed)));
+                REQUIRE_THROWS_MATCHES(start_server(),
+                                       std::runtime_error,
+                                       MessageMatches(ContainsSubstring(Tango::API_ZmqInitFailed) &&
+                                                      ContainsSubstring(heartbeat_port) &&
+                                                      ContainsSubstring(strerror(EINVAL))));
             }
         }
     }
