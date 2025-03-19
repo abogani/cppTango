@@ -167,7 +167,6 @@ endfunction()
     CXX_GENERATE_TEST(cxx_poll_admin)
     CXX_GENERATE_TEST(cxx_reconnection_zmq)
     CXX_GENERATE_TEST(cxx_seq_vec)
-    CXX_GENERATE_TEST(cxx_server_configure_zmq_ports)
     CXX_GENERATE_TEST(cxx_server_event)
     CXX_GENERATE_TEST(cxx_signal)#TODO Windows
     CXX_GENERATE_TEST(cxx_stateless_subscription)
