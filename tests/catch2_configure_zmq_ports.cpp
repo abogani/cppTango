@@ -172,7 +172,9 @@ SCENARIO("ZmqEventSupplier reports an error when event port invalid")
                                        Tango::DevFailed,
                                        FirstErrorMatches(Reason(Tango::API_ZmqInitFailed) &&
                                                          DescriptionMatches(ContainsSubstring(event_port)) &&
-                                                         DescriptionMatches(ContainsSubstring(strerror(EINVAL)))));
+                                                         DescriptionMatches(ContainsSubstring(strerror(EINVAL)))) &&
+                                           ErrorListMatches(AnyMatch(
+                                               DescriptionMatches(ContainsSubstring("Failed to bind event socket")))));
 
                 THEN("the admin device reports being bound to the specified ports regardless")
                 {
@@ -233,7 +235,8 @@ SCENARIO("ZmqEventSupplier reports an error when heartbeat port invalid")
                                        std::runtime_error,
                                        MessageMatches(ContainsSubstring(Tango::API_ZmqInitFailed) &&
                                                       ContainsSubstring(heartbeat_port) &&
-                                                      ContainsSubstring(strerror(EINVAL))));
+                                                      ContainsSubstring(strerror(EINVAL)) &&
+                                                      ContainsSubstring("Failed to bind heartbeat socket")));
             }
         }
     }
