@@ -174,5 +174,14 @@ void FileWatcher::pop_event()
 // effort to implement something that mimics it. The tests works without it.
 void kill_self_on_parent_death([[maybe_unused]] pid_t ppid) { }
 
+int wait_for_fd_or_signal(int fd, struct timespec *timeout, sigset_t *sigmask)
+{
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(fd, &readfds);
+
+    return pselect(fd + 1, &readfds, nullptr, nullptr, timeout, sigmask);
+}
+
 } // namespace unix
 } // namespace TangoTest::platform

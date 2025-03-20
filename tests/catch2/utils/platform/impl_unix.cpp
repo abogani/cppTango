@@ -141,11 +141,11 @@ StartServerResult start_server(const std::vector<std::string> &args,
 
     StartServerResult result;
 
-    // In order to be able to handle SIGCHLD as part of our pselect() loop, we
+    // In order to be able to handle SIGCHLD as part of our wait_for_fd_or_signal() loop, we
     // need to:
-    //  1. Block the signal and then unblock during the pselect() call
+    //  1. Block the signal and then unblock during the wait_for_fd_or_signal() call
     //  2. Install a do-nothing signal handler, so that the kernel will actually
-    //  interrupt the pselect() call with the SIGCHLD.
+    //  interrupt the wait_for_fd_or_signal() call with the SIGCHLD.
     //
     //  We restore the block mask but not the action so that if the server dies
     //  during the test we can waitpid in the call to stop_server at the end of
@@ -230,17 +230,14 @@ StartServerResult start_server(const std::vector<std::string> &args,
         // Begin watching the device server's log file.
         // This is a no-op on Linux, only needed on macOS.
         watcher.start_watching();
+
         int watch_fd = watcher.get_file_descriptor();
 
         auto end = steady_clock::now() + timeout;
         while(true)
         {
-            fd_set readfds;
-            FD_ZERO(&readfds);
-            FD_SET(watch_fd, &readfds);
-
             struct timespec remaining_timeout = duration_to_timespec(end - steady_clock::now());
-            int ready = pselect(watch_fd + 1, &readfds, nullptr, nullptr, &remaining_timeout, &emptyset);
+            int ready = unix::wait_for_fd_or_signal(watch_fd, &remaining_timeout, &emptyset);
 
             if(ready == -1)
             {
@@ -289,14 +286,6 @@ StartServerResult start_server(const std::vector<std::string> &args,
     }
 }
 
-static void kill(pid_t pid, int signo)
-{
-    if(::kill(pid, signo))
-    {
-        perror("kill()");
-    }
-}
-
 std::vector<int> relevant_sendable_signals()
 {
     return {SIGINT, SIGTERM};
@@ -305,7 +294,10 @@ std::vector<int> relevant_sendable_signals()
 void send_signal(TestServer::Handle *handle, int signo)
 {
     pid_t child = static_cast<pid_t>(reinterpret_cast<ssize_t>(handle));
-    kill(child, signo);
+    if(kill(child, signo) != 0)
+    {
+        unix::throw_strerror("kill()");
+    }
 }
 
 StopServerResult stop_server(TestServer::Handle *handle)
