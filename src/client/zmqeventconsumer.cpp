@@ -1331,6 +1331,7 @@ void ZmqEventConsumer::cleanup_EventChannel_map()
     {
         EventCallBackStruct &evt_cb = cb_it->second;
         delete evt_cb.callback_monitor;
+        evt_cb.callback_monitor = nullptr;
     }
 
     //
