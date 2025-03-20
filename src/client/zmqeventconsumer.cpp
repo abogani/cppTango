@@ -4374,9 +4374,24 @@ DelayEvent::DelayEvent(EventConsumer *ec)
 
 DelayEvent::~DelayEvent()
 {
-    if(!released)
+    try
     {
-        release();
+        if(!released)
+        {
+            release();
+        }
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << "DelayEvent::~DelayEvent(): std::exception thrown: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "DelayEvent::~DelayEvent(): Unknown exception thrown " << std::endl;
     }
 }
 
