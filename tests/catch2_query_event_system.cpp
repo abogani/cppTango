@@ -186,6 +186,12 @@ SCENARIO("QueryEventSystem reports details about client side once subscribed")
                     REQUIRE(val["callback_count"] == 1);
                     REQUIRE(val.contains("server_counter"));
                     REQUIRE(val["server_counter"] >= 0);
+                    REQUIRE(val.contains("event_count"));
+                    REQUIRE(val["event_count"] >= 0);
+                    REQUIRE(val.contains("missed_event_count"));
+                    REQUIRE(val["missed_event_count"] >= 0);
+                    REQUIRE(val.contains("discarded_event_count"));
+                    REQUIRE(val["discarded_event_count"] >= 0);
                     REQUIRE(val.contains("last_resubscribed"));
                     REQUIRE(val["last_resubscribed"].is_null());
                 }

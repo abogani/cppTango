@@ -1119,6 +1119,9 @@ void ZmqEventConsumer::query_event_system(std::ostream &os)
             os << R"("channel_name":")" << obj.channel_name << "\"";
             os << R"(,"callback_count":)" << obj.callback_list.size();
             os << R"(,"server_counter":)" << obj.ctr;
+            os << R"(,"event_count":)" << obj.event_count;
+            os << R"(,"missed_event_count":)" << obj.missed_event_count;
+            os << R"(,"discarded_event_count":)" << obj.discarded_event_count;
             os << R"(,"last_resubscribed":)";
             if(obj.last_subscribed == 0)
             {
@@ -2089,6 +2092,7 @@ void ZmqEventConsumer::push_zmq_event(
                 if(!evt_cb.discarded_event)
                 {
                     evt_cb.discarded_event = true;
+                    evt_cb.discarded_event_count++;
                     map_modification_lock.readerOut();
                     return;
                 }
@@ -2103,6 +2107,12 @@ void ZmqEventConsumer::push_zmq_event(
             }
 
             evt_cb.ctr = ds_ctr;
+            evt_cb.event_count++;
+
+            if(err_missed_event)
+            {
+                evt_cb.missed_event_count++;
+            }
 
             //
             // Get which type of event data has been received (from the event type)

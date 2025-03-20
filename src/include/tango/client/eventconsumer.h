@@ -418,6 +418,11 @@ typedef struct event_callback : public EventCallBackBase, public EventCallBackZm
     std::string client_attribute_name;
     ReceivedFromAdmin received_from_admin;
 
+    // For monitoring
+    std::uint64_t event_count{};
+    std::uint64_t discarded_event_count{};
+    std::uint64_t missed_event_count{};
+
     std::string get_client_attribute_name()
     {
         return client_attribute_name;
