@@ -478,8 +478,11 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
             if(ret)
             {
                 delete heartbeat_sub_sock;
+                heartbeat_sub_sock = nullptr;
                 delete control_sock;
+                control_sock = nullptr;
                 delete[] items;
+                items = nullptr;
 
                 break;
             }
