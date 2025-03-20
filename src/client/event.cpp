@@ -1969,6 +1969,13 @@ std::string EventConsumer::get_client_attribute_name(const std::string &local_ca
 
 void EventConsumer::unsubscribe_event(int event_id)
 {
+    if(keep_alive_thread == nullptr)
+    {
+        // we are shutting down the event system
+        // nothing left to do
+        return;
+    }
+
     if(event_id == 0)
     {
         TANGO_THROW_DETAILED_EXCEPTION(
