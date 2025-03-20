@@ -398,6 +398,7 @@ class ZmqEventSupplier : public EventSupplier
                                        bool intr_change);
 
     void query_event_system(std::ostream &os);
+    static void enable_perf_mon(Tango::DevBoolean enabled);
 
   protected:
     ZmqEventSupplier(Util *);

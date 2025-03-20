@@ -724,6 +724,7 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
     void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &);
 
     void query_event_system(std::ostream &os);
+    static void enable_perf_mon(Tango::DevBoolean enabled);
 
     enum UserDataEventType
     {

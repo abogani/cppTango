@@ -767,6 +767,16 @@ Tango::DevString DServer::query_event_system()
     return ret;
 }
 
+void DServer::enable_event_system_perf_mon(Tango::DevBoolean enabled)
+{
+    NoSyncModelTangoMonitor mon(this);
+
+    TANGO_LOG_DEBUG << "In enable_event_system_perf_mon command" << std::endl;
+
+    ZmqEventSupplier::enable_perf_mon(enabled);
+    ZmqEventConsumer::enable_perf_mon(enabled);
+}
+
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :

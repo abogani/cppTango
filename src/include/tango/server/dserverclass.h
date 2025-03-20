@@ -174,6 +174,34 @@ class DevQueryEventSystemCmd : public Command
 
 //=============================================================================
 //
+//            The DevEnableEventSystemPerfMonCmd class
+//
+// description :    Class to implement the EnableEventSystemPerfMon command. This
+//            command does takes a boolean input argument and does not return anything.
+//
+//            If called with true, performance samples will be collected for
+//            events being published and received by the server.  These
+//            performance samples can then be queried with the QueryEventSystem.
+//
+//            If called with false, collection of performance samples with stop.
+//
+//=============================================================================
+
+class DevEnableEventSystemPerfMonCmd : public Command
+{
+  public:
+    DevEnableEventSystemPerfMonCmd(const char *cmd_name,
+                                   Tango::CmdArgType argin,
+                                   Tango::CmdArgType argout,
+                                   const char *desc);
+
+    ~DevEnableEventSystemPerfMonCmd() override = default;
+
+    CORBA::Any *execute(DeviceImpl *device, const CORBA::Any &in_any) override;
+};
+
+//=============================================================================
+//
 //            The DevKillCmd class
 //
 // description :    Class to implement the DevKill command. This

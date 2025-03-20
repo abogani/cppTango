@@ -36,6 +36,7 @@
 #include <tango/client/apiexcept.h>
 
 #include <omniORB4/internal/giopStream.h>
+#include <tango/internal/perf_mon.h>
 
 #include <iterator>
 #include <future>
@@ -836,6 +837,36 @@ void ZmqEventSupplier::init_event_cptr(const std::string &event_name)
     }
 }
 
+// Performance monitoring
+namespace
+{
+struct PerfMonSample
+{
+    std::int64_t micros_since_last_event{k_invalid_duration};
+    std::int64_t push_event_micros{0};
+
+    void json_dump(std::ostream &os)
+    {
+        os << "{\"micros_since_last_event\":";
+        if(micros_since_last_event != k_invalid_duration)
+        {
+            os << micros_since_last_event;
+        }
+        else
+        {
+            os << "null";
+        }
+        os << ",\"push_event_micros\":" << push_event_micros;
+        os << "}";
+    }
+};
+
+DoubleBuffer<PerfMonSample> g_perf_mon;
+
+// Must hold g_perf_mon.lock to access
+PerfClock::time_point g_last_event_timestamp;
+} // namespace
+
 //---------------------------------------------------------------------------------------------------------------------
 //
 // method :
@@ -868,7 +899,28 @@ void ZmqEventSupplier::query_event_system(std::ostream &os)
         os << "\"" << pair.first << "\":" << pair.second;
         first = false;
     }
-    os << "}}";
+    os << R"(},"perf":)";
+    g_perf_mon.json_dump(os);
+    os << "}";
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        ZmqEventSupplier::enable_perf_mon()
+//
+// description :
+//  Enable or disable collection of performance counters for supplier
+//
+// argument :
+//        in :
+//          - enabled : If true, enable sampling otherwise disable sampling
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void ZmqEventSupplier::enable_perf_mon(Tango::DevBoolean enabled)
+{
+    g_perf_mon.enable(enabled);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -1088,6 +1140,26 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
                                   DevFailed *except,
                                   bool inc_cptr)
 {
+    PerfMonSample sample;
+    SamplePusher<PerfMonSample> pusher{false, sample, *g_perf_mon.front, g_perf_mon.lock};
+    TimeBlockMicros perf_mon;
+    if(g_perf_mon.lock.try_lock())
+    {
+        if(g_perf_mon.enabled)
+        {
+            perf_mon = TimeBlockMicros{true, &sample.push_event_micros};
+            pusher.enabled = true;
+
+            if(g_last_event_timestamp != PerfClock::time_point{})
+            {
+                sample.micros_since_last_event = duration_micros(g_last_event_timestamp, perf_mon.start);
+            }
+            g_last_event_timestamp = perf_mon.start;
+        }
+
+        g_perf_mon.lock.unlock();
+    }
+
     if(device_impl == nullptr)
     {
         return;

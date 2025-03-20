@@ -351,6 +351,44 @@ CORBA::Any *DevQueryEventSystemCmd::execute(DeviceImpl *device, TANGO_UNUSED(con
 
 //+----------------------------------------------------------------------------
 //
+// method :         DevEnableEventSystemPerfMonCmd::DevEnableEventSystemPerfMonCmd()
+//
+// description :     method to trigger the execution of the "EnableEventSystemPerfMon"
+//                    command
+//
+//-----------------------------------------------------------------------------
+
+DevEnableEventSystemPerfMonCmd::DevEnableEventSystemPerfMonCmd(const char *name,
+                                                               Tango::CmdArgType argin,
+                                                               Tango::CmdArgType argout,
+                                                               const char *in_desc) :
+    Command(name, argin, argout)
+{
+    set_in_type_desc(in_desc);
+}
+
+//+----------------------------------------------------------------------------
+//
+// method :         DevEnableEventSystemPerfMonCmd::execute()
+//
+// description :     constructor for the DevEnableEventSystemPerfMon command of the
+//                    DServer.
+//
+//-----------------------------------------------------------------------------
+
+CORBA::Any *DevEnableEventSystemPerfMonCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
+{
+    Tango::DevBoolean enabled;
+    in_any >>= enabled;
+
+    (static_cast<DServer *>(device))->enable_event_system_perf_mon(enabled);
+
+    CORBA::Any *ret = return_empty_any("DevEnableEventSystemPerfMonCmd");
+    return ret;
+}
+
+//+----------------------------------------------------------------------------
+//
 // method :         DevKillCmd::DevKillCmd()
 //
 // description :     constructor for the DevKill command of the
@@ -1444,6 +1482,11 @@ void DServerClass::command_factory()
     command_list.push_back(new DevKillCmd("Kill", Tango::DEV_VOID, Tango::DEV_VOID));
     command_list.push_back(new DevQueryEventSystemCmd(
         "QueryEventSystem", Tango::DEV_VOID, Tango::DEV_STRING, "JSON object with information about the event system"));
+    command_list.push_back(
+        new DevEnableEventSystemPerfMonCmd("EnableEventSystemPerfMon",
+                                           Tango::DEV_BOOLEAN,
+                                           Tango::DEV_VOID,
+                                           "Enable or disable the collection of performance samples for events"));
 
     //
     // Now, commands related to polling
