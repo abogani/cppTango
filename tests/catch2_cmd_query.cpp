@@ -16,7 +16,7 @@ SCENARIO("Command list can be retrieved")
             {
                 using namespace Catch::Matchers;
 
-                CHECK_THAT(*ptr, SizeIs(32));
+                CHECK_THAT(*ptr, SizeIs(34));
 
                 auto has_info_for = [](std::string name)
                 {
@@ -29,6 +29,7 @@ SCENARIO("Command list can be retrieved")
                 CHECK_THAT(*ptr, has_info_for("DevLockStatus"));
                 CHECK_THAT(*ptr, has_info_for("DevPollStatus"));
                 CHECK_THAT(*ptr, has_info_for("DevRestart"));
+                CHECK_THAT(*ptr, has_info_for("EnableEventSystemPerfMon"));
                 CHECK_THAT(*ptr, has_info_for("EventConfirmSubscription"));
                 CHECK_THAT(*ptr, has_info_for("EventSubscriptionChange"));
                 CHECK_THAT(*ptr, has_info_for("GetLoggingLevel"));
@@ -38,6 +39,7 @@ SCENARIO("Command list can be retrieved")
                 CHECK_THAT(*ptr, has_info_for("PolledDevice"));
                 CHECK_THAT(*ptr, has_info_for("QueryClass"));
                 CHECK_THAT(*ptr, has_info_for("QueryDevice"));
+                CHECK_THAT(*ptr, has_info_for("QueryEventSystem"));
                 CHECK_THAT(*ptr, has_info_for("QuerySubDevice"));
                 CHECK_THAT(*ptr, has_info_for("QueryWizardClassProperty"));
                 CHECK_THAT(*ptr, has_info_for("QueryWizardDevProperty"));
@@ -221,6 +223,31 @@ SCENARIO("DevRestart command can be queried")
                 CHECK(cmd_inf.in_type == Tango::DEV_STRING);
                 CHECK(cmd_inf.out_type == Tango::DEV_VOID);
                 CHECK(cmd_inf.in_type_desc == "Device name");
+                CHECK(cmd_inf.out_type_desc == "Uninitialised");
+            }
+        }
+    }
+}
+
+SCENARIO("EnableEventSystemPerfMon command can be queried")
+{
+    GIVEN("a device proxy to a device")
+    {
+        TangoTest::Context ctx{"empty", "Empty"};
+        auto dserver = ctx.get_admin_proxy();
+
+        WHEN("we ask the device proxy about the EnableEventSystemPerfMon command")
+        {
+            Tango::CommandInfo cmd_inf;
+            REQUIRE_NOTHROW(cmd_inf = dserver->command_query("EnableEventSystemPerfMon"));
+
+            THEN("we get the expected information")
+            {
+                using namespace Catch::Matchers;
+                CHECK(cmd_inf.cmd_name == "EnableEventSystemPerfMon");
+                CHECK(cmd_inf.in_type == Tango::DEV_BOOLEAN);
+                CHECK(cmd_inf.out_type == Tango::DEV_VOID);
+                CHECK(cmd_inf.in_type_desc == "Enable or disable the collection of performance samples for events");
                 CHECK(cmd_inf.out_type_desc == "Uninitialised");
             }
         }
@@ -449,6 +476,31 @@ SCENARIO("QueryDevice command can be queried")
                 CHECK(cmd_inf.out_type == Tango::DEVVAR_STRINGARRAY);
                 CHECK(cmd_inf.in_type_desc == "Uninitialised");
                 CHECK(cmd_inf.out_type_desc == "Device server device(s) list");
+            }
+        }
+    }
+}
+
+SCENARIO("QueryEventSystem command can be queried")
+{
+    GIVEN("a device proxy to a device")
+    {
+        TangoTest::Context ctx{"empty", "Empty"};
+        auto dserver = ctx.get_admin_proxy();
+
+        WHEN("we ask the device proxy about the QueryEventSystem command")
+        {
+            Tango::CommandInfo cmd_inf;
+            REQUIRE_NOTHROW(cmd_inf = dserver->command_query("QueryEventSystem"));
+
+            THEN("we get the expected information")
+            {
+                using namespace Catch::Matchers;
+                CHECK(cmd_inf.cmd_name == "QueryEventSystem");
+                CHECK(cmd_inf.in_type == Tango::DEV_VOID);
+                CHECK(cmd_inf.out_type == Tango::DEV_STRING);
+                CHECK(cmd_inf.in_type_desc == "Uninitialised");
+                CHECK(cmd_inf.out_type_desc == "JSON object with information about the event system");
             }
         }
     }
