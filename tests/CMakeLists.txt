@@ -40,6 +40,7 @@ tango_catch2_tests_create(
     catch2_attr_polling.cpp
     catch2_attr_read_write_simple.cpp
     catch2_cmd_polling.cpp
+    catch2_cmd_query.cpp
     catch2_connection.cpp
     catch2_data_ready_event.cpp
     catch2_test_dtypes.cpp
