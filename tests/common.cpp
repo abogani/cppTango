@@ -25,14 +25,17 @@ auto set_env(const std::string &var, const std::string &value, bool force_update
 
 #ifndef TANGO_HAS_FROM_CHARS_DOUBLE
 template <>
-double parse_as<double>(const std::string &str)
+double parse_as<double>(std::string_view str)
 {
     char *end = nullptr;
 
-    errno = 0;
-    double result = strtod(str.c_str(), &end);
+    // We have to copy the string_view as it might not be nul-terminated.
+    std::string copy{str};
 
-    if(str.size() == 0 || errno == ERANGE || end != str.data() + str.size())
+    errno = 0;
+    double result = strtod(copy.c_str(), &end);
+
+    if(str.size() == 0 || errno == ERANGE || end != copy.data() + copy.size())
     {
         std::stringstream ss;
         ss << "\"" << str << "\" cannot be entirely parsed into double";

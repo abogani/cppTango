@@ -49,7 +49,7 @@ SPECIALIZE_TYPE_NAME(size_t);
  * Throws a std::runtime_error if the string cannot be entirely parsed to the type T
  */
 template <typename T>
-T parse_as(const std::string &str)
+T parse_as(std::string_view str)
 {
     T result{};
     auto first = str.data();
@@ -68,7 +68,7 @@ T parse_as(const std::string &str)
 
   #ifndef TANGO_HAS_FROM_CHARS_DOUBLE
 template <>
-double parse_as<double>(const std::string &str);
+double parse_as<double>(std::string_view str);
   #endif
 
 /**
