@@ -110,7 +110,7 @@ class EventData
 class FwdEventData : public EventData
 {
   public:
-    FwdEventData();
+    FwdEventData() = default;
     FwdEventData(
         DeviceProxy *, const std::string &, const std::string &, Tango::DeviceAttribute *, const DevErrorList &);
     FwdEventData(DeviceProxy *,
@@ -236,7 +236,7 @@ class AttrConfEventData
 class FwdAttrConfEventData : public AttrConfEventData
 {
   public:
-    FwdAttrConfEventData();
+    FwdAttrConfEventData() = default;
     FwdAttrConfEventData(
         DeviceProxy *, const std::string &, const std::string &, Tango::AttributeInfoEx *, const DevErrorList &);
 
