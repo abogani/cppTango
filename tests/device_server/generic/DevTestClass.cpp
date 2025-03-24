@@ -582,10 +582,8 @@ void DevTestClass::attribute_factory(std::vector<Tango::Attr *> &att_list)
 
     att_list.push_back(new Sub_device_tstAttr());
     att_list.push_back(new SlowAttr());
-#ifndef COMPAT
     att_list.push_back(new Encoded_attr_rwAttr());
     att_list.push_back(new Encoded_attr_image());
-#endif
 
     Tango::UserDefaultAttrProp att_no_data_prop;
     att_no_data_prop.set_description("User desc");

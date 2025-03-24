@@ -478,12 +478,7 @@ CORBA::Any *IOTrigPoll::execute(Tango::DeviceImpl *device, const CORBA::Any &in_
 
     Tango::Util *tg = Tango::Util::instance();
 
-#ifndef COMPAT
     tg->trigger_cmd_polling(device, cmd_name);
-#else
-    std::string name(cmd_name);
-    tg->trigger_cmd_polling(device, name);
-#endif
 
     return insert();
 }
@@ -525,12 +520,7 @@ CORBA::Any *IOAttrTrigPoll::execute(Tango::DeviceImpl *device, const CORBA::Any 
 
     Tango::Util *tg = Tango::Util::instance();
 
-#ifndef COMPAT
     tg->trigger_attr_polling(device, att_name);
-#else
-    std::string name(att_name);
-    tg->trigger_attr_polling(device, name);
-#endif
 
     return insert();
 }
@@ -1233,7 +1223,6 @@ CORBA::Any *ChangeEncodedFormat::execute(Tango::DeviceImpl *device, TANGO_UNUSED
 {
     static bool togle = false;
 
-#ifndef COMPAT
     if(togle == false)
     {
         (static_cast<DevTest *>(device))->enc_attr.encoded_format = Tango::string_dup("This format");
@@ -1244,7 +1233,6 @@ CORBA::Any *ChangeEncodedFormat::execute(Tango::DeviceImpl *device, TANGO_UNUSED
         (static_cast<DevTest *>(device))->enc_attr.encoded_format = Tango::string_dup("Another format");
         togle = false;
     }
-#endif
 
     return insert();
 }
@@ -1281,9 +1269,7 @@ bool ChangeEncodedData::is_allowed(TANGO_UNUSED(Tango::DeviceImpl *device), TANG
 
 CORBA::Any *ChangeEncodedData::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-#ifndef COMPAT
     (static_cast<DevTest *>(device))->enc_attr.encoded_data[2]++;
-#endif
     return insert();
 }
 

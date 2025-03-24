@@ -451,7 +451,6 @@ int main(int argc, char **argv)
 
         // Set Encoded_Attr attribute to be polled with external trigger
 
-#ifndef COMPAT
         device->poll_attribute("Encoded_attr", 0);
 
         // Fill polling buffer
@@ -510,7 +509,6 @@ int main(int argc, char **argv)
         TEST_LOG
             << "   Read attribute history for one DevEncoded attribute with polling buffer externally filled --> OK"
             << endl;
-#endif
     }
     catch(Tango::DevFailed &e)
     {

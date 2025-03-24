@@ -67,8 +67,6 @@ int main(int argc, char **argv)
 
         TEST_LOG << "   Asynchronous write_attribute in polling mode --> OK" << std::endl;
 
-#ifndef COMPAT
-
         // Write one attribute of the DevEncoded data type
         // The attribute used to test DevEncoded does not have any
         // "sleep" in its code -> Do not check the nb_not_arrived data
@@ -106,7 +104,6 @@ int main(int argc, char **argv)
         }
 
         TEST_LOG << "   Asynchronous write_attribute (DevEncoded data type) in polling mode --> OK" << std::endl;
-#endif
 
         // Write attribute to check polling with blocking with timeout
 

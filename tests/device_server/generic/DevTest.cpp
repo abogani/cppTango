@@ -48,7 +48,6 @@ void EventCallBack::push_event(Tango::EventData *event_data)
 //
 //-----------------------------------------------------------------------------
 
-#ifndef COMPAT
 DevTest::DevTest(Tango::DeviceClass *cl, std::string &s) :
     TANGO_BASE_CLASS(cl, s.c_str())
 {
@@ -72,31 +71,6 @@ DevTest::DevTest(Tango::DeviceClass *cl, const char *s, const char *d, Tango::De
 {
     init_device();
 }
-#else
-DevTest::DevTest(Tango::DeviceClass *cl, std::string &s) :
-    Tango::Device_3Impl(cl, s.c_str())
-{
-    init_device();
-}
-
-DevTest::DevTest(Tango::DeviceClass *cl, const char *s) :
-    Tango::Device_3Impl(cl, s)
-{
-    init_device();
-}
-
-DevTest::DevTest(Tango::DeviceClass *cl, const char *s, const char *d) :
-    Tango::Device_3Impl(cl, s, d)
-{
-    init_device();
-}
-
-DevTest::DevTest(Tango::DeviceClass *cl, const char *s, const char *d, Tango::DevState state, const char *status) :
-    Tango::Device_3Impl(cl, s, d, state, status)
-{
-    init_device();
-}
-#endif
 
 void DevTest::init_device()
 {
@@ -169,7 +143,6 @@ void DevTest::init_device()
 
     attr_slow = 3.3;
 
-#ifndef COMPAT
     enc_attr.encoded_format = Tango::string_dup("Which format?");
     /*  	enc_attr.encoded_data.length(200 * 1024 * 1024);
             for (int i = 0;i < (200 * 1024 * 1024);i++)
@@ -180,11 +153,10 @@ void DevTest::init_device()
     enc_attr.encoded_data[2] = (unsigned char) 99;
     enc_attr.encoded_data[3] = (unsigned char) 100;
 
-/*	enc_format = new char[40];
-        strcpy(enc_format,"Forth try");
-        enc_data[0] = (unsigned char)40;
-        enc_data[1] = (unsigned char)41;*/
-#endif
+    /*	enc_format = new char[40];
+            strcpy(enc_format,"Forth try");
+            enc_data[0] = (unsigned char)40;
+            enc_data[1] = (unsigned char)41;*/
 
     att_conf = 10;
     wattr_throw = 0;
@@ -317,12 +289,10 @@ void DevTest::IOPushDevEncodedEvent()
 {
     TANGO_LOG << "[DevTest::IOPushDevEncodedEvent] received " << std::endl;
 
-#ifndef COMPAT
     std::vector<std::string> f_names;
     std::vector<double> f_val;
 
     push_event("encoded_attr", f_names, f_val, &enc_attr);
-#endif
 }
 
 Tango::DevLong DevTest::IOSubscribeEvent(const Tango::DevVarStringArray *in_data)
@@ -513,7 +483,6 @@ void DevTest::IOFillPollBuffEncodedAttr()
 {
     TANGO_LOG << "[DevTest::IOFillPollBuffEncodedAttr] received " << std::endl;
 
-#ifndef COMPAT
     Tango::AttrHistoryStack<Tango::DevEncoded> ahs;
     ahs.length(3);
     std::string att_name("Encoded_attr");
@@ -551,7 +520,6 @@ void DevTest::IOFillPollBuffEncodedAttr()
 
     tg->fill_attr_polling_buffer(this, att_name, ahs);
     TANGO_LOG << "Attribute (DevEncoded data type) polling buffer filled" << std::endl;
-#endif
 }
 
 void DevTest::IOFillPollBuffCmd()
@@ -1232,7 +1200,6 @@ void DevTest::write_State_spec_attr_rw(Tango::WAttribute &att)
 void DevTest::write_Encoded_attr_rw(Tango::WAttribute &att)
 {
     TANGO_LOG << "In write_Encoded_attr_rw for attribute " << att.get_name() << std::endl;
-#ifndef COMPAT
     const Tango::DevEncoded *enc;
     att.get_write_value(enc);
     TANGO_LOG << "\tReceived string = " << enc->encoded_format << std::endl;
@@ -1241,7 +1208,6 @@ void DevTest::write_Encoded_attr_rw(Tango::WAttribute &att)
     {
         TANGO_LOG << "\t\tdata[" << i << "] = " << (unsigned long) enc->encoded_data[i] << std::endl;
     }
-#endif
 }
 
 void DevTest::write_Poll_buffRW(Tango::WAttribute &att)
@@ -1989,7 +1955,6 @@ void DevTest::read_Encoded_attr_rw(Tango::Attribute &att)
 {
     //		static int count = 0;
     TANGO_LOG << "[DevTest::read_attr] attribute name Encoded_attr_rw" << std::endl;
-#ifndef COMPAT
 
     /*		if ((count % 2) == 0)
                     {
@@ -2003,37 +1968,35 @@ void DevTest::read_Encoded_attr_rw(Tango::Attribute &att)
                     }*/
 
     att.set_value(&enc_attr);
-//		count++;
+    //		count++;
 
-/*		enc_attr_ptr = new Tango::DevEncoded;
-                enc_attr_ptr->encoded_format = Tango::string_dup("Which format?");
-                enc_attr_ptr->encoded_data.length(4);
-                enc_attr_ptr->encoded_data[0] = (unsigned char)97;
-                enc_attr_ptr->encoded_data[1] = (unsigned char)98;
-                enc_attr_ptr->encoded_data[2] = (unsigned char)99;
-                enc_attr_ptr->encoded_data[3] = (unsigned char)100;
+    /*		enc_attr_ptr = new Tango::DevEncoded;
+                    enc_attr_ptr->encoded_format = Tango::string_dup("Which format?");
+                    enc_attr_ptr->encoded_data.length(4);
+                    enc_attr_ptr->encoded_data[0] = (unsigned char)97;
+                    enc_attr_ptr->encoded_data[1] = (unsigned char)98;
+                    enc_attr_ptr->encoded_data[2] = (unsigned char)99;
+                    enc_attr_ptr->encoded_data[3] = (unsigned char)100;
 
-        att.set_value(enc_attr_ptr,1,0,true);*/
+            att.set_value(enc_attr_ptr,1,0,true);*/
 
-/*		char *str_ptr = new char[80];
-                strcpy(str_ptr,"Hola");
+    /*		char *str_ptr = new char[80];
+                    strcpy(str_ptr,"Hola");
 
-                unsigned char *data_ptr = new unsigned char [4];
-                data_ptr[0] = (unsigned char)79;
-                data_ptr[1] = (unsigned char)80;
-                data_ptr[2] = (unsigned char)81;
-                data_ptr[3] = (unsigned char)82;
+                    unsigned char *data_ptr = new unsigned char [4];
+                    data_ptr[0] = (unsigned char)79;
+                    data_ptr[1] = (unsigned char)80;
+                    data_ptr[2] = (unsigned char)81;
+                    data_ptr[3] = (unsigned char)82;
 
-                att.set_value(&str_ptr,data_ptr,4,true);*/
+                    att.set_value(&str_ptr,data_ptr,4,true);*/
 
-/*		att.set_value(&enc_format,&(enc_data[0]),2);	*/
-#endif
+    /*		att.set_value(&enc_format,&(enc_data[0]),2);	*/
 }
 
 void DevTest::read_Encoded_attr_image(Tango::Attribute &att)
 {
     TANGO_LOG << "[DevTest::read_attr] attribute name Encoded_attr_image" << std::endl;
-#ifndef COMPAT
 
     // Build a dummy image
     unsigned char *imageData = (unsigned char *) malloc(256 * 256);
@@ -2049,8 +2012,6 @@ void DevTest::read_Encoded_attr_image(Tango::Attribute &att)
     jpeg.encode_jpeg_gray8(imageData, 256, 256, 50.0);
     att.set_value(&jpeg);
     free(imageData);
-
-#endif
 }
 
 void DevTest::read_Slow_attr(Tango::Attribute &att)

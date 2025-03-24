@@ -189,7 +189,6 @@ int main(int argc, char **argv)
 
         TEST_LOG << "   unsubscribe_event --> OK" << std::endl;
 
-#ifndef COMPAT
         //
         // subscribe to a user event for an attribute of the DevEncoded data type
         //
@@ -230,7 +229,6 @@ int main(int argc, char **argv)
         device->unsubscribe_event(eve_id);
 
         TEST_LOG << "   unsubscribe_event (DevEncoded data type) --> OK" << std::endl;
-#endif
     }
     catch(Tango::DevFailed &e)
     {

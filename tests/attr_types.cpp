@@ -33,9 +33,7 @@ int main(int argc, char **argv)
     for(i = 0; i < loop; i++)
     {
         DeviceAttribute da;
-#ifndef COMPAT
         assert(da.get_data_format() == Tango::FMT_UNKNOWN);
-#endif
 
         try
         {
@@ -51,10 +49,8 @@ int main(int argc, char **argv)
         da >> sh;
         assert(sh == 12);
         assert(data_type == Tango::DEV_SHORT);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar short --> OK" << endl;
 
@@ -63,9 +59,7 @@ int main(int argc, char **argv)
     for(i = 0; i < loop; i++)
     {
         DeviceAttribute da;
-#ifndef COMPAT
         assert(da.get_data_format() == Tango::FMT_UNKNOWN);
-#endif
         try
         {
             da = device->read_attribute("Long_attr");
@@ -80,10 +74,8 @@ int main(int argc, char **argv)
         int data_type = da.get_type();
         assert(lo == 1246);
         assert(data_type == Tango::DEV_LONG);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar long --> OK" << endl;
 
@@ -106,10 +98,8 @@ int main(int argc, char **argv)
         int data_type = da.get_type();
         assert(db == 3.2);
         assert(data_type == Tango::DEV_DOUBLE);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar double --> OK" << endl;
 
@@ -132,10 +122,8 @@ int main(int argc, char **argv)
         int data_type = da.get_type();
         assert(str == "test_string");
         assert(data_type == Tango::DEV_STRING);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar C++ string --> OK" << endl;
 
@@ -152,10 +140,8 @@ int main(int argc, char **argv)
             int data_type = da.get_type();
             assert(db == 4.5);
             assert(data_type == Tango::DEV_FLOAT);
-#ifndef COMPAT
             AttrDataFormat data_format = da.get_data_format();
             assert(data_format == Tango::SCALAR);
-#endif
         }
         catch(CORBA::Exception &e)
         {
@@ -184,10 +170,8 @@ int main(int argc, char **argv)
         assert(db == true);
         int data_type = da.get_type();
         assert(data_type == Tango::DEV_BOOLEAN);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar boolean --> OK" << endl;
 
@@ -210,10 +194,8 @@ int main(int argc, char **argv)
         assert(db == 111);
         int data_type = da.get_type();
         assert(data_type == Tango::DEV_USHORT);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar unsigned short --> OK" << endl;
 
@@ -236,10 +218,8 @@ int main(int argc, char **argv)
         assert(db == 88);
         int data_type = da.get_type();
         assert(data_type == Tango::DEV_UCHAR);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar unsigned char --> OK" << endl;
 
@@ -263,10 +243,8 @@ int main(int argc, char **argv)
 
         assert(lo == 0x800000000LL);
         assert(data_type == Tango::DEV_LONG64);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar long 64 bits --> OK" << endl;
 
@@ -289,10 +267,8 @@ int main(int argc, char **argv)
         int data_type = da.get_type();
         assert(lo == 0xC0000000L);
         assert(data_type == Tango::DEV_ULONG);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar unsigned long --> OK" << endl;
 
@@ -315,10 +291,8 @@ int main(int argc, char **argv)
         int data_type = da.get_type();
         assert(lo == 0xC000000000000000LL);
         assert(data_type == Tango::DEV_ULONG64);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar unsigned long 64 bits --> OK" << endl;
 
@@ -327,9 +301,7 @@ int main(int argc, char **argv)
     for(i = 0; i < loop; i++)
     {
         DeviceAttribute da;
-#ifndef COMPAT
         assert(da.get_data_format() == Tango::FMT_UNKNOWN);
-#endif
         try
         {
             da = device->read_attribute("State_attr_rw");
@@ -345,16 +317,13 @@ int main(int argc, char **argv)
 
         assert(lo == Tango::FAULT);
         assert(data_type == Tango::DEV_STATE);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-#endif
     }
     TEST_LOG << "   Scalar state --> OK" << endl;
 
     // Test SCALAR DevEncoded
 
-#ifndef COMPAT
     for(i = 0; i < loop; i++)
     {
         DeviceAttribute da;
@@ -373,10 +342,8 @@ int main(int argc, char **argv)
 
         assert(::strcmp(lo.encoded_format.in(), "Which format?") == 0);
         assert(data_type == Tango::DEV_ENCODED);
-  #ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SCALAR);
-  #endif
         assert(lo.encoded_data.length() == 4);
         assert(lo.encoded_data[0] == 97);
         assert(lo.encoded_data[1] == 98);
@@ -392,7 +359,7 @@ int main(int argc, char **argv)
         int width, height;
         unsigned char *gray8;
 
-  #ifdef TANGO_USE_JPEG
+#ifdef TANGO_USE_JPEG
         try
         {
             da = device->read_attribute("Encoded_image");
@@ -411,7 +378,7 @@ int main(int argc, char **argv)
         assert(gray8[128 + 128 * 256] <= 132);
 
         delete[] gray8;
-  #else
+#else
         try
         {
             da = device->read_attribute("Encoded_image");
@@ -422,10 +389,9 @@ int main(int argc, char **argv)
         {
             assert(string(e.errors[0].reason.in()) == API_EmptyDeviceAttribute);
         }
-  #endif
+#endif
     }
     TEST_LOG << "   Scalar DevEncoded (JPEG) --> OK" << endl;
-#endif
 
     // Thirteen in one go
 
@@ -444,11 +410,9 @@ int main(int argc, char **argv)
         names.push_back("ULong_attr_rw");
         names.push_back("ULong64_attr_rw");
         names.push_back("State_attr_rw");
-#ifndef COMPAT
         names.push_back("Encoded_attr");
 
         DevEncoded enc;
-#endif
 
         vector<DeviceAttribute> *received;
 
@@ -510,11 +474,9 @@ int main(int argc, char **argv)
         (*received)[11] >> sta;
         assert(sta == Tango::FAULT);
         assert((*received)[11].get_type() == DEV_STATE);
-#ifndef COMPAT
         (*received)[12] >> enc;
         assert(enc.encoded_data.length() == 4);
         assert(::strcmp(enc.encoded_format.in(), "Which format?") == 0);
-#endif
 
         delete received;
     }
@@ -544,10 +506,8 @@ int main(int argc, char **argv)
 
         assert(ret == true);
         assert(da.get_type() == DEV_SHORT);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SPECTRUM);
-#endif
         assert(sh[0] == 10);
         assert(sh[1] == 20);
         assert(sh[2] == 30);
@@ -574,10 +534,8 @@ int main(int argc, char **argv)
 
         assert(ret == true);
         assert(da.get_type() == DEV_LONG);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SPECTRUM);
-#endif
         assert(lo[0] == 0);
         assert(lo[1] == 1);
         assert(lo[2] == 2);
@@ -679,10 +637,8 @@ int main(int argc, char **argv)
 
         assert(ret == true);
         assert(da.get_type() == DEV_BOOLEAN);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SPECTRUM);
-#endif
         assert(sh[0] == true);
         assert(sh[1] == true);
         assert(sh[2] == false);
@@ -1167,10 +1123,8 @@ int main(int argc, char **argv)
         bool ret = (da >> lo);
         assert(ret == true);
         assert(da.get_type() == DEV_STATE);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::SPECTRUM);
-#endif
         assert((*lo)[0] == Tango::ON);
         assert((*lo)[1] == Tango::OFF);
         assert((*lo)[2] == Tango::UNKNOWN);
@@ -1198,10 +1152,8 @@ int main(int argc, char **argv)
 
         assert(ret == true);
         assert(da.get_type() == DEV_SHORT);
-#ifndef COMPAT
         AttrDataFormat data_format = da.get_data_format();
         assert(data_format == Tango::IMAGE);
-#endif
 
         delete lo;
     }
@@ -1211,7 +1163,6 @@ int main(int argc, char **argv)
 
     bool except = false;
     DeviceAttribute db;
-#ifndef COMPAT
     db.set_exceptions(DeviceAttribute::unknown_format_flag);
 
     try
@@ -1230,7 +1181,6 @@ int main(int argc, char **argv)
     assert(df == Tango::FMT_UNKNOWN);
 
     TEST_LOG << "   Exception/Error for unknown attribute data format --> OK" << endl;
-#endif
 
     // Test DeviceAttribute::get_type() on empty spectrum attribute
 
