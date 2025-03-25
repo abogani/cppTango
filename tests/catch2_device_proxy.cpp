@@ -50,3 +50,28 @@ SCENARIO("DeviceProxy can be copied")
         }
     }
 }
+
+SCENARIO("Admin device proxy can be created from device proxy")
+{
+    int idlver = GENERATE(TangoTest::idlversion(4));
+    GIVEN("a device proxy to a IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"emptyproxy", "EmptyProxy", idlver};
+        auto device = ctx.get_proxy();
+        REQUIRE(idlver == device->get_idl_version());
+        THEN("A device proxy to the admin device can be queried")
+        {
+            std::unique_ptr<Tango::DeviceProxy> admin_device;
+            REQUIRE_NOTHROW(admin_device.reset(device->get_adm_device()));
+            AND_THEN("This device proxy is initialized")
+            {
+                REQUIRE(admin_device != nullptr);
+                AND_THEN("This device proxy is pointing to the proper device")
+                {
+                    using namespace Catch::Matchers;
+                    REQUIRE_THAT(device->adm_name(), ContainsSubstring(admin_device->name()));
+                }
+            }
+        }
+    }
+}
