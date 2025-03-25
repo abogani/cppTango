@@ -1871,6 +1871,7 @@ void DeviceProxy::real_constructor(const std::string &name, bool need_check_acc)
 
 DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
     Connection(sou),
+    adm_device(nullptr),
     ext_proxy(nullptr)
 {
     //
@@ -1901,19 +1902,6 @@ DeviceProxy::DeviceProxy(const DeviceProxy &sou) :
         {
             db_dev = new DbDevice(device_name, db_host, db_port);
         }
-    }
-
-    //
-    // Copy adm device pointer
-    //
-
-    if(sou.adm_device == nullptr)
-    {
-        adm_device = nullptr;
-    }
-    else
-    {
-        adm_device = new DeviceProxy(sou.adm_device->dev_name().c_str());
     }
 
     //
@@ -1971,16 +1959,7 @@ DeviceProxy &DeviceProxy::operator=(const DeviceProxy &rval)
             }
         }
 
-        delete adm_device;
-
-        if(rval.adm_device != nullptr)
-        {
-            adm_device = new DeviceProxy(rval.adm_device->dev_name().c_str());
-        }
-        else
-        {
-            adm_device = nullptr;
-        }
+        adm_device.reset(nullptr);
 
         if(rval.ext_proxy != nullptr)
         {
@@ -2554,8 +2533,6 @@ DeviceProxy::~DeviceProxy()
     //
     // Delete memory
     //
-
-    delete adm_device;
 }
 
 void DeviceProxy::unsubscribe_all_events()
@@ -7060,23 +7037,6 @@ std::vector<DeviceAttributeHistory> *DeviceProxy::attribute_history(const std::s
     return ddh;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-//
-// method:
-//        DeviceProxy::connect_to_adm_device()
-//
-// description:
-//        Create a connection to the admin device of the Tango device server process where the device is running.
-//
-//--------------------------------------------------------------------------------------------------------------------
-
-void DeviceProxy::connect_to_adm_device()
-{
-    adm_dev_name = adm_name();
-
-    adm_device = new DeviceProxy(adm_dev_name);
-}
-
 //-----------------------------------------------------------------------------
 //
 // DeviceProxy::polling_status() - get device polling status
@@ -7084,23 +7044,22 @@ void DeviceProxy::connect_to_adm_device()
 
 std::vector<std::string> *DeviceProxy::polling_status()
 {
-    check_connect_adm_device();
-
     DeviceData dout, din;
     std::string cmd("DevPollStatus");
     din.any <<= device_name.c_str();
 
+    auto &admin_device = get_admin_device();
     //
     // In case of connection failed error, do a re-try
     //
 
     try
     {
-        dout = adm_device->command_inout(cmd, din);
+        dout = admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        dout = adm_device->command_inout(cmd, din);
+        dout = admin_device.command_inout(cmd, din);
     }
 
     const DevVarStringArray *out_str;
@@ -7275,6 +7234,7 @@ void DeviceProxy::poll_command(const std::string &cmd_name, int period)
 {
     std::string poll_per;
     bool poll = is_polled(Cmd, cmd_name, poll_per);
+    auto &admin_device = get_admin_device();
 
     DevVarLongStringArray in;
     in.lvalue.length(1);
@@ -7312,11 +7272,11 @@ void DeviceProxy::poll_command(const std::string &cmd_name, int period)
 
             try
             {
-                adm_device->command_inout(cmd, din);
+                admin_device.command_inout(cmd, din);
             }
             catch(Tango::CommunicationFailed &)
             {
-                adm_device->command_inout(cmd, din);
+                admin_device.command_inout(cmd, din);
             }
         }
     }
@@ -7332,11 +7292,11 @@ void DeviceProxy::poll_command(const std::string &cmd_name, int period)
 
         try
         {
-            adm_device->command_inout(cmd, din);
+            admin_device.command_inout(cmd, din);
         }
         catch(Tango::CommunicationFailed &)
         {
-            adm_device->command_inout(cmd, din);
+            admin_device.command_inout(cmd, din);
         }
     }
 }
@@ -7353,6 +7313,7 @@ void DeviceProxy::poll_attribute(const std::string &attr_name, int period)
 {
     std::string poll_per;
     bool poll = is_polled(Attr, attr_name, poll_per);
+    auto &admin_device = get_admin_device();
 
     DevVarLongStringArray in;
     in.lvalue.length(1);
@@ -7391,11 +7352,11 @@ void DeviceProxy::poll_attribute(const std::string &attr_name, int period)
 
             try
             {
-                adm_device->command_inout(cmd, din);
+                admin_device.command_inout(cmd, din);
             }
             catch(Tango::CommunicationFailed &)
             {
-                adm_device->command_inout(cmd, din);
+                admin_device.command_inout(cmd, din);
             }
         }
     }
@@ -7411,11 +7372,11 @@ void DeviceProxy::poll_attribute(const std::string &attr_name, int period)
 
         try
         {
-            adm_device->command_inout(cmd, din);
+            admin_device.command_inout(cmd, din);
         }
         catch(Tango::CommunicationFailed &)
         {
-            adm_device->command_inout(cmd, din);
+            admin_device.command_inout(cmd, din);
         }
     }
 }
@@ -7452,8 +7413,7 @@ bool DeviceProxy::is_attribute_polled(const std::string &attr_name)
 
 void DeviceProxy::stop_poll_command(const std::string &cmd_name)
 {
-    check_connect_adm_device();
-
+    auto &admin_device = get_admin_device();
     DevVarStringArray in;
     in.length(3);
 
@@ -7467,11 +7427,11 @@ void DeviceProxy::stop_poll_command(const std::string &cmd_name)
 
     try
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
 }
 
@@ -7483,8 +7443,7 @@ void DeviceProxy::stop_poll_command(const std::string &cmd_name)
 
 void DeviceProxy::stop_poll_attribute(const std::string &attr_name)
 {
-    check_connect_adm_device();
-
+    auto &admin_device = get_admin_device();
     DevVarStringArray in;
     in.length(3);
 
@@ -7498,11 +7457,11 @@ void DeviceProxy::stop_poll_attribute(const std::string &attr_name)
 
     try
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
 }
 
@@ -7513,8 +7472,7 @@ void DeviceProxy::stop_poll_attribute(const std::string &attr_name)
 //-----------------------------------------------------------------------------
 void DeviceProxy::add_logging_target(const std::string &target_type_name)
 {
-    check_connect_adm_device();
-
+    auto &admin_device = get_admin_device();
     DevVarStringArray in(2);
     in.length(2);
 
@@ -7527,11 +7485,11 @@ void DeviceProxy::add_logging_target(const std::string &target_type_name)
 
     try
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
 }
 
@@ -7542,8 +7500,7 @@ void DeviceProxy::add_logging_target(const std::string &target_type_name)
 //-----------------------------------------------------------------------------
 void DeviceProxy::remove_logging_target(const std::string &target_type_name)
 {
-    check_connect_adm_device();
-
+    auto &admin_device = get_admin_device();
     DevVarStringArray in(2);
     in.length(2);
 
@@ -7556,11 +7513,11 @@ void DeviceProxy::remove_logging_target(const std::string &target_type_name)
 
     try
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
 }
 
@@ -7571,8 +7528,7 @@ void DeviceProxy::remove_logging_target(const std::string &target_type_name)
 //-----------------------------------------------------------------------------
 std::vector<std::string> DeviceProxy::get_logging_target()
 {
-    check_connect_adm_device();
-
+    auto &admin_device = get_admin_device();
     DeviceData din;
     din << device_name;
 
@@ -7582,11 +7538,11 @@ std::vector<std::string> DeviceProxy::get_logging_target()
     DevVarStringArray_var logging_targets;
     try
     {
-        dout = adm_device->command_inout(cmd, din);
+        dout = admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        dout = adm_device->command_inout(cmd, din);
+        dout = admin_device.command_inout(cmd, din);
     }
 
     std::vector<std::string> logging_targets_vec;
@@ -7604,9 +7560,8 @@ std::vector<std::string> DeviceProxy::get_logging_target()
 
 int DeviceProxy::get_logging_level()
 {
-    check_connect_adm_device();
-
     std::string cmd("GetLoggingLevel");
+    auto &admin_device = get_admin_device();
 
     DevVarStringArray in;
     in.length(1);
@@ -7618,11 +7573,11 @@ int DeviceProxy::get_logging_level()
     DeviceData dout;
     try
     {
-        dout = adm_device->command_inout(cmd, din);
+        dout = admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        dout = adm_device->command_inout(cmd, din);
+        dout = admin_device.command_inout(cmd, din);
     }
 
     long level;
@@ -7658,9 +7613,8 @@ int DeviceProxy::get_logging_level()
 
 void DeviceProxy::set_logging_level(int level)
 {
-    check_connect_adm_device();
-
     std::string cmd("SetLoggingLevel");
+    auto &admin_device = get_admin_device();
 
     DevVarLongStringArray in;
     in.lvalue.length(1);
@@ -7673,11 +7627,11 @@ void DeviceProxy::set_logging_level(int level)
 
     try
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
     catch(Tango::CommunicationFailed &)
     {
-        adm_device->command_inout(cmd, din);
+        admin_device.command_inout(cmd, din);
     }
 }
 
@@ -8276,6 +8230,33 @@ Database *DeviceProxy::get_device_db()
 
 //-----------------------------------------------------------------------------
 //
+// DeviceProxy::get_admin_device - get a device proxy to the admin device
+//
+//-----------------------------------------------------------------------------
+DeviceProxy &DeviceProxy::get_admin_device()
+{
+    omni_mutex_lock guard(adm_dev_mutex);
+    if(adm_device == nullptr)
+    {
+        adm_dev_name = adm_name();
+        adm_device = std::make_unique<Tango::DeviceProxy>(adm_dev_name);
+    }
+    return *adm_device;
+}
+
+//-----------------------------------------------------------------------------
+//
+// DeviceProxy::get_adm_device - get a device proxy to the admin device
+//
+//-----------------------------------------------------------------------------
+DeviceProxy *DeviceProxy::get_adm_device()
+{
+    auto &admin_device = get_admin_device();
+    return new DeviceProxy(admin_device);
+}
+
+//-----------------------------------------------------------------------------
+//
 // clean_lock - Litle function installed in the list of function(s) to be called
 // at exit time. It will clean all locking thread(s) and unlock locked device(s)
 //
@@ -8298,6 +8279,7 @@ static void clean_lock()
 
 void DeviceProxy::lock(int lock_validity)
 {
+    auto &admin_device = get_admin_device();
     //
     // Feature unavailable for device without database
     //
@@ -8353,12 +8335,6 @@ void DeviceProxy::lock(int lock_validity)
     }
 
     //
-    // Connect to the admin device if not already done
-    //
-
-    check_connect_adm_device();
-
-    //
     // Send command to admin device
     //
 
@@ -8371,7 +8347,7 @@ void DeviceProxy::lock(int lock_validity)
     sent_data.lvalue[0] = lock_validity;
     din << sent_data;
 
-    adm_device->command_inout(cmd, din);
+    admin_device.command_inout(cmd, din);
 
     //
     // Increment locking counter
@@ -8466,6 +8442,7 @@ void DeviceProxy::lock(int lock_validity)
 
 void DeviceProxy::unlock(bool force)
 {
+    auto &admin_device = get_admin_device();
     //
     // Feature unavailable for device without database
     //
@@ -8479,8 +8456,6 @@ void DeviceProxy::unlock(bool force)
 
         TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
-
-    check_connect_adm_device();
 
     //
     // Send command to admin device
@@ -8506,7 +8481,7 @@ void DeviceProxy::unlock(bool force)
     // Send request to the DS admin device
     //
 
-    dout = adm_device->command_inout(cmd, din);
+    dout = admin_device.command_inout(cmd, din);
 
     //
     // Decrement locking counter or replace it by the device global counter
@@ -8627,7 +8602,7 @@ void DeviceProxy::create_locking_thread(ApiUtil *au, std::chrono::seconds dl)
         pos->second.shared = new LockThCmd;
         pos->second.shared->cmd_pending = false;
         pos->second.shared->suicide = false;
-        pos->second.l_thread = new LockThread(*pos->second.shared, *pos->second.mon, adm_device, device_name, dl);
+        pos->second.l_thread = new LockThread(*pos->second.shared, *pos->second.mon, get_adm_device(), device_name, dl);
 
         pos->second.l_thread->start();
     }
@@ -8845,6 +8820,7 @@ bool DeviceProxy::get_locker(LockerInfo &lock_info)
 
 void DeviceProxy::ask_locking_status(std::vector<std::string> &v_str, std::vector<DevLong> &v_l)
 {
+    auto &admin_device = get_admin_device();
     //
     // Feature unavailable for device without database
     //
@@ -8859,8 +8835,6 @@ void DeviceProxy::ask_locking_status(std::vector<std::string> &v_str, std::vecto
         TANGO_THROW_DETAILED_EXCEPTION(ApiNonDbExcept, API_NonDatabaseDevice, desc.str());
     }
 
-    check_connect_adm_device();
-
     //
     // Send command to admin device
     //
@@ -8869,7 +8843,7 @@ void DeviceProxy::ask_locking_status(std::vector<std::string> &v_str, std::vecto
     DeviceData din, dout;
     din.any <<= device_name.c_str();
 
-    dout = adm_device->command_inout(cmd, din);
+    dout = admin_device.command_inout(cmd, din);
 
     //
     // Extract data and return data to caller
@@ -9597,15 +9571,14 @@ int DeviceProxy::get_tango_lib_version()
 {
     int ret = 0;
 
-    check_connect_adm_device();
-
+    auto &admin_device = get_admin_device();
     //
     // Get admin device IDL release and command list
     //
 
-    int admin_idl_vers = adm_device->get_idl_version();
+    int admin_idl_vers = admin_device.get_idl_version();
     Tango::CommandInfoList *cmd_list;
-    cmd_list = adm_device->command_list_query();
+    cmd_list = admin_device.command_list_query();
 
     switch(admin_idl_vers)
     {
