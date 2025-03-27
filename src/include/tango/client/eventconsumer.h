@@ -394,7 +394,7 @@ typedef struct event_callback_base
     std::string event_name;
     std::string channel_name;
     std::string fully_qualified_event_name;
-    time_t last_subscribed;
+    time_t last_subscribed{0};
     TangoMonitor *callback_monitor;
     std::vector<EventSubscribeStruct> callback_list;
     bool alias_used;
