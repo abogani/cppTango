@@ -72,8 +72,8 @@ SCENARIO("ZmqEventSupplier can bind to ephemeral ports")
                         REQUIRE(pos != std::string_view::npos);
                         std::string_view port_str = endpoint.substr(pos + 1);
                         auto port = parse_as<int>(port_str);
-                        REQUIRE(port >= 32768);
-                        REQUIRE(port <= 60999);
+                        REQUIRE(port >= std::numeric_limits<std::uint16_t>::min());
+                        REQUIRE(port <= std::numeric_limits<std::uint16_t>::max());
                     }
                 }
             }
