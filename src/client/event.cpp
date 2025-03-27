@@ -2005,11 +2005,19 @@ void EventConsumer::unsubscribe_event(int event_id)
                         omni_thread::ensure_self se;
                         if(omni_thread::self()->id() == thread_id)
                         {
-                            //                           TANGO_LOG << event_id << ": Unsubscribing for an event while it
-                            //                           is in its callback !!!!!!!!!!" << endl;
-                            esspos->id = -event_id;
+                            TANGO_LOG_DEBUG << "Event " << event_id
+                                            << ": Unsubscribing from its callback! Thread_id: " << thread_id
+                                            << std::endl;
 
-                            auto *th = new DelayedEventUnsubThread(this, event_id, epos->second.callback_monitor);
+                            if(event_id > 0)
+                            {
+                                esspos->id = -event_id;
+
+                                TANGO_LOG_DEBUG << "Event " << event_id
+                                                << ": Deactivating event, new ID: " << esspos->id << std::endl;
+                            }
+
+                            auto *th = new DelayedEventUnsubThread(this, esspos->id, epos->second.callback_monitor);
                             th->start();
 
                             return;
@@ -2019,6 +2027,8 @@ void EventConsumer::unsubscribe_event(int event_id)
             }
         }
     }
+
+    TANGO_LOG_DEBUG << "Event " << event_id << ": Start unsubscribing" << std::endl;
 
     //
     // Ask the main ZMQ thread to delay all incoming event until this method exit. A dead lock could happen if we don't
@@ -2236,7 +2246,9 @@ void DelayedEventUnsubThread::run(TANGO_UNUSED(void *ptr))
         // Unsubscribe the event
         //
 
-        ev_cons->unsubscribe_event(-event_id);
+        TANGO_LOG_DEBUG << "DelayedEventUnsubThread calling unsubscribe_event for ID " << event_id << std::endl;
+
+        ev_cons->unsubscribe_event(event_id);
     }
     catch(...)
     {
