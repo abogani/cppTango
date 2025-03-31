@@ -20,7 +20,7 @@ variables: &variables
   BUILD_TESTING: "ON"
   TANGO_USE_TELEMETRY: "ON"
   # docker image names and versions
-  DEBIAN_12_IMAGE: "debian12:v10"
+  DEBIAN_12_IMAGE: "debian12:v11"
   DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v9"
   DEBIAN_11_IMAGE: "debian11:v9"
   UBUNTU_20_IMAGE: "ubuntu-20.04:v10"
