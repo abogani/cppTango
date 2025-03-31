@@ -621,7 +621,7 @@ cmake-config:
     - cmake --build /tmp/cmake_config_test
 
 macos:
-  image: macos-13-xcode-14
+  image: macos-15-xcode-16
   tags:
     - saas-macos-medium-m1
   needs:
