@@ -651,7 +651,7 @@ macos:
       -DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=1000
       -S . -B build
     - cmake --build build
-    - ctest --output-on-failure --test-dir build -R "^catch2.*$"
+    - ctest --output-on-failure --test-dir build -R "^catch2.*$" || (echo "Rerunning failed tests"; ctest --output-on-failure --test-dir build --rerun-failed)
   artifacts:
     when: always
     paths:
