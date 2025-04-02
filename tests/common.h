@@ -3,6 +3,10 @@
 #ifndef Common_H
   #define Common_H
 
+  #ifdef WIN32
+    #define NOMINMAX
+  #endif
+
   #include <iostream>
   #include <tango/tango.h>
 
