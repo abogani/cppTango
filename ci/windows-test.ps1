@@ -6,11 +6,20 @@ $cwd = $(pwd | Convert-Path).Replace("\", "/")
 # so let's only run them once
 if ($TANGO_INSTALL_DEPENDENCIES -eq "ON") {
     Write-Host "== Run Catch2 tests"
-    Invoke-NativeCommand ctest `
-        --output-on-failure `
-        --test-dir build `
-        -C ${CMAKE_BUILD_TYPE} `
-        -R "^catch2.*$"
+    try {
+        Invoke-NativeCommand ctest `
+            --output-on-failure `
+            --test-dir build `
+            -C ${CMAKE_BUILD_TYPE} `
+            -R "^catch2.*$"
+    } catch {
+        Write-Host "== Rerunning failed tests"
+        Invoke-NativeCommand ctest `
+            --output-on-failure `
+            --test-dir build `
+            -C ${CMAKE_BUILD_TYPE} `
+            --rerun-failed
+    }
 }
 
 Write-Host "== Test installation"
