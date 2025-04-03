@@ -86,6 +86,8 @@ SCENARIO("ZmqEventSupplier can bind to specific ports")
     int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device with ZMQ ports specified")
     {
+        // These ports have to unique between all the scenarios in this file
+        // to allow parallel test execution from ctest
         std::string event_port = "9977";
         std::string heartbeat_port = "9988";
 
@@ -147,8 +149,10 @@ SCENARIO("ZmqEventSupplier reports an error when event port invalid")
     int idlver = GENERATE(TangoTest::idlversion(4));
     GIVEN("a device proxy to a IDLv" << idlver << " device with an invalid ZMQ event ports specified")
     {
+        // These ports have to unique between all the scenarios in this file
+        // to allow parallel test execution from ctest
         std::string event_port = "XXXX";
-        std::string heartbeat_port = "9988";
+        std::string heartbeat_port = "9989";
 
         std::vector<std::string> env{
             "TANGO_ZMQ_EVENT_PORT=" + event_port,
@@ -216,7 +220,9 @@ SCENARIO("ZmqEventSupplier reports an error when heartbeat port invalid")
 {
     GIVEN("an invalid heartbeat port")
     {
-        std::string event_port = "9987";
+        // These ports have to unique between all the scenarios in this file
+        // to allow parallel test execution from ctest
+        std::string event_port = "9978";
         std::string heartbeat_port = "YYYYY";
         WHEN("starting a device server")
         {
