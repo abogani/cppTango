@@ -41,6 +41,7 @@
 namespace Tango
 {
 
+// NOLINTNEXTLINE(bugprone-tagged-union-member-count)
 class FwdAttribute : public WAttribute
 {
   public:

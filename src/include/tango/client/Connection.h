@@ -569,6 +569,7 @@ class Connection
         return get_access_control();
     }
 
+    // NOLINTNEXTLINE(bugprone-tagged-union-member-count)
     friend class FwdAttribute;
 
   private:
