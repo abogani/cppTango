@@ -19,14 +19,17 @@ then
     sudo sh -c 'echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern'
   fi
 
-  docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
-  docker pull registry.gitlab.com/tango-controls/docker/tango-db:5.16-1
+  if [[ $TANGO_SKIP_OLD_TESTS != "ON" ]]
+  then
+    docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
+    docker pull registry.gitlab.com/tango-controls/docker/tango-db:5.16-1
 
-  # Setup a route to the containers running inside dind
-  sudo ip route add $(docker network inspect -f '{{(index .IPAM.Config 0).Subnet}}' bridge) \
-  via                                                                                       \
-  $(getent hosts docker | awk '{ print $1 }')                                               \
-  dev eth0
+    # Setup a route to the containers running inside dind
+    sudo ip route add $(docker network inspect -f '{{(index .IPAM.Config 0).Subnet}}' bridge) \
+    via                                                                                       \
+    $(getent hosts docker | awk '{ print $1 }')                                               \
+    dev eth0
+  fi
 fi
 
 ADDITIONAL_ARGS=""
