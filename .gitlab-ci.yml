@@ -79,10 +79,8 @@ pre-commit:
 
 .job-template-with-tests: &job-template-with-tests
   image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
-  services:
-    - docker:20.10.16-dind
   tags:
-    - dind, skao, docker, linux, amd64
+    - docker, linux, amd64
   needs:
     - job: pre-commit
       artifacts: false
@@ -247,6 +245,12 @@ debian12-release-no-pch:
 debian12:
   <<: *job-template-with-tests
   timeout: 4h
+  services:
+    - docker:20.10.16-dind
+  # We require dind for the old tests and SKAO seem to be the
+  # only runners which can handle this.
+  tags:
+    - dind, skao, docker, linux, amd64
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
