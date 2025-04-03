@@ -11,19 +11,6 @@ dline="=========================================================================
 
 for corefile in build/tests/core.*; do
   if [ -e "$corefile" ]; then
-    # extract %e from the core pattern: core.%e.%p.%t
-    bin_name=$(basename $corefile | awk 'BEGIN { FS="." } { print $2 }')
-
-    # $bin_name is limited to 15 characters, so we might have truncation compared
-    # to the name of the binary in the file system.  In this loop we try dumping a
-    # stack trace with each binary that matches.  There is only a single match
-    # that will work but, in practice, we will probably only see a single match
-    # anyway so it is not worth trying to work out which is the correct one here.
-
-    for bin_path in $(find -L . -name "${bin_name}*" -type f -executable); do
-      echo -e "$dline\nBacktrace for corefile=$corefile (binary=$bin_path)\n$dline"
-      gdb --cd=${SOURCE_DIR} --batch $bin_path ./$corefile -ex "thread apply all bt full"
-      echo
-    done
+    gdb --cd=${SOURCE_DIR} --batch -core ./$corefile -ex "thread apply all bt full"
   fi
 done

@@ -79,10 +79,8 @@ pre-commit:
 
 .job-template-with-tests: &job-template-with-tests
   image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
-  services:
-    - docker:20.10.16-dind
   tags:
-    - dind, skao, docker, linux, amd64
+    - docker, linux, amd64
   needs:
     - job: pre-commit
       artifacts: false
@@ -155,18 +153,21 @@ ubuntu-20.04:
   variables:
     <<: *variables
     OS_TYPE: "${UBUNTU_20_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 ubuntu-22.04:
   <<: *job-template-with-tests
   variables:
     <<: *variables
     OS_TYPE: "${UBUNTU_22_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 ubuntu-24.04:
   <<: *job-template-with-tests
   variables:
     <<: *variables
     OS_TYPE: "${UBUNTU_24_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 coverage:
   <<: *job-template-with-tests
@@ -174,6 +175,7 @@ coverage:
     <<: *variables
     TANGO_ENABLE_COVERAGE: "ON"
     OS_TYPE: "${DEBIAN_12_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
   after_script:
     - mkdir -p build/tests/results
     - mkdir coverage
@@ -210,6 +212,7 @@ debian12-static:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     BUILD_SHARED_LIBS: "OFF"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12-no-pch:
   <<: *job-template-no-test-run
@@ -218,6 +221,7 @@ debian12-no-pch:
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12-release:
   <<: *job-template-with-tests
@@ -226,6 +230,7 @@ debian12-release:
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     CMAKE_BUILD_TYPE: Release
     TANGO_WARNINGS_AS_ERRORS: "ON"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12-release-no-pch:
   <<: *job-template-with-tests
@@ -235,12 +240,21 @@ debian12-release-no-pch:
     CMAKE_BUILD_TYPE: Release
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12:
   <<: *job-template-with-tests
+  timeout: 4h
+  services:
+    - docker:20.10.16-dind
+  # We require dind for the old tests and SKAO seem to be the
+  # only runners which can handle this.
+  tags:
+    - dind, skao, docker, linux, amd64
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "OFF"
 
 debian12-no-submodule-init:
   <<: *job-template-no-test-run
@@ -257,6 +271,7 @@ debian12-no-jpeg:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     TANGO_USE_JPEG: "OFF"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12-no-telemetry:
   <<: *job-template-with-tests
@@ -264,6 +279,7 @@ debian12-no-telemetry:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     TANGO_USE_TELEMETRY: "OFF"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12-cross-32bit:
   <<: *job-template-no-test-run
@@ -276,18 +292,21 @@ debian12-cross-32bit:
     TANGO_WARNINGS_AS_ERRORS: "ON"
     TANGO_USE_JPEG: "OFF"
     TANGO_USE_TELEMETRY: "OFF"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian11:
   <<: *job-template-with-tests
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_11_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 ubuntu-20.04-jpeg9:
   <<: *job-template-with-tests
   variables:
     <<: *variables
     OS_TYPE: "${UBUNTU_20_JPEG9_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 clang-analyzer:
   <<: *job-template-no-test-run
@@ -541,6 +560,7 @@ sanitizer:
       halt_on_error=1,\
       suppressions=$CI_PROJECT_DIR/tests/suppressions-ubsan.supp"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    TANGO_SKIP_OLD_TESTS: "ON"
   # Increase timeout, this is required by UBSAN job.
   timeout: 2h
   parallel:
@@ -550,8 +570,6 @@ sanitizer:
     - if: '$CI_JOB_NAME == "sanitizer: [TSAN]"'
       when: never
     - if: '$CI_JOB_NAME == "sanitizer: [ASAN]"'
-      variables:
-        TANGO_SKIP_OLD_TESTS: "ON"
       when: on_success
     - if: '$CI_JOB_NAME == "sanitizer: [UBSAN]"'
       variables:
