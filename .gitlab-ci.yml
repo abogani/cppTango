@@ -246,6 +246,7 @@ debian12-release-no-pch:
 
 debian12:
   <<: *job-template-with-tests
+  timeout: 4h
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
