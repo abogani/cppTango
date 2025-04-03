@@ -12,13 +12,6 @@ then
   echo "Preparing for test run inside CI"
   ulimit -c unlimited
 
-  if hash sysctl 2>/dev/null
-  then
-    sudo sh -c 'sysctl kernel.core_pattern="core.%e.%p.%t"'
-  else
-    sudo sh -c 'echo "core.%e.%p.%t" > /proc/sys/kernel/core_pattern'
-  fi
-
   if [[ $TANGO_SKIP_OLD_TESTS != "ON" ]]
   then
     docker pull registry.gitlab.com/tango-controls/docker/mysql:5.16-mysql-5
