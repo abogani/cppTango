@@ -55,4 +55,5 @@ tango_catch2_tests_create(
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_filedatabase.cpp>
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_jpeg_encoding.cpp>
     catch2_loggerstream_attribute.cpp
+    catch2_device_proxy.cpp
     )
