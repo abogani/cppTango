@@ -212,7 +212,6 @@ set(TESTS asyn_attr
           user_event
           acc_right
           add_rem_attr
-          add_rem_dev
           allowed_cmd
           att_conf
           attr_conf_test
