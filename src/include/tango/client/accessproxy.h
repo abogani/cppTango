@@ -25,7 +25,12 @@
 #ifndef _ACCESSPROXY_H
 #define _ACCESSPROXY_H
 
-#include <tango/tango.h>
+#include <tango/client/DeviceProxy.h>
+#include <tango/common/tango_const.h>
+
+#include <string>
+#include <vector>
+#include <map>
 
 namespace Tango
 {

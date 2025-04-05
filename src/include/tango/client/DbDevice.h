@@ -25,6 +25,12 @@
 #ifndef _DBDEVICE_H
 #define _DBDEVICE_H
 
+#include <string>
+#include <memory>
+#include <tango/client/Database.h>
+
+namespace Tango
+{
 /****************************************************************************************
  *                                                                                         *
  *                     The DbDevice class                                                    *
@@ -237,4 +243,5 @@ class DbDevice
     void clear_access_except_errors();
     void get_property_list(const std::string &, std::vector<std::string> &);
 };
+} // namespace Tango
 #endif /* _DBDEVICE_H */

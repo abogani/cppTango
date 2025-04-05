@@ -34,6 +34,7 @@
 
 #include <tango/server/fwdattribute_templ.h>
 #include <tango/server/fwdattribute_spec_templ.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

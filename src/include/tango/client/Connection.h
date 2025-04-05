@@ -33,6 +33,77 @@
 #include <chrono>
 #include <optional>
 
+#include <string>
+#include <memory>
+#include <vector>
+
+#include <tango/client/CallBack.h>
+#include <tango/client/DeviceData.h>
+#include <tango/client/devasyn.h>
+#include <tango/server/readers_writers_lock.h>
+
+namespace Tango
+{
+class Connection;
+
+/**
+ * Possible asynchronous request type
+ *
+ * @ingroup Client
+ * @headerfile tango.h
+ */
+enum asyn_req_type
+{
+    POLLING,   ///< Polling mode request
+    CALL_BACK, ///< Callback mode request
+    ALL_ASYNCH ///< All request
+};
+
+class TgRequest
+{
+  public:
+    enum ReqType
+    {
+        CMD_INOUT,
+        READ_ATTR,
+        WRITE_ATTR_SINGLE,
+        WRITE_ATTR
+    };
+
+    TgRequest(CORBA::Request_ptr re, ReqType ty) :
+        request(re),
+        req_type(ty),
+        cb_ptr(nullptr),
+        arrived(false),
+        dev(nullptr)
+    {
+    }
+
+    TgRequest(CORBA::Request_ptr re, ReqType ty, CallBack *cb) :
+        request(re),
+        req_type(ty),
+        cb_ptr(cb),
+        arrived(false),
+        dev(nullptr)
+    {
+    }
+
+    TgRequest(Tango::Connection *con, ReqType ty, CallBack *cb) :
+        request(nullptr),
+        req_type(ty),
+        cb_ptr(cb),
+        arrived(false),
+        dev(con)
+    {
+    }
+
+    CORBA::Request_ptr request;
+    ReqType req_type;
+    CallBack *cb_ptr;
+    bool arrived;
+    Connection *dev;
+};
+
 /****************************************************************************************
  *                                                                                         *
  *                     The Connection class                                                *
@@ -577,5 +648,5 @@ class Connection
     DeviceData omni420_except(int, char *, TgRequest &);
     void toIOR(const char *, IOP::IOR &);
 };
-
+} // namespace Tango
 #endif /* _CONNECTION_H */

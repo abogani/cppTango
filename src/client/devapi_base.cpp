@@ -29,6 +29,8 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/devapi_utils_templ.h>
+#include <tango/client/Database.h>
+#include <tango/client/DbDevice.h>
 #include <tango/internal/net.h>
 #include <tango/internal/utils.h>
 
@@ -1691,6 +1693,45 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
     return tmp;
 
     TANGO_TELEMETRY_TRACE_END();
+}
+
+long Connection::add_asyn_request(CORBA::Request_ptr req, TgRequest::ReqType req_type)
+{
+    omni_mutex_lock guard(asyn_mutex);
+    long id = ApiUtil::instance()->get_pasyn_table()->store_request(req, req_type);
+    pasyn_ctr++;
+    return id;
+}
+
+void Connection::remove_asyn_request(long id)
+{
+    omni_mutex_lock guard(asyn_mutex);
+
+    ApiUtil::instance()->get_pasyn_table()->remove_request(id);
+    pasyn_ctr--;
+}
+
+void Connection::add_asyn_cb_request(CORBA::Request_ptr req, CallBack *cb, Connection *con, TgRequest::ReqType req_type)
+{
+    omni_mutex_lock guard(asyn_mutex);
+    ApiUtil::instance()->get_pasyn_table()->store_request(req, cb, con, req_type);
+    pasyn_cb_ctr++;
+}
+
+void Connection::remove_asyn_cb_request(Connection *con, CORBA::Request_ptr req)
+{
+    omni_mutex_lock guard(asyn_mutex);
+    ApiUtil::instance()->get_pasyn_table()->remove_request(con, req);
+    pasyn_cb_ctr--;
+}
+
+long Connection::get_pasyn_cb_ctr()
+{
+    long ret;
+    asyn_mutex.lock();
+    ret = pasyn_cb_ctr;
+    asyn_mutex.unlock();
+    return ret;
 }
 
 //-----------------------------------------------------------------------------
@@ -9436,6 +9477,26 @@ int DeviceProxy::get_tango_lib_version()
     delete cmd_list;
 
     return ret;
+}
+
+inline int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, CallBack *callback)
+{
+    std::vector<std::string> filt;
+    return subscribe_event(attr_name, event, callback, filt, false);
+}
+
+inline int
+    DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, CallBack *callback, bool stateless)
+{
+    std::vector<std::string> filt;
+    return subscribe_event(attr_name, event, callback, filt, stateless);
+}
+
+inline int
+    DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, int event_queue_size, bool stateless)
+{
+    std::vector<std::string> filt;
+    return subscribe_event(attr_name, event, event_queue_size, filt, stateless);
 }
 
 template void DeviceProxy::extract_value<Tango::DevLong>(CORBA::Any &,

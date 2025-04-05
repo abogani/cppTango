@@ -26,6 +26,8 @@ set(CLIENT_HEADERS
     filedatabase.h
     group.h
     lockthread.h
+    CallBack.h
+    DbDatum.h
 )
 
 install(FILES ${CLIENT_HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/tango/client")

@@ -40,6 +40,8 @@
 #include <chrono>
 #include <optional>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace Tango
 {
@@ -91,6 +93,8 @@ enum LockCmdType
 //=============================================================================
 
 class TangoMonitor;
+class DeviceProxy;
+class ApiUtil;
 
 class LockThread : public omni_thread
 {

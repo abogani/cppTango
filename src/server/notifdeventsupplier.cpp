@@ -38,6 +38,7 @@
 
 #include <tango/tango.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/client/Database.h>
 
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>

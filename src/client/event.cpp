@@ -33,6 +33,7 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/event_templ.h>
+#include <tango/client/Database.h>
 #include <tango/server/tango_clock.h>
 
 #include <tango/common/pointer_with_lock.h>

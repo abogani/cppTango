@@ -38,6 +38,7 @@
 #include <new>
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 #include <tango/internal/utils.h>
+#include <tango/client/Database.h>
 
 namespace
 {

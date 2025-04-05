@@ -32,6 +32,9 @@
 #ifndef _TANGO_MONITOR_H
 #define _TANGO_MONITOR_H
 
+#include <tango/server/logging.h>
+#include <tango/server/except.h>
+
 namespace Tango
 {
 

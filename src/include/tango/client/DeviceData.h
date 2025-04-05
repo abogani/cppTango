@@ -30,6 +30,14 @@
 #ifndef _DEVICEDATA_H
 #define _DEVICEDATA_H
 
+#include <tango/idl/tango.h>
+
+#include <memory>
+#include <vector>
+#include <bitset>
+
+namespace Tango
+{
 /****************************************************************************************
  *                                                                                         *
  *                     The DeviceData class                                                   *
@@ -817,5 +825,5 @@ class DeviceData
 
     std::unique_ptr<DeviceDataExt> ext;
 };
-
+} // namespace Tango
 #endif /* _DEVICEDATA_H */

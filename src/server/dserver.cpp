@@ -34,6 +34,8 @@
 #include <tango/tango.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/devintr.h>
+#include <tango/client/DbDevice.h>
+#include <tango/client/Database.h>
 
 #include <new>
 #include <algorithm>

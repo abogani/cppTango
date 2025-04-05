@@ -27,6 +27,16 @@
 #ifndef _DEVICEPIPE_H
 #define _DEVICEPIPE_H
 
+#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
+
+#include <string>
+#include <vector>
+#include <bitset>
+#include <memory>
+
+namespace Tango
+{
 /**
  * Fundamental type for extracting data from a device pipe blob
  *
@@ -1726,5 +1736,5 @@ DevicePipeBlob &operator>>(DevicePipeBlob &, DataElement<T> &);
                                                                                                               \
     if(ext_state.test(notenoughde_flag) == true && exceptions_flags.test(notenoughde_flag) == true)           \
         throw_too_many("operator<<", false);
-
+} // namespace Tango
 #endif /* _DEVICEPIPE_H */

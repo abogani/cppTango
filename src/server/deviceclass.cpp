@@ -42,6 +42,7 @@
 #include <tango/server/eventsupplier.h>
 
 #include <tango/client/apiexcept.h>
+#include <tango/client/Database.h>
 
 #include <tango/server/logging.h>
 

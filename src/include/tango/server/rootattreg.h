@@ -37,6 +37,7 @@
 
 namespace Tango
 {
+class FwdAttr;
 
 struct NameFwdAttr
 {

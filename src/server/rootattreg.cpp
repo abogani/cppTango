@@ -32,6 +32,7 @@
 #include <tango/tango.h>
 #include <tango/server/rootattreg.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

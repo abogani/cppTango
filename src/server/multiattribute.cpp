@@ -36,6 +36,7 @@
 #include <tango/server/eventsupplier.h>
 #include <tango/server/multiattribute.h>
 #include <tango/server/classattribute.h>
+#include <tango/client/Database.h>
 
 #include <functional>
 #include <algorithm>

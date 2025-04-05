@@ -60,6 +60,7 @@
   #include <ws2tcpip.h>
 #endif /* _TG_WINDOWS_ */
 
+#include <tango/client/Database.h>
 #include <omniORB4/omniInterceptors.h>
 
 #include <tango/common/pointer_with_lock.h>

@@ -42,6 +42,7 @@
 #include <tango/server/pollcmds.h>
 #include <tango/server/logcmds.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

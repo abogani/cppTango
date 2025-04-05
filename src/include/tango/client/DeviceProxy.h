@@ -28,6 +28,23 @@
 #define _DEVICEPROXY_H
 
 #include <chrono>
+#include <string>
+#include <memory>
+#include <vector>
+
+#include <tango/client/Connection.h>
+#include <tango/client/CallBack.h>
+#include <tango/client/DbDatum.h>
+#include <tango/client/devapi.h>
+
+namespace Tango
+{
+class DbDevice;
+class EventDataList;
+class AttrConfEventDataList;
+class DataReadyEventDataList;
+class DevIntrChangeEventDataList;
+class PipeEventDataList;
 
 /****************************************************************************************
  *                                                                                         *
@@ -2094,5 +2111,5 @@ class DeviceProxy : public Tango::Connection
                                 const std::vector<std::string> &filters,
                                 bool stateless = false); // For compatibility with Tango < 8
 };
-
+} // namespace Tango
 #endif /* _DEVICEPROXY_H */

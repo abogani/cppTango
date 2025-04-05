@@ -27,12 +27,16 @@
 #ifndef _DEVAPI_H
 #define _DEVAPI_H
 
-#include <tango/tango.h>
 #include <tango/common/tango_const.h>
 #include <tango/client/apiexcept.h>
 #include <tango/client/cbthread.h>
 #include <tango/client/lockthread.h>
 #include <tango/server/readers_writers_lock.h>
+
+#include <tango/client/Connection.h>
+#include <tango/client/DeviceData.h>
+#include <tango/client/DevicePipe.h>
+#include <tango/client/DeviceAttribute.h>
 
 #include <bitset>
 
@@ -45,25 +49,19 @@ namespace Tango
 // forward declarations
 //
 
-class DeviceData;
-class DeviceAttribute;
 class DbDevice;
 class DbAttribute;
-class DbDatum;
 class DbDevImportInfo;
 class Database;
 class AsynReq;
 class NotifdEventConsumer;
 class ZmqEventConsumer;
 class CallBack;
-class AttributeProxy;
 class TangoMonitor;
 
 //
 // Some typedef
 //
-
-typedef std::vector<DbDatum> DbData;
 
 typedef union
 {
@@ -107,12 +105,6 @@ typedef struct _DevCommandInfo
     ///@privatesection
     bool operator==(const _DevCommandInfo &);
 } DevCommandInfo;
-
-struct AttributeDimension
-{
-    long dim_x;
-    long dim_y;
-};
 
 /**
  * Command information data extension
@@ -387,19 +379,6 @@ typedef std::vector<PipeInfo> PipeInfoList;
 //
 
 /**
- * Possible asynchronous request type
- *
- * @ingroup Client
- * @headerfile tango.h
- */
-enum asyn_req_type
-{
-    POLLING,   ///< Polling mode request
-    CALL_BACK, ///< Callback mode request
-    ALL_ASYNCH ///< All request
-};
-
-/**
  * Possible callback mode
  *
  * @ingroup Client
@@ -434,42 +413,6 @@ enum cb_sub_model
 
 #define FROM_IOR "IOR"
 #define NOT_USED "Unused"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The ApiUtil class                                                    *
- *                     -----------------                                                    *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "ApiUtil.h"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The DeviceData class                                                *
- *                     --------------------                                                *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "DeviceData.h"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The DevicePipe class                                                *
- *                     --------------------                                                *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "DevicePipe.h"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The DeviceAttribute class                                            *
- *                     -------------------------                                            *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "DeviceAttribute.h"
 
 /****************************************************************************************
  *                                                                                         *
@@ -734,40 +677,6 @@ class DeviceAttributeHistory : public DeviceAttribute
     std::unique_ptr<DeviceAttributeHistoryExt> ext_hist;
 };
 
-/****************************************************************************************
- *                                                                                         *
- *                     The Connection class                                                *
- *                     --------------------                                                *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "Connection.h"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The DeviceProxy class                                                *
- *                     --------------------                                                *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "DeviceProxy.h"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The AttributeProxy class                                            *
- *                     --------------------                                                *
- *                                                                                         *
- ***************************************************************************************/
-
-#include "AttributeProxy.h"
-
-/****************************************************************************************
- *                                                                                         *
- *                     The DummyDeviceProxy class                                            *
- *                     --------------------                                                *
- *                                                                                         *
- ***************************************************************************************/
-
 class DummyDeviceProxy : public Tango::Connection
 {
   public:
@@ -812,46 +721,6 @@ class DummyDeviceProxy : public Tango::Connection
 ///                    -------------------
 ///
 
-inline long Connection::add_asyn_request(CORBA::Request_ptr req, TgRequest::ReqType req_type)
-{
-    omni_mutex_lock guard(asyn_mutex);
-    long id = ApiUtil::instance()->get_pasyn_table()->store_request(req, req_type);
-    pasyn_ctr++;
-    return id;
-}
-
-inline void Connection::remove_asyn_request(long id)
-{
-    omni_mutex_lock guard(asyn_mutex);
-
-    ApiUtil::instance()->get_pasyn_table()->remove_request(id);
-    pasyn_ctr--;
-}
-
-inline void
-    Connection::add_asyn_cb_request(CORBA::Request_ptr req, CallBack *cb, Connection *con, TgRequest::ReqType req_type)
-{
-    omni_mutex_lock guard(asyn_mutex);
-    ApiUtil::instance()->get_pasyn_table()->store_request(req, cb, con, req_type);
-    pasyn_cb_ctr++;
-}
-
-inline void Connection::remove_asyn_cb_request(Connection *con, CORBA::Request_ptr req)
-{
-    omni_mutex_lock guard(asyn_mutex);
-    ApiUtil::instance()->get_pasyn_table()->remove_request(con, req);
-    pasyn_cb_ctr--;
-}
-
-inline long Connection::get_pasyn_cb_ctr()
-{
-    long ret;
-    asyn_mutex.lock();
-    ret = pasyn_cb_ctr;
-    asyn_mutex.unlock();
-    return ret;
-}
-
 inline void Connection::dec_asynch_counter(asyn_req_type ty)
 {
     omni_mutex_lock guard(asyn_mutex);
@@ -868,26 +737,6 @@ inline void Connection::dec_asynch_counter(asyn_req_type ty)
 //
 // For Tango 8 ZMQ event system
 //
-
-inline int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, CallBack *callback)
-{
-    std::vector<std::string> filt;
-    return subscribe_event(attr_name, event, callback, filt, false);
-}
-
-inline int
-    DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, CallBack *callback, bool stateless)
-{
-    std::vector<std::string> filt;
-    return subscribe_event(attr_name, event, callback, filt, stateless);
-}
-
-inline int
-    DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, int event_queue_size, bool stateless)
-{
-    std::vector<std::string> filt;
-    return subscribe_event(attr_name, event, event_queue_size, filt, stateless);
-}
 
 ///
 ///                    Some macros

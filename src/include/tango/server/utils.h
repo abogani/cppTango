@@ -38,8 +38,11 @@
 #include <tango/server/pollext.h>
 #include <tango/server/subdev_diag.h>
 #include <new>
+#include <algorithm>
 #include <tango/server/rootattreg.h>
 #include <tango/server/pollthread.h>
+#include <tango/server/tango_monitor.h>
+#include <tango/client/ApiUtil.h>
 
 #ifndef _TG_WINDOWS_
   #include <unistd.h>
@@ -60,6 +63,7 @@ class NotifdEventSupplier;
 class ZmqEventSupplier;
 class DbServerCache;
 class SubDevDiag;
+class FwdAttr;
 
 struct PollingThreadInfo;
 struct DevDbUpd;
@@ -1346,7 +1350,7 @@ inline bool Util::is_device_restarting(const std::string &d_name)
     if(!restarting_devices.empty())
     {
         std::vector<std::string>::iterator pos;
-        pos = find(restarting_devices.begin(), restarting_devices.end(), d_name);
+        pos = std::find(restarting_devices.begin(), restarting_devices.end(), d_name);
         if(pos != restarting_devices.end())
         {
             ret = true;
@@ -1501,21 +1505,6 @@ inline CORBA::Any *return_empty_any(const char *cmd)
         TANGO_THROW_EXCEPTION(API_MemoryAllocation, "Can't allocate memory in server");
     }
     return (out_any);
-}
-
-inline DbDevice *DeviceImpl::get_db_device()
-{
-    if(!Tango::Util::instance()->use_db())
-    {
-        TangoSys_OMemStream desc_mess;
-        desc_mess << "Method not available for device ";
-        desc_mess << device_name;
-        desc_mess << " which is a non database device";
-
-        TANGO_THROW_EXCEPTION(API_NonDatabaseDevice, desc_mess.str());
-    }
-
-    return db_dev;
 }
 
 void clear_att_dim(Tango::AttributeValue_3 &att_val);

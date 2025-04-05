@@ -30,6 +30,7 @@
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/api_util_templ.h>
+#include <tango/client/Database.h>
 #include <thread>
 #include <iomanip>
 

@@ -121,6 +121,8 @@ inline void string_free(char *s)
 
 #include <tango/client/apiexcept.h>
 #include <tango/client/devasyn.h>
+#include <tango/client/Database.h>
+#include <tango/client/AttributeProxy.h>
 #include <tango/client/dbapi.h>
 #include <tango/client/devapi.h>
 #include <tango/client/group.h>

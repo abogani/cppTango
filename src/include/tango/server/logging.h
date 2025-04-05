@@ -37,6 +37,7 @@
 #include <cstring>
 #include <tango/server/tango_current_function.h>
 #include <tango/common/tango_const.h>
+#include <tango/common/log4tango/Logger.h>
 
 namespace Tango::logging_detail
 {

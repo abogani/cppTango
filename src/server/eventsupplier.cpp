@@ -35,6 +35,7 @@
 #include <tango/server/eventsupplier.h>
 #include <tango/client/apiexcept.h>
 #include <tango/server/exception_reason_consts.h>
+#include <tango/client/Database.h>
 
 #ifdef _TG_WINDOWS_
   #include <float.h>

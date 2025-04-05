@@ -34,6 +34,8 @@
 #define _ATTRIBUTE_TPP
 
 #include <tango/server/tango_clock.h>
+#include <tango/client/Database.h>
+#include <string>
 
 namespace Tango
 {

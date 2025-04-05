@@ -49,6 +49,7 @@
 #include <tango/server/coutappender.h>
 #include <tango/server/tangoappender.h>
 #include <tango/server/tangorollingfileappender.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

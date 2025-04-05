@@ -32,6 +32,8 @@
 
 #include <tango/tango.h>
 #include <tango/server/tango_clock.h>
+#include <tango/client/Database.h>
+#include <tango/client/DbDevice.h>
 
 #include <iomanip>
 

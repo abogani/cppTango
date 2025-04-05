@@ -29,6 +29,7 @@
 //====================================================================================================================
 
 #include <tango/tango.h>
+#include <tango/client/Database.h>
 
 using namespace CORBA;
 

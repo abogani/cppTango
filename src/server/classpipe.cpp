@@ -31,6 +31,7 @@
 
 #include <tango/tango.h>
 #include <tango/server/classpipe.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

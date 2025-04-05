@@ -27,6 +27,19 @@
 #ifndef _DATABASE_H
 #define _DATABASE_H
 
+#include <string>
+#include <memory>
+#include <vector>
+#include <map>
+
+#include <tango/client/Connection.h>
+#include <tango/client/filedatabase.h>
+#include <tango/client/accessproxy.h>
+#include <tango/client/dbapi.h>
+#include <tango/server/utils.h>
+
+namespace Tango
+{
 /****************************************************************************************
  *                                                                                         *
  *                     The Database class                                                    *
@@ -2020,5 +2033,5 @@ inline std::string Database::dev_name()
     }
     return db_device_name;
 }
-
+} // namespace Tango
 #endif /* _DATABASE_H */

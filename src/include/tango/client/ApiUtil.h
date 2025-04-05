@@ -30,6 +30,13 @@
 #ifndef _APIUTIL_H
 #define _APIUTIL_H
 
+#include <string>
+
+#include <tango/client/Connection.h>
+#include <tango/client/devapi.h>
+
+namespace Tango
+{
 /****************************************************************************************
  *                                                                                         *
  *                     The ApiUtil class                                                    *
@@ -352,5 +359,5 @@ class ApiUtil
     template <typename T>
     static void attr_to_device_base(const T *, DeviceAttribute *);
 };
-
+} // namespace Tango
 #endif /* _APIUTIL_H */
