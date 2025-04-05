@@ -34,6 +34,7 @@
 #define _WATTRIBUTE_TPP
 
 #include <tango/common/utils/type_info.h>
+#include <cmath>
 
 namespace Tango
 {

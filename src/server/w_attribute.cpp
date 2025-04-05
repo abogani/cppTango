@@ -41,8 +41,7 @@
 #include <tango/server/classattribute.h>
 #include <tango/server/tango_clock.h>
 
-#include <functional>
-#include <algorithm>
+#include <cmath>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

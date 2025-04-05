@@ -37,6 +37,7 @@
 
 #include <functional>
 #include <algorithm>
+#include <cmath>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

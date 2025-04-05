@@ -34,6 +34,7 @@
 #include <tango/server/exception_reason_consts.h>
 
 #include <tango/common/tango_version.h>
+#include <vector>
 
 namespace Tango
 {

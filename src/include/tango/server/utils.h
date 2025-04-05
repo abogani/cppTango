@@ -50,6 +50,7 @@
   #include <tango/windows/coutbuf.h>
   #include <tango/windows/w32win.h>
 #endif /* _TG_WINDOWS_ */
+#include <iostream>
 
 namespace Tango
 {

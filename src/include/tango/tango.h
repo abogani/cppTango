@@ -99,23 +99,6 @@ inline void string_free(char *s)
 #endif
 
 //
-// Include stream header files
-//
-
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-//
-// Include some stdc++ library headers
-//
-
-#include <memory>
-#include <typeinfo>
-#include <vector>
-#include <cmath>
-
-//
 // Include API files (device and database)
 //
 
