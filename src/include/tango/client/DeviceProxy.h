@@ -62,13 +62,11 @@ class DeviceProxy : public Tango::Connection
     std::string alias_name;
     DeviceInfo _info;
     bool is_alias;
-    DeviceProxy *adm_device;
+    std::unique_ptr<DeviceProxy> adm_device;
     std::string adm_dev_name;
     omni_mutex netcalls_mutex;
     int lock_ctr;
     int lock_valid;
-
-    void connect_to_adm_device();
 
     void retrieve_read_args(const TgRequest &, std::vector<std::string> &);
     DeviceAttribute *redo_synch_read_call(TgRequest &);
@@ -88,7 +86,6 @@ class DeviceProxy : public Tango::Connection
 
     void read_attr_except(CORBA::Request_ptr, long, read_attr_type);
     void write_attr_except(CORBA::Request_ptr, long, TgRequest::ReqType);
-    void check_connect_adm_device();
 
     void omni420_timeout_attr(int, char *, read_attr_type);
     void omni420_except_attr(int, char *, read_attr_type);
@@ -105,6 +102,8 @@ class DeviceProxy : public Tango::Connection
      */
     template <class T>
     void extract_value(CORBA::Any &, std::vector<DeviceDataHistory> &, const Tango::AttributeDimList &ad);
+
+    DeviceProxy &get_admin_device();
 
     friend class AttributeProxy;
 
@@ -2062,10 +2061,7 @@ class DeviceProxy : public Tango::Connection
     virtual void parse_name(const std::string &);
     virtual Database *get_device_db();
 
-    DeviceProxy *get_adm_device()
-    {
-        return adm_device;
-    }
+    DeviceProxy *get_adm_device();
 
     //
     // attribute methods
