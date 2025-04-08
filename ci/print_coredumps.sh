@@ -11,6 +11,7 @@ dline="=========================================================================
 
 for corefile in build/tests/core.*; do
   if [ -e "$corefile" ]; then
-    gdb --cd=${SOURCE_DIR} --batch -core ./$corefile -ex "thread apply all bt full"
+    exe=$(gdb --cd=${SOURCE_DIR} --batch -core ./$corefile -ex "info auxv" | awk '/AT_EXECFN/ { gsub(/"/, "", $8); print $8 }')
+    gdb --cd=${SOURCE_DIR} --batch $exe ./$corefile -ex "thread apply all bt full"
   fi
 done
