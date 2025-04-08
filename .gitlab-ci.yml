@@ -228,7 +228,7 @@ debian12-release:
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
-    CMAKE_BUILD_TYPE: Release
+    CMAKE_BUILD_TYPE: RelWithDebInfo
     TANGO_WARNINGS_AS_ERRORS: "ON"
     TANGO_SKIP_OLD_TESTS: "ON"
 
@@ -237,7 +237,7 @@ debian12-release-no-pch:
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_12_IMAGE}"
-    CMAKE_BUILD_TYPE: Release
+    CMAKE_BUILD_TYPE: RelWithDebInfo
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     TANGO_WARNINGS_AS_ERRORS: "ON"
     TANGO_SKIP_OLD_TESTS: "ON"
