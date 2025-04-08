@@ -22,6 +22,7 @@ echo "TANGO_ENABLE_SANITIZER=$TANGO_ENABLE_SANITIZER"
 echo "TANGO_ENABLE_COVERAGE=$TANGO_ENABLE_COVERAGE"
 echo "CMAKE_CXX_STANDARD=$CMAKE_CXX_STANDARD"
 echo "TANGO_SKIP_OLD_TESTS=$TANGO_SKIP_OLD_TESTS"
+echo "TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=$TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD"
 echo "############################"
 
 # set defaults
@@ -36,6 +37,7 @@ TANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE:-OFF}
 BUILD_TESTING=${BUILD_TESTING:-ON}
 TANGO_USE_TELEMETRY=${TANGO_USE_TELEMETRY:-OFF}
 TANGO_SKIP_OLD_TESTS=${TANGO_SKIP_OLD_TESTS:-OFF}
+TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=${TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD:-1000}
 
 ADDITIONAL_ARGS=""
 
@@ -70,24 +72,25 @@ if [[ "$TANGO_USE_LIBCPP" == "ON" ]]; then
 fi
 
 
-cmake                                                                    \
-  -Werror=dev                                                            \
-  -H${SOURCE_DIR}                                                        \
-  -B${BUILD_DIR}                                                         \
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                               \
-  -DCMAKE_VERBOSE_MAKEFILE=ON                                            \
-  -Dcppzmq_ROOT=${INSTALL_DIR}                                           \
-  -DCatch2_ROOT=${CATCH_ROOT}                                            \
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                 \
-  -DCMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS} \
-  -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                                     \
-  -DTANGO_USE_LIBCPP=${TANGO_USE_LIBCPP}                                 \
-  -DTANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS}                 \
-  -DTANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE}                       \
-  -DCMAKE_EXPORT_COMPILE_COMMANDS=${CMAKE_EXPORT_COMPILE_COMMANDS}       \
-  -DBUILD_TESTING=${BUILD_TESTING}                                       \
-  -DCMAKE_UNITY_BUILD=${CMAKE_UNITY_BUILD}                               \
-  -DCMAKE_UNITY_BUILD_BATCH_SIZE=${CMAKE_UNITY_BUILD_BATCH_SIZE}         \
-  -DTANGO_USE_TELEMETRY=${TANGO_USE_TELEMETRY}                           \
-  -DTANGO_SKIP_OLD_TESTS=${TANGO_SKIP_OLD_TESTS}                         \
+cmake                                                                              \
+  -Werror=dev                                                                      \
+  -H${SOURCE_DIR}                                                                  \
+  -B${BUILD_DIR}                                                                   \
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                                         \
+  -DCMAKE_VERBOSE_MAKEFILE=ON                                                      \
+  -Dcppzmq_ROOT=${INSTALL_DIR}                                                     \
+  -DCatch2_ROOT=${CATCH_ROOT}                                                      \
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                           \
+  -DCMAKE_DISABLE_PRECOMPILE_HEADERS=${CMAKE_DISABLE_PRECOMPILE_HEADERS}           \
+  -DTANGO_USE_JPEG=${TANGO_USE_JPEG}                                               \
+  -DTANGO_USE_LIBCPP=${TANGO_USE_LIBCPP}                                           \
+  -DTANGO_WARNINGS_AS_ERRORS=${TANGO_WARNINGS_AS_ERRORS}                           \
+  -DTANGO_ENABLE_COVERAGE=${TANGO_ENABLE_COVERAGE}                                 \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=${CMAKE_EXPORT_COMPILE_COMMANDS}                 \
+  -DBUILD_TESTING=${BUILD_TESTING}                                                 \
+  -DCMAKE_UNITY_BUILD=${CMAKE_UNITY_BUILD}                                         \
+  -DCMAKE_UNITY_BUILD_BATCH_SIZE=${CMAKE_UNITY_BUILD_BATCH_SIZE}                   \
+  -DTANGO_USE_TELEMETRY=${TANGO_USE_TELEMETRY}                                     \
+  -DTANGO_SKIP_OLD_TESTS=${TANGO_SKIP_OLD_TESTS}                                   \
+  -DTANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD=${TANGO_TEST_CATCH2_DEFAULT_POLL_PERIOD} \
   ${ADDITIONAL_ARGS}
