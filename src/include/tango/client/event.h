@@ -79,7 +79,7 @@ class EventData
               Tango::DeviceAttribute *attr_value_in,
               const DevErrorList &errors_in);
 
-    ~EventData();
+    virtual ~EventData();
     EventData(const EventData &);
     EventData &operator=(const EventData &);
     /**
@@ -96,12 +96,12 @@ class EventData
     std::unique_ptr<DeviceAttribute>
         get_attr_err_info(); ///< Construct and return a DeviceAttribute containing the error stack
 
-    DeviceProxy *device;         ///< The DeviceProxy object on which the call was executed
-    std::string attr_name;       ///< The attribute name
-    std::string event;           ///< The event name
-    DeviceAttribute *attr_value; ///< The attribute data
-    bool err;                    ///< A boolean flag set to true if the request failed. False otherwise
-    DevErrorList errors;         ///< The error stack
+    DeviceProxy *device{nullptr};         ///< The DeviceProxy object on which the call was executed
+    std::string attr_name;                ///< The attribute name
+    std::string event;                    ///< The event name
+    DeviceAttribute *attr_value{nullptr}; ///< The attribute data
+    bool err{false};                      ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors;                  ///< The error stack
 
   private:
     void set_time();
@@ -110,7 +110,7 @@ class EventData
 class FwdEventData : public EventData
 {
   public:
-    FwdEventData();
+    FwdEventData() = default;
     FwdEventData(
         DeviceProxy *, const std::string &, const std::string &, Tango::DeviceAttribute *, const DevErrorList &);
     FwdEventData(DeviceProxy *,
@@ -136,8 +136,8 @@ class FwdEventData : public EventData
     }
 
   private:
-    const AttributeValue_5 *av_5;
-    zmq::message_t *event_data;
+    const AttributeValue_5 *av_5{nullptr};
+    zmq::message_t *event_data{nullptr};
 };
 
 /********************************************************************************
@@ -208,7 +208,7 @@ class AttrConfEventData
                       const std::string &evt,
                       Tango::AttributeInfoEx *attr_conf_in,
                       const DevErrorList &errors_in);
-    ~AttrConfEventData();
+    virtual ~AttrConfEventData();
     AttrConfEventData(const AttrConfEventData &);
     AttrConfEventData &operator=(const AttrConfEventData &);
     /**
@@ -222,12 +222,12 @@ class AttrConfEventData
     }
 
     ///@publicsection
-    DeviceProxy *device;        ///< The DeviceProxy object on which the call was executed
-    std::string attr_name;      ///< The attribute name
-    std::string event;          ///< The event name
-    AttributeInfoEx *attr_conf; ///< The attribute configuration
-    bool err;                   ///< A boolean flag set to true if the request failed. False otherwise
-    DevErrorList errors;        ///< The error stack
+    DeviceProxy *device{nullptr};        ///< The DeviceProxy object on which the call was executed
+    std::string attr_name;               ///< The attribute name
+    std::string event;                   ///< The event name
+    AttributeInfoEx *attr_conf{nullptr}; ///< The attribute configuration
+    bool err{false};                     ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors;                 ///< The error stack
 
   private:
     void set_time();
@@ -236,7 +236,7 @@ class AttrConfEventData
 class FwdAttrConfEventData : public AttrConfEventData
 {
   public:
-    FwdAttrConfEventData();
+    FwdAttrConfEventData() = default;
     FwdAttrConfEventData(
         DeviceProxy *, const std::string &, const std::string &, Tango::AttributeInfoEx *, const DevErrorList &);
 
@@ -251,7 +251,7 @@ class FwdAttrConfEventData : public AttrConfEventData
     }
 
   private:
-    const AttributeConfig_5 *fwd_attr_conf;
+    const AttributeConfig_5 *fwd_attr_conf{nullptr};
 };
 
 /********************************************************************************
@@ -333,13 +333,13 @@ class DataReadyEventData
     }
 
     ///@publicsection
-    DeviceProxy *device;   ///< The DeviceProxy object on which the call was executed
-    std::string attr_name; ///< The attribute name
-    std::string event;     ///< The event name
-    int attr_data_type;    ///< The attribute data type
-    int ctr;               ///< The user counter. Set to 0 if not defined when sent by the server
+    DeviceProxy *device{nullptr}; ///< The DeviceProxy object on which the call was executed
+    std::string attr_name;        ///< The attribute name
+    std::string event;            ///< The event name
+    int attr_data_type;           ///< The attribute data type
+    int ctr;                      ///< The user counter. Set to 0 if not defined when sent by the server
 
-    bool err;            ///< A boolean flag set to true if the request failed. False otherwise
+    bool err{false};     ///< A boolean flag set to true if the request failed. False otherwise
     DevErrorList errors; ///< The error stack
 
   private:
@@ -439,15 +439,15 @@ class DevIntrChangeEventData
     }
 
     ///@publicsection
-    DeviceProxy *device;          ///< The DeviceProxy object on which the call was executed
+    DeviceProxy *device{nullptr}; ///< The DeviceProxy object on which the call was executed
     std::string event;            ///< The event name
     std::string device_name;      ///< The device name
     CommandInfoList cmd_list;     ///< Device command list info
     AttributeInfoListEx att_list; ///< Device attribute list info
-    bool dev_started;             ///< Device started flag (true when event sent due to device being (re)started
+    bool dev_started{false};      ///< Device started flag (true when event sent due to device being (re)started
                                   ///< and with only a possible but not sure interface change)
 
-    bool err;            ///< A boolean flag set to true if the request failed. False otherwise
+    bool err{false};     ///< A boolean flag set to true if the request failed. False otherwise
     DevErrorList errors; ///< The error stack
 
   private:
@@ -537,12 +537,12 @@ class PipeEventData
     }
 
     ///@publicsection
-    DeviceProxy *device;    ///< The DeviceProxy object on which the call was executed
-    std::string pipe_name;  ///< The pipe name
-    std::string event;      ///< The event name
-    DevicePipe *pipe_value; ///< The pipe data
-    bool err;               ///< A boolean flag set to true if the request failed. False otherwise
-    DevErrorList errors;    ///< The error stack
+    DeviceProxy *device{nullptr};    ///< The DeviceProxy object on which the call was executed
+    std::string pipe_name;           ///< The pipe name
+    std::string event;               ///< The event name
+    DevicePipe *pipe_value{nullptr}; ///< The pipe data
+    bool err{false};                 ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList errors;             ///< The error stack
 
   private:
     void set_time();

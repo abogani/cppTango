@@ -3743,21 +3743,12 @@ void EventData::set_time()
     reception_date = make_TimeVal(std::chrono::system_clock::now());
 }
 
-FwdEventData::FwdEventData() :
-
-    av_5(nullptr),
-    event_data(nullptr)
-{
-}
-
 FwdEventData::FwdEventData(DeviceProxy *dev,
                            const std::string &_s1,
                            const std::string &_s2,
                            Tango::DeviceAttribute *_da,
                            const DevErrorList &_del) :
-    EventData(dev, _s1, _s2, _da, _del),
-    av_5(nullptr),
-    event_data(nullptr)
+    EventData(dev, _s1, _s2, _da, _del)
 {
 }
 
@@ -3768,7 +3759,6 @@ FwdEventData::FwdEventData(DeviceProxy *dev,
                            const DevErrorList &_del,
                            zmq::message_t *_m) :
     EventData(dev, _s1, _s2, _da, _del),
-    av_5(nullptr),
     event_data(_m)
 {
 }
@@ -3883,19 +3873,12 @@ void AttrConfEventData::set_time()
     reception_date = make_TimeVal(std::chrono::system_clock::now());
 }
 
-FwdAttrConfEventData::FwdAttrConfEventData() :
-
-    fwd_attr_conf(nullptr)
-{
-}
-
 FwdAttrConfEventData::FwdAttrConfEventData(DeviceProxy *dev,
                                            const std::string &nam,
                                            const std::string &evt,
                                            Tango::AttributeInfoEx *attr_conf_in,
                                            const DevErrorList &errors_in) :
-    AttrConfEventData(dev, nam, evt, attr_conf_in, errors_in),
-    fwd_attr_conf(nullptr)
+    AttrConfEventData(dev, nam, evt, attr_conf_in, errors_in)
 {
 }
 

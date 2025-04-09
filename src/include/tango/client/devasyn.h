@@ -132,11 +132,11 @@ class AttrReadEvent
     }
 
     ///@publicsection
-    Tango::DeviceProxy *device;           ///< The DeviceProxy object on which the call was executed
-    std::vector<std::string> &attr_names; ///< The attribute name list
-    std::vector<DeviceAttribute> *argout; ///< The attribute data (callback function owns the memory)
-    bool err;                             ///< A boolean flag set to true if the request failed. False otherwise
-    DevErrorList &errors;                 ///< The error stack
+    Tango::DeviceProxy *device{nullptr};           ///< The DeviceProxy object on which the call was executed
+    std::vector<std::string> &attr_names;          ///< The attribute name list
+    std::vector<DeviceAttribute> *argout{nullptr}; ///< The attribute data (callback function owns the memory)
+    bool err{false};      ///< A boolean flag set to true if the request failed. False otherwise
+    DevErrorList &errors; ///< The error stack
 
   private:
     class AttrReadEventExt
@@ -178,9 +178,9 @@ class AttrWrittenEvent
     }
 
     ///@publicsection
-    Tango::DeviceProxy *device;           ///< The DeviceProxy object on which the call was executed
+    Tango::DeviceProxy *device{nullptr};  ///< The DeviceProxy object on which the call was executed
     std::vector<std::string> &attr_names; ///< The attribute name list
-    bool err;                             ///< A boolean flag set to true if the request failed. False otherwise
+    bool err{false};                      ///< A boolean flag set to true if the request failed. False otherwise
     NamedDevFailedList &errors;           ///< The error stack
 
   private:
