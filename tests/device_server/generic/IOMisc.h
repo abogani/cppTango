@@ -2,6 +2,8 @@
 
 #include <tango/tango.h>
 
+#include <memory>
+
 //
 // Define classes for two commands
 //
@@ -347,6 +349,23 @@ class PushDataReady : public Tango::Command
     virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
 };
 
+//+----------------------------------------------------------------------------
+//	A thread class to test the registration of
+//	sub device connections in an external thread
+//
+//	The thread is executed when calling
+//	the command SubDeviceTst.
+//-----------------------------------------------------------------------------
+
+class AcquisitionThread : public omni_thread
+{
+  public:
+    AcquisitionThread();
+
+  private:
+    void *run_undetached(void *arg);
+};
+
 class SubDeviceTst : public Tango::Command
 {
   public:
@@ -356,6 +375,9 @@ class SubDeviceTst : public Tango::Command
 
     virtual bool is_allowed(Tango::DeviceImpl *, const CORBA::Any &);
     virtual CORBA::Any *execute(Tango::DeviceImpl *, const CORBA::Any &);
+
+  private:
+    std::shared_ptr<AcquisitionThread> acquisition_thread;
 };
 
 class PollingPoolTst : public Tango::Command

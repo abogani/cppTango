@@ -124,7 +124,6 @@ void DevTest::init_device()
     attr_qua_event[0] = 1.2;
     attr_qua_event[1] = 2.4;
     attr_event_qua = Tango::ATTR_VALID;
-    remote_dev = nullptr;
 
     slow_actua_write.tv_sec = 0;
     slow_actua = 0;
@@ -327,10 +326,7 @@ Tango::DevLong DevTest::IOSubscribeEvent(const Tango::DevVarStringArray *in_data
 
     std::vector<std::string> filters;
 
-    if(remote_dev == nullptr)
-    {
-        remote_dev = new Tango::DeviceProxy((*in_data)[0]);
-    }
+    remote_dev = std::make_shared<Tango::DeviceProxy>((*in_data)[0]);
     std::string att_name((*in_data)[1]);
     cb.cb_executed = 0;
 
@@ -1933,9 +1929,7 @@ void DevTest::read_Sub_device_tst(Tango::Attribute &att)
 
         try
         {
-            Tango::DeviceProxy *remote_dev;
-            remote_dev = new Tango::DeviceProxy(dev_list_sorted[1]->get_name());
-            (void) remote_dev;
+            auto tmp_dev = std::make_shared<Tango::DeviceProxy>(dev_list_sorted[1]->get_name());
             attr_sub_device_tst = true;
         }
         catch(...)

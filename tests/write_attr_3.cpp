@@ -1070,7 +1070,11 @@ int main(int argc, char **argv)
 
         assert(ula->length() == 2);
         assert((*ula)[1] == 12);
+        delete ula;
+    }
 
+    {
+        DeviceAttribute dout;
         DeviceAttribute din2("ULong_attr_rw", (DevULong) 1200);
         try
         {
@@ -1083,10 +1087,12 @@ int main(int argc, char **argv)
             exit(-1);
         }
 
+        DevVarULongArray *ula;
         dout >> ula;
 
         assert(ula->length() == 2);
         assert((*ula)[1] == 1111);
+        delete ula;
     }
     TEST_LOG << "   User code a set_write_value in its write_xxx method --> OK" << endl;
 

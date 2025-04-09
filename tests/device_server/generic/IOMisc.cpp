@@ -1351,23 +1351,6 @@ CORBA::Any *IOSetWAttrLimit::execute(Tango::DeviceImpl *device, const CORBA::Any
     return insert();
 }
 
-//+----------------------------------------------------------------------------
-//	A thread class to test the registration of
-//	sub device connections in an external thread
-//
-//	The thread is executed when calling
-//	the command SubDeviceTst.
-//-----------------------------------------------------------------------------
-
-class AcquisitionThread : public omni_thread
-{
-  public:
-    AcquisitionThread();
-
-  private:
-    void *run_undetached(void *arg);
-};
-
 AcquisitionThread::AcquisitionThread() :
     omni_thread()
 {
@@ -1410,8 +1393,7 @@ void *AcquisitionThread::run_undetached(TANGO_UNUSED(void *arg))
 
         try
         {
-            Tango::DeviceProxy *dev = new Tango::DeviceProxy(dev_list_sorted[1]->get_name());
-            (void) dev;
+            auto temp_dev = std::make_shared<Tango::DeviceProxy>(dev_list_sorted[1]->get_name());
         }
         catch(...)
         {
@@ -1456,8 +1438,7 @@ CORBA::Any *SubDeviceTst::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO
 
     try
     {
-        omni_thread *acquisition_thread = new AcquisitionThread();
-        (void) acquisition_thread;
+        acquisition_thread = std::make_shared<AcquisitionThread>();
 
         Tango::Util *tg = Tango::Util::instance();
 
@@ -1490,9 +1471,7 @@ CORBA::Any *SubDeviceTst::execute(TANGO_UNUSED(Tango::DeviceImpl *device), TANGO
                 n = i;
             } while(n != 1);
 
-            Tango::DeviceProxy *remote_dev;
-            remote_dev = new Tango::DeviceProxy(dev_list_sorted[2]->get_name());
-            (void) remote_dev;
+            auto temp_dev = std::make_shared<Tango::DeviceProxy>(dev_list_sorted[2]->get_name());
             connected = true;
         }
         else
