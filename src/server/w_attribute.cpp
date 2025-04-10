@@ -52,6 +52,77 @@
 namespace Tango
 {
 
+namespace details
+{
+template <class T>
+static bool check_rds_out_of_range(const typename tango_type_traits<T>::ArrayType &array_val,
+                                   const typename tango_type_traits<T>::ArrayType &val_seq,
+                                   const Tango::AttrDataFormat data_format,
+                                   const Tango::Attr_CheckVal &delta_val,
+                                   Tango::AttrQuality &quality,
+                                   std::bitset<Tango::Attribute::alarm_flags::numFlags> &alarm)
+{
+    auto nb_written = array_val.length();
+    auto nb_read = (data_format == Tango::SCALAR) ? 1 : val_seq.length();
+    auto nb_data = std::min(nb_read, nb_written);
+
+    for(std::size_t i = 0; i != nb_data; ++i)
+    {
+        auto last_val = array_val[i];
+        auto curr_val = val_seq[i];
+        bool out_of_range = false;
+        if constexpr(std::is_same_v<T, double> || std::is_same_v<T, float>)
+        {
+            if(std::isnan(last_val) != std::isnan(curr_val))
+            {
+                out_of_range = true;
+            }
+        }
+        if(!out_of_range)
+        {
+            auto delta = last_val > curr_val ? last_val - curr_val : curr_val - last_val;
+            out_of_range = (delta >= delta_val.get_value<T>());
+        }
+        if(out_of_range)
+        {
+            quality = Tango::ATTR_ALARM;
+            alarm.set(Tango::Attribute::alarm_flags::rds);
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool check_rds_out_of_range(const Tango::DevEncoded &encoded_val,
+                                   const Tango::DevVarEncodedArray &enc_seq,
+                                   const Tango::Attr_CheckVal &delta_val,
+                                   Tango::AttrQuality &quality,
+                                   std::bitset<Tango::Attribute::alarm_flags::numFlags> &alarm)
+{
+    if(::strcmp(encoded_val.encoded_format.in(), enc_seq[0].encoded_format.in()) != 0)
+    {
+        quality = Tango::ATTR_ALARM;
+        alarm.set(Tango::Attribute::alarm_flags::rds);
+        return true;
+    }
+
+    auto nb_written = encoded_val.encoded_data.length();
+    auto nb_read = enc_seq[0].encoded_data.length();
+    auto nb_data = (nb_written > nb_read) ? nb_read : nb_written;
+    for(std::size_t i = 0; i < nb_data; ++i)
+    {
+        auto delta = encoded_val.encoded_data[i] - enc_seq[0].encoded_data[i];
+        if(std::abs(delta) >= delta_val.uch)
+        {
+            quality = Tango::ATTR_ALARM;
+            alarm.set(Tango::Attribute::alarm_flags::rds);
+            return true;
+        }
+    }
+    return false;
+}
+} // namespace details
+
 //+-------------------------------------------------------------------------
 //
 // method :         WAttribute::WAttribute
@@ -535,278 +606,93 @@ bool WAttribute::check_rds_alarm()
         // Now check attribute value with again a switch on attribute data type
         //
 
-        long nb_written, nb_read, nb_data, i;
-
         switch(data_type)
         {
         case Tango::DEV_SHORT:
-            nb_written = short_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_short_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                short delta = short_array_val[i] - (*get_short_value())[i];
-                if(abs(delta) >= delta_val.sh)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevShort>(get_last_written_value<Tango::DevVarShortArray>(),
+                                                                   *get_value_storage<Tango::DevVarShortArray>(),
+                                                                   data_format,
+                                                                   delta_val,
+                                                                   quality,
+                                                                   alarm);
             break;
 
         case Tango::DEV_LONG:
-            nb_written = long_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_long_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                DevLong delta = long_array_val[i] - (*get_long_value())[i];
-                if(abs(delta) >= delta_val.lg)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevLong>(get_last_written_value<Tango::DevVarLongArray>(),
+                                                                  *get_value_storage<Tango::DevVarLongArray>(),
+                                                                  data_format,
+                                                                  delta_val,
+                                                                  quality,
+                                                                  alarm);
             break;
 
         case Tango::DEV_LONG64:
-            nb_written = long64_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_long64_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                DevLong64 delta = long64_array_val[i] - (*get_long64_value())[i];
-
-                DevLong64 abs_delta;
-                if(delta < 0)
-                {
-                    abs_delta = -delta;
-                }
-                else
-                {
-                    abs_delta = delta;
-                }
-
-                if(abs_delta >= delta_val.lg64)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevLong64>(get_last_written_value<Tango::DevVarLong64Array>(),
+                                                                    *get_value_storage<Tango::DevVarLong64Array>(),
+                                                                    data_format,
+                                                                    delta_val,
+                                                                    quality,
+                                                                    alarm);
             break;
 
         case Tango::DEV_DOUBLE:
-            nb_written = double_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_double_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                // check for NAN values
-                if(data_format == Tango::SCALAR)
-                {
-                    if(std::isnan(double_array_val[0]) || std::isnan((*get_double_value())[0]))
-                    {
-                        // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(double_array_val[0]) && std::isnan((*get_double_value())[0])))
-                        {
-                            quality = Tango::ATTR_ALARM;
-                            alarm.set(rds);
-                            ret = true;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if(std::isnan(double_array_val[i]) || std::isnan((*get_double_value())[i]))
-                    {
-                        // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(double_array_val[i]) && std::isnan((*get_double_value())[i])))
-                        {
-                            quality = Tango::ATTR_ALARM;
-                            alarm.set(rds);
-                            ret = true;
-                            break;
-                        }
-                    }
-                }
-
-                double delta = double_array_val[i] - (*get_double_value())[i];
-                if(fabs(delta) >= delta_val.db)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevDouble>(get_last_written_value<Tango::DevVarDoubleArray>(),
+                                                                    *get_value_storage<Tango::DevVarDoubleArray>(),
+                                                                    data_format,
+                                                                    delta_val,
+                                                                    quality,
+                                                                    alarm);
             break;
 
         case Tango::DEV_FLOAT:
-            nb_written = float_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_float_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                // check for NAN values
-                if(data_format == Tango::SCALAR)
-                {
-                    if(std::isnan(float_array_val[0]) || std::isnan((*get_float_value())[0]))
-                    {
-                        // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(float_array_val[0]) && std::isnan((*get_float_value())[0])))
-                        {
-                            quality = Tango::ATTR_ALARM;
-                            alarm.set(rds);
-                            ret = true;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if(std::isnan(float_array_val[i]) || std::isnan((*get_float_value())[i]))
-                    {
-                        // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(float_array_val[i]) && std::isnan((*get_float_value())[i])))
-                        {
-                            quality = Tango::ATTR_ALARM;
-                            alarm.set(rds);
-                            ret = true;
-                            break;
-                        }
-                    }
-                }
-
-                float delta = float_array_val[i] - (*get_float_value())[i];
-                double delta_d = (double) delta;
-                if(((float) fabs(delta_d)) >= delta_val.fl)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevFloat>(get_last_written_value<Tango::DevVarFloatArray>(),
+                                                                   *get_value_storage<Tango::DevVarFloatArray>(),
+                                                                   data_format,
+                                                                   delta_val,
+                                                                   quality,
+                                                                   alarm);
             break;
 
         case Tango::DEV_USHORT:
-            nb_written = ushort_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_ushort_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                unsigned short delta = ushort_array_val[i] - (*get_ushort_value())[i];
-                if(delta >= delta_val.ush)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevUShort>(get_last_written_value<Tango::DevVarUShortArray>(),
+                                                                    *get_value_storage<Tango::DevVarUShortArray>(),
+                                                                    data_format,
+                                                                    delta_val,
+                                                                    quality,
+                                                                    alarm);
             break;
 
         case Tango::DEV_UCHAR:
-            nb_written = uchar_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_uchar_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                unsigned char delta = uchar_array_val[i] - (*get_uchar_value())[i];
-                if(delta >= delta_val.uch)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevUChar>(get_last_written_value<Tango::DevVarUCharArray>(),
+                                                                   *get_value_storage<Tango::DevVarUCharArray>(),
+                                                                   data_format,
+                                                                   delta_val,
+                                                                   quality,
+                                                                   alarm);
             break;
 
         case Tango::DEV_ULONG:
-            nb_written = ulong_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_ulong_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                DevLong delta = ulong_array_val[i] - (*get_ulong_value())[i];
-                if((unsigned int) abs(delta) >= delta_val.ulg)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range<Tango::DevULong>(get_last_written_value<Tango::DevVarULongArray>(),
+                                                                   *get_value_storage<Tango::DevVarULongArray>(),
+                                                                   data_format,
+                                                                   delta_val,
+                                                                   quality,
+                                                                   alarm);
             break;
 
         case Tango::DEV_ULONG64:
-            nb_written = ulong64_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : get_ulong64_value()->length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                DevLong64 delta = ulong64_array_val[i] - (*get_ulong64_value())[i];
-
-                DevULong64 abs_delta;
-                if(delta < 0)
-                {
-                    abs_delta = -delta;
-                }
-                else
-                {
-                    abs_delta = delta;
-                }
-
-                if(abs_delta >= delta_val.ulg64)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret =
+                details::check_rds_out_of_range<Tango::DevULong64>(get_last_written_value<Tango::DevVarULong64Array>(),
+                                                                   *get_value_storage<Tango::DevVarULong64Array>(),
+                                                                   data_format,
+                                                                   delta_val,
+                                                                   quality,
+                                                                   alarm);
             break;
 
         case Tango::DEV_ENCODED:
-            nb_written = ::strlen(encoded_val.encoded_format.in());
-            nb_read = ::strlen((*get_encoded_value())[0].encoded_format.in());
-            if(nb_written != nb_read)
-            {
-                quality = Tango::ATTR_ALARM;
-                alarm.set(rds);
-                ret = true;
-                break;
-            }
-            if(::strcmp(encoded_val.encoded_format.in(), (*get_encoded_value())[0].encoded_format.in()) != 0)
-            {
-                quality = Tango::ATTR_ALARM;
-                alarm.set(rds);
-                ret = true;
-                break;
-            }
-
-            nb_written = encoded_val.encoded_data.length();
-            nb_read = (*get_encoded_value())[0].encoded_data.length();
-            nb_data = (nb_written > nb_read) ? nb_read : nb_written;
-            for(i = 0; i < nb_data; i++)
-            {
-                unsigned char delta = encoded_val.encoded_data[i] - (*get_encoded_value())[0].encoded_data[i];
-                if(delta >= delta_val.uch)
-                {
-                    quality = Tango::ATTR_ALARM;
-                    alarm.set(rds);
-                    ret = true;
-                    break;
-                }
-            }
+            ret = details::check_rds_out_of_range(
+                encoded_val, *get_value_storage<Tango::DevVarEncodedArray>(), delta_val, quality, alarm);
             break;
         }
     }

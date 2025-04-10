@@ -70,65 +70,65 @@ typedef union _Attr_CheckVal
      * Does not manage memory.
      */
     template <class T>
-    const T &get_value();
+    const T &get_value() const;
 } Attr_CheckVal;
 
 template <>
-inline const Tango::DevShort &Attr_CheckVal::get_value()
+inline const Tango::DevShort &Attr_CheckVal::get_value() const
 {
     return sh;
 }
 
 template <>
-inline const Tango::DevLong &Attr_CheckVal::get_value()
+inline const Tango::DevLong &Attr_CheckVal::get_value() const
 {
     return lg;
 }
 
 template <>
-inline const Tango::DevDouble &Attr_CheckVal::get_value()
+inline const Tango::DevDouble &Attr_CheckVal::get_value() const
 {
     return db;
 }
 
 template <>
-inline const Tango::DevFloat &Attr_CheckVal::get_value()
+inline const Tango::DevFloat &Attr_CheckVal::get_value() const
 {
     return fl;
 }
 
 template <>
-inline const Tango::DevUShort &Attr_CheckVal::get_value()
+inline const Tango::DevUShort &Attr_CheckVal::get_value() const
 {
     return ush;
 }
 
 template <>
-inline const Tango::DevUChar &Attr_CheckVal::get_value()
+inline const Tango::DevUChar &Attr_CheckVal::get_value() const
 {
     return uch;
 }
 
 template <>
-inline const Tango::DevLong64 &Attr_CheckVal::get_value()
+inline const Tango::DevLong64 &Attr_CheckVal::get_value() const
 {
     return lg64;
 }
 
 template <>
-inline const Tango::DevULong &Attr_CheckVal::get_value()
+inline const Tango::DevULong &Attr_CheckVal::get_value() const
 {
     return ulg;
 }
 
 template <>
-inline const Tango::DevULong64 &Attr_CheckVal::get_value()
+inline const Tango::DevULong64 &Attr_CheckVal::get_value() const
 {
     return ulg64;
 }
 
 template <>
-inline const Tango::DevState &Attr_CheckVal::get_value()
+inline const Tango::DevState &Attr_CheckVal::get_value() const
 {
     return d_sta;
 }
