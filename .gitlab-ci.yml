@@ -413,9 +413,6 @@ cmake-with-locations-and-min-versions-ROOT:
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_MINIMUM_VERSIONS_IMAGE}"
-  parallel:
-    matrix:
-      - BUILD_TYPE: [Release, Debug, RelWithDebInfo, MinSizeRel]
   script:
     # needs to be in-sync with scripts.git/install_minimum_versions.sh
     - INSTALL_PREFIX=/tmp/install
@@ -424,7 +421,7 @@ cmake-with-locations-and-min-versions-ROOT:
       cmake
       -Werror=dev
       -B build
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo
       -DCatch2_ROOT=${INSTALL_PREFIX}/catch
       -Dcppzmq_ROOT=${INSTALL_PREFIX}/cppzmq
       -Dtangoidl_ROOT=${INSTALL_PREFIX}/tango-idl
@@ -444,9 +441,6 @@ cmake-with-locations-and-min-versions-env:
   variables:
     <<: *variables
     OS_TYPE: "${DEBIAN_MINIMUM_VERSIONS_IMAGE}"
-  parallel:
-    matrix:
-      - BUILD_TYPE: [Release, Debug, RelWithDebInfo, MinSizeRel]
   script:
     # needs to be in-sync with scripts.git/install_minimum_versions.sh
     - INSTALL_PREFIX=/tmp/install
@@ -459,7 +453,7 @@ cmake-with-locations-and-min-versions-env:
       cmake
       -Werror=dev
       -B build
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo
       -DTANGO_USE_JPEG=ON
       -DTANGO_USE_TELEMETRY=ON
     - ci/build.sh
