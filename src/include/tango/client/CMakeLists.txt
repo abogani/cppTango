@@ -2,7 +2,6 @@ add_subdirectory(helpers)
 
 set(CLIENT_HEADERS
     accessproxy.h
-    api_util_templ.h
     apiexcept.h
     ApiUtil.h
     AttributeProxy.h

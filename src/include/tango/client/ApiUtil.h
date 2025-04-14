@@ -355,9 +355,6 @@ class ApiUtil
      * @param req, the request to be forwarded on the connection
      */
     void process_request(Connection *connection, const TgRequest &tg_req, CORBA::Request_ptr &req);
-
-    template <typename T>
-    static void attr_to_device_base(const T *, DeviceAttribute *);
 };
 } // namespace Tango
 #endif /* _APIUTIL_H */
