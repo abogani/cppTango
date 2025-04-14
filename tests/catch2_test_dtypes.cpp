@@ -888,7 +888,7 @@ template <
     typename T,
     typename std::enable_if_t<(std::is_arithmetic_v<T> || tango_traits::is_scalar_state_boolean_string_enum<T>::value),
                               T> * = nullptr>
-void compare_attribute_value(const T &got_val, const T &expected_val)
+void compare_attribute_value(const T &got_val, const T &expected_val, bool)
 {
     REQUIRE(got_val == expected_val);
 }
@@ -897,7 +897,7 @@ template <typename T,
           typename std::enable_if_t<((!std::is_arithmetic_v<T> &&
                                       !tango_traits::is_scalar_state_boolean_string_enum<T>::value)),
                                     T> * = nullptr>
-void compare_attribute_value(const T &got_val, const T &expected_val)
+void compare_attribute_value(const T &got_val, const T &expected_val, bool)
 {
     CHECK(got_val.size() >= expected_val.size());
 
@@ -908,9 +908,14 @@ void compare_attribute_value(const T &got_val, const T &expected_val)
 }
 
 template <>
-void compare_attribute_value<Tango::DevEncoded>(const Tango::DevEncoded &got_val, const Tango::DevEncoded &expected_val)
+void compare_attribute_value<Tango::DevEncoded>(const Tango::DevEncoded &got_val,
+                                                const Tango::DevEncoded &expected_val,
+                                                bool check_format)
 {
-    CHECK(::strcmp(got_val.encoded_format, expected_val.encoded_format) == 0);
+    if(check_format)
+    {
+        CHECK(::strcmp(got_val.encoded_format, expected_val.encoded_format) == 0);
+    }
 
     for(unsigned int i = 0; i < expected_val.encoded_data.length(); ++i)
     {
@@ -924,7 +929,8 @@ void read_and_compare_attribute_value(std::unique_ptr<Tango::DeviceProxy> &devic
                                       const T &expected_val,
                                       Tango::AttrQuality &expected_quality,
                                       const Tango::CmdArgType &expected_type,
-                                      const Tango::AttrDataFormat &expected_format)
+                                      const Tango::AttrDataFormat &expected_format,
+                                      bool check_format = true)
 {
     Tango::DeviceAttribute da;
     REQUIRE(da.get_data_format() == Tango::FMT_UNKNOWN);
@@ -958,7 +964,7 @@ void read_and_compare_attribute_value(std::unique_ptr<Tango::DeviceProxy> &devic
                 bool ret = (da >> read_val);
                 CHECK(ret == true);
 
-                compare_attribute_value(read_val, expected_val);
+                compare_attribute_value(read_val, expected_val, check_format);
             }
         }
     }
@@ -1357,6 +1363,20 @@ void test_rds_alarm(const std::string &attr_name,
             std::this_thread::sleep_for(std::chrono::milliseconds(10 * RDS_DELTA_T));
             read_and_compare_attribute_value(
                 device, attr_name, expected_value, expected_quality, expected_type, expected_format);
+        }
+        if constexpr(std::is_same_v<T, Tango::DevEncoded>)
+        {
+            write_value = expected_value;
+            AND_GIVEN("Testing different format for " + attr_name)
+            {
+                write_value = expected_value;
+                expected_value.encoded_format = Tango::string_dup("fmt");
+                write_value.encoded_format = Tango::string_dup("other_fmt");
+                write_attribute(device, attr_name, write_value);
+                std::this_thread::sleep_for(std::chrono::milliseconds(10 * RDS_DELTA_T));
+                read_and_compare_attribute_value(
+                    device, attr_name, expected_value, expected_quality, expected_type, expected_format, false);
+            }
         }
     }
 }
