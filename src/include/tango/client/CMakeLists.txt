@@ -12,7 +12,6 @@ set(CLIENT_HEADERS
     DbDevice.h
     devapi_attr_templ.h
     devapi_pipe_templ.h
-    devapi_utils_templ.h
     devapi.h
     devasyn.h
     DeviceAttribute.h
