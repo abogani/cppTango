@@ -20,7 +20,6 @@ set(CLIENT_HEADERS
     DevicePipe.h
     DeviceProxy.h
     event.h
-    event_templ.h
     eventconsumer.h
     filedatabase.h
     group.h

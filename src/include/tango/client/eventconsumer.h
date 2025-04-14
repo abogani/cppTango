@@ -554,9 +554,6 @@ class EventConsumer
     void attr_to_device(const AttributeValue_4 *, DeviceAttribute *);
     void attr_to_device(const ZmqAttributeValue_4 *, DeviceAttribute *);
     void attr_to_device(const ZmqAttributeValue_5 *, DeviceAttribute *);
-    template <typename T>
-    void base_attr_to_device(const T *, DeviceAttribute *);
-    void att_union_to_device(const AttrValUnion *union_ptr, DeviceAttribute *dev_attr);
     void conf_to_info(AttributeConfig_2 &, AttributeInfoEx **);
     void get_cs_tango_host(Database *);
     std::string get_client_attribute_name(const std::string &, const std::vector<std::string> &filters);
