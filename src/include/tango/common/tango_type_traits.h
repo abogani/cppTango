@@ -624,5 +624,25 @@ struct tango_type_traits<Tango::DevVarDoubleStringArray>
     }
 };
 
+template <class T>
+struct is_tango_base_type
+    : std::conditional_t<std::is_same_v<T, Tango::DevBoolean> || std::is_same_v<T, Tango::DevUChar> ||
+                             std::is_same_v<T, Tango::DevShort> || std::is_same_v<T, Tango::DevUShort> ||
+                             std::is_same_v<T, Tango::DevLong> || std::is_same_v<T, Tango::DevULong> ||
+                             std::is_same_v<T, Tango::DevLong64> || std::is_same_v<T, Tango::DevULong64> ||
+                             std::is_same_v<T, Tango::DevFloat> || std::is_same_v<T, Tango::DevDouble> ||
+                             std::is_same_v<T, Tango::DevState> || std::is_same_v<T, Tango::DevEncoded> ||
+                             std::is_same_v<T, Tango::DevString>,
+                         std::true_type,
+                         std::false_type>
+{
+};
+
+template <class T>
+constexpr bool is_tango_base_type_v = is_tango_base_type<T>::value;
+
+template <class T>
+using is_tango_base_type_t = typename is_tango_base_type<T>::type;
+
 } // namespace Tango
 #endif /* TANGO_TYPE_TRAITS_H */

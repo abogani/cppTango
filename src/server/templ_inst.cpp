@@ -139,16 +139,6 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-TEMPL_EXPL_METH_INST(Attribute, get_min_alarm)
-TEMPL_EXPL_METH_INST(Attribute, get_max_alarm)
-TEMPL_EXPL_METH_INST(Attribute, get_min_warning)
-TEMPL_EXPL_METH_INST(Attribute, get_max_warning)
-
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_min_alarm)
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_max_alarm)
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_min_warning)
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_max_warning)
-
 TEMPL_EXPL_CLASS_INST(AttrProp)
 TEMPL_EXPL_CLASS_INST(DoubleAttrProp)
 TEMPL_EXPL_CLASS_INST(MultiAttrProp)

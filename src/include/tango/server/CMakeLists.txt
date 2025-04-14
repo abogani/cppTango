@@ -2,7 +2,6 @@ set(SERVER_HEADERS attrdesc.h
     attribute.h
     attribute_templ.h
     attrsetval_templ.h
-    attribute_spec_templ.h
     attrmanip.h
     attrprop.h
     attrprop_templ.h

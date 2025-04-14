@@ -33,6 +33,7 @@
 #define _ATTRIBUTE_H
 
 #include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/server/attrdesc.h>
 #include <tango/server/fwdattrdesc.h>
 #include <tango/server/encoded_attribute.h>
@@ -1259,8 +1260,9 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_min_alarm(const T &new_min_alarm);
+    void set_min_alarm(const std::string &new_min_alarm);
 
     /**
      * Set attribute minimum alarm.
@@ -1292,7 +1294,7 @@ class Attribute
      * @param min_al Reference to a variable which value will be set to the attribute's
      * minimum alarm
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_min_alarm(T &min_al);
 
     /**
@@ -1305,8 +1307,10 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_max_alarm(const T &new_max_alarm);
+    void set_max_alarm(const std::string &new_max_alarm);
+
     /**
      * Set attribute maximum alarm.
      *
@@ -1337,7 +1341,7 @@ class Attribute
      * @param max_al Reference to a variable which value will be set to the attribute's
      * maximum alarm
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_max_alarm(T &max_al);
 
     /**
@@ -1350,8 +1354,10 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_min_warning(const T &new_min_warning);
+    void set_min_warning(const std::string &new_min_warning);
+
     /**
      * Set attribute minimum warning.
      *
@@ -1382,8 +1388,8 @@ class Attribute
      * @param min_war Reference to a variable which value will be set to the attribute's
      * minimum warning
      */
-    template <typename T>
-    void get_min_warning(T &min_war);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void get_min_warning(T &min_warning);
 
     /**
      * Set attribute maximum warning.
@@ -1395,8 +1401,10 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_max_warning(const T &new_max_warning);
+    void set_max_warning(const std::string &new_max_warning);
+
     /**
      * Set attribute maximum warning.
      *
@@ -1427,8 +1435,8 @@ class Attribute
      * @param max_war Reference to a variable which value will be set to the attribute's
      * maximum warning
      */
-    template <typename T>
-    void get_max_warning(T &max_war);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void get_max_warning(T &max_warning);
     //@}
 
   protected:
