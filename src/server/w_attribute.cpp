@@ -80,8 +80,27 @@ static bool check_rds_out_of_range(const typename tango_type_traits<T>::ArrayTyp
         }
         if(!out_of_range)
         {
-            auto delta = last_val > curr_val ? last_val - curr_val : curr_val - last_val;
-            out_of_range = (delta >= delta_val.get_value<T>());
+            if constexpr(std::is_signed_v<T>)
+            {
+                if(last_val < 0 && curr_val > std::numeric_limits<T>::max() + last_val)
+                {
+                    out_of_range = true;
+                }
+                else if(last_val >= 0 && curr_val <= std::numeric_limits<T>::min() + last_val)
+                {
+                    out_of_range = true;
+                }
+                else
+                {
+                    auto delta = last_val > curr_val ? last_val - curr_val : curr_val - last_val;
+                    out_of_range = (delta >= delta_val.get_value<T>());
+                }
+            }
+            else
+            {
+                auto delta = last_val > curr_val ? last_val - curr_val : curr_val - last_val;
+                out_of_range = (delta >= delta_val.get_value<T>());
+            }
         }
         if(out_of_range)
         {
