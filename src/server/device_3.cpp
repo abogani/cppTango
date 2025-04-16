@@ -59,6 +59,61 @@ void report_attr_error(const std::vector<std::string> &vec)
 }
 
 #endif // TANGO_USE_TELEMETRY
+template <typename T, typename V>
+void init_polled_out_data(T &back, const V &att_val)
+{
+    back.quality = att_val.quality;
+    back.time = att_val.time;
+    back.r_dim = att_val.r_dim;
+    back.w_dim = att_val.w_dim;
+    back.name = Tango::string_dup(att_val.name);
+}
+
+template <typename T>
+void init_out_data(T &back, Tango::Attribute &att, const Tango::AttrWriteType &w_type, Tango::MultiAttribute *dev_attr)
+{
+    back.time = att.get_when();
+    back.quality = att.get_quality();
+    back.name = Tango::string_dup(att.get_name().c_str());
+    back.r_dim.dim_x = att.get_x();
+    back.r_dim.dim_y = att.get_y();
+    if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
+    {
+        Tango::WAttribute &assoc_att = dev_attr->get_w_attr_by_ind(att.get_assoc_ind());
+        back.w_dim.dim_x = assoc_att.get_w_dim_x();
+        back.w_dim.dim_y = assoc_att.get_w_dim_y();
+    }
+    else
+    {
+        if(w_type == Tango::WRITE)
+        {
+            // for write only attributes read and set value are the same!
+            back.w_dim.dim_x = att.get_x();
+            back.w_dim.dim_y = att.get_y();
+        }
+        else
+        {
+            // Tango::Read : read only attributes
+            back.w_dim.dim_x = 0;
+            back.w_dim.dim_y = 0;
+        }
+    }
+}
+
+template <typename T>
+void init_out_data_quality(T &back, Tango::Attribute &att, Tango::AttrQuality qual)
+{
+    back.time = att.get_when();
+    back.quality = qual;
+    back.name = Tango::string_dup(att.get_name().c_str());
+    back.r_dim.dim_x = att.get_x();
+    back.r_dim.dim_y = att.get_y();
+    back.r_dim.dim_x = 0;
+    back.r_dim.dim_y = 0;
+    back.w_dim.dim_x = 0;
+    back.w_dim.dim_y = 0;
+}
+
 template <typename T>
 void base_status2attr(T &back)
 {
@@ -1077,7 +1132,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                                         GIVE_USER_ATT_MUTEX_5(aid.data_5, index, att);
                                     }
                                 }
-                                init_out_data((*aid.data_5)[index], att, w_type);
+                                init_out_data((*aid.data_5)[index], att, w_type, dev_attr);
                                 (*aid.data_5)[index].data_format = att.get_data_format();
                                 (*aid.data_5)[index].data_type = att.get_data_type();
                             }
@@ -1096,12 +1151,12 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                                         GIVE_USER_ATT_MUTEX(aid.data_4, index, att);
                                     }
                                 }
-                                init_out_data((*aid.data_4)[index], att, w_type);
+                                init_out_data((*aid.data_4)[index], att, w_type, dev_attr);
                                 (*aid.data_4)[index].data_format = att.get_data_format();
                             }
                             else
                             {
-                                init_out_data((*aid.data_3)[index], att, w_type);
+                                init_out_data((*aid.data_3)[index], att, w_type, dev_attr);
                             }
                         }
                         catch(Tango::DevFailed &e)

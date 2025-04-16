@@ -329,13 +329,6 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
     template <typename T>
     void one_error(T &, const char *, const char *, std::string &, const char *);
 
-    template <typename T, typename V>
-    void init_polled_out_data(T &, V &);
-    template <typename T>
-    void init_out_data(T &, Attribute &, AttrWriteType &);
-    template <typename T>
-    void init_out_data_quality(T &, Attribute &, AttrQuality);
-
   private:
     class Device_3ImplExt
     {

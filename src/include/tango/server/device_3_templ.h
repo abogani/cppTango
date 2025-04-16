@@ -395,61 +395,6 @@ inline void Device_3Impl::one_error(T &back, const char *reas, const char *ori, 
     clear_att_dim(back);
 }
 
-template <typename T, typename V>
-inline void Device_3Impl::init_polled_out_data(T &back, V &att_val)
-{
-    back.quality = att_val.quality;
-    back.time = att_val.time;
-    back.r_dim = att_val.r_dim;
-    back.w_dim = att_val.w_dim;
-    back.name = Tango::string_dup(att_val.name);
-}
-
-template <typename T>
-inline void Device_3Impl::init_out_data(T &back, Attribute &att, AttrWriteType &w_type)
-{
-    back.time = att.get_when();
-    back.quality = att.get_quality();
-    back.name = Tango::string_dup(att.get_name().c_str());
-    back.r_dim.dim_x = att.get_x();
-    back.r_dim.dim_y = att.get_y();
-    if((w_type == Tango::READ_WRITE) || (w_type == Tango::READ_WITH_WRITE))
-    {
-        WAttribute &assoc_att = dev_attr->get_w_attr_by_ind(att.get_assoc_ind());
-        back.w_dim.dim_x = assoc_att.get_w_dim_x();
-        back.w_dim.dim_y = assoc_att.get_w_dim_y();
-    }
-    else
-    {
-        if(w_type == Tango::WRITE)
-        {
-            // for write only attributes read and set value are the same!
-            back.w_dim.dim_x = att.get_x();
-            back.w_dim.dim_y = att.get_y();
-        }
-        else
-        {
-            // Tango::Read : read only attributes
-            back.w_dim.dim_x = 0;
-            back.w_dim.dim_y = 0;
-        }
-    }
-}
-
-template <typename T>
-inline void Device_3Impl::init_out_data_quality(T &back, Attribute &att, AttrQuality qual)
-{
-    back.time = att.get_when();
-    back.quality = qual;
-    back.name = Tango::string_dup(att.get_name().c_str());
-    back.r_dim.dim_x = att.get_x();
-    back.r_dim.dim_y = att.get_y();
-    back.r_dim.dim_x = 0;
-    back.r_dim.dim_y = 0;
-    back.w_dim.dim_x = 0;
-    back.w_dim.dim_y = 0;
-}
-
 } // namespace Tango
 
 #endif /* DEVICE_3_TPP */
