@@ -347,54 +347,6 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
     TANGO_LOG_DEBUG << "Leaving Device_3Impl::set_attribute_config_3_local" << std::endl;
 }
 
-template <typename T>
-inline void Device_3Impl::error_from_devfailed(T &back, DevFailed &e, const char *na)
-{
-    back.err_list = e.errors;
-    back.quality = ATTR_INVALID;
-    back.name = Tango::string_dup(na);
-    clear_att_dim(back);
-}
-
-template <typename T>
-inline void Device_3Impl::error_from_errorlist(T &back, DevErrorList &e, const char *na)
-{
-    back.err_list = e;
-    back.quality = ATTR_INVALID;
-    back.name = Tango::string_dup(na);
-    clear_att_dim(back);
-}
-
-template <typename T>
-inline void Device_3Impl::one_error(T &back, const char *reas, const char *ori, std::string &mess, Attribute &att)
-{
-    back.err_list.length(1);
-
-    back.err_list[0].severity = Tango::ERR;
-    back.err_list[0].reason = Tango::string_dup(reas);
-    back.err_list[0].origin = Tango::string_dup(ori);
-    back.err_list[0].desc = Tango::string_dup(mess.c_str());
-
-    back.quality = Tango::ATTR_INVALID;
-    back.name = Tango::string_dup(att.get_name().c_str());
-    clear_att_dim(back);
-}
-
-template <typename T>
-inline void Device_3Impl::one_error(T &back, const char *reas, const char *ori, std::string &mess, const char *na)
-{
-    back.err_list.length(1);
-
-    back.err_list[0].severity = Tango::ERR;
-    back.err_list[0].reason = Tango::string_dup(reas);
-    back.err_list[0].origin = Tango::string_dup(ori);
-    back.err_list[0].desc = Tango::string_dup(mess.c_str());
-
-    back.quality = Tango::ATTR_INVALID;
-    back.name = Tango::string_dup(na);
-    clear_att_dim(back);
-}
-
 } // namespace Tango
 
 #endif /* DEVICE_3_TPP */

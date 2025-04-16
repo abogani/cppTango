@@ -59,6 +59,45 @@ void report_attr_error(const std::vector<std::string> &vec)
 }
 
 #endif // TANGO_USE_TELEMETRY
+template <typename T>
+void error_from_devfailed(T &back, Tango::DevFailed &e, const char *na)
+{
+    back.err_list = e.errors;
+    back.quality = Tango::ATTR_INVALID;
+    back.name = Tango::string_dup(na);
+    clear_att_dim(back);
+}
+
+template <typename T>
+void error_from_errorlist(T &back, Tango::DevErrorList &e, const char *na)
+{
+    back.err_list = e;
+    back.quality = Tango::ATTR_INVALID;
+    back.name = Tango::string_dup(na);
+    clear_att_dim(back);
+}
+
+template <typename T>
+void one_error(T &back, const char *reas, const char *ori, const std::string &mess, const char *na)
+{
+    back.err_list.length(1);
+
+    back.err_list[0].severity = Tango::ERR;
+    back.err_list[0].reason = Tango::string_dup(reas);
+    back.err_list[0].origin = Tango::string_dup(ori);
+    back.err_list[0].desc = Tango::string_dup(mess.c_str());
+
+    back.quality = Tango::ATTR_INVALID;
+    back.name = Tango::string_dup(na);
+    clear_att_dim(back);
+}
+
+template <typename T>
+void one_error(T &back, const char *reas, const char *ori, const std::string &mess, Tango::Attribute &att)
+{
+    one_error(back, reas, ori, mess, att.get_name().c_str());
+}
+
 template <typename T, typename V>
 void init_polled_out_data(T &back, const V &att_val)
 {
