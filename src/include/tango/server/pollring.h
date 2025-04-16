@@ -96,9 +96,6 @@ class PollRing
     void insert_data(Tango::AttributeValueList_5 *, PollClock::time_point, bool);
     void insert_except(Tango::DevFailed *, PollClock::time_point);
 
-    template <typename T>
-    void force_copy_data(T *);
-
     std::vector<PollClock::duration> get_delta_t(long nb);
     PollClock::time_point get_last_insert_date();
 

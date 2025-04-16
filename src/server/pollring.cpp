@@ -43,6 +43,185 @@
   #include <sys/types.h>
 #endif /* _TG_WINDOWS_ */
 
+namespace
+{
+//------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        force_copy_data
+//
+// description :
+//        Since IDL 4, attributes are transferred on the net using a IDL union. In some cases, the sequence within the
+//        union simply points to the user data (no copy), therefore, this method force the user data to be copied
+//        To do this copy we:
+//                    1 - Really copy the data within a temporary sequence
+//                    2 - Force memory freeing (if required by user) using the
+//                        union sequence replace call
+//                    3 - Transfer the data from the temporary sequence within the
+//                        union sequence using again the sequence replace call
+//                        in order not to trigger a real data copy
+//
+// argument :
+//        in :
+//            - attr_value : The attribute value
+//
+//------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+void force_copy_data(T *attr_value)
+{
+    for(unsigned long loop = 0; loop < attr_value->length(); loop++)
+    {
+        switch((*attr_value)[loop].value._d())
+        {
+        case Tango::ATT_BOOL:
+        {
+            Tango::DevVarBooleanArray &union_seq = (*attr_value)[loop].value.bool_att_value();
+            Tango::DevVarBooleanArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_SHORT:
+        {
+            Tango::DevVarShortArray &union_seq = (*attr_value)[loop].value.short_att_value();
+            Tango::DevVarShortArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_LONG:
+        {
+            Tango::DevVarLongArray &union_seq = (*attr_value)[loop].value.long_att_value();
+            Tango::DevVarLongArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_LONG64:
+        {
+            Tango::DevVarLong64Array &union_seq = (*attr_value)[loop].value.long64_att_value();
+            Tango::DevVarLong64Array tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_FLOAT:
+        {
+            Tango::DevVarFloatArray &union_seq = (*attr_value)[loop].value.float_att_value();
+            Tango::DevVarFloatArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_DOUBLE:
+        {
+            Tango::DevVarDoubleArray &union_seq = (*attr_value)[loop].value.double_att_value();
+            Tango::DevVarDoubleArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_UCHAR:
+        {
+            Tango::DevVarCharArray &union_seq = (*attr_value)[loop].value.uchar_att_value();
+            Tango::DevVarCharArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_USHORT:
+        {
+            Tango::DevVarUShortArray &union_seq = (*attr_value)[loop].value.ushort_att_value();
+            Tango::DevVarUShortArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_ULONG:
+        {
+            Tango::DevVarULongArray &union_seq = (*attr_value)[loop].value.ulong_att_value();
+            Tango::DevVarULongArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_ULONG64:
+        {
+            Tango::DevVarULong64Array &union_seq = (*attr_value)[loop].value.ulong64_att_value();
+            Tango::DevVarULong64Array tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::ATT_STRING:
+        {
+            const Tango::DevVarStringArray &union_seq = (*attr_value)[loop].value.string_att_value();
+            Tango::DevVarStringArray tmp_seq = union_seq;
+            (const_cast<Tango::DevVarStringArray &>(union_seq)).replace(0, 0, nullptr, true);
+            (*attr_value)[loop].value.string_att_value(tmp_seq);
+        }
+        break;
+
+        case Tango::ATT_STATE:
+        {
+            Tango::DevVarStateArray &union_seq = (*attr_value)[loop].value.state_att_value();
+            Tango::DevVarStateArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+            unsigned long len = tmp_seq.length();
+            union_seq.replace(len, len, tmp_seq.get_buffer(true), true);
+        }
+        break;
+
+        case Tango::DEVICE_STATE:
+        case Tango::ATT_NO_DATA:
+            break;
+
+        case Tango::ATT_ENCODED:
+        {
+            Tango::DevVarEncodedArray &union_seq = (*attr_value)[loop].value.encoded_att_value();
+            Tango::DevVarEncodedArray tmp_seq(union_seq);
+            union_seq.replace(0, 0, nullptr, true);
+
+            union_seq.length(tmp_seq.length());
+
+            union_seq[0].encoded_format = Tango::string_dup(tmp_seq[0].encoded_format);
+            unsigned long nb_data = tmp_seq[0].encoded_data.length();
+            union_seq[0].encoded_data.replace(nb_data, nb_data, tmp_seq[0].encoded_data.get_buffer(true), true);
+
+            if(tmp_seq.length() == 2)
+            {
+                union_seq[1].encoded_format = Tango::string_dup(tmp_seq[1].encoded_format);
+                unsigned long nb_data = tmp_seq[1].encoded_data.length();
+                union_seq[1].encoded_data.replace(nb_data, nb_data, tmp_seq[1].encoded_data.get_buffer(true), true);
+            }
+        }
+        break;
+        }
+    }
+}
+} // namespace
+
 namespace Tango
 {
 
