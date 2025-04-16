@@ -59,6 +59,29 @@ void report_attr_error(const std::vector<std::string> &vec)
 }
 
 #endif // TANGO_USE_TELEMETRY
+template <typename T>
+void base_status2attr(T &back)
+{
+    back.time = Tango::make_TimeVal(std::chrono::system_clock::now());
+    back.quality = Tango::ATTR_VALID;
+    back.name = Tango::string_dup("Status");
+    back.r_dim.dim_x = 1;
+    back.r_dim.dim_y = 0;
+    back.w_dim.dim_x = 0;
+    back.w_dim.dim_y = 0;
+}
+
+template <typename T>
+void base_state2attr(T &back)
+{
+    back.time = Tango::make_TimeVal(std::chrono::system_clock::now());
+    back.quality = Tango::ATTR_VALID;
+    back.name = Tango::string_dup("State");
+    back.r_dim.dim_x = 1;
+    back.r_dim.dim_y = 0;
+    back.w_dim.dim_x = 0;
+    back.w_dim.dim_y = 0;
+}
 
 } // namespace
 

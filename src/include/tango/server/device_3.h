@@ -336,11 +336,6 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
     template <typename T>
     void init_out_data_quality(T &, Attribute &, AttrQuality);
 
-    template <typename T>
-    void base_state2attr(T &);
-    template <typename T>
-    void base_status2attr(T &);
-
   private:
     class Device_3ImplExt
     {

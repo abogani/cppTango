@@ -450,30 +450,6 @@ inline void Device_3Impl::init_out_data_quality(T &back, Attribute &att, AttrQua
     back.w_dim.dim_y = 0;
 }
 
-template <typename T>
-inline void Device_3Impl::base_state2attr(T &back)
-{
-    back.time = make_TimeVal(std::chrono::system_clock::now());
-    back.quality = Tango::ATTR_VALID;
-    back.name = Tango::string_dup("State");
-    back.r_dim.dim_x = 1;
-    back.r_dim.dim_y = 0;
-    back.w_dim.dim_x = 0;
-    back.w_dim.dim_y = 0;
-}
-
-template <typename T>
-inline void Device_3Impl::base_status2attr(T &back)
-{
-    back.time = make_TimeVal(std::chrono::system_clock::now());
-    back.quality = Tango::ATTR_VALID;
-    back.name = Tango::string_dup("Status");
-    back.r_dim.dim_x = 1;
-    back.r_dim.dim_y = 0;
-    back.w_dim.dim_x = 0;
-    back.w_dim.dim_y = 0;
-}
-
 } // namespace Tango
 
 #endif /* DEVICE_3_TPP */
