@@ -84,9 +84,6 @@ class FwdAttribute : public WAttribute
     template <typename T>
     void set_local_attribute(DeviceAttribute &, T *&);
 
-    template <typename T, typename V>
-    void propagate_writen_data(DeviceAttribute &da, WAttribute &attr, T *&, V *&);
-
     template <typename T>
     bool new_att_conf_base(const T &);
 

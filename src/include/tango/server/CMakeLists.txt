@@ -31,7 +31,6 @@ set(SERVER_HEADERS attrdesc.h
     fwdattrdesc.h
     fwdattribute.h
     fwdattribute_templ.h
-    fwdattribute_spec_templ.h
     log4tango.h
     logcmds.h
     logging.h
