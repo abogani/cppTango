@@ -394,7 +394,7 @@ typedef struct event_callback_base
     std::string event_name;
     std::string channel_name;
     std::string fully_qualified_event_name;
-    time_t last_subscribed;
+    time_t last_subscribed{0};
     TangoMonitor *callback_monitor;
     std::vector<EventSubscribeStruct> callback_list;
     bool alias_used;
@@ -417,6 +417,11 @@ typedef struct event_callback : public EventCallBackBase, public EventCallBackZm
     bool filter_ok = false;
     std::string client_attribute_name;
     ReceivedFromAdmin received_from_admin;
+
+    // For monitoring
+    std::uint64_t event_count{};
+    std::uint64_t discarded_event_count{};
+    std::uint64_t missed_event_count{};
 
     std::string get_client_attribute_name()
     {
@@ -717,6 +722,9 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
     }
 
     void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &);
+
+    void query_event_system(std::ostream &os);
+    static void enable_perf_mon(Tango::DevBoolean enabled);
 
     enum UserDataEventType
     {

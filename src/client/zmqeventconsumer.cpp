@@ -37,6 +37,7 @@
 #include <cstdio>
 
 #include <omniORB4/internal/giopStream.h>
+#include <tango/internal/perf_mon.h>
 
 #ifdef _TG_WINDOWS_
   #include <winsock2.h>
@@ -56,6 +57,57 @@ using namespace CORBA;
 
 namespace Tango
 {
+
+// Performance Monitoring
+namespace
+{
+struct PerfMonSample
+{
+    static constexpr const size_t k_attr_name_size = 31;
+    std::int64_t micros_since_last_event{k_invalid_duration};
+    std::int64_t sleep_micros{0};
+    std::int64_t process_micros{0};
+    std::int64_t first_callback_latency_micros{k_invalid_duration};
+    std::uint32_t callback_count{0};
+    std::uint32_t wake_count{0};
+    char attr_name[k_attr_name_size + 1]{};
+    bool discarded{false};
+
+    void json_dump(std::ostream &os)
+    {
+        os << R"({"attr_name":")" << attr_name << "\"";
+        os << R"(,"micros_since_last_event":)";
+        if(micros_since_last_event != k_invalid_duration)
+        {
+            os << micros_since_last_event;
+        }
+        else
+        {
+            os << "null";
+        }
+        os << R"(,"sleep_micros":)" << sleep_micros;
+        os << R"(,"process_micros":)" << process_micros;
+        os << R"(,"first_callback_latency_micros":)";
+        if(first_callback_latency_micros != k_invalid_duration)
+        {
+            os << first_callback_latency_micros;
+        }
+        else
+        {
+            os << "null";
+        }
+        os << R"(,"callback_count":)" << callback_count;
+        os << R"(,"wake_count":)" << wake_count;
+        os << R"(,"discarded":)" << std::boolalpha << discarded;
+        os << "}";
+    }
+};
+
+DoubleBuffer<PerfMonSample> g_perf_mon;
+
+// Used to pass the sample into `push_zmq_event` from `run_undetached`
+PerfMonSample *g_current_perf_mon_sample = nullptr;
+} // namespace
 
 ZmqEventConsumer *ZmqEventConsumer::_instance = nullptr;
 
@@ -196,6 +248,9 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
     // Enter the infinite loop
     //
 
+    PerfMonSample perf_mon_sample;
+    bool do_sample_next_event = false;
+    PerfClock::time_point last_event_sampled_timestamp = {};
     while(true)
     {
         zmq::message_t received_event_name, received_endian;
@@ -211,12 +266,37 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
         zmq::message_t mcast_received_call;
         zmq::message_t mcast_received_event_data;
 
+        // For each performance sample, we want to record how long we were
+        // sleeping for, before we received that event, taking into account the
+        // fact that we might be woken up for ZMQ messages which are not events,
+        // i.e. heartbeat and control messages.
+        //
+        // This means that, in general, a single event corresponds to multiple trips
+        // around the loop.  We take `do_sample_next_event` being true at the start of
+        // the loop to mean that we are in the middle of producing a performance sample
+        // and that the last time through the loop we got some non-event ZMQ
+        // message.
+        //
+        // If `!do_sample_next_event` at the start of the loop, then we are not in
+        // the middle of producing a performance sample, so we check with the
+        // global variables if performance sampling is enabled.
+        if(!do_sample_next_event && g_perf_mon.lock.try_lock())
+        {
+            do_sample_next_event = g_perf_mon.enabled;
+            if(!g_perf_mon.enabled)
+            {
+                last_event_sampled_timestamp = {};
+            }
+            g_perf_mon.lock.unlock();
+        }
+
         //
         // Wait for message. The try/catch is usefull when the process is running under gdb control
         //
 
         try
         {
+            TimeBlockMicros time_block(do_sample_next_event, &perf_mon_sample.sleep_micros);
             zmq::poll(items, nb_poll_item);
             // TANGO_LOG << "Awaken !!!!!!!!" << std::endl;
         }
@@ -226,6 +306,11 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
             {
                 continue;
             }
+        }
+
+        if(do_sample_next_event)
+        {
+            perf_mon_sample.wake_count++; // We don't care about spurious wakes here
         }
 
         //
@@ -283,6 +368,28 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
 
         if((items[2].revents & ZMQ_POLLIN) != 0)
         {
+            // We reset `do_sample_next_event` here so that at the start of the
+            // loop, we will check if we are sampling again and start producing
+            // a new performance sample if we are.
+            // The pusher will always reset the `perf_mon_sample` in its
+            // dtor, so we can start a new sample, even if we ended up not
+            // pushing this one.
+            bool do_sample_this_event = do_sample_next_event;
+            do_sample_next_event = false;
+            SamplePusher<PerfMonSample> pusher{
+                do_sample_this_event, perf_mon_sample, *g_perf_mon.front, g_perf_mon.lock};
+            TimeBlockMicros time_block{do_sample_this_event, &perf_mon_sample.process_micros};
+
+            if(do_sample_this_event)
+            {
+                if(last_event_sampled_timestamp != PerfClock::time_point{})
+                {
+                    perf_mon_sample.micros_since_last_event =
+                        duration_micros(last_event_sampled_timestamp, time_block.start);
+                }
+                last_event_sampled_timestamp = time_block.start;
+            }
+
             try
             {
                 auto res = event_sub_sock->recv(received_event_name, zmq::recv_flags::dontwait);
@@ -321,7 +428,9 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
                     continue;
                 }
 
+                g_current_perf_mon_sample = do_sample_this_event ? &perf_mon_sample : nullptr;
                 process_event(received_event_name, received_endian, received_call, received_event_data);
+                g_current_perf_mon_sample = nullptr;
             }
             catch(zmq::error_t &e)
             {
@@ -1087,6 +1196,93 @@ void ZmqEventConsumer::multi_tango_host(zmq::socket_t *sock, SocketCmd cmd, cons
             }
         }
     }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        ZmqEventConsumer::query_event_system()
+//
+// description :
+//  Report information about the event consumer as a JSON object.
+//
+// argument :
+//        in :
+//          - os : Output stream to write the JSON object to
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void ZmqEventConsumer::query_event_system(std::ostream &os)
+{
+    {
+        ReaderLock l(map_modification_lock);
+        os << "{\"event_callbacks\":{";
+        {
+            bool first = true;
+            for(const auto &[name, obj] : event_callback_map)
+            {
+                if(!first)
+                {
+                    os << ",";
+                }
+                os << "\"" << name << "\":{";
+                os << R"("channel_name":")" << obj.channel_name << "\"";
+                os << R"(,"callback_count":)" << obj.callback_list.size();
+                os << R"(,"server_counter":)" << obj.ctr;
+                os << R"(,"event_count":)" << obj.event_count;
+                os << R"(,"missed_event_count":)" << obj.missed_event_count;
+                os << R"(,"discarded_event_count":)" << obj.discarded_event_count;
+                os << R"(,"last_resubscribed":)";
+                if(obj.last_subscribed == 0)
+                {
+                    os << "null";
+                }
+                else
+                {
+                    os << "\"" << std::put_time(std::gmtime(&obj.last_subscribed), "%Y-%m-%dT%H:%M:%S") << "\"";
+                }
+                os << "}";
+                first = false;
+            }
+        }
+        os << R"(},"event_channels":{)";
+        {
+            bool first = true;
+            for(const auto &[name, obj] : channel_map)
+            {
+                if(!first)
+                {
+                    os << ",";
+                }
+                os << "\"" << name << "\":{";
+                os << R"("endpoint":")" << obj.endpoint << "\"";
+                os << "}";
+                first = false;
+            }
+        }
+    }
+    os << R"(},"perf":)";
+    g_perf_mon.json_dump(os);
+    os << "}";
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        ZmqEventSupplier::enable_perf_mon()
+//
+// description :
+//  Enable or disable collection of performance counters for supplier
+//
+// argument :
+//        in :
+//          - enabled : If true, enable sampling otherwise disable sampling
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void ZmqEventConsumer::enable_perf_mon(Tango::DevBoolean enabled)
+{
+    g_perf_mon.enable(enabled);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -2028,6 +2224,11 @@ void ZmqEventConsumer::push_zmq_event(
                 if(!evt_cb.discarded_event)
                 {
                     evt_cb.discarded_event = true;
+                    evt_cb.discarded_event_count++;
+                    if(g_current_perf_mon_sample != nullptr)
+                    {
+                        g_current_perf_mon_sample->discarded = true;
+                    }
                     map_modification_lock.readerOut();
                     return;
                 }
@@ -2042,6 +2243,12 @@ void ZmqEventConsumer::push_zmq_event(
             }
 
             evt_cb.ctr = ds_ctr;
+            evt_cb.event_count++;
+
+            if(err_missed_event)
+            {
+                evt_cb.missed_event_count++;
+            }
 
             //
             // Get which type of event data has been received (from the event type)
@@ -2085,6 +2292,12 @@ void ZmqEventConsumer::push_zmq_event(
             else
             {
                 data_type = ATT_VALUE;
+            }
+
+            if(g_current_perf_mon_sample != nullptr)
+            {
+                strncpy(g_current_perf_mon_sample->attr_name, att_name.c_str(), PerfMonSample::k_attr_name_size);
+                g_current_perf_mon_sample->attr_name[PerfMonSample::k_attr_name_size] = '\0';
             }
 
             //
@@ -2646,6 +2859,11 @@ void ZmqEventConsumer::push_zmq_event(
                 unsigned int cb_nb = ipos->second.callback_list.size();
                 unsigned int cb_ctr = 0;
 
+                bool first_callback = true;
+                if(g_current_perf_mon_sample != nullptr)
+                {
+                    g_current_perf_mon_sample->callback_count = evt_cb.callback_list.size();
+                }
                 for(esspos = evt_cb.callback_list.begin(); esspos != evt_cb.callback_list.end(); ++esspos)
                 {
                     if(missed_event_data != nullptr)
@@ -2690,6 +2908,20 @@ void ZmqEventConsumer::push_zmq_event(
                                                                       cb_nb,
                                                                       cb_ctr,
                                                                       callback);
+
+                            if(g_current_perf_mon_sample != nullptr && first_callback &&
+                               event_dat->attr_value != nullptr)
+                            {
+                                TimeVal reception_date = event_dat->reception_date;
+                                TimeVal send_date = event_dat->attr_value->get_date();
+
+                                g_current_perf_mon_sample->first_callback_latency_micros =
+                                    (reception_date.tv_sec - send_date.tv_sec) * 1000000 +
+                                    (reception_date.tv_usec - send_date.tv_usec);
+
+                                first_callback = false;
+                            }
+
                             //
                             // If a callback method was specified, call it!
                             //

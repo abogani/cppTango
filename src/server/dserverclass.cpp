@@ -314,6 +314,81 @@ CORBA::Any *DevQuerySubDeviceCmd::execute(DeviceImpl *device, TANGO_UNUSED(const
 
 //+----------------------------------------------------------------------------
 //
+// method :         DevQueryEventSystemCmd::DevQuerySubDeviceCmd()
+//
+// description :     method to trigger the execution of the "QueryEventSystem"
+//                    command
+//
+//-----------------------------------------------------------------------------
+
+DevQueryEventSystemCmd::DevQueryEventSystemCmd(const char *name,
+                                               Tango::CmdArgType argin,
+                                               Tango::CmdArgType argout,
+                                               const char *out_desc) :
+    Command(name, argin, argout)
+{
+    set_out_type_desc(out_desc);
+}
+
+//+----------------------------------------------------------------------------
+//
+// method :         DevQueryEventSystemCmd::execute()
+//
+// description :     constructor for the DevQueryEventSystem command of the
+//                    DServer.
+//
+//-----------------------------------------------------------------------------
+
+CORBA::Any *DevQueryEventSystemCmd::execute(DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+    auto *out_any = new CORBA::Any();
+
+    Tango::DevString ret = (static_cast<DServer *>(device))->query_event_system();
+    (*out_any) <<= ret;
+
+    return out_any;
+}
+
+//+----------------------------------------------------------------------------
+//
+// method :         DevEnableEventSystemPerfMonCmd::DevEnableEventSystemPerfMonCmd()
+//
+// description :     method to trigger the execution of the "EnableEventSystemPerfMon"
+//                    command
+//
+//-----------------------------------------------------------------------------
+
+DevEnableEventSystemPerfMonCmd::DevEnableEventSystemPerfMonCmd(const char *name,
+                                                               Tango::CmdArgType argin,
+                                                               Tango::CmdArgType argout,
+                                                               const char *in_desc) :
+    Command(name, argin, argout)
+{
+    set_in_type_desc(in_desc);
+}
+
+//+----------------------------------------------------------------------------
+//
+// method :         DevEnableEventSystemPerfMonCmd::execute()
+//
+// description :     constructor for the DevEnableEventSystemPerfMon command of the
+//                    DServer.
+//
+//-----------------------------------------------------------------------------
+
+CORBA::Any *DevEnableEventSystemPerfMonCmd::execute(DeviceImpl *device, const CORBA::Any &in_any)
+{
+    Tango::DevBoolean enabled;
+    in_any >>= enabled;
+
+    (static_cast<DServer *>(device))->enable_event_system_perf_mon(enabled);
+
+    CORBA::Any *ret = return_empty_any("DevEnableEventSystemPerfMonCmd");
+    return ret;
+}
+
+//+----------------------------------------------------------------------------
+//
 // method :         DevKillCmd::DevKillCmd()
 //
 // description :     constructor for the DevKill command of the
@@ -1405,6 +1480,13 @@ void DServerClass::command_factory()
     command_list.push_back(new DevQuerySubDeviceCmd(
         "QuerySubDevice", Tango::DEV_VOID, Tango::DEVVAR_STRINGARRAY, "Device server sub device(s) list"));
     command_list.push_back(new DevKillCmd("Kill", Tango::DEV_VOID, Tango::DEV_VOID));
+    command_list.push_back(new DevQueryEventSystemCmd(
+        "QueryEventSystem", Tango::DEV_VOID, Tango::DEV_STRING, "JSON object with information about the event system"));
+    command_list.push_back(
+        new DevEnableEventSystemPerfMonCmd("EnableEventSystemPerfMon",
+                                           Tango::DEV_BOOLEAN,
+                                           Tango::DEV_VOID,
+                                           "Enable or disable the collection of performance samples for events"));
 
     //
     // Now, commands related to polling

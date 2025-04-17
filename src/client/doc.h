@@ -634,4 +634,8 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * \include{doc} telemetry.md
  */
 
+/** \page query_event_system Event System Monitoring
+ * \include{doc} query_event_system.md
+ */
+
 #endif /* DOC_DOXYGEN */

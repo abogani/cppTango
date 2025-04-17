@@ -224,6 +224,36 @@ inline ReasonMatcher Reason(std::string reason)
     return {CATCH_MOVE(reason)};
 }
 
+class SeverityMatcher : public Catch::Matchers::MatcherBase<Tango::DevError>
+{
+  public:
+    SeverityMatcher(Tango::ErrSeverity severity) :
+        m_severity{CATCH_MOVE(severity)}
+    {
+    }
+
+    bool match(const Tango::DevError &error) const override
+    {
+        return m_severity == error.severity;
+    }
+
+    std::string describe() const override
+    {
+        std::stringstream ss;
+        ss << "severity equals ";
+        ss << m_severity;
+        return ss.str();
+    }
+
+  private:
+    Tango::ErrSeverity m_severity;
+};
+
+inline SeverityMatcher Severity(Tango::ErrSeverity severity)
+{
+    return {CATCH_MOVE(severity)};
+}
+
 template <typename StringMatcher>
 class DescriptionMatchesMatcher : public Catch::Matchers::MatcherBase<Tango::DevError>
 {

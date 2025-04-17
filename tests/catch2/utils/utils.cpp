@@ -46,12 +46,68 @@ namespace
 constexpr const char *k_log_directory_path = TANGO_TEST_CATCH2_LOG_DIRECTORY_PATH;
 constexpr const char *k_filedb_directory_path = TANGO_TEST_CATCH2_FILEDB_DIRECTORY_PATH;
 std::string g_current_log_file_path;
+
+ContextDescriptor make_descriptor(const std::string &instance_name,
+                                  const std::string &tmpl_name,
+                                  int idlversion,
+                                  const std::string &extra_filedb_contents,
+                                  std::vector<std::string> env)
+{
+    ContextDescriptor result;
+
+    ServerDescriptor srv;
+    srv.instance_name = instance_name;
+    srv.class_name = tmpl_name;
+    srv.idlversion = idlversion;
+    srv.extra_filedb_contents = extra_filedb_contents;
+    srv.extra_env = env;
+
+    result.servers.push_back(srv);
+    return result;
+}
+
+ContextDescriptor
+    make_descriptor(const std::string &instance_name, const std::string &class_name, std::vector<std::string> env)
+{
+    ContextDescriptor result;
+
+    ServerDescriptor srv;
+    srv.instance_name = instance_name;
+    srv.class_name = class_name;
+    srv.extra_env = std::move(env);
+
+    result.servers.push_back(srv);
+    return result;
+}
+
+ContextDescriptor make_descriptor(const std::string &instance_name,
+                                  const std::string &tmpl_name,
+                                  int idlversion,
+                                  std::vector<std::string> env)
+{
+    ContextDescriptor result;
+
+    ServerDescriptor srv;
+    srv.instance_name = instance_name;
+    srv.class_name = tmpl_name;
+    srv.idlversion = idlversion;
+    srv.extra_env = std::move(env);
+
+    result.servers.push_back(srv);
+    return result;
+}
+
 } // namespace
 
-std::string make_nodb_fqtrl(int port, std::string_view device_name)
+std::string make_nodb_fqtrl(int port, std::string_view device_name, std::string_view attr_name)
 {
     std::stringstream ss;
-    ss << "tango://127.0.0.1:" << port << "/" << device_name << "#dbase=no";
+    ss << "tango://127.0.0.1:" << port << "/" << device_name;
+    if(!attr_name.empty())
+    {
+        ss << "/" << attr_name;
+    }
+    ss << "#dbase=no";
     return ss.str();
 }
 
@@ -71,133 +127,207 @@ std::string get_next_file_database_location()
     return ss.str();
 }
 
-// TODO:  Don't handle filedb strings directly, but instead manipulate a
-// Tango::Filedatabase to build the database.
-// Needs Filedatabase::DbAddDevice/DbAddServer implemented to do that.
+Context::Context(const ContextDescriptor &desc)
+{
+    for(const auto &srv_desc : desc.servers)
+    {
+        add_server_job(srv_desc);
+    }
+
+    // TODO: Start these in parallel
+    for(auto &job : m_server_jobs)
+    {
+        job.process.start(job.instance_name, job.extra_args, job.extra_env);
+    }
+}
+
+void Context::add_server_job(const ServerDescriptor &desc)
+{
+    m_server_jobs.emplace_back();
+    ServerJob &job = m_server_jobs.back();
+
+    job.instance_name = desc.instance_name;
+    job.device_name = "TestServer/tests/" + std::to_string(m_server_jobs.size());
+
+    if(desc.idlversion.has_value())
+    {
+        job.class_name = make_class_name(desc.class_name, *desc.idlversion);
+    }
+    else
+    {
+        job.class_name = desc.class_name;
+    }
+
+    job.extra_env = desc.extra_env;
+    append_std_entries_to_env(job.extra_env, job.class_name);
+
+    // TODO:  Don't handle filedb strings directly, but instead manipulate a
+    // Tango::Filedatabase to build the database.
+    // Needs Filedatabase::DbAddDevice/DbAddServer implemented to do that.
+    if(desc.extra_filedb_contents.has_value())
+    {
+        job.filedb_path = get_next_file_database_location();
+
+        TANGO_LOG_INFO << "Setting up server \"" << job.instance_name << "\" with device class "
+                       << "\"" << job.class_name << "\", device name \"" << job.device_name << "\" and filedb \""
+                       << *job.filedb_path << "\".";
+
+        {
+            std::ofstream out{*job.filedb_path};
+
+            auto write_and_log = [&out](auto &&...args)
+            {
+                if(API_LOGGER && API_LOGGER->is_info_enabled())
+                {
+                    log4tango::LoggerStream::SourceLocation loc{::Tango::logging_detail::basename(__FILE__), __LINE__};
+                    auto stream = API_LOGGER->info_stream();
+                    stream << log4tango::_begin_log << loc << "Writing to filedb: '";
+                    (stream << ... << args);
+                    stream << "'";
+                }
+                (out << ... << args);
+            };
+
+            write_and_log("TestServer/", job.instance_name, "/DEVICE/", job.class_name, ": ", job.device_name, "\n");
+            write_and_log(*desc.extra_filedb_contents);
+        }
+
+        std::string file_arg = std::string{"-file="} + *job.filedb_path;
+        job.extra_args = {file_arg};
+    }
+    else
+    {
+        std::string dlist_arg = [&]()
+        {
+            std::stringstream ss;
+            ss << job.class_name << "::" << job.device_name;
+            return ss.str();
+        }();
+
+        TANGO_LOG_INFO << "Setting up server \"" << job.instance_name << "\" with device class "
+                       << "\"" << job.class_name << "\" and device name " << "\"" << job.device_name << "\"";
+
+        job.extra_args = {"-nodb", "-dlist", dlist_arg};
+    }
+}
+
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
                  const std::string &extra_filedb_contents,
                  std::vector<std::string> env) :
-    m_instance_name{instance_name},
-    m_extra_env{std::move(env)}
+    Context{make_descriptor(instance_name, tmpl_name, idlversion, extra_filedb_contents, std::move(env))}
 {
-    m_filedb_path = get_next_file_database_location();
-    m_class_name = make_class_name(tmpl_name, idlversion);
-
-    TANGO_LOG_INFO << "Setting up server \"" << m_instance_name << "\" with device class "
-                   << "\"" << m_class_name << "\" and filedb \"" << *m_filedb_path << "\".";
-
-    {
-        std::ofstream out{*m_filedb_path};
-
-        auto write_and_log = [&out](auto &&...args)
-        {
-            if(API_LOGGER && API_LOGGER->is_info_enabled())
-            {
-                log4tango::LoggerStream::SourceLocation loc{::Tango::logging_detail::basename(__FILE__), __LINE__};
-                auto stream = API_LOGGER->info_stream();
-                stream << log4tango::_begin_log << loc << "Writing to filedb: '";
-                (stream << ... << args);
-                stream << "'";
-            }
-            (out << ... << args);
-        };
-
-        write_and_log("TestServer/", m_instance_name, "/DEVICE/", m_class_name, ": ", "TestServer/tests/1\n");
-        write_and_log(extra_filedb_contents);
-    }
-
-    append_std_entries_to_env(m_extra_env, m_class_name);
-
-    std::string file_arg = std::string{"-file="} + *m_filedb_path;
-    m_extra_args = {file_arg};
-
-    restart_server();
 }
 
 Context::Context(const std::string &instance_name, const std::string &class_name, std::vector<std::string> env) :
-    m_class_name{class_name},
-    m_instance_name{instance_name},
-    m_extra_env{std::move(env)}
+    Context{make_descriptor(instance_name, class_name, std::move(env))}
 {
-    std::string dlist_arg = [&]()
-    {
-        std::stringstream ss;
-        ss << m_class_name << "::TestServer/tests/1";
-        return ss.str();
-    }();
-
-    TANGO_LOG_INFO << "Setting up server \"" << m_instance_name << "\" with device class "
-                   << "\"" << m_class_name << "\"";
-
-    append_std_entries_to_env(m_extra_env, m_class_name);
-
-    m_extra_args = {"-nodb", "-dlist", dlist_arg};
-
-    restart_server();
 }
 
 Context::Context(const std::string &instance_name,
                  const std::string &tmpl_name,
                  int idlversion,
                  std::vector<std::string> env) :
-    Context{instance_name, make_class_name(tmpl_name, idlversion), env}
+    Context{make_descriptor(instance_name, tmpl_name, idlversion, std::move(env))}
 {
 }
 
 void Context::restart_server(std::chrono::milliseconds timeout)
 {
-    m_server.start(m_instance_name, m_extra_args, m_extra_env, timeout);
+    auto &job = get_only_job();
 
-    TANGO_LOG_INFO << "Started server \"" << m_instance_name << "\" on port " << m_server.get_port()
-                   << " redirected to " << m_server.get_redirect_file();
+    job.process.start(job.instance_name, job.extra_args, job.extra_env, timeout);
+
+    TANGO_LOG_INFO << "Started server \"" << job.instance_name << "\" on port " << job.process.get_port()
+                   << " redirected to " << job.process.get_redirect_file();
 }
 
 Context::~Context()
 {
-    m_server.stop();
-
-    if(m_filedb_path.has_value())
+    // TODO: Stop these in parallel
+    for(auto &job : m_server_jobs)
     {
-        std::remove(m_filedb_path->c_str());
+        job.process.stop();
+
+        if(job.filedb_path.has_value())
+        {
+            std::remove(job.filedb_path->c_str());
+        }
     }
+}
+
+std::string Context::get_fqtrl(std::string_view instance, std::string_view attr_name)
+{
+    const auto &job = get_job(instance);
+
+    return make_nodb_fqtrl(job.process.get_port(), job.device_name, attr_name);
 }
 
 std::unique_ptr<Tango::DeviceProxy> Context::get_proxy()
 {
-    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "TestServer/tests/1");
+    auto &job = get_only_job();
+
+    std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), job.device_name);
+
+    return std::make_unique<Tango::DeviceProxy>(fqtrl);
+}
+
+std::unique_ptr<Tango::DeviceProxy> Context::get_proxy(std::string_view instance)
+{
+    const auto &job = get_job(instance);
+
+    std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), job.device_name);
 
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
 
 std::unique_ptr<Tango::DeviceProxy> Context::get_admin_proxy()
 {
-    std::string fqtrl = make_nodb_fqtrl(m_server.get_port(), "dserver/TestServer/" + m_instance_name);
+    auto &job = get_only_job();
+
+    std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), "dserver/TestServer/" + job.instance_name);
+
+    return std::make_unique<Tango::DeviceProxy>(fqtrl);
+}
+
+std::unique_ptr<Tango::DeviceProxy> Context::get_admin_proxy(std::string_view instance)
+{
+    auto &job = get_job(instance);
+
+    std::string fqtrl = make_nodb_fqtrl(job.process.get_port(), "dserver/TestServer/" + job.instance_name);
 
     return std::make_unique<Tango::DeviceProxy>(fqtrl);
 }
 
 const std::string &Context::get_redirect_file() const
 {
-    return m_server.get_redirect_file();
+    const auto &job = get_only_job();
+
+    return job.process.get_redirect_file();
 }
 
 void Context::stop_server(std::chrono::milliseconds timeout)
 {
-    m_server.stop(timeout);
+    auto &job = get_only_job();
+
+    job.process.stop(timeout);
 }
 
 ExitStatus Context::wait_for_exit(std::chrono::milliseconds timeout)
 {
-    return m_server.wait_for_exit(timeout);
+    auto &job = get_only_job();
+
+    return job.process.wait_for_exit(timeout);
 }
 
 std::string Context::get_file_database_path()
 {
-    if(m_filedb_path.has_value())
+    auto &job = get_only_job();
+
+    if(job.filedb_path.has_value())
     {
-        return *m_filedb_path;
+        return *job.filedb_path;
     }
 
     throw std::runtime_error("Non existing filedatabase");
@@ -205,7 +335,36 @@ std::string Context::get_file_database_path()
 
 std::string Context::get_class_name()
 {
-    return m_class_name;
+    auto &job = get_only_job();
+
+    return job.class_name;
+}
+
+Context::ServerJob &Context::get_only_job()
+{
+    TANGO_ASSERT(m_server_jobs.size() == 1);
+
+    return m_server_jobs[0];
+}
+
+const Context::ServerJob &Context::get_only_job() const
+{
+    return const_cast<Context *>(this)->get_only_job();
+}
+
+Context::ServerJob &Context::get_job(std::string_view instance)
+{
+    auto job = std::find_if(
+        m_server_jobs.begin(), m_server_jobs.end(), [=](const ServerJob &j) { return j.instance_name == instance; });
+
+    TANGO_ASSERT(job != m_server_jobs.end());
+
+    return *job;
+}
+
+const Context::ServerJob &Context::get_job(std::string_view instance) const
+{
+    return const_cast<Context *>(this)->get_job(instance);
 }
 
 // Listener to cleanup the Tango client ApiUtil singleton
