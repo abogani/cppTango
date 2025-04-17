@@ -733,8 +733,8 @@ class Attribute
      *
      * @param props A MultiAttrProp object.
      */
-    template <typename T>
-    void get_properties(Tango::MultiAttrProp<T> &props);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void get_properties(MultiAttrProp<T> &);
     /**
      * Set all modifiable attribute properties in one call
      *
@@ -743,8 +743,8 @@ class Attribute
      *
      * @param props A MultiAttrProp object.
      */
-    template <typename T>
-    void set_properties(Tango::MultiAttrProp<T> &props);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void set_properties(const MultiAttrProp<T> &);
     /**
      * Set attribute serialization model
      *
@@ -1661,8 +1661,12 @@ class Attribute
         set_upd_properties(_c, d_name);
     }
 
-    template <typename T>
-    void set_upd_properties(const T &, const std::string &, bool f_s = false);
+    void set_upd_properties(const AttributeConfig &);
+    void set_upd_properties(const AttributeConfig_3 &);
+    void set_upd_properties(const AttributeConfig_5 &);
+    void set_upd_properties(const AttributeConfig &, const std::string &, bool f_s = false);
+    void set_upd_properties(const AttributeConfig_3 &, const std::string &, bool f_s = false);
+    void set_upd_properties(const AttributeConfig_5 &, const std::string &, bool f_s = false);
 
     template <typename T>
     void delete_data_if_needed(T *data, bool release);
@@ -2188,7 +2192,6 @@ class Attribute
 
     void convert_prop_value(const char *, std::string &, Attr_CheckVal &, const std::string &);
 
-    void check_range_coherency(const std::string &);
     void db_access(const struct CheckOneStrProp &, const std::string &);
     void set_prop_5_specific(const AttributeConfig_5 &, const std::string &, bool, std::vector<AttPropDb> &);
     void build_check_enum_labels(const std::string &);

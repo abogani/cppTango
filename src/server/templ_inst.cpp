@@ -143,43 +143,11 @@ TEMPL_EXPL_CLASS_INST(AttrProp)
 TEMPL_EXPL_CLASS_INST(DoubleAttrProp)
 TEMPL_EXPL_CLASS_INST(MultiAttrProp)
 
-template void Attribute::get_properties(MultiAttrProp<DevBoolean> &);
-template void Attribute::get_properties(MultiAttrProp<DevUChar> &);
-template void Attribute::get_properties(MultiAttrProp<DevShort> &);
-template void Attribute::get_properties(MultiAttrProp<DevUShort> &);
-template void Attribute::get_properties(MultiAttrProp<DevLong> &);
-template void Attribute::get_properties(MultiAttrProp<DevULong> &);
-template void Attribute::get_properties(MultiAttrProp<DevLong64> &);
-template void Attribute::get_properties(MultiAttrProp<DevULong64> &);
-template void Attribute::get_properties(MultiAttrProp<DevFloat> &);
-template void Attribute::get_properties(MultiAttrProp<DevDouble> &);
-template void Attribute::get_properties(MultiAttrProp<DevState> &);
-template void Attribute::get_properties(MultiAttrProp<DevEncoded> &);
-template void Attribute::get_properties(MultiAttrProp<DevString> &);
-
-template void Attribute::set_properties(MultiAttrProp<DevBoolean> &);
-template void Attribute::set_properties(MultiAttrProp<DevUChar> &);
-template void Attribute::set_properties(MultiAttrProp<DevShort> &);
-template void Attribute::set_properties(MultiAttrProp<DevUShort> &);
-template void Attribute::set_properties(MultiAttrProp<DevLong> &);
-template void Attribute::set_properties(MultiAttrProp<DevULong> &);
-template void Attribute::set_properties(MultiAttrProp<DevLong64> &);
-template void Attribute::set_properties(MultiAttrProp<DevULong64> &);
-template void Attribute::set_properties(MultiAttrProp<DevFloat> &);
-template void Attribute::set_properties(MultiAttrProp<DevDouble> &);
-template void Attribute::set_properties(MultiAttrProp<DevState> &);
-template void Attribute::set_properties(MultiAttrProp<DevEncoded> &);
-template void Attribute::set_properties(MultiAttrProp<DevString> &);
-
 template void Attribute::check_hard_coded_properties(const AttributeConfig &);
 template void Attribute::check_hard_coded_properties(const AttributeConfig_3 &);
 
 template void Attribute::set_hard_coded_properties(const AttributeConfig &);
 template void Attribute::set_hard_coded_properties(const AttributeConfig_3 &);
-
-template void Attribute::set_upd_properties(const AttributeConfig &, const std::string &, bool);
-template void Attribute::set_upd_properties(const AttributeConfig_3 &, const std::string &, bool);
-template void Attribute::set_upd_properties(const AttributeConfig_5 &, const std::string &, bool);
 
 template void Attribute::Attribute_2_AttributeValue_base(AttributeValue_4 *, Tango::DeviceImpl *);
 template void Attribute::Attribute_2_AttributeValue_base(AttributeValue_5 *, Tango::DeviceImpl *);
