@@ -112,7 +112,7 @@ class WAttribute : public Attribute
      *
      * @param min_value Reference to a variable which represents the new min value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T> || std::is_same_v<T, std::string>> * = nullptr>
     void set_min_value(const T &min_value);
 
     /**
@@ -135,7 +135,7 @@ class WAttribute : public Attribute
      * @param min_value Reference to a variable which value will be set to the attribute's
      * minimum value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_min_value(T &min_value);
 
     /**
@@ -154,7 +154,7 @@ class WAttribute : public Attribute
      *
      * @param max_value Reference to a variable which represents the new max value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T> || std::is_same_v<T, std::string>> * = nullptr>
     void set_max_value(const T &max_value);
 
     /**
@@ -176,7 +176,7 @@ class WAttribute : public Attribute
      * @param max_value Reference to a variable which value will be set to the attribute's
      * maximum value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_max_value(T &max_value);
     //@}
 

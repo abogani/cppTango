@@ -61,34 +61,6 @@ namespace Tango
 // managed as specialized templates
 //
 
-#define TEMPL_EXPL_METH_INST_CONST(CLASS, METH)    \
-    template void CLASS::METH(const DevBoolean &); \
-    template void CLASS::METH(const DevUChar &);   \
-    template void CLASS::METH(const DevShort &);   \
-    template void CLASS::METH(const DevUShort &);  \
-    template void CLASS::METH(const DevLong &);    \
-    template void CLASS::METH(const DevULong &);   \
-    template void CLASS::METH(const DevLong64 &);  \
-    template void CLASS::METH(const DevULong64 &); \
-    template void CLASS::METH(const DevFloat &);   \
-    template void CLASS::METH(const DevDouble &);  \
-    template void CLASS::METH(const DevState &);
-
-#define TEMPL_EXPL_METH_INST(CLASS, METH)    \
-    template void CLASS::METH(DevBoolean &); \
-    template void CLASS::METH(DevUChar &);   \
-    template void CLASS::METH(DevShort &);   \
-    template void CLASS::METH(DevUShort &);  \
-    template void CLASS::METH(DevLong &);    \
-    template void CLASS::METH(DevULong &);   \
-    template void CLASS::METH(DevLong64 &);  \
-    template void CLASS::METH(DevULong64 &); \
-    template void CLASS::METH(DevFloat &);   \
-    template void CLASS::METH(DevDouble &);  \
-    template void CLASS::METH(DevState &);   \
-    template void CLASS::METH(DevString &);  \
-    template void CLASS::METH(DevEncoded &);
-
 #define TEMPL_EXPL_CLASS_INST(CLASS)  \
     template class CLASS<DevBoolean>; \
     template class CLASS<DevUChar>;   \
@@ -238,12 +210,6 @@ template void Util::fill_cmd_polling_buffer(DeviceImpl *, std::string &, CmdHist
 // Instantiate WAttribute::XXX methods
 //
 //-----------------------------------------------------------------------------
-
-TEMPL_EXPL_METH_INST(WAttribute, get_min_value)
-TEMPL_EXPL_METH_INST(WAttribute, get_max_value)
-
-TEMPL_EXPL_METH_INST_CONST(WAttribute, set_min_value)
-TEMPL_EXPL_METH_INST_CONST(WAttribute, set_max_value)
 
 template void WAttribute::_update_written_value<Tango::DevShort>(const CORBA::Any &any, std::size_t x, std::size_t y);
 template void WAttribute::_update_written_value<Tango::DevUShort>(const CORBA::Any &any, std::size_t x, std::size_t y);

@@ -33,6 +33,7 @@
 #include <tango/server/attribute.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/internal/server/attribute_utils.h>
 #include <tango/client/Database.h>
 
 #include <functional>
@@ -517,24 +518,27 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
     //
 
     set_one_str_prop("description", conf.description, description, v_db, def_user_prop, def_class_prop, DescNotSpec);
-    delete_startup_exception("description", dev_name);
+    Tango::detail::delete_startup_exception(
+        *this, "description", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_str_prop("label", conf.label, label, v_db, def_user_prop, def_class_prop, name.c_str());
-    delete_startup_exception("label", dev_name);
+    Tango::detail::delete_startup_exception(*this, "label", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_str_prop("unit", conf.unit, unit, v_db, def_user_prop, def_class_prop, UnitNotSpec);
-    delete_startup_exception("unit", dev_name);
+    Tango::detail::delete_startup_exception(*this, "unit", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_str_prop(
         "standard_unit", conf.standard_unit, standard_unit, v_db, def_user_prop, def_class_prop, StdUnitNotSpec);
-    delete_startup_exception("standard_unit", dev_name);
+    Tango::detail::delete_startup_exception(
+        *this, "standard_unit", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_str_prop(
         "display_unit", conf.display_unit, display_unit, v_db, def_user_prop, def_class_prop, DispUnitNotSpec);
-    delete_startup_exception("display_unit", dev_name);
+    Tango::detail::delete_startup_exception(
+        *this, "display_unit", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_str_prop("format", conf.format, format, v_db, def_user_prop, def_class_prop, FormatNotSpec);
-    delete_startup_exception("format", dev_name);
+    Tango::detail::delete_startup_exception(*this, "format", dev_name, check_startup_exceptions, startup_exceptions);
 
     //
     // Min, max and most of the alarm related properties
@@ -542,11 +546,11 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
 
     set_one_alarm_prop(
         "min_value", conf.min_value, min_value_str, min_value, v_db, def_user_prop, def_class_prop, check_min_value);
-    delete_startup_exception("min_value", dev_name);
+    Tango::detail::delete_startup_exception(*this, "min_value", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_alarm_prop(
         "max_value", conf.max_value, max_value_str, max_value, v_db, def_user_prop, def_class_prop, check_max_value);
-    delete_startup_exception("max_value", dev_name);
+    Tango::detail::delete_startup_exception(*this, "max_value", dev_name, check_startup_exceptions, startup_exceptions);
 
     bool alrm_set;
     set_one_alarm_prop(
@@ -559,7 +563,7 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
     {
         alarm_conf.set(min_level);
     }
-    delete_startup_exception("min_alarm", dev_name);
+    Tango::detail::delete_startup_exception(*this, "min_alarm", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_alarm_prop(
         "max_alarm", conf.max_alarm, max_alarm_str, max_alarm, v_db, def_user_prop, def_class_prop, alrm_set);
@@ -571,7 +575,7 @@ void Attribute::set_properties(const Tango::AttributeConfig &conf,
     {
         alarm_conf.set(max_level);
     }
-    delete_startup_exception("max_alarm", dev_name);
+    Tango::detail::delete_startup_exception(*this, "max_alarm", dev_name, check_startup_exceptions, startup_exceptions);
 }
 
 void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
@@ -682,7 +686,8 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
         {
             alarm_conf.set(min_warn);
         }
-        delete_startup_exception("min_warning", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "min_warning", dev_name, check_startup_exceptions, startup_exceptions);
 
         set_one_alarm_prop("max_warning",
                            conf.att_alarm.max_warning,
@@ -700,7 +705,8 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
         {
             alarm_conf.set(max_warn);
         }
-        delete_startup_exception("max_warning", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "max_warning", dev_name, check_startup_exceptions, startup_exceptions);
 
         //
         // RDS related properties
@@ -714,11 +720,13 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
 
         set_one_event_prop(
             "rel_change", conf.event_prop.ch_event.rel_change, rel_change, v_db, def_user_prop, def_class_prop);
-        delete_startup_exception("rel_change", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "rel_change", dev_name, check_startup_exceptions, startup_exceptions);
 
         set_one_event_prop(
             "abs_change", conf.event_prop.ch_event.abs_change, abs_change, v_db, def_user_prop, def_class_prop);
-        delete_startup_exception("rel_change", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "rel_change", dev_name, check_startup_exceptions, startup_exceptions);
 
         set_one_event_prop("archive_rel_change",
                            conf.event_prop.arch_event.rel_change,
@@ -726,7 +734,8 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
                            v_db,
                            def_user_prop,
                            def_class_prop);
-        delete_startup_exception("archive_rel_change", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "archive_rel_change", dev_name, check_startup_exceptions, startup_exceptions);
 
         set_one_event_prop("archive_abs_change",
                            conf.event_prop.arch_event.abs_change,
@@ -734,7 +743,8 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
                            v_db,
                            def_user_prop,
                            def_class_prop);
-        delete_startup_exception("archive_abs_change", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "archive_abs_change", dev_name, check_startup_exceptions, startup_exceptions);
     }
 
     //
@@ -748,7 +758,8 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
                          v_db,
                          def_user_prop,
                          def_class_prop);
-    delete_startup_exception("event_period", dev_name);
+    Tango::detail::delete_startup_exception(
+        *this, "event_period", dev_name, check_startup_exceptions, startup_exceptions);
 
     set_one_event_period("archive_period",
                          conf.event_prop.arch_event.period,
@@ -757,7 +768,8 @@ void Attribute::set_properties(const Tango::AttributeConfig_3 &conf,
                          v_db,
                          def_user_prop,
                          def_class_prop);
-    delete_startup_exception("archive_period", dev_name);
+    Tango::detail::delete_startup_exception(
+        *this, "archive_period", dev_name, check_startup_exceptions, startup_exceptions);
 }
 
 void Attribute::set_properties(const Tango::AttributeConfig_5 &conf,
@@ -842,11 +854,9 @@ void Attribute::set_one_str_prop(const char *prop_name,
 
     bool user_defaults, class_defaults;
     std::string usr_def_val, class_def_val;
-    size_t nb_user = def_user_prop.size();
-    size_t nb_class = def_class_prop.size();
 
-    user_defaults = prop_in_list(prop_name, usr_def_val, nb_user, def_user_prop);
-    class_defaults = prop_in_list(prop_name, class_def_val, nb_class, def_class_prop);
+    user_defaults = Tango::detail::prop_in_list(prop_name, usr_def_val, def_user_prop);
+    class_defaults = Tango::detail::prop_in_list(prop_name, class_def_val, def_class_prop);
 
     if(TG_strcasecmp(conf_val, AlrmValueNotSpec) == 0)
     {
@@ -1130,7 +1140,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
        (TG_strcasecmp(conf_val, AlrmValueNotSpec) != 0 && strlen(conf_val) != 0 &&
         TG_strcasecmp(conf_val, NotANumber) != 0))
     {
-        throw_err_data_type(prop_name, d_name, "Attribute::set_one_alarm_prop()");
+        Tango::detail::throw_err_data_type(prop_name, d_name, name, "Attribute::set_one_alarm_prop()");
     }
 
     AttPropDb apd;
@@ -1138,11 +1148,9 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
 
     bool user_defaults, class_defaults;
     std::string usr_def_val, class_def_val;
-    size_t nb_user = def_user_prop.size();
-    size_t nb_class = def_class_prop.size();
 
-    user_defaults = prop_in_list(prop_name, usr_def_val, nb_user, def_user_prop);
-    class_defaults = prop_in_list(prop_name, class_def_val, nb_class, def_class_prop);
+    user_defaults = Tango::detail::prop_in_list(prop_name, usr_def_val, def_user_prop);
+    class_defaults = Tango::detail::prop_in_list(prop_name, class_def_val, def_class_prop);
 
     std::stringstream str;
     str.precision(TANGO_FLOAT_PRECISION);
@@ -1572,7 +1580,7 @@ void Attribute::set_one_alarm_prop(const char *prop_name,
             ss << conf_val;
             if(!(ss >> db && ss.eof()))
             {
-                throw_err_format(prop_name, d_name, "Attribute::set_one_alarm_prop()");
+                Tango::detail::throw_err_format(prop_name, d_name, name, "Attribute::set_one_alarm_prop()");
             }
 
             ss.str("");
@@ -1777,9 +1785,6 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     bool usr_defaults = false;
     bool class_defaults = false;
 
-    size_t nb_user = def_user_prop.size();
-    size_t nb_class = def_class_prop.size();
-
     if(TG_strcasecmp(att_alarm.delta_val, AlrmValueNotSpec) == 0)
     {
         // force library defaults (even if user defaults defined)
@@ -1789,10 +1794,10 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     {
         // set class default if defined, user default value if defined, otherwise use the library defaults
 
-        class_defaults = prop_in_list("delta_val", delta_val_class_def, nb_class, def_class_prop);
+        class_defaults = Tango::detail::prop_in_list("delta_val", delta_val_class_def, def_class_prop);
         if(!class_defaults)
         {
-            usr_defaults = prop_in_list("delta_val", delta_val_usr_def, nb_user, def_user_prop);
+            usr_defaults = Tango::detail::prop_in_list("delta_val", delta_val_usr_def, def_user_prop);
             if(!usr_defaults)
             {
                 delta_val_str = AlrmValueNotSpec;
@@ -1819,7 +1824,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     {
         // set user default value if defined, otherwise use the library defaults
 
-        usr_defaults = prop_in_list("delta_val", delta_val_usr_def, nb_user, def_user_prop);
+        usr_defaults = Tango::detail::prop_in_list("delta_val", delta_val_usr_def, def_user_prop);
         if(!usr_defaults)
         {
             delta_val_str = AlrmValueNotSpec;
@@ -1848,7 +1853,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         }
         else
         {
-            throw_err_data_type("delta_val", d_name, "Attribute::set_rds_prop_val()");
+            Tango::detail::throw_err_data_type("delta_val", d_name, name, "Attribute::set_rds_prop_val()");
         }
     }
 
@@ -1881,7 +1886,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         }
     }
 
-    delete_startup_exception("delta_val", dev_name);
+    Tango::detail::delete_startup_exception(*this, "delta_val", dev_name, check_startup_exceptions, startup_exceptions);
 
     //
     // And the delta_t
@@ -1904,10 +1909,10 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     {
         // set class default if defined, user default value if defined, otherwise use the library defaults
 
-        class_defaults = prop_in_list("delta_t", delta_t_class_def, nb_class, def_class_prop);
+        class_defaults = Tango::detail::prop_in_list("delta_t", delta_t_class_def, def_class_prop);
         if(!class_defaults)
         {
-            usr_defaults = prop_in_list("delta_t", delta_t_usr_def, nb_user, def_user_prop);
+            usr_defaults = Tango::detail::prop_in_list("delta_t", delta_t_usr_def, def_user_prop);
             if(!usr_defaults)
             {
                 delta_t_str = "0";
@@ -1934,7 +1939,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     {
         // set user default value if defined, otherwise use the library defaults
 
-        usr_defaults = prop_in_list("delta_t", delta_t_usr_def, nb_user, def_user_prop);
+        usr_defaults = Tango::detail::prop_in_list("delta_t", delta_t_usr_def, def_user_prop);
         if(!usr_defaults)
         {
             delta_t_str = "0";
@@ -1965,7 +1970,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
             double db;
             if(!(str >> db && str.eof()))
             {
-                throw_err_format("delta_t", d_name, "Attribute::set_rds_prop_val");
+                Tango::detail::throw_err_format("delta_t", d_name, name, "Attribute::set_rds_prop_val");
             }
             delta_t = (long) db;
             str.str("");
@@ -1976,7 +1981,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         }
         else
         {
-            throw_err_data_type("delta_t", d_name, "Attribute::set_rds_prop_val");
+            Tango::detail::throw_err_data_type("delta_t", d_name, name, "Attribute::set_rds_prop_val");
         }
     }
     else
@@ -2007,7 +2012,7 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
         }
     }
 
-    delete_startup_exception("delta_t", dev_name);
+    Tango::detail::delete_startup_exception(*this, "delta_t", dev_name, check_startup_exceptions, startup_exceptions);
 
     //
     // Set RDS alarm flag only if both delta_t and delta_val are defined
@@ -2016,7 +2021,8 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     if(delta_t_defined && delta_val_defined)
     {
         alarm_conf.set(rds);
-        delete_startup_exception("rds_alarm", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "rds_alarm", dev_name, check_startup_exceptions, startup_exceptions);
     }
     else if(delta_t_defined || delta_val_defined)
     {
@@ -2048,7 +2054,8 @@ void Attribute::set_rds_prop_val(const AttributeAlarm &att_alarm,
     else
     {
         alarm_conf.reset(rds);
-        delete_startup_exception("rds_alarm", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "rds_alarm", dev_name, check_startup_exceptions, startup_exceptions);
     }
 }
 
@@ -2079,8 +2086,6 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
     str.precision(TANGO_FLOAT_PRECISION);
 
     std::string delta_val_usr_def_val, delta_val_class_def_val;
-    size_t nb_user = def_user_prop.size();
-    size_t nb_class = def_class_prop.size();
 
     bool delta_val_user_defaults;
     bool delta_val_class_defaults;
@@ -2097,8 +2102,8 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
     std::string delta_val_tmp_str = att_alarm.delta_val.in();
     bool delta_val_is_number = true;
 
-    delta_val_user_defaults = prop_in_list("delta_val", delta_val_usr_def_val, nb_user, def_user_prop);
-    delta_val_class_defaults = prop_in_list("delta_val", delta_val_class_def_val, nb_class, def_class_prop);
+    delta_val_user_defaults = Tango::detail::prop_in_list("delta_val", delta_val_usr_def_val, def_user_prop);
+    delta_val_class_defaults = Tango::detail::prop_in_list("delta_val", delta_val_class_def_val, def_class_prop);
 
     if(delta_val_class_defaults)
     {
@@ -2160,7 +2165,7 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
             str << att_alarm.delta_val;
             if(!(str >> db && str.eof()))
             {
-                throw_err_format("delta_val", d_name, "Attribute::set_rds_prop_db)");
+                Tango::detail::throw_err_format("delta_val", d_name, name, "Attribute::set_rds_prop_db)");
             }
             switch(data_type)
             {
@@ -2225,7 +2230,7 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
         }
         else
         {
-            throw_err_data_type("delta_val", d_name, "Attribute::set_rds_prop_db()");
+            Tango::detail::throw_err_data_type("delta_val", d_name, name, "Attribute::set_rds_prop_db()");
         }
     }
 
@@ -2240,8 +2245,8 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
     bool delta_t_class_defaults;
     bool delta_t_is_number = true;
 
-    delta_t_user_defaults = prop_in_list("delta_t", delta_t_usr_def_val, nb_user, def_user_prop);
-    delta_t_class_defaults = prop_in_list("delta_t", delta_t_class_def_val, nb_class, def_class_prop);
+    delta_t_user_defaults = Tango::detail::prop_in_list("delta_t", delta_t_usr_def_val, def_user_prop);
+    delta_t_class_defaults = Tango::detail::prop_in_list("delta_t", delta_t_class_def_val, def_class_prop);
 
     if(delta_t_class_defaults)
     {
@@ -2303,7 +2308,7 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
             double db;
             if(!(str >> db && str.eof()))
             {
-                throw_err_format("delta_t", d_name, "Attribute::set_rds_prop_db()");
+                Tango::detail::throw_err_format("delta_t", d_name, name, "Attribute::set_rds_prop_db()");
             }
             str.str("");
             str.clear();
@@ -2312,7 +2317,7 @@ void Attribute::set_rds_prop_db(const AttributeAlarm &att_alarm,
         }
         else
         {
-            throw_err_data_type("delta_t", d_name, "Attribute::set_rds_prop_db()");
+            Tango::detail::throw_err_data_type("delta_t", d_name, name, "Attribute::set_rds_prop_db()");
         }
     }
 
@@ -2435,11 +2440,8 @@ void Attribute::set_one_event_prop(const char *prop_name,
     std::vector<bool> rel_change_set_class_def; // vector indicating if to use provided values for the property or the
                                                 // class defaults if defined
 
-    size_t nb_user = def_user_prop.size();
-    size_t nb_class = def_class_prop.size();
-
-    rel_change_usr_def = prop_in_list(prop_name, rel_change_usr_str, nb_user, def_user_prop);
-    rel_change_class_def = prop_in_list(prop_name, rel_change_class_str, nb_class, def_class_prop);
+    rel_change_usr_def = Tango::detail::prop_in_list(prop_name, rel_change_usr_str, def_user_prop);
+    rel_change_class_def = Tango::detail::prop_in_list(prop_name, rel_change_class_str, def_class_prop);
 
     //
     // Validate user or class default properties
@@ -2689,10 +2691,8 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
         att_ptr = &(mca->get_attr(name));
 
         std::vector<AttrProperty> &def_user_prop = att_ptr->get_user_default_properties();
-        size_t nb_user = def_user_prop.size();
 
         std::vector<AttrProperty> &def_class_prop = att_ptr->get_class_properties();
-        size_t nb_class = def_class_prop.size();
 
         //
         // Set the enum labels
@@ -2703,8 +2703,8 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
         bool usr_defaults = false;
         bool class_defaults = false;
 
-        usr_defaults = prop_in_list("enum_labels", enum_labels_usr_def, nb_user, def_user_prop);
-        class_defaults = prop_in_list("enum_labels", enum_labels_class_def, nb_class, def_class_prop);
+        usr_defaults = Tango::detail::prop_in_list("enum_labels", enum_labels_usr_def, def_user_prop);
+        class_defaults = Tango::detail::prop_in_list("enum_labels", enum_labels_class_def, def_class_prop);
 
         std::vector<std::string> old_labels = enum_labels;
 
@@ -2818,7 +2818,8 @@ void Attribute::set_prop_5_specific(const AttributeConfig_5 &conf,
             }
         }
 
-        delete_startup_exception("enum_labels", dev_name);
+        Tango::detail::delete_startup_exception(
+            *this, "enum_labels", dev_name, check_startup_exceptions, startup_exceptions);
     }
 }
 
@@ -3070,14 +3071,16 @@ void Attribute::validate_change_properties(const std::string &dev_name,
                 }
                 else
                 {
-                    throw_err_data_type(
-                        prop_name, const_cast<std::string &>(dev_name), "Attribute::validate_change_properties()");
+                    Tango::detail::throw_err_data_type(prop_name,
+                                                       const_cast<std::string &>(dev_name),
+                                                       name,
+                                                       "Attribute::validate_change_properties()");
                 }
             }
         }
         else
         {
-            throw_err_format(prop_name, dev_name, "Attribute::validate_change_properties()");
+            Tango::detail::throw_err_format(prop_name, dev_name, name, "Attribute::validate_change_properties()");
         }
     }
 
@@ -3115,14 +3118,16 @@ void Attribute::validate_change_properties(const std::string &dev_name,
                     }
                     else
                     {
-                        throw_err_data_type(
-                            prop_name, const_cast<std::string &>(dev_name), "Attribute::validate_change_properties()");
+                        Tango::detail::throw_err_data_type(prop_name,
+                                                           const_cast<std::string &>(dev_name),
+                                                           name,
+                                                           "Attribute::validate_change_properties()");
                     }
                 }
             }
             else
             {
-                throw_err_format(prop_name, dev_name, "Attribute::validate_change_properties()");
+                Tango::detail::throw_err_format(prop_name, dev_name, name, "Attribute::validate_change_properties()");
             }
         }
     }
@@ -3229,17 +3234,14 @@ void Attribute::set_one_event_period(const char *prop_name,
     AttPropDb apd;
     apd.name = prop_name;
 
-    size_t nb_user = def_user_prop.size();
-    size_t nb_class = def_class_prop.size();
-
     std::stringstream def_event_period;
     def_event_period << (int) (prop_def);
 
     std::string class_def_val;
     std::string usr_def_val;
 
-    bool user_defaults = prop_in_list(prop_name, usr_def_val, nb_user, def_user_prop);
-    bool class_defaults = prop_in_list(prop_name, class_def_val, nb_class, def_class_prop);
+    bool user_defaults = Tango::detail::prop_in_list(prop_name, usr_def_val, def_user_prop);
+    bool class_defaults = Tango::detail::prop_in_list(prop_name, class_def_val, def_class_prop);
 
     std::stringstream str;
     str.precision(TANGO_FLOAT_PRECISION);
@@ -3267,7 +3269,7 @@ void Attribute::set_one_event_period(const char *prop_name,
                 double db;
                 if(!(str >> db && str.eof()))
                 {
-                    throw_err_format(prop_name, d_name, "Attribute::set_one_event_period()");
+                    Tango::detail::throw_err_format(prop_name, d_name, name, "Attribute::set_one_event_period()");
                 }
                 prop_val = (int) db;
             }
@@ -3280,7 +3282,7 @@ void Attribute::set_one_event_period(const char *prop_name,
             double db;
             if(!(str >> db && str.eof()))
             {
-                throw_err_format(prop_name, d_name, "Attribute::set_one_event_period()");
+                Tango::detail::throw_err_format(prop_name, d_name, name, "Attribute::set_one_event_period()");
             }
             prop_val = (int) db;
         }
@@ -3300,7 +3302,7 @@ void Attribute::set_one_event_period(const char *prop_name,
             double db;
             if(!(str >> db && str.eof()))
             {
-                throw_err_format(prop_name, d_name, "Attribute::set_one_event_period()");
+                Tango::detail::throw_err_format(prop_name, d_name, name, "Attribute::set_one_event_period()");
             }
             prop_val = (int) db;
         }
@@ -3314,7 +3316,7 @@ void Attribute::set_one_event_period(const char *prop_name,
         double db;
         if(!(str >> db && str.eof()))
         {
-            throw_err_format(prop_name, d_name, "Attribute::set_one_event_period()");
+            Tango::detail::throw_err_format(prop_name, d_name, name, "Attribute::set_one_event_period()");
         }
         prop_val = (int) db;
     }
@@ -3433,7 +3435,7 @@ void Attribute::set_one_event_period(const char *prop_name,
                 double db;
                 if(!(str >> db && str.eof()))
                 {
-                    throw_err_format(prop_name, d_name, "Attribute::set_one_event_period()");
+                    Tango::detail::throw_err_format(prop_name, d_name, name, "Attribute::set_one_event_period()");
                 }
                 str.str("");
                 str.clear();
@@ -3536,7 +3538,7 @@ void Attribute::convert_prop_value(const char *prop_name,
     str << value_str;
     if(!(str >> val.db && str.eof()))
     {
-        throw_err_format(prop_name, dev_name, "Attribute::convert_prop_value()");
+        Tango::detail::throw_err_format(prop_name, dev_name, name, "Attribute::convert_prop_value()");
     }
 
     switch(data_type)

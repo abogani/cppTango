@@ -32,7 +32,6 @@
 #ifndef _ATTRIBUTE_H
 #define _ATTRIBUTE_H
 
-#include <tango/tango.h>
 #include <tango/common/tango_type_traits.h>
 #include <tango/server/attrdesc.h>
 #include <tango/server/fwdattrdesc.h>
@@ -257,16 +256,6 @@ struct LastAttrValue
                const AttributeValue *,
                DevFailed *);
 };
-
-typedef enum prop_type
-{
-    MIN_VALUE = 0,
-    MAX_VALUE,
-    MIN_WARNING,
-    MAX_WARNING,
-    MIN_ALARM,
-    MAX_ALARM
-} PropType;
 
 class EventSupplier;
 
@@ -2158,7 +2147,6 @@ class Attribute
 
     bool check_level_alarm();
     bool check_warn_alarm();
-    void upd_att_prop_db(const Tango::Attr_CheckVal &, const char *);
     DeviceClass *get_att_device_class(const std::string &);
 
     template <typename T>
@@ -2169,12 +2157,7 @@ class Attribute
 
     void check_hard_coded(const AttributeConfig_5 &);
 
-    void delete_startup_exception(std::string, std::string str = std::string("None"));
-
     void throw_hard_coded_prop(const char *);
-    void throw_err_format(const char *, const std::string &, const char *);
-    void throw_incoherent_val_err(const char *, const char *, const std::string &, const char *);
-    void throw_err_data_type(const char *, const std::string &, const char *);
     void validate_change_properties(const std::string &,
                                     const char *,
                                     std::string &,
@@ -2182,13 +2165,9 @@ class Attribute
                                     std::vector<bool> &,
                                     std::vector<bool> &);
     void validate_change_properties(const std::string &, const char *, std::string &, std::vector<double> &);
-    bool prop_in_list(const char *, std::string &, size_t, const std::vector<AttrProperty> &);
     void set_format_notspec();
     bool is_format_notspec(const char *);
     void def_format_in_dbdatum(DbDatum &);
-
-    void avns_in_db(const char *, const std::string &);
-    void avns_in_att(prop_type);
 
     void convert_prop_value(const char *, std::string &, Attr_CheckVal &, const std::string &);
 
@@ -2445,51 +2424,6 @@ inline void Attribute::throw_startup_exception(const char *origin)
 
         Except::throw_exception(API_AttrConfig, err_msg, origin);
     }
-}
-
-//+------------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        Attribute::prop_in_list
-//
-// description :
-//        Search for a property in a list
-//
-// args:
-//        in :
-//            - prop_name : The property name
-//          - list_size : The size list
-//          - list : The list
-//      out :
-//            - prop_str : String initialized with prop. value (if found)
-//
-//------------------------------------------------------------------------------------------------------------------
-
-inline bool Attribute::prop_in_list(const char *prop_name,
-                                    std::string &prop_str,
-                                    size_t list_size,
-                                    const std::vector<AttrProperty> &list)
-{
-    bool ret = false;
-
-    if(list_size != 0)
-    {
-        size_t i;
-        for(i = 0; i < list_size; i++)
-        {
-            if(list[i].get_name() == prop_name)
-            {
-                break;
-            }
-        }
-        if(i != list_size)
-        {
-            prop_str = list[i].get_value();
-            ret = true;
-        }
-    }
-
-    return ret;
 }
 
 inline void Attribute::set_change_event_sub(int cl_lib)

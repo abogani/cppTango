@@ -40,6 +40,7 @@
 #include <tango/server/w_attribute.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/tango_clock.h>
+#include <tango/internal/server/attribute_utils.h>
 
 #include <cmath>
 
@@ -718,6 +719,385 @@ bool WAttribute::check_rds_alarm()
     return ret;
 }
 
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        set_min_value()
+//
+// description :
+//        Sets minimum value attribute property. Throws exception in case the data type of provided
+//        property does not match the attribute data type
+//
+// args :
+//        in :
+//             - new_min_value : The minimum value property to be set
+//
+//-----------------------------------------------------------------------------------------------------------------
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T> || std::is_same_v<T, std::string>> *>
+void WAttribute::set_min_value(const T &new_min_value)
+{
+    //
+    // Check type validity
+    //
+    if((data_type == Tango::DEV_STRING) || (data_type == Tango::DEV_BOOLEAN) || (data_type == Tango::DEV_STATE))
+    {
+        Tango::detail::throw_err_data_type("min_value", d_name, name, "set_min_value()");
+    }
+
+    if(!(data_type == Tango::DEV_ENCODED && Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR) &&
+       (data_type != Tango::tango_type_traits<T>::type_value()))
+    {
+        std::stringstream err_msg;
+        err_msg << "Attribute (" << name
+                << ") data type does not match the type provided : " << Tango::tango_type_traits<T>::type_value();
+        TANGO_THROW_EXCEPTION(Tango::API_IncompatibleAttrDataType, err_msg.str().c_str());
+    }
+
+    //
+    //    Check coherence with max_value
+    //
+
+    if(is_max_value())
+    {
+        T max_value_tmp;
+        memcpy((void *) &max_value_tmp, (const void *) &max_value, sizeof(T));
+        if(new_min_value >= max_value_tmp)
+        {
+            Tango::detail::throw_incoherent_val_err("min_value", "max_value", d_name, name, "set_min_value()");
+        }
+    }
+
+    //
+    // Store new min value as a string
+    //
+
+    TangoSys_MemStream str;
+    str.precision(Tango::TANGO_FLOAT_PRECISION);
+    if(Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR)
+    {
+        str << (short) new_min_value; // to represent the numeric value
+    }
+    else
+    {
+        str << new_min_value;
+    }
+    std::string min_value_tmp_str = str.str();
+
+    //
+    // Get the monitor protecting device att config
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
+    //
+
+    Tango::Util *tg = Tango::Util::instance();
+    Tango::TangoMonitor *mon_ptr = nullptr;
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
+    {
+        mon_ptr = &(get_att_device()->get_att_conf_monitor());
+    }
+    Tango::AutoTangoMonitor sync1(mon_ptr);
+
+    //
+    // Store the new value locally
+    //
+
+    Tango::Attr_CheckVal old_min_value;
+    memcpy((void *) &old_min_value, (void *) &min_value, sizeof(T));
+    memcpy((void *) &min_value, (void *) &new_min_value, sizeof(T));
+
+    //
+    // Then, update database
+    //
+
+    const auto &def_user_prop =
+        get_att_device_class(d_name)->get_class_attr()->get_attr(name).get_user_default_properties();
+    size_t nb_user = def_user_prop.size();
+
+    std::string usr_def_val;
+    bool user_defaults = false;
+    if(nb_user != 0)
+    {
+        size_t i;
+        for(i = 0; i < nb_user; i++)
+        {
+            if(def_user_prop[i].get_name() == "min_value")
+            {
+                break;
+            }
+        }
+        if(i != nb_user) // user defaults defined
+        {
+            user_defaults = true;
+            usr_def_val = def_user_prop[i].get_value();
+        }
+    }
+
+    if(Tango::Util::instance()->use_db())
+    {
+        if(user_defaults && min_value_tmp_str == usr_def_val)
+        {
+            Tango::DbDatum attr_dd(name), prop_dd("min_value");
+            Tango::DbData db_data;
+            db_data.push_back(attr_dd);
+            db_data.push_back(prop_dd);
+
+            bool retry = true;
+            while(retry)
+            {
+                try
+                {
+                    tg->get_database()->delete_device_attribute_property(d_name, db_data);
+                    retry = false;
+                }
+                catch(CORBA::COMM_FAILURE &)
+                {
+                    tg->get_database()->reconnect(true);
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                Tango::detail::upd_att_prop_db(min_value, "min_value", d_name, name, get_data_type());
+            }
+            catch(Tango::DevFailed &)
+            {
+                memcpy((void *) &min_value, (void *) &old_min_value, sizeof(T));
+                throw;
+            }
+        }
+    }
+
+    //
+    // Set the min_value flag
+    //
+
+    check_min_value = true;
+
+    //
+    // Store new value as a string
+    //
+
+    min_value_str = min_value_tmp_str;
+
+    //
+    // Push a att conf event
+    //
+
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
+    {
+        get_att_device()->push_att_conf_event(this);
+    }
+
+    //
+    // Delete device startup exception related to min_value if there is any
+    //
+
+    Tango::detail::delete_startup_exception(*this, "min_value", d_name, check_startup_exceptions, startup_exceptions);
+}
+
+template <>
+void WAttribute::set_min_value(const std::string &new_min_value_str)
+{
+    if((data_type == Tango::DEV_STRING) || (data_type == Tango::DEV_BOOLEAN) || (data_type == Tango::DEV_STATE) ||
+       (data_type == Tango::DEV_ENUM))
+    {
+        Tango::detail::throw_err_data_type("min_value", d_name, name, "set_min_value()");
+    }
+
+    std::string min_value_str_tmp = new_min_value_str;
+
+    std::string usr_def_val;
+    std::string class_def_val;
+    bool user_defaults = false;
+    bool class_defaults = false;
+
+    const auto &def_user_prop =
+        get_att_device_class(d_name)->get_class_attr()->get_attr(name).get_user_default_properties();
+    const auto &def_class_prop = get_att_device_class(d_name)->get_class_attr()->get_attr(name).get_class_properties();
+    user_defaults = Tango::detail::prop_in_list("min_value", usr_def_val, def_user_prop);
+
+    class_defaults = Tango::detail::prop_in_list("min_value", class_def_val, def_class_prop);
+
+    bool set_value = true;
+
+    if(class_defaults)
+    {
+        if(TG_strcasecmp(new_min_value_str.c_str(), Tango::AlrmValueNotSpec) == 0)
+        {
+            set_value = false;
+
+            Tango::detail::avns_in_db("min_value", name, d_name);
+            Tango::detail::avns_in_att(*this, d_name, check_min_value, min_value_str);
+        }
+        else if((TG_strcasecmp(new_min_value_str.c_str(), Tango::NotANumber) == 0) ||
+                (TG_strcasecmp(new_min_value_str.c_str(), class_def_val.c_str()) == 0))
+        {
+            min_value_str_tmp = class_def_val;
+        }
+        else if(strlen(new_min_value_str.c_str()) == 0)
+        {
+            if(user_defaults)
+            {
+                min_value_str_tmp = usr_def_val;
+            }
+            else
+            {
+                set_value = false;
+
+                Tango::detail::avns_in_db("min_value", name, d_name);
+                Tango::detail::avns_in_att(*this, d_name, check_min_value, min_value_str);
+            }
+        }
+    }
+    else if(user_defaults)
+    {
+        if(TG_strcasecmp(new_min_value_str.c_str(), Tango::AlrmValueNotSpec) == 0)
+        {
+            set_value = false;
+
+            Tango::detail::avns_in_db("min_value", name, d_name);
+            Tango::detail::avns_in_att(*this, d_name, check_min_value, min_value_str);
+        }
+        else if((TG_strcasecmp(new_min_value_str.c_str(), Tango::NotANumber) == 0) ||
+                (TG_strcasecmp(new_min_value_str.c_str(), usr_def_val.c_str()) == 0) ||
+                (strlen(new_min_value_str.c_str()) == 0))
+        {
+            min_value_str_tmp = usr_def_val;
+        }
+    }
+    else
+    {
+        if((TG_strcasecmp(new_min_value_str.c_str(), Tango::AlrmValueNotSpec) == 0) ||
+           (TG_strcasecmp(new_min_value_str.c_str(), Tango::NotANumber) == 0) ||
+           (strlen(new_min_value_str.c_str()) == 0))
+        {
+            set_value = false;
+
+            Tango::detail::avns_in_db("min_value", name, d_name);
+            Tango::detail::avns_in_att(*this, d_name, check_min_value, min_value_str);
+        }
+    }
+
+    if(set_value)
+    {
+        if((data_type != Tango::DEV_STRING) && (data_type != Tango::DEV_BOOLEAN) && (data_type != Tango::DEV_STATE))
+        {
+            double db;
+            float fl;
+
+            TangoSys_MemStream str;
+            str.precision(Tango::TANGO_FLOAT_PRECISION);
+            str << min_value_str_tmp;
+            switch(data_type)
+            {
+            case Tango::DEV_SHORT:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                set_min_value((Tango::DevShort) db);
+                break;
+
+            case Tango::DEV_LONG:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                set_min_value((Tango::DevLong) db);
+                break;
+
+            case Tango::DEV_LONG64:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                set_min_value((Tango::DevLong64) db);
+                break;
+
+            case Tango::DEV_DOUBLE:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                set_min_value(db);
+                break;
+
+            case Tango::DEV_FLOAT:
+                if(!(str >> fl && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                set_min_value(fl);
+                break;
+
+            case Tango::DEV_USHORT:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((Tango::DevUShort)(-db)) : set_min_value((Tango::DevUShort) db);
+                break;
+
+            case Tango::DEV_UCHAR:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((Tango::DevUChar)(-db)) : set_min_value((Tango::DevUChar) db);
+                break;
+
+            case Tango::DEV_ULONG:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((Tango::DevULong)(-db)) : set_min_value((Tango::DevULong) db);
+                break;
+
+            case Tango::DEV_ULONG64:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((Tango::DevULong64)(-db)) : set_min_value((Tango::DevULong64) db);
+                break;
+
+            case Tango::DEV_ENCODED:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_format("min_value", d_name, name, "set_min_value()");
+                }
+                (db < 0.0) ? set_min_value((Tango::DevUChar)(-db)) : set_min_value((Tango::DevUChar) db);
+                break;
+            }
+        }
+        else
+        {
+            Tango::detail::throw_err_data_type("min_value", d_name, name, "set_min_value()");
+        }
+    }
+}
+
+template <>
+void WAttribute::set_min_value(const Tango::DevEncoded &)
+{
+    std::string err_msg = "Attribute properties cannot be set with Tango::DevEncoded data type";
+    TANGO_THROW_EXCEPTION(Tango::API_MethodArgument, err_msg.c_str());
+}
+
+template void WAttribute::set_min_value(const Tango::DevBoolean &value);
+template void WAttribute::set_min_value(const Tango::DevUChar &value);
+template void WAttribute::set_min_value(const Tango::DevShort &value);
+template void WAttribute::set_min_value(const Tango::DevUShort &value);
+template void WAttribute::set_min_value(const Tango::DevLong &value);
+template void WAttribute::set_min_value(const Tango::DevULong &value);
+template void WAttribute::set_min_value(const Tango::DevLong64 &value);
+template void WAttribute::set_min_value(const Tango::DevULong64 &value);
+template void WAttribute::set_min_value(const Tango::DevFloat &value);
+template void WAttribute::set_min_value(const Tango::DevDouble &value);
+template void WAttribute::set_min_value(const Tango::DevState &value);
+
 void WAttribute::set_min_value(char *new_min_value_str)
 {
     set_min_value(std::string(new_min_value_str));
@@ -728,6 +1108,434 @@ void WAttribute::set_min_value(const char *new_min_value_str)
     set_min_value(std::string(new_min_value_str));
 }
 
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        get_min_value()
+//
+// description :
+//        Gets attribute's minimum value and assigns it to the variable provided as a parameter
+//        Throws exception in case the data type of provided parameter does not match the attribute data type
+//        or if minimum value is not defined
+//
+// args :
+//        in :
+//             - min_val : The variable to be assigned the attribute's minimum value
+//
+//------------------------------------------------------------------------------------------------------------------
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> *>
+void WAttribute::get_min_value(T &min_val)
+{
+    if(!(data_type == Tango::DEV_ENCODED && Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR) &&
+       (data_type != Tango::tango_type_traits<T>::type_value()))
+    {
+        std::stringstream err_msg;
+        err_msg << "Attribute (" << get_name()
+                << ") data type does not match the type provided : " << Tango::tango_type_traits<T>::type_value();
+        TANGO_THROW_EXCEPTION(Tango::API_IncompatibleAttrDataType, err_msg.str().c_str());
+    }
+
+    if(!is_min_value())
+    {
+        TANGO_THROW_EXCEPTION(Tango::API_AttrNotAllowed, "Minimum value not defined for this attribute");
+    }
+
+    memcpy((void *) &min_val, (void *) &min_value, sizeof(T));
+}
+
+template void WAttribute::get_min_value(Tango::DevBoolean &value);
+template void WAttribute::get_min_value(Tango::DevUChar &value);
+template void WAttribute::get_min_value(Tango::DevShort &value);
+template void WAttribute::get_min_value(Tango::DevUShort &value);
+template void WAttribute::get_min_value(Tango::DevLong &value);
+template void WAttribute::get_min_value(Tango::DevULong &value);
+template void WAttribute::get_min_value(Tango::DevLong64 &value);
+template void WAttribute::get_min_value(Tango::DevULong64 &value);
+template void WAttribute::get_min_value(Tango::DevFloat &value);
+template void WAttribute::get_min_value(Tango::DevDouble &value);
+template void WAttribute::get_min_value(Tango::DevState &value);
+template void WAttribute::get_min_value(Tango::DevString &value);
+template void WAttribute::get_min_value(Tango::DevEncoded &value);
+
+//+-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        set_max_value()
+//
+// description :
+//        Sets maximum value attribute property
+//        Throws exception in case the data type of provided property does not match the attribute data type
+//
+// args :
+//        in :
+//            - new_max_value : The maximum value property to be set
+//
+//-------------------------------------------------------------------------------------------------------------------
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T> || std::is_same_v<T, std::string>> *>
+void WAttribute::set_max_value(const T &new_max_value)
+{
+    //
+    // Check type validity
+    //
+    if((data_type == Tango::DEV_STRING) || (data_type == Tango::DEV_BOOLEAN) || (data_type == Tango::DEV_STATE))
+    {
+        Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+    }
+
+    if(!(data_type == Tango::DEV_ENCODED && Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR) &&
+       (data_type != Tango::tango_type_traits<T>::type_value()))
+    {
+        std::stringstream err_msg;
+        err_msg << "Attribute (" << name
+                << ") data type does not match the type provided : " << Tango::tango_type_traits<T>::type_value();
+        TANGO_THROW_EXCEPTION(Tango::API_IncompatibleAttrDataType, err_msg.str().c_str());
+    }
+
+    //
+    //    Check coherence with max_value
+    //
+
+    if(is_min_value())
+    {
+        T min_value_tmp;
+        memcpy((void *) &min_value_tmp, (const void *) &min_value, sizeof(T));
+        if(new_max_value <= min_value_tmp)
+        {
+            Tango::detail::throw_incoherent_val_err("min_value", "max_value", d_name, name, "set_max_value()");
+        }
+    }
+
+    //
+    // Store new max value as a string
+    //
+
+    TangoSys_MemStream str;
+    str.precision(Tango::TANGO_FLOAT_PRECISION);
+    if(Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR)
+    {
+        str << (short) new_max_value; // to represent the numeric value
+    }
+    else
+    {
+        str << new_max_value;
+    }
+    std::string max_value_tmp_str = str.str();
+
+    //
+    // Get the monitor protecting device att config
+    // If the server is in its starting phase, give a nullptr to the AutoLock object
+    //
+
+    Tango::Util *tg = Tango::Util::instance();
+    Tango::TangoMonitor *mon_ptr = nullptr;
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
+    {
+        mon_ptr = &(get_att_device()->get_att_conf_monitor());
+    }
+    Tango::AutoTangoMonitor sync1(mon_ptr);
+
+    //
+    // Store the new value locally
+    //
+
+    Tango::Attr_CheckVal old_max_value;
+    memcpy((void *) &old_max_value, (void *) &max_value, sizeof(T));
+    memcpy((void *) &max_value, (void *) &new_max_value, sizeof(T));
+
+    //
+    // Then, update database
+    //
+
+    const auto &def_user_prop =
+        get_att_device_class(d_name)->get_class_attr()->get_attr(name).get_user_default_properties();
+    size_t nb_user = def_user_prop.size();
+
+    std::string usr_def_val;
+    bool user_defaults = false;
+    if(nb_user != 0)
+    {
+        size_t i;
+        for(i = 0; i < nb_user; i++)
+        {
+            if(def_user_prop[i].get_name() == "max_value")
+            {
+                break;
+            }
+        }
+        if(i != nb_user) // user defaults defined
+        {
+            user_defaults = true;
+            usr_def_val = def_user_prop[i].get_value();
+        }
+    }
+
+    if(Tango::Util::instance()->use_db())
+    {
+        if(user_defaults && max_value_tmp_str == usr_def_val)
+        {
+            Tango::DbDatum attr_dd(name), prop_dd("max_value");
+            Tango::DbData db_data;
+            db_data.push_back(attr_dd);
+            db_data.push_back(prop_dd);
+
+            bool retry = true;
+            while(retry)
+            {
+                try
+                {
+                    tg->get_database()->delete_device_attribute_property(d_name, db_data);
+                    retry = false;
+                }
+                catch(CORBA::COMM_FAILURE &)
+                {
+                    tg->get_database()->reconnect(true);
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                Tango::detail::upd_att_prop_db(max_value, "max_value", d_name, name, get_data_type());
+            }
+            catch(Tango::DevFailed &)
+            {
+                memcpy((void *) &max_value, (void *) &old_max_value, sizeof(T));
+                throw;
+            }
+        }
+    }
+
+    //
+    // Set the max_value flag
+    //
+
+    check_max_value = true;
+
+    //
+    // Store new value as a string
+    //
+
+    max_value_str = max_value_tmp_str;
+
+    //
+    // Push a att conf event
+    //
+
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
+    {
+        get_att_device()->push_att_conf_event(this);
+    }
+
+    //
+    // Delete device startup exception related to max_value if there is any
+    //
+
+    Tango::detail::delete_startup_exception(*this, "max_value", d_name, check_startup_exceptions, startup_exceptions);
+}
+
+template <>
+void WAttribute::set_max_value(const std::string &new_max_value_str)
+{
+    if((data_type == Tango::DEV_STRING) || (data_type == Tango::DEV_BOOLEAN) || (data_type == Tango::DEV_STATE))
+    {
+        Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+    }
+
+    std::string max_value_str_tmp = new_max_value_str;
+
+    std::string usr_def_val;
+    std::string class_def_val;
+    bool user_defaults = false;
+    bool class_defaults = false;
+
+    const auto &def_user_prop =
+        get_att_device_class(d_name)->get_class_attr()->get_attr(name).get_user_default_properties();
+    const auto &def_class_prop = get_att_device_class(d_name)->get_class_attr()->get_attr(name).get_class_properties();
+    user_defaults = Tango::detail::prop_in_list("max_value", usr_def_val, def_user_prop);
+
+    class_defaults = Tango::detail::prop_in_list("max_value", class_def_val, def_class_prop);
+
+    bool set_value = true;
+
+    if(class_defaults)
+    {
+        if(TG_strcasecmp(new_max_value_str.c_str(), Tango::AlrmValueNotSpec) == 0)
+        {
+            set_value = false;
+
+            Tango::detail::avns_in_db("max_value", name, d_name);
+            Tango::detail::avns_in_att(*this, d_name, check_max_value, max_value_str);
+        }
+        else if((TG_strcasecmp(new_max_value_str.c_str(), Tango::NotANumber) == 0) ||
+                (TG_strcasecmp(new_max_value_str.c_str(), class_def_val.c_str()) == 0))
+        {
+            max_value_str_tmp = class_def_val;
+        }
+        else if(strlen(new_max_value_str.c_str()) == 0)
+        {
+            if(user_defaults)
+            {
+                max_value_str_tmp = usr_def_val;
+            }
+            else
+            {
+                set_value = false;
+
+                Tango::detail::avns_in_db("max_value", name, d_name);
+                Tango::detail::avns_in_att(*this, d_name, check_max_value, max_value_str);
+            }
+        }
+    }
+    else if(user_defaults)
+    {
+        if(TG_strcasecmp(new_max_value_str.c_str(), Tango::AlrmValueNotSpec) == 0)
+        {
+            set_value = false;
+
+            Tango::detail::avns_in_db("max_value", name, d_name);
+            Tango::detail::avns_in_att(*this, d_name, check_max_value, max_value_str);
+        }
+        else if((TG_strcasecmp(new_max_value_str.c_str(), Tango::NotANumber) == 0) ||
+                (TG_strcasecmp(new_max_value_str.c_str(), usr_def_val.c_str()) == 0) ||
+                (strlen(new_max_value_str.c_str()) == 0))
+        {
+            max_value_str_tmp = usr_def_val;
+        }
+    }
+    else
+    {
+        if((TG_strcasecmp(new_max_value_str.c_str(), Tango::AlrmValueNotSpec) == 0) ||
+           (TG_strcasecmp(new_max_value_str.c_str(), Tango::NotANumber) == 0) ||
+           (strlen(new_max_value_str.c_str()) == 0))
+        {
+            set_value = false;
+
+            Tango::detail::avns_in_db("max_value", name, d_name);
+            Tango::detail::avns_in_att(*this, d_name, check_max_value, max_value_str);
+        }
+    }
+
+    if(set_value)
+    {
+        if((data_type != Tango::DEV_STRING) && (data_type != Tango::DEV_BOOLEAN) && (data_type != Tango::DEV_STATE) &&
+           (data_type != Tango::DEV_ENUM))
+        {
+            double db;
+            float fl;
+
+            TangoSys_MemStream str;
+            str.precision(Tango::TANGO_FLOAT_PRECISION);
+            str << max_value_str_tmp;
+            switch(data_type)
+            {
+            case Tango::DEV_SHORT:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                set_max_value((Tango::DevShort) db);
+                break;
+
+            case Tango::DEV_LONG:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                set_max_value((Tango::DevLong) db);
+                break;
+
+            case Tango::DEV_LONG64:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                set_max_value((Tango::DevLong64) db);
+                break;
+
+            case Tango::DEV_DOUBLE:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                set_max_value(db);
+                break;
+
+            case Tango::DEV_FLOAT:
+                if(!(str >> fl && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                set_max_value(fl);
+                break;
+
+            case Tango::DEV_USHORT:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((Tango::DevUShort)(-db)) : set_max_value((Tango::DevUShort) db);
+                break;
+
+            case Tango::DEV_UCHAR:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((Tango::DevUChar)(-db)) : set_max_value((Tango::DevUChar) db);
+                break;
+
+            case Tango::DEV_ULONG:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((Tango::DevULong)(-db)) : set_max_value((Tango::DevULong) db);
+                break;
+
+            case Tango::DEV_ULONG64:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((Tango::DevULong64)(-db)) : set_max_value((Tango::DevULong64) db);
+                break;
+
+            case Tango::DEV_ENCODED:
+                if(!(str >> db && str.eof()))
+                {
+                    Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+                }
+                (db < 0.0) ? set_max_value((Tango::DevUChar)(-db)) : set_max_value((Tango::DevUChar) db);
+                break;
+            }
+        }
+        else
+        {
+            Tango::detail::throw_err_data_type("max_value", d_name, name, "set_max_value()");
+        }
+    }
+}
+
+template <>
+void WAttribute::set_max_value(const Tango::DevEncoded &)
+{
+    std::string err_msg = "Attribute properties cannot be set with Tango::DevEncoded data type";
+    TANGO_THROW_EXCEPTION(Tango::API_MethodArgument, err_msg.c_str());
+}
+
+template void WAttribute::set_max_value(const Tango::DevBoolean &value);
+template void WAttribute::set_max_value(const Tango::DevUChar &value);
+template void WAttribute::set_max_value(const Tango::DevShort &value);
+template void WAttribute::set_max_value(const Tango::DevUShort &value);
+template void WAttribute::set_max_value(const Tango::DevLong &value);
+template void WAttribute::set_max_value(const Tango::DevULong &value);
+template void WAttribute::set_max_value(const Tango::DevLong64 &value);
+template void WAttribute::set_max_value(const Tango::DevULong64 &value);
+template void WAttribute::set_max_value(const Tango::DevFloat &value);
+template void WAttribute::set_max_value(const Tango::DevDouble &value);
+template void WAttribute::set_max_value(const Tango::DevState &value);
+
 void WAttribute::set_max_value(char *new_max_value_str)
 {
     set_max_value(std::string(new_max_value_str));
@@ -737,6 +1545,55 @@ void WAttribute::set_max_value(const char *new_max_value_str)
 {
     set_max_value(std::string(new_max_value_str));
 }
+
+//+------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        get_max_value()
+//
+// description :
+//        Gets attribute's maximum value and assigns it to the variable provided as a parameter
+//        Throws exception in case the data type of provided parameter does not match the attribute data type
+//        or if maximum value is not defined
+//
+// args :
+//        in :
+//             - max_val : The variable to be assigned the attribute's maximum value
+//
+//------------------------------------------------------------------------------------------------------------------
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> *>
+void WAttribute::get_max_value(T &max_val)
+{
+    if(!(data_type == Tango::DEV_ENCODED && Tango::tango_type_traits<T>::type_value() == Tango::DEV_UCHAR) &&
+       (data_type != Tango::tango_type_traits<T>::type_value()))
+    {
+        std::stringstream err_msg;
+        err_msg << "Attribute (" << get_name()
+                << ") data type does not match the type provided : " << Tango::tango_type_traits<T>::type_value();
+        TANGO_THROW_EXCEPTION(Tango::API_IncompatibleAttrDataType, err_msg.str().c_str());
+    }
+
+    if(!is_max_value())
+    {
+        TANGO_THROW_EXCEPTION(Tango::API_AttrNotAllowed, "Maximum value not defined for this attribute");
+    }
+
+    memcpy((void *) &max_val, (void *) &max_value, sizeof(T));
+}
+
+template void WAttribute::get_max_value(Tango::DevBoolean &value);
+template void WAttribute::get_max_value(Tango::DevUChar &value);
+template void WAttribute::get_max_value(Tango::DevShort &value);
+template void WAttribute::get_max_value(Tango::DevUShort &value);
+template void WAttribute::get_max_value(Tango::DevLong &value);
+template void WAttribute::get_max_value(Tango::DevULong &value);
+template void WAttribute::get_max_value(Tango::DevLong64 &value);
+template void WAttribute::get_max_value(Tango::DevULong64 &value);
+template void WAttribute::get_max_value(Tango::DevFloat &value);
+template void WAttribute::get_max_value(Tango::DevDouble &value);
+template void WAttribute::get_max_value(Tango::DevState &value);
+template void WAttribute::get_max_value(Tango::DevString &value);
+template void WAttribute::get_max_value(Tango::DevEncoded &value);
 
 //+-------------------------------------------------------------------------
 //
