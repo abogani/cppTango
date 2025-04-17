@@ -32,7 +32,7 @@ variables: &variables
   FEDORA_IMAGE: "fedora37:v9"
   ALPINE_IMAGE: "alpine-3.15:v9"
   DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v9"
-  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v10"
+  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v11"
   GIT_SUBMODULE_STRATEGY: "recursive"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
