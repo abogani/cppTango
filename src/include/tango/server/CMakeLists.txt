@@ -59,7 +59,6 @@ set(SERVER_HEADERS attrdesc.h
     w_attribute.h
     w_attribute_templ.h
     w_attrsetval_templ.h
-    w_attribute_spec_templ.h
     w_pipe.h
     w_pipe_templ.h
     subdev_diag.h

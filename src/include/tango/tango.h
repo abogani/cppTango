@@ -155,7 +155,6 @@ inline void string_free(char *s)
   #include <tango/server/pipe_templ.h>
   #include <tango/server/dserver.h>
   #include <tango/server/utils_spec_templ.h>
-  #include <tango/server/w_attribute_spec_templ.h>
   #include <tango/server/attrprop_templ.h>
   #include <tango/server/attrsetval_templ.h>
   #include <tango/server/w_attrsetval_templ.h>

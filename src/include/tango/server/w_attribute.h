@@ -1025,6 +1025,311 @@ class WAttribute : public Attribute
     bool mem_write_failed{false}; // Flag set to true if the memorized att setting failed
 };
 
+template <>
+inline const Tango::DevShort *&WAttribute::get_write_value_ptr()
+{
+    return short_ptr;
+}
+
+template <>
+inline Tango::DevVarShortArray &WAttribute::get_last_written_value()
+{
+    return short_array_val;
+}
+
+template <>
+inline Tango::DevShort &WAttribute::get_write_value()
+{
+    return short_val;
+}
+
+template <>
+inline Tango::DevShort &WAttribute::get_old_value()
+{
+    return old_short_val;
+}
+
+template <>
+inline const Tango::DevUShort *&WAttribute::get_write_value_ptr()
+{
+    return ushort_ptr;
+}
+
+template <>
+inline Tango::DevVarUShortArray &WAttribute::get_last_written_value()
+{
+    return ushort_array_val;
+}
+
+template <>
+inline Tango::DevUShort &WAttribute::get_write_value()
+{
+    return ushort_val;
+}
+
+template <>
+inline Tango::DevUShort &WAttribute::get_old_value()
+{
+    return old_ushort_val;
+}
+
+template <>
+inline const Tango::DevLong *&WAttribute::get_write_value_ptr()
+{
+    return long_ptr;
+}
+
+template <>
+inline Tango::DevVarLongArray &WAttribute::get_last_written_value()
+{
+    return long_array_val;
+}
+
+template <>
+inline Tango::DevLong &WAttribute::get_write_value()
+{
+    return long_val;
+}
+
+template <>
+inline Tango::DevLong &WAttribute::get_old_value()
+{
+    return old_long_val;
+}
+
+template <>
+inline const Tango::DevULong *&WAttribute::get_write_value_ptr()
+{
+    return ulong_ptr;
+}
+
+template <>
+inline Tango::DevVarULongArray &WAttribute::get_last_written_value()
+{
+    return ulong_array_val;
+}
+
+template <>
+inline Tango::DevULong &WAttribute::get_write_value()
+{
+    return ulong_val;
+}
+
+template <>
+inline Tango::DevULong &WAttribute::get_old_value()
+{
+    return old_ulong_val;
+}
+
+template <>
+inline const Tango::DevLong64 *&WAttribute::get_write_value_ptr()
+{
+    return long64_ptr;
+}
+
+template <>
+inline Tango::DevVarLong64Array &WAttribute::get_last_written_value()
+{
+    return long64_array_val;
+}
+
+template <>
+inline Tango::DevLong64 &WAttribute::get_write_value()
+{
+    return long64_val;
+}
+
+template <>
+inline Tango::DevLong64 &WAttribute::get_old_value()
+{
+    return old_long64_val;
+}
+
+template <>
+inline const Tango::DevULong64 *&WAttribute::get_write_value_ptr()
+{
+    return ulong64_ptr;
+}
+
+template <>
+inline Tango::DevVarULong64Array &WAttribute::get_last_written_value()
+{
+    return ulong64_array_val;
+}
+
+template <>
+inline Tango::DevULong64 &WAttribute::get_write_value()
+{
+    return ulong64_val;
+}
+
+template <>
+inline Tango::DevULong64 &WAttribute::get_old_value()
+{
+    return old_ulong64_val;
+}
+
+template <>
+inline const Tango::DevDouble *&WAttribute::get_write_value_ptr()
+{
+    return double_ptr;
+}
+
+template <>
+inline Tango::DevVarDoubleArray &WAttribute::get_last_written_value()
+{
+    return double_array_val;
+}
+
+template <>
+inline Tango::DevDouble &WAttribute::get_write_value()
+{
+    return double_val;
+}
+
+template <>
+inline Tango::DevDouble &WAttribute::get_old_value()
+{
+    return old_double_val;
+}
+
+template <>
+inline const Tango::DevFloat *&WAttribute::get_write_value_ptr()
+{
+    return float_ptr;
+}
+
+template <>
+inline Tango::DevVarFloatArray &WAttribute::get_last_written_value()
+{
+    return float_array_val;
+}
+
+template <>
+inline Tango::DevFloat &WAttribute::get_write_value()
+{
+    return float_val;
+}
+
+template <>
+inline Tango::DevFloat &WAttribute::get_old_value()
+{
+    return old_float_val;
+}
+
+template <>
+inline const Tango::ConstDevString *&WAttribute::get_write_value_ptr()
+{
+    return str_ptr;
+}
+
+template <>
+inline Tango::DevVarStringArray &WAttribute::get_last_written_value()
+{
+    return str_array_val;
+}
+
+template <>
+inline Tango::DevString &WAttribute::get_write_value()
+{
+    return str_val;
+}
+
+template <>
+inline Tango::DevString &WAttribute::get_old_value()
+{
+    return old_str_val;
+}
+
+template <>
+inline const Tango::DevState *&WAttribute::get_write_value_ptr()
+{
+    return state_ptr;
+}
+
+template <>
+inline Tango::DevVarStateArray &WAttribute::get_last_written_value()
+{
+    return state_array_val;
+}
+
+template <>
+inline Tango::DevState &WAttribute::get_write_value()
+{
+    return dev_state_val;
+}
+
+template <>
+inline Tango::DevState &WAttribute::get_old_value()
+{
+    return old_dev_state_val;
+}
+
+template <>
+inline const Tango::DevBoolean *&WAttribute::get_write_value_ptr()
+{
+    return boolean_ptr;
+}
+
+template <>
+inline Tango::DevVarBooleanArray &WAttribute::get_last_written_value()
+{
+    return boolean_array_val;
+}
+
+template <>
+inline Tango::DevBoolean &WAttribute::get_write_value()
+{
+    return boolean_val;
+}
+
+template <>
+inline Tango::DevBoolean &WAttribute::get_old_value()
+{
+    return old_boolean_val;
+}
+
+template <>
+inline const Tango::DevEncoded *&WAttribute::get_write_value_ptr()
+{
+    return encoded_ptr;
+}
+
+template <>
+inline Tango::DevEncoded &WAttribute::get_write_value()
+{
+    return encoded_val;
+}
+
+template <>
+inline Tango::DevEncoded &WAttribute::get_old_value()
+{
+    return old_encoded_val;
+}
+
+template <>
+inline const Tango::DevUChar *&WAttribute::get_write_value_ptr()
+{
+    return uchar_ptr;
+}
+
+template <>
+inline Tango::DevVarCharArray &WAttribute::get_last_written_value()
+{
+    return uchar_array_val;
+}
+
+template <>
+inline Tango::DevUChar &WAttribute::get_write_value()
+{
+    return uchar_val;
+}
+
+template <>
+inline Tango::DevUChar &WAttribute::get_old_value()
+{
+    return old_uchar_val;
+}
 } // namespace Tango
 
 #endif // _WATTRIBUTE_H
