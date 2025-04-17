@@ -43,6 +43,8 @@
 #include <functional>
 #include <iterator>
 #include <type_traits>
+#include <variant>
+#include <stdexcept>
 
 namespace Tango
 {
@@ -130,6 +132,98 @@ inline const Tango::DevState &Attr_CheckVal::get_value()
 {
     return d_sta;
 }
+
+class AttrValue
+{
+  public:
+    // Define a variant type that holds unique pointers to each allowed array type.
+    using ValueVariant = std::variant<std::monostate, // Represents an empty state.
+                                      std::unique_ptr<DevVarShortArray>,
+                                      std::unique_ptr<DevVarLongArray>,
+                                      std::unique_ptr<DevVarFloatArray>,
+                                      std::unique_ptr<DevVarDoubleArray>,
+                                      std::unique_ptr<DevVarStringArray>,
+                                      std::unique_ptr<DevVarUShortArray>,
+                                      std::unique_ptr<DevVarBooleanArray>,
+                                      std::unique_ptr<DevVarCharArray>,
+                                      std::unique_ptr<DevVarLong64Array>,
+                                      std::unique_ptr<DevVarULongArray>,
+                                      std::unique_ptr<DevVarULong64Array>,
+                                      std::unique_ptr<DevVarStateArray>,
+                                      std::unique_ptr<DevVarEncodedArray>>;
+
+    AttrValue() :
+        data_{std::monostate{}}
+    {
+    }
+
+    // Setter: accepts a smart pointer to one of the allowed types.
+    template <typename T>
+    void set(std::unique_ptr<T> value)
+    {
+        TANGO_LOG_DEBUG << "AttrValue::set()" << std::endl;
+        static_assert(is_valid<T>(), "Type not allowed in AttrValue");
+        data_ = std::move(value);
+    }
+
+    // Getter: returns a raw pointer (or nullptr if the stored type doesn't match).
+    template <typename T>
+    T *get()
+    {
+        TANGO_LOG_DEBUG << "AttrValue::get()" << std::endl;
+        static_assert(is_valid<T>(), "Type not allowed in AttrValue");
+        if(auto ptr = std::get_if<std::unique_ptr<T>>(&data_))
+        {
+            return ptr->get(); //
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    std::unique_ptr<T> release()
+    {
+        TANGO_LOG_DEBUG << "AttrValue::release()" << std::endl;
+
+        static_assert(is_valid<T>(), "Type not allowed in AttrValue");
+        if(auto ptr = std::get_if<std::unique_ptr<T>>(&data_))
+        {
+            std::unique_ptr<T> temp = std::move(*ptr);
+            data_ = std::monostate{};
+            return temp;
+        }
+        return nullptr;
+    }
+
+    // Reset clears any stored value. After calling reset, has_value() returns false.
+    void reset()
+    {
+        TANGO_LOG_DEBUG << "AttrValue::reset()" << std::endl;
+        data_ = std::monostate{};
+    }
+
+    // Check if any value is set.
+    bool has_value() const
+    {
+        TANGO_LOG_DEBUG << "AttrValue::has_value()" << std::endl;
+        return !std::holds_alternative<std::monostate>(data_);
+    }
+
+  private:
+    ValueVariant data_;
+
+    // Helper to restrict the types that can be stored.
+    template <typename T>
+    static constexpr bool is_valid()
+    {
+        return std::is_same_v<T, DevVarShortArray> || std::is_same_v<T, DevVarLongArray> ||
+               std::is_same_v<T, DevVarFloatArray> || std::is_same_v<T, DevVarDoubleArray> ||
+               std::is_same_v<T, DevVarStringArray> || std::is_same_v<T, DevVarUShortArray> ||
+               std::is_same_v<T, DevVarBooleanArray> || std::is_same_v<T, DevVarCharArray> ||
+               std::is_same_v<T, DevVarLong64Array> || std::is_same_v<T, DevVarULongArray> ||
+               std::is_same_v<T, DevVarULong64Array> || std::is_same_v<T, DevVarStateArray> ||
+               std::is_same_v<T, DevVarEncodedArray>;
+    }
+};
 
 typedef union _Attr_Value
 {
@@ -1341,10 +1435,6 @@ class Attribute
     /**@name Class data members */
     //@{
     /**
-     * A flag set to true if the attribute value has been updated
-     */
-    bool value_flag;
-    /**
      * The date when attribute was read
      */
     Tango::TimeVal when;
@@ -1484,7 +1574,7 @@ class Attribute
     /**
      * The attribute value
      */
-    Tango::Attr_Value value{nullptr};
+    Tango::AttrValue attribute_value;
     /**
      * The attribute data size
      */
@@ -1519,10 +1609,13 @@ class Attribute
     /// @privatesection
     /**
      * Returns the internal buffer to keep data of this type.
-     * It does not do any memory management
+     * Buffer is saved in as std::unique_ptr
      */
     template <class T>
-    T **get_value_storage();
+    T *get_value_storage()
+    {
+        return attribute_value.get<T>(); // Temporary, non-owning access
+    }
 
     //
     // methods not usable for the external world (outside the lib)
@@ -1590,67 +1683,67 @@ class Attribute
 
     Tango::DevVarShortArray *get_short_value()
     {
-        return value.sh_seq;
+        return attribute_value.get<Tango::DevVarShortArray>();
     }
 
     Tango::DevVarLongArray *get_long_value()
     {
-        return value.lg_seq;
+        return attribute_value.get<Tango::DevVarLongArray>();
     }
 
     Tango::DevVarDoubleArray *get_double_value()
     {
-        return value.db_seq;
+        return attribute_value.get<Tango::DevVarDoubleArray>();
     }
 
     Tango::DevVarStringArray *get_string_value()
     {
-        return value.str_seq;
+        return attribute_value.get<Tango::DevVarStringArray>();
     }
 
     Tango::DevVarFloatArray *get_float_value()
     {
-        return value.fl_seq;
+        return attribute_value.get<Tango::DevVarFloatArray>();
     }
 
     Tango::DevVarBooleanArray *get_boolean_value()
     {
-        return value.boo_seq;
+        return attribute_value.get<Tango::DevVarBooleanArray>();
     }
 
     Tango::DevVarUShortArray *get_ushort_value()
     {
-        return value.ush_seq;
+        return attribute_value.get<Tango::DevVarUShortArray>();
     }
 
     Tango::DevVarCharArray *get_uchar_value()
     {
-        return value.cha_seq;
+        return attribute_value.get<Tango::DevVarCharArray>();
     }
 
     Tango::DevVarLong64Array *get_long64_value()
     {
-        return value.lg64_seq;
+        return attribute_value.get<Tango::DevVarLong64Array>();
     }
 
     Tango::DevVarULongArray *get_ulong_value()
     {
-        return value.ulg_seq;
+        return attribute_value.get<Tango::DevVarULongArray>();
     }
 
     Tango::DevVarULong64Array *get_ulong64_value()
     {
-        return value.ulg64_seq;
+        return attribute_value.get<Tango::DevVarULong64Array>();
     }
 
     Tango::DevVarStateArray *get_state_value()
     {
-        return value.state_seq;
+        return attribute_value.get<Tango::DevVarStateArray>();
     }
 
     Tango::DevVarEncodedArray *get_encoded_value()
     {
-        return value.enc_seq;
+        return attribute_value.get<Tango::DevVarEncodedArray>();
     }
 
     unsigned long get_name_size()
@@ -1663,14 +1756,14 @@ class Attribute
         return name_lower;
     }
 
-    void set_value_flag(bool val)
+    void reset_value()
     {
-        value_flag = val;
+        attribute_value.reset();
     }
 
-    bool get_value_flag()
+    bool value_is_set() const
     {
-        return value_flag;
+        return attribute_value.has_value();
     }
 
     DispLevel get_disp_level()

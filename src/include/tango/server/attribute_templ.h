@@ -1745,7 +1745,7 @@ void Attribute::AttrValUnion_2_Any(const T *src, CORBA::Any &dst)
 template <class T>
 inline void Attribute::_extract_value(CORBA::Any &dest)
 {
-    auto *ptr = *get_value_storage<T>();
+    auto *ptr = get_value_storage<T>();
     dest <<= *ptr;
     delete_seq();
 }

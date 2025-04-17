@@ -354,7 +354,7 @@ inline void data_in_net_object(AttributeIdlData &aid, long index, long vers, Pol
 template <class T>
 inline void data_in_object(Attribute &att, AttributeIdlData &aid, long index, bool del_seq)
 {
-    auto *ptr = *(att.get_value_storage<T>());
+    auto *ptr = att.get_value_storage<T>();
     if(aid.data_5 != nullptr)
     {
         auto &the_seq = get_any_value<T>((*aid.data_5)[index].value);
@@ -1546,7 +1546,7 @@ Tango::DevState DeviceImpl::dev_state()
                     try
                     {
                         att.wanted_date(false);
-                        att.set_value_flag(false);
+                        att.reset_value();
 
                         if(vers < 3)
                         {
@@ -1565,7 +1565,7 @@ Tango::DevState DeviceImpl::dev_state()
                             }
                             attr_vect[att.get_attr_idx()]->read(this, att);
                             Tango::AttrQuality qua = att.get_quality();
-                            if((qua != Tango::ATTR_INVALID) && (!att.get_value_flag()))
+                            if((qua != Tango::ATTR_INVALID) && (!att.value_is_set()))
                             {
                                 TangoSys_OMemStream o;
 
@@ -1580,7 +1580,7 @@ Tango::DevState DeviceImpl::dev_state()
                     }
                     catch(Tango::DevFailed &)
                     {
-                        if(!att.get_value_flag())
+                        if(!att.value_is_set())
                         {
                             WARN_STREAM << "Attribute has no value, forcing INVALID quality for: " << att.get_name()
                                         << std::endl;
@@ -2931,7 +2931,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                     o << " and a device inheriting from Device_3Impl" << std::ends;
                     TANGO_THROW_EXCEPTION(API_NotSupportedFeature, o.str());
                 }
-                att.set_value_flag(false);
+                att.reset_value();
                 att.get_when().tv_sec = 0;
             }
             else
@@ -2954,7 +2954,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
                 {
                     wanted_attr.push_back(j);
                     Attribute &att = dev_attr->get_attr_by_ind(wanted_attr.back());
-                    att.set_value_flag(false);
+                    att.reset_value();
                     att.get_when().tv_sec = 0;
                 }
             }
@@ -3054,7 +3054,7 @@ Tango::AttributeValueList *DeviceImpl::read_attributes(const Tango::DevVarString
             Tango::AttrQuality qual = att.get_quality();
             if(qual != Tango::ATTR_INVALID)
             {
-                if(!att.get_value_flag())
+                if(!att.value_is_set())
                 {
                     TangoSys_OMemStream o;
                     delete back;
@@ -5162,6 +5162,8 @@ void DeviceImpl::throw_locked_exception(const char *meth)
 void DeviceImpl::data_into_net_object(
     Attribute &att, AttributeIdlData &aid, long index, AttrWriteType w_type, bool del_seq)
 {
+    TANGO_LOG_DEBUG << "DeviceImpl::data_into_net_object() called " << std::endl;
+
     //
     // A big switch according to attribute data type
     //

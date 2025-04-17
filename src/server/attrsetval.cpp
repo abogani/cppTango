@@ -58,6 +58,8 @@ namespace Tango
 
 void Attribute::set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data, long size, bool release)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     if(p_data_str == nullptr || p_data == nullptr)
     {
         TangoSys_OMemStream o;
@@ -85,6 +87,8 @@ void Attribute::set_value(Tango::DevString *p_data_str, Tango::DevUChar *p_data,
 
 void Attribute::set_value(Tango::EncodedAttribute *attr)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     CHECK_PTR(attr, name);
 
     Tango::DevString *f = attr->get_format();
