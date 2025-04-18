@@ -37,10 +37,13 @@
 #ifndef _DSERVERSIGNAL_H
 #define _DSERVERSIGNAL_H
 
+#include <omnithread.h>
+
+#include <vector>
 #include <condition_variable>
 #include <deque>
-#include <tango/tango.h>
-#include <signal.h>
+#include <memory>
+#include <csignal>
 
 #ifdef _TG_WINDOWS_
 struct sigaction
@@ -51,7 +54,8 @@ struct sigaction
 
 namespace Tango
 {
-
+class DeviceClass;
+class DeviceImpl;
 //=============================================================================
 //
 //            The DServerSignal class
