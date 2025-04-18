@@ -76,8 +76,6 @@ inline void string_free(char *s)
 // Some general interest define
 //
 
-#define TANGO_BASE_CLASS Tango::Device_6Impl
-
 #define TBS(s) #s
 #define XTBS(s) TBS(s)
 

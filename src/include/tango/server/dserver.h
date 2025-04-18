@@ -37,12 +37,22 @@
 #ifndef _DSERVER_H
 #define _DSERVER_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/common/tango_base_class.h>
+#include <tango/server/tango_config.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/tango_clock.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <map>
+
 namespace Tango
 {
+class DeviceClass;
+class DServer;
+struct PollingThreadInfo;
 
 void call_delete(DeviceClass *dev_class_ptr);
 
