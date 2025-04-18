@@ -36,7 +36,7 @@
 #ifndef _COMMAND_H
 #define _COMMAND_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/server/device.h>
 
 #include <string>

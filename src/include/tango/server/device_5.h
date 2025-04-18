@@ -35,7 +35,6 @@
 
 #include <tango/common/tango_const.h>
 #include <tango/server/device_4.h>
-#include <tango/idl/tango.h>
 
 #include <string>
 #include <memory>

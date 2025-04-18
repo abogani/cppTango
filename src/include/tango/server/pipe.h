@@ -32,7 +32,7 @@
 #ifndef _PIPE_H
 #define _PIPE_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/client/DevicePipe.h>
 
 #include <cstdarg>
