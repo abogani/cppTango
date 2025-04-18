@@ -37,7 +37,12 @@
 #ifndef _SECVEC_H
 #define _SECVEC_H
 
-#include <tango/tango.h>
+#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
+
+#include <vector>
+#include <string>
+#include <ostream>
 
 namespace Tango
 {
