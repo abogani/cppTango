@@ -32,11 +32,14 @@
 #ifndef _FWDATTRIBUTE_H
 #define _FWDATTRIBUTE_H
 
-#include <tango/tango.h>
+#include <tango/server/w_attribute.h>
+#include <tango/client/devapi.h>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>
 #endif
+
+#include <string>
 
 namespace Tango
 {
