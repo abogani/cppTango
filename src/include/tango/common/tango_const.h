@@ -1019,13 +1019,6 @@ enum AttrSerialModel
     ATTR_BY_USER
 };
 
-enum PipeSerialModel
-{
-    PIPE_NO_SYNC = 0,
-    PIPE_BY_KERNEL,
-    PIPE_BY_USER
-};
-
 /**
  * Possible error management with write_read_attribute call
  *
