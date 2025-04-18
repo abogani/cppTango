@@ -21,7 +21,7 @@
 #ifndef _NTSERVICE_H
 #define _NTSERVICE_H
 
-#include <tango/tango.h>
+#include <string>
 
 namespace Tango
 {

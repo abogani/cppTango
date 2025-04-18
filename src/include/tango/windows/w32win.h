@@ -34,8 +34,6 @@
 #ifndef _W32WIN_H
 #define _W32WIN_H
 
-#include <tango/tango.h>
-
 namespace Tango
 {
 

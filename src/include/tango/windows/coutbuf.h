@@ -34,8 +34,6 @@
 #ifndef _COUTBUF_H
 #define _COUTBUF_H
 
-#include <tango/tango.h>
-
 namespace Tango
 {
 
