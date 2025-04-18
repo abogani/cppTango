@@ -34,7 +34,9 @@
 #ifndef _LOG_CMDS_H
 #define _LOG_CMDS_H
 
-#include <tango/tango.h>
+#include <tango/server/command.h>
+
+#include <string>
 
 namespace Tango
 {
