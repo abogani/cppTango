@@ -38,10 +38,12 @@
 #ifndef _BASICCOMMAND_H
 #define _BASICCOMMAND_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/command.h>
 
 namespace Tango
 {
+class DeviceImpl;
 
 //=============================================================================
 //
