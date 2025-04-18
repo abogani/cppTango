@@ -33,7 +33,10 @@
 #ifndef _DEVINTR_H
 #define _DEVINTR_H
 
-#include <tango/tango.h>
+#include <tango/server/device.h>
+
+#include <string>
+#include <vector>
 
 namespace Tango
 {
