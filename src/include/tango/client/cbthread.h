@@ -35,7 +35,7 @@
 #ifndef _CBTHREAD_H
 #define _CBTHREAD_H
 
-#include <tango/client/devasyn.h>
+#include <omnithread.h>
 
 namespace Tango
 {

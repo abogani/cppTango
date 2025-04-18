@@ -37,7 +37,6 @@
 #ifndef _POLLEXT_H
 #define _POLLEXT_H
 
-#include <tango/tango.h>
 #include <tango/server/tango_clock.h>
 
 namespace Tango

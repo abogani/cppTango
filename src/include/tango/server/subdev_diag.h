@@ -35,7 +35,11 @@
 #ifndef _SUBDEV_DIAG_H
 #define _SUBDEV_DIAG_H
 
-#include <tango/tango.h>
+#include <tango/idl/tango.h>
+
+#include <vector>
+#include <string>
+#include <map>
 
 namespace Tango
 {

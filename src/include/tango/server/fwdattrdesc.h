@@ -33,10 +33,15 @@
 #ifndef _FWDATTRDESC_H
 #define _FWDATTRDESC_H
 
-#include <tango/tango.h>
+#include <tango/server/attrdesc.h>
+
+#include <string>
+#include <memory>
 
 namespace Tango
 {
+class AttrConfEventData;
+class DeviceAttribute;
 
 /**
  * User class to set forwarded attribute default properties.

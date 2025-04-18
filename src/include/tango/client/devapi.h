@@ -32,13 +32,16 @@
 #include <tango/client/cbthread.h>
 #include <tango/client/lockthread.h>
 #include <tango/server/readers_writers_lock.h>
+#include <tango/server/tango_config.h>
 
 #include <tango/client/Connection.h>
 #include <tango/client/DeviceData.h>
 #include <tango/client/DevicePipe.h>
 #include <tango/client/DeviceAttribute.h>
 
-#include <bitset>
+#include <string>
+#include <ostream>
+#include <map>
 
 namespace Tango
 {

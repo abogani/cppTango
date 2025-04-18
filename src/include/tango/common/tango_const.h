@@ -31,13 +31,46 @@
 #ifndef _TANGO_CONST_H
 #define _TANGO_CONST_H
 
+// FIXME remove once https://gitlab.com/tango-controls/cppTango/-/issues/786 is fixed
+#if defined(__clang__)
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wdeprecated"
+#endif
+
+#include <tango/idl/tango.h>
+
+#if defined(__clang__)
+  #pragma clang diagnostic pop
+#endif
+
 #include <tango/server/exception_reason_consts.h>
 
 #include <tango/common/tango_version.h>
+
+#include <string>
 #include <vector>
 
 namespace Tango
 {
+
+//
+// A short inline function to hide the CORBA::string_dup function
+//
+inline char *string_dup(const std::string &s)
+{
+    return CORBA::string_dup(s.c_str());
+}
+
+inline char *string_dup(const char *s)
+{
+    return CORBA::string_dup(s);
+}
+
+// A short inline function to hide the CORBA::string_free function
+inline void string_free(char *s)
+{
+    CORBA::string_free(s);
+}
 
 //
 // Some general interest define

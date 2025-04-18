@@ -37,8 +37,15 @@
 #ifndef _ATTRPROP_H
 #define _ATTRPROP_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/common/tango_type_traits.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/except.h>
+
+#include <string>
+#include <memory>
+#include <vector>
+#include <sstream>
 
 namespace Tango
 {

@@ -34,8 +34,9 @@
 #ifndef _POLLRING_H
 #define _POLLRING_H
 
-#include <tango/tango.h>
 #include <tango/server/tango_clock.h>
+
+#include <vector>
 
 namespace Tango
 {

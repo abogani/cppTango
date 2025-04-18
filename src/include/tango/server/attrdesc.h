@@ -35,13 +35,19 @@
 #ifndef _ATTRDESC_H
 #define _ATTRDESC_H
 
-#include <tango/tango.h>
+#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
+
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace Tango
 {
 
 class AttrProperty;
 class WAttribute;
+class Attribute;
 
 /**
  * User class to set attribute default properties.

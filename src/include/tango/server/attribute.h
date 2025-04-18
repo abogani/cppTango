@@ -35,16 +35,23 @@
 #include <tango/common/tango_type_traits.h>
 #include <tango/server/attrdesc.h>
 #include <tango/server/fwdattrdesc.h>
+#include <tango/server/classattribute.h>
 #include <tango/server/encoded_attribute.h>
 #include <tango/server/tango_clock.h>
+#include <tango/server/attrprop.h>
+#include <tango/server/logging.h>
 #include <tango/client/apiexcept.h>
+#include <tango/client/DbDatum.h>
 #include <tango/server/exception_reason_consts.h>
+#include <tango/common/utils/assert.h>
+#include <tango/server/tango_config.h>
 
-#include <functional>
 #include <iterator>
 #include <type_traits>
 #include <variant>
-#include <stdexcept>
+#include <vector>
+#include <map>
+#include <string>
 
 namespace Tango
 {

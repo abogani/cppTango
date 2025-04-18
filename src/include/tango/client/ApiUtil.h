@@ -30,10 +30,15 @@
 #ifndef _APIUTIL_H
 #define _APIUTIL_H
 
-#include <string>
-
+#include <tango/server/tango_config.h>
 #include <tango/client/Connection.h>
 #include <tango/client/devapi.h>
+#include <tango/client/devasyn.h>
+
+#include <string>
+#include <map>
+#include <memory>
+#include <vector>
 
 namespace Tango
 {

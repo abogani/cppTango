@@ -29,7 +29,12 @@
 #define _DEVICEATTRIBUTE_H
 
 #include <tango/idl/tango.h>
-#include <tango/client/devapi.h>
+#include <tango/server/tango_config.h>
+
+#include <string>
+#include <vector>
+#include <memory>
+#include <bitset>
 
 namespace Tango
 {

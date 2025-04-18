@@ -30,17 +30,18 @@
 #ifndef _CONNECTION_H
 #define _CONNECTION_H
 
+#include <tango/idl/tango.h>
+
+#include <tango/common/tango_const.h>
+#include <tango/client/CallBack.h>
+#include <tango/client/DeviceData.h>
+#include <tango/server/readers_writers_lock.h>
+
 #include <chrono>
 #include <optional>
 
 #include <string>
 #include <memory>
-#include <vector>
-
-#include <tango/client/CallBack.h>
-#include <tango/client/DeviceData.h>
-#include <tango/client/devasyn.h>
-#include <tango/server/readers_writers_lock.h>
 
 namespace Tango
 {

@@ -37,6 +37,7 @@
 #include <cstring>
 #include <tango/server/tango_current_function.h>
 #include <tango/common/tango_const.h>
+#include <tango/server/tango_config.h>
 #include <tango/common/log4tango/Logger.h>
 
 namespace Tango::logging_detail
@@ -125,6 +126,7 @@ namespace Tango
 {
 
 class Util;
+class Database;
 
 TANGO_IMP extern log4tango::Logger *_core_logger;
 

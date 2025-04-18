@@ -35,7 +35,7 @@
 #ifndef _LOCKTHREAD_H
 #define _LOCKTHREAD_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
 
 #include <chrono>
 #include <optional>

@@ -35,7 +35,6 @@
 #ifndef _POLLTHREAD_H
 #define _POLLTHREAD_H
 
-#include <tango/tango.h>
 #include <tango/server/pollobj.h>
 #include <tango/server/utils.h>
 #include <tango/server/tango_clock.h>

@@ -27,9 +27,9 @@
 //
 //+==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/Database.h>
+#include <tango/client/DeviceAttribute.h>
 #include <thread>
 #include <iomanip>
 

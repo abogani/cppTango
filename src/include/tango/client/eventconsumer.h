@@ -33,21 +33,38 @@
 #define _EVENTCONSUMER_H
 
 #include <tango/server/attribute.h>
+#include <tango/server/tango_monitor.h>
 #include <tango/server/except.h>
+#include <tango/client/ApiUtil.h>
 #include <tango/common/tango_const.h>
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
 #include <omnithread.h>
-#include <map>
 
 #include <tango/server/readers_writers_lock.h>
 #include <tango/common/pointer_with_lock.h>
 
 #include <zmq.hpp>
 
+#include <map>
+#include <iostream>
+
 namespace Tango
 {
+class DeviceProxy;
+class CallBack;
+class EventQueue;
+class TangoMonitor;
+class DeviceData;
+class EventDataList;
+class AttrConfEventDataList;
+class DataReadyEventDataList;
+class DevIntrChangeEventDataList;
+class PipeEventDataList;
+class EventConsumerKeepAliveThread;
+class Database;
+class FwdEventData;
 
 #ifndef _USRDLL
 extern "C"
