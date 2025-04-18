@@ -42,7 +42,7 @@
 #ifndef _POLLCMDS_H
 #define _POLLCMDS_H
 
-#include <tango/tango.h>
+#include <tango/server/command.h>
 
 namespace Tango
 {
