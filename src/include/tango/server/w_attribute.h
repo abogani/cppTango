@@ -34,11 +34,13 @@
 #ifndef _WATTRIBUTE_H
 #define _WATTRIBUTE_H
 
-#include <tango/tango.h>
 #include <tango/common/tango_type_traits.h>
+#include <tango/server/attribute.h>
 #include <tango/server/attrdesc.h>
-#include <functional>
-#include <time.h>
+
+#include <ctime>
+#include <string>
+#include <vector>
 
 namespace Tango
 {
