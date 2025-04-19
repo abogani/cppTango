@@ -26,7 +26,6 @@
 //
 //===================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/DbDevice.h>
 
 using namespace CORBA;
