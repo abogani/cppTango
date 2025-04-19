@@ -34,6 +34,13 @@
 #ifndef _GROUP_H_
 #define _GROUP_H_
 
+#include <tango/common/tango_const.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/except.h>
+#include <tango/client/apiexcept.h>
+#include <tango/client/DeviceData.h>
+#include <tango/client/DeviceAttribute.h>
+
 #include <vector>
 #include <string>
 #include <map>
@@ -54,6 +61,7 @@ namespace Tango
 //=============================================================================
 class Group;
 class GroupElement;
+class DeviceProxy;
 
 //=============================================================================
 // Misc. Typedefs
