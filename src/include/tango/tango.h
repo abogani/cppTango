@@ -134,6 +134,7 @@
   #include <tango/server/attrprop_templ.h>
   #include <tango/server/attrsetval_templ.h>
   #include <tango/server/w_attrsetval_templ.h>
+  #include <tango/server/fwdattribute.h>
 #endif
 
 #include <tango/client/event.h>

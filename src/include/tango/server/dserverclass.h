@@ -41,7 +41,9 @@
 #ifndef _DSERVERCLASS_H
 #define _DSERVERCLASS_H
 
-#include <tango/tango.h>
+#include <tango/server/command.h>
+
+#include <string>
 
 namespace Tango
 {
