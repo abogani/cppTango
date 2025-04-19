@@ -26,7 +26,6 @@
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <tango/tango.h>
 #include <tango/client/Database.h>
 
 using namespace CORBA;
