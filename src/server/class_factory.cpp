@@ -49,6 +49,8 @@
   #include <regex>
 #endif
 
+#include <iostream>
+
 namespace Tango
 {
 
