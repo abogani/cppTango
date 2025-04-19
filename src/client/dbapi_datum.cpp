@@ -26,11 +26,16 @@
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <tango/tango.h>
+#include <tango/client/DbDatum.h>
+
+#include <tango/server/tango_config.h>
+#include <tango/client/apiexcept.h>
 
 #include <iomanip>
 #include <limits>
-#include <memory>
+#include <algorithm>
+#include <iostream>
+#include <ostream>
 
 using namespace CORBA;
 
