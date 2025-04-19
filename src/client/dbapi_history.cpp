@@ -46,7 +46,7 @@
 //
 //
 
-#include <tango/tango.h>
+#include <tango/client/dbapi.h>
 
 using namespace CORBA;
 
