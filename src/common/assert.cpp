@@ -1,6 +1,5 @@
 #include <tango/common/utils/assert.h>
-
-#include <tango/tango.h>
+#include <tango/server/logging.h>
 
 #include <iostream>
 #include <exception>
