@@ -28,7 +28,7 @@
 //
 //
 
-#include <tango/tango.h>
+#include <tango/server/seqvec.h>
 #include <tango/client/accessproxy.h>
 #include <tango/client/Database.h>
 #include <tango/internal/net.h>
