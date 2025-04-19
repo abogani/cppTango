@@ -35,8 +35,13 @@
 //
 //-============================================================================
 
-#include <tango/tango.h>
 #include <tango/client/cbthread.h>
+
+#include <tango/server/tango_clock.h>
+#include <tango/client/devasyn.h>
+#include <tango/client/ApiUtil.h>
+
+#include <iostream>
 
 namespace Tango
 {
