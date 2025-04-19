@@ -35,8 +35,8 @@
 //
 //-============================================================================
 
-#include <tango/tango.h>
 #include <tango/client/apiexcept.h>
+#include <tango/server/tango_config.h>
 
 namespace Tango
 {
