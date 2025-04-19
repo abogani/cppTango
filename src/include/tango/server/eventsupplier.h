@@ -44,6 +44,7 @@
 
 #include <tango/server/except.h>
 #include <tango/server/tango_clock.h>
+#include <tango/server/blackbox.h>
 
 #if defined(_TG_WINDOWS_) && defined(_USRDLL) && !defined(_TANGO_LIB)
   #define USE_stub_in_nt_dll
@@ -67,6 +68,7 @@
 #endif
 
 #include <chrono>
+#include <list>
 
 namespace Tango
 {
