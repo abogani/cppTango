@@ -27,8 +27,9 @@
 //
 //
 
-#include <tango/tango.h>
-
+#include <tango/client/DeviceData.h>
+#include <tango/client/ApiUtil.h>
+#include <tango/client/apiexcept.h>
 #include <tango/internal/utils.h>
 
 #include <memory>
