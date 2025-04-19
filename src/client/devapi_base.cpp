@@ -26,10 +26,11 @@
 //
 //===================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/Database.h>
 #include <tango/client/DbDevice.h>
+#include <tango/server/seqvec.h>
+#include <tango/server/device.h>
 #include <tango/internal/net.h>
 #include <tango/internal/utils.h>
 
