@@ -34,6 +34,8 @@
 
 #include <tango/common/tango_const.h>
 #include <tango/client/DevicePipe.h>
+#include <tango/server/attribute.h>
+#include <tango/server/classpipe.h>
 
 #include <cstdarg>
 #include <string>
