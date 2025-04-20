@@ -30,7 +30,6 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/device_3.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/tango_clock.h>
