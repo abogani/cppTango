@@ -28,7 +28,14 @@
 //
 //
 
-#include <tango/tango.h>
+#include <tango/client/Connection.h>
+#include <tango/client/apiexcept.h>
+#include <tango/client/ApiUtil.h>
+#include <tango/client/DeviceProxy.h>
+#include <tango/client/DeviceAttribute.h>
+#include <tango/server/tango_config.h>
+
+#include <thread>
 
 namespace Tango
 {
