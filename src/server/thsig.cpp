@@ -35,8 +35,9 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
 #include <tango/server/dserversignal.h>
+#include <tango/server/utils.h>
+#include <tango/client/devasyn.h>
 
 namespace Tango
 {
