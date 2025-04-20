@@ -3,8 +3,8 @@
 //      WE SIMPLY REUSE THE APPROACH USED FOR THE LOGGING SERVICE FOR CONSISTENCY REASONS
 //------------------------------------------------------------------------------------------------
 
-#include <tango/tango.h>
 #include <tango/internal/utils.h>
+#include <tango/server/device.h>
 
 namespace Tango
 {

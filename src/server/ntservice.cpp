@@ -20,7 +20,7 @@
 
 #include <tango/windows/ntservice.h>
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
 
 namespace Tango
 {
