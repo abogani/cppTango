@@ -31,8 +31,6 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
-
 //-----------------------------------------------------------------------------
 // HEADERS
 //-----------------------------------------------------------------------------
@@ -49,6 +47,9 @@
 #include <tango/server/coutappender.h>
 #include <tango/server/tangoappender.h>
 #include <tango/server/tangorollingfileappender.h>
+#include <tango/server/dserver.h>
+#include <tango/server/device.h>
+#include <tango/server/log4tango.h>
 #include <tango/client/Database.h>
 
 namespace Tango

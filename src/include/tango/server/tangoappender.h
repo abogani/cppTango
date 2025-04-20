@@ -29,8 +29,14 @@
 #ifndef _TANGO_APPENDER_H_
 #define _TANGO_APPENDER_H_
 
+#include <tango/common/log4tango/Appender.h>
+#include <tango/common/tango_const.h>
+
+#include <string>
+
 namespace Tango
 {
+class DeviceProxy;
 
 class TangoAppender : public log4tango::Appender
 {

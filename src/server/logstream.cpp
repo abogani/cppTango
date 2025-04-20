@@ -31,7 +31,16 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
+#include <tango/server/logstream.h>
+#include <tango/common/log4tango/LoggerStream.h>
+
+#include <tango/common/tango_const.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/attribute.h>
+#include <tango/server/attrmanip.h>
+#include <tango/server/dserver.h>
+#include <tango/server/device.h>
+#include <tango/client/DeviceProxy.h>
 
 namespace Tango
 {
