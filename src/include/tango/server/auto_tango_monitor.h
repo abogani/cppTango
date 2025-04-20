@@ -32,8 +32,13 @@
 #ifndef _AUTO_TANGO_MONITOR_H
 #define _AUTO_TANGO_MONITOR_H
 
+#include <omnithread.h>
+
 namespace Tango
 {
+class DeviceImpl;
+class DeviceClass;
+class TangoMonitor;
 
 //-------------------------------------------------------------------------------------------------------------------
 //

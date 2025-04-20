@@ -29,8 +29,10 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/auto_tango_monitor.h>
+#include <tango/server/tango_monitor.h>
+#include <tango/server/device.h>
+#include <tango/server/utils.h>
 
 namespace Tango
 {
