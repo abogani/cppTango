@@ -1,5 +1,11 @@
-#include <tango/tango.h>
 #include <tango/internal/server/attribute_utils.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/logging.h>
+#include <tango/server/attribute.h>
+#include <tango/server/device.h>
+#include <tango/server/utils.h>
+#include <tango/client/Database.h>
+#include <tango/client/DbDatum.h>
 
 namespace Tango::detail
 {

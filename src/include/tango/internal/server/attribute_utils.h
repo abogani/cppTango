@@ -2,9 +2,11 @@
 #define _INTERNAL_ATTRIBUTE_UTILS_H
 
 #include <tango/common/tango_const.h>
+#include <tango/server/classattribute.h>
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace Tango
 {
