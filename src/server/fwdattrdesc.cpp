@@ -29,8 +29,11 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/fwdattrdesc.h>
+#include <tango/server/w_attribute.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/device.h>
+#include <tango/client/event.h>
 
 #include <tango/server/fwdattribute_templ.h>
 #include <tango/client/Database.h>
