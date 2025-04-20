@@ -36,6 +36,7 @@
 #define _ATTRDESC_H
 
 #include <tango/common/tango_const.h>
+#include <tango/server/classattribute.h>
 
 #include <string>
 #include <vector>
@@ -44,7 +45,6 @@
 namespace Tango
 {
 
-class AttrProperty;
 class WAttribute;
 class Attribute;
 
