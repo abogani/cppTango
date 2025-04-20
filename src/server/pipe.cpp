@@ -30,7 +30,10 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/server/pipe.h>
+#include <tango/server/pipedesc.h>
+#include <tango/server/deviceclass.h>
+#include <tango/server/device.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/tango_clock.h>
 #include <tango/client/Database.h>
