@@ -35,13 +35,16 @@
 //
 //-============================================================================
 
-#include <tango/tango.h>
-#include <tango/common/tango_const.h>
 #include <tango/server/attribute.h>
 #include <tango/server/w_attribute.h>
 #include <tango/server/classattribute.h>
+#include <tango/server/deviceclass.h>
+#include <tango/server/utils.h>
+#include <tango/server/device.h>
 #include <tango/server/tango_clock.h>
 #include <tango/common/utils/type_info.h>
+#include <tango/server/seqvec.h>
+#include <tango/client/Database.h>
 #include <tango/internal/server/attribute_utils.h>
 
 #include <cmath>
