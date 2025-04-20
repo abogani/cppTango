@@ -39,6 +39,8 @@
 
 #include <tango/server/tango_clock.h>
 
+#include <vector>
+
 namespace Tango
 {
 

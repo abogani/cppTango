@@ -35,9 +35,15 @@
 //
 //-============================================================================
 
-#include <tango/tango.h>
 #include <tango/server/pollring.h>
 #include <tango/server/pollring_templ.h>
+#include <tango/server/logging.h>
+#include <tango/server/except.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/utils.h>
+#include <tango/common/utils/assert.h>
+
+#include <ostream>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

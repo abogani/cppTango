@@ -35,11 +35,9 @@
 #define _UTILS_H
 
 #include <tango/server/pollext.h>
-#include <tango/server/subdev_diag.h>
-#include <new>
-#include <algorithm>
-#include <tango/server/rootattreg.h>
 #include <tango/server/pollthread.h>
+#include <tango/server/subdev_diag.h>
+#include <tango/server/rootattreg.h>
 #include <tango/server/tango_monitor.h>
 #include <tango/client/ApiUtil.h>
 
@@ -50,6 +48,8 @@
   #include <tango/windows/w32win.h>
 #endif /* _TG_WINDOWS_ */
 #include <iostream>
+#include <new>
+#include <algorithm>
 
 namespace Tango
 {
