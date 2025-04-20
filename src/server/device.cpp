@@ -30,7 +30,6 @@
 //
 //-================================================================================================================
 
-#include <tango/tango.h>
 #include <new>
 
 #include <tango/server/basiccommand.h>
@@ -38,6 +37,10 @@
 #include <tango/server/dserversignal.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/pipe.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/dserver.h>
+#include <tango/server/log4tango.h>
 #include <tango/client/apiexcept.h>
 #include <tango/server/tango_clock.h>
 #include <tango/common/git_revision.h>
