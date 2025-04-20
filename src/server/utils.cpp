@@ -29,8 +29,6 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
-
 #ifdef _MSC_VER
   #pragma warning(push)
   #pragma warning(disable : 4290)
@@ -43,7 +41,7 @@
   #pragma warning(pop)
 #endif
 
-#include <cstdlib>
+#include <tango/server/dserver.h>
 #include <tango/server/dserversignal.h>
 #include <tango/server/dserverclass.h>
 #include <tango/server/eventsupplier.h>
@@ -62,6 +60,7 @@
 
 #include <tango/client/Database.h>
 #include <omniORB4/omniInterceptors.h>
+#include <cstdlib>
 
 #include <tango/common/pointer_with_lock.h>
 
