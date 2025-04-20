@@ -42,14 +42,15 @@
 // See C++ template book chapter 6
 //
 
-#include <tango/tango.h>
-
+#include <tango/server/device.h>
+#include <tango/common/utils/assert.h>
 #include <tango/server/attribute_templ.h>
 #include <tango/server/pollext_templ.h>
 #include <tango/server/utils_templ.h>
 #include <tango/server/w_attrsetval_templ.h>
 #include <tango/client/devapi_pipe_templ.h>
 #include <tango/server/pipe_templ.h>
+#include <tango/server/w_pipe.h>
 #include <tango/server/w_pipe_templ.h>
 
 namespace Tango
