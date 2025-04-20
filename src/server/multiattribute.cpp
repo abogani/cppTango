@@ -31,14 +31,16 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/internal/utils.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/multiattribute.h>
 #include <tango/server/classattribute.h>
+#include <tango/server/device.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/attribute.h>
+#include <tango/server/logstream.h>
 #include <tango/client/Database.h>
 
-#include <functional>
 #include <algorithm>
 
 namespace
