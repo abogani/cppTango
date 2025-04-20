@@ -30,8 +30,10 @@
 //
 //-=================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/server/dserver.h>
 #include <tango/server/tango_clock.h>
+#include <tango/server/command.h>
+#include <tango/server/fwdattribute.h>
 #include <tango/client/Database.h>
 #include <tango/client/DbDevice.h>
 
