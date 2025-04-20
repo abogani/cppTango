@@ -33,10 +33,10 @@
 #ifndef _DINTRTHREAD_H
 #define _DINTRTHREAD_H
 
+#include <tango/server/devintr.h>
+
 namespace Tango
 {
-
-class DevIntr;
 
 //=================================================================================================================
 //
@@ -63,7 +63,7 @@ struct _ShDevIntrTh
     #undef interface
   #endif
 #endif
-    DevIntr interface; // Device interface
+    Tango::DevIntr interface; // Device interface
 };
 typedef struct _ShDevIntrTh ShDevIntrTh;
 

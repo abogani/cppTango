@@ -29,7 +29,8 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/server/devintr.h>
+#include <tango/server/command.h>
 
 namespace Tango
 {

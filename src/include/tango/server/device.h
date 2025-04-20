@@ -40,7 +40,6 @@
 #include <tango/server/multiattribute.h>
 #include <tango/server/pollobj.h>
 #include <tango/server/deviceclass.h>
-#include <tango/server/devintr.h>
 #include <tango/server/dintrthread.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
