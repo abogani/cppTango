@@ -30,9 +30,7 @@
 //
 //-================================================================================================================
 
-#include <tango/tango.h>
 #include <new>
-#include <iterator>
 
 #include <tango/server/basiccommand.h>
 #include <tango/server/blackbox.h>
@@ -40,11 +38,15 @@
 #include <tango/server/classattribute.h>
 #include <tango/server/classpipe.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/device_3.h>
+#include <tango/server/pipe.h>
+#include <tango/server/dserver.h>
 
 #include <tango/client/apiexcept.h>
 #include <tango/client/Database.h>
 
 #include <tango/server/logging.h>
+#include <tango/server/log4tango.h>
 
 namespace Tango
 {
