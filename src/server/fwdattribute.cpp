@@ -31,9 +31,9 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/fwdattribute.h>
 #include <tango/server/fwdattribute_templ.h>
+#include <tango/server/deviceclass.h>
 #include <tango/internal/server/attribute_utils.h>
 #include <tango/client/Database.h>
 
