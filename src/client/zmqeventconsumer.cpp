@@ -30,9 +30,10 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/internal/net.h>
 #include <tango/client/eventconsumer.h>
+#include <tango/client/event.h>
+#include <tango/server/auto_tango_monitor.h>
 
 #include <cstdio>
 
