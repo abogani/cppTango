@@ -31,7 +31,6 @@
 //
 //=============================================================================
 
-#include <tango/tango.h>
 #include <tango/server/seqvec.h>
 
 namespace Tango
