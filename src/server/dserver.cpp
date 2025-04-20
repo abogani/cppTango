@@ -31,15 +31,17 @@
 //
 //-=================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/server/dserver.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/devintr.h>
+#include <tango/server/deviceclass.h>
+#include <tango/server/command.h>
+#include <tango/server/seqvec.h>
 #include <tango/client/DbDevice.h>
 #include <tango/client/Database.h>
 
 #include <new>
 #include <algorithm>
-#include <iterator>
 #include <sstream>
 
 #ifndef _TG_WINDOWS_
