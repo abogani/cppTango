@@ -30,10 +30,10 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/pollobj.h>
 #include <tango/server/pollring.h>
 #include <tango/server/pollring_templ.h>
+#include <tango/server/device.h>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>
