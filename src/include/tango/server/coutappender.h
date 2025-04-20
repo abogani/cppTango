@@ -29,6 +29,10 @@
 #ifndef _COUT_APPENDER_H_
 #define _COUT_APPENDER_H_
 
+#include <tango/common/log4tango/LayoutAppender.h>
+
+#include <string>
+
 namespace Tango
 {
 
