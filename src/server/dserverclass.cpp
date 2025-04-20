@@ -35,14 +35,14 @@
 //
 //-=============================================================================
 
-#include <algorithm>
-
-#include <tango/tango.h>
 #include <tango/server/dserverclass.h>
 #include <tango/server/pollcmds.h>
 #include <tango/server/logcmds.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/dserver.h>
 #include <tango/client/Database.h>
+
+#include <algorithm>
 
 namespace Tango
 {
