@@ -30,8 +30,6 @@
 #ifndef _CONNECTION_H
 #define _CONNECTION_H
 
-#include <tango/idl/tango.h>
-
 #include <tango/common/tango_const.h>
 #include <tango/client/CallBack.h>
 #include <tango/client/DeviceData.h>

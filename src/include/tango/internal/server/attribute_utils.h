@@ -1,7 +1,7 @@
 #ifndef _INTERNAL_ATTRIBUTE_UTILS_H
 #define _INTERNAL_ATTRIBUTE_UTILS_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 
 #include <string>
 #include <map>

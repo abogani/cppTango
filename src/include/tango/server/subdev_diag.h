@@ -35,7 +35,7 @@
 #ifndef _SUBDEV_DIAG_H
 #define _SUBDEV_DIAG_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 
 #include <vector>
 #include <string>

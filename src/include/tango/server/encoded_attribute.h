@@ -35,7 +35,7 @@
 #ifndef _ENCODED_ATT_H
 #define _ENCODED_ATT_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/server/encoded_format.h>
 
 #include <memory>

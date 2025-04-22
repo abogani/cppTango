@@ -27,7 +27,6 @@
 #ifndef _DEVICEPIPE_H
 #define _DEVICEPIPE_H
 
-#include <tango/idl/tango.h>
 #include <tango/common/tango_const.h>
 
 #include <string>

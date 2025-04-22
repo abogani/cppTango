@@ -30,7 +30,7 @@
 #ifndef _DEVICEDATA_H
 #define _DEVICEDATA_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 
 #include <memory>
 #include <vector>

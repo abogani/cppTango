@@ -28,7 +28,7 @@
 #ifndef _DEVICEATTRIBUTE_H
 #define _DEVICEATTRIBUTE_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/server/tango_config.h>
 
 #include <string>

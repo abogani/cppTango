@@ -1,7 +1,7 @@
 #ifndef _DBDATUM_H
 #define _DBDATUM_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 
 #include <bitset>
 #include <string>

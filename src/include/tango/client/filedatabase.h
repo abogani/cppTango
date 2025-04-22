@@ -21,7 +21,7 @@
 #ifndef FILEDATABASE_H
 #define FILEDATABASE_H
 
-#include <tango/idl/tango.h>
+#include <tango/common/tango_const.h>
 #include <fstream>
 #include <string>
 #include <vector>

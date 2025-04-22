@@ -35,7 +35,6 @@
 #ifndef _ATTRDESC_H
 #define _ATTRDESC_H
 
-#include <tango/idl/tango.h>
 #include <tango/common/tango_const.h>
 
 #include <string>
