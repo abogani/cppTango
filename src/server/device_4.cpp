@@ -60,7 +60,6 @@
 
 #include <tango/server/device_4.h>
 #include <tango/server/eventsupplier.h>
-#include <tango/server/device_3_templ.h>
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 namespace Tango
@@ -852,7 +851,7 @@ void Device_4Impl::set_attribute_config_4(const Tango::AttributeConfigList_3 &ne
     //
 
     store_in_bb = false;
-    set_attribute_config_3_local(new_conf, new_conf[0], false, idl_version);
+    set_attribute_config_3_local(new_conf, false, idl_version);
 
     TANGO_TELEMETRY_TRACE_END();
 }

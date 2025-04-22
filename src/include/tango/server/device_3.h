@@ -316,8 +316,8 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
 
     void write_attributes_34(const Tango::AttributeValueList *, const Tango::AttributeValueList_4 *);
 
-    template <typename T, typename V>
-    void set_attribute_config_3_local(const T &, const V &, bool, int);
+    void set_attribute_config_3_local(const Tango::AttributeConfigList_3 &, bool, int);
+    void set_attribute_config_3_local(const Tango::AttributeConfigList_5 &, bool, int);
 
   private:
     class Device_3ImplExt

@@ -55,7 +55,6 @@
 
 #include <tango/server/device_6.h>
 #include <tango/server/eventsupplier.h>
-#include <tango/server/device_3_templ.h>
 #include <tango/common/telemetry/telemetry.h>
 
 namespace Tango

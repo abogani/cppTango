@@ -17,7 +17,6 @@ set(SERVER_HEADERS attrdesc.h
     device.h
     device_2.h
     device_3.h
-    device_3_templ.h
     device_4.h
     device_5.h
     device_6.h
