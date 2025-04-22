@@ -36,10 +36,12 @@
 //-============================================================================
 
 #include <tango/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/server/attribute.h>
 #include <tango/server/w_attribute.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/tango_clock.h>
+#include <tango/common/utils/type_info.h>
 #include <tango/internal/server/attribute_utils.h>
 
 #include <cmath>
@@ -48,6 +50,532 @@
   #include <sys/types.h>
   #include <float.h>
 #endif /* _TG_WINDOWS_ */
+
+namespace
+{
+
+template <class T>
+void _update_value(T &old_value, T &write_value, const typename Tango::tango_type_traits<T>::ArrayType &seq)
+{
+    old_value = write_value;
+    write_value = seq[0];
+}
+
+template <>
+void _update_value(Tango::DevString &old_value, Tango::DevString &write_value, const Tango::DevVarStringArray &seq)
+{
+    Tango::string_free(old_value);
+    old_value = Tango::string_dup(write_value);
+    Tango::string_free(write_value);
+
+    write_value = Tango::string_dup(seq[0]);
+}
+
+template <class T>
+const T &get_value(const Tango::AttrValUnion &);
+
+template <>
+inline const Tango::DevVarDoubleArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.double_att_value();
+}
+
+template <>
+inline const Tango::DevVarFloatArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.float_att_value();
+}
+
+template <>
+inline const Tango::DevVarLongArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.long_att_value();
+}
+
+template <>
+inline const Tango::DevVarULongArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.ulong_att_value();
+}
+
+template <>
+inline const Tango::DevVarLong64Array &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.long64_att_value();
+}
+
+template <>
+inline const Tango::DevVarULong64Array &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.ulong64_att_value();
+}
+
+template <>
+inline const Tango::DevVarShortArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.short_att_value();
+}
+
+template <>
+inline const Tango::DevVarUShortArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.ushort_att_value();
+}
+
+template <>
+inline const Tango::DevVarBooleanArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.bool_att_value();
+}
+
+template <>
+inline const Tango::DevVarCharArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.uchar_att_value();
+}
+
+template <>
+inline const Tango::DevVarStringArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.string_att_value();
+}
+
+template <>
+inline const Tango::DevVarStateArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.state_att_value();
+}
+
+template <>
+inline const Tango::DevVarEncodedArray &get_value(const Tango::AttrValUnion &att_union)
+{
+    return att_union.encoded_att_value();
+}
+
+void _throw_incompatible_exception(Tango::CmdArgType expected, const std::string &found)
+{
+    std::stringstream o;
+
+    o << "Incompatible attribute type: expected Tango::" << expected
+      << " (even for single value), found Tango::" << found << std::ends;
+    Tango::Except::throw_exception((const char *) Tango::API_IncompatibleAttrDataType,
+                                   o.str(),
+                                   (const char *) "WAttribute::check_written_value()");
+}
+
+template <class T>
+void _copy_data(T &last_written_value, const CORBA::Any &any)
+{
+    const T *ptr;
+    any >>= ptr;
+    last_written_value = *ptr;
+}
+
+template <class T>
+void _copy_data(T &last_written_value, const Tango::AttrValUnion &the_union)
+{
+    last_written_value = get_value<T>(the_union);
+}
+
+template <class T>
+bool _check_for_nan(Tango::Util *)
+{
+    return false;
+}
+
+template <>
+inline bool _check_for_nan<Tango::DevDouble>(Tango::Util *tg)
+{
+    return !tg->is_wattr_nan_allowed();
+}
+
+template <>
+inline bool _check_for_nan<Tango::DevFloat>(Tango::Util *tg)
+{
+    return !tg->is_wattr_nan_allowed();
+}
+
+template <class T>
+void check_enum(Tango::WAttribute &,
+                const std::vector<std::string> &,
+                const typename Tango::tango_type_traits<T>::ArrayType &,
+                const size_t)
+{
+}
+
+template <>
+void check_enum<Tango::DevShort>(Tango::WAttribute &attr,
+                                 const std::vector<std::string> &enum_labels,
+                                 const Tango::DevVarShortArray &seq,
+                                 const size_t nb_data)
+{
+    const auto data_type = attr.get_data_type();
+    const auto &name = attr.get_name();
+    //
+    // If the attribute is enumerated, check the input value compared to the enum labels
+    //
+    if(data_type == Tango::DEV_ENUM)
+    {
+        std::size_t max_val = enum_labels.size();
+        for(std::size_t i = 0; i < nb_data; i++)
+        {
+            if(seq[i] < 0 || static_cast<std::size_t>(seq[i]) >= max_val)
+            {
+                std::stringstream o;
+                o << "Set value for attribute " << name << " is negative or above the maximun authorized (" << max_val
+                  << ") for at least element " << i;
+
+                TANGO_THROW_EXCEPTION(Tango::API_WAttrOutsideLimit, o.str());
+            }
+        }
+    }
+}
+
+template <typename T,
+          std::enable_if_t<!(std::is_same_v<T, Tango::DevDouble> || std::is_same_v<T, Tango::DevFloat>), T> * = nullptr>
+void check_nan(const std::string &, const T &, const size_t)
+{
+}
+
+template <typename T,
+          std::enable_if_t<(std::is_same_v<T, Tango::DevDouble> || std::is_same_v<T, Tango::DevFloat>), T> * = nullptr>
+void check_nan(const std::string &, const T &, size_t);
+
+template <typename T,
+          std::enable_if_t<(std::is_same_v<T, Tango::DevDouble> || std::is_same_v<T, Tango::DevFloat>), T> *>
+void check_nan(const std::string &name, const T &val, const size_t i)
+{
+    if(std::isfinite(val) == 0)
+    {
+        std::stringstream o;
+
+        o << "Set value for attribute " << name << " is a NaN or INF value (at least element " << i << ")" << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_WAttrOutsideLimit, o.str());
+    }
+}
+
+//+------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        check_data_limits()
+//
+// description :
+//        Check if the data received from client is valid.
+//      It will check for nan value if needed, if itis not below the min (if one defined) or above the max
+//      (if one defined), and for enum if it is in the accepted range.
+//       This method throws exception in case of threshold violation.
+//
+// args :
+//        in :
+//          - nb_data : Data number
+//          - seq : The received data
+//          - min : The min allowed value
+//          - max : The max allowed value
+//
+//------------------------------------------------------------------------------------------------------------------
+
+template <class T>
+void check_data_limits(Tango::WAttribute &attr,
+                       const size_t nb_data,
+                       const typename Tango::tango_type_traits<T>::ArrayType &seq,
+                       Tango::Attr_CheckVal &min,
+                       Tango::Attr_CheckVal &max,
+                       const std::string &d_name,
+                       const std::vector<std::string> &enum_labels,
+                       const bool check_min_value,
+                       const bool check_max_value)
+{
+    const T &min_value = min.get_value<T>();
+    const T &max_value = max.get_value<T>();
+    const auto &name = attr.get_name();
+    //
+    // If the server is in its starting phase, gives a nullptr
+    // to the AutoLock object
+    //
+
+    Tango::Util *tg = Tango::Util::instance();
+    Tango::TangoMonitor *mon_ptr = nullptr;
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
+    {
+        mon_ptr = &(attr.get_att_device()->get_att_conf_monitor());
+    }
+
+    Tango::AutoTangoMonitor sync1(mon_ptr);
+
+    bool check_for_nan = _check_for_nan<T>(tg);
+
+    if(check_for_nan || check_min_value || check_max_value)
+    {
+        for(size_t i = 0; i < nb_data; ++i)
+        {
+            if(check_for_nan)
+            {
+                check_nan(name, seq[i], i);
+            }
+            if(check_min_value)
+            {
+                if(seq[i] < min_value)
+                {
+                    std::stringstream o;
+
+                    o << "Set value for attribute " << name << " is below the minimum authorized (at least element "
+                      << i << ")" << std::ends;
+                    TANGO_THROW_EXCEPTION(Tango::API_WAttrOutsideLimit, o.str());
+                }
+            }
+            if(check_max_value)
+            {
+                if(seq[i] > max_value)
+                {
+                    std::stringstream o;
+
+                    o << "Set value for attribute " << name << " is above the maximum authorized (at least element "
+                      << i << ")" << std::ends;
+                    TANGO_THROW_EXCEPTION(Tango::API_WAttrOutsideLimit, o.str());
+                }
+            }
+        }
+    }
+
+    check_enum<T>(attr, enum_labels, seq, nb_data);
+}
+
+template <>
+void check_data_limits<Tango::DevEncoded>(Tango::WAttribute &attr,
+                                          const size_t nb_data,
+                                          const Tango::DevVarEncodedArray &seq,
+                                          Tango::Attr_CheckVal &min,
+                                          Tango::Attr_CheckVal &max,
+                                          const std::string &d_name,
+                                          const std::vector<std::string> &,
+                                          const bool check_min_value,
+                                          const bool check_max_value)
+{
+    const Tango::DevUChar &min_value = min.uch;
+    const Tango::DevUChar &max_value = max.uch;
+    const auto &name = attr.get_name();
+    //
+    // If the server is in its starting phase, gives a nullptr
+    // to the AutoLock object
+    //
+
+    Tango::Util *tg = Tango::Util::instance();
+    Tango::TangoMonitor *mon_ptr = nullptr;
+    if(!tg->is_svr_starting() && !tg->is_device_restarting(d_name))
+    {
+        mon_ptr = &(attr.get_att_device()->get_att_conf_monitor());
+    }
+
+    Tango::AutoTangoMonitor sync1(mon_ptr);
+
+    if(check_min_value || check_max_value)
+    {
+        for(size_t i = 0; i < nb_data; ++i)
+        {
+            size_t nb_data_elt = seq[i].encoded_data.length();
+            for(size_t j = 0; j < nb_data_elt; ++j)
+            {
+                if(check_min_value)
+                {
+                    if(seq[i].encoded_data[j] < min_value)
+                    {
+                        std::stringstream o;
+
+                        o << "Set value for attribute " << name << " is below the minimum authorized (at least element "
+                          << i << ")" << std::ends;
+                        TANGO_THROW_EXCEPTION(Tango::API_WAttrOutsideLimit, o.str());
+                    }
+                }
+                if(check_max_value)
+                {
+                    if(seq[i].encoded_data[j] > max_value)
+                    {
+                        std::stringstream o;
+
+                        o << "Set value for attribute " << name << " is above the maximum authorized (at least element "
+                          << i << ")" << std::ends;
+                        TANGO_THROW_EXCEPTION(Tango::API_WAttrOutsideLimit, o.str());
+                    }
+                }
+            }
+        }
+    }
+}
+
+template <>
+void check_data_limits<Tango::DevBoolean>(Tango::WAttribute &,
+                                          const size_t,
+                                          const Tango::DevVarBooleanArray &,
+                                          Tango::Attr_CheckVal &,
+                                          Tango::Attr_CheckVal &,
+                                          const std::string &,
+                                          const std::vector<std::string> &,
+                                          const bool,
+                                          const bool)
+{
+}
+
+template <>
+void check_data_limits<Tango::DevString>(Tango::WAttribute &,
+                                         const size_t,
+                                         const Tango::DevVarStringArray &,
+                                         Tango::Attr_CheckVal &,
+                                         Tango::Attr_CheckVal &,
+                                         const std::string &,
+                                         const std::vector<std::string> &,
+                                         const bool,
+                                         const bool)
+{
+}
+
+void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)
+{
+    if(((y == 0u) && nb_data != x) || ((y != 0u) && nb_data != (x * y)))
+    {
+        TANGO_THROW_EXCEPTION(Tango::API_AttrIncorrectDataNumber, "Incorrect data number");
+    }
+}
+
+template <class T, class V>
+void update_internal_sequence(Tango::WAttribute &attr,
+                              Tango::Attr_CheckVal &min_value,
+                              Tango::Attr_CheckVal &max_value,
+                              long &w_dim_x,
+                              long &w_dim_y,
+                              T &old_value,
+                              T &write_value,
+                              V &write_value_ptr,
+                              const std::string &d_name,
+                              const std::vector<std::string> &enum_labels,
+                              bool check_min_value,
+                              bool check_max_value,
+                              const typename Tango::tango_type_traits<T>::ArrayType &seq,
+                              size_t x,
+                              size_t y)
+{
+    auto nb_data = seq.length();
+    check_length(nb_data, x, y);
+
+    //
+    // Check the incoming value
+    //
+    const auto &data_format = attr.get_data_format();
+    check_data_limits<T>(
+        attr, nb_data, seq, min_value, max_value, d_name, enum_labels, check_min_value, check_max_value);
+
+    write_value_ptr = seq.get_buffer();
+
+    if(data_format == Tango::SCALAR)
+    {
+        _update_value(old_value, write_value, seq);
+        w_dim_x = 1;
+        w_dim_y = 0;
+    }
+    else
+    {
+        w_dim_x = x;
+        w_dim_y = y;
+    }
+}
+
+template <class T, class V>
+void _update_written_value(Tango::WAttribute &attr,
+                           Tango::Attr_CheckVal &min_value,
+                           Tango::Attr_CheckVal &max_value,
+                           long &w_dim_x,
+                           long &w_dim_y,
+                           T &old_value,
+                           T &write_value,
+                           V &write_value_ptr,
+                           const std::string &d_name,
+                           const std::vector<std::string> &enum_labels,
+                           bool check_min_value,
+                           bool check_max_value,
+                           const CORBA::Any &any,
+                           std::size_t x,
+                           std::size_t y)
+{
+    //
+    // Check data type inside the any and data number
+    //
+    using ArrayType = typename Tango::tango_type_traits<T>::ArrayType;
+
+    ArrayType *ptr;
+
+    if((any >>= ptr) == false)
+    {
+        std::string found = Tango::detail::corba_any_to_type_name(any);
+        Tango::CmdArgType expected = Tango::tango_type_traits<ArrayType>::type_value();
+        _throw_incompatible_exception(expected, found);
+    }
+
+    update_internal_sequence(attr,
+                             min_value,
+                             max_value,
+                             w_dim_x,
+                             w_dim_y,
+                             old_value,
+                             write_value,
+                             write_value_ptr,
+                             d_name,
+                             enum_labels,
+                             check_min_value,
+                             check_max_value,
+                             *ptr,
+                             x,
+                             y);
+}
+
+template <class T, class V>
+void _update_written_value(Tango::WAttribute &attr,
+                           Tango::Attr_CheckVal &min_value,
+                           Tango::Attr_CheckVal &max_value,
+                           long &w_dim_x,
+                           long &w_dim_y,
+                           T &old_value,
+                           T &write_value,
+                           V &write_value_ptr,
+                           const std::string &d_name,
+                           const std::vector<std::string> &enum_labels,
+                           bool check_min_value,
+                           bool check_max_value,
+                           const Tango::AttrValUnion &att_union,
+                           std::size_t x,
+                           std::size_t y)
+{
+    //
+    // Check data type inside the union
+    //
+    using ArrayType = typename Tango::tango_type_traits<T>::ArrayType;
+
+    if(att_union._d() != Tango::tango_type_traits<T>::att_type_value())
+    {
+        std::string found = Tango::detail::attr_union_dtype_to_type_name(att_union._d());
+        Tango::CmdArgType expected = Tango::tango_type_traits<ArrayType>::type_value();
+        _throw_incompatible_exception(expected, found);
+    }
+
+    const ArrayType &seq = get_value<ArrayType>(att_union);
+
+    update_internal_sequence(attr,
+                             min_value,
+                             max_value,
+                             w_dim_x,
+                             w_dim_y,
+                             old_value,
+                             write_value,
+                             write_value_ptr,
+                             d_name,
+                             enum_labels,
+                             check_min_value,
+                             check_max_value,
+                             seq,
+                             x,
+                             y);
+}
+
+} // namespace
 
 namespace Tango
 {
@@ -418,12 +946,490 @@ void WAttribute::set_rvalue()
 
 void WAttribute::check_written_value(const CORBA::Any &any, unsigned long x, unsigned long y)
 {
-    _update_any_written_value(any, x, y);
+    switch(data_type)
+    {
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevShort>(),
+                              get_write_value<Tango::DevShort>(),
+                              get_write_value_ptr<const Tango::DevShort *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_LONG:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevLong>(),
+                              get_write_value<Tango::DevLong>(),
+                              get_write_value_ptr<const Tango::DevLong *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_LONG64:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevLong64>(),
+                              get_write_value<Tango::DevLong64>(),
+                              get_write_value_ptr<const Tango::DevLong64 *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_DOUBLE:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevDouble>(),
+                              get_write_value<Tango::DevDouble>(),
+                              get_write_value_ptr<const Tango::DevDouble *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_STRING:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevString>(),
+                              get_write_value<Tango::DevString>(),
+                              get_write_value_ptr<const Tango::ConstDevString *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_FLOAT:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevFloat>(),
+                              get_write_value<Tango::DevFloat>(),
+                              get_write_value_ptr<const Tango::DevFloat *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_USHORT:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevUShort>(),
+                              get_write_value<Tango::DevUShort>(),
+                              get_write_value_ptr<const Tango::DevUShort *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_UCHAR:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevUChar>(),
+                              get_write_value<Tango::DevUChar>(),
+                              get_write_value_ptr<const Tango::DevUChar *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_ULONG:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevULong>(),
+                              get_write_value<Tango::DevULong>(),
+                              get_write_value_ptr<const Tango::DevULong *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_ULONG64:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevULong64>(),
+                              get_write_value<Tango::DevULong64>(),
+                              get_write_value_ptr<const Tango::DevULong64 *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_STATE:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevState>(),
+                              get_write_value<Tango::DevState>(),
+                              get_write_value_ptr<const Tango::DevState *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_BOOLEAN:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevBoolean>(),
+                              get_write_value<Tango::DevBoolean>(),
+                              get_write_value_ptr<const Tango::DevBoolean *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_ENCODED:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevEncoded>(),
+                              get_write_value<Tango::DevEncoded>(),
+                              get_write_value_ptr<const Tango::DevEncoded *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    default:
+        TANGO_ASSERT_ON_DEFAULT(data_type);
+    }
 }
 
-void WAttribute::check_written_value(const Tango::AttrValUnion &att_union, unsigned long x, unsigned long y)
+void WAttribute::check_written_value(const Tango::AttrValUnion &any, unsigned long x, unsigned long y)
 {
-    _update_any_written_value(att_union, x, y);
+    switch(data_type)
+    {
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevShort>(),
+                              get_write_value<Tango::DevShort>(),
+                              get_write_value_ptr<const Tango::DevShort *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_LONG:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevLong>(),
+                              get_write_value<Tango::DevLong>(),
+                              get_write_value_ptr<const Tango::DevLong *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_LONG64:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevLong64>(),
+                              get_write_value<Tango::DevLong64>(),
+                              get_write_value_ptr<const Tango::DevLong64 *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_DOUBLE:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevDouble>(),
+                              get_write_value<Tango::DevDouble>(),
+                              get_write_value_ptr<const Tango::DevDouble *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_STRING:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevString>(),
+                              get_write_value<Tango::DevString>(),
+                              get_write_value_ptr<const Tango::ConstDevString *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_FLOAT:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevFloat>(),
+                              get_write_value<Tango::DevFloat>(),
+                              get_write_value_ptr<const Tango::DevFloat *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_USHORT:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevUShort>(),
+                              get_write_value<Tango::DevUShort>(),
+                              get_write_value_ptr<const Tango::DevUShort *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_UCHAR:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevUChar>(),
+                              get_write_value<Tango::DevUChar>(),
+                              get_write_value_ptr<const Tango::DevUChar *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_ULONG:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevULong>(),
+                              get_write_value<Tango::DevULong>(),
+                              get_write_value_ptr<const Tango::DevULong *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_ULONG64:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevULong64>(),
+                              get_write_value<Tango::DevULong64>(),
+                              get_write_value_ptr<const Tango::DevULong64 *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_STATE:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevState>(),
+                              get_write_value<Tango::DevState>(),
+                              get_write_value_ptr<const Tango::DevState *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_BOOLEAN:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevBoolean>(),
+                              get_write_value<Tango::DevBoolean>(),
+                              get_write_value_ptr<const Tango::DevBoolean *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    case Tango::DEV_ENCODED:
+        _update_written_value(*this,
+                              min_value,
+                              max_value,
+                              w_dim_x,
+                              w_dim_y,
+                              get_old_value<Tango::DevEncoded>(),
+                              get_write_value<Tango::DevEncoded>(),
+                              get_write_value_ptr<const Tango::DevEncoded *>(),
+                              d_name,
+                              enum_labels,
+                              check_min_value,
+                              check_max_value,
+                              any,
+                              x,
+                              y);
+        break;
+
+    default:
+        TANGO_ASSERT_ON_DEFAULT(data_type);
+    }
 }
 
 //+-------------------------------------------------------------------------
@@ -449,6 +1455,94 @@ long WAttribute::get_write_value_length()
         return 0;
     }
 }
+
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> *>
+void WAttribute::set_write_value(T *val, size_t x, size_t y)
+{
+    size_t nb_data;
+
+    if(y == 0)
+    {
+        nb_data = x;
+    }
+    else
+    {
+        nb_data = x * y;
+    }
+
+    typename Tango::tango_type_traits<T>::ArrayType tmp_seq(
+        static_cast<CORBA::ULong>(nb_data), static_cast<CORBA::ULong>(nb_data), val, false);
+
+    CORBA::Any tmp_any;
+    tmp_any <<= tmp_seq;
+    check_written_value(tmp_any, x, y);
+    copy_data(tmp_any);
+    set_user_set_write_value(true);
+}
+
+template void WAttribute::set_write_value(Tango::DevBoolean *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevState *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevString *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevUChar *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevFloat *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevDouble *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevShort *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevUShort *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevLong *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevULong *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevLong64 *val, size_t x, size_t y);
+template void WAttribute::set_write_value(Tango::DevULong64 *val, size_t x, size_t y);
+
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> *>
+void WAttribute::set_write_value(T val)
+{
+    set_write_value(&val, 1, 0);
+}
+
+template void WAttribute::set_write_value(Tango::DevBoolean val);
+template void WAttribute::set_write_value(Tango::DevState val);
+template void WAttribute::set_write_value(Tango::DevUChar val);
+template void WAttribute::set_write_value(Tango::DevFloat val);
+template void WAttribute::set_write_value(Tango::DevDouble val);
+template void WAttribute::set_write_value(Tango::DevShort val);
+template void WAttribute::set_write_value(Tango::DevUShort val);
+template void WAttribute::set_write_value(Tango::DevLong val);
+template void WAttribute::set_write_value(Tango::DevULong val);
+template void WAttribute::set_write_value(Tango::DevLong64 val);
+template void WAttribute::set_write_value(Tango::DevULong64 val);
+
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> *>
+void WAttribute::set_write_value(std::vector<T> &val, size_t x, size_t y)
+{
+    if constexpr(std::is_same_v<T, bool> || std::is_same_v<T, std::string>)
+    {
+        typename Tango::tango_type_traits<T>::ArrayType tmp_seq;
+        tmp_seq << val;
+
+        CORBA::Any tmp_any;
+        tmp_any <<= tmp_seq;
+        check_written_value(tmp_any, x, y);
+        copy_data(tmp_any);
+        set_user_set_write_value(true);
+    }
+    else
+    {
+        set_write_value(val.data(), x, y);
+    }
+}
+
+template void WAttribute::set_write_value(std::vector<Tango::DevBoolean> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevState> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevString> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevUChar> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevFloat> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevDouble> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevShort> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevUShort> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevLong> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevULong> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevLong64> &val, size_t x, size_t y);
+template void WAttribute::set_write_value(std::vector<Tango::DevULong64> &val, size_t x, size_t y);
 
 void WAttribute::set_write_value(std::string &val)
 {
@@ -566,12 +1660,122 @@ void WAttribute::rollback()
 
 void WAttribute::copy_data(const CORBA::Any &any)
 {
-    _copy_any_data(any);
+    switch(data_type)
+    {
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
+        _copy_data(get_last_written_value<Tango::DevVarShortArray>(), any);
+        break;
+
+    case Tango::DEV_LONG:
+        _copy_data(get_last_written_value<Tango::DevVarLongArray>(), any);
+        break;
+
+    case Tango::DEV_LONG64:
+        _copy_data(get_last_written_value<Tango::DevVarLong64Array>(), any);
+        break;
+
+    case Tango::DEV_DOUBLE:
+        _copy_data(get_last_written_value<Tango::DevVarDoubleArray>(), any);
+        break;
+
+    case Tango::DEV_STRING:
+        _copy_data(get_last_written_value<Tango::DevVarStringArray>(), any);
+        break;
+
+    case Tango::DEV_FLOAT:
+        _copy_data(get_last_written_value<Tango::DevVarFloatArray>(), any);
+        break;
+
+    case Tango::DEV_BOOLEAN:
+        _copy_data(get_last_written_value<Tango::DevVarBooleanArray>(), any);
+        break;
+
+    case Tango::DEV_USHORT:
+        _copy_data(get_last_written_value<Tango::DevVarUShortArray>(), any);
+        break;
+
+    case Tango::DEV_UCHAR:
+        _copy_data(get_last_written_value<Tango::DevVarCharArray>(), any);
+        break;
+
+    case Tango::DEV_ULONG:
+        _copy_data(get_last_written_value<Tango::DevVarULongArray>(), any);
+        break;
+
+    case Tango::DEV_ULONG64:
+        _copy_data(get_last_written_value<Tango::DevVarULong64Array>(), any);
+        break;
+
+    case Tango::DEV_STATE:
+        _copy_data(get_last_written_value<Tango::DevVarStateArray>(), any);
+        break;
+    case Tango::DEV_ENCODED:
+        // do nothing
+        break;
+    default:
+        TANGO_ASSERT_ON_DEFAULT(data_type);
+    }
 }
 
-void WAttribute::copy_data(const Tango::AttrValUnion &the_union)
+void WAttribute::copy_data(const Tango::AttrValUnion &any)
 {
-    _copy_any_data(the_union);
+    switch(data_type)
+    {
+    case Tango::DEV_SHORT:
+    case Tango::DEV_ENUM:
+        _copy_data(get_last_written_value<Tango::DevVarShortArray>(), any);
+        break;
+
+    case Tango::DEV_LONG:
+        _copy_data(get_last_written_value<Tango::DevVarLongArray>(), any);
+        break;
+
+    case Tango::DEV_LONG64:
+        _copy_data(get_last_written_value<Tango::DevVarLong64Array>(), any);
+        break;
+
+    case Tango::DEV_DOUBLE:
+        _copy_data(get_last_written_value<Tango::DevVarDoubleArray>(), any);
+        break;
+
+    case Tango::DEV_STRING:
+        _copy_data(get_last_written_value<Tango::DevVarStringArray>(), any);
+        break;
+
+    case Tango::DEV_FLOAT:
+        _copy_data(get_last_written_value<Tango::DevVarFloatArray>(), any);
+        break;
+
+    case Tango::DEV_BOOLEAN:
+        _copy_data(get_last_written_value<Tango::DevVarBooleanArray>(), any);
+        break;
+
+    case Tango::DEV_USHORT:
+        _copy_data(get_last_written_value<Tango::DevVarUShortArray>(), any);
+        break;
+
+    case Tango::DEV_UCHAR:
+        _copy_data(get_last_written_value<Tango::DevVarCharArray>(), any);
+        break;
+
+    case Tango::DEV_ULONG:
+        _copy_data(get_last_written_value<Tango::DevVarULongArray>(), any);
+        break;
+
+    case Tango::DEV_ULONG64:
+        _copy_data(get_last_written_value<Tango::DevVarULong64Array>(), any);
+        break;
+
+    case Tango::DEV_STATE:
+        _copy_data(get_last_written_value<Tango::DevVarStateArray>(), any);
+        break;
+    case Tango::DEV_ENCODED:
+        // do nothing
+        break;
+    default:
+        TANGO_ASSERT_ON_DEFAULT(data_type);
+    }
 }
 
 //+-------------------------------------------------------------------------

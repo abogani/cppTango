@@ -211,56 +211,5 @@ inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
         throw;
     }
 }
-
-template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
-inline void WAttribute::set_write_value(T *val, size_t x, size_t y)
-{
-    size_t nb_data;
-
-    if(y == 0)
-    {
-        nb_data = x;
-    }
-    else
-    {
-        nb_data = x * y;
-    }
-
-    typename tango_type_traits<T>::ArrayType tmp_seq(
-        static_cast<CORBA::ULong>(nb_data), static_cast<CORBA::ULong>(nb_data), val, false);
-
-    CORBA::Any tmp_any;
-    tmp_any <<= tmp_seq;
-    check_written_value(tmp_any, x, y);
-    copy_data(tmp_any);
-    set_user_set_write_value(true);
-}
-
-template <class T>
-inline void WAttribute::set_write_value(std::vector<T> &val, size_t x, size_t y)
-{
-    if constexpr(std::is_same_v<T, bool> || std::is_same_v<T, std::string>)
-    {
-        typename tango_type_traits<T>::ArrayType tmp_seq;
-        tmp_seq << val;
-
-        CORBA::Any tmp_any;
-        tmp_any <<= tmp_seq;
-        check_written_value(tmp_any, x, y);
-        copy_data(tmp_any);
-        set_user_set_write_value(true);
-    }
-    else
-    {
-        set_write_value(val.data(), x, y);
-    }
-}
-
-template <class T>
-inline void WAttribute::set_write_value(T val)
-{
-    set_write_value(&val, 1, 0);
-}
-
 } // namespace Tango
 #endif // _WATTRSETVAL_TPP

@@ -56,7 +56,6 @@ set(SERVER_HEADERS attrdesc.h
     utils_templ.h
     utils_spec_templ.h
     w_attribute.h
-    w_attribute_templ.h
     w_attrsetval_templ.h
     w_pipe.h
     w_pipe_templ.h
