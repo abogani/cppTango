@@ -219,4 +219,22 @@ bool prop_in_list(const char *prop_name, std::string &prop_str, const std::vecto
     return false;
 }
 
+long compute_data_size(const Tango::AttrDataFormat &data_format, const long dim_x, const long dim_y)
+{
+    switch(data_format)
+    {
+    case Tango::SCALAR:
+        return 1;
+
+    case Tango::SPECTRUM:
+        return dim_x;
+
+    case Tango::IMAGE:
+        return dim_x * dim_y;
+
+    case Tango::FMT_UNKNOWN:
+        return 0;
+    }
+    return 0;
+}
 } // namespace Tango::detail

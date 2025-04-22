@@ -2118,24 +2118,7 @@ long Attribute::get_lg_attr_value(std::vector<AttrProperty> &prop_list, const ch
 
 void Attribute::set_data_size()
 {
-    switch(data_format)
-    {
-    case Tango::SCALAR:
-        data_size = 1;
-        break;
-
-    case Tango::SPECTRUM:
-        data_size = dim_x;
-        break;
-
-    case Tango::IMAGE:
-        data_size = dim_x * dim_y;
-        break;
-
-    case FMT_UNKNOWN:
-        data_size = 0;
-        break;
-    }
+    data_size = Tango::detail::compute_data_size(data_format, dim_x, dim_y);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

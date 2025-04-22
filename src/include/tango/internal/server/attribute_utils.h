@@ -159,5 +159,16 @@ void avns_in_db(const char *prop_name, const std::string &name, const std::strin
 //
 //------------------------------------------------------------------------------------------------------------------
 bool prop_in_list(const char *prop_name, std::string &prop_str, const std::vector<AttrProperty> &list);
+
+//+-------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        compute_data_size
+//
+// description :
+//        Compute the attribute amount of data
+//
+//--------------------------------------------------------------------------------------------------------------------
+long compute_data_size(const Tango::AttrDataFormat &data_format, long dim_x, long dim_y);
 } // namespace Tango::detail
 #endif
