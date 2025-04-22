@@ -800,8 +800,30 @@ class Attribute
      * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data,
      * or wrong Enum value.
      */
-    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_value(T *p_data, long x = 1, long y = 0, bool release = false);
+
+    /**
+     * This method stores the attribute value inside the Attribute object and set current time as readout time
+     *
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     *
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+     * otherwise. For the DevString's, when release is true we expect value to have been allocated with
+     * Tango::string_dup or equivalent.
+     *
+     * @param Tango::DevEncoded *p_data: pointer to value
+     * @param long x=1: the attribute x dimension
+     * @param long y=0: the attribute y dimension
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data,
+     * or wrong Enum value.
+     */
+    void set_value(Tango::DevEncoded *p_data, long x = 1, long y = 0, bool release = false);
 
     /**
      * This is special realization for scalar C++11 scoped enum with short as underlying data type or old enum of
@@ -2615,6 +2637,61 @@ inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString 
     }
 }
 
+/*
+ * method: Attribute::set_value_date_quality
+ *
+ * These methods store the attribute value inside the Attribute object,
+ * with readout time and attribute quality factor provided by user.
+ *
+ *
+ */
+
+template <class T>
+inline void
+    Attribute::set_value_date_quality(T *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
+template <class T>
+inline void Attribute::set_value_date_quality(
+    T *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
+template <>
+inline void Attribute::set_value_date_quality(
+    Tango::DevEncoded *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+}
+
+template <>
+inline void Attribute::set_value_date_quality(
+    Tango::DevEncoded *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+}
+
 //
 // Macro to help coding
 //
@@ -2639,7 +2716,7 @@ inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString 
     {                                                           \
         std::stringstream o;                                    \
         o << "Data pointer for attribute " << B << " is NULL!"; \
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());        \
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str()); \
     }                                                           \
     else                                                        \
         (void) 0

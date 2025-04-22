@@ -6846,4 +6846,393 @@ template void Attribute::set_properties(const MultiAttrProp<DevDouble> &attr_pro
 template void Attribute::set_properties(const MultiAttrProp<DevState> &attr_prop);
 template void Attribute::set_properties(const MultiAttrProp<DevEncoded> &attr_prop);
 template void Attribute::set_properties(const MultiAttrProp<DevString> &attr_prop);
+
+template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> *>
+void Attribute::set_value(T *p_data, long x, long y, bool release)
+{
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
+    using ArrayType = typename Tango::tango_type_traits<T>::ArrayType;
+
+    //
+    // Throw exception if type is not correct
+    //
+
+    if(data_type != Tango::tango_type_traits<T>::type_value())
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Invalid incoming data type " << Tango::tango_type_traits<T>::type_value() << " for attribute " << name
+          << ". Attribute data type is " << (Tango::CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Check that data size is less than the given max
+    //
+
+    if((x > max_x) || (y > max_y))
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
+          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Compute data size and set default quality to valid.
+    //
+
+    dim_x = x;
+    dim_y = y;
+    data_size = Tango::detail::compute_data_size(data_format, dim_x, dim_y);
+    quality = Tango::ATTR_VALID;
+
+    //
+    // Throw exception if pointer is null and data_size != 0
+    //
+
+    if(data_size != 0)
+    {
+        CHECK_PTR(p_data, name);
+    }
+
+    // Save data to proper seq
+    if((data_format == Tango::SCALAR) && (release))
+    {
+        T *tmp_ptr = new T[1];
+        *tmp_ptr = *p_data;
+        attribute_value.set(std::make_unique<ArrayType>(data_size, data_size, tmp_ptr, release));
+        delete_data_if_needed(p_data, release);
+    }
+    else
+    {
+        attribute_value.set(std::make_unique<ArrayType>(data_size, data_size, p_data, release));
+    }
+    //
+    // Reset alarm flags
+    //
+
+    alarm.reset();
+
+    //
+    // Get time
+    //
+
+    set_time();
+}
+
+// Special set_value realisation for Tango::DevShort due to the fact, that Tango::DevEnum
+// is effectively Tango::DevShort under hood and when one calls set_value for DevEnum -
+// cpp gives him Tango::DevShort realisation
+template <>
+void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool release)
+{
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
+    //
+    // Throw exception if type is not correct
+    //
+
+    if(data_type != Tango::DEV_SHORT && data_type != Tango::DEV_ENUM)
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Invalid incoming data type " << Tango::DEV_SHORT << " for attribute " << name
+          << ". Attribute data type is " << (Tango::CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Check that data size is less than the given max
+    //
+
+    if((x > max_x) || (y > max_y))
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream ss;
+        ss << "Data size for attribute " << name << " exceeds given limit";
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, ss.str());
+    }
+
+    //
+    // Compute data size and set default quality to valid.
+    //
+
+    dim_x = x;
+    dim_y = y;
+    data_size = Tango::detail::compute_data_size(data_format, dim_x, dim_y);
+    quality = Tango::ATTR_VALID;
+
+    //
+    // Throw exception if pointer is null and data_size != 0
+    //
+
+    if(data_size != 0)
+    {
+        CHECK_PTR(p_data, name);
+    }
+
+    //
+    // For DevEnum, check that the enum labels are defined. Also check the enum value
+    //
+
+    if(data_type == Tango::DEV_ENUM)
+    {
+        if(enum_labels.size() == 0)
+        {
+            delete_data_if_needed(p_data, release);
+
+            std::stringstream ss;
+            ss << "Attribute " << name << " data type is enum but no enum labels are defined!";
+
+            TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, ss.str());
+        }
+
+        int max_val = enum_labels.size() - 1;
+        for(std::uint32_t i = 0; i < data_size; i++)
+        {
+            if(p_data[i] < 0 || p_data[i] > max_val)
+            {
+                delete_data_if_needed(p_data, release);
+
+                std::stringstream ss;
+                ss << "Wrong value for attribute " << name;
+                ss << ". Element " << i << " (value = " << p_data[i]
+                   << ") is negative or above the limit defined by the enum (" << max_val << ").";
+
+                TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, ss.str());
+            }
+        }
+    }
+
+    if((data_format == Tango::SCALAR) && (release))
+    {
+        Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
+        *tmp_ptr = *p_data;
+        attribute_value.set(std::make_unique<Tango::DevVarShortArray>(data_size, data_size, tmp_ptr, release));
+        delete_data_if_needed(p_data, release);
+    }
+    else
+    {
+        attribute_value.set(std::make_unique<Tango::DevVarShortArray>(data_size, data_size, p_data, release));
+    }
+    //
+    // Reset alarm flags
+    //
+
+    alarm.reset();
+
+    //
+    // Get time
+    //
+
+    set_time();
+}
+
+// Special set_value realisation for Tango::DevString due to different memory management of Tango::DevString (aka
+// char*[])
+template <>
+void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool release)
+{
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
+    //
+    // Throw exception if type is not correct
+    //
+
+    if(data_type != Tango::DEV_STRING)
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Invalid incoming data type " << Tango::DEV_STRING << " for attribute " << name
+          << ". Attribute data type is " << (Tango::CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Check that data size is less than the given max
+    //
+
+    if((x > max_x) || (y > max_y))
+    {
+        delete_data_if_needed(p_data, release);
+
+        TangoSys_OMemStream o;
+
+        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
+          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Compute data size and set default quality to valid.
+    //
+
+    dim_x = x;
+    dim_y = y;
+    data_size = Tango::detail::compute_data_size(data_format, dim_x, dim_y);
+    quality = Tango::ATTR_VALID;
+
+    //
+    // Throw exception if pointer is null and data size != 0
+    //
+
+    if(data_size != 0)
+    {
+        CHECK_PTR(p_data, name);
+    }
+
+    if(release)
+    {
+        char **strvec = Tango::DevVarStringArray::allocbuf(data_size);
+        if(is_fwd_att())
+        {
+            for(std::uint32_t i = 0; i < data_size; i++)
+            {
+                strvec[i] = Tango::string_dup(p_data[i]);
+            }
+        }
+        else
+        {
+            for(std::uint32_t i = 0; i < data_size; i++)
+            {
+                strvec[i] = p_data[i];
+            }
+        }
+        attribute_value.set(std::make_unique<Tango::DevVarStringArray>(data_size, data_size, strvec, release));
+    }
+    else
+    {
+        attribute_value.set(std::make_unique<Tango::DevVarStringArray>(data_size, data_size, p_data, release));
+    }
+
+    delete_data_if_needed(p_data, release);
+    //
+    // Get time
+    //
+
+    set_time();
+}
+
+// Special set_value realisation for Tango::DevEncoded due to different memory management of Tango::DevString (aka
+// char*[])
+void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool release)
+{
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
+    //
+    // Throw exception if type is not correct
+    //
+
+    if(data_type != Tango::DEV_ENCODED)
+    {
+        delete_data_if_needed(p_data, release);
+
+        std::stringstream o;
+
+        o << "Invalid incoming data type " << Tango::DEV_ENCODED << " for attribute " << name
+          << ". Attribute data type is " << (Tango::CmdArgType) data_type << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Check that data size is less than the given max
+    //
+
+    if((x > max_x) || (y > max_y))
+    {
+        delete_data_if_needed(p_data, release);
+
+        TangoSys_OMemStream o;
+
+        o << "Data size for attribute " << name << " [" << x << ", " << y << "]"
+          << " exceeds given limit [" << max_x << ", " << max_y << "]" << std::ends;
+
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str());
+    }
+
+    //
+    // Compute data size and set default quality to valid.
+    //
+
+    dim_x = x;
+    dim_y = y;
+    data_size = Tango::detail::compute_data_size(data_format, dim_x, dim_y);
+    quality = Tango::ATTR_VALID;
+
+    //
+    // Throw exception if pointer is null and data size != 0
+    //
+
+    if(data_size != 0)
+    {
+        CHECK_PTR(p_data, name);
+    }
+
+    //
+    // If the data is wanted from the DevState command, store it in a sequence.
+    // If the attribute  has an associated writable attribute, store data in a
+    // temporary buffer (the write value must be added before the data is sent
+    // back to the caller)
+    //
+
+    if(release)
+    {
+        Tango::DevEncoded *tmp_ptr = new Tango::DevEncoded[1];
+
+        tmp_ptr->encoded_format = p_data->encoded_format;
+
+        unsigned long nb_data = p_data->encoded_data.length();
+        tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
+        p_data->encoded_data.replace(0, 0, nullptr, false);
+
+        attribute_value.set(std::make_unique<Tango::DevVarEncodedArray>(data_size, data_size, tmp_ptr, release));
+    }
+    else
+    {
+        attribute_value.set(std::make_unique<Tango::DevVarEncodedArray>(data_size, data_size, p_data, release));
+    }
+
+    delete_data_if_needed(p_data, release);
+    //
+    // Reset alarm flags
+    //
+
+    alarm.reset();
+
+    //
+    // Get time
+    //
+
+    set_time();
+}
+
+template void Attribute::set_value(Tango::DevBoolean *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevFloat *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevDouble *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevState *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevUChar *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevUShort *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevLong *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevULong *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevLong64 *p_data, long x, long y, bool release);
+template void Attribute::set_value(Tango::DevULong64 *p_data, long x, long y, bool release);
 } // namespace Tango
