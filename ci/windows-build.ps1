@@ -33,6 +33,7 @@ Invoke-NativeCommand cmake `
   -A "${ARCHITECTURE}" `
   -DWITH_TURBOJPEG=ON `
   -DCMAKE_ASM_NASM_COMPILER="${cwd}/${TANGO_NASM_ROOT}/nasm.exe" `
+  -DWITH_CRT_DLL="${BUILD_SHARED_LIBS}" `
   -DCMAKE_INSTALL_PREFIX="${TANGO_JPEG_ROOT}" `
   -DCMAKE_DEBUG_POSTFIX=d
 Invoke-NativeCommand cmake `
