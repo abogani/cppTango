@@ -510,6 +510,7 @@ class EventConsumer
     int subscribe_event(DeviceProxy *device, EventType event, int event_queue_size, bool stateless = false);
 
     void unsubscribe_event(int event_id);
+    virtual void query_event_system(std::ostream &os) = 0;
 
     // methods to access data in event queues
 
@@ -640,6 +641,8 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, pu
     void disconnect_structured_push_consumer() override;
     void offer_change(const CosNotification::EventTypeSeq &, const CosNotification::EventTypeSeq &) override;
 
+    void query_event_system(std::ostream &os) override;
+
     void get_subscription_command_name(std::string &cmd) override
     {
         cmd = "EventSubscriptionChange";
@@ -723,7 +726,7 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
 
     void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &);
 
-    void query_event_system(std::ostream &os);
+    void query_event_system(std::ostream &os) override;
     static void enable_perf_mon(Tango::DevBoolean enabled);
 
     enum UserDataEventType

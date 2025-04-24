@@ -136,6 +136,11 @@ void *NotifdEventConsumer::run_undetached(void *arg)
     return (void *) nullptr;
 }
 
+void NotifdEventConsumer::query_event_system(TANGO_UNUSED(std::ostream &os))
+{
+    TANGO_ASSERT(0);
+}
+
 //+----------------------------------------------------------------------------
 //
 // method :         NotifdEventConsumer::cleanup_EventChannel_map()
