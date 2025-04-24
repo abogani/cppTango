@@ -61,7 +61,7 @@ tango_catch2_tests_create(
     catch2_w_attribute_set_write_value.cpp
     # These currrently fail on Windows and need investigating
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_filedatabase.cpp>
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:catch2_jpeg_encoding.cpp>
+    catch2_jpeg_encoding.cpp
     catch2_loggerstream_attribute.cpp
     catch2_device_proxy.cpp
     )

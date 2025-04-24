@@ -17,8 +17,9 @@ md -Force ${TANGO_OMNI_ROOT}
 Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_OMNI_ROOT}
 
 Write-Host "== Get nasm" -ForegroundColor Blue
-Invoke-NativeCommand curl.exe -L ${NASM_DOWNLOAD_LINK} -o nasm.exe
-Invoke-NativeCommand ./nasm.exe /S /v/qn
+$FILENAME="nasm.zip"
+Invoke-NativeCommand curl.exe -L ${NASM_DOWNLOAD_LINK} -o ${FILENAME}
+Expand-Archive -Path ${FILENAME} -DestinationPath ${TANGO_NASM_ROOT}/..
 
 Write-Host "== Build jpeg" -ForegroundColor Blue
 $FILENAME="libjpeg-turbo-${JPEG_VERSION}.zip"
@@ -31,6 +32,8 @@ Invoke-NativeCommand cmake `
   -G "${CMAKE_GENERATOR}" `
   -A "${ARCHITECTURE}" `
   -DWITH_TURBOJPEG=ON `
+  -DCMAKE_ASM_NASM_COMPILER="${cwd}/${TANGO_NASM_ROOT}/nasm.exe" `
+  -DWITH_CRT_DLL="${BUILD_SHARED_LIBS}" `
   -DCMAKE_INSTALL_PREFIX="${TANGO_JPEG_ROOT}" `
   -DCMAKE_DEBUG_POSTFIX=d
 Invoke-NativeCommand cmake `

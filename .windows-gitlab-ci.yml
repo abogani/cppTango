@@ -29,6 +29,7 @@ windows-build:
     PYVER: "py37"
     CMAKE_GENERATOR: "Visual Studio 17 2022"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
+    TANGO_NASM_ROOT: dependencies/nasm-${NASM_VERSION}
     TANGO_JPEG_ROOT: dependencies/libjpeg
     TANGO_JPEG_SOURCE: dependencies/source/libjpeg-turbo-${JPEG_VERSION}
     TANGO_ZMQ_ROOT: dependencies/zeromq
@@ -43,6 +44,7 @@ windows-build:
     PYTHON_LOCATION: dependencies/python
     TANGO_WARNINGS_AS_ERRORS: "ON"
     BUILD_TESTING: "ON"
+    NASM_DOWNLOAD_LINK: "https://tango-controls.customers.byte-physics.de/nasm-${NASM_VERSION}-win64.zip"
     # BEGIN local testing
     # For local testing on Windows machine do the following:
     # - Make sure you have git, cmake and gitlab-runner installed
@@ -53,8 +55,6 @@ windows-build:
     # GIT_CLEAN_FLAGS: "none" #  see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#git-clean-flags
     # ARCHITECTURE: "x64"
     # PY_ARCH: "amd64"
-    # NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win64/nasm-${NASM_VERSION}-installer-x64.exe"
-    # NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-installer-x86.exe"
     # VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
     # CMAKE_BUILD_TYPE: "Release"
     # LIBRARY_TYPE: "Shared"
@@ -88,13 +88,11 @@ windows-build:
       when: never
     - if: '$ARCHITECTURE == "x64"'
       variables:
-        NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win64/nasm-${NASM_VERSION}-installer-x64.exe"
         VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
         PY_ARCH: "amd64"
       when: on_success
     - if: '$ARCHITECTURE == "win32"'
       variables:
-        NASM_DOWNLOAD_LINK: "https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/win32/nasm-${NASM_VERSION}-installer-x86.exe"
         VC_ARCH_VER: "${ARCHITECTURE}-msvc15"
         PY_ARCH: "${ARCHITECTURE}"
       when: on_success
