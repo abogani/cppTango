@@ -51,6 +51,7 @@
 #include <memory>
 
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
+#include <tango/common/pointer_with_lock.h>
 
 using namespace CORBA;
 
@@ -61,7 +62,7 @@ namespace
 {
 constexpr auto RECONNECTION_DELAY = std::chrono::seconds(1);
 
-EventConsumer *get_event_system_for_event_id(int event_id)
+PointerWithLock<EventConsumer> get_event_system_for_event_id(int event_id)
 {
     ApiUtil *au = ApiUtil::instance();
     auto zmq_consumer = au->get_zmq_event_consumer();
@@ -2570,7 +2571,8 @@ void DeviceProxy::unsubscribe_all_events()
 {
     if(ApiUtil *api = ApiUtil::instance())
     {
-        if(ZmqEventConsumer *zmq_event_consumer = api->get_zmq_event_consumer())
+        auto zmq_event_consumer = api->get_zmq_event_consumer();
+        if(zmq_event_consumer != nullptr)
         {
             std::vector<int> event_ids;
             zmq_event_consumer->get_subscribed_event_ids(this, event_ids);
@@ -7700,11 +7702,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
                                  const std::vector<std::string> &filters,
                                  bool stateless)
 {
-    ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == nullptr)
-    {
-        api_ptr->create_zmq_event_consumer();
-    }
+    ApiUtil *au = ApiUtil::instance();
 
     //
     // First, try using zmq. If it fails with the error "Command Not Found", try using notifd
@@ -7713,20 +7711,17 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
     int ret;
     try
     {
-        ret = api_ptr->get_zmq_event_consumer()->subscribe_event(this, attr_name, event, callback, filters, stateless);
+        auto zmq_consumer = au->create_zmq_event_consumer();
+        ret = zmq_consumer->subscribe_event(this, attr_name, event, callback, filters, stateless);
     }
     catch(DevFailed &e)
     {
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == nullptr)
-            {
-                api_ptr->create_notifd_event_consumer();
-            }
+            auto notifd_consumer = au->create_notifd_event_consumer();
 
-            ret = api_ptr->get_notifd_event_consumer()->subscribe_event(
-                this, attr_name, event, callback, filters, stateless);
+            ret = notifd_consumer->subscribe_event(this, attr_name, event, callback, filters, stateless);
         }
         else
         {
@@ -7754,11 +7749,7 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
                                  const std::vector<std::string> &filters,
                                  bool stateless)
 {
-    ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == nullptr)
-    {
-        api_ptr->create_zmq_event_consumer();
-    }
+    ApiUtil *au = ApiUtil::instance();
 
     //
     // First, try using zmq. If it fails with the error "Command Not Found", try using notifd
@@ -7767,21 +7758,16 @@ int DeviceProxy::subscribe_event(const std::string &attr_name,
     int ret;
     try
     {
-        ret = api_ptr->get_zmq_event_consumer()->subscribe_event(
-            this, attr_name, event, event_queue_size, filters, stateless);
+        auto zmq_consumer = au->create_zmq_event_consumer();
+        ret = zmq_consumer->subscribe_event(this, attr_name, event, event_queue_size, filters, stateless);
     }
     catch(DevFailed &e)
     {
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == nullptr)
-            {
-                api_ptr->create_notifd_event_consumer();
-            }
-
-            ret = api_ptr->get_notifd_event_consumer()->subscribe_event(
-                this, attr_name, event, event_queue_size, filters, stateless);
+            auto notifd_consumer = au->create_notifd_event_consumer();
+            ret = notifd_consumer->subscribe_event(this, attr_name, event, event_queue_size, filters, stateless);
         }
         else
         {
@@ -7847,16 +7833,10 @@ int DeviceProxy::subscribe_event(EventType event, int event_queue_size, bool sta
         TANGO_THROW_EXCEPTION(API_NotSupportedFeature, ss.str());
     }
 
-    ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == nullptr)
-    {
-        api_ptr->create_zmq_event_consumer();
-    }
+    ApiUtil *au = ApiUtil::instance();
+    auto zmq_consumer = au->create_zmq_event_consumer();
 
-    int ret;
-    ret = api_ptr->get_zmq_event_consumer()->subscribe_event(this, event, event_queue_size, stateless);
-
-    return ret;
+    return zmq_consumer->subscribe_event(this, event, event_queue_size, stateless);
 }
 
 //--------------------------------------------------------------------------------------------------------------------

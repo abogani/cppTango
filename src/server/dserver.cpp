@@ -750,7 +750,7 @@ Tango::DevString DServer::query_event_system()
     out << ",\"client\":";
 
     Tango::ApiUtil *api = Tango::ApiUtil::instance();
-    auto *consumer = api->get_zmq_event_consumer();
+    auto consumer = api->get_zmq_event_consumer();
     if(consumer == nullptr)
     {
         out << "null";

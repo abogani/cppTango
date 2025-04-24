@@ -35,6 +35,8 @@
 #include <tango/client/event_templ.h>
 #include <tango/server/tango_clock.h>
 
+#include <tango/common/pointer_with_lock.h>
+
 #include <cstdio>
 
 #ifdef _TG_WINDOWS_
@@ -99,38 +101,20 @@ void leavefunc()
     //
     // Manage event stuff
     //
+    auto notifd_available = au->is_notifd_event_consumer_created();
 
-    NotifdEventConsumer *notifd_ec = au->get_notifd_event_consumer();
-
-    if(notifd_ec != nullptr)
-    {
-        notifd_ec->shutdown();
-
-        //
-        // Shut-down the notifd ORB and wait for the thread to exit
-        //
-
-        int *rv;
-        notifd_ec->orb_->shutdown(true);
-        notifd_ec->join((void **) &rv);
-    }
-
-    ZmqEventConsumer *zmq_ec = au->get_zmq_event_consumer();
-
-    if(zmq_ec != nullptr)
-    {
-        zmq_ec->shutdown();
-    }
+    au->shutdown_event_consumers();
 
     //
     // Shutdown and destroy the ORB
     //
-    if(notifd_ec == nullptr)
+    CORBA::ORB_var orb = au->get_orb();
+    if(!notifd_available)
     {
-        CORBA::ORB_var orb = au->get_orb();
         orb->shutdown(true);
         orb->destroy();
     }
+
     already_executed = true;
     au->need_reset_already_flag(false);
 }

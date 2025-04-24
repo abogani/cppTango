@@ -37,6 +37,8 @@
 #include <tango/client/eventconsumer.h>
 #include <tango/server/auto_tango_monitor.h>
 
+#include <tango/common/pointer_with_lock.h>
+
 #include <cstdio>
 
 #ifdef _TG_WINDOWS_
@@ -75,7 +77,8 @@ namespace Tango
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos, EventConsumer *event_consumer)
+bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos,
+                                                        PointerWithLock<EventConsumer> &event_consumer)
 {
     bool ret = true;
     EvCbIte epos;
@@ -146,7 +149,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos, E
 //---------------------------------------------------------------------------------------------------------------------
 
 bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipos,
-                                                            EventConsumer *event_consumer,
+                                                            PointerWithLock<EventConsumer> &event_consumer,
                                                             DeviceData &dd)
 {
     TANGO_LOG_DEBUG << "Entering KeepAliveThread::reconnect_to_zmq_channel()" << std::endl;
@@ -272,7 +275,8 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumerKeepAliveThread::reconnect_to_event(const EvChanIte &ipos, EventConsumer *event_consumer)
+void EventConsumerKeepAliveThread::reconnect_to_event(const EvChanIte &ipos,
+                                                      PointerWithLock<EventConsumer> &event_consumer)
 {
     EvCbIte epos;
 
@@ -441,7 +445,7 @@ void EventConsumerKeepAliveThread::re_subscribe_event(const EvCbIte &epos, const
 //-------------------------------------------------------------------------------------------------------------------
 
 void EventConsumerKeepAliveThread::reconnect_to_zmq_event(const EvChanIte &ipos,
-                                                          EventConsumer *event_consumer,
+                                                          PointerWithLock<EventConsumer> &event_consumer,
                                                           DeviceData &dd)
 {
     EvCbIte epos;
@@ -546,8 +550,6 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
 {
     int time_to_sleep;
     time_t now;
-    ZmqEventConsumer *event_consumer;
-    NotifdEventConsumer *notifd_event_consumer;
 
     //
     // first sleep 2 seconds to give the event system time to startup
@@ -556,9 +558,6 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     bool exit_th = false;
-
-    event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
-    notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
 
     while(!exit_th)
     {
@@ -596,19 +595,8 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
 
         TANGO_LOG_DEBUG << "KeepAliveThread at work" << std::endl;
 
-        //
-        // Be sure to have valid event consumer object (In case of long startup OS with some notifd event(s) subscribed
-        // at the end of the process startup. Verified with some ESRF HdbEventHandler process)
-        //
-
-        if(event_consumer != nullptr)
-        {
-            event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
-        }
-        if(notifd_event_consumer == nullptr)
-        {
-            notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
-        }
+        auto event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
+        auto notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
 
         now = Tango::get_current_system_datetime();
         if(!event_consumer->event_not_connected.empty())
@@ -750,9 +738,9 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumerKeepAliveThread::not_conected_event(ZmqEventConsumer *event_consumer,
+void EventConsumerKeepAliveThread::not_conected_event(PointerWithLock<EventConsumer> &event_consumer,
                                                       time_t now,
-                                                      NotifdEventConsumer *notifd_event_consumer)
+                                                      PointerWithLock<EventConsumer> &)
 {
     if(!event_consumer->event_not_connected.empty())
     {
@@ -795,19 +783,15 @@ void EventConsumerKeepAliveThread::not_conected_event(ZmqEventConsumer *event_co
                     {
                         try
                         {
-                            if(notifd_event_consumer == nullptr)
-                            {
-                                ApiUtil::instance()->create_notifd_event_consumer();
-                                notifd_event_consumer = ApiUtil::instance()->get_notifd_event_consumer();
-                            }
-                            notifd_event_consumer->connect_event(vpos->device,
-                                                                 vpos->attribute,
-                                                                 vpos->event_type,
-                                                                 vpos->callback,
-                                                                 vpos->ev_queue,
-                                                                 vpos->filters,
-                                                                 vpos->event_name,
-                                                                 vpos->event_id);
+                            auto notifd_consumer = ApiUtil::instance()->create_notifd_event_consumer();
+                            notifd_consumer->connect_event(vpos->device,
+                                                           vpos->attribute,
+                                                           vpos->event_type,
+                                                           vpos->callback,
+                                                           vpos->ev_queue,
+                                                           vpos->filters,
+                                                           vpos->event_name,
+                                                           vpos->event_id);
 
                             //
                             // delete element from vector when subscribe worked
@@ -862,7 +846,7 @@ void EventConsumerKeepAliveThread::not_conected_event(ZmqEventConsumer *event_co
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumerKeepAliveThread::fwd_not_conected_event(ZmqEventConsumer *event_consumer)
+void EventConsumerKeepAliveThread::fwd_not_conected_event(PointerWithLock<EventConsumer> &event_consumer)
 {
     //
     // lock the maps only for reading
@@ -945,7 +929,7 @@ void EventConsumerKeepAliveThread::fwd_not_conected_event(ZmqEventConsumer *even
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_consumer,
+void EventConsumerKeepAliveThread::confirm_subscription(PointerWithLock<EventConsumer> &event_consumer,
                                                         const std::map<std::string, EventChannelStruct>::iterator &ipos)
 {
     std::vector<std::string> cmd_params;
@@ -1084,8 +1068,8 @@ void EventConsumerKeepAliveThread::confirm_subscription(ZmqEventConsumer *event_
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consumer,
-                                                  NotifdEventConsumer *notifd_event_consumer,
+void EventConsumerKeepAliveThread::main_reconnect(PointerWithLock<EventConsumer> &event_consumer,
+                                                  PointerWithLock<EventConsumer> &notifd_event_consumer,
                                                   std::map<std::string, EventCallBackStruct>::iterator &epos,
                                                   const std::map<std::string, EventChannelStruct>::iterator &ipos)
 {
@@ -1455,8 +1439,8 @@ void EventConsumerKeepAliveThread::main_reconnect(ZmqEventConsumer *event_consum
 //--------------------------------------------------------------------------------------------------------------------
 
 void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
-    ZmqEventConsumer *event_consumer,
-    NotifdEventConsumer *notifd_event_consumer,
+    PointerWithLock<EventConsumer> &event_consumer,
+    PointerWithLock<EventConsumer> &notifd_event_consumer,
     const std::map<std::string, EventCallBackStruct>::iterator &epos,
     const std::map<std::string, EventChannelStruct>::iterator &ipos,
     const std::string &domain_name)
