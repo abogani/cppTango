@@ -86,14 +86,15 @@ void leavefunc()
         already_executed = false;
     }
 
+    if(already_executed)
+    {
+        return;
+    }
+
     //
     // Kill locking threads (if any)
     //
-
-    if(!already_executed)
-    {
-        au->clean_locking_threads();
-    }
+    au->clean_locking_threads();
 
     //
     // Manage event stuff
@@ -101,7 +102,7 @@ void leavefunc()
 
     NotifdEventConsumer *notifd_ec = au->get_notifd_event_consumer();
 
-    if(notifd_ec != nullptr && !already_executed)
+    if(notifd_ec != nullptr)
     {
         notifd_ec->shutdown();
 
@@ -116,7 +117,7 @@ void leavefunc()
 
     ZmqEventConsumer *zmq_ec = au->get_zmq_event_consumer();
 
-    if(zmq_ec != nullptr && !already_executed)
+    if(zmq_ec != nullptr)
     {
         zmq_ec->shutdown();
     }
@@ -124,18 +125,14 @@ void leavefunc()
     //
     // Shutdown and destroy the ORB
     //
-
-    if(!already_executed)
+    if(notifd_ec == nullptr)
     {
-        if(notifd_ec == nullptr)
-        {
-            CORBA::ORB_var orb = au->get_orb();
-            orb->shutdown(true);
-            orb->destroy();
-        }
-        already_executed = true;
-        au->need_reset_already_flag(false);
+        CORBA::ORB_var orb = au->get_orb();
+        orb->shutdown(true);
+        orb->destroy();
     }
+    already_executed = true;
+    au->need_reset_already_flag(false);
 }
 
 //+--------------------------------------------------------------------------------------------------------------------
