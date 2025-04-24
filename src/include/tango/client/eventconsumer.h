@@ -510,6 +510,7 @@ class EventConsumer
     int subscribe_event(DeviceProxy *device, EventType event, int event_queue_size, bool stateless = false);
 
     void unsubscribe_event(int event_id);
+    virtual void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &) = 0;
     virtual void query_event_system(std::ostream &os) = 0;
 
     // methods to access data in event queues
@@ -642,6 +643,7 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, pu
     void offer_change(const CosNotification::EventTypeSeq &, const CosNotification::EventTypeSeq &) override;
 
     void query_event_system(std::ostream &os) override;
+    void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &) override;
 
     void get_subscription_command_name(std::string &cmd) override
     {

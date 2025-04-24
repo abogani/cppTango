@@ -141,6 +141,11 @@ void NotifdEventConsumer::query_event_system(TANGO_UNUSED(std::ostream &os))
     TANGO_ASSERT(0);
 }
 
+void NotifdEventConsumer::get_subscribed_event_ids(TANGO_UNUSED(DeviceProxy *dev), TANGO_UNUSED(std::vector<int> &ids))
+{
+    TANGO_ASSERT(0);
+}
+
 //+----------------------------------------------------------------------------
 //
 // method :         NotifdEventConsumer::cleanup_EventChannel_map()
