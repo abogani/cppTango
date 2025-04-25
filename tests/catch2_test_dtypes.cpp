@@ -670,6 +670,8 @@ class DtypeDev : public Base
         labels.emplace_back("SIX");
         labels.emplace_back("SEVEN");
         props.set_enum_labels(labels);
+        // to check that subsequent labels sets overwrite previous ones
+        props.set_enum_labels(labels);
 
         if(is_spectrum)
         {
