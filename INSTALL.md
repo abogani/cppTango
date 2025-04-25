@@ -245,7 +245,7 @@ This is the modern way and should be preferred over pkg-config as it works on
 all platforms, is much shorter and more future-proof.
 
 ```cmake
-cmake_minimum_required(VERSION 3.18...3.28 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18...4.0 FATAL_ERROR)
 
 project(dummy LANGUAGES CXX)
 
