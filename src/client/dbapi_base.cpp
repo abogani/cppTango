@@ -3774,7 +3774,7 @@ std::vector<DbHistory> Database::make_history_array(bool is_attribute, Any_var &
 
             if(is_attribute)
             {
-                v.emplace_back(aName, pName, pDate, value);
+                v.emplace_back(pName, aName, pDate, value);
             }
             else
             {
