@@ -3,7 +3,9 @@
 #include "utils/platform/ready_string_finder.h"
 
 #define UNICODE
-#define NOMINMAX
+#ifndef NOMINMAX
+  #define NOMINMAX
+#endif
 #include <windows.h>
 #include <shlwapi.h>
 #include <signal.h>

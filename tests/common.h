@@ -4,7 +4,9 @@
   #define Common_H
 
   #ifdef WIN32
-    #define NOMINMAX
+    #ifndef NOMINMAX
+      #define NOMINMAX
+    #endif
   #endif
 
   #include <iostream>
