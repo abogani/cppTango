@@ -70,6 +70,8 @@ namespace Tango
 template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *p_data, long x, long y, bool release)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     using ArrayType = typename tango_type_traits<T>::ArrayType;
 
     //
@@ -122,23 +124,18 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
         CHECK_PTR(p_data, name);
     }
 
-    // Get proper storage
-    auto *tmp = get_value_storage<ArrayType>();
-
     // Save data to proper seq
     if((data_format == Tango::SCALAR) && (release))
     {
         T *tmp_ptr = new T[1];
         *tmp_ptr = *p_data;
-        *tmp = new ArrayType(data_size, data_size, tmp_ptr, release);
+        attribute_value.set(std::make_unique<ArrayType>(data_size, data_size, tmp_ptr, release));
         delete_data_if_needed(p_data, release);
     }
     else
     {
-        *tmp = new ArrayType(data_size, data_size, p_data, release);
+        attribute_value.set(std::make_unique<ArrayType>(data_size, data_size, p_data, release));
     }
-
-    value_flag = true;
 
     //
     // Reset alarm flags
@@ -157,6 +154,8 @@ inline void Attribute::set_value(T *p_data, long x, long y, bool release)
 template <class T, std::enable_if_t<std::is_enum_v<T> && !std::is_same_v<T, Tango::DevState>, T> *>
 inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     //
     // Throw exception if attribute data type is not correct
     //
@@ -297,14 +296,12 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 
     if((data_format == Tango::SCALAR) && (release))
     {
-        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, false);
+        attribute_value.set(std::make_unique<Tango::DevVarShortArray>(data_size, data_size, loc_enum_ptr, false));
     }
     else
     {
-        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, loc_enum_ptr, release);
+        attribute_value.set(std::make_unique<Tango::DevVarShortArray>(data_size, data_size, loc_enum_ptr, release));
     }
-
-    value_flag = true;
 
     //
     // Reset alarm flags
@@ -325,6 +322,8 @@ inline void Attribute::set_value(T *enum_ptr, long x, long y, bool release)
 template <>
 inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool release)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     //
     // Throw exception if type is not correct
     //
@@ -410,15 +409,13 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
     {
         Tango::DevShort *tmp_ptr = new Tango::DevShort[1];
         *tmp_ptr = *p_data;
-        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, tmp_ptr, release);
+        attribute_value.set(std::make_unique<Tango::DevVarShortArray>(data_size, data_size, tmp_ptr, release));
         delete_data_if_needed(p_data, release);
     }
     else
     {
-        value.sh_seq = new Tango::DevVarShortArray(data_size, data_size, p_data, release);
+        attribute_value.set(std::make_unique<Tango::DevVarShortArray>(data_size, data_size, p_data, release));
     }
-
-    value_flag = true;
 
     //
     // Reset alarm flags
@@ -438,6 +435,8 @@ inline void Attribute::set_value(Tango::DevShort *p_data, long x, long y, bool r
 template <>
 inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool release)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     //
     // Throw exception if type is not correct
     //
@@ -505,16 +504,14 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
                 strvec[i] = p_data[i];
             }
         }
-        value.str_seq = new Tango::DevVarStringArray(data_size, data_size, strvec, release);
+        attribute_value.set(std::make_unique<Tango::DevVarStringArray>(data_size, data_size, strvec, release));
     }
     else
     {
-        value.str_seq = new Tango::DevVarStringArray(data_size, data_size, p_data, release);
+        attribute_value.set(std::make_unique<Tango::DevVarStringArray>(data_size, data_size, p_data, release));
     }
 
     delete_data_if_needed(p_data, release);
-
-    value_flag = true;
 
     //
     // Get time
@@ -528,6 +525,8 @@ inline void Attribute::set_value(Tango::DevString *p_data, long x, long y, bool 
 template <>
 inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool release)
 {
+    TANGO_LOG_DEBUG << "Attribute::set_value() called " << std::endl;
+
     //
     // Throw exception if type is not correct
     //
@@ -595,16 +594,14 @@ inline void Attribute::set_value(Tango::DevEncoded *p_data, long x, long y, bool
         tmp_ptr->encoded_data.replace(nb_data, nb_data, p_data->encoded_data.get_buffer(true), true);
         p_data->encoded_data.replace(0, 0, nullptr, false);
 
-        value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, tmp_ptr, true);
+        attribute_value.set(std::make_unique<Tango::DevVarEncodedArray>(data_size, data_size, tmp_ptr, true));
     }
     else
     {
-        value.enc_seq = new Tango::DevVarEncodedArray(data_size, data_size, p_data, release);
+        attribute_value.set(std::make_unique<Tango::DevVarEncodedArray>(data_size, data_size, p_data, release));
     }
 
     delete_data_if_needed(p_data, release);
-
-    value_flag = true;
 
     //
     // Reset alarm flags

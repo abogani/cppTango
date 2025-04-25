@@ -1940,13 +1940,13 @@ bool Attribute::general_check_alarm(const Tango::AttrQuality &alarm_type, const 
     bool real_returned = false;
 
     using ArrayType = typename tango_type_traits<T>::ArrayType;
-    ArrayType **storage = get_value_storage<ArrayType>();
+    ArrayType *storage = get_value_storage<ArrayType>();
 
     if(alarm_conf.test(min))
     {
         for(std::uint32_t i = 0; i < data_size; i++)
         {
-            if((**storage)[i] <= min_value)
+            if((*storage)[i] <= min_value)
             {
                 quality = alarm_type;
                 alarm.set(min);
@@ -1960,7 +1960,7 @@ bool Attribute::general_check_alarm(const Tango::AttrQuality &alarm_type, const 
     {
         for(std::uint32_t i = 0; i < data_size; i++)
         {
-            if((**storage)[i] >= max_value)
+            if((*storage)[i] >= max_value)
             {
                 quality = alarm_type;
                 alarm.set(max);
@@ -2003,11 +2003,13 @@ bool Attribute::general_check_devencoded_alarm(const Tango::AttrQuality &alarm_t
 
     bool real_returned = false;
 
+    const Tango::DevEncoded &value = (*attribute_value.get<Tango::DevVarEncodedArray>())[0];
+
     if(alarm_conf.test(min))
     {
-        for(unsigned int i = 0; i < (*value.enc_seq)[0].encoded_data.length(); i++)
+        for(unsigned int i = 0; i < value.encoded_data.length(); i++)
         {
-            if((*value.enc_seq)[0].encoded_data[i] <= min_value)
+            if(value.encoded_data[i] <= min_value)
             {
                 quality = alarm_type;
                 alarm.set(min);
@@ -2019,9 +2021,9 @@ bool Attribute::general_check_devencoded_alarm(const Tango::AttrQuality &alarm_t
 
     if(alarm_conf.test(max))
     {
-        for(unsigned int i = 0; i < (*value.enc_seq)[0].encoded_data.length(); i++)
+        for(unsigned int i = 0; i < value.encoded_data.length(); i++)
         {
-            if((*value.enc_seq)[0].encoded_data[i] >= max_value)
+            if(value.encoded_data[i] >= max_value)
             {
                 quality = alarm_type;
                 alarm.set(max);
@@ -2144,6 +2146,7 @@ bool Attribute::check_warn_alarm()
 
 void Attribute::delete_seq_and_reset_alarm()
 {
+    TANGO_LOG_DEBUG << "Attribute::delete_seq_and_reset_alarm() called " << std::endl;
     delete_seq();
     quality = Tango::ATTR_VALID;
     alarm.reset();
@@ -2167,75 +2170,8 @@ void Attribute::delete_seq_and_reset_alarm()
 
 void Attribute::delete_seq()
 {
-    switch(data_type)
-    {
-    case Tango::DEV_SHORT:
-    case Tango::DEV_ENUM:
-        delete value.sh_seq;
-        value.sh_seq = nullptr;
-        break;
-
-    case Tango::DEV_LONG:
-        delete value.lg_seq;
-        value.lg_seq = nullptr;
-        break;
-
-    case Tango::DEV_LONG64:
-        delete value.lg64_seq;
-        value.lg64_seq = nullptr;
-        break;
-
-    case Tango::DEV_DOUBLE:
-        delete value.db_seq;
-        value.db_seq = nullptr;
-        break;
-
-    case Tango::DEV_STRING:
-        delete value.str_seq;
-        value.str_seq = nullptr;
-        break;
-
-    case Tango::DEV_FLOAT:
-        delete value.fl_seq;
-        value.fl_seq = nullptr;
-        break;
-
-    case Tango::DEV_USHORT:
-        delete value.ush_seq;
-        value.ush_seq = nullptr;
-        break;
-
-    case Tango::DEV_UCHAR:
-        delete value.cha_seq;
-        value.cha_seq = nullptr;
-        break;
-
-    case Tango::DEV_BOOLEAN:
-        delete value.boo_seq;
-        value.boo_seq = nullptr;
-        break;
-
-    case Tango::DEV_ULONG:
-        delete value.ulg_seq;
-        value.ulg_seq = nullptr;
-        break;
-
-    case Tango::DEV_ULONG64:
-        delete value.ulg64_seq;
-        value.ulg64_seq = nullptr;
-        break;
-
-    case Tango::DEV_STATE:
-        delete value.state_seq;
-        value.state_seq = nullptr;
-        break;
-
-    case Tango::DEV_ENCODED:
-        delete value.enc_seq;
-        value.enc_seq = nullptr;
-        break;
-    }
-
+    TANGO_LOG_DEBUG << "Attribute::delete_seq() called " << std::endl;
+    attribute_value.reset();
     data_size = 0;
 }
 
@@ -2318,31 +2254,35 @@ void Attribute::add_write_value(Tango::DevEncoded &val_ptr)
 template <class T>
 void Attribute::add_write_value_impl(T *val_ptr)
 {
-    T **storage = get_value_storage<T>();
+    T *storage = get_value_storage<T>();
 
-    long nb_read = (*storage)->length();
-    (*storage)->length(nb_read + val_ptr->length());
+    long nb_read = storage->length();
+    storage->length(nb_read + val_ptr->length());
     for(unsigned int k = 0; k < val_ptr->length(); k++)
     {
-        (**storage)[nb_read + k] = (*val_ptr)[k];
+        (*storage)[nb_read + k] = (*val_ptr)[k];
     }
 }
 
 void Attribute::add_write_value_impl(Tango::DevVarStringArray *val_ptr)
 {
-    long nb_read = value.str_seq->length();
-    value.str_seq->length(nb_read + val_ptr->length());
+    auto *storage = attribute_value.get<Tango::DevVarStringArray>();
+
+    long nb_read = storage->length();
+    storage->length(nb_read + val_ptr->length());
     for(unsigned int k = 0; k < val_ptr->length(); k++)
     {
-        (*value.str_seq)[nb_read + k] = Tango::string_dup((*val_ptr)[k]);
+        (*storage)[nb_read + k] = Tango::string_dup((*val_ptr)[k]);
     }
 }
 
 void Attribute::add_write_value_impl(Tango::DevEncoded &val_ref)
 {
-    value.enc_seq->length(2);
-    (*value.enc_seq)[1].encoded_format = CORBA::string_dup(val_ref.encoded_format);
-    (*value.enc_seq)[1].encoded_data.replace(
+    auto *storage = attribute_value.get<Tango::DevVarEncodedArray>();
+
+    storage->length(2);
+    (*storage)[1].encoded_format = CORBA::string_dup(val_ref.encoded_format);
+    (*storage)[1].encoded_data.replace(
         val_ref.encoded_data.length(), val_ref.encoded_data.length(), val_ref.encoded_data.get_buffer());
 }
 
@@ -2436,13 +2376,14 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
             Tango::DevState *state_tmp_ptr;
 
             CORBA::Any &a = ptr->value;
-            long seq_length = value.sh_seq->length();
+            long seq_length;
 
             switch(data_type)
             {
             case Tango::DEV_SHORT:
             case Tango::DEV_ENUM:
                 sh_tmp_ptr = get_short_value()->get_buffer();
+                seq_length = get_short_value()->length();
                 sh_seq = new Tango::DevVarShortArray(seq_length, seq_length, sh_tmp_ptr, false);
                 a <<= *sh_seq;
                 delete sh_seq;
@@ -2450,6 +2391,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_LONG:
                 lo_tmp_ptr = get_long_value()->get_buffer();
+                seq_length = get_long_value()->length();
                 lo_seq = new Tango::DevVarLongArray(seq_length, seq_length, lo_tmp_ptr, false);
                 a <<= *lo_seq;
                 delete lo_seq;
@@ -2457,6 +2399,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_LONG64:
                 lo64_tmp_ptr = get_long64_value()->get_buffer();
+                seq_length = get_long64_value()->length();
                 lo64_seq = new Tango::DevVarLong64Array(seq_length, seq_length, lo64_tmp_ptr, false);
                 a <<= *lo64_seq;
                 delete lo64_seq;
@@ -2464,6 +2407,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_DOUBLE:
                 db_tmp_ptr = get_double_value()->get_buffer();
+                seq_length = get_double_value()->length();
                 db_seq = new Tango::DevVarDoubleArray(seq_length, seq_length, db_tmp_ptr, false);
                 a <<= *db_seq;
                 delete db_seq;
@@ -2471,6 +2415,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_STRING:
                 str_tmp_ptr = get_string_value()->get_buffer();
+                seq_length = get_string_value()->length();
                 str_seq = new Tango::DevVarStringArray(seq_length, seq_length, str_tmp_ptr, false);
                 a <<= *str_seq;
                 delete str_seq;
@@ -2478,6 +2423,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_FLOAT:
                 fl_tmp_ptr = get_float_value()->get_buffer();
+                seq_length = get_float_value()->length();
                 fl_seq = new Tango::DevVarFloatArray(seq_length, seq_length, fl_tmp_ptr, false);
                 a <<= *fl_seq;
                 delete fl_seq;
@@ -2485,6 +2431,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_BOOLEAN:
                 bo_tmp_ptr = get_boolean_value()->get_buffer();
+                seq_length = get_boolean_value()->length();
                 bo_seq = new Tango::DevVarBooleanArray(seq_length, seq_length, bo_tmp_ptr, false);
                 a <<= *bo_seq;
                 delete bo_seq;
@@ -2492,6 +2439,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_USHORT:
                 ush_tmp_ptr = get_ushort_value()->get_buffer();
+                seq_length = get_ushort_value()->length();
                 ush_seq = new Tango::DevVarUShortArray(seq_length, seq_length, ush_tmp_ptr, false);
                 a <<= *ush_seq;
                 delete ush_seq;
@@ -2499,6 +2447,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_UCHAR:
                 uch_tmp_ptr = get_uchar_value()->get_buffer();
+                seq_length = get_uchar_value()->length();
                 uch_seq = new Tango::DevVarUCharArray(seq_length, seq_length, uch_tmp_ptr, false);
                 a <<= *uch_seq;
                 delete uch_seq;
@@ -2506,6 +2455,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_ULONG:
                 ulo_tmp_ptr = get_ulong_value()->get_buffer();
+                seq_length = get_ulong_value()->length();
                 ulo_seq = new Tango::DevVarULongArray(seq_length, seq_length, ulo_tmp_ptr, false);
                 a <<= *ulo_seq;
                 delete ulo_seq;
@@ -2513,6 +2463,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_ULONG64:
                 ulo64_tmp_ptr = get_ulong64_value()->get_buffer();
+                seq_length = get_ulong64_value()->length();
                 ulo64_seq = new Tango::DevVarULong64Array(seq_length, seq_length, ulo64_tmp_ptr, false);
                 a <<= *ulo64_seq;
                 delete ulo64_seq;
@@ -2520,6 +2471,7 @@ void Attribute::Attribute_2_AttributeValue(Tango::AttributeValue_3 *ptr, Tango::
 
             case Tango::DEV_STATE:
                 state_tmp_ptr = get_state_value()->get_buffer();
+                seq_length = get_state_value()->length();
                 state_seq = new Tango::DevVarStateArray(seq_length, seq_length, state_tmp_ptr, false);
                 a <<= *state_seq;
                 delete state_seq;
@@ -2966,12 +2918,12 @@ void Attribute::generic_fire_event(const EventType &event_type,
 
     if(except != nullptr)
     {
-        set_value_flag(false);
+        reset_value();
     }
 
     bool must_have_data = (name_lower != "state") && (name_lower != "status") && (quality != Tango::ATTR_INVALID);
 
-    bool must_clean_data = must_have_data && get_value_flag() && should_delete_seq;
+    bool must_clean_data = must_have_data && value_is_set() && should_delete_seq;
 
     //
     // Check if it is needed to send an event
@@ -3109,7 +3061,6 @@ void Attribute::generic_fire_event(const EventType &event_type,
             {
                 delete_seq_and_reset_alarm();
             }
-            //                        set_value_flag (false);
             return;
         }
 
@@ -3122,7 +3073,7 @@ void Attribute::generic_fire_event(const EventType &event_type,
             dev = tg->get_device_by_name(d_name);
         }
 
-        if(except == nullptr && must_have_data && !get_value_flag())
+        if(except == nullptr && must_have_data && !value_is_set())
         {
             TangoSys_OMemStream o;
 
@@ -3448,7 +3399,6 @@ void Attribute::generic_fire_event(const EventType &event_type,
         {
             delete_seq_and_reset_alarm();
         }
-        //                set_value_flag (false);
     }
     catch(...)
     {
@@ -3469,7 +3419,6 @@ void Attribute::generic_fire_event(const EventType &event_type,
         {
             delete_seq_and_reset_alarm();
         }
-        //                set_value_flag (false);
         throw;
     }
 }

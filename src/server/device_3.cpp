@@ -579,7 +579,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                     // failed during the device startup sequence
                     //
 
-                    att.set_value_flag(false);
+                    att.reset_value();
 
                     if(!att.is_mem_exception())
                     {
@@ -940,7 +940,7 @@ void Device_3Impl::read_attributes_no_except(const Tango::DevVarStringArray &nam
                 Tango::AttrQuality qual = att.get_quality();
                 if(qual != Tango::ATTR_INVALID)
                 {
-                    if(!att.get_value_flag())
+                    if(!att.value_is_set())
                     {
                         TangoSys_OMemStream o;
 
@@ -1869,7 +1869,7 @@ void Device_3Impl::write_attributes_34(const Tango::AttributeValueList *values_3
 
                 try
                 {
-                    att.set_value_flag(false);
+                    att.reset_value();
                     att.set_user_set_write_value(false);
                     std::vector<Tango::Attr *> &attr_vect = device_class->get_class_attr()->get_attr_list();
                     if(!attr_vect[att.get_attr_idx()]->is_allowed(this, Tango::WRITE_REQ))

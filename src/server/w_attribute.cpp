@@ -541,11 +541,11 @@ bool WAttribute::check_rds_alarm()
         {
         case Tango::DEV_SHORT:
             nb_written = short_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.sh_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_short_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                short delta = short_array_val[i] - (*value.sh_seq)[i];
+                short delta = short_array_val[i] - (*get_short_value())[i];
                 if(abs(delta) >= delta_val.sh)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -558,11 +558,11 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_LONG:
             nb_written = long_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.lg_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_long_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong delta = long_array_val[i] - (*value.lg_seq)[i];
+                DevLong delta = long_array_val[i] - (*get_long_value())[i];
                 if(abs(delta) >= delta_val.lg)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -575,11 +575,11 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_LONG64:
             nb_written = long64_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.lg64_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_long64_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong64 delta = long64_array_val[i] - (*value.lg64_seq)[i];
+                DevLong64 delta = long64_array_val[i] - (*get_long64_value())[i];
 
                 DevLong64 abs_delta;
                 if(delta < 0)
@@ -603,17 +603,17 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_DOUBLE:
             nb_written = double_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.db_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_double_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
                 // check for NAN values
                 if(data_format == Tango::SCALAR)
                 {
-                    if(std::isnan(double_array_val[0]) || std::isnan((*value.db_seq)[0]))
+                    if(std::isnan(double_array_val[0]) || std::isnan((*get_double_value())[0]))
                     {
                         // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(double_array_val[0]) && std::isnan((*value.db_seq)[0])))
+                        if(!(std::isnan(double_array_val[0]) && std::isnan((*get_double_value())[0])))
                         {
                             quality = Tango::ATTR_ALARM;
                             alarm.set(rds);
@@ -624,10 +624,10 @@ bool WAttribute::check_rds_alarm()
                 }
                 else
                 {
-                    if(std::isnan(double_array_val[i]) || std::isnan((*value.db_seq)[i]))
+                    if(std::isnan(double_array_val[i]) || std::isnan((*get_double_value())[i]))
                     {
                         // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(double_array_val[i]) && std::isnan((*value.db_seq)[i])))
+                        if(!(std::isnan(double_array_val[i]) && std::isnan((*get_double_value())[i])))
                         {
                             quality = Tango::ATTR_ALARM;
                             alarm.set(rds);
@@ -637,7 +637,7 @@ bool WAttribute::check_rds_alarm()
                     }
                 }
 
-                double delta = double_array_val[i] - (*value.db_seq)[i];
+                double delta = double_array_val[i] - (*get_double_value())[i];
                 if(fabs(delta) >= delta_val.db)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -650,17 +650,17 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_FLOAT:
             nb_written = float_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.fl_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_float_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
                 // check for NAN values
                 if(data_format == Tango::SCALAR)
                 {
-                    if(std::isnan(float_array_val[0]) || std::isnan((*value.fl_seq)[0]))
+                    if(std::isnan(float_array_val[0]) || std::isnan((*get_float_value())[0]))
                     {
                         // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(float_array_val[0]) && std::isnan((*value.fl_seq)[0])))
+                        if(!(std::isnan(float_array_val[0]) && std::isnan((*get_float_value())[0])))
                         {
                             quality = Tango::ATTR_ALARM;
                             alarm.set(rds);
@@ -671,10 +671,10 @@ bool WAttribute::check_rds_alarm()
                 }
                 else
                 {
-                    if(std::isnan(float_array_val[i]) || std::isnan((*value.fl_seq)[i]))
+                    if(std::isnan(float_array_val[i]) || std::isnan((*get_float_value())[i]))
                     {
                         // send an alarm if only read or set value are NAN
-                        if(!(std::isnan(float_array_val[i]) && std::isnan((*value.fl_seq)[i])))
+                        if(!(std::isnan(float_array_val[i]) && std::isnan((*get_float_value())[i])))
                         {
                             quality = Tango::ATTR_ALARM;
                             alarm.set(rds);
@@ -684,7 +684,7 @@ bool WAttribute::check_rds_alarm()
                     }
                 }
 
-                float delta = float_array_val[i] - (*value.fl_seq)[i];
+                float delta = float_array_val[i] - (*get_float_value())[i];
                 double delta_d = (double) delta;
                 if(((float) fabs(delta_d)) >= delta_val.fl)
                 {
@@ -698,11 +698,11 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_USHORT:
             nb_written = ushort_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.ush_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_ushort_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                unsigned short delta = ushort_array_val[i] - (*value.ush_seq)[i];
+                unsigned short delta = ushort_array_val[i] - (*get_ushort_value())[i];
                 if(delta >= delta_val.ush)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -715,11 +715,11 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_UCHAR:
             nb_written = uchar_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.cha_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_uchar_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                unsigned char delta = uchar_array_val[i] - (*value.cha_seq)[i];
+                unsigned char delta = uchar_array_val[i] - (*get_uchar_value())[i];
                 if(delta >= delta_val.uch)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -732,11 +732,11 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_ULONG:
             nb_written = ulong_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.ulg_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_ulong_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong delta = ulong_array_val[i] - (*value.ulg_seq)[i];
+                DevLong delta = ulong_array_val[i] - (*get_ulong_value())[i];
                 if((unsigned int) abs(delta) >= delta_val.ulg)
                 {
                     quality = Tango::ATTR_ALARM;
@@ -749,11 +749,11 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_ULONG64:
             nb_written = ulong64_array_val.length();
-            nb_read = (data_format == Tango::SCALAR) ? 1 : value.ulg64_seq->length();
+            nb_read = (data_format == Tango::SCALAR) ? 1 : get_ulong64_value()->length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                DevLong64 delta = ulong64_array_val[i] - (*value.ulg64_seq)[i];
+                DevLong64 delta = ulong64_array_val[i] - (*get_ulong64_value())[i];
 
                 DevULong64 abs_delta;
                 if(delta < 0)
@@ -777,7 +777,7 @@ bool WAttribute::check_rds_alarm()
 
         case Tango::DEV_ENCODED:
             nb_written = ::strlen(encoded_val.encoded_format.in());
-            nb_read = ::strlen((*value.enc_seq)[0].encoded_format.in());
+            nb_read = ::strlen((*get_encoded_value())[0].encoded_format.in());
             if(nb_written != nb_read)
             {
                 quality = Tango::ATTR_ALARM;
@@ -785,7 +785,7 @@ bool WAttribute::check_rds_alarm()
                 ret = true;
                 break;
             }
-            if(::strcmp(encoded_val.encoded_format.in(), (*value.enc_seq)[0].encoded_format.in()) != 0)
+            if(::strcmp(encoded_val.encoded_format.in(), (*get_encoded_value())[0].encoded_format.in()) != 0)
             {
                 quality = Tango::ATTR_ALARM;
                 alarm.set(rds);
@@ -794,11 +794,11 @@ bool WAttribute::check_rds_alarm()
             }
 
             nb_written = encoded_val.encoded_data.length();
-            nb_read = (*value.enc_seq)[0].encoded_data.length();
+            nb_read = (*get_encoded_value())[0].encoded_data.length();
             nb_data = (nb_written > nb_read) ? nb_read : nb_written;
             for(i = 0; i < nb_data; i++)
             {
-                unsigned char delta = encoded_val.encoded_data[i] - (*value.enc_seq)[0].encoded_data[i];
+                unsigned char delta = encoded_val.encoded_data[i] - (*get_encoded_value())[0].encoded_data[i];
                 if(delta >= delta_val.uch)
                 {
                     quality = Tango::ATTR_ALARM;
