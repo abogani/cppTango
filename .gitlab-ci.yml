@@ -28,7 +28,7 @@ variables: &variables
   UBUNTU_22_IMAGE: "ubuntu-22.04:v12"
   UBUNTU_24_IMAGE: "ubuntu-24.04:v11"
   LLVM_LATEST_IMAGE: "llvm-latest:v17"
-  GCC_LATEST_IMAGE: "gcc-latest:v10"
+  GCC_LATEST_IMAGE: "gcc-latest:v11"
   FEDORA_IMAGE: "fedora37:v9"
   ALPINE_IMAGE: "alpine-3.15:v9"
   DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v9"
