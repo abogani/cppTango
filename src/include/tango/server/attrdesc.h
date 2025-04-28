@@ -282,12 +282,14 @@ class UserDefaultAttrProp
      */
     void set_enum_labels(const std::vector<std::string> &def_enum_labels)
     {
-        for(size_t loop = 0; loop < def_enum_labels.size(); loop++)
+        enum_labels.clear();
+
+        for(size_t i = 0; i < def_enum_labels.size(); ++i)
         {
-            enum_labels = enum_labels + def_enum_labels[loop];
-            if(loop != def_enum_labels.size() - 1)
+            enum_labels += def_enum_labels[i];
+            if(i + 1 < def_enum_labels.size())
             {
-                enum_labels = enum_labels + ',';
+                enum_labels += ',';
             }
         }
     }
