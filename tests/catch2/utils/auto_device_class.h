@@ -109,7 +109,10 @@ class AutoDeviceClass : public Tango::DeviceClass
         return _instance;
     }
 
-    ~AutoDeviceClass() override { }
+    ~AutoDeviceClass() override
+    {
+        _instance = nullptr;
+    }
 
     void device_factory(const Tango::DevVarStringArray *devlist_ptr) override
     {

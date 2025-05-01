@@ -173,6 +173,15 @@ SCENARIO("test servers can be started and stopped")
 
 #endif
 
+        WHEN("we can restart the server via the admin server")
+        {
+            auto fqtrl = TangoTest::make_nodb_fqtrl(server.get_port(), "TestServer/tests/1");
+
+            auto device = std::make_unique<Tango::DeviceProxy>(fqtrl);
+            auto adm_device = std::unique_ptr<Tango::DeviceProxy>{device->get_adm_device()};
+            REQUIRE_NOTHROW(adm_device->command_inout("RestartServer"));
+        }
+
         WHEN("we stop the server")
         {
             REQUIRE_NOTHROW(server.stop());
