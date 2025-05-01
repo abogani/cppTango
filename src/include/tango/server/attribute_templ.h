@@ -1357,7 +1357,10 @@ void Attribute::set_upd_properties(const T &conf, const std::string &dev_name, b
 
         try
         {
-            upd_database(v_db);
+            if(Tango::Util::instance()->use_db())
+            {
+                upd_database(v_db);
+            }
         }
         catch(DevFailed &)
         {
