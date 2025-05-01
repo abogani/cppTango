@@ -1226,7 +1226,7 @@ class Util
 
     std::string database_file_name;
 
-    Database *db; // The db proxy
+    Database *db{nullptr}; // The db proxy
 
     void effective_job(int, char *[]);
     void create_CORBA_objects();
