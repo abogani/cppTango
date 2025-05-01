@@ -813,10 +813,14 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @PROJECT_SOURCE_DIR@/src/include          \
-                         @PROJECT_SOURCE_DIR@/src/client/doc.h     \
-                         @PROJECT_SOURCE_DIR@/log4tango/include    \
-                         @PROJECT_BINARY_DIR@/src/include/tango/idl
+INPUT                  = @PROJECT_SOURCE_DIR@/src/include           \
+                         @PROJECT_SOURCE_DIR@/src/client/doc.h      \
+                         @PROJECT_SOURCE_DIR@/log4tango/include     \
+                         @PROJECT_BINARY_DIR@/src/include/tango/idl \
+                         @omniORB4_INCLUDE_DIR@/omnithread          \
+                         @omniORB4_INCLUDE_DIR@/omniORB4            \
+                         @omniORB4_INCLUDE_DIR@/omniconfig.h        \
+                         @omniORB4_INCLUDE_DIR@/omnithread.h
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -947,7 +951,8 @@ INPUT_FILTER           =
 # need to set EXTENSION_MAPPING for the extension otherwise the files are not
 # properly processed by doxygen.
 
-FILTER_PATTERNS        = "*/idl/tango.h=sed -e 's/_CORBA_MODULE Tango/_CORBA_MODULE IDL::Tango/g'"
+FILTER_PATTERNS        = "*/idl/tango.h=sed -e 's/_CORBA_MODULE Tango/_CORBA_MODULE IDL::Tango/g'"               \
+                         "@omniORB4_INCLUDE_DIR@/*=sed -e 's/_CORBA_MODULE \(.*\)/_CORBA_MODULE omniORB4::\1/g'"
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER) will also be used to filter the input files that are used for

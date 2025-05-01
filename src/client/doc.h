@@ -647,4 +647,13 @@ typedef vector<AttributeInfoEx> AttributeInfoListEx;
  * The symbols live in the code in the `Tango` namespace as the `IDL::Tango` namespace is madeup.
  */
 
+/**
+ * \namespace omniORB4
+ *
+ * This is only interesting for cppTango developers.
+ *
+ * This namespace holds all relevant symbols from the omniORB4 library.
+ * The symbols live in the code in the their contained namespace as the `omniORB4` namespace is madeup.
+ */
+
 #endif /* DOC_DOXYGEN */
