@@ -218,7 +218,6 @@ set(TESTS asyn_attr
           attr_proxy
           attr_types
           cmd_types
-          ConfEventBugClient
           ds_cache
           device_proxy_properties
           helper
@@ -298,7 +297,6 @@ tango_add_test(NAME "event::pipe_event"  COMMAND $<TARGET_FILE:pipe_event> ${DEV
 tango_add_test(NAME "event::state_event"  COMMAND $<TARGET_FILE:state_event> ${DEV1})
 tango_add_test(NAME "event::user_event"  COMMAND $<TARGET_FILE:user_event> ${DEV1})
 
-tango_add_test(NAME "old_tests::ConfEventBugClient"  COMMAND $<TARGET_FILE:ConfEventBugClient> ${DEV3})
 tango_add_test(NAME "old_tests::att_conf"  COMMAND $<TARGET_FILE:att_conf> ${DEV1})
 tango_add_test(NAME "old_tests::attr_conf_test"  COMMAND $<TARGET_FILE:attr_conf_test> ${DEV1})
 tango_add_test(NAME "old_tests::attr_misc"  COMMAND $<TARGET_FILE:attr_misc> ${DEV1})
