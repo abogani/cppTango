@@ -184,3 +184,22 @@ SCENARIO("Telemetry traces/logs can be turned off")
         }
     }
 }
+
+SCENARIO("Telemetry DS can be restarted without memory leak")
+{
+    int idlver = GENERATE(TangoTest::idlversion(6));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        std::vector<std::string> env{"TANGO_TELEMETRY_ENABLE=on",
+                                     "TANGO_TELEMETRY_KERNEL_ENABLE=on",
+                                     "TANGO_TELEMETRY_TRACES_EXPORTER=none",
+                                     "TANGO_TELEMETRY_LOGS_EXPORTER=none"};
+        TangoTest::Context ctx{"telemetry", "TelemetryDS", idlver, env};
+
+        auto device = ctx.get_proxy();
+        REQUIRE(idlver == device->get_idl_version());
+
+        auto admin_dev = ctx.get_admin_proxy();
+        REQUIRE_NOTHROW(admin_dev->command_inout("RestartServer"));
+    }
+}
