@@ -382,6 +382,15 @@ void RootAttRegistry::RootAttUserCallBack::push_event(Tango::DataReadyEventData 
 //
 //--------------------------------------------------------------------------------------------------------------------
 
+RootAttRegistry::RootAttConfCallBack::~RootAttConfCallBack()
+{
+    for(auto it = map_attrdesc.begin(); it != map_attrdesc.end(); it++)
+    {
+        delete it->second.fwd_attr;
+        it->second.fwd_attr = nullptr;
+    }
+}
+
 void RootAttRegistry::RootAttConfCallBack::add_att(const std::string &root_att_name,
                                                    const std::string &local_dev_name,
                                                    const std::string &local_att_name,
@@ -463,6 +472,8 @@ void RootAttRegistry::RootAttConfCallBack::remove_att(const std::string &root_at
     if(ite != map_attrdesc.end())
     {
         std::string local_dev_name = ite->second.local_name;
+        delete ite->second.fwd_attr;
+        ite->second.fwd_attr = nullptr;
         map_attrdesc.erase(ite);
 
         bool used_elsewhere = false;
@@ -517,6 +528,7 @@ void RootAttRegistry::RootAttConfCallBack::clear_attrdesc(const std::string &roo
     ite = map_attrdesc.find(root_att_name);
     if(ite != map_attrdesc.end())
     {
+        delete ite->second.fwd_attr;
         ite->second.fwd_attr = nullptr;
     }
     else
@@ -699,6 +711,15 @@ bool RootAttRegistry::RootAttConfCallBack::is_root_dev_not_started_err()
 //            - dev : Device pointer
 //
 //--------------------------------------------------------------------------------------------------------------------
+
+RootAttRegistry::~RootAttRegistry()
+{
+    for(auto it = dps.begin(); it != dps.end(); it++)
+    {
+        delete it->second;
+        it->second = nullptr;
+    }
+}
 
 void RootAttRegistry::add_root_att(const std::string &device_name,
                                    const std::string &att_name,

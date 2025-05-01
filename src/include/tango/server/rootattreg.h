@@ -62,6 +62,8 @@ class RootAttRegistry
     {
     }
 
+    ~RootAttRegistry();
+
     void add_root_att(
         const std::string &, const std::string &, const std::string &, const std::string &, FwdAttr *, DeviceImpl *);
     void remove_root_att(const std::string &, const std::string &);
@@ -124,6 +126,8 @@ class RootAttRegistry
         {
             ci.cpp_clnt(0);
         }
+
+        ~RootAttConfCallBack();
 
         void push_event(Tango::AttrConfEventData *) override;
 
