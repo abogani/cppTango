@@ -127,7 +127,7 @@ class RootAttRegistry
             ci.cpp_clnt(0);
         }
 
-        ~RootAttConfCallBack();
+        ~RootAttConfCallBack() override;
 
         void push_event(Tango::AttrConfEventData *) override;
 

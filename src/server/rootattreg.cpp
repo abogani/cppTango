@@ -97,13 +97,15 @@ void RootAttRegistry::RootAttConfCallBack::push_event(Tango::AttrConfEventData *
 
                                 auto *ev_fwd = static_cast<FwdAttrConfEventData *>(ev);
                                 AttributeConfig_5 *ptr = const_cast<AttributeConfig_5 *>(ev_fwd->get_fwd_attr_conf());
+                                bool need_release{false};
                                 if(ptr == nullptr)
                                 {
                                     ptr = AttributeConfigList_5::allocbuf(1);
                                     ApiUtil::AttributeInfoEx_to_AttributeConfig(ev->attr_conf, ptr);
+                                    need_release = true;
                                 }
 
-                                AttributeConfigList_5 conf_list(1, 1, ptr, false);
+                                AttributeConfigList_5 conf_list(1, 1, ptr, need_release);
 
                                 //
                                 // The attribute name, root_attr_name and label are local values
