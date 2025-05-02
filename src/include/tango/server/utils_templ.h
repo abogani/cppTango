@@ -344,10 +344,22 @@ void Util::fill_attr_polling_buffer(DeviceImpl *dev, std::string &att_name, Attr
                             if(att.get_data_format() == Tango::SCALAR)
                             {
                                 delete(data.get_data())[i].wr_ptr;
+                                (data.get_data())[i].wr_ptr = nullptr;
                             }
                             else
                             {
+                                if constexpr(std::is_same_v<T, Tango::DevString>)
+                                {
+                                    CORBA::Long len =
+                                        (data.get_data())[i].wr_x * std::max(1l, (data.get_data())[i].wr_y);
+                                    for(CORBA::Long j = 0; j < len; j += 1)
+                                    {
+                                        Tango::string_free((data.get_data())[i].wr_ptr[j]);
+                                    }
+                                }
+
                                 delete[](data.get_data())[i].wr_ptr;
+                                (data.get_data())[i].wr_ptr = nullptr;
                             }
                         }
                     }
