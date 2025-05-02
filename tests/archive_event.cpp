@@ -308,6 +308,7 @@ int main(int argc, char **argv)
         dbd.push_back(DbDatum("archive_rel_change"));
         dbd.push_back(DbDatum("archive_period"));
         dba.delete_property(dbd);
+        delete device;
         exit(0);
         dbd.clear();
         a << (short) 2;
