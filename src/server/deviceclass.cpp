@@ -816,8 +816,10 @@ DeviceClass::~DeviceClass()
         for(size_t loop = 0; loop < ite->second.size(); loop++)
         {
             delete(ite->second)[loop];
+            (ite->second)[loop] = nullptr;
         }
     }
+    ext->dev_pipe_list.clear();
 
     //
     // Destroy the MultiClassAttribute object
