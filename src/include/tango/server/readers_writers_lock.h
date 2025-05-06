@@ -28,7 +28,7 @@
 #ifndef _ReadersWritersLock_h_
 #define _ReadersWritersLock_h_
 
-#include <omnithread.h>
+#include <tango/common/omnithread_wrapper.h>
 
 class ReadersWritersLock
 {

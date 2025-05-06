@@ -38,6 +38,10 @@
 #include <tango/server/device.h>
 #include <tango/server/logging.h>
 
+#ifdef _TG_WINDOWS_
+  #include <tango/server/utils.h>
+#endif
+
 #include <new>
 #include <string>
 #include <cerrno>

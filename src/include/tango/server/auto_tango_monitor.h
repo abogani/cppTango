@@ -32,7 +32,7 @@
 #ifndef _AUTO_TANGO_MONITOR_H
 #define _AUTO_TANGO_MONITOR_H
 
-#include <omnithread.h>
+#include <tango/common/omnithread_wrapper.h>
 
 namespace Tango
 {

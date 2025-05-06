@@ -34,6 +34,9 @@
 #ifndef _COUTBUF_H
 #define _COUTBUF_H
 
+#include <winsock2.h> // prevents windows.h from including winsock.h
+#include <windows.h>
+
 namespace Tango
 {
 

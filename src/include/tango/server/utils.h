@@ -34,6 +34,7 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
+#include <tango/server/tango_config.h>
 #include <tango/server/pollext.h>
 #include <tango/server/pollthread.h>
 #include <tango/server/subdev_diag.h>

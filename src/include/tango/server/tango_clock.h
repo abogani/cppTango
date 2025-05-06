@@ -11,6 +11,7 @@
 
 #ifdef _TG_WINDOWS_
   #include <sys/timeb.h>
+  #include <winsock2.h> // struct timeval
 #else
   #include <sys/time.h>
 #endif

@@ -41,7 +41,7 @@
 #include <omniORB4/callDescriptor.h>
 
 #ifdef _TG_WINDOWS_
-  #include <winsock.h>
+  #include <winsock2.h>
 #endif
 
 #include <ctime>

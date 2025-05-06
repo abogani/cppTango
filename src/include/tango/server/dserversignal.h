@@ -37,7 +37,7 @@
 #ifndef _DSERVERSIGNAL_H
 #define _DSERVERSIGNAL_H
 
-#include <omnithread.h>
+#include <tango/common/omnithread_wrapper.h>
 
 #include <vector>
 #include <condition_variable>

@@ -10,6 +10,7 @@ set(COMMON_HEADERS
     tango_type_traits.h
     git_revision.h
     pointer_with_lock.h
+    omnithread_wrapper.h
 )
 
 install(FILES ${COMMON_HEADERS} DESTINATION

@@ -37,10 +37,10 @@
 #include <tango/server/except.h>
 #include <tango/client/ApiUtil.h>
 #include <tango/common/tango_const.h>
+#include <tango/common/omnithread_wrapper.h>
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
-#include <omnithread.h>
 
 #include <tango/server/readers_writers_lock.h>
 #include <tango/common/pointer_with_lock.h>

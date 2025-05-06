@@ -62,7 +62,7 @@
 
 #include <tango/client/eventconsumer.h>
 
-#include <omnithread.h>
+#include <tango/common/omnithread_wrapper.h>
 #ifndef _TG_WINDOWS_
   #include <sys/time.h>
 #endif

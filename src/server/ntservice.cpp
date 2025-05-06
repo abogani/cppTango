@@ -21,6 +21,14 @@
 #include <tango/windows/ntservice.h>
 
 #include <tango/common/tango_const.h>
+#include <tango/server/logging.h>
+#include <tango/server/except.h>
+#include <tango/server/utils.h>
+#include <libloaderapi.h>
+
+#include <iostream>
+#include <sstream>
+#include <string>
 
 namespace Tango
 {

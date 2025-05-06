@@ -32,6 +32,11 @@
 
 #if defined(_MSC_VER)
 
+  // We ensure that the header is included because we will redefine the ERROR and DEBUG
+  // macros. Also includes winsock2 to prevent windows.h from including 'winsock.h'.
+  #include <winsock2.h>
+  #include <windows.h>
+
   /* define to get around problems with ERROR in windows.h */
   #ifndef LOG4TANGO_FIX_ERROR_COLLISION
     #define LOG4TANGO_FIX_ERROR_COLLISION 1

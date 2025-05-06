@@ -35,7 +35,7 @@
 #ifndef _CBTHREAD_H
 #define _CBTHREAD_H
 
-#include <omnithread.h>
+#include <tango/common/omnithread_wrapper.h>
 
 namespace Tango
 {
