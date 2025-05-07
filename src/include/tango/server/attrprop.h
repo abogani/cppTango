@@ -38,6 +38,7 @@
 #define _ATTRPROP_H
 
 #include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
 
 namespace Tango
 {

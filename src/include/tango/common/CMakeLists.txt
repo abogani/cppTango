@@ -6,6 +6,7 @@ configure_file(tango_version.h.in ${tango_version_h})
 set(COMMON_HEADERS
     ${tango_version_h}
     tango_const.h
+    tango_type_traits.h
     git_revision.h
     pointer_with_lock.h
 )

@@ -117,6 +117,7 @@ inline void string_free(char *s)
 //
 
 #include <tango/common/tango_const.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/common/utils/assert.h>
 #include <tango/server/except.h>
 #include <tango/server/attrmanip.h>

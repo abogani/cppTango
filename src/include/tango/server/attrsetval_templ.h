@@ -34,6 +34,7 @@
 #ifndef _ATTRSETVAL_TPP
 #define _ATTRSETVAL_TPP
 
+#include <tango/common/tango_type_traits.h>
 #include <type_traits>
 
 namespace Tango

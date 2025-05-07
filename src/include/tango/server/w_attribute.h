@@ -35,6 +35,7 @@
 #define _WATTRIBUTE_H
 
 #include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/server/attrdesc.h>
 #include <functional>
 #include <time.h>

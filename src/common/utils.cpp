@@ -1,4 +1,5 @@
 #include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/internal/utils.h>
 #include <tango/common/utils/type_info.h>
 
