@@ -1,5 +1,8 @@
 default:
   interruptible: true
+  services: []
+  tags:
+    - docker, linux, amd64
 
 include:
   - local: '.windows-gitlab-ci.yml'
@@ -45,9 +48,6 @@ workflow:
 
 pre-commit:
   image: registry.gitlab.com/tango-controls/docker/pre-commit:3.7.0-2
-  services: []
-  tags:
-    - docker, linux, amd64
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     PATCH_FILE: clang-format.patch
@@ -67,9 +67,6 @@ pre-commit:
 
 .job-template-no-test-run: &job-template-no-test-run
   image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
-  services: []
-  tags:
-    - docker, linux, amd64
   needs:
     - job: pre-commit
       artifacts: false
@@ -79,8 +76,6 @@ pre-commit:
 
 .job-template-with-tests: &job-template-with-tests
   image: registry.gitlab.com/tango-controls/docker/ci/cpptango/${OS_TYPE}
-  tags:
-    - docker, linux, amd64
   needs:
     - job: pre-commit
       artifacts: false
