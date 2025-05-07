@@ -802,7 +802,7 @@ PointerWithLock<ZmqEventConsumer> ApiUtil::get_zmq_event_consumer_derived(EventC
     {
         ReaderLock lock{zmq_rw_lock};
 
-        if(zmq_event_consumer != nullptr && zmq_event_consumer == dynamic_cast<ZmqEventConsumer *>(ptr))
+        if(zmq_event_consumer != nullptr && dynamic_cast<EventConsumer *>(zmq_event_consumer) == ptr)
         {
             return PointerWithLock<ZmqEventConsumer>(zmq_event_consumer, zmq_rw_lock);
         }
@@ -822,7 +822,7 @@ PointerWithLock<EventConsumer> ApiUtil::get_locked_event_consumer(EventConsumer 
     {
         ReaderLock lock{zmq_rw_lock};
 
-        if(zmq_event_consumer != nullptr && zmq_event_consumer == dynamic_cast<ZmqEventConsumer *>(ptr))
+        if(zmq_event_consumer != nullptr && dynamic_cast<EventConsumer *>(zmq_event_consumer) == ptr)
         {
             return PointerWithLock<EventConsumer>(zmq_event_consumer, zmq_rw_lock);
         }
@@ -831,7 +831,7 @@ PointerWithLock<EventConsumer> ApiUtil::get_locked_event_consumer(EventConsumer 
     {
         ReaderLock lock{notifd_rw_lock};
 
-        if(notifd_event_consumer != nullptr && notifd_event_consumer == dynamic_cast<NotifdEventConsumer *>(ptr))
+        if(notifd_event_consumer != nullptr && dynamic_cast<EventConsumer *>(notifd_event_consumer) == ptr)
         {
             return PointerWithLock<EventConsumer>(notifd_event_consumer, notifd_rw_lock);
         }
