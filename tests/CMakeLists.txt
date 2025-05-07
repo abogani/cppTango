@@ -1,5 +1,9 @@
 set(COMMON_TEST_DEFS _REENTRANT)
 
+if (WIN32)
+    list(APPEND COMMON_TEST_DEFS NOMINMAX)
+endif()
+
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/check_from_chars_double.cpp [===[
 #include <charconv>
 

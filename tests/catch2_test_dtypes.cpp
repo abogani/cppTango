@@ -12,6 +12,18 @@
 
 static constexpr int N_ELEMENTS_IN_SPECTRUM_ATTRS = 5;
 
+template <class T>
+struct is_container : public std::false_type
+{
+    using underlying_type = void;
+};
+
+template <class T, class Alloc>
+struct is_container<std::vector<T, Alloc>> : public std::true_type
+{
+    using underlying_type = T;
+};
+
 enum class TestEnum : short
 {
     ONE = 0,
@@ -34,8 +46,8 @@ static const float NUMERIC_MAX_ALARM_LEVEL = 9.9;
 static const float NUMERIC_MAX_ALARM_VALUE = 10.1;
 
 static const int RDS_DELTA_T = 1;
-static const float NUMERIC_RDS_DELTA = 1;
-static const float NUMERIC_RDS_WRITE_VALUE = 5.5;
+static const float NUMERIC_RDS_DELTA = 10;
+static const float NUMERIC_RDS_WRITE_VALUE = 25.5;
 
 static const Tango::DevBoolean BOOLEAN_NORMAL_VALUE = true;
 static const Tango::DevState STATE_NORMAL_VALUE = Tango::ON;
@@ -51,7 +63,9 @@ enum ValueToTest
     MIN_WARNING,
     MAX_WARNING,
     MAX_ALARM,
-    RDS_WRITE
+    RDS_WRITE,
+    NUMERIC_LIMIT_MIN,
+    RDS_OVERFLOW
 };
 
 std::string valueToTestToString(ValueToTest v)
@@ -72,6 +86,10 @@ std::string valueToTestToString(ValueToTest v)
         return "MAX_ALARM";
     case ValueToTest::RDS_WRITE:
         return "RDS_WRITE";
+    case ValueToTest::NUMERIC_LIMIT_MIN:
+        return "NUMERIC_LIMIT_MIN";
+    case ValueToTest::RDS_OVERFLOW:
+        return "RDS_OVERFLOW";
     default:
         return "Unknown";
     }
@@ -119,30 +137,41 @@ struct is_scalar_state_boolean_string_enum<Tango::DevEnum> : std::true_type
 template <typename T>
 void get_value_for_test(const ValueToTest &requested_value, T &value)
 {
-    float selected_value;
     switch(requested_value)
     {
     case ValueToTest::MIN_ALARM:
-        selected_value = NUMERIC_MIN_ALARM_VALUE;
+        value = static_cast<T>(NUMERIC_MIN_ALARM_VALUE);
         break;
     case ValueToTest::MIN_WARNING:
-        selected_value = NUMERIC_MIN_WARNING_VALUE;
+        value = static_cast<T>(NUMERIC_MIN_WARNING_VALUE);
         break;
     case ValueToTest::MAX_WARNING:
-        selected_value = NUMERIC_MAX_WARNING_VALUE;
+        value = static_cast<T>(NUMERIC_MAX_WARNING_VALUE);
         break;
     case ValueToTest::MAX_ALARM:
-        selected_value = NUMERIC_MAX_ALARM_VALUE;
+        value = static_cast<T>(NUMERIC_MAX_ALARM_VALUE);
         break;
     case ValueToTest::RDS_WRITE:
-        selected_value = NUMERIC_RDS_WRITE_VALUE;
+        value = static_cast<T>(NUMERIC_RDS_WRITE_VALUE);
+        break;
+    case ValueToTest::RDS_OVERFLOW:
+        if constexpr(std::is_signed_v<T>)
+        {
+            value = std::numeric_limits<T>::max();
+        }
+        else
+        {
+            value = std::numeric_limits<T>::min() + 1;
+        }
+        break;
+    case ValueToTest::NUMERIC_LIMIT_MIN:
+        value = std::numeric_limits<T>::min();
         break;
     case ValueToTest::NORMAL:
     case ValueToTest::INVALID:
     default:
-        selected_value = NUMERIC_NORMAL_VALUE;
+        value = static_cast<T>(NUMERIC_NORMAL_VALUE);
     }
-    value = static_cast<T>(selected_value);
 }
 
 template <>
@@ -242,6 +271,12 @@ void get_value_for_test<Tango::DevEncoded>(const ValueToTest &requested_value, T
     case ValueToTest::RDS_WRITE:
         value.encoded_data[0] = static_cast<unsigned char>(NUMERIC_RDS_WRITE_VALUE);
         break;
+    case ValueToTest::NUMERIC_LIMIT_MIN:
+        value.encoded_data[0] = std::numeric_limits<unsigned char>::min();
+        break;
+    case ValueToTest::RDS_OVERFLOW:
+        value.encoded_data[0] = std::numeric_limits<unsigned char>::min() + 1;
+        break;
     case ValueToTest::NORMAL:
     case ValueToTest::INVALID:
     default:
@@ -273,6 +308,8 @@ void get_value_quality_for_test(const ValueToTest &requested_value, T &value, Ta
     case ValueToTest::RDS_WRITE:
         quality = Tango::ATTR_ALARM;
         break;
+    case ValueToTest::NUMERIC_LIMIT_MIN:
+    case ValueToTest::RDS_OVERFLOW:
     case ValueToTest::NORMAL:
     default:
         quality = Tango::ATTR_VALID;
@@ -437,55 +474,55 @@ class DtypeDev : public Base
 
         // Scalars
 
-        if(my_name == "scalar_short")
+        if(my_name == "scalar_short" || my_name == "scalar_short_rds")
         {
             get_value_quality_for_test(requested_value, scalar_short, attr_quality);
             set_scalar_attribute_value(att, scalar_short, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_long")
+        else if(my_name == "scalar_long" || my_name == "scalar_long_rds")
         {
             get_value_quality_for_test(requested_value, scalar_long, attr_quality);
             set_scalar_attribute_value(att, scalar_long, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_float")
+        else if(my_name == "scalar_float" || my_name == "scalar_float_rds")
         {
             get_value_quality_for_test(requested_value, scalar_float, attr_quality);
             set_scalar_attribute_value(att, scalar_float, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_double")
+        else if(my_name == "scalar_double" || my_name == "scalar_double_rds")
         {
             get_value_quality_for_test(requested_value, scalar_double, attr_quality);
             set_scalar_attribute_value(att, scalar_double, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_ushort")
+        else if(my_name == "scalar_ushort" || my_name == "scalar_ushort_rds")
         {
             get_value_quality_for_test(requested_value, scalar_ushort, attr_quality);
             set_scalar_attribute_value(att, scalar_ushort, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_ulong")
+        else if(my_name == "scalar_ulong" || my_name == "scalar_ulong_rds")
         {
             get_value_quality_for_test(requested_value, scalar_ulong, attr_quality);
             set_scalar_attribute_value(att, scalar_ulong, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_uchar")
+        else if(my_name == "scalar_uchar" || my_name == "scalar_uchar_rds")
         {
             get_value_quality_for_test(requested_value, scalar_uchar, attr_quality);
             set_scalar_attribute_value(att, scalar_uchar, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_long64")
+        else if(my_name == "scalar_long64" || my_name == "scalar_long64_rds")
         {
             get_value_quality_for_test(requested_value, scalar_long64, attr_quality);
             set_scalar_attribute_value(att, scalar_long64, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_ulong64")
+        else if(my_name == "scalar_ulong64" || my_name == "scalar_ulong64_rds")
         {
             get_value_quality_for_test(requested_value, scalar_ulong64, attr_quality);
             set_scalar_attribute_value(att, scalar_ulong64, attr_quality, release_flag);
@@ -509,7 +546,7 @@ class DtypeDev : public Base
             set_scalar_attribute_value(att, scalar_string, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "scalar_encoded")
+        else if(my_name == "scalar_encoded" || my_name == "scalar_encoded_rds")
         {
             get_value_quality_for_test(requested_value, scalar_encoded, attr_quality);
             set_scalar_attribute_value(att, scalar_encoded, attr_quality, release_flag);
@@ -524,55 +561,55 @@ class DtypeDev : public Base
 
         // Spectrum
 
-        if(my_name == "spectrum_short")
+        if(my_name == "spectrum_short" || my_name == "spectrum_short_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_short, attr_quality);
             set_spectrum_attribute_value(att, spectrum_short, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_long")
+        else if(my_name == "spectrum_long" || my_name == "spectrum_long_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_long, attr_quality);
             set_spectrum_attribute_value(att, spectrum_long, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_float")
+        else if(my_name == "spectrum_float" || my_name == "spectrum_float_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_float, attr_quality);
             set_spectrum_attribute_value(att, spectrum_float, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_double")
+        else if(my_name == "spectrum_double" || my_name == "spectrum_double_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_double, attr_quality);
             set_spectrum_attribute_value(att, spectrum_double, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_ushort")
+        else if(my_name == "spectrum_ushort" || my_name == "spectrum_ushort_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_ushort, attr_quality);
             set_spectrum_attribute_value(att, spectrum_ushort, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_ulong")
+        else if(my_name == "spectrum_ulong" || my_name == "spectrum_ulong_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_ulong, attr_quality);
             set_spectrum_attribute_value(att, spectrum_ulong, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_uchar")
+        else if(my_name == "spectrum_uchar" || my_name == "spectrum_uchar_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_uchar, attr_quality);
             set_spectrum_attribute_value(att, spectrum_uchar, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_long64")
+        else if(my_name == "spectrum_long64" || my_name == "spectrum_long64_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_long64, attr_quality);
             set_spectrum_attribute_value(att, spectrum_long64, attr_quality, release_flag);
             return;
         }
-        else if(my_name == "spectrum_ulong64")
+        else if(my_name == "spectrum_ulong64" || my_name == "spectrum_ulong64_rds")
         {
             get_value_quality_for_test(requested_value, spectrum_ulong64, attr_quality);
             set_spectrum_attribute_value(att, spectrum_ulong64, attr_quality, release_flag);
@@ -608,21 +645,42 @@ class DtypeDev : public Base
 
     void write_attribute(Tango::WAttribute & /*attr*/) { }
 
-    template <typename T>
-    static void attributes_with_limits_factory(std::vector<Tango::Attr *> &attrs,
-                                               bool is_spectrum,
-                                               const std::string &attr_name,
-                                               const Tango::CmdArgType &attr_type)
+    template <typename T, bool is_spectrum, bool set_rds>
+    static void attributes_with_limits_factory(std::vector<Tango::Attr *> &attrs, const std::string &attr_name)
     {
+        const auto &attr_type = Tango::tango_type_traits<T>::type_value();
         Tango::UserDefaultAttrProp props;
-        props.set_min_warning(std::to_string(static_cast<T>(NUMERIC_MIN_WARNING_LEVEL)).c_str());
-        props.set_max_warning(std::to_string(static_cast<T>(NUMERIC_MAX_WARNING_LEVEL)).c_str());
-        props.set_min_alarm(std::to_string(static_cast<T>(NUMERIC_MIN_ALARM_LEVEL)).c_str());
-        props.set_max_alarm(std::to_string(static_cast<T>(NUMERIC_MAX_ALARM_LEVEL)).c_str());
-        props.set_delta_val(std::to_string(static_cast<T>(NUMERIC_RDS_DELTA)).c_str());
-        props.set_delta_t(std::to_string(RDS_DELTA_T).c_str());
+        if constexpr(!set_rds)
+        {
+            if constexpr(std::is_same_v<T, Tango::DevEncoded>)
+            {
+                props.set_min_warning(std::to_string(static_cast<unsigned char>(NUMERIC_MIN_WARNING_LEVEL)).c_str());
+                props.set_max_warning(std::to_string(static_cast<unsigned char>(NUMERIC_MAX_WARNING_LEVEL)).c_str());
+                props.set_min_alarm(std::to_string(static_cast<unsigned char>(NUMERIC_MIN_ALARM_LEVEL)).c_str());
+                props.set_max_alarm(std::to_string(static_cast<unsigned char>(NUMERIC_MAX_ALARM_LEVEL)).c_str());
+            }
+            else
+            {
+                props.set_min_warning(std::to_string(static_cast<T>(NUMERIC_MIN_WARNING_LEVEL)).c_str());
+                props.set_max_warning(std::to_string(static_cast<T>(NUMERIC_MAX_WARNING_LEVEL)).c_str());
+                props.set_min_alarm(std::to_string(static_cast<T>(NUMERIC_MIN_ALARM_LEVEL)).c_str());
+                props.set_max_alarm(std::to_string(static_cast<T>(NUMERIC_MAX_ALARM_LEVEL)).c_str());
+            }
+        }
+        else
+        {
+            if constexpr(std::is_same_v<T, Tango::DevEncoded>)
+            {
+                props.set_delta_val(std::to_string(static_cast<unsigned char>(NUMERIC_RDS_DELTA)).c_str());
+            }
+            else
+            {
+                props.set_delta_val(std::to_string(static_cast<T>(NUMERIC_RDS_DELTA)).c_str());
+            }
+            props.set_delta_t(std::to_string(RDS_DELTA_T).c_str());
+        }
 
-        if(is_spectrum)
+        if constexpr(is_spectrum)
         {
             auto attr = new TangoTest::AutoSpectrumAttr<&DtypeDev::read_attribute, &DtypeDev::write_attribute>(
                 attr_name.c_str(), attr_type, N_ELEMENTS_IN_SPECTRUM_ATTRS);
@@ -694,27 +752,27 @@ class DtypeDev : public Base
     {
         // Scalar with limits
 
-        attributes_with_limits_factory<Tango::DevShort>(attrs, false, "scalar_short", Tango::DEV_SHORT);
-        attributes_with_limits_factory<Tango::DevLong>(attrs, false, "scalar_long", Tango::DEV_LONG);
-        attributes_with_limits_factory<Tango::DevFloat>(attrs, false, "scalar_float", Tango::DEV_FLOAT);
-        attributes_with_limits_factory<Tango::DevDouble>(attrs, false, "scalar_double", Tango::DEV_DOUBLE);
-        attributes_with_limits_factory<Tango::DevUShort>(attrs, false, "scalar_ushort", Tango::DEV_USHORT);
-        attributes_with_limits_factory<Tango::DevULong>(attrs, false, "scalar_ulong", Tango::DEV_ULONG);
-        attributes_with_limits_factory<Tango::DevUChar>(attrs, false, "scalar_uchar", Tango::DEV_UCHAR);
-        attributes_with_limits_factory<Tango::DevLong64>(attrs, false, "scalar_long64", Tango::DEV_LONG64);
-        attributes_with_limits_factory<Tango::DevULong64>(attrs, false, "scalar_ulong64", Tango::DEV_ULONG64);
+        attributes_with_limits_factory<Tango::DevShort, false, false>(attrs, "scalar_short");
+        attributes_with_limits_factory<Tango::DevLong, false, false>(attrs, "scalar_long");
+        attributes_with_limits_factory<Tango::DevFloat, false, false>(attrs, "scalar_float");
+        attributes_with_limits_factory<Tango::DevDouble, false, false>(attrs, "scalar_double");
+        attributes_with_limits_factory<Tango::DevUShort, false, false>(attrs, "scalar_ushort");
+        attributes_with_limits_factory<Tango::DevULong, false, false>(attrs, "scalar_ulong");
+        attributes_with_limits_factory<Tango::DevUChar, false, false>(attrs, "scalar_uchar");
+        attributes_with_limits_factory<Tango::DevLong64, false, false>(attrs, "scalar_long64");
+        attributes_with_limits_factory<Tango::DevULong64, false, false>(attrs, "scalar_ulong64");
 
         // Spectrum with limits
 
-        attributes_with_limits_factory<Tango::DevShort>(attrs, true, "spectrum_short", Tango::DEV_SHORT);
-        attributes_with_limits_factory<Tango::DevLong>(attrs, true, "spectrum_long", Tango::DEV_LONG);
-        attributes_with_limits_factory<Tango::DevFloat>(attrs, true, "spectrum_float", Tango::DEV_FLOAT);
-        attributes_with_limits_factory<Tango::DevDouble>(attrs, true, "spectrum_double", Tango::DEV_DOUBLE);
-        attributes_with_limits_factory<Tango::DevUShort>(attrs, true, "spectrum_ushort", Tango::DEV_USHORT);
-        attributes_with_limits_factory<Tango::DevULong>(attrs, true, "spectrum_ulong", Tango::DEV_ULONG);
-        attributes_with_limits_factory<Tango::DevUChar>(attrs, true, "spectrum_uchar", Tango::DEV_UCHAR);
-        attributes_with_limits_factory<Tango::DevLong64>(attrs, true, "spectrum_long64", Tango::DEV_LONG64);
-        attributes_with_limits_factory<Tango::DevULong64>(attrs, true, "spectrum_ulong64", Tango::DEV_ULONG64);
+        attributes_with_limits_factory<Tango::DevShort, true, false>(attrs, "spectrum_short");
+        attributes_with_limits_factory<Tango::DevLong, true, false>(attrs, "spectrum_long");
+        attributes_with_limits_factory<Tango::DevFloat, true, false>(attrs, "spectrum_float");
+        attributes_with_limits_factory<Tango::DevDouble, true, false>(attrs, "spectrum_double");
+        attributes_with_limits_factory<Tango::DevUShort, true, false>(attrs, "spectrum_ushort");
+        attributes_with_limits_factory<Tango::DevULong, true, false>(attrs, "spectrum_ulong");
+        attributes_with_limits_factory<Tango::DevUChar, true, false>(attrs, "spectrum_uchar");
+        attributes_with_limits_factory<Tango::DevLong64, true, false>(attrs, "spectrum_long64");
+        attributes_with_limits_factory<Tango::DevULong64, true, false>(attrs, "spectrum_ulong64");
 
         // Scalar no limits
 
@@ -730,12 +788,35 @@ class DtypeDev : public Base
 
         // DevEncoded
 
-        attributes_with_limits_factory<unsigned char>(attrs, false, "scalar_encoded", Tango::DEV_ENCODED);
+        attributes_with_limits_factory<Tango::DevEncoded, false, false>(attrs, "scalar_encoded");
 
         // DevEnum scalar and spectrum
 
         attributes_enum_factory(attrs, false, "scalar_enum");
         attributes_enum_factory(attrs, true, "spectrum_enum");
+
+        // attributes with rds limits
+        attributes_with_limits_factory<Tango::DevShort, false, true>(attrs, "scalar_short_rds");
+        attributes_with_limits_factory<Tango::DevLong, false, true>(attrs, "scalar_long_rds");
+        attributes_with_limits_factory<Tango::DevFloat, false, true>(attrs, "scalar_float_rds");
+        attributes_with_limits_factory<Tango::DevDouble, false, true>(attrs, "scalar_double_rds");
+        attributes_with_limits_factory<Tango::DevUShort, false, true>(attrs, "scalar_ushort_rds");
+        attributes_with_limits_factory<Tango::DevULong, false, true>(attrs, "scalar_ulong_rds");
+        attributes_with_limits_factory<Tango::DevUChar, false, true>(attrs, "scalar_uchar_rds");
+        attributes_with_limits_factory<Tango::DevLong64, false, true>(attrs, "scalar_long64_rds");
+        attributes_with_limits_factory<Tango::DevULong64, false, true>(attrs, "scalar_ulong64_rds");
+
+        attributes_with_limits_factory<Tango::DevShort, true, true>(attrs, "spectrum_short_rds");
+        attributes_with_limits_factory<Tango::DevLong, true, true>(attrs, "spectrum_long_rds");
+        attributes_with_limits_factory<Tango::DevFloat, true, true>(attrs, "spectrum_float_rds");
+        attributes_with_limits_factory<Tango::DevDouble, true, true>(attrs, "spectrum_double_rds");
+        attributes_with_limits_factory<Tango::DevUShort, true, true>(attrs, "spectrum_ushort_rds");
+        attributes_with_limits_factory<Tango::DevULong, true, true>(attrs, "spectrum_ulong_rds");
+        attributes_with_limits_factory<Tango::DevUChar, true, true>(attrs, "spectrum_uchar_rds");
+        attributes_with_limits_factory<Tango::DevLong64, true, true>(attrs, "spectrum_long64_rds");
+        attributes_with_limits_factory<Tango::DevULong64, true, true>(attrs, "spectrum_ulong64_rds");
+
+        attributes_with_limits_factory<Tango::DevEncoded, false, true>(attrs, "scalar_encoded_rds");
     }
 
     static void command_factory(std::vector<Tango::Command *> &cmds)
@@ -809,7 +890,7 @@ template <
     typename T,
     typename std::enable_if_t<(std::is_arithmetic_v<T> || tango_traits::is_scalar_state_boolean_string_enum<T>::value),
                               T> * = nullptr>
-void compare_attribute_value(const T &got_val, const T &expected_val)
+void compare_attribute_value(const T &got_val, const T &expected_val, bool)
 {
     REQUIRE(got_val == expected_val);
 }
@@ -818,7 +899,7 @@ template <typename T,
           typename std::enable_if_t<((!std::is_arithmetic_v<T> &&
                                       !tango_traits::is_scalar_state_boolean_string_enum<T>::value)),
                                     T> * = nullptr>
-void compare_attribute_value(const T &got_val, const T &expected_val)
+void compare_attribute_value(const T &got_val, const T &expected_val, bool)
 {
     CHECK(got_val.size() >= expected_val.size());
 
@@ -829,9 +910,14 @@ void compare_attribute_value(const T &got_val, const T &expected_val)
 }
 
 template <>
-void compare_attribute_value<Tango::DevEncoded>(const Tango::DevEncoded &got_val, const Tango::DevEncoded &expected_val)
+void compare_attribute_value<Tango::DevEncoded>(const Tango::DevEncoded &got_val,
+                                                const Tango::DevEncoded &expected_val,
+                                                bool check_format)
 {
-    CHECK(::strcmp(got_val.encoded_format, expected_val.encoded_format) == 0);
+    if(check_format)
+    {
+        CHECK(::strcmp(got_val.encoded_format, expected_val.encoded_format) == 0);
+    }
 
     for(unsigned int i = 0; i < expected_val.encoded_data.length(); ++i)
     {
@@ -845,7 +931,8 @@ void read_and_compare_attribute_value(std::unique_ptr<Tango::DeviceProxy> &devic
                                       const T &expected_val,
                                       Tango::AttrQuality &expected_quality,
                                       const Tango::CmdArgType &expected_type,
-                                      const Tango::AttrDataFormat &expected_format)
+                                      const Tango::AttrDataFormat &expected_format,
+                                      bool check_format = true)
 {
     Tango::DeviceAttribute da;
     REQUIRE(da.get_data_format() == Tango::FMT_UNKNOWN);
@@ -879,7 +966,7 @@ void read_and_compare_attribute_value(std::unique_ptr<Tango::DeviceProxy> &devic
                 bool ret = (da >> read_val);
                 CHECK(ret == true);
 
-                compare_attribute_value(read_val, expected_val);
+                compare_attribute_value(read_val, expected_val, check_format);
             }
         }
     }
@@ -1255,9 +1342,43 @@ void test_rds_alarm(const std::string &attr_name,
         AND_GIVEN("Testing " + attr_name)
         {
             write_attribute(device, attr_name, write_value);
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10 * RDS_DELTA_T));
             read_and_compare_attribute_value(
                 device, attr_name, expected_value, expected_quality, expected_type, expected_format);
+        }
+        AND_GIVEN("Testing " + attr_name + " rds overflow")
+        {
+            set_tested_value(device, ValueToTest::RDS_OVERFLOW);
+            set_tested_attribute(device, attr_name);
+            get_value_quality_for_test(ValueToTest::NUMERIC_LIMIT_MIN, write_value, expected_quality);
+            get_value_quality_for_test(ValueToTest::RDS_OVERFLOW, expected_value, expected_quality);
+            if constexpr(std::is_signed_v<T> ||
+                         (is_container<T>::value && std::is_signed_v<typename is_container<T>::underlying_type>) )
+            {
+                expected_quality = Tango::ATTR_ALARM;
+            }
+            else
+            {
+                expected_quality = Tango::ATTR_VALID;
+            }
+            write_attribute(device, attr_name, write_value);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10 * RDS_DELTA_T));
+            read_and_compare_attribute_value(
+                device, attr_name, expected_value, expected_quality, expected_type, expected_format);
+        }
+        if constexpr(std::is_same_v<T, Tango::DevEncoded>)
+        {
+            write_value = expected_value;
+            AND_GIVEN("Testing different format for " + attr_name)
+            {
+                write_value = expected_value;
+                expected_value.encoded_format = Tango::string_dup("fmt");
+                write_value.encoded_format = Tango::string_dup("other_fmt");
+                write_attribute(device, attr_name, write_value);
+                std::this_thread::sleep_for(std::chrono::milliseconds(10 * RDS_DELTA_T));
+                read_and_compare_attribute_value(
+                    device, attr_name, expected_value, expected_quality, expected_type, expected_format, false);
+            }
         }
     }
 }
@@ -1266,99 +1387,99 @@ void test_rds_alarm(const std::string &attr_name,
 
 SCENARIO("Testing rds alarm for scalar Tango::DevShort")
 {
-    test_rds_alarm<Tango::DevShort>("scalar_short", Tango::DEV_SHORT, Tango::SCALAR);
+    test_rds_alarm<Tango::DevShort>("scalar_short_rds", Tango::DEV_SHORT, Tango::SCALAR);
 }
 
-SCENARIO("Testing rds alarmr for scalar Tango::DevLong")
+SCENARIO("Testing rds alarm for scalar Tango::DevLong")
 {
-    test_rds_alarm<Tango::DevLong>("scalar_long", Tango::DEV_LONG, Tango::SCALAR);
+    test_rds_alarm<Tango::DevLong>("scalar_long_rds", Tango::DEV_LONG, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevFloat")
 {
-    test_rds_alarm<Tango::DevFloat>("scalar_float", Tango::DEV_FLOAT, Tango::SCALAR);
+    test_rds_alarm<Tango::DevFloat>("scalar_float_rds", Tango::DEV_FLOAT, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevDouble")
 {
-    test_rds_alarm<Tango::DevDouble>("scalar_double", Tango::DEV_DOUBLE, Tango::SCALAR);
+    test_rds_alarm<Tango::DevDouble>("scalar_double_rds", Tango::DEV_DOUBLE, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevUShort")
 {
-    test_rds_alarm<Tango::DevUShort>("scalar_ushort", Tango::DEV_USHORT, Tango::SCALAR);
+    test_rds_alarm<Tango::DevUShort>("scalar_ushort_rds", Tango::DEV_USHORT, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevULong")
 {
-    test_rds_alarm<Tango::DevULong>("scalar_ulong", Tango::DEV_ULONG, Tango::SCALAR);
+    test_rds_alarm<Tango::DevULong>("scalar_ulong_rds", Tango::DEV_ULONG, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevUChar")
 {
-    test_rds_alarm<Tango::DevUChar>("scalar_uchar", Tango::DEV_UCHAR, Tango::SCALAR);
+    test_rds_alarm<Tango::DevUChar>("scalar_uchar_rds", Tango::DEV_UCHAR, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevLong64")
 {
-    test_rds_alarm<Tango::DevLong64>("scalar_long64", Tango::DEV_LONG64, Tango::SCALAR);
+    test_rds_alarm<Tango::DevLong64>("scalar_long64_rds", Tango::DEV_LONG64, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevULong64")
 {
-    test_rds_alarm<Tango::DevULong64>("scalar_ulong64", Tango::DEV_ULONG64, Tango::SCALAR);
+    test_rds_alarm<Tango::DevULong64>("scalar_ulong64_rds", Tango::DEV_ULONG64, Tango::SCALAR);
 }
 
 SCENARIO("Testing rds alarm for scalar Tango::DevEncoded")
 {
-    test_rds_alarm<Tango::DevEncoded>("scalar_encoded", Tango::DEV_ENCODED, Tango::SCALAR);
+    test_rds_alarm<Tango::DevEncoded>("scalar_encoded_rds", Tango::DEV_ENCODED, Tango::SCALAR);
 }
 
 // Spectrum (aka cpp <vector>)
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevShort")
 {
-    test_rds_alarm<std::vector<Tango::DevShort>>("spectrum_short", Tango::DEV_SHORT, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevShort>>("spectrum_short_rds", Tango::DEV_SHORT, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevLong")
 {
-    test_rds_alarm<std::vector<Tango::DevLong>>("spectrum_long", Tango::DEV_LONG, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevLong>>("spectrum_long_rds", Tango::DEV_LONG, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevFloat")
 {
-    test_rds_alarm<std::vector<Tango::DevFloat>>("spectrum_float", Tango::DEV_FLOAT, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevFloat>>("spectrum_float_rds", Tango::DEV_FLOAT, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevDouble")
 {
-    test_rds_alarm<std::vector<Tango::DevDouble>>("spectrum_double", Tango::DEV_DOUBLE, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevDouble>>("spectrum_double_rds", Tango::DEV_DOUBLE, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevUShort")
 {
-    test_rds_alarm<std::vector<Tango::DevUShort>>("spectrum_ushort", Tango::DEV_USHORT, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevUShort>>("spectrum_ushort_rds", Tango::DEV_USHORT, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevULong")
 {
-    test_rds_alarm<std::vector<Tango::DevULong>>("spectrum_ulong", Tango::DEV_ULONG, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevULong>>("spectrum_ulong_rds", Tango::DEV_ULONG, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevUChar")
 {
-    test_rds_alarm<std::vector<Tango::DevUChar>>("spectrum_uchar", Tango::DEV_UCHAR, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevUChar>>("spectrum_uchar_rds", Tango::DEV_UCHAR, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevLong64")
 {
-    test_rds_alarm<std::vector<Tango::DevLong64>>("spectrum_long64", Tango::DEV_LONG64, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevLong64>>("spectrum_long64_rds", Tango::DEV_LONG64, Tango::SPECTRUM);
 }
 
 SCENARIO("Testing rds alarm for spectrum Tango::DevULong64")
 {
-    test_rds_alarm<std::vector<Tango::DevULong64>>("spectrum_ulong64", Tango::DEV_ULONG64, Tango::SPECTRUM);
+    test_rds_alarm<std::vector<Tango::DevULong64>>("spectrum_ulong64_rds", Tango::DEV_ULONG64, Tango::SPECTRUM);
 }
 
 /*
