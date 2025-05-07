@@ -1208,6 +1208,7 @@ void ServRestartThread::run(void *ptr)
     // Setup telemetry
     //
 #if defined(TANGO_USE_TELEMETRY)
+    dev->cleanup_telemetry_interface();
     // initialize the telemetry interface
     dev->initialize_telemetry_interface();
     // attach the device's telemetry interface
