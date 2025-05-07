@@ -39,6 +39,7 @@
 
 #include <chrono>
 #include <optional>
+#include <memory>
 
 namespace Tango
 {
@@ -115,7 +116,7 @@ class LockThread : public omni_thread
     std::vector<LockedDevice> locked_devices;
     std::vector<std::string> re_lock_cmd_args;
     LockClock::duration period;
-    DeviceProxy *admin_proxy;
+    std::unique_ptr<DeviceProxy> admin_proxy;
 
     LockClock::time_point next_work;
 };
