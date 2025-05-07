@@ -41,6 +41,7 @@ tango_catch2_tests_create(
     catch2_attr_async_cb.cpp
     catch2_attr_manip.cpp
     catch2_attr_proxy.cpp
+    catch2_attr_conf_event.cpp
     catch2_attr_polling.cpp
     catch2_attr_read_write_simple.cpp
     catch2_cmd_polling.cpp
