@@ -65,18 +65,19 @@ constexpr auto RECONNECTION_DELAY = std::chrono::seconds(1);
 PointerWithLock<EventConsumer> get_event_system_for_event_id(int event_id)
 {
     ApiUtil *au = ApiUtil::instance();
-    auto zmq_consumer = au->get_zmq_event_consumer();
-    if(zmq_consumer == nullptr)
-    {
-        TangoSys_OMemStream desc;
-        desc << "Could not find event consumer object, \n";
-        desc << "probably no event subscription was done before!";
-        desc << std::ends;
-        TANGO_THROW_EXCEPTION(API_EventConsumer, desc.str());
-    }
 
-    if(zmq_consumer->get_event_system_for_event_id(event_id) == ZMQ)
+    if(EventConsumer::get_event_system_for_event_id(event_id) == ZMQ)
     {
+        auto zmq_consumer = au->get_zmq_event_consumer();
+        if(zmq_consumer == nullptr)
+        {
+            TangoSys_OMemStream desc;
+            desc << "Could not find event consumer object, \n";
+            desc << "probably no event subscription was done before!";
+            desc << std::ends;
+            TANGO_THROW_EXCEPTION(API_EventConsumer, desc.str());
+        }
+
         return au->get_zmq_event_consumer();
     }
 

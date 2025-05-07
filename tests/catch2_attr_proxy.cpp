@@ -88,7 +88,7 @@ SCENARIO("AttributeProxy: Bails when unsubscribing without subscriptions")
 
             REQUIRE_THROWS_MATCHES(ap.unsubscribe_event(4711),
                                    Tango::DevFailed,
-                                   ErrorListMatches(AnyMatch(Reason(Tango::API_EventConsumer))));
+                                   ErrorListMatches(AnyMatch(Reason(Tango::API_EventNotFound))));
         }
     }
 }

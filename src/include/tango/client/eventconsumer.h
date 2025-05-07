@@ -491,7 +491,7 @@ class EventConsumer
 
     void shutdown();
     void shutdown_keep_alive_thread();
-    ChannelType get_event_system_for_event_id(int);
+    static ChannelType get_event_system_for_event_id(int);
     virtual void cleanup_EventChannel_map() = 0;
     virtual void get_subscription_command_name(std::string &) = 0;
 
