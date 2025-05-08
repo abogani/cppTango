@@ -696,7 +696,7 @@ DeviceImpl::~DeviceImpl()
     // Delete the black box
     //
 
-    delete blackbox_ptr;
+    blackbox_ptr.reset();
 
     //
     // Delete the DbDevice object
@@ -784,11 +784,11 @@ void DeviceImpl::black_box_create()
 
     if(blackbox_depth == 0)
     {
-        blackbox_ptr = new BlackBox();
+        blackbox_ptr = std::make_unique<BlackBox>();
     }
     else
     {
-        blackbox_ptr = new BlackBox(blackbox_depth);
+        blackbox_ptr = std::make_unique<BlackBox>(blackbox_depth);
     }
 }
 
