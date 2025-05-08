@@ -29,6 +29,7 @@
 
 #include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
+#include <tango/common/pointer_with_lock.h>
 
 #include <ctime>
 #include <csignal>
@@ -1287,11 +1288,7 @@ int AttributeProxy::subscribe_event(EventType event,
                                     const std::vector<std::string> &filters,
                                     bool stateless)
 {
-    ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == nullptr)
-    {
-        api_ptr->create_zmq_event_consumer();
-    }
+    ApiUtil *au = ApiUtil::instance();
 
     int ret;
     try
@@ -1300,21 +1297,17 @@ int AttributeProxy::subscribe_event(EventType event,
         //  see https://github.com/tango-controls/cppTango/pull/423
         std::vector<std::string> non_const_filters;
         non_const_filters.push_back(get_user_defined_name());
-        ret = api_ptr->get_zmq_event_consumer()->subscribe_event(
-            dev_proxy, attr_name, event, callback, non_const_filters, stateless);
+        auto zmq_consumer = au->create_zmq_event_consumer();
+        ret = zmq_consumer->subscribe_event(dev_proxy, attr_name, event, callback, non_const_filters, stateless);
     }
     catch(DevFailed &e)
     {
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(ApiUtil::instance()->get_notifd_event_consumer() == nullptr)
-            {
-                ApiUtil::instance()->create_notifd_event_consumer();
-            }
+            auto notifd_consumer = au->create_notifd_event_consumer();
 
-            ret = api_ptr->get_notifd_event_consumer()->subscribe_event(
-                dev_proxy, attr_name, event, callback, filters, stateless);
+            ret = notifd_consumer->subscribe_event(dev_proxy, attr_name, event, callback, filters, stateless);
         }
         else
         {
@@ -1344,29 +1337,22 @@ int AttributeProxy::subscribe_event(EventType event,
                                     const std::vector<std::string> &filters,
                                     bool stateless)
 {
-    ApiUtil *api_ptr = ApiUtil::instance();
-    if(api_ptr->get_zmq_event_consumer() == nullptr)
-    {
-        api_ptr->create_zmq_event_consumer();
-    }
+    ApiUtil *au = ApiUtil::instance();
 
     int ret;
     try
     {
-        ret = api_ptr->get_zmq_event_consumer()->subscribe_event(
-            dev_proxy, attr_name, event, event_queue_size, filters, stateless);
+        auto zmq_consumer = au->create_zmq_event_consumer();
+        ret = zmq_consumer->subscribe_event(dev_proxy, attr_name, event, event_queue_size, filters, stateless);
     }
     catch(DevFailed &e)
     {
         std::string reason(e.errors[0].reason.in());
         if(reason == API_CommandNotFound)
         {
-            if(api_ptr->get_notifd_event_consumer() == nullptr)
-            {
-                api_ptr->create_notifd_event_consumer();
-            }
-            ret = api_ptr->get_notifd_event_consumer()->subscribe_event(
-                dev_proxy, attr_name, event, event_queue_size, filters, stateless);
+            auto notifd_consumer = au->create_notifd_event_consumer();
+
+            ret = notifd_consumer->subscribe_event(dev_proxy, attr_name, event, event_queue_size, filters, stateless);
         }
         else
         {

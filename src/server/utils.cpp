@@ -62,6 +62,8 @@
 
 #include <omniORB4/omniInterceptors.h>
 
+#include <tango/common/pointer_with_lock.h>
+
 namespace
 {
 
@@ -2105,7 +2107,7 @@ void Util::server_init(TANGO_UNUSED(bool with_window))
         {
             if(EventConsumer::keep_alive_thread != nullptr)
             {
-                ZmqEventConsumer *event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
+                auto event_consumer = ApiUtil::instance()->get_zmq_event_consumer();
                 EventConsumer::keep_alive_thread->fwd_not_conected_event(event_consumer);
             }
         }

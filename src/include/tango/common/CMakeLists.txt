@@ -7,6 +7,7 @@ set(COMMON_HEADERS
     ${tango_version_h}
     tango_const.h
     git_revision.h
+    pointer_with_lock.h
 )
 
 install(FILES ${COMMON_HEADERS} DESTINATION

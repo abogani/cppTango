@@ -42,6 +42,7 @@
 #include <map>
 
 #include <tango/server/readers_writers_lock.h>
+#include <tango/common/pointer_with_lock.h>
 
 #include <zmq.hpp>
 
@@ -490,7 +491,7 @@ class EventConsumer
 
     void shutdown();
     void shutdown_keep_alive_thread();
-    ChannelType get_event_system_for_event_id(int);
+    static ChannelType get_event_system_for_event_id(int);
     virtual void cleanup_EventChannel_map() = 0;
     virtual void get_subscription_command_name(std::string &) = 0;
 
@@ -510,6 +511,8 @@ class EventConsumer
     int subscribe_event(DeviceProxy *device, EventType event, int event_queue_size, bool stateless = false);
 
     void unsubscribe_event(int event_id);
+    virtual void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &) = 0;
+    virtual void query_event_system(std::ostream &os) = 0;
 
     // methods to access data in event queues
 
@@ -571,8 +574,6 @@ class EventConsumer
     static std::vector<std::string> env_var_fqdn_prefix;
     static std::map<std::string, std::string> alias_map; // key - real host name, value - alias
 
-    static omni_mutex ev_consumer_inst_mutex;
-
     std::string device_name;
     std::string obj_name_lower;
     int thread_id;
@@ -624,21 +625,16 @@ class EventConsumer
 class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, public EventConsumer, public omni_thread
 {
   public:
-    static NotifdEventConsumer *create();
-
-    static void cleanup()
-    {
-        if(_instance != nullptr)
-        {
-            _instance = nullptr;
-        }
-    }
+    NotifdEventConsumer(ApiUtil *ptr);
 
     void push_structured_event(const CosNotification::StructuredEvent &) override;
     void cleanup_EventChannel_map() override;
 
     void disconnect_structured_push_consumer() override;
     void offer_change(const CosNotification::EventTypeSeq &, const CosNotification::EventTypeSeq &) override;
+
+    void query_event_system(std::ostream &os) override;
+    void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &) override;
 
     void get_subscription_command_name(std::string &cmd) override
     {
@@ -648,7 +644,6 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, pu
     CORBA::ORB_var orb_;
 
   protected:
-    NotifdEventConsumer(ApiUtil *ptr);
     void connect_event_channel(const std::string &, Database *, bool, DeviceData &) override;
     void connect_event_system(const std::string &,
                               const std::string &,
@@ -672,8 +667,6 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, pu
                                                      bool device_from_env_var) override;
 
   private:
-    TANGO_IMP static NotifdEventConsumer *_instance;
-
     CosNotifyChannelAdmin::EventChannel_var eventChannel;
     CosNotifyChannelAdmin::ConsumerAdmin_var consumerAdmin;
     CosNotifyChannelAdmin::ProxyID proxyId;
@@ -693,18 +686,7 @@ class NotifdEventConsumer : public POA_CosNotifyComm::StructuredPushConsumer, pu
 class ZmqEventConsumer : public EventConsumer, public omni_thread
 {
   public:
-    static ZmqEventConsumer *create();
-
-    static void cleanup()
-    {
-        omni_mutex_lock guard(ev_consumer_inst_mutex);
-
-        if(_instance != nullptr)
-        {
-            delete _instance;
-            _instance = nullptr;
-        }
-    }
+    ZmqEventConsumer(ApiUtil *ptr);
 
     ~ZmqEventConsumer() override
     {
@@ -721,9 +703,9 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
         cmd = "ZmqEventSubscriptionChange";
     }
 
-    void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &);
+    void get_subscribed_event_ids(DeviceProxy *, std::vector<int> &) override;
 
-    void query_event_system(std::ostream &os);
+    void query_event_system(std::ostream &os) override;
     static void enable_perf_mon(Tango::DevBoolean enabled);
 
     enum UserDataEventType
@@ -742,7 +724,6 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
     };
 
   protected:
-    ZmqEventConsumer(ApiUtil *ptr);
     void connect_event_channel(const std::string &, Database *, bool, DeviceData &) override;
     void disconnect_event_channel(const std::string &channel_name,
                                   const std::string &endpoint,
@@ -770,7 +751,6 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
                                                      bool device_from_env_var) override;
 
   private:
-    TANGO_IMP static ZmqEventConsumer *_instance;
     zmq::context_t zmq_context;        // ZMQ context
     zmq::socket_t *heartbeat_sub_sock; // heartbeat subscriber socket
     zmq::socket_t *control_sock;       // control socket
@@ -852,14 +832,11 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
 class DelayEvent
 {
   public:
-    DelayEvent(EventConsumer *);
+    DelayEvent(const PointerWithLock<EventConsumer> &ec);
+    DelayEvent(EventConsumer *ec);
     ~DelayEvent();
 
     void release();
-
-  private:
-    bool released{false};
-    ZmqEventConsumer *eve_con{nullptr};
 };
 
 /********************************************************************************
@@ -886,27 +863,28 @@ class EventConsumerKeepAliveThread : public omni_thread
     void stateless_subscription_failed(const std::vector<EventNotConnected>::iterator &,
                                        const DevFailed &,
                                        const time_t &);
-    void fwd_not_conected_event(ZmqEventConsumer *);
+    void fwd_not_conected_event(PointerWithLock<EventConsumer> &);
 
   protected:
     KeepAliveThCmd &shared_cmd;
 
   private:
     void *run_undetached(void *arg) override;
-    bool reconnect_to_channel(const EvChanIte &, EventConsumer *);
-    void reconnect_to_event(const EvChanIte &, EventConsumer *);
+    bool reconnect_to_channel(const EvChanIte &, PointerWithLock<EventConsumer> &);
+    void reconnect_to_event(const EvChanIte &, PointerWithLock<EventConsumer> &);
     void re_subscribe_event(const EvCbIte &, const EvChanIte &);
 
-    bool reconnect_to_zmq_channel(const EvChanIte &, EventConsumer *, DeviceData &);
-    void reconnect_to_zmq_event(const EvChanIte &, EventConsumer *, DeviceData &);
-    void not_conected_event(ZmqEventConsumer *, time_t, NotifdEventConsumer *);
-    void confirm_subscription(ZmqEventConsumer *, const std::map<std::string, EventChannelStruct>::iterator &);
-    void main_reconnect(ZmqEventConsumer *,
-                        NotifdEventConsumer *,
+    bool reconnect_to_zmq_channel(const EvChanIte &, PointerWithLock<EventConsumer> &, DeviceData &);
+    void reconnect_to_zmq_event(const EvChanIte &, PointerWithLock<EventConsumer> &, DeviceData &);
+    void not_conected_event(PointerWithLock<EventConsumer> &, time_t, PointerWithLock<EventConsumer> &);
+    void confirm_subscription(PointerWithLock<EventConsumer> &,
+                              const std::map<std::string, EventChannelStruct>::iterator &);
+    void main_reconnect(PointerWithLock<EventConsumer> &,
+                        PointerWithLock<EventConsumer> &,
                         std::map<std::string, EventCallBackStruct>::iterator &,
                         const std::map<std::string, EventChannelStruct>::iterator &);
-    void re_subscribe_after_reconnect(ZmqEventConsumer *,
-                                      NotifdEventConsumer *,
+    void re_subscribe_after_reconnect(PointerWithLock<EventConsumer> &,
+                                      PointerWithLock<EventConsumer> &,
                                       const std::map<std::string, EventCallBackStruct>::iterator &,
                                       const std::map<std::string, EventChannelStruct>::iterator &,
                                       const std::string &);
@@ -924,7 +902,7 @@ class DelayedEventUnsubThread : public omni_thread
     DelayedEventUnsubThread(EventConsumer *ec, int id, TangoMonitor *m) :
 
         event_id(id),
-        ev_cons(ec),
+        ev_cons(ApiUtil::instance()->get_locked_event_consumer(ec)),
         the_mon(m)
     {
     }
@@ -933,7 +911,7 @@ class DelayedEventUnsubThread : public omni_thread
 
   private:
     int event_id;
-    EventConsumer *ev_cons;
+    PointerWithLock<EventConsumer> ev_cons;
     TangoMonitor *the_mon;
 };
 
@@ -955,7 +933,7 @@ class DelayedEventSubThread : public omni_thread
                           const std::string &_ev_name,
                           int _id) :
 
-        ev_cons(ec),
+        ev_cons(ApiUtil::instance()->get_locked_event_consumer(ec)),
         device(_device),
         attribute(_attribute),
         et(_event),
@@ -969,7 +947,7 @@ class DelayedEventSubThread : public omni_thread
     void run(void *) override;
 
   private:
-    EventConsumer *ev_cons;
+    PointerWithLock<EventConsumer> ev_cons;
     DeviceProxy *device;
     std::string attribute;
     EventType et;

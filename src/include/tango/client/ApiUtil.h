@@ -253,22 +253,20 @@ class ApiUtil
     // EventConsumer related methods
     //
 
-    void create_notifd_event_consumer();
-    void create_zmq_event_consumer();
+    PointerWithLock<EventConsumer> create_notifd_event_consumer();
+    PointerWithLock<EventConsumer> create_zmq_event_consumer();
 
-    bool is_notifd_event_consumer_created()
-    {
-        return notifd_event_consumer != nullptr;
-    }
+    bool is_notifd_event_consumer_created();
+    PointerWithLock<EventConsumer> get_notifd_event_consumer();
 
-    NotifdEventConsumer *get_notifd_event_consumer();
+    bool is_zmq_event_consumer_created();
+    PointerWithLock<EventConsumer> get_zmq_event_consumer();
 
-    bool is_zmq_event_consumer_created()
-    {
-        return zmq_event_consumer != nullptr;
-    }
+    PointerWithLock<ZmqEventConsumer> get_zmq_event_consumer_derived(EventConsumer *ptr);
 
-    ZmqEventConsumer *get_zmq_event_consumer();
+    PointerWithLock<EventConsumer> get_locked_event_consumer(EventConsumer *ptr);
+
+    void shutdown_event_consumers();
 
     //
     // Asynchronous methods
@@ -328,13 +326,16 @@ class ApiUtil
     static omni_mutex inst_mutex;
     bool exit_lock_installed{false};
     bool reset_already_executed_flag{false};
+    ReadersWritersLock zmq_rw_lock, notifd_rw_lock;
+    // we don't use smart pointers here as these are omnithreads
+    // which cleanup when join'ed
+    ZmqEventConsumer *zmq_event_consumer{nullptr};
+    NotifdEventConsumer *notifd_event_consumer{nullptr};
 
     std::unique_ptr<ApiUtilExt> ext;
 
-    NotifdEventConsumer *notifd_event_consumer{nullptr};
     TangoSys_Pid cl_pid;
     int user_connect_timeout{-1};
-    ZmqEventConsumer *zmq_event_consumer{nullptr};
     std::vector<std::string> host_ip_adrs;
     DevLong user_sub_hwm{-1};
     /***

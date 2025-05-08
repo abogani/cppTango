@@ -99,22 +99,7 @@ void Util::shutdown_ds()
     //
 
     ApiUtil *au = ApiUtil::instance();
-    if(au->is_notifd_event_consumer_created())
-    {
-        NotifdEventConsumer *ec = ApiUtil::instance()->get_notifd_event_consumer();
-        if(ec != nullptr)
-        {
-            ec->shutdown();
-        }
-    }
-    if(au->is_zmq_event_consumer_created())
-    {
-        ZmqEventConsumer *ec = ApiUtil::instance()->get_zmq_event_consumer();
-        if(ec != nullptr)
-        {
-            ec->shutdown();
-        }
-    }
+    au->shutdown_event_consumers();
 
     //
     // Disconnect the server from the notifd, when it was connected

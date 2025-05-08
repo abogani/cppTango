@@ -49,9 +49,6 @@ using namespace CORBA;
 namespace Tango
 {
 
-NotifdEventConsumer *NotifdEventConsumer::_instance = nullptr;
-omni_mutex EventConsumer::ev_consumer_inst_mutex;
-
 void NotifdEventConsumer::disconnect_structured_push_consumer()
 {
     TANGO_LOG_DEBUG << "calling Tango::NotifdEventConsumer::disconnect_structured_push_consumer() \n";
@@ -77,30 +74,7 @@ NotifdEventConsumer::NotifdEventConsumer(ApiUtil *ptr) :
     TANGO_LOG_DEBUG << "calling Tango::NotifdEventConsumer::NotifdEventConsumer() \n";
     orb_ = ptr->get_orb();
 
-    _instance = this;
-
     start_undetached();
-}
-
-NotifdEventConsumer *NotifdEventConsumer::create()
-{
-    omni_mutex_lock guard(ev_consumer_inst_mutex);
-
-    //
-    // check if the NotifdEventConsumer singleton exists, if so return it
-    //
-
-    if(_instance != nullptr)
-    {
-        return _instance;
-    }
-
-    //
-    // NotifdEventConsumer singleton does not exist, create it
-    //
-
-    ApiUtil *ptr = ApiUtil::instance();
-    return new NotifdEventConsumer(ptr);
 }
 
 //+----------------------------------------------------------------------------
@@ -134,6 +108,16 @@ void *NotifdEventConsumer::run_undetached(void *arg)
     }
 
     return (void *) nullptr;
+}
+
+void NotifdEventConsumer::query_event_system(TANGO_UNUSED(std::ostream &os))
+{
+    TANGO_ASSERT(0);
+}
+
+void NotifdEventConsumer::get_subscribed_event_ids(TANGO_UNUSED(DeviceProxy *dev), TANGO_UNUSED(std::vector<int> &ids))
+{
+    TANGO_ASSERT(0);
 }
 
 //+----------------------------------------------------------------------------

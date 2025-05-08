@@ -47,6 +47,8 @@
   #include <process.h>
 #endif
 
+#include <tango/common/pointer_with_lock.h>
+
 namespace
 {
 
@@ -216,12 +218,10 @@ ApiUtil::~ApiUtil()
 
     if(ext != nullptr)
     {
-        if((notifd_event_consumer != nullptr) || (zmq_event_consumer != nullptr))
+        if((get_notifd_event_consumer() != nullptr) || (get_zmq_event_consumer() != nullptr))
         {
             event_was_used = true;
             leavefunc();
-            NotifdEventConsumer::cleanup();
-            ZmqEventConsumer::cleanup();
         }
     }
 
@@ -749,24 +749,128 @@ void ApiUtil::set_asynch_cb_sub_model(cb_sub_model mode)
 //
 //----------------------------------------------------------------------------------------------------------------
 
-void ApiUtil::create_notifd_event_consumer()
+PointerWithLock<EventConsumer> ApiUtil::create_notifd_event_consumer()
 {
-    notifd_event_consumer = NotifdEventConsumer::create();
+    if(!is_notifd_event_consumer_created())
+    {
+        WriterLock lock{notifd_rw_lock};
+        notifd_event_consumer = new NotifdEventConsumer(this);
+    }
+
+    return get_notifd_event_consumer();
 }
 
-void ApiUtil::create_zmq_event_consumer()
+PointerWithLock<EventConsumer> ApiUtil::create_zmq_event_consumer()
 {
-    zmq_event_consumer = ZmqEventConsumer::create();
+    if(!is_zmq_event_consumer_created())
+    {
+        WriterLock lock{zmq_rw_lock};
+        zmq_event_consumer = new ZmqEventConsumer(this);
+    }
+
+    return get_zmq_event_consumer();
 }
 
-NotifdEventConsumer *ApiUtil::get_notifd_event_consumer()
+PointerWithLock<EventConsumer> ApiUtil::get_notifd_event_consumer()
 {
-    return notifd_event_consumer;
+    return PointerWithLock<EventConsumer>{notifd_event_consumer, notifd_rw_lock};
 }
 
-ZmqEventConsumer *ApiUtil::get_zmq_event_consumer()
+PointerWithLock<EventConsumer> ApiUtil::get_zmq_event_consumer()
 {
-    return zmq_event_consumer;
+    return PointerWithLock<EventConsumer>{zmq_event_consumer, zmq_rw_lock};
+}
+
+bool ApiUtil::is_notifd_event_consumer_created()
+{
+    return get_notifd_event_consumer() != nullptr;
+}
+
+bool ApiUtil::is_zmq_event_consumer_created()
+{
+    return get_zmq_event_consumer() != nullptr;
+}
+
+// The caller is required to hold the read lock on the event consumer behind ptr
+PointerWithLock<ZmqEventConsumer> ApiUtil::get_zmq_event_consumer_derived(EventConsumer *ptr)
+{
+    if(ptr == nullptr)
+    {
+        TANGO_THROW_EXCEPTION(API_InvalidArgs, "Can't handle nullptr");
+    }
+
+    {
+        ReaderLock lock{zmq_rw_lock};
+
+        if(zmq_event_consumer != nullptr && dynamic_cast<EventConsumer *>(zmq_event_consumer) == ptr)
+        {
+            return PointerWithLock<ZmqEventConsumer>(zmq_event_consumer, zmq_rw_lock);
+        }
+    }
+
+    TANGO_THROW_EXCEPTION(API_InvalidArgs, "Could not find event consumer for ptr");
+}
+
+// The caller is required to hold the read lock on the event consumer behind ptr
+PointerWithLock<EventConsumer> ApiUtil::get_locked_event_consumer(EventConsumer *ptr)
+{
+    if(ptr == nullptr)
+    {
+        TANGO_THROW_EXCEPTION(API_InvalidArgs, "Can't handle nullptr");
+    }
+
+    {
+        ReaderLock lock{zmq_rw_lock};
+
+        if(zmq_event_consumer != nullptr && dynamic_cast<EventConsumer *>(zmq_event_consumer) == ptr)
+        {
+            return PointerWithLock<EventConsumer>(zmq_event_consumer, zmq_rw_lock);
+        }
+    }
+
+    {
+        ReaderLock lock{notifd_rw_lock};
+
+        if(notifd_event_consumer != nullptr && dynamic_cast<EventConsumer *>(notifd_event_consumer) == ptr)
+        {
+            return PointerWithLock<EventConsumer>(notifd_event_consumer, notifd_rw_lock);
+        }
+    }
+
+    TANGO_THROW_EXCEPTION(API_InvalidArgs, "Could not find event consumer for ptr");
+}
+
+void ApiUtil::shutdown_event_consumers()
+{
+    {
+        WriterLock lock{notifd_rw_lock};
+
+        if(notifd_event_consumer != nullptr)
+        {
+            notifd_event_consumer->shutdown();
+
+            //
+            // Shut-down the notifd ORB and wait for the thread to exit
+            //
+
+            int *rv;
+            notifd_event_consumer->orb_->shutdown(true);
+            notifd_event_consumer->join((void **) &rv);
+            notifd_event_consumer = nullptr;
+        }
+    }
+
+    {
+        WriterLock lock{zmq_rw_lock};
+
+        if(zmq_event_consumer != nullptr)
+        {
+            int *rv;
+            zmq_event_consumer->shutdown();
+            zmq_event_consumer->join((void **) &rv);
+            zmq_event_consumer = nullptr;
+        }
+    }
 }
 
 //+-----------------------------------------------------------------------------------------------------------------

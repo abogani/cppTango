@@ -71,3 +71,24 @@ SCENARIO("AttributeProxy basic functionality")
         }
     }
 }
+
+SCENARIO("AttributeProxy: Bails when unsubscribing without subscriptions")
+{
+    int idlver = GENERATE(TangoTest::idlversion(3));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"attr_proxy_dev", "AttrProxyDev", idlver};
+        auto device = ctx.get_proxy();
+
+        WHEN("we can create an AttributeProxy to it")
+        {
+            using namespace TangoTest::Matchers;
+
+            auto ap = Tango::AttributeProxy(device.get(), "attr_dq_db");
+
+            REQUIRE_THROWS_MATCHES(ap.unsubscribe_event(4711),
+                                   Tango::DevFailed,
+                                   ErrorListMatches(AnyMatch(Reason(Tango::API_EventNotFound))));
+        }
+    }
+}

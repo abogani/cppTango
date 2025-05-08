@@ -53,6 +53,8 @@
   #include <netinet/in.h> // Needed for systems that do not include this file from arpa/inet.h
 #endif
 
+#include <tango/common/pointer_with_lock.h>
+
 using namespace CORBA;
 
 namespace Tango
@@ -109,10 +111,6 @@ DoubleBuffer<PerfMonSample> g_perf_mon;
 PerfMonSample *g_current_perf_mon_sample = nullptr;
 } // namespace
 
-ZmqEventConsumer *ZmqEventConsumer::_instance = nullptr;
-
-// omni_mutex EventConsumer::ev_consumer_inst_mutex;
-
 /************************************************************************/
 /*                                                                           */
 /*             ZmqEventConsumer class                                         */
@@ -127,7 +125,6 @@ ZmqEventConsumer::ZmqEventConsumer(ApiUtil *ptr) :
 
 {
     TANGO_LOG_DEBUG << "calling Tango::ZmqEventConsumer::ZmqEventConsumer() \n";
-    _instance = this;
 
     //
     // Initialize the var references
@@ -143,27 +140,6 @@ ZmqEventConsumer::ZmqEventConsumer(ApiUtil *ptr) :
     del = new DevErrorList();
 
     start_undetached();
-}
-
-ZmqEventConsumer *ZmqEventConsumer::create()
-{
-    omni_mutex_lock guard(ev_consumer_inst_mutex);
-
-    //
-    // check if the ZmqEventConsumer singleton exists, if so return it
-    //
-
-    if(_instance != nullptr)
-    {
-        return _instance;
-    }
-
-    //
-    // ZmqEventConsumer singleton does not exist, create it
-    //
-
-    ApiUtil *ptr = ApiUtil::instance();
-    return new ZmqEventConsumer(ptr);
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -478,8 +454,11 @@ void *ZmqEventConsumer::run_undetached(TANGO_UNUSED(void *arg))
             if(ret)
             {
                 delete heartbeat_sub_sock;
+                heartbeat_sub_sock = nullptr;
                 delete control_sock;
+                control_sock = nullptr;
                 delete[] items;
+                items = nullptr;
 
                 break;
             }
@@ -1328,6 +1307,7 @@ void ZmqEventConsumer::cleanup_EventChannel_map()
     {
         EventCallBackStruct &evt_cb = cb_it->second;
         delete evt_cb.callback_monitor;
+        evt_cb.callback_monitor = nullptr;
     }
 
     //
@@ -4248,8 +4228,7 @@ void Tango::ZmqDevPipeDataElt::operator<<=(TangoCdrMemoryStream &_n)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-DelayEvent::DelayEvent(EventConsumer *ec)
-
+DelayEvent::DelayEvent(const PointerWithLock<EventConsumer> &ec)
 {
     std::string str;
     ec->get_subscription_command_name(str);
@@ -4260,7 +4239,12 @@ DelayEvent::DelayEvent(EventConsumer *ec)
 
     if(str[0] == 'Z')
     {
-        eve_con = static_cast<ZmqEventConsumer *>(ec);
+        auto eve_con = ApiUtil::instance()->get_zmq_event_consumer_derived(ec.operator->());
+
+        //
+        // Do something only for ZMQ event system
+        //
+
         zmq::message_t reply;
 
         try
@@ -4369,81 +4353,103 @@ DelayEvent::DelayEvent(EventConsumer *ec)
     }
 }
 
+DelayEvent::DelayEvent(EventConsumer *ec) :
+    DelayEvent(ApiUtil::instance()->get_locked_event_consumer(ec))
+{
+}
+
 DelayEvent::~DelayEvent()
 {
-    if(!released)
+    try
     {
         release();
+    }
+    catch(CORBA::Exception &e)
+    {
+        Tango::Except::print_exception(e);
+    }
+    catch(std::exception &e)
+    {
+        std::cerr << "DelayEvent::~DelayEvent(): std::exception thrown: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "DelayEvent::~DelayEvent(): Unknown exception thrown " << std::endl;
     }
 }
 
 void DelayEvent::release()
 {
-    if(eve_con != nullptr)
+    auto ec = ApiUtil::instance()->get_zmq_event_consumer();
+
+    if(ec == nullptr)
     {
-        zmq::message_t reply;
+        return;
+    }
 
-        try
-        {
-            zmq::socket_t sender(eve_con->zmq_context, ZMQ_REQ);
-            sender.connect(CTRL_SOCK_ENDPOINT);
+    auto eve_con = ApiUtil::instance()->get_zmq_event_consumer_derived(ec.operator->());
 
-            //
-            // Build message sent to ZMQ main thread. In this case, this is only a command code
-            //
+    zmq::message_t reply;
 
-            char buffer[10];
-            int length = 0;
-
-            buffer[length] = ZMQ_RELEASE_EVENT;
-            length++;
-
-            //
-            // Send command to main ZMQ thread
-            //
-
-            zmq::message_t send_data(length);
-            ::memcpy(send_data.data(), buffer, length);
-            auto result = sender.send(send_data, zmq::send_flags::none);
-            TANGO_ASSERT(result);
-
-            result = sender.recv(reply);
-            TANGO_ASSERT(result);
-
-            released = true;
-            eve_con->subscription_monitor.rel_monitor();
-        }
-        catch(zmq::error_t &e)
-        {
-            eve_con->subscription_monitor.rel_monitor();
-
-            TangoSys_OMemStream o;
-
-            o << "Failed to delay event!\n";
-            o << "Error while communicating with the ZMQ main thread\n";
-            o << "ZMQ message: " << e.what() << std::ends;
-
-            TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
-        }
+    try
+    {
+        zmq::socket_t sender(eve_con->zmq_context, ZMQ_REQ);
+        sender.connect(CTRL_SOCK_ENDPOINT);
 
         //
-        // In case of error returned by the main ZMQ thread
+        // Build message sent to ZMQ main thread. In this case, this is only a command code
         //
 
-        if(reply.size() != 2)
-        {
-            char err_mess[512];
-            ::memcpy(err_mess, reply.data(), reply.size());
-            err_mess[reply.size()] = '\0';
+        char buffer[10];
+        int length = 0;
 
-            TangoSys_OMemStream o;
+        buffer[length] = ZMQ_RELEASE_EVENT;
+        length++;
 
-            o << "Failed to release event!\n";
-            o << "Error while trying to ask the ZMQ thread to release events\n";
-            o << "ZMQ message: " << err_mess << std::ends;
+        //
+        // Send command to main ZMQ thread
+        //
 
-            TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
-        }
+        zmq::message_t send_data(length);
+        ::memcpy(send_data.data(), buffer, length);
+        auto result = sender.send(send_data, zmq::send_flags::none);
+        TANGO_ASSERT(result);
+
+        result = sender.recv(reply);
+        TANGO_ASSERT(result);
+
+        eve_con->subscription_monitor.rel_monitor();
+    }
+    catch(zmq::error_t &e)
+    {
+        eve_con->subscription_monitor.rel_monitor();
+
+        TangoSys_OMemStream o;
+
+        o << "Failed to delay event!\n";
+        o << "Error while communicating with the ZMQ main thread\n";
+        o << "ZMQ message: " << e.what() << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
+    }
+
+    //
+    // In case of error returned by the main ZMQ thread
+    //
+
+    if(reply.size() != 2)
+    {
+        char err_mess[512];
+        ::memcpy(err_mess, reply.data(), reply.size());
+        err_mess[reply.size()] = '\0';
+
+        TangoSys_OMemStream o;
+
+        o << "Failed to release event!\n";
+        o << "Error while trying to ask the ZMQ thread to release events\n";
+        o << "ZMQ message: " << err_mess << std::ends;
+
+        TANGO_THROW_EXCEPTION(API_ZmqFailed, o.str());
     }
 }
 

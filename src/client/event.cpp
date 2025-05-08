@@ -35,6 +35,8 @@
 #include <tango/client/event_templ.h>
 #include <tango/server/tango_clock.h>
 
+#include <tango/common/pointer_with_lock.h>
+
 #include <cstdio>
 
 #ifdef _TG_WINDOWS_
@@ -86,56 +88,35 @@ void leavefunc()
         already_executed = false;
     }
 
+    if(already_executed)
+    {
+        return;
+    }
+
     //
     // Kill locking threads (if any)
     //
-
-    if(!already_executed)
-    {
-        au->clean_locking_threads();
-    }
+    au->clean_locking_threads();
 
     //
     // Manage event stuff
     //
+    auto notifd_available = au->is_notifd_event_consumer_created();
 
-    NotifdEventConsumer *notifd_ec = au->get_notifd_event_consumer();
-
-    if(notifd_ec != nullptr && !already_executed)
-    {
-        notifd_ec->shutdown();
-
-        //
-        // Shut-down the notifd ORB and wait for the thread to exit
-        //
-
-        int *rv;
-        notifd_ec->orb_->shutdown(true);
-        notifd_ec->join((void **) &rv);
-    }
-
-    ZmqEventConsumer *zmq_ec = au->get_zmq_event_consumer();
-
-    if(zmq_ec != nullptr && !already_executed)
-    {
-        zmq_ec->shutdown();
-    }
+    au->shutdown_event_consumers();
 
     //
     // Shutdown and destroy the ORB
     //
-
-    if(!already_executed)
+    CORBA::ORB_var orb = au->get_orb();
+    if(!notifd_available)
     {
-        if(notifd_ec == nullptr)
-        {
-            CORBA::ORB_var orb = au->get_orb();
-            orb->shutdown(true);
-            orb->destroy();
-        }
-        already_executed = true;
-        au->need_reset_already_flag(false);
+        orb->shutdown(true);
+        orb->destroy();
     }
+
+    already_executed = true;
+    au->need_reset_already_flag(false);
 }
 
 //+--------------------------------------------------------------------------------------------------------------------
@@ -1969,6 +1950,13 @@ std::string EventConsumer::get_client_attribute_name(const std::string &local_ca
 
 void EventConsumer::unsubscribe_event(int event_id)
 {
+    if(keep_alive_thread == nullptr)
+    {
+        // we are shutting down the event system
+        // nothing left to do
+        return;
+    }
+
     if(event_id == 0)
     {
         TANGO_THROW_DETAILED_EXCEPTION(

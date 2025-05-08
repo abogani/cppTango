@@ -1703,6 +1703,9 @@ struct tango_type_traits<Tango::DevVarDoubleStringArray>
     }
 };
 
+template <typename T>
+class PointerWithLock;
+
 } // namespace Tango
 
 #endif /* TANGO_CONST_H */
