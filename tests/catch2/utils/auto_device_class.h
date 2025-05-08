@@ -4,6 +4,7 @@
 #include <tango/tango.h>
 
 #include <functional>
+#include <memory>
 #include <type_traits>
 
 #include <tango/internal/type_traits.h>
@@ -130,10 +131,10 @@ class AutoDeviceClass : public Tango::DeviceClass
                 continue;
             }
 
-            auto dev = new Device{this, name};
+            auto dev = std::make_unique<Device>(this, name);
             dev->init_device();
 
-            device_list.push_back(dev);
+            device_list.push_back(dev.release());
 
             if(tg->use_db() && !tg->use_file_db())
             {
