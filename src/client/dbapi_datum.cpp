@@ -102,6 +102,11 @@ DbDatum::DbDatum(const DbDatum &source) :
 
 DbDatum &DbDatum::operator=(const DbDatum &rval)
 {
+    if(this == &rval)
+    {
+        return *this;
+    }
+
     name = rval.name;
     value_string = rval.value_string;
     value_type = rval.value_type;

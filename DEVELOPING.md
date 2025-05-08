@@ -36,10 +36,11 @@ Below are some comments worth noticing:
 * default [configuration file](.clang-tidy) contains a list of checks that
   are verified in the CI pipeline.
 
-Example commands to run clang-tidy on all files (excluding the tests):
+Example commands to run clang-tidy on all files (excluding the old tests):
 ```
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=0 ...
-run-clang-tidy.py -header-filter='.*' 'src/(?!server/idl)' 'log4tango/src'
+cmake -B build -S . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=0
+cmake --build build --target idl_source
+run-clang-tidy.py -p build -header-filter='.*' 'src' 'log4tango/src' 'tests/catch2*'
 ```
 
 # Code style checks

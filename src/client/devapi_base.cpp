@@ -225,6 +225,11 @@ Connection::Connection(const Connection &sou) :
 
 Connection &Connection::operator=(const Connection &rval)
 {
+    if(this == &rval)
+    {
+        return *this;
+    }
+
     dbase_used = rval.dbase_used;
     from_env_var = rval.from_env_var;
     host = rval.host;

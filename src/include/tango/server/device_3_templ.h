@@ -189,11 +189,16 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                                 attr.add_config_5_specific(conf5);
                                 tmp_conf_ptr5 = &conf5;
 
-                                ::memcpy(&(ad.attr_conf_5), &(tmp_conf_ptr5), sizeof(V *));
+                                ::memcpy(&(ad.attr_conf_5), // NOLINT(bugprone-bitwise-pointer-cast)
+                                         &(tmp_conf_ptr5),
+                                         sizeof(V *));
                             }
                             else
                             {
-                                ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *));
+                                ::memcpy( // NOLINT(bugprone-bitwise-pointer-cast)
+                                    &(ad.attr_conf_3),
+                                    &(tmp_ptr),
+                                    sizeof(V *));
                             }
 
                             if(event_supplier_nd != nullptr)
@@ -226,11 +231,16 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                                 attr.AttributeConfig_5_2_AttributeConfig_3(mod_conf, conf3);
                                 tmp_conf_ptr = &conf3;
 
-                                ::memcpy(&(ad.attr_conf_3), &(tmp_conf_ptr), sizeof(V *));
+                                ::memcpy(&(ad.attr_conf_3), // NOLINT(bugprone-bitwise-pointer-cast)
+                                         &(tmp_conf_ptr),
+                                         sizeof(V *));
                             }
                             else
                             {
-                                ::memcpy(&(ad.attr_conf_5), &(tmp_ptr), sizeof(V *));
+                                ::memcpy( // NOLINT(bugprone-bitwise-pointer-cast)
+                                    &(ad.attr_conf_5),
+                                    &(tmp_ptr),
+                                    sizeof(V *));
                             }
 
                             if(event_supplier_nd != nullptr)
@@ -257,7 +267,7 @@ void Device_3Impl::set_attribute_config_3_local(const T &new_conf,
                 }
                 else
                 {
-                    ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *));
+                    ::memcpy(&(ad.attr_conf_3), &(tmp_ptr), sizeof(V *)); // NOLINT(bugprone-bitwise-pointer-cast)
 
                     if(event_supplier_nd != nullptr)
                     {
