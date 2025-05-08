@@ -782,20 +782,13 @@ void DeviceImpl::black_box_create()
     // default depth
     //
 
-    try
+    if(blackbox_depth == 0)
     {
-        if(blackbox_depth == 0)
-        {
-            blackbox_ptr = new BlackBox();
-        }
-        else
-        {
-            blackbox_ptr = new BlackBox(blackbox_depth);
-        }
+        blackbox_ptr = new BlackBox();
     }
-    catch(std::bad_alloc &)
+    else
     {
-        throw;
+        blackbox_ptr = new BlackBox(blackbox_depth);
     }
 }
 
