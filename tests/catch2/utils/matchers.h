@@ -327,6 +327,12 @@ class EventTypeMatcher : public Catch::Matchers::MatcherGenericBase
         return event->event == Tango::EventName[m_event_type];
     }
 
+    template <typename T>
+    bool match(const T &event) const
+    {
+        return event->event == Tango::EventName[m_event_type];
+    }
+
     std::string describe() const override
     {
         std::ostringstream os;
