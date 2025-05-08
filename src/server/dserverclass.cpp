@@ -43,6 +43,7 @@
 #include <tango/client/Database.h>
 
 #include <algorithm>
+#include <memory>
 
 namespace Tango
 {
@@ -1621,12 +1622,12 @@ void DServerClass::device_factory(const Tango::DevVarStringArray *devlist_ptr)
         //
         // Create device and add it into the device list
         //
-        DServer *dserver =
-            new DServer(this, (*devlist_ptr)[i], "A device server device !!", Tango::ON, "The device is ON");
+        auto dserver = std::make_unique<DServer>(
+            this, (*devlist_ptr)[i], "A device server device !!", Tango::ON, "The device is ON");
 
         dserver->init_device();
 
-        device_list.push_back(dserver);
+        device_list.push_back(dserver.release());
 
         //
         // Export device to the outside world
