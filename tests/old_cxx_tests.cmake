@@ -63,7 +63,7 @@ target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_DEFS})
 target_link_libraries(conf_devtest PUBLIC Tango::Tango ${CMAKE_DL_LIBS})
 target_precompile_headers(conf_devtest PRIVATE ${TANGO_SOURCE_DIR}/src/include/tango/tango.h)
 add_library(common_test_lib OBJECT compare_test.cpp compare_test.h common.cpp cxx_common.h)
-target_compile_definitions(common_test_lib PRIVATE ${COMMON_TEST_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
+target_compile_definitions(common_test_lib PRIVATE ${COMMON_TEST_DEFS})
 target_link_libraries(common_test_lib PUBLIC Tango::Tango ${CMAKE_DL_LIBS})
 
 add_subdirectory(device_server)
