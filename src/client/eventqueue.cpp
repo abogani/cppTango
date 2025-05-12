@@ -29,8 +29,10 @@
 //
 //===================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/event.h>
+#include <tango/server/logging.h>
+
+#include <iostream>
 
 namespace Tango
 {

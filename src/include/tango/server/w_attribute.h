@@ -34,10 +34,13 @@
 #ifndef _WATTRIBUTE_H
 #define _WATTRIBUTE_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
+#include <tango/server/attribute.h>
 #include <tango/server/attrdesc.h>
-#include <functional>
-#include <time.h>
+
+#include <ctime>
+#include <string>
+#include <vector>
 
 namespace Tango
 {
@@ -111,7 +114,7 @@ class WAttribute : public Attribute
      *
      * @param min_value Reference to a variable which represents the new min value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T> || std::is_same_v<T, std::string>> * = nullptr>
     void set_min_value(const T &min_value);
 
     /**
@@ -134,7 +137,7 @@ class WAttribute : public Attribute
      * @param min_value Reference to a variable which value will be set to the attribute's
      * minimum value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_min_value(T &min_value);
 
     /**
@@ -153,7 +156,7 @@ class WAttribute : public Attribute
      *
      * @param max_value Reference to a variable which represents the new max value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T> || std::is_same_v<T, std::string>> * = nullptr>
     void set_max_value(const T &max_value);
 
     /**
@@ -175,7 +178,7 @@ class WAttribute : public Attribute
      * @param max_value Reference to a variable which value will be set to the attribute's
      * maximum value
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_max_value(T &max_value);
     //@}
 
@@ -543,8 +546,23 @@ class WAttribute : public Attribute
      * @param y The attribute set value y length. Default value is 0
 
      */
-    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_write_value(T *val, size_t x = 1, size_t y = 0);
+
+    /**@name Set new value for attribute
+     * Miscellaneous method to set a WAttribute value
+     */
+    //@{
+    /**
+     * Set the writable scalar attribute value when the attribute
+     * data type is not an enum.
+     *
+     * @param val The value to set as the attribute setpoint
+
+     */
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void set_write_value(T val);
+
     /**@name Set new value for attribute
      * Miscellaneous method to set a WAttribute value
      */
@@ -573,7 +591,7 @@ class WAttribute : public Attribute
      * @param y The attribute set value y length. Default value is 0
 
      */
-    template <class T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_write_value(std::vector<T> &val, size_t x = 1, size_t y = 0);
 
     /**
@@ -597,7 +615,7 @@ class WAttribute : public Attribute
      *
      * @param val A vector of std::string
      */
-    void set_write_value(std::vector<std::string> &val, size_t x, size_t y);
+    void set_write_value(std::vector<std::string> &val, size_t x = 1, size_t y = 0);
     //@}
 
     /// @privatesection
@@ -607,9 +625,6 @@ class WAttribute : public Attribute
 
     template <typename T>
     void get_write_value(const T *&);
-
-    template <typename T>
-    void set_write_value(T);
 
     void set_write_value(Tango::DevEncoded *, long x = 1, long y = 0); // Dummy method for compiler
 
@@ -785,97 +800,6 @@ class WAttribute : public Attribute
     bool check_rds_alarm() override;
 
   private:
-    void check_length(const unsigned int nb_data, unsigned long x, unsigned long y)
-    {
-        if(((y == 0u) && nb_data != x) || ((y != 0u) && nb_data != (x * y)))
-        {
-            TANGO_THROW_EXCEPTION(API_AttrIncorrectDataNumber, "Incorrect data number");
-        }
-    }
-
-    /**
-     * method :
-     *        WAttribute::check_data_limits()
-     *
-     * description :
-     *        Check if the data received from client is valid.
-     *      It will check for nan value if needed, if itis not below the min (if one defined) or above the max
-     *      (if one defined), and for enum if it is in the accepted range.
-     *       This method throws exception in case of threshold violation.
-     *
-     * args :
-     *        in :
-     *          - nb_data : Data number
-     *          - seq : The received data
-     *          - min : The min allowed value
-     *          - max : The max allowed value
-     */
-    template <typename T>
-    void check_data_limits(size_t, const typename tango_type_traits<T>::ArrayType &, Attr_CheckVal &, Attr_CheckVal &);
-
-    /**
-     * Check that provided enum is within limits.
-     * On data_type that are not enum, do nothing.
-     * Check that all the values provided are lower than the size of enum_labels.
-     * @param buffer with the data to be checked
-     * @param data_size number of elements in the buffer
-     */
-    template <class T>
-    void check_enum(const typename tango_type_traits<T>::ArrayType &, size_t);
-
-    /**
-     * description :     Check the value sent by the caller and copy incoming data
-     *                    for SCALAR attribute only
-     *
-     * in :            any : Reference to the object, can be union or CORBA Any
-     *                      dim_x: dim_x
-     *                      dim_y: dim_y
-     */
-    template <class T>
-    void _update_any_written_value(const T &, size_t, size_t);
-
-    /**
-     * description :     Check the value sent by the caller and copy incoming data
-     *                    for SCALAR attribute only
-     *
-     * in :            any : Reference to the object CORBA Any
-     *                      dim_x: dim_x
-     *                      dim_y: dim_y
-     */
-    template <class T>
-    void _update_written_value(const CORBA::Any &, size_t, size_t);
-
-    /**
-     * description :     Check the value sent by the caller and copy incoming data
-     *                    for SCALAR attribute only
-     *
-     * in :            any : Reference to the object AttrValUnion
-     *                      dim_x: dim_x
-     *                      dim_y: dim_y
-     */
-    template <class T>
-    void _update_written_value(const Tango::AttrValUnion &, size_t, size_t);
-
-    /**
-     * Update internal sequence with provided buffer.
-     * Check if the data is in the permitted limit, if not do not update.
-     * Update the attribute value with the buffer.
-     * Update the dim_x and dim_y properties.
-     * @param buffer with the new value
-     * @param dim_x, new dim_x.
-     * @param dim_y, new dim_y, note that for scalar, this value is ignored.
-     */
-    template <class T>
-    void update_internal_sequence(const typename tango_type_traits<T>::ArrayType &, size_t, size_t);
-
-    /**
-     * Update internal sequence with provided buffer.
-     * The old value is kept, and then the new value is set in internal storage.
-     * Update the attribute value with the buffer.
-     * @param buffer with the new value
-     */
-    template <class T>
-    void _update_value(const T &);
     /**
      * Get a ref to a pointer for the internal field for the value.
      * Do not manage memory.
@@ -902,24 +826,6 @@ class WAttribute : public Attribute
      */
     template <class T>
     T &get_old_value();
-
-    template <class T>
-    void _copy_data(const CORBA::Any &);
-
-    template <class T>
-    void _copy_data(const Tango::AttrValUnion &);
-
-    /*
-     * method :         WAttribute::copy_any_data
-     *
-     * description :     Copy data into the attribute object in order to return
-     *            them in case of a read on this attribute
-     *            Data is copied to the buffer returned with get_last_written_value.
-     *
-     * in :            any : Reference to the CORBA Any object or the AttrValUnion
-     */
-    template <class T>
-    void _copy_any_data(const T &data);
 
     template <typename T>
     void check_type(const std::string &);
@@ -1022,8 +928,315 @@ class WAttribute : public Attribute
     DevErrorList mem_exception;   // Exception received at start-up in case writing the
                                   // memorized att. failed
     bool mem_write_failed{false}; // Flag set to true if the memorized att setting failed
+    template <class T>
+    friend void _update_value(Tango::WAttribute &attr, const T &seq);
 };
 
+template <>
+inline const Tango::DevShort *&WAttribute::get_write_value_ptr()
+{
+    return short_ptr;
+}
+
+template <>
+inline Tango::DevVarShortArray &WAttribute::get_last_written_value()
+{
+    return short_array_val;
+}
+
+template <>
+inline Tango::DevShort &WAttribute::get_write_value()
+{
+    return short_val;
+}
+
+template <>
+inline Tango::DevShort &WAttribute::get_old_value()
+{
+    return old_short_val;
+}
+
+template <>
+inline const Tango::DevUShort *&WAttribute::get_write_value_ptr()
+{
+    return ushort_ptr;
+}
+
+template <>
+inline Tango::DevVarUShortArray &WAttribute::get_last_written_value()
+{
+    return ushort_array_val;
+}
+
+template <>
+inline Tango::DevUShort &WAttribute::get_write_value()
+{
+    return ushort_val;
+}
+
+template <>
+inline Tango::DevUShort &WAttribute::get_old_value()
+{
+    return old_ushort_val;
+}
+
+template <>
+inline const Tango::DevLong *&WAttribute::get_write_value_ptr()
+{
+    return long_ptr;
+}
+
+template <>
+inline Tango::DevVarLongArray &WAttribute::get_last_written_value()
+{
+    return long_array_val;
+}
+
+template <>
+inline Tango::DevLong &WAttribute::get_write_value()
+{
+    return long_val;
+}
+
+template <>
+inline Tango::DevLong &WAttribute::get_old_value()
+{
+    return old_long_val;
+}
+
+template <>
+inline const Tango::DevULong *&WAttribute::get_write_value_ptr()
+{
+    return ulong_ptr;
+}
+
+template <>
+inline Tango::DevVarULongArray &WAttribute::get_last_written_value()
+{
+    return ulong_array_val;
+}
+
+template <>
+inline Tango::DevULong &WAttribute::get_write_value()
+{
+    return ulong_val;
+}
+
+template <>
+inline Tango::DevULong &WAttribute::get_old_value()
+{
+    return old_ulong_val;
+}
+
+template <>
+inline const Tango::DevLong64 *&WAttribute::get_write_value_ptr()
+{
+    return long64_ptr;
+}
+
+template <>
+inline Tango::DevVarLong64Array &WAttribute::get_last_written_value()
+{
+    return long64_array_val;
+}
+
+template <>
+inline Tango::DevLong64 &WAttribute::get_write_value()
+{
+    return long64_val;
+}
+
+template <>
+inline Tango::DevLong64 &WAttribute::get_old_value()
+{
+    return old_long64_val;
+}
+
+template <>
+inline const Tango::DevULong64 *&WAttribute::get_write_value_ptr()
+{
+    return ulong64_ptr;
+}
+
+template <>
+inline Tango::DevVarULong64Array &WAttribute::get_last_written_value()
+{
+    return ulong64_array_val;
+}
+
+template <>
+inline Tango::DevULong64 &WAttribute::get_write_value()
+{
+    return ulong64_val;
+}
+
+template <>
+inline Tango::DevULong64 &WAttribute::get_old_value()
+{
+    return old_ulong64_val;
+}
+
+template <>
+inline const Tango::DevDouble *&WAttribute::get_write_value_ptr()
+{
+    return double_ptr;
+}
+
+template <>
+inline Tango::DevVarDoubleArray &WAttribute::get_last_written_value()
+{
+    return double_array_val;
+}
+
+template <>
+inline Tango::DevDouble &WAttribute::get_write_value()
+{
+    return double_val;
+}
+
+template <>
+inline Tango::DevDouble &WAttribute::get_old_value()
+{
+    return old_double_val;
+}
+
+template <>
+inline const Tango::DevFloat *&WAttribute::get_write_value_ptr()
+{
+    return float_ptr;
+}
+
+template <>
+inline Tango::DevVarFloatArray &WAttribute::get_last_written_value()
+{
+    return float_array_val;
+}
+
+template <>
+inline Tango::DevFloat &WAttribute::get_write_value()
+{
+    return float_val;
+}
+
+template <>
+inline Tango::DevFloat &WAttribute::get_old_value()
+{
+    return old_float_val;
+}
+
+template <>
+inline const Tango::ConstDevString *&WAttribute::get_write_value_ptr()
+{
+    return str_ptr;
+}
+
+template <>
+inline Tango::DevVarStringArray &WAttribute::get_last_written_value()
+{
+    return str_array_val;
+}
+
+template <>
+inline Tango::DevString &WAttribute::get_write_value()
+{
+    return str_val;
+}
+
+template <>
+inline Tango::DevString &WAttribute::get_old_value()
+{
+    return old_str_val;
+}
+
+template <>
+inline const Tango::DevState *&WAttribute::get_write_value_ptr()
+{
+    return state_ptr;
+}
+
+template <>
+inline Tango::DevVarStateArray &WAttribute::get_last_written_value()
+{
+    return state_array_val;
+}
+
+template <>
+inline Tango::DevState &WAttribute::get_write_value()
+{
+    return dev_state_val;
+}
+
+template <>
+inline Tango::DevState &WAttribute::get_old_value()
+{
+    return old_dev_state_val;
+}
+
+template <>
+inline const Tango::DevBoolean *&WAttribute::get_write_value_ptr()
+{
+    return boolean_ptr;
+}
+
+template <>
+inline Tango::DevVarBooleanArray &WAttribute::get_last_written_value()
+{
+    return boolean_array_val;
+}
+
+template <>
+inline Tango::DevBoolean &WAttribute::get_write_value()
+{
+    return boolean_val;
+}
+
+template <>
+inline Tango::DevBoolean &WAttribute::get_old_value()
+{
+    return old_boolean_val;
+}
+
+template <>
+inline const Tango::DevEncoded *&WAttribute::get_write_value_ptr()
+{
+    return encoded_ptr;
+}
+
+template <>
+inline Tango::DevEncoded &WAttribute::get_write_value()
+{
+    return encoded_val;
+}
+
+template <>
+inline Tango::DevEncoded &WAttribute::get_old_value()
+{
+    return old_encoded_val;
+}
+
+template <>
+inline const Tango::DevUChar *&WAttribute::get_write_value_ptr()
+{
+    return uchar_ptr;
+}
+
+template <>
+inline Tango::DevVarCharArray &WAttribute::get_last_written_value()
+{
+    return uchar_array_val;
+}
+
+template <>
+inline Tango::DevUChar &WAttribute::get_write_value()
+{
+    return uchar_val;
+}
+
+template <>
+inline Tango::DevUChar &WAttribute::get_old_value()
+{
+    return old_uchar_val;
+}
 } // namespace Tango
 
 #endif // _WATTRIBUTE_H

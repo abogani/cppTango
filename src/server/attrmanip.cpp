@@ -29,8 +29,8 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/attrmanip.h>
+#include <tango/server/tango_config.h>
 
 namespace Tango
 {

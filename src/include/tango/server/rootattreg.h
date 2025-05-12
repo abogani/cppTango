@@ -33,10 +33,17 @@
 #ifndef _ROOTATTREG_H
 #define _ROOTATTREG_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/client/CallBack.h>
+#include <tango/server/readers_writers_lock.h>
+
+#include <string>
+#include <map>
 
 namespace Tango
 {
+class FwdAttr;
+class DeviceProxy;
 
 struct NameFwdAttr
 {

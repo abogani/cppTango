@@ -30,9 +30,12 @@
 //
 //+==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/internal/net.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/pipe.h>
+#include <tango/server/device.h>
+#include <tango/server/dserver.h>
+#include <tango/server/utils.h>
 #include <tango/client/apiexcept.h>
 
 #include <omniORB4/internal/giopStream.h>

@@ -46,12 +46,12 @@
 #ifndef _CLASS_ATTRIBUTE_H
 #define _CLASS_ATTRIBUTE_H
 
-#include <tango/tango.h>
-// #include <attrdesc.h>
-#include <functional>
+#include <string>
+#include <vector>
 
 namespace Tango
 {
+class Attr;
 
 //=============================================================================
 //

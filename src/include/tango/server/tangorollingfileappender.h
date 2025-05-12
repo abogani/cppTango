@@ -30,6 +30,8 @@
 #ifndef _LOG4TANGO_TANGO_ROLLING_FILE_APPENDER_H_
 #define _LOG4TANGO_TANGO_ROLLING_FILE_APPENDER_H_
 
+#include <tango/common/log4tango/RollingFileAppender.h>
+
 namespace Tango
 {
 class TangoRollingFileAppender : public log4tango::RollingFileAppender

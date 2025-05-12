@@ -33,10 +33,15 @@
 #ifndef _DEVICE_6_H
 #define _DEVICE_6_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/device_5.h>
+
+#include <string>
+#include <memory>
 
 namespace Tango
 {
+class DeviceClass;
 
 //==================================================================================================================
 //

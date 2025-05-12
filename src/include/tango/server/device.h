@@ -32,22 +32,23 @@
 #ifndef _DEVICE_H
 #define _DEVICE_H
 
-#include <tango/tango.h>
 #include <tango/server/blackbox.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/classpipe.h>
 #include <tango/server/attrdesc.h>
 #include <tango/server/attribute.h>
-#include <tango/server/w_attribute.h>
-#include <tango/server/fwdattribute.h>
 #include <tango/server/multiattribute.h>
 #include <tango/server/pollobj.h>
 #include <tango/server/deviceclass.h>
-#include <tango/server/devintr.h>
 #include <tango/server/dintrthread.h>
 #include <tango/server/event_subscription_state.h>
 #include <tango/server/auto_tango_monitor.h>
 #include <tango/common/telemetry/telemetry.h>
+
+#include <string_view>
+#include <vector>
+#include <map>
+#include <algorithm>
 
 namespace Tango
 {
@@ -58,6 +59,8 @@ class EventSupplier;
 class EventSubscriptionChangeCmd;
 class Util;
 class FwdWrongConf;
+class DbDevice;
+class DevicePipeBlob;
 
 /** @defgroup Server Server classes */
 

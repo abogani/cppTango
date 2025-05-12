@@ -32,9 +32,11 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
+#include <tango/server/utils.h>
+#include <tango/server/dserver.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

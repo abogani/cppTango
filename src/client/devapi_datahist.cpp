@@ -29,7 +29,9 @@
 //
 //
 
-#include <tango/tango.h>
+#include <tango/client/devapi.h>
+#include <tango/server/seqvec.h>
+#include <tango/server/tango_clock.h>
 #include <iomanip>
 #include <memory>
 

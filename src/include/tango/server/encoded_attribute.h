@@ -35,11 +35,15 @@
 #ifndef _ENCODED_ATT_H
 #define _ENCODED_ATT_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
 #include <tango/server/encoded_format.h>
+
+#include <memory>
+#include <cstdlib>
 
 namespace Tango
 {
+class DeviceAttribute;
 
 /**
  * This class provides method to deal with Tango::DevEncoded attribute format.

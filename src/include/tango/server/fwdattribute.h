@@ -32,11 +32,14 @@
 #ifndef _FWDATTRIBUTE_H
 #define _FWDATTRIBUTE_H
 
-#include <tango/tango.h>
+#include <tango/server/w_attribute.h>
+#include <tango/client/devapi.h>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>
 #endif
+
+#include <string>
 
 namespace Tango
 {
@@ -83,9 +86,6 @@ class FwdAttribute : public WAttribute
 
     template <typename T>
     void set_local_attribute(DeviceAttribute &, T *&);
-
-    template <typename T, typename V>
-    void propagate_writen_data(DeviceAttribute &da, WAttribute &attr, T *&, V *&);
 
     template <typename T>
     bool new_att_conf_base(const T &);

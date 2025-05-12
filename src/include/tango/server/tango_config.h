@@ -32,8 +32,8 @@
 #ifndef _TANGO_CONFIG_H
 #define _TANGO_CONFIG_H
 
-#include <chrono>
-#include <thread>
+#include <sstream>
+#include <ostream>
 
 //
 // Add some define for Win32 and omniORB

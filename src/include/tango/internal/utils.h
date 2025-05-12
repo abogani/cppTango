@@ -1,14 +1,18 @@
 #ifndef _INTERNAL_UTILS_H
 #define _INTERNAL_UTILS_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
 
 #include <iostream>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <vector>
+
+namespace Tango
+{
+class DeviceAttribute;
+}
 
 namespace Tango::detail
 {

@@ -34,8 +34,10 @@
 #ifndef _POLLRING_H
 #define _POLLRING_H
 
-#include <tango/tango.h>
 #include <tango/server/tango_clock.h>
+#include <tango/common/tango_const.h>
+
+#include <vector>
 
 namespace Tango
 {
@@ -95,9 +97,6 @@ class PollRing
     void insert_data(Tango::AttributeValueList_4 *, PollClock::time_point, bool);
     void insert_data(Tango::AttributeValueList_5 *, PollClock::time_point, bool);
     void insert_except(Tango::DevFailed *, PollClock::time_point);
-
-    template <typename T>
-    void force_copy_data(T *);
 
     std::vector<PollClock::duration> get_delta_t(long nb);
     PollClock::time_point get_last_insert_date();

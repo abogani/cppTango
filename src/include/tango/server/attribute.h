@@ -32,19 +32,26 @@
 #ifndef _ATTRIBUTE_H
 #define _ATTRIBUTE_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/server/attrdesc.h>
 #include <tango/server/fwdattrdesc.h>
+#include <tango/server/classattribute.h>
 #include <tango/server/encoded_attribute.h>
 #include <tango/server/tango_clock.h>
+#include <tango/server/attrprop.h>
+#include <tango/server/logging.h>
 #include <tango/client/apiexcept.h>
+#include <tango/client/DbDatum.h>
 #include <tango/server/exception_reason_consts.h>
+#include <tango/common/utils/assert.h>
+#include <tango/server/tango_config.h>
 
-#include <functional>
 #include <iterator>
 #include <type_traits>
 #include <variant>
-#include <stdexcept>
+#include <vector>
+#include <map>
+#include <string>
 
 namespace Tango
 {
@@ -256,16 +263,6 @@ struct LastAttrValue
                const AttributeValue *,
                DevFailed *);
 };
-
-typedef enum prop_type
-{
-    MIN_VALUE = 0,
-    MAX_VALUE,
-    MIN_WARNING,
-    MAX_WARNING,
-    MIN_ALARM,
-    MAX_ALARM
-} PropType;
 
 class EventSupplier;
 
@@ -732,8 +729,8 @@ class Attribute
      *
      * @param props A MultiAttrProp object.
      */
-    template <typename T>
-    void get_properties(Tango::MultiAttrProp<T> &props);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void get_properties(MultiAttrProp<T> &);
     /**
      * Set all modifiable attribute properties in one call
      *
@@ -742,8 +739,8 @@ class Attribute
      *
      * @param props A MultiAttrProp object.
      */
-    template <typename T>
-    void set_properties(Tango::MultiAttrProp<T> &props);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void set_properties(const MultiAttrProp<T> &);
     /**
      * Set attribute serialization model
      *
@@ -810,8 +807,30 @@ class Attribute
      * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data,
      * or wrong Enum value.
      */
-    template <class T, std::enable_if_t<!std::is_enum_v<T> || std::is_same_v<T, Tango::DevState>, T> * = nullptr>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_value(T *p_data, long x = 1, long y = 0, bool release = false);
+
+    /**
+     * This method stores the attribute value inside the Attribute object and set current time as readout time
+     *
+     * The value will be later send to the client either as result of attribute readout of event value,
+     * or utilized to define current device State (when reading device State and warning/alarm levels are defined)
+     *
+     * After readout value will be destroyed.
+     *
+     * When release is true, we expect p_data to be allocated with operator new for SCALAR attributes and operator new[]
+     * otherwise. For the DevString's, when release is true we expect value to have been allocated with
+     * Tango::string_dup or equivalent.
+     *
+     * @param Tango::DevEncoded *p_data: pointer to value
+     * @param long x=1: the attribute x dimension
+     * @param long y=0: the attribute y dimension
+     * @param bool release: The release flag. If true, memory pointed to by p_data will be
+     *           freed after being send to the client. Default value is false.
+     * @exception DevFailed If the attribute data type is not coherent, enum labels are not defined, wrong size of data,
+     * or wrong Enum value.
+     */
+    void set_value(Tango::DevEncoded *p_data, long x = 1, long y = 0, bool release = false);
 
     /**
      * This is special realization for scalar C++11 scoped enum with short as underlying data type or old enum of
@@ -1259,8 +1278,9 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_min_alarm(const T &new_min_alarm);
+    void set_min_alarm(const std::string &new_min_alarm);
 
     /**
      * Set attribute minimum alarm.
@@ -1292,7 +1312,7 @@ class Attribute
      * @param min_al Reference to a variable which value will be set to the attribute's
      * minimum alarm
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_min_alarm(T &min_al);
 
     /**
@@ -1305,8 +1325,10 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_max_alarm(const T &new_max_alarm);
+    void set_max_alarm(const std::string &new_max_alarm);
+
     /**
      * Set attribute maximum alarm.
      *
@@ -1337,7 +1359,7 @@ class Attribute
      * @param max_al Reference to a variable which value will be set to the attribute's
      * maximum alarm
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void get_max_alarm(T &max_al);
 
     /**
@@ -1350,8 +1372,10 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_min_warning(const T &new_min_warning);
+    void set_min_warning(const std::string &new_min_warning);
+
     /**
      * Set attribute minimum warning.
      *
@@ -1382,8 +1406,8 @@ class Attribute
      * @param min_war Reference to a variable which value will be set to the attribute's
      * minimum warning
      */
-    template <typename T>
-    void get_min_warning(T &min_war);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void get_min_warning(T &min_warning);
 
     /**
      * Set attribute maximum warning.
@@ -1395,8 +1419,10 @@ class Attribute
      * Click <a href="https://tango-controls.readthedocs.io/en/latest/development/advanced/IDL.html#exceptions">here</a>
      * to read <b>DevFailed</b> exception specification
      */
-    template <typename T>
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
     void set_max_warning(const T &new_max_warning);
+    void set_max_warning(const std::string &new_max_warning);
+
     /**
      * Set attribute maximum warning.
      *
@@ -1427,8 +1453,8 @@ class Attribute
      * @param max_war Reference to a variable which value will be set to the attribute's
      * maximum warning
      */
-    template <typename T>
-    void get_max_warning(T &max_war);
+    template <class T, std::enable_if_t<Tango::is_tango_base_type_v<T>> * = nullptr>
+    void get_max_warning(T &max_warning);
     //@}
 
   protected:
@@ -1653,8 +1679,12 @@ class Attribute
         set_upd_properties(_c, d_name);
     }
 
-    template <typename T>
-    void set_upd_properties(const T &, const std::string &, bool f_s = false);
+    void set_upd_properties(const AttributeConfig &);
+    void set_upd_properties(const AttributeConfig_3 &);
+    void set_upd_properties(const AttributeConfig_5 &);
+    void set_upd_properties(const AttributeConfig &, const std::string &, bool f_s = false);
+    void set_upd_properties(const AttributeConfig_3 &, const std::string &, bool f_s = false);
+    void set_upd_properties(const AttributeConfig_5 &, const std::string &, bool f_s = false);
 
     template <typename T>
     void delete_data_if_needed(T *data, bool release);
@@ -2146,7 +2176,6 @@ class Attribute
 
     bool check_level_alarm();
     bool check_warn_alarm();
-    void upd_att_prop_db(const Tango::Attr_CheckVal &, const char *);
     DeviceClass *get_att_device_class(const std::string &);
 
     template <typename T>
@@ -2157,12 +2186,7 @@ class Attribute
 
     void check_hard_coded(const AttributeConfig_5 &);
 
-    void delete_startup_exception(std::string, std::string str = std::string("None"));
-
     void throw_hard_coded_prop(const char *);
-    void throw_err_format(const char *, const std::string &, const char *);
-    void throw_incoherent_val_err(const char *, const char *, const std::string &, const char *);
-    void throw_err_data_type(const char *, const std::string &, const char *);
     void validate_change_properties(const std::string &,
                                     const char *,
                                     std::string &,
@@ -2170,17 +2194,12 @@ class Attribute
                                     std::vector<bool> &,
                                     std::vector<bool> &);
     void validate_change_properties(const std::string &, const char *, std::string &, std::vector<double> &);
-    bool prop_in_list(const char *, std::string &, size_t, const std::vector<AttrProperty> &);
     void set_format_notspec();
     bool is_format_notspec(const char *);
     void def_format_in_dbdatum(DbDatum &);
 
-    void avns_in_db(const char *, const std::string &);
-    void avns_in_att(prop_type);
-
     void convert_prop_value(const char *, std::string &, Attr_CheckVal &, const std::string &);
 
-    void check_range_coherency(const std::string &);
     void db_access(const struct CheckOneStrProp &, const std::string &);
     void set_prop_5_specific(const AttributeConfig_5 &, const std::string &, bool, std::vector<AttPropDb> &);
     void build_check_enum_labels(const std::string &);
@@ -2436,51 +2455,6 @@ inline void Attribute::throw_startup_exception(const char *origin)
     }
 }
 
-//+------------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        Attribute::prop_in_list
-//
-// description :
-//        Search for a property in a list
-//
-// args:
-//        in :
-//            - prop_name : The property name
-//          - list_size : The size list
-//          - list : The list
-//      out :
-//            - prop_str : String initialized with prop. value (if found)
-//
-//------------------------------------------------------------------------------------------------------------------
-
-inline bool Attribute::prop_in_list(const char *prop_name,
-                                    std::string &prop_str,
-                                    size_t list_size,
-                                    const std::vector<AttrProperty> &list)
-{
-    bool ret = false;
-
-    if(list_size != 0)
-    {
-        size_t i;
-        for(i = 0; i < list_size; i++)
-        {
-            if(list[i].get_name() == prop_name)
-            {
-                break;
-            }
-        }
-        if(i != list_size)
-        {
-            prop_str = list[i].get_value();
-            ret = true;
-        }
-    }
-
-    return ret;
-}
-
 inline void Attribute::set_change_event_sub(int cl_lib)
 {
     switch(cl_lib)
@@ -2670,6 +2644,61 @@ inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString 
     }
 }
 
+/*
+ * method: Attribute::set_value_date_quality
+ *
+ * These methods store the attribute value inside the Attribute object,
+ * with readout time and attribute quality factor provided by user.
+ *
+ *
+ */
+
+template <class T>
+inline void
+    Attribute::set_value_date_quality(T *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
+template <class T>
+inline void Attribute::set_value_date_quality(
+    T *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+
+    if(qual == Tango::ATTR_INVALID)
+    {
+        delete_seq();
+    }
+}
+
+template <>
+inline void Attribute::set_value_date_quality(
+    Tango::DevEncoded *p_data, time_t t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+}
+
+template <>
+inline void Attribute::set_value_date_quality(
+    Tango::DevEncoded *p_data, const TangoTimestamp &t, Tango::AttrQuality qual, long x, long y, bool release)
+{
+    set_value(p_data, x, y, release);
+    set_quality(qual, false);
+    set_date(t);
+}
+
 //
 // Macro to help coding
 //
@@ -2694,7 +2723,7 @@ inline void Attribute::delete_data_if_needed<Tango::DevString>(Tango::DevString 
     {                                                           \
         std::stringstream o;                                    \
         o << "Data pointer for attribute " << B << " is NULL!"; \
-        TANGO_THROW_EXCEPTION(API_AttrOptProp, o.str());        \
+        TANGO_THROW_EXCEPTION(Tango::API_AttrOptProp, o.str()); \
     }                                                           \
     else                                                        \
         (void) 0

@@ -28,6 +28,23 @@
 #define _DEVICEPROXY_H
 
 #include <chrono>
+#include <string>
+#include <memory>
+#include <vector>
+
+#include <tango/client/Connection.h>
+#include <tango/client/CallBack.h>
+#include <tango/client/DbDatum.h>
+#include <tango/client/devapi.h>
+
+namespace Tango
+{
+class DbDevice;
+class EventDataList;
+class AttrConfEventDataList;
+class DataReadyEventDataList;
+class DevIntrChangeEventDataList;
+class PipeEventDataList;
 
 /****************************************************************************************
  *                                                                                         *
@@ -91,17 +108,6 @@ class DeviceProxy : public Tango::Connection
     void omni420_except_attr(int, char *, read_attr_type);
     void omni420_timeout_wattr(int, char *);
     void omni420_except_wattr(int, char *);
-    /**
-     * Extracts values from Any and push it to a vector of DeviceAttributeHistory
-     */
-    template <class T>
-    void extract_value(CORBA::Any &, std::vector<DeviceAttributeHistory> &);
-
-    /**
-     * Extracts values from Any and push it to a vector of DeviceDataHistory
-     */
-    template <class T>
-    void extract_value(CORBA::Any &, std::vector<DeviceDataHistory> &, const Tango::AttributeDimList &ad);
 
     DeviceProxy &get_admin_device();
 
@@ -131,9 +137,6 @@ class DeviceProxy : public Tango::Connection
     bool is_polled(polled_object, const std::string &, std::string &);
     void reconnect(bool) override;
     void get_remaining_param(AttributeInfoListEx *);
-    template <typename T>
-    void from_hist_2_AttHistory(const T &, std::vector<DeviceAttributeHistory> *);
-    void from_hist4_2_DataHistory(const DevCmdHistory_4_var &, std::vector<DeviceDataHistory> *);
     void ask_locking_status(std::vector<std::string> &, std::vector<DevLong> &);
     void get_locker_host(const std::string &, std::string &);
 
@@ -2094,5 +2097,5 @@ class DeviceProxy : public Tango::Connection
                                 const std::vector<std::string> &filters,
                                 bool stateless = false); // For compatibility with Tango < 8
 };
-
+} // namespace Tango
 #endif /* _DEVICEPROXY_H */

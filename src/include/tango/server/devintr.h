@@ -33,10 +33,14 @@
 #ifndef _DEVINTR_H
 #define _DEVINTR_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+
+#include <string>
+#include <vector>
 
 namespace Tango
 {
+class DeviceImpl;
 
 class DevIntr
 {

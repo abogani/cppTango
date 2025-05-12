@@ -5,6 +5,10 @@
 
 #if defined(TANGO_USE_TELEMETRY)
 
+  #include <tango/common/telemetry/telemetry.h>
+
+  #include <string>
+
 //---------------------------------------------------------------------------------------------------------------------
 // Tango::telemetry::SilentKernelScope
 //

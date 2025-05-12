@@ -36,6 +36,7 @@
 #include <tango/server/attribute.h>
 #include <tango/server/except.h>
 #include <tango/common/tango_const.h>
+#include <tango/client/devapi.h>
 
 #include <zmq.hpp>
 
@@ -50,6 +51,8 @@ extern "C"
 #ifndef _USRDLL
 }
 #endif
+
+class DeviceProxy;
 
 /********************************************************************************
  *                                                                                 *

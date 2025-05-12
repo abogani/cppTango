@@ -33,21 +33,38 @@
 #define _EVENTCONSUMER_H
 
 #include <tango/server/attribute.h>
+#include <tango/server/tango_monitor.h>
 #include <tango/server/except.h>
+#include <tango/client/ApiUtil.h>
 #include <tango/common/tango_const.h>
+#include <tango/common/omnithread_wrapper.h>
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
-#include <omnithread.h>
-#include <map>
 
 #include <tango/server/readers_writers_lock.h>
 #include <tango/common/pointer_with_lock.h>
 
 #include <zmq.hpp>
 
+#include <map>
+#include <iostream>
+
 namespace Tango
 {
+class DeviceProxy;
+class CallBack;
+class EventQueue;
+class TangoMonitor;
+class DeviceData;
+class EventDataList;
+class AttrConfEventDataList;
+class DataReadyEventDataList;
+class DevIntrChangeEventDataList;
+class PipeEventDataList;
+class EventConsumerKeepAliveThread;
+class Database;
+class FwdEventData;
 
 #ifndef _USRDLL
 extern "C"
@@ -554,9 +571,6 @@ class EventConsumer
     void attr_to_device(const AttributeValue_4 *, DeviceAttribute *);
     void attr_to_device(const ZmqAttributeValue_4 *, DeviceAttribute *);
     void attr_to_device(const ZmqAttributeValue_5 *, DeviceAttribute *);
-    template <typename T>
-    void base_attr_to_device(const T *, DeviceAttribute *);
-    void att_union_to_device(const AttrValUnion *union_ptr, DeviceAttribute *dev_attr);
     void conf_to_info(AttributeConfig_2 &, AttributeInfoEx **);
     void get_cs_tango_host(Database *);
     std::string get_client_attribute_name(const std::string &, const std::vector<std::string> &filters);

@@ -35,7 +35,6 @@
 //
 // Include the Tango config file
 //
-#include <string>
 #include <tango/server/tango_config.h>
 
 //
@@ -61,29 +60,6 @@
 #include <tango/server/tango_current_function.h>
 
 //
-// A short inline function to hide the CORBA::string_dup function
-//
-namespace Tango
-{
-inline char *string_dup(const std::string &s)
-{
-    return CORBA::string_dup(s.c_str());
-}
-
-inline char *string_dup(const char *s)
-{
-    return CORBA::string_dup(s);
-}
-
-// A short inline function to hide the CORBA::string_free function
-inline void string_free(char *s)
-{
-    CORBA::string_free(s);
-}
-
-} // namespace Tango
-
-//
 // Some Windows specific include (necessary when used with MFC)
 //
 
@@ -99,28 +75,13 @@ inline void string_free(char *s)
 #endif
 
 //
-// Include stream header files
-//
-
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-//
-// Include some stdc++ library headers
-//
-
-#include <memory>
-#include <typeinfo>
-#include <vector>
-#include <cmath>
-
-//
 // Include API files (device and database)
 //
 
 #include <tango/client/apiexcept.h>
 #include <tango/client/devasyn.h>
+#include <tango/client/Database.h>
+#include <tango/client/AttributeProxy.h>
 #include <tango/client/dbapi.h>
 #include <tango/client/devapi.h>
 #include <tango/client/group.h>
@@ -132,6 +93,7 @@ inline void string_free(char *s)
 //
 
 #include <tango/common/tango_const.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/common/utils/assert.h>
 #include <tango/server/except.h>
 #include <tango/server/attrmanip.h>
@@ -168,12 +130,11 @@ inline void string_free(char *s)
   #include <tango/server/w_pipe.h>
   #include <tango/server/pipe_templ.h>
   #include <tango/server/dserver.h>
-  #include <tango/server/attribute_spec_templ.h>
   #include <tango/server/utils_spec_templ.h>
-  #include <tango/server/w_attribute_spec_templ.h>
   #include <tango/server/attrprop_templ.h>
   #include <tango/server/attrsetval_templ.h>
   #include <tango/server/w_attrsetval_templ.h>
+  #include <tango/server/fwdattribute.h>
 #endif
 
 #include <tango/client/event.h>

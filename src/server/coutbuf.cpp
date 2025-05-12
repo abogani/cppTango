@@ -35,8 +35,12 @@
 
 #include <tango/windows/coutbuf.h>
 #include <tango/windows/resource.h>
+#include <tango/server/except.h>
+#include <tango/server/utils.h>
 
 #include <commctrl.h>
+#include <winuser.h>
+#include <cstdio>
 
 namespace Tango
 {

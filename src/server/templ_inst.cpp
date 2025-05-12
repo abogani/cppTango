@@ -42,14 +42,15 @@
 // See C++ template book chapter 6
 //
 
-#include <tango/tango.h>
-
+#include <tango/server/device.h>
+#include <tango/common/utils/assert.h>
 #include <tango/server/attribute_templ.h>
 #include <tango/server/pollext_templ.h>
 #include <tango/server/utils_templ.h>
-#include <tango/server/w_attribute_templ.h>
+#include <tango/server/w_attrsetval_templ.h>
 #include <tango/client/devapi_pipe_templ.h>
 #include <tango/server/pipe_templ.h>
+#include <tango/server/w_pipe.h>
 #include <tango/server/w_pipe_templ.h>
 
 namespace Tango
@@ -60,34 +61,6 @@ namespace Tango
 // forwarding the call to the same method using string data type as parameter. DevEncoded and string are
 // managed as specialized templates
 //
-
-#define TEMPL_EXPL_METH_INST_CONST(CLASS, METH)    \
-    template void CLASS::METH(const DevBoolean &); \
-    template void CLASS::METH(const DevUChar &);   \
-    template void CLASS::METH(const DevShort &);   \
-    template void CLASS::METH(const DevUShort &);  \
-    template void CLASS::METH(const DevLong &);    \
-    template void CLASS::METH(const DevULong &);   \
-    template void CLASS::METH(const DevLong64 &);  \
-    template void CLASS::METH(const DevULong64 &); \
-    template void CLASS::METH(const DevFloat &);   \
-    template void CLASS::METH(const DevDouble &);  \
-    template void CLASS::METH(const DevState &);
-
-#define TEMPL_EXPL_METH_INST(CLASS, METH)    \
-    template void CLASS::METH(DevBoolean &); \
-    template void CLASS::METH(DevUChar &);   \
-    template void CLASS::METH(DevShort &);   \
-    template void CLASS::METH(DevUShort &);  \
-    template void CLASS::METH(DevLong &);    \
-    template void CLASS::METH(DevULong &);   \
-    template void CLASS::METH(DevLong64 &);  \
-    template void CLASS::METH(DevULong64 &); \
-    template void CLASS::METH(DevFloat &);   \
-    template void CLASS::METH(DevDouble &);  \
-    template void CLASS::METH(DevState &);   \
-    template void CLASS::METH(DevString &);  \
-    template void CLASS::METH(DevEncoded &);
 
 #define TEMPL_EXPL_CLASS_INST(CLASS)  \
     template class CLASS<DevBoolean>; \
@@ -139,57 +112,15 @@ namespace Tango
 //
 //-----------------------------------------------------------------------------
 
-TEMPL_EXPL_METH_INST(Attribute, get_min_alarm)
-TEMPL_EXPL_METH_INST(Attribute, get_max_alarm)
-TEMPL_EXPL_METH_INST(Attribute, get_min_warning)
-TEMPL_EXPL_METH_INST(Attribute, get_max_warning)
-
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_min_alarm)
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_max_alarm)
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_min_warning)
-TEMPL_EXPL_METH_INST_CONST(Attribute, set_max_warning)
-
 TEMPL_EXPL_CLASS_INST(AttrProp)
 TEMPL_EXPL_CLASS_INST(DoubleAttrProp)
 TEMPL_EXPL_CLASS_INST(MultiAttrProp)
-
-template void Attribute::get_properties(MultiAttrProp<DevBoolean> &);
-template void Attribute::get_properties(MultiAttrProp<DevUChar> &);
-template void Attribute::get_properties(MultiAttrProp<DevShort> &);
-template void Attribute::get_properties(MultiAttrProp<DevUShort> &);
-template void Attribute::get_properties(MultiAttrProp<DevLong> &);
-template void Attribute::get_properties(MultiAttrProp<DevULong> &);
-template void Attribute::get_properties(MultiAttrProp<DevLong64> &);
-template void Attribute::get_properties(MultiAttrProp<DevULong64> &);
-template void Attribute::get_properties(MultiAttrProp<DevFloat> &);
-template void Attribute::get_properties(MultiAttrProp<DevDouble> &);
-template void Attribute::get_properties(MultiAttrProp<DevState> &);
-template void Attribute::get_properties(MultiAttrProp<DevEncoded> &);
-template void Attribute::get_properties(MultiAttrProp<DevString> &);
-
-template void Attribute::set_properties(MultiAttrProp<DevBoolean> &);
-template void Attribute::set_properties(MultiAttrProp<DevUChar> &);
-template void Attribute::set_properties(MultiAttrProp<DevShort> &);
-template void Attribute::set_properties(MultiAttrProp<DevUShort> &);
-template void Attribute::set_properties(MultiAttrProp<DevLong> &);
-template void Attribute::set_properties(MultiAttrProp<DevULong> &);
-template void Attribute::set_properties(MultiAttrProp<DevLong64> &);
-template void Attribute::set_properties(MultiAttrProp<DevULong64> &);
-template void Attribute::set_properties(MultiAttrProp<DevFloat> &);
-template void Attribute::set_properties(MultiAttrProp<DevDouble> &);
-template void Attribute::set_properties(MultiAttrProp<DevState> &);
-template void Attribute::set_properties(MultiAttrProp<DevEncoded> &);
-template void Attribute::set_properties(MultiAttrProp<DevString> &);
 
 template void Attribute::check_hard_coded_properties(const AttributeConfig &);
 template void Attribute::check_hard_coded_properties(const AttributeConfig_3 &);
 
 template void Attribute::set_hard_coded_properties(const AttributeConfig &);
 template void Attribute::set_hard_coded_properties(const AttributeConfig_3 &);
-
-template void Attribute::set_upd_properties(const AttributeConfig &, const std::string &, bool);
-template void Attribute::set_upd_properties(const AttributeConfig_3 &, const std::string &, bool);
-template void Attribute::set_upd_properties(const AttributeConfig_5 &, const std::string &, bool);
 
 template void Attribute::Attribute_2_AttributeValue_base(AttributeValue_4 *, Tango::DeviceImpl *);
 template void Attribute::Attribute_2_AttributeValue_base(AttributeValue_5 *, Tango::DeviceImpl *);
@@ -274,87 +205,6 @@ template void Util::fill_cmd_polling_buffer(DeviceImpl *, std::string &, CmdHist
 template void Util::fill_cmd_polling_buffer(DeviceImpl *, std::string &, CmdHistoryStack<DevVarStringArray> &);
 template void Util::fill_cmd_polling_buffer(DeviceImpl *, std::string &, CmdHistoryStack<DevVarLongStringArray> &);
 template void Util::fill_cmd_polling_buffer(DeviceImpl *, std::string &, CmdHistoryStack<DevVarDoubleStringArray> &);
-
-//+----------------------------------------------------------------------------
-//
-// Instantiate WAttribute::XXX methods
-//
-//-----------------------------------------------------------------------------
-
-TEMPL_EXPL_METH_INST(WAttribute, get_min_value)
-TEMPL_EXPL_METH_INST(WAttribute, get_max_value)
-
-TEMPL_EXPL_METH_INST_CONST(WAttribute, set_min_value)
-TEMPL_EXPL_METH_INST_CONST(WAttribute, set_max_value)
-
-template void WAttribute::_update_written_value<Tango::DevShort>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevUShort>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevLong>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevULong>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevULong64>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevLong64>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevState>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevBoolean>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevString>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevUChar>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevDouble>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_written_value<Tango::DevFloat>(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevShort>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevUShort>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevLong>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevULong>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevULong64>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevLong64>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevState>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevBoolean>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevString>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevUChar>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevDouble>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevFloat>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void
-    WAttribute::_update_written_value<Tango::DevEncoded>(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_any_written_value(const CORBA::Any &any, std::size_t x, std::size_t y);
-template void WAttribute::_update_any_written_value(const Tango::AttrValUnion &any, std::size_t x, std::size_t y);
-
-template void WAttribute::_copy_data<Tango::DevShort>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevShort>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevUShort>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevUShort>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevLong>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevLong>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevULong>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevULong>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevLong64>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevLong64>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevULong64>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevULong64>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevString>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevString>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevState>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevState>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevDouble>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevDouble>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevFloat>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevFloat>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevBoolean>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevBoolean>(const Tango::AttrValUnion &);
-template void WAttribute::_copy_data<Tango::DevUChar>(const CORBA::Any &);
-template void WAttribute::_copy_data<Tango::DevUChar>(const Tango::AttrValUnion &);
-
-template void WAttribute::_copy_any_data(const Tango::AttrValUnion &);
-template void WAttribute::_copy_any_data(const CORBA::Any &);
 
 //+----------------------------------------------------------------------------
 //

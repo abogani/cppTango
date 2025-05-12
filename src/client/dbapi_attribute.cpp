@@ -30,7 +30,7 @@
 // version     - 1.0
 //
 
-#include <tango/tango.h>
+#include <tango/client/Database.h>
 
 using namespace CORBA;
 

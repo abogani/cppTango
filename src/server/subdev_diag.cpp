@@ -32,7 +32,11 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
+#include <tango/server/subdev_diag.h>
+#include <tango/server/dserver.h>
+#include <tango/server/device.h>
+
+#include <tango/client/Database.h>
 
 namespace Tango
 {

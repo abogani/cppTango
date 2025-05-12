@@ -38,7 +38,11 @@
 #ifndef _DEVICE_3_H
 #define _DEVICE_3_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/device_2.h>
+
+#include <string>
+#include <memory>
 
 namespace Tango
 {
@@ -316,30 +320,8 @@ class Device_3Impl : public virtual POA_Tango::Device_3, public Device_2Impl
 
     void write_attributes_34(const Tango::AttributeValueList *, const Tango::AttributeValueList_4 *);
 
-    template <typename T, typename V>
-    void set_attribute_config_3_local(const T &, const V &, bool, int);
-
-    template <typename T>
-    void error_from_devfailed(T &, DevFailed &, const char *);
-    template <typename T>
-    void error_from_errorlist(T &, DevErrorList &, const char *);
-
-    template <typename T>
-    void one_error(T &, const char *, const char *, std::string &, Attribute &);
-    template <typename T>
-    void one_error(T &, const char *, const char *, std::string &, const char *);
-
-    template <typename T, typename V>
-    void init_polled_out_data(T &, V &);
-    template <typename T>
-    void init_out_data(T &, Attribute &, AttrWriteType &);
-    template <typename T>
-    void init_out_data_quality(T &, Attribute &, AttrQuality);
-
-    template <typename T>
-    void base_state2attr(T &);
-    template <typename T>
-    void base_status2attr(T &);
+    void set_attribute_config_3_local(const Tango::AttributeConfigList_3 &, bool, int);
+    void set_attribute_config_3_local(const Tango::AttributeConfigList_5 &, bool, int);
 
   private:
     class Device_3ImplExt

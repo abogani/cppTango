@@ -29,14 +29,19 @@
 //
 //-======================================================================
 
-#include <tango/tango.h>
 #include <tango/client/accessproxy.h>
+
+#include <tango/client/ApiUtil.h>
 
 #include <sys/types.h>
 
 #ifndef _TG_WINDOWS_
+  #include <unistd.h>
   #include <pwd.h>
 #endif
+
+#include <iostream>
+#include <algorithm>
 
 namespace Tango
 {

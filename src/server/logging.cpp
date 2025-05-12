@@ -31,11 +31,18 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
-
 //-----------------------------------------------------------------------------
 // HEADERS
 //-----------------------------------------------------------------------------
+#include <tango/server/tango_config.h>
+#include <tango/server/coutappender.h>
+#include <tango/server/tangoappender.h>
+#include <tango/server/tangorollingfileappender.h>
+#include <tango/server/dserver.h>
+#include <tango/server/device.h>
+#include <tango/server/log4tango.h>
+#include <tango/client/Database.h>
+
 #ifdef _TG_WINDOWS_
   #include <direct.h>
 #else
@@ -45,10 +52,6 @@
   #include <ctime>
   #include <pwd.h>
 #endif
-
-#include <tango/server/coutappender.h>
-#include <tango/server/tangoappender.h>
-#include <tango/server/tangorollingfileappender.h>
 
 namespace Tango
 {

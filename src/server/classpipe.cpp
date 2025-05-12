@@ -29,8 +29,10 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/classpipe.h>
+#include <tango/server/pipe.h>
+#include <tango/server/deviceclass.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

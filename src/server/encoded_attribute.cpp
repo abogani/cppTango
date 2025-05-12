@@ -33,6 +33,10 @@
 //=============================================================================
 
 #include <tango/server/encoded_attribute.h>
+#include <tango/common/utils/assert.h>
+#include <tango/client/DeviceAttribute.h>
+#include <tango/server/except.h>
+#include <tango/client/apiexcept.h>
 
 #ifdef TANGO_USE_JPEG
   #include <iostream>

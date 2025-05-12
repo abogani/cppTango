@@ -32,12 +32,25 @@
 #ifndef _PIPE_H
 #define _PIPE_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/client/DevicePipe.h>
+#include <tango/server/attribute.h>
+#include <tango/server/classpipe.h>
 
-#include <stdarg.h>
+#include <cstdarg>
+#include <string>
+#include <vector>
 
 namespace Tango
 {
+class UserDefaultPipeProp;
+
+enum PipeSerialModel
+{
+    PIPE_NO_SYNC = 0,
+    PIPE_BY_KERNEL,
+    PIPE_BY_USER
+};
 
 /**
  * This class is a class representing a pipe in the TANGO device server pattern. It is an abstract class.

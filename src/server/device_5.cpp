@@ -43,8 +43,6 @@
   #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
-#include <tango/tango.h>
-
 #if defined(__clang__)
   #pragma clang diagnostic pop
 #endif
@@ -54,8 +52,11 @@
 #endif
 
 #include <tango/server/device_5.h>
+#include <tango/server/pipe.h>
+#include <tango/server/w_pipe.h>
 #include <tango/server/eventsupplier.h>
-#include <tango/server/device_3_templ.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/utils.h>
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 namespace Tango
@@ -694,7 +695,7 @@ void Device_5Impl::set_attribute_config_5(const Tango::AttributeConfigList_5 &ne
     // Call the Device_3Impl set_attribute_config
     //
 
-    set_attribute_config_3_local(new_conf, new_conf[0], from_fwd_cb, idl_version);
+    set_attribute_config_3_local(new_conf, from_fwd_cb, idl_version);
 
     TANGO_TELEMETRY_TRACE_END();
 }

@@ -34,13 +34,20 @@
 #ifndef _BLACKBOX_H
 #define _BLACKBOX_H
 
-#include <tango/tango.h>
-#ifdef _TG_WINDOWS_
-  #include <winsock.h>
-#endif
-#include <time.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/tango_config.h>
+
 #include <omniORB4/omniInterceptors.h>
 #include <omniORB4/callDescriptor.h>
+
+#ifdef _TG_WINDOWS_
+  #include <winsock2.h>
+#endif
+
+#include <ctime>
+#include <string>
+#include <vector>
+#include <ostream>
 #include <chrono>
 
 namespace Tango

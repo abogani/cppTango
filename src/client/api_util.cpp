@@ -27,9 +27,9 @@
 //
 //+==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
-#include <tango/client/api_util_templ.h>
+#include <tango/client/Database.h>
+#include <tango/client/DeviceAttribute.h>
 #include <thread>
 #include <iomanip>
 
@@ -64,6 +64,315 @@ void _t_handler(TANGO_UNUSED(int signum))
     std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
+//-----------------------------------------------------------------------------------------------------------------
+//
+// method :
+//        attr_to_device_base()
+//
+// description :
+//
+//
+//-------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+inline void attr_to_device_base(const T *attr_value, Tango::DeviceAttribute *dev_attr)
+{
+    CORBA::Long *tmp_lo;
+    CORBA::Short *tmp_sh;
+    CORBA::Double *tmp_db;
+    char **tmp_str;
+    CORBA::Float *tmp_fl;
+    CORBA::Boolean *tmp_boo;
+    CORBA::UShort *tmp_ush;
+    CORBA::Octet *tmp_uch;
+    CORBA::LongLong *tmp_lolo;
+    CORBA::ULong *tmp_ulo;
+    CORBA::ULongLong *tmp_ulolo;
+    Tango::DevState *tmp_state;
+    Tango::DevEncoded *tmp_enc;
+
+    CORBA::ULong max, len;
+
+    dev_attr->name = attr_value->name;
+    dev_attr->quality = attr_value->quality;
+    dev_attr->data_format = attr_value->data_format;
+    dev_attr->time = attr_value->time;
+    dev_attr->dim_x = attr_value->r_dim.dim_x;
+    dev_attr->dim_y = attr_value->r_dim.dim_y;
+    dev_attr->set_w_dim_x(attr_value->w_dim.dim_x);
+    dev_attr->set_w_dim_y(attr_value->w_dim.dim_y);
+    dev_attr->err_list = new Tango::DevErrorList(attr_value->err_list);
+
+    if(dev_attr->quality != Tango::ATTR_INVALID)
+    {
+        switch(attr_value->value._d())
+        {
+        case Tango::ATT_BOOL:
+        {
+            const Tango::DevVarBooleanArray &tmp_seq = attr_value->value.bool_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_boo = (const_cast<Tango::DevVarBooleanArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->BooleanSeq = new Tango::DevVarBooleanArray(max, len, tmp_boo, true);
+            }
+            else
+            {
+                tmp_boo = const_cast<CORBA::Boolean *>(tmp_seq.get_buffer());
+                dev_attr->BooleanSeq = new Tango::DevVarBooleanArray(max, len, tmp_boo, false);
+            }
+            dev_attr->data_type = Tango::DEV_BOOLEAN;
+        }
+        break;
+
+        case Tango::ATT_SHORT:
+        {
+            const Tango::DevVarShortArray &tmp_seq = attr_value->value.short_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_sh = (const_cast<Tango::DevVarShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->ShortSeq = new Tango::DevVarShortArray(max, len, tmp_sh, true);
+            }
+            else
+            {
+                tmp_sh = const_cast<CORBA::Short *>(tmp_seq.get_buffer());
+                dev_attr->ShortSeq = new Tango::DevVarShortArray(max, len, tmp_sh, false);
+            }
+            dev_attr->data_type = Tango::DEV_SHORT;
+        }
+        break;
+
+        case Tango::ATT_LONG:
+        {
+            const Tango::DevVarLongArray &tmp_seq = attr_value->value.long_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_lo = (const_cast<Tango::DevVarLongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->LongSeq = new Tango::DevVarLongArray(max, len, tmp_lo, true);
+            }
+            else
+            {
+                tmp_lo = const_cast<CORBA::Long *>(tmp_seq.get_buffer());
+                dev_attr->LongSeq = new Tango::DevVarLongArray(max, len, tmp_lo, false);
+            }
+            dev_attr->data_type = Tango::DEV_LONG;
+        }
+        break;
+
+        case Tango::ATT_LONG64:
+        {
+            const Tango::DevVarLong64Array &tmp_seq = attr_value->value.long64_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_lolo = (const_cast<Tango::DevVarLong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->Long64Seq = new Tango::DevVarLong64Array(max, len, tmp_lolo, true);
+            }
+            else
+            {
+                tmp_lolo = const_cast<CORBA::LongLong *>(tmp_seq.get_buffer());
+                dev_attr->Long64Seq = new Tango::DevVarLong64Array(max, len, tmp_lolo, false);
+            }
+            dev_attr->data_type = Tango::DEV_LONG64;
+        }
+        break;
+
+        case Tango::ATT_FLOAT:
+        {
+            const Tango::DevVarFloatArray &tmp_seq = attr_value->value.float_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_fl = (const_cast<Tango::DevVarFloatArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->FloatSeq = new Tango::DevVarFloatArray(max, len, tmp_fl, true);
+            }
+            else
+            {
+                tmp_fl = const_cast<CORBA::Float *>(tmp_seq.get_buffer());
+                dev_attr->FloatSeq = new Tango::DevVarFloatArray(max, len, tmp_fl, false);
+            }
+            dev_attr->data_type = Tango::DEV_FLOAT;
+        }
+        break;
+
+        case Tango::ATT_DOUBLE:
+        {
+            const Tango::DevVarDoubleArray &tmp_seq = attr_value->value.double_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_db = (const_cast<Tango::DevVarDoubleArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->DoubleSeq = new Tango::DevVarDoubleArray(max, len, tmp_db, true);
+            }
+            else
+            {
+                tmp_db = const_cast<CORBA::Double *>(tmp_seq.get_buffer());
+                dev_attr->DoubleSeq = new Tango::DevVarDoubleArray(max, len, tmp_db, false);
+            }
+            dev_attr->data_type = Tango::DEV_DOUBLE;
+        }
+        break;
+
+        case Tango::ATT_UCHAR:
+        {
+            const Tango::DevVarCharArray &tmp_seq = attr_value->value.uchar_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_uch = (const_cast<Tango::DevVarCharArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->UCharSeq = new Tango::DevVarCharArray(max, len, tmp_uch, true);
+            }
+            else
+            {
+                tmp_uch = const_cast<CORBA::Octet *>(tmp_seq.get_buffer());
+                dev_attr->UCharSeq = new Tango::DevVarCharArray(max, len, tmp_uch, false);
+            }
+            dev_attr->data_type = Tango::DEV_UCHAR;
+        }
+        break;
+
+        case Tango::ATT_USHORT:
+        {
+            const Tango::DevVarUShortArray &tmp_seq = attr_value->value.ushort_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_ush = (const_cast<Tango::DevVarUShortArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->UShortSeq = new Tango::DevVarUShortArray(max, len, tmp_ush, true);
+            }
+            else
+            {
+                tmp_ush = const_cast<CORBA::UShort *>(tmp_seq.get_buffer());
+                dev_attr->UShortSeq = new Tango::DevVarUShortArray(max, len, tmp_ush, false);
+            }
+            dev_attr->data_type = Tango::DEV_USHORT;
+        }
+        break;
+
+        case Tango::ATT_ULONG:
+        {
+            const Tango::DevVarULongArray &tmp_seq = attr_value->value.ulong_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_ulo = (const_cast<Tango::DevVarULongArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->ULongSeq = new Tango::DevVarULongArray(max, len, tmp_ulo, true);
+            }
+            else
+            {
+                tmp_ulo = const_cast<CORBA::ULong *>(tmp_seq.get_buffer());
+                dev_attr->ULongSeq = new Tango::DevVarULongArray(max, len, tmp_ulo, false);
+            }
+            dev_attr->data_type = Tango::DEV_ULONG;
+        }
+        break;
+
+        case Tango::ATT_ULONG64:
+        {
+            const Tango::DevVarULong64Array &tmp_seq = attr_value->value.ulong64_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_ulolo = (const_cast<Tango::DevVarULong64Array &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->ULong64Seq = new Tango::DevVarULong64Array(max, len, tmp_ulolo, true);
+            }
+            else
+            {
+                tmp_ulolo = const_cast<CORBA::ULongLong *>(tmp_seq.get_buffer());
+                dev_attr->ULong64Seq = new Tango::DevVarULong64Array(max, len, tmp_ulolo, false);
+            }
+            dev_attr->data_type = Tango::DEV_ULONG64;
+        }
+        break;
+
+        case Tango::ATT_STRING:
+        {
+            const Tango::DevVarStringArray &tmp_seq = attr_value->value.string_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_str = (const_cast<Tango::DevVarStringArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->StringSeq = new Tango::DevVarStringArray(max, len, tmp_str, true);
+            }
+            else
+            {
+                tmp_str = const_cast<char **>(tmp_seq.get_buffer());
+                dev_attr->StringSeq = new Tango::DevVarStringArray(max, len, tmp_str, false);
+            }
+            dev_attr->data_type = Tango::DEV_STRING;
+        }
+        break;
+
+        case Tango::ATT_STATE:
+        {
+            const Tango::DevVarStateArray &tmp_seq = attr_value->value.state_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_state = (const_cast<Tango::DevVarStateArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->StateSeq = new Tango::DevVarStateArray(max, len, tmp_state, true);
+            }
+            else
+            {
+                tmp_state = const_cast<Tango::DevState *>(tmp_seq.get_buffer());
+                dev_attr->StateSeq = new Tango::DevVarStateArray(max, len, tmp_state, false);
+            }
+            dev_attr->data_type = Tango::DEV_STATE;
+        }
+        break;
+
+        case Tango::DEVICE_STATE:
+        {
+            dev_attr->d_state = attr_value->value.dev_state_att();
+            dev_attr->d_state_filled = true;
+            dev_attr->data_type = Tango::DEV_STATE;
+        }
+        break;
+
+        case Tango::ATT_ENCODED:
+        {
+            const Tango::DevVarEncodedArray &tmp_seq = attr_value->value.encoded_att_value();
+            max = tmp_seq.maximum();
+            len = tmp_seq.length();
+            if(tmp_seq.release())
+            {
+                tmp_enc = (const_cast<Tango::DevVarEncodedArray &>(tmp_seq)).get_buffer((CORBA::Boolean) true);
+                dev_attr->EncodedSeq = new Tango::DevVarEncodedArray(max, len, tmp_enc, true);
+            }
+            else
+            {
+                tmp_enc = const_cast<Tango::DevEncoded *>(tmp_seq.get_buffer());
+                dev_attr->EncodedSeq = new Tango::DevVarEncodedArray(max, len, tmp_enc, false);
+            }
+            dev_attr->data_type = Tango::DEV_ENCODED;
+        }
+        break;
+
+        case Tango::ATT_NO_DATA:
+        {
+            dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+        }
+        break;
+
+        default:
+            dev_attr->data_type = Tango::DATA_TYPE_UNKNOWN;
+        }
+    }
+}
 } // anonymous namespace
 
 namespace Tango

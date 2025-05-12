@@ -31,10 +31,22 @@
 //
 //-===================================================================================================================
 
-#include <tango/tango.h>
-#include <new>
-#include <cerrno>
 #include <tango/server/dserversignal.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/except.h>
+#include <tango/server/deviceclass.h>
+#include <tango/server/device.h>
+#include <tango/server/logging.h>
+
+#ifdef _TG_WINDOWS_
+  #include <tango/server/utils.h>
+#endif
+
+#include <new>
+#include <string>
+#include <cerrno>
+#include <ostream>
+#include <algorithm>
 
 namespace Tango
 {

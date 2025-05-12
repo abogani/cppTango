@@ -26,9 +26,11 @@
 //
 //===================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/eventconsumer.h>
-#include <tango/client/devapi_utils_templ.h>
+#include <tango/client/Database.h>
+#include <tango/client/DbDevice.h>
+#include <tango/server/seqvec.h>
+#include <tango/server/device.h>
 #include <tango/internal/net.h>
 #include <tango/internal/utils.h>
 
@@ -92,6 +94,606 @@ PointerWithLock<EventConsumer> get_event_system_for_event_id(int event_id)
     }
 
     return au->get_notifd_event_consumer();
+}
+
+template <class T, class U, std::enable_if_t<std::is_same_v<T, U>, T> * = nullptr>
+CORBA::Any *create_any(const U *, size_t, size_t);
+template <class T, class U, std::enable_if_t<!std::is_same_v<T, U>, T> * = nullptr>
+CORBA::Any *create_any(const U *, size_t, size_t);
+
+template <class T, class U, std::enable_if_t<std::is_same_v<T, U>, T> *>
+CORBA::Any *create_any(const U *tmp, const size_t base, const size_t data_length)
+{
+    CORBA::Any *any_ptr = new CORBA::Any();
+
+    const auto *c_seq_buff = tmp->get_buffer();
+    auto *seq_buff = const_cast<std::remove_const_t<std::remove_pointer_t<decltype(c_seq_buff)>> *>(c_seq_buff);
+
+    T tmp_data = T(data_length, data_length, &(seq_buff[base - data_length]), false);
+
+    (*any_ptr) <<= tmp_data;
+
+    return any_ptr;
+}
+
+template <class T, class U, std::enable_if_t<!std::is_same_v<T, U>, T> *>
+CORBA::Any *create_any(const U *tmp, const size_t base, const size_t)
+{
+    CORBA::Any *any_ptr = new CORBA::Any();
+    (*any_ptr) <<= (*tmp)[base - 1];
+    return any_ptr;
+}
+
+template <>
+CORBA::Any *create_any<DevBoolean>(const DevVarBooleanArray *tmp, const size_t base, const size_t)
+{
+    CORBA::Any *any_ptr = new CORBA::Any();
+    (*any_ptr) <<= CORBA::Any::from_boolean((*tmp)[base - 1]);
+    return any_ptr;
+}
+
+template <>
+CORBA::Any *create_any<DevString>(const DevVarStringArray *tmp, const size_t base, const size_t)
+{
+    CORBA::Any *any_ptr = new CORBA::Any();
+    Tango::ConstDevString tmp_data = (*tmp)[base - 1].in();
+    (*any_ptr) <<= tmp_data;
+    return any_ptr;
+}
+
+template <>
+CORBA::Any *create_any<DevVarStringArray>(const DevVarStringArray *tmp, const size_t base, const size_t data_length)
+{
+    CORBA::Any *any_ptr = new CORBA::Any();
+    const Tango::ConstDevString *c_seq_buff = tmp->get_buffer();
+    char **seq_buff = const_cast<char **>(c_seq_buff);
+    Tango::DevVarStringArray tmp_data =
+        DevVarStringArray(data_length, data_length, &(seq_buff[base - data_length]), false);
+
+    (*any_ptr) <<= tmp_data;
+    return any_ptr;
+}
+
+template <class T>
+void extract_value(CORBA::Any &value, std::vector<DeviceAttributeHistory> &ddh)
+{
+    const T *tmp;
+
+    value >>= tmp;
+    size_t seq_size = tmp->length();
+
+    //
+    // Copy data
+    //
+
+    size_t base = seq_size;
+
+    for(auto &hist : ddh)
+    {
+        if(hist.failed() || hist.quality == Tango::ATTR_INVALID)
+        {
+            continue;
+        }
+
+        //
+        // Get the data length for this record
+        //
+
+        int r_dim_x = hist.dim_x;
+        int r_dim_y = hist.dim_y;
+        int w_dim_x = hist.get_written_dim_x();
+        int w_dim_y = hist.get_written_dim_y();
+
+        int data_length;
+        (r_dim_y == 0) ? data_length = r_dim_x : data_length = r_dim_x * r_dim_y;
+        (w_dim_y == 0) ? data_length += w_dim_x : data_length += (w_dim_x * w_dim_y);
+
+        //
+        // Real copy now
+        //
+
+        hist.update_internal_sequence(tmp, base - data_length, data_length);
+
+        base -= data_length;
+    }
+}
+
+template <class T>
+void extract_value(CORBA::Any &value, std::vector<DeviceDataHistory> &ddh, const Tango::AttributeDimList &ad)
+{
+    const typename tango_type_traits<T>::ArrayType *tmp;
+
+    value >>= tmp;
+    size_t seq_size = tmp->length();
+
+    //
+    // Copy data
+    //
+
+    size_t base = seq_size;
+
+    size_t loop = 0;
+
+    for(auto &hist : ddh)
+    {
+        //
+        // Get the data length for this record
+        //
+
+        size_t data_length = ad[loop++].dim_x;
+
+        if(hist.failed())
+        {
+            continue;
+        }
+
+        //
+        // Real copy now
+        //
+        CORBA::Any *any_ptr = create_any<T>(tmp, base, data_length);
+
+        hist.any = any_ptr;
+
+        base -= data_length;
+    }
+}
+
+template <>
+void extract_value<Tango::DevVarDoubleStringArray>(CORBA::Any &value,
+                                                   std::vector<DeviceDataHistory> &ddh,
+                                                   const Tango::AttributeDimList &ad)
+{
+    const Tango::DevVarDoubleStringArray *tmp;
+
+    value >>= tmp;
+    size_t seq_size_str = tmp->svalue.length();
+    size_t seq_size_num = tmp->dvalue.length();
+
+    //
+    // Copy data
+    //
+
+    size_t base_str = seq_size_str;
+    size_t base_num = seq_size_num;
+
+    size_t loop = 0;
+
+    for(auto &hist : ddh)
+    {
+        if(hist.failed())
+        {
+            continue;
+        }
+
+        //
+        // Get the data length for this record
+        //
+
+        size_t data_length = ad[loop].dim_x;
+        size_t data_num_length = ad[loop].dim_y;
+        ++loop;
+        //
+        // Real copy now
+        //
+        auto *dvdsa = new Tango::DevVarDoubleStringArray();
+        dvdsa->svalue.length(data_length);
+        dvdsa->dvalue.length(data_num_length);
+
+        for(size_t i = 0; i < data_length; ++i)
+        {
+            dvdsa->svalue[i] = tmp->svalue[(base_str - data_length) + i];
+        }
+        for(size_t i = 0; i < data_num_length; ++i)
+        {
+            dvdsa->dvalue[i] = tmp->dvalue[(base_num - data_num_length) + i];
+        }
+
+        CORBA::Any *any_ptr = new CORBA::Any();
+        (*any_ptr) <<= dvdsa;
+        hist.any = any_ptr;
+
+        base_str -= data_length;
+        base_num -= data_num_length;
+    }
+}
+
+template <>
+void extract_value<Tango::DevVarLongStringArray>(CORBA::Any &value,
+                                                 std::vector<DeviceDataHistory> &ddh,
+                                                 const Tango::AttributeDimList &ad)
+{
+    const Tango::DevVarLongStringArray *tmp;
+
+    value >>= tmp;
+    size_t seq_size_str = tmp->svalue.length();
+    size_t seq_size_num = tmp->lvalue.length();
+
+    //
+    // Copy data
+    //
+
+    size_t base_str = seq_size_str;
+    size_t base_num = seq_size_num;
+
+    size_t loop = 0;
+
+    for(auto &hist : ddh)
+    {
+        if(hist.failed())
+        {
+            continue;
+        }
+
+        //
+        // Get the data length for this record
+        //
+
+        size_t data_length = ad[loop].dim_x;
+        size_t data_num_length = ad[loop].dim_y;
+        ++loop;
+        //
+        // Real copy now
+        //
+        auto *dvdsa = new Tango::DevVarLongStringArray();
+        dvdsa->svalue.length(data_length);
+        dvdsa->lvalue.length(data_num_length);
+
+        for(size_t i = 0; i < data_length; ++i)
+        {
+            dvdsa->svalue[i] = tmp->svalue[(base_str - data_length) + i];
+        }
+        for(size_t i = 0; i < data_num_length; ++i)
+        {
+            dvdsa->lvalue[i] = tmp->lvalue[(base_num - data_num_length) + i];
+        }
+
+        CORBA::Any *any_ptr = new CORBA::Any();
+        (*any_ptr) <<= dvdsa;
+        hist.any = any_ptr;
+
+        base_str -= data_length;
+        base_num -= data_num_length;
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//         from_hist_2_AttHistory()
+//
+// description :
+//         Convert the attribute history as returned by a IDL 4 device to the classical DeviceAttributeHistory format
+//
+//-------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+void from_hist_2_AttHistory(const T &hist, std::vector<DeviceAttributeHistory> *ddh)
+{
+    //
+    // Check received data validity
+    //
+
+    if((hist->quals.length() != hist->quals_array.length()) || (hist->r_dims.length() != hist->r_dims_array.length()) ||
+       (hist->w_dims.length() != hist->w_dims_array.length()) || (hist->errors.length() != hist->errors_array.length()))
+    {
+        TANGO_THROW_EXCEPTION(API_WrongHistoryDataBuffer, "Data buffer received from server is not valid !");
+    }
+
+    //
+    // Get history depth
+    //
+
+    unsigned int h_depth = hist->dates.length();
+
+    //
+    // Copy date and name in each history list element
+    //
+
+    unsigned int loop;
+    for(loop = 0; loop < h_depth; loop++)
+    {
+        (*ddh)[loop].time = hist->dates[loop];
+        (*ddh)[loop].name = hist->name.in();
+    }
+
+    //
+    // Copy the attribute quality factor
+    //
+
+    int k;
+
+    for(loop = 0; loop < hist->quals.length(); loop++)
+    {
+        int nb_elt = hist->quals_array[loop].nb_elt;
+        int start = hist->quals_array[loop].start;
+
+        for(k = 0; k < nb_elt; k++)
+        {
+            (*ddh)[start - k].quality = hist->quals[loop];
+        }
+    }
+
+    //
+    // Copy read dimension
+    //
+
+    for(loop = 0; loop < hist->r_dims.length(); loop++)
+    {
+        int nb_elt = hist->r_dims_array[loop].nb_elt;
+        int start = hist->r_dims_array[loop].start;
+
+        for(k = 0; k < nb_elt; k++)
+        {
+            (*ddh)[start - k].dim_x = hist->r_dims[loop].dim_x;
+            (*ddh)[start - k].dim_y = hist->r_dims[loop].dim_y;
+        }
+    }
+
+    //
+    // Copy write dimension
+    //
+
+    for(loop = 0; loop < hist->w_dims.length(); loop++)
+    {
+        int nb_elt = hist->w_dims_array[loop].nb_elt;
+        int start = hist->w_dims_array[loop].start;
+
+        for(k = 0; k < nb_elt; k++)
+        {
+            (*ddh)[start - k].set_w_dim_x(hist->w_dims[loop].dim_x);
+            (*ddh)[start - k].set_w_dim_y(hist->w_dims[loop].dim_y);
+        }
+    }
+
+    //
+    // Copy errors
+    //
+
+    for(loop = 0; loop < hist->errors.length(); loop++)
+    {
+        int nb_elt = hist->errors_array[loop].nb_elt;
+        int start = hist->errors_array[loop].start;
+
+        for(k = 0; k < nb_elt; k++)
+        {
+            (*ddh)[start - k].failed(true);
+            DevErrorList &err_list = (*ddh)[start - k].get_error_list();
+            err_list.length(hist->errors[loop].length());
+            for(unsigned int g = 0; g < hist->errors[loop].length(); g++)
+            {
+                err_list[g] = (hist->errors[loop])[g];
+            }
+        }
+    }
+
+    //
+    // Get data type and data ptr
+    //
+
+    CORBA::TypeCode_var ty = hist->value.type();
+    if(ty->kind() != tk_null)
+    {
+        CORBA::TypeCode_var ty_alias = ty->content_type();
+        CORBA::TypeCode_var ty_seq = ty_alias->content_type();
+
+        switch(ty_seq->kind())
+        {
+        case tk_long:
+            extract_value<Tango::DevVarLongArray>(hist->value, *ddh);
+            break;
+
+        case tk_longlong:
+            extract_value<Tango::DevVarLong64Array>(hist->value, *ddh);
+            break;
+
+        case tk_short:
+            extract_value<Tango::DevVarShortArray>(hist->value, *ddh);
+            break;
+
+        case tk_double:
+            extract_value<Tango::DevVarDoubleArray>(hist->value, *ddh);
+            break;
+
+        case tk_string:
+            extract_value<Tango::DevVarStringArray>(hist->value, *ddh);
+            break;
+
+        case tk_float:
+            extract_value<Tango::DevVarFloatArray>(hist->value, *ddh);
+            break;
+
+        case tk_boolean:
+            extract_value<Tango::DevVarBooleanArray>(hist->value, *ddh);
+            break;
+
+        case tk_ushort:
+            extract_value<Tango::DevVarUShortArray>(hist->value, *ddh);
+            break;
+
+        case tk_octet:
+            extract_value<Tango::DevVarCharArray>(hist->value, *ddh);
+            break;
+
+        case tk_ulong:
+            extract_value<Tango::DevVarULongArray>(hist->value, *ddh);
+            break;
+
+        case tk_ulonglong:
+            extract_value<Tango::DevVarULong64Array>(hist->value, *ddh);
+            break;
+
+        case tk_enum:
+            extract_value<Tango::DevVarStateArray>(hist->value, *ddh);
+            break;
+
+        case tk_struct:
+            extract_value<Tango::DevVarEncodedArray>(hist->value, *ddh);
+            break;
+
+        default:
+            TangoSys_OMemStream desc;
+            desc << "'hist.value' with unexpected sequence kind '" << ty_seq->kind() << "'";
+            TANGO_THROW_EXCEPTION(API_InvalidCorbaAny, desc.str().c_str());
+        }
+    }
+}
+
+//------------------------------------------------------------------------------------------------------------------
+//
+// method :
+//         from_hist4_2_DataHistory()
+//
+// description :
+//         Convert the command history as returned by a IDL 4 device to the classical DeviceDataHistory format
+//
+//-------------------------------------------------------------------------------------------------------------------
+
+void from_hist4_2_DataHistory(const Tango::DevCmdHistory_4_var &hist_4, std::vector<Tango::DeviceDataHistory> *ddh)
+{
+    //
+    // Check received data validity
+    //
+
+    if((hist_4->dims.length() != hist_4->dims_array.length()) ||
+       (hist_4->errors.length() != hist_4->errors_array.length()))
+    {
+        TANGO_THROW_EXCEPTION(API_WrongHistoryDataBuffer, "Data buffer received from server is not valid !");
+    }
+
+    //
+    // Get history depth
+    //
+
+    unsigned int h_depth = hist_4->dates.length();
+
+    //
+    // Copy date in each history list element
+    //
+
+    unsigned int loop;
+    int k;
+
+    for(loop = 0; loop < h_depth; loop++)
+    {
+        (*ddh)[loop].set_date(hist_4->dates[loop]);
+    }
+
+    //
+    // Copy errors
+    //
+
+    for(loop = 0; loop < hist_4->errors.length(); loop++)
+    {
+        int nb_elt = hist_4->errors_array[loop].nb_elt;
+        int start = hist_4->errors_array[loop].start;
+
+        for(k = 0; k < nb_elt; k++)
+        {
+            (*ddh)[start - k].failed(true);
+            DevErrorList_var del(&hist_4->errors[loop]);
+            (*ddh)[start - k].errors(del);
+            del._retn();
+        }
+    }
+
+    //
+    // Create a temporary sequence with record dimension
+    //
+
+    Tango::AttributeDimList ad(h_depth);
+    ad.length(h_depth);
+
+    for(loop = 0; loop < hist_4->dims.length(); loop++)
+    {
+        int nb_elt = hist_4->dims_array[loop].nb_elt;
+        int start = hist_4->dims_array[loop].start;
+
+        for(k = 0; k < nb_elt; k++)
+        {
+            ad[start - k].dim_x = hist_4->dims[loop].dim_x;
+            ad[start - k].dim_y = hist_4->dims[loop].dim_y;
+        }
+    }
+
+    //
+    // Get data ptr and data size
+    //
+
+    switch(hist_4->cmd_type)
+    {
+    case DEV_LONG:
+        extract_value<Tango::DevLong>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_LONGARRAY:
+        extract_value<Tango::DevVarLongArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_LONG64:
+        extract_value<Tango::DevLong64>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_LONG64ARRAY:
+        extract_value<Tango::DevVarLong64Array>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_SHORT:
+        extract_value<Tango::DevShort>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_SHORTARRAY:
+        extract_value<Tango::DevVarShortArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_DOUBLE:
+        extract_value<Tango::DevDouble>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_DOUBLEARRAY:
+        extract_value<Tango::DevVarDoubleArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_STRING:
+        extract_value<Tango::DevString>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_STRINGARRAY:
+        extract_value<Tango::DevVarStringArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_FLOAT:
+        extract_value<Tango::DevFloat>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_FLOATARRAY:
+        extract_value<Tango::DevVarFloatArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_BOOLEAN:
+        extract_value<Tango::DevBoolean>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_USHORT:
+        extract_value<Tango::DevUShort>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_USHORTARRAY:
+        extract_value<Tango::DevVarUShortArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_CHARARRAY:
+        extract_value<Tango::DevVarCharArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_ULONG:
+        extract_value<Tango::DevULong>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_ULONGARRAY:
+        extract_value<Tango::DevVarULongArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_ULONG64:
+        extract_value<Tango::DevULong64>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_ULONG64ARRAY:
+        extract_value<Tango::DevVarULong64Array>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_STATE:
+        extract_value<Tango::DevState>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_LONGSTRINGARRAY:
+        extract_value<Tango::DevVarLongStringArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEVVAR_DOUBLESTRINGARRAY:
+        extract_value<Tango::DevVarDoubleStringArray>(hist_4->value, *ddh, ad);
+        break;
+    case DEV_ENCODED:
+        extract_value<Tango::DevEncoded>(hist_4->value, *ddh, ad);
+        break;
+    }
 }
 } // namespace
 
@@ -1691,6 +2293,45 @@ CORBA::Any_var Connection::command_inout(const std::string &command, const CORBA
     return tmp;
 
     TANGO_TELEMETRY_TRACE_END();
+}
+
+long Connection::add_asyn_request(CORBA::Request_ptr req, TgRequest::ReqType req_type)
+{
+    omni_mutex_lock guard(asyn_mutex);
+    long id = ApiUtil::instance()->get_pasyn_table()->store_request(req, req_type);
+    pasyn_ctr++;
+    return id;
+}
+
+void Connection::remove_asyn_request(long id)
+{
+    omni_mutex_lock guard(asyn_mutex);
+
+    ApiUtil::instance()->get_pasyn_table()->remove_request(id);
+    pasyn_ctr--;
+}
+
+void Connection::add_asyn_cb_request(CORBA::Request_ptr req, CallBack *cb, Connection *con, TgRequest::ReqType req_type)
+{
+    omni_mutex_lock guard(asyn_mutex);
+    ApiUtil::instance()->get_pasyn_table()->store_request(req, cb, con, req_type);
+    pasyn_cb_ctr++;
+}
+
+void Connection::remove_asyn_cb_request(Connection *con, CORBA::Request_ptr req)
+{
+    omni_mutex_lock guard(asyn_mutex);
+    ApiUtil::instance()->get_pasyn_table()->remove_request(con, req);
+    pasyn_cb_ctr--;
+}
+
+long Connection::get_pasyn_cb_ctr()
+{
+    long ret;
+    asyn_mutex.lock();
+    ret = pasyn_cb_ctr;
+    asyn_mutex.unlock();
+    return ret;
 }
 
 //-----------------------------------------------------------------------------
@@ -9438,77 +10079,24 @@ int DeviceProxy::get_tango_lib_version()
     return ret;
 }
 
-template void DeviceProxy::extract_value<Tango::DevLong>(CORBA::Any &,
-                                                         std::vector<DeviceDataHistory> &,
-                                                         const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevULong>(CORBA::Any &,
-                                                          std::vector<DeviceDataHistory> &,
-                                                          const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarLongArray>(CORBA::Any &,
-                                                                 std::vector<DeviceDataHistory> &,
-                                                                 const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarULongArray>(CORBA::Any &,
-                                                                  std::vector<DeviceDataHistory> &,
-                                                                  const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevLong64>(CORBA::Any &,
-                                                           std::vector<DeviceDataHistory> &,
-                                                           const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevULong64>(CORBA::Any &,
-                                                            std::vector<DeviceDataHistory> &,
-                                                            const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarLong64Array>(CORBA::Any &,
-                                                                   std::vector<DeviceDataHistory> &,
-                                                                   const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarULong64Array>(CORBA::Any &,
-                                                                    std::vector<DeviceDataHistory> &,
-                                                                    const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevShort>(CORBA::Any &,
-                                                          std::vector<DeviceDataHistory> &,
-                                                          const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevUShort>(CORBA::Any &,
-                                                           std::vector<DeviceDataHistory> &,
-                                                           const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarShortArray>(CORBA::Any &,
-                                                                  std::vector<DeviceDataHistory> &,
-                                                                  const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarUShortArray>(CORBA::Any &,
-                                                                   std::vector<DeviceDataHistory> &,
-                                                                   const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevDouble>(CORBA::Any &,
-                                                           std::vector<DeviceDataHistory> &,
-                                                           const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarDoubleArray>(CORBA::Any &,
-                                                                   std::vector<DeviceDataHistory> &,
-                                                                   const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevFloat>(CORBA::Any &,
-                                                          std::vector<DeviceDataHistory> &,
-                                                          const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarFloatArray>(CORBA::Any &,
-                                                                  std::vector<DeviceDataHistory> &,
-                                                                  const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevBoolean>(CORBA::Any &,
-                                                            std::vector<DeviceDataHistory> &,
-                                                            const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarBooleanArray>(CORBA::Any &,
-                                                                    std::vector<DeviceDataHistory> &,
-                                                                    const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevString>(CORBA::Any &,
-                                                           std::vector<DeviceDataHistory> &,
-                                                           const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarStringArray>(CORBA::Any &,
-                                                                   std::vector<DeviceDataHistory> &,
-                                                                   const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarCharArray>(CORBA::Any &,
-                                                                 std::vector<DeviceDataHistory> &,
-                                                                 const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevState>(CORBA::Any &,
-                                                          std::vector<DeviceDataHistory> &,
-                                                          const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevVarStateArray>(CORBA::Any &,
-                                                                  std::vector<DeviceDataHistory> &,
-                                                                  const Tango::AttributeDimList &);
-template void DeviceProxy::extract_value<Tango::DevEncoded>(CORBA::Any &,
-                                                            std::vector<DeviceDataHistory> &,
-                                                            const Tango::AttributeDimList &);
+inline int DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, CallBack *callback)
+{
+    std::vector<std::string> filt;
+    return subscribe_event(attr_name, event, callback, filt, false);
+}
+
+inline int
+    DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, CallBack *callback, bool stateless)
+{
+    std::vector<std::string> filt;
+    return subscribe_event(attr_name, event, callback, filt, stateless);
+}
+
+inline int
+    DeviceProxy::subscribe_event(const std::string &attr_name, EventType event, int event_queue_size, bool stateless)
+{
+    std::vector<std::string> filt;
+    return subscribe_event(attr_name, event, event_queue_size, filt, stateless);
+}
 
 } // namespace Tango

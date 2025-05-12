@@ -31,9 +31,11 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/fwdattribute.h>
 #include <tango/server/fwdattribute_templ.h>
+#include <tango/server/deviceclass.h>
+#include <tango/internal/server/attribute_utils.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {
@@ -776,9 +778,7 @@ void FwdAttribute::upd_att_label(const char *new_label)
     Tango::Attr &att = mca->get_attr(name);
 
     std::vector<AttrProperty> &def_user_prop = att.get_user_default_properties();
-    size_t nb_user = def_user_prop.size();
     std::vector<AttrProperty> &def_class_prop = att.get_class_properties();
-    size_t nb_class = def_class_prop.size();
 
     if(TG_strcasecmp(new_label, AlrmValueNotSpec) == 0 || (TG_strcasecmp(new_label, LabelNotSpec) == 0) ||
        (TG_strcasecmp(new_label, name.c_str()) == 0))
@@ -791,10 +791,10 @@ void FwdAttribute::upd_att_label(const char *new_label)
     {
         // set class default value if defined, otherwise use the user default or library defaults
 
-        bool found = prop_in_list("label", label, nb_class, def_class_prop);
+        bool found = Tango::detail::prop_in_list("label", label, def_class_prop);
         if(!found)
         {
-            found = prop_in_list("label", label, nb_user, def_user_prop);
+            found = Tango::detail::prop_in_list("label", label, def_user_prop);
             remove_db = true;
             if(!found)
             {
@@ -806,7 +806,7 @@ void FwdAttribute::upd_att_label(const char *new_label)
     {
         // set user default value if defined, otherwise use the library defaults
 
-        bool found = prop_in_list("label", label, nb_user, def_user_prop);
+        bool found = Tango::detail::prop_in_list("label", label, def_user_prop);
         remove_db = true;
         if(!found)
         {

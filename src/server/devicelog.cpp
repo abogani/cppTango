@@ -96,9 +96,10 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
+#include <tango/server/device.h>
 
 #include <tango/server/logging.h>
+#include <tango/client/DbDevice.h>
 
 namespace Tango
 {

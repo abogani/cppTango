@@ -27,9 +27,18 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/client/DevicePipe.h>
+#include <tango/common/utils/assert.h>
+#include <tango/server/seqvec.h>
+#include <tango/server/except.h>
+#include <tango/server/tango_clock.h>
+#include <tango/client/apiexcept.h>
+
 #include <iomanip>
 #include <memory>
+#include <algorithm>
+#include <sstream>
+#include <string>
 
 using namespace CORBA;
 

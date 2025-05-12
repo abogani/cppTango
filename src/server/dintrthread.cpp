@@ -32,9 +32,11 @@
 //
 //-================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/dintrthread.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/auto_tango_monitor.h>
+#include <tango/server/device_5.h>
+#include <tango/server/utils.h>
 
 namespace Tango
 {

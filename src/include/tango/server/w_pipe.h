@@ -32,7 +32,11 @@
 #ifndef _W_PIPE_H
 #define _W_PIPE_H
 
-#include <tango/tango.h>
+#include <tango/server/pipe.h>
+
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace Tango
 {

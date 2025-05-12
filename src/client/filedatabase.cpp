@@ -18,11 +18,17 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <tango/client/filedatabase.h>
+#include <tango/common/utils/type_info.h>
+#include <tango/common/tango_const.h>
+#include <tango/common/tango_type_traits.h>
+#include <tango/server/logging.h>
+#include <tango/server/except.h>
+#include <tango/client/apiexcept.h>
+
 #include <iostream>
 #include <numeric>
-#include <tango/tango.h>
-#include <tango/common/utils/type_info.h>
-
+#include <algorithm>
 // DbInfo                              done
 // DbImportDevice
 // DbExportDevice

@@ -37,7 +37,11 @@
 #ifndef _DEVICE_2_H
 #define _DEVICE_2_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/device.h>
+
+#include <string>
+#include <memory>
 
 namespace Tango
 {

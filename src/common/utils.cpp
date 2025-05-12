@@ -1,6 +1,15 @@
-#include <tango/tango.h>
+#include <tango/common/tango_type_traits.h>
 #include <tango/internal/utils.h>
+
+#include <tango/common/tango_const.h>
 #include <tango/common/utils/type_info.h>
+#include <tango/common/utils/assert.h>
+#include <tango/server/except.h>
+#include <tango/server/seqvec.h>
+#include <tango/client/DeviceAttribute.h>
+#include <tango/client/ApiUtil.h>
+
+#include <algorithm>
 
 namespace Tango::detail
 {

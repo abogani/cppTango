@@ -27,7 +27,7 @@
 //
 //
 
-#include <tango/tango.h>
+#include <tango/client/AttributeProxy.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/common/pointer_with_lock.h>
 

@@ -1,5 +1,6 @@
-#include <tango/tango.h>
 #include <tango/internal/net.h>
+#include <tango/server/except.h>
+#include <tango/server/exception_reason_consts.h>
 
 #ifdef _TG_WINDOWS_
   #include <ws2tcpip.h>
@@ -9,6 +10,8 @@
   #include <sys/socket.h>
   #include <netinet/in.h>
 #endif /* _TG_WINDOWS_ */
+
+#include <sstream>
 
 namespace Tango::detail
 {
@@ -84,7 +87,7 @@ std::string get_port_from_endpoint(const std::string &endpoint)
             return;
         }
 
-        TangoSys_OMemStream o;
+        std::stringstream o;
         o << "Could not extract the port from "
           << "\"" << endpoint << "\"" << std::ends;
 
@@ -112,7 +115,7 @@ void split_endpoint(const std::string &endpoint, std::string &name, std::string 
             return;
         }
 
-        TangoSys_OMemStream o;
+        std::stringstream o;
         o << "Could not extract name and port from "
           << "\"" << endpoint << "\"" << std::ends;
 
@@ -147,7 +150,7 @@ std::string qualify_host_address(std::string name, const std::string &port)
             return;
         }
 
-        TangoSys_OMemStream o;
+        std::stringstream o;
         o << "Neither name "
           << "\"" << name << "\""
           << " nor port "
@@ -176,7 +179,7 @@ std::string parse_hostname_from_CORBA_URI(const std::string &input)
             return;
         }
 
-        TangoSys_OMemStream o;
+        std::stringstream o;
         o << "Could not parse "
           << "\"" << input << "\""
           << " as CORBA URI" << std::ends;

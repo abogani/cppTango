@@ -33,12 +33,17 @@
 #ifndef _DEVICE_5_H
 #define _DEVICE_5_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/server/device_4.h>
+
+#include <string>
+#include <memory>
 
 namespace Tango
 {
 
 class WPipe;
+class DeviceClass;
 
 //==================================================================================================================
 //

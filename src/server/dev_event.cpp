@@ -29,8 +29,10 @@
 //
 //-=================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/device.h>
+#include <tango/server/utils.h>
+#include <tango/server/pipe.h>
 
 #include <tango/server/logging.h>
 

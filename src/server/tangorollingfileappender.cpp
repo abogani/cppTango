@@ -31,8 +31,6 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
-
 #include <tango/server/tangorollingfileappender.h>
 
 namespace Tango

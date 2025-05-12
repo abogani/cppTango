@@ -35,10 +35,9 @@
 //
 //-=============================================================================
 
-#include <algorithm>
-
-#include <tango/tango.h>
 #include <tango/server/pollcmds.h>
+#include <tango/server/dserver.h>
+#include <tango/server/utils.h>
 
 namespace Tango
 {

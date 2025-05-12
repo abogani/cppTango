@@ -1,6 +1,10 @@
 #ifndef TANGO_COMMON_UTILS_TYPE_INFO_H
 #define TANGO_COMMON_UTILS_TYPE_INFO_H
 
+#include <tango/common/tango_const.h>
+
+#include <string>
+
 namespace Tango::detail
 {
 

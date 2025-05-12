@@ -34,6 +34,8 @@
 #ifndef _PIPE_TPP
 #define _PIPE_TPP
 
+#include <tango/server/pipe.h>
+
 namespace Tango
 {
 

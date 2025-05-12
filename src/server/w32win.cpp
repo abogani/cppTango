@@ -34,6 +34,9 @@
 
 #include <tango/windows/w32win.h>
 #include <tango/windows/resource.h>
+#include <tango/server/utils.h>
+#include <tango/server/device.h>
+#include <tango/server/dserver.h>
 
 namespace Tango
 {

@@ -32,7 +32,8 @@
 #ifndef _PIPEDESC_H
 #define _PIPEDESC_H
 
-#include <tango/tango.h>
+#include <string>
+#include <memory>
 
 namespace Tango
 {

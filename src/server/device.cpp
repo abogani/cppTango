@@ -30,7 +30,6 @@
 //
 //-================================================================================================================
 
-#include <tango/tango.h>
 #include <new>
 
 #include <tango/server/basiccommand.h>
@@ -38,10 +37,15 @@
 #include <tango/server/dserversignal.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/pipe.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/dserver.h>
+#include <tango/server/log4tango.h>
 #include <tango/client/apiexcept.h>
 #include <tango/server/tango_clock.h>
 #include <tango/common/git_revision.h>
 #include <tango/server/logging.h>
+#include <tango/client/DbDevice.h>
 #include <tango/internal/telemetry/telemetry_kernel_macros.h>
 
 #if defined(TANGO_USE_TELEMETRY)
@@ -6428,6 +6432,21 @@ void DeviceImpl::set_pipe_event_subscription_states(const PipeEventSubscriptionS
             pipe.set_event_subscription(now);
         }
     }
+}
+
+inline DbDevice *DeviceImpl::get_db_device()
+{
+    if(!Tango::Util::instance()->use_db())
+    {
+        TangoSys_OMemStream desc_mess;
+        desc_mess << "Method not available for device ";
+        desc_mess << device_name;
+        desc_mess << " which is a non database device";
+
+        TANGO_THROW_EXCEPTION(API_NonDatabaseDevice, desc_mess.str());
+    }
+
+    return db_dev;
 }
 
 } // namespace Tango

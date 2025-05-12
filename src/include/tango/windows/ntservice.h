@@ -21,7 +21,9 @@
 #ifndef _NTSERVICE_H
 #define _NTSERVICE_H
 
-#include <tango/tango.h>
+#include <string>
+#include <winsock2.h> // prevents windows.h from including winsock.h
+#include <windows.h>
 
 namespace Tango
 {

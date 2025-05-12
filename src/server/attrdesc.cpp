@@ -30,8 +30,11 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/attrdesc.h>
+#include <tango/server/logging.h>
+#include <tango/server/except.h>
+
+#include <bitset>
 
 namespace Tango
 {

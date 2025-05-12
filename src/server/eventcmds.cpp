@@ -28,8 +28,11 @@
 //
 //-=================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/dserver.h>
+#include <tango/server/utils.h>
+#include <tango/server/pipe.h>
+#include <tango/server/fwdattribute.h>
 
 namespace Tango
 {

@@ -29,9 +29,14 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/rootattreg.h>
 #include <tango/server/eventsupplier.h>
+#include <tango/server/device.h>
+#include <tango/server/device_5.h>
+#include <tango/server/fwdattribute.h>
+#include <tango/server/dserver.h>
+#include <tango/client/event.h>
+#include <tango/client/Database.h>
 
 namespace Tango
 {

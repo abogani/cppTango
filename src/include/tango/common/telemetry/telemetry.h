@@ -5,14 +5,18 @@
 
 #if defined(TANGO_USE_TELEMETRY)
 
+  #include <tango/common/tango_const.h>
+  #include <tango/common/log4tango/Appender.h>
   #include <tango/common/telemetry/configuration.h>
+  #include <tango/server/logging.h>
 
   #include <map>
-  #include <regex>
   #include <memory>
   #include <string>
   #include <cstring>
+  #include <cstdint>
   #include <variant>
+  #include <thread>
 
 namespace Tango::telemetry
 {

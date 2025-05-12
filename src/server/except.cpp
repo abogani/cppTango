@@ -32,7 +32,10 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
+#include <tango/server/except.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/device.h>
+#include <tango/client/apiexcept.h>
 
 #include <tango/internal/utils.h>
 

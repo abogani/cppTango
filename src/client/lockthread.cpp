@@ -30,12 +30,14 @@
 //
 //-=================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/client/lockthread.h>
+#include <tango/client/devasyn.h>
+#include <tango/server/tango_monitor.h>
+#include <tango/server/tango_clock.h>
 
-#include <functional>
 #include <algorithm>
 #include <ctime>
+#include <iostream>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

@@ -34,7 +34,9 @@
 #ifndef _CLASS_PIPE_H
 #define _CLASS_PIPE_H
 
-#include <tango/tango.h>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Tango
 {

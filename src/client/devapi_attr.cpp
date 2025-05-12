@@ -27,8 +27,11 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
-
+#include <tango/common/tango_const.h>
+#include <tango/server/seqvec.h>
+#include <tango/server/tango_clock.h>
+#include <tango/client/DeviceAttribute.h>
+#include <tango/client/apiexcept.h>
 #include <tango/internal/utils.h>
 
 #include <iomanip>

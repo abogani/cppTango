@@ -34,8 +34,9 @@
 #ifndef _ATTRMANIP_H
 #define _ATTRMANIP_H
 
-#include <tango/tango.h>
 #include <algorithm>
+#include <ostream>
+#include <string>
 
 namespace Tango
 {

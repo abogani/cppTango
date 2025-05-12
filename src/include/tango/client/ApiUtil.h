@@ -30,6 +30,18 @@
 #ifndef _APIUTIL_H
 #define _APIUTIL_H
 
+#include <tango/server/tango_config.h>
+#include <tango/client/Connection.h>
+#include <tango/client/devapi.h>
+#include <tango/client/devasyn.h>
+
+#include <string>
+#include <map>
+#include <memory>
+#include <vector>
+
+namespace Tango
+{
 /****************************************************************************************
  *                                                                                         *
  *                     The ApiUtil class                                                    *
@@ -348,9 +360,6 @@ class ApiUtil
      * @param req, the request to be forwarded on the connection
      */
     void process_request(Connection *connection, const TgRequest &tg_req, CORBA::Request_ptr &req);
-
-    template <typename T>
-    static void attr_to_device_base(const T *, DeviceAttribute *);
 };
-
+} // namespace Tango
 #endif /* _APIUTIL_H */

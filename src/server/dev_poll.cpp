@@ -30,7 +30,10 @@
 //
 //-===================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/server/device.h>
+#include <tango/server/command.h>
+#include <tango/server/utils.h>
+#include <tango/server/dserver.h>
 
 namespace Tango
 {

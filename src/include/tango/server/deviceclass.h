@@ -35,7 +35,13 @@
 #ifndef _DEVICECLASS_H
 #define _DEVICECLASS_H
 
-#include "tango/server/tango_config.h"
+#include <tango/common/tango_const.h>
+#include <tango/server/tango_monitor.h>
+
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
 
 namespace Tango
 {
@@ -48,6 +54,12 @@ class NoSyncModelTangoMonitor;
 class EventSupplier;
 class Util;
 class DServer;
+class DeviceImpl;
+class Attr;
+class Attribute;
+class MultiClassAttribute;
+class MultiClassPipe;
+class DbClass;
 
 //=============================================================================
 //

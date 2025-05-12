@@ -35,8 +35,10 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/classattribute.h>
+#include <tango/server/attribute.h>
+#include <tango/server/logstream.h>
+#include <tango/client/Database.h>
 #include <algorithm>
 
 namespace Tango

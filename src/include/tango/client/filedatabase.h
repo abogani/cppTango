@@ -21,10 +21,11 @@
 #ifndef FILEDATABASE_H
 #define FILEDATABASE_H
 
+#include <tango/common/tango_const.h>
 #include <fstream>
 #include <string>
 #include <vector>
-#include <tango/tango.h>
+#include <memory>
 
 namespace Tango
 {

@@ -84,7 +84,7 @@
 //
 //-=============================================================================
 
-#include <tango/tango.h>
+#include <tango/server/dserver.h>
 
 namespace Tango
 {

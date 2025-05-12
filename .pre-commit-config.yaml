@@ -26,3 +26,12 @@ repos:
   hooks:
   - id: clang-format
     types_or: [c++, c]
+- repo: local
+  hooks:
+    - id: include_tango_h
+      name: Check that tango/tango.h is not included in source code
+      types_or: [c++, c]
+      exclude: 'tests/'
+      args: [--multiline]
+      entry: "#include <tango/tango.h>"
+      language: pygrep

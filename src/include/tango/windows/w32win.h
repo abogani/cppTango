@@ -34,7 +34,10 @@
 #ifndef _W32WIN_H
 #define _W32WIN_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+
+#include <winsock2.h> // prevents windows.h from including winsock.h
+#include <windows.h>
 
 namespace Tango
 {

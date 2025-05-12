@@ -1,8 +1,6 @@
 #ifndef TANGO_INTERNAL_STL_CORBA_HELPERS_H
 #define TANGO_INTERNAL_STL_CORBA_HELPERS_H
 
-#include <tango/tango.h>
-
 #include <tango/internal/type_traits.h>
 
 #include <type_traits>

@@ -26,7 +26,9 @@
 // along with Tango.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <tango/tango.h>
+#include <tango/client/devasyn.h>
+
+#include <algorithm>
 
 namespace Tango
 {

@@ -30,11 +30,14 @@
 //
 //-==================================================================================================================
 
-#include <tango/tango.h>
+#include <tango/server/pollthread.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/pollthread_templ.h>
-
-#include <iomanip>
+#include <tango/server/device.h>
+#include <tango/server/device_5.h>
+#include <tango/server/device_4.h>
+#include <tango/server/device_3.h>
+#include <tango/server/utils.h>
 
 namespace Tango
 {

@@ -43,6 +43,7 @@
 //-------------------------------------------------------------
 #include <tango/server/logstream.h>
 #include <tango/server/logging.h>
+#include <tango/server/device.h>
 
 #include <tango/server/tango_current_function.h>
 

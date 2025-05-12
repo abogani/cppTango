@@ -2,7 +2,6 @@ set(SERVER_HEADERS attrdesc.h
     attribute.h
     attribute_templ.h
     attrsetval_templ.h
-    attribute_spec_templ.h
     attrmanip.h
     attrprop.h
     attrprop_templ.h
@@ -18,7 +17,6 @@ set(SERVER_HEADERS attrdesc.h
     device.h
     device_2.h
     device_3.h
-    device_3_templ.h
     device_4.h
     device_5.h
     device_6.h
@@ -33,7 +31,6 @@ set(SERVER_HEADERS attrdesc.h
     fwdattrdesc.h
     fwdattribute.h
     fwdattribute_templ.h
-    fwdattribute_spec_templ.h
     log4tango.h
     logcmds.h
     logging.h
@@ -59,9 +56,7 @@ set(SERVER_HEADERS attrdesc.h
     utils_templ.h
     utils_spec_templ.h
     w_attribute.h
-    w_attribute_templ.h
     w_attrsetval_templ.h
-    w_attribute_spec_templ.h
     w_pipe.h
     w_pipe_templ.h
     subdev_diag.h

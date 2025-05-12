@@ -30,6 +30,16 @@
 #ifndef _ATTRIBUTEPROXY_H
 #define _ATTRIBUTEPROXY_H
 
+#include <string>
+#include <memory>
+#include <vector>
+
+#include <tango/client/DeviceProxy.h>
+#include <tango/client/devapi.h>
+#include <tango/client/DbDevice.h>
+
+namespace Tango
+{
 /****************************************************************************************
  *                                                                                         *
  *                     The AttributeProxy class                                            *
@@ -773,5 +783,5 @@ class AttributeProxy
     AttributeProxy &operator=(const AttributeProxy &);
     virtual ~AttributeProxy();
 };
-
+} // namespace Tango
 #endif /* _ATTRIBUTEPROXY_H */

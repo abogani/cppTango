@@ -33,7 +33,7 @@
 #ifndef _POLLEXT_TPP
 #define _POLLEXT_TPP
 
-#include <tango/tango.h>
+#include <tango/server/pollext.h>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

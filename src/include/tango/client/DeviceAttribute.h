@@ -28,6 +28,23 @@
 #ifndef _DEVICEATTRIBUTE_H
 #define _DEVICEATTRIBUTE_H
 
+#include <tango/common/tango_const.h>
+#include <tango/server/tango_config.h>
+
+#include <string>
+#include <vector>
+#include <memory>
+#include <bitset>
+
+namespace Tango
+{
+
+struct AttributeDimension
+{
+    long dim_x;
+    long dim_y;
+};
+
 /****************************************************************************************
  *                                                                                         *
  *                     The DeviceAttribute class                                            *
@@ -1532,5 +1549,5 @@ inline Tango::DevVarEncodedArray_var &DeviceAttribute::get_seq_storage()
 {
     return EncodedSeq;
 }
-
+} // namespace Tango
 #endif /* _DEVICEATTRIBUTE_H */

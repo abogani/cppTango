@@ -37,14 +37,22 @@
 #ifndef _MULTIATTRIBUTE_H
 #define _MULTIATTRIBUTE_H
 
-#include <tango/tango.h>
+#include <tango/server/attribute.h>
+#include <tango/server/w_attribute.h>
 #include <tango/server/event_subscription_state.h>
+
+#include <string>
+#include <vector>
+#include <map>
+#include <memory>
 
 namespace Tango
 {
 
 class AttrProperty;
 class DeviceClass;
+class DeviceImpl;
+class Attr;
 
 //=============================================================================
 //

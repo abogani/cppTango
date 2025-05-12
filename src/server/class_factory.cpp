@@ -38,6 +38,11 @@
 //-===========================================================================
 
 #include <tango/server/dserver.h>
+
+#ifdef _TG_WINDOWS_
+  #include <tango/server/utils.h>
+#endif
+
 #ifdef __APPLE__
   #include <dlfcn.h>
   #include <cstdlib>
@@ -48,6 +53,8 @@
   #include <algorithm>
   #include <regex>
 #endif
+
+#include <iostream>
 
 namespace Tango
 {

@@ -37,7 +37,15 @@
 #ifndef _ATTRPROP_H
 #define _ATTRPROP_H
 
-#include <tango/tango.h>
+#include <tango/common/tango_const.h>
+#include <tango/common/tango_type_traits.h>
+#include <tango/server/tango_config.h>
+#include <tango/server/except.h>
+
+#include <string>
+#include <memory>
+#include <vector>
+#include <sstream>
 
 namespace Tango
 {
@@ -182,7 +190,7 @@ class AttrProp
      *
      * @return The attribute property value.
      */
-    T get_val()
+    T get_val() const
     {
         if(!is_value)
         {
@@ -197,7 +205,7 @@ class AttrProp
      *
      * @return The string representation of the attribute property value.
      */
-    std::string &get_str()
+    const std::string &get_str() const
     {
         return str;
     }
@@ -255,7 +263,7 @@ class AttrProp
      *
      * @return A boolean set to true if the attribute property value has been assigned
      */
-    bool is_val()
+    bool is_val() const
     {
         return is_value;
     }
@@ -264,12 +272,12 @@ class AttrProp
 
     /// @privatesection
 
-    operator std::string()
+    operator std::string() const
     {
         return str;
     }
 
-    operator const char *()
+    operator const char *() const
     {
         return str.c_str();
     }
@@ -487,7 +495,7 @@ class DoubleAttrProp
      *
      * @return The vector containing the compound attribute property values.
      */
-    std::vector<T> get_val()
+    const std::vector<T> &get_val() const
     {
         if(!is_value)
         {
@@ -502,7 +510,7 @@ class DoubleAttrProp
      *
      * @return The string representation of the compound attribute property values.
      */
-    std::string &get_str()
+    const std::string &get_str() const
     {
         return str;
     }
@@ -586,7 +594,7 @@ class DoubleAttrProp
      *
      * @return A boolean set to true if the compound attribute property values have been assigned
      */
-    bool is_val()
+    bool is_val() const
     {
         return is_value;
     }
@@ -595,12 +603,12 @@ class DoubleAttrProp
 
     /// @privatesection
 
-    operator std::string()
+    operator std::string() const
     {
         return str;
     }
 
-    operator const char *()
+    operator const char *() const
     {
         return str.c_str();
     }

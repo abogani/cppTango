@@ -29,13 +29,10 @@
 //
 //====================================================================================================================
 
-#include <tango/tango.h>
 #include <tango/server/attribute.h>
 #include <tango/server/classattribute.h>
 #include <tango/server/eventsupplier.h>
-
-#include <functional>
-#include <algorithm>
+#include <tango/server/tango_config.h>
 
 #ifdef _TG_WINDOWS_
   #include <sys/types.h>

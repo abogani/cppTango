@@ -1,6 +1,9 @@
 #ifndef _TANGO_CLOCK_H
 #define _TANGO_CLOCK_H
 
+#include <tango/common/tango_const.h>
+#include <tango/server/tango_config.h>
+
 #include <chrono>
 #include <ratio>
 #include <type_traits>
@@ -8,11 +11,10 @@
 
 #ifdef _TG_WINDOWS_
   #include <sys/timeb.h>
+  #include <winsock2.h> // struct timeval
 #else
   #include <sys/time.h>
 #endif
-
-#include <tango/idl/tango.h>
 
 namespace Tango
 {

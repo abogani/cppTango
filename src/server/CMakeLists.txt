@@ -1,6 +1,7 @@
 set(SOURCES attrdesc.cpp
             attrgetsetprop.cpp
             attribute.cpp
+            attribute_utils.cpp
             attrsetval.cpp
             attrmanip.cpp
             auto_tango_monitor.cpp

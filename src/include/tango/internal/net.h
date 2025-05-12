@@ -1,10 +1,10 @@
 #ifndef _INTERNAL_MISC_H
 #define _INTERNAL_MISC_H
 
+#include <tango/server/tango_config.h>
+
 #include <vector>
 #include <string>
-
-#include <tango/tango.h>
 
 #ifndef _TG_WINDOWS_
   #include <unistd.h>

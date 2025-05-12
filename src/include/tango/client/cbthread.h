@@ -35,10 +35,11 @@
 #ifndef _CBTHREAD_H
 #define _CBTHREAD_H
 
-#include <tango/tango.h>
+#include <tango/common/omnithread_wrapper.h>
 
 namespace Tango
 {
+class AsynReq;
 
 class CbThreadCmd : public omni_mutex
 {

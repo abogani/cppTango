@@ -36,8 +36,10 @@
 //
 //-============================================================================
 
-#include <tango/tango.h>
 #include <tango/server/device_2.h>
+#include <tango/server/dserver.h>
+#include <tango/server/command.h>
+#include <tango/server/utils.h>
 #include <tango/server/tango_clock.h>
 #include <new>
 
