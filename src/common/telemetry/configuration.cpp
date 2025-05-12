@@ -1,11 +1,14 @@
 #include <tango/common/telemetry/configuration.h>
+#include <tango/common/telemetry/telemetry.h>
+#include <tango/common/utils/assert.h>
+#include <tango/server/except.h>
+#include <tango/client/ApiUtil.h>
 
 #include <tango/internal/utils.h>
 
-#include <tango/tango.h>
-
 #include <string>
 #include <variant>
+#include <regex>
 
 namespace Tango::telemetry
 {
