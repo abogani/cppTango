@@ -307,22 +307,18 @@ clang-analyzer:
   <<: *job-template-no-test-run
   variables:
     <<: *variables
-    OS_TYPE: "${UBUNTU_20_IMAGE}"
+    OS_TYPE: "${LLVM_LATEST_IMAGE}"
     CMAKE_EXPORT_COMPILE_COMMANDS: "ON"
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "OFF"
     CMAKE_BUILD_TYPE: "Debug"
     TANGO_MAKE_TARGET: "idl_source"
-    CC: /usr/lib/llvm-12/bin/clang
-    CXX: /usr/lib/llvm-12/bin/clang++
   script: # override
-    - sudo ln -s /usr/bin/clang-12 /usr/local/bin/clang
-    - sudo ln -s /usr/bin/clang-extdef-mapping-12 /usr/local/bin/clang-extdef-mapping
     - ci/config.sh
     - ci/build.sh
     # scan-build command must be wrapped in quotes because
     # --analyzer-config option cannot contain whitespaces.
-    - "/usr/share/clang/scan-build-py-12/bin/analyze-build                          \
+    - "$(find /usr/bin/ -iname analyze-build-*)                                     \
       -v                                                                            \
       --cdb build/compile_commands.json                                             \
       --exclude build/cppapi/server/idl                                             \
@@ -532,9 +528,7 @@ sanitizer:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: "${UBUNTU_20_IMAGE}"
-    CC: /usr/lib/llvm-12/bin/clang
-    CXX: /usr/lib/llvm-12/bin/clang++
+    OS_TYPE: "${LLVM_LATEST_IMAGE}"
     ASAN_OPTIONS: detect_stack_use_after_return=1
     TSAN_OPTIONS: second_deadlock_stack=1
     UBSAN_OPTIONS: "\
