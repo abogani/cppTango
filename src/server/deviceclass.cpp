@@ -1739,7 +1739,17 @@ void DeviceClass::create_device_pipe(DeviceClass *cl, DeviceImpl *dev)
     sort(pipe_list.begin(), pipe_list.end(), [](Pipe *a, Pipe *b) { return a->get_name() < b->get_name(); });
 
     std::string dev_name = dev->get_name_lower();
-    ext->dev_pipe_list.insert(make_pair(dev_name, pipe_list));
+
+    auto ret = ext->dev_pipe_list.insert(make_pair(dev_name, pipe_list));
+    if(!ret.second)
+    {
+        // insertion was not successful, we now own the memory in pipe_list
+        for(auto *elem : pipe_list)
+        {
+            delete elem;
+            elem = nullptr;
+        }
+    }
 
     pipe_list.clear();
 }
