@@ -49,6 +49,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <memory>
 
 namespace Tango
 {
@@ -1663,7 +1664,7 @@ class DeviceImpl : public virtual POA_Tango::Device
     /**
      * The device black box pointer
      */
-    BlackBox *blackbox_ptr;
+    std::unique_ptr<BlackBox> blackbox_ptr;
     /**
      * The device black box depth
      */

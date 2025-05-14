@@ -214,6 +214,23 @@ class InitCrash : public Base
 };
 
 template <class Base>
+class InitDeviceException : public Base
+{
+  public:
+    InitDeviceException(Tango::DeviceClass *device_class, const std::string &dev_name) :
+        Base(device_class, dev_name)
+    {
+    }
+
+    ~InitDeviceException() override { }
+
+    void init_device() override
+    {
+        TANGO_THROW_EXCEPTION(Tango::API_StdException, k_helpful_message);
+    }
+};
+
+template <class Base>
 class ExitCrash : public Base
 {
   public:
@@ -293,12 +310,13 @@ class ExitTimeout : public Base
 };
 
 TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(InitCrash<TANGO_BASE_CLASS>, InitCrash)
+TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(InitDeviceException<TANGO_BASE_CLASS>, InitDeviceException)
 TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(ExitCrash<TANGO_BASE_CLASS>, ExitCrash)
 TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(DuringCrash<TANGO_BASE_CLASS>, DuringCrash)
 TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(InitTimeout<TANGO_BASE_CLASS>, InitTimeout)
 TANGO_TEST_AUTO_DEV_CLASS_INSTANTIATE(ExitTimeout<TANGO_BASE_CLASS>, ExitTimeout)
 
-SCENARIO("test server crashes and timeouts are reported")
+SCENARIO("test server crashes, exceptions and timeouts are reported")
 {
     using TestServer = TangoTest::TestServer;
     LoggerSwapper ls;
@@ -329,6 +347,42 @@ SCENARIO("test server crashes and timeouts are reported")
                 REQUIRE(what);
                 REQUIRE_THAT(*what, ContainsSubstring(k_helpful_message));
                 REQUIRE_THAT(*what, ContainsSubstring("exit status 0"));
+            }
+
+            THEN("there should be no (non-port-in-use) logs")
+            {
+                using namespace Catch::Matchers;
+                logger->remove_port_in_use_logs();
+                REQUIRE_THAT(logger->logs, IsEmpty());
+            }
+        }
+    }
+
+    GIVEN("a server that throws in init_device")
+    {
+        TestServer server;
+        std::vector<std::string> extra_args = {"-nodb", "-dlist", "InitDeviceException::TestServer/tests/1"};
+        std::vector<std::string> env;
+        TangoTest::append_std_entries_to_env(env, "InitDeviceException");
+
+        WHEN("we start the server")
+        {
+            std::optional<std::string> what = std::nullopt;
+            try
+            {
+                server.start("self_test", extra_args, env);
+            }
+            catch(std::exception &ex)
+            {
+                what = ex.what();
+            }
+
+            THEN("a exception should be raised, reporting the helpful message and exit status")
+            {
+                using namespace Catch::Matchers;
+                REQUIRE(what);
+                REQUIRE_THAT(*what, ContainsSubstring(k_helpful_message));
+                REQUIRE_THAT(*what, ContainsSubstring("exit status 2"));
             }
 
             THEN("there should be no (non-port-in-use) logs")

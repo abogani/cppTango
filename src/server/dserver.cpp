@@ -42,6 +42,7 @@
 
 #include <new>
 #include <algorithm>
+#include <memory>
 #include <sstream>
 
 #ifndef _TG_WINDOWS_
@@ -305,7 +306,7 @@ void DServer::init_device()
                     //
 
                     std::vector<std::string> &list = class_list[i]->get_nodb_name_list();
-                    auto *dev_list_nodb = new Tango::DevVarStringArray();
+                    auto dev_list_nodb = std::make_unique<Tango::DevVarStringArray>();
 
                     tg->get_cmd_line_name_list(class_list[i]->get_name(), list);
                     if(i == class_list.size() - 1)
@@ -335,11 +336,9 @@ void DServer::init_device()
                     class_list[i]->set_device_factory_done(false);
                     {
                         AutoTangoMonitor sync(class_list[i]);
-                        class_list[i]->device_factory(dev_list_nodb);
+                        class_list[i]->device_factory(dev_list_nodb.get());
                     }
                     class_list[i]->set_device_factory_done(true);
-
-                    delete dev_list_nodb;
                 }
             }
         }
