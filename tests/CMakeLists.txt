@@ -70,6 +70,6 @@ tango_catch2_tests_create(
     catch2_jpeg_encoding.cpp
     catch2_loggerstream_attribute.cpp
     catch2_device_proxy.cpp
+    $<$<AND:$<NOT:$<CXX_COMPILER_ID:MSVC>>,$<STREQUAL:$<TARGET_PROPERTY:tango,TYPE>,SHARED_LIBRARY>>:catch2_create_cpp_class.cpp>
     )
-
 target_link_libraries(Catch2Tests PRIVATE $<$<BOOL:${nlohmann_json_FOUND}>:nlohmann_json::nlohmann_json>)
