@@ -1553,7 +1553,7 @@ void DServer::create_cpp_class(const std::string &class_name,
     if((mod = LoadLibrary(lib_name.c_str())) == nullptr)
     {
         fetch_error_msg(lib_name);
-        for(const auto &prefix : prefixes)
+        for(const auto &prefix : local_prefixes)
         {
             lib_name = prefix + class_name;
             if((mod = LoadLibrary(lib_name.c_str())) != nullptr)
@@ -1604,7 +1604,7 @@ void DServer::create_cpp_class(const std::string &class_name,
     if(lib_ptr == nullptr)
     {
         fetch_error_msg(lib_name);
-        for(const auto &prefix : prefixes)
+        for(const auto &prefix : local_prefixes)
         {
             auto tmp_lib_name = prefix + lib_name;
             lib_ptr = dlopen(tmp_lib_name.c_str(), RTLD_NOW);
@@ -1612,7 +1612,7 @@ void DServer::create_cpp_class(const std::string &class_name,
             {
                 break;
             }
-            fetch_error_msg(lib_name);
+            fetch_error_msg(tmp_lib_name);
         }
         if(lib_ptr == nullptr)
         {

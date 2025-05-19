@@ -3,6 +3,8 @@ include(Catch)
 
 set(TANGO_CATCH2_TESTS_DIR ${CMAKE_CURRENT_LIST_DIR})
 
+add_subdirectory(DummyClass)
+
 function(tango_catch2_tests_create)
     set(TEST_FILES ${ARGN})
 
@@ -59,6 +61,7 @@ function(tango_catch2_tests_create)
         common.cpp
         ${PLATFORM_IMPL})
 
+    add_dependencies(Catch2Tests DummyClass DummyClassPrefix DummyClassUnPrefix)
     target_link_libraries(Catch2Tests PUBLIC Tango::Tango Catch2::Catch2)
     target_link_libraries(Catch2Tests PRIVATE $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>)
     target_include_directories(Catch2Tests PUBLIC ${TANGO_CATCH2_TESTS_DIR})
