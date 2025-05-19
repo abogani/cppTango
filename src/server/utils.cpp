@@ -1229,12 +1229,61 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::print_help_message(TANGO_UNUSED(bool extended), bool with_database)
+void Util::print_help_message(bool extended, bool with_database)
 {
     TangoSys_OMemStream o;
 
-    o << "usage :  " << ds_exec_name << " instance_name [-v[trace level]]";
-    o << " [-nodb [-dlist <device name list>]]";
+    if(extended)
+    {
+        o << "Usage: " << ds_unmodified_exec_name << " <INSTANCE_NAME> [OPTIONS]\n";
+        o << "\n";
+        o << "Start this Tango device server. By default it connects to a database specified\n";
+        o << "in the TANGO_HOST environment variable or the configuration files:\n";
+#ifdef _TG_WINDOWS_
+        o << "%" << WindowsEnvVariable << "%/" << WINDOWS_ENV_VAR_FILE << "\n";
+#else
+        o << "~/" << USER_ENV_VAR_FILE << " or " << TANGO_RC_FILE << "\n";
+#endif
+        o << "\n";
+        o << "Arguments:\n";
+        o << "  <INSTANCE_NAME>\n";
+        o << "      Name of this device server instance. When using a database, this must\n";
+        o << "      match a registered instance name that is not yet running.\n";
+        o << "\n";
+        o << "Options:\n";
+        o << "  -?, -h, -help\n";
+        o << "      Print only usage followed by the list of registered instance names.\n";
+        o << "  -v[LEVEL]\n";
+        o << "      Enable verbose output, with optional level number: 1 or 2 for INFO, 3 and\n";
+        o << "      more for DEBUG. Defaults to OFF.\n";
+        o << "  -nodb\n";
+        o << "      Do not connect to a database. This also requires an explicit device list\n";
+        o << "      given by -dlist option. This is incompatible with -file option. Example:\n";
+        o << "      $ /usr/local/bin/TangoTest test -nodb -dlist sys/test/1\n";
+        o << "        -ORBendPoint giop:tcp:localhost:12345\n";
+        o << "  -dlist <DEV>[,...]\n";
+        o << "      Explicit comma-separated list of devices to create when -nodb is used.\n";
+        o << "  -file=<PATH>\n";
+        o << "      Do not connect to a database and use a file database. This is not\n";
+        o << "      compatible with -nodb option.\n";
+        o << "  -ORBendPoint <ENDPOINT>\n";
+        o << "      Explicitly specify the ORB endpoint. For example 'giop:tcp:[host]:[port]'\n";
+        o << "      that determines the network interface and port which the server listens on\n";
+        o << "      and the service port. Defaults to 'giop:tcp::', listening every interface\n";
+        o << "      and OS chooses a port. See omniORB doc Chapter 7.\n";
+        o << "  -ORBendPointPublish <RULES>\n";
+        o << "      By default, the OBR publishes in its IORs the first available address for\n";
+        o << "      each endpoints the server listens on. This option can be used to selects\n";
+        o << "      which endpoints are published. Specifying a full endpoint URI forces it\n";
+        o << "      to be published, even if the server is not listening it. More on rules in\n";
+        o << "      omniORB doc Chapter 7.\n";
+    }
+    else
+    {
+        o << "Usage: " << ds_unmodified_exec_name << " <INSTANCE_NAME> [-?|-h|-help] [-v[LEVEL]]\n";
+        o << "                  [-nodb [-dlist <DEV>,...] | -file=<PATH>]\n";
+        o << "                  [-ORBendPoint <ENDPOINT>] [-ORBendPointPublish <RULES>]";
+    }
 
     // This function should only ever be called with 'with_database' if connected to db,
     // but we double check that here to avoid null deref.
@@ -1256,7 +1305,7 @@ void Util::print_help_message(TANGO_UNUSED(bool extended), bool with_database)
             std::string reason(e.errors[0].reason.in());
             if(reason == API_ReadOnlyMode)
             {
-            o << "\n\nWarning: Control System configured with AccessControl but can't communicate with AccessControl "
+                o << "\nWarning: Control System configured with AccessControl but can't communicate with AccessControl "
                      "server";
             }
             o << std::ends;
@@ -1267,19 +1316,23 @@ void Util::print_help_message(TANGO_UNUSED(bool extended), bool with_database)
         // Add instance name list to message
         //
 
-        o << "\nInstance name defined in database for server " << ds_exec_name << " :";
-        for(unsigned long i = 0; i < db_inst.size(); i++)
+        o << "\nRegistered instance names in the database:";
+
+        if(db_inst.empty())
         {
-            o << "\n\t" << db_inst[i];
+            o << " none yet.\n";
+        }
+        else
+        {
+            o << "\n";
+            for(unsigned long i = 0; i < db_inst.size(); i++)
+            {
+                o << "  " << db_inst[i] << "\n";
+            }
         }
     }
 
     o << std::ends;
-
-    //
-    // Display message
-    //
-
     print_err_message(o.str(), Tango::INFO);
 }
 

@@ -76,6 +76,6 @@ if ($result -ne -1) {
     throw "Unexpected return code from dummy: $result"
 }
 
-if (!$output.ToString().StartsWith("usage")) {
-    throw "Unexpected output from dummy: $output"
+if (!"$output".StartsWith("Usage: ")) {
+    throw "Unexpected output from dummy, expected the usage: $output"
 }
