@@ -383,15 +383,6 @@ void Util::effective_job(int argc, char *argv[])
     try
     {
         //
-        // Check server option
-        //
-
-        if(argc < 2)
-        {
-            print_usage(argv[0]);
-        }
-
-        //
         // Manage command line option (personal name and -v option)
         //
 
@@ -529,12 +520,12 @@ void Util::effective_job(int argc, char *argv[])
             //
             // Display help message if requested by user. This is done after the process is
             // connected to the database becaue a call to the database server is done in the
-            // display_help_message() method
+            // print_help_message() method
             //
 
-            if(display_help)
+            if(print_help_once_connected)
             {
-                display_help_message();
+                print_help_message(false, true);
             }
         }
         else
@@ -809,26 +800,20 @@ Util::Util(HINSTANCE hInst, int nCmdShow) :
 
 void Util::check_args(int argc, char *argv[])
 {
-    //
-    // Check command line argument
-    //
-
-    std::string first_arg(argv[1]);
-    display_help = false;
-
-    if((argc == 2) && (_UseDb))
+    // Early check that we at least have a program name...
+    if(argc < 1)
     {
-        if((first_arg == "-?") || (first_arg == "-help") || (first_arg == "-h"))
-        {
-            display_help = true;
-        }
+        ds_unmodified_exec_name = "?";
+        print_help_message(true);
     }
 
-    if((!display_help) && (argv[1][0] == '-'))
-    {
-        print_usage(argv[0]);
-    }
-    ds_instance_name = argv[1];
+    // Keep an unmodified copy of the executable for later use
+    // with realpath from the std C library. realpath resolves
+    // the full path for a given filename.
+    ds_unmodified_exec_name = argv[0];
+
+    // Start by parsing the executable name, this has been moved at the beginning of the
+    // function because the print_help_message function relies on ds_unmodified_exec_name.
     char *tmp;
 #ifdef _TG_WINDOWS_
     if((tmp = strrchr(argv[0], '\\')) == 0)
@@ -849,11 +834,6 @@ void Util::check_args(int argc, char *argv[])
         ds_exec_name = tmp;
     }
 #else
-    // Keep an unmodified copy of the executable for later use
-    // with realpath from the std C library. realpath resolves
-    // the full path for a given filename.
-    ds_unmodified_exec_name = argv[0];
-
     if((tmp = strrchr(argv[0], '/')) == nullptr)
     {
         ds_exec_name = argv[0];
@@ -876,6 +856,32 @@ void Util::check_args(int argc, char *argv[])
         ds_exec_name.erase(pos, ds_exec_name.size());
     }
 #endif /* _TG_WINDOWS_ */
+
+    // If we don't have an argument for the instance, print the help message early.
+    if(argc < 2)
+    {
+        print_help_message(true);
+    }
+
+    // Now that we've stored the exec name, we decode the first argument which is either
+    // the instance name, a help flag. If this is a help flag, we set the display usage
+    std::string first_arg(argv[1]);
+    print_help_once_connected = false;
+
+    // For example, the Database DS sets _UseDb to false to disable -?, -h, -help.
+    if((argc == 2) && (_UseDb))
+    {
+        if((first_arg == "-?") || (first_arg == "-help") || (first_arg == "-h"))
+        {
+            print_help_once_connected = true;
+        }
+    }
+
+    if((!print_help_once_connected) && (argv[1][0] == '-'))
+    {
+        print_help_message(false);
+    }
+    ds_instance_name = argv[1];
 
     if(argc > 2)
     {
@@ -903,7 +909,7 @@ void Util::check_args(int argc, char *argv[])
                             else
                             {
                                 std::cerr << "Unknown option " << argv[ind] << std::endl;
-                                print_usage(argv[0]);
+                                print_help_message(false);
                             }
                         }
                         else
@@ -918,7 +924,7 @@ void Util::check_args(int argc, char *argv[])
                         if(level == 0)
                         {
                             std::cerr << "Unknown option " << argv[ind] << std::endl;
-                            print_usage(argv[0]);
+                            print_help_message(false);
                         }
                         else
                         {
@@ -936,13 +942,13 @@ void Util::check_args(int argc, char *argv[])
                     if(strcmp(argv[ind], "-nodb") != 0)
                     {
                         std::cerr << "Unknown option " << argv[ind] << std::endl;
-                        print_usage(argv[0]);
+                        print_help_message(false);
                     }
                     else
                     {
                         if(_FileDb)
                         {
-                            print_usage(argv[0]);
+                            print_help_message(false);
                         }
                         _UseDb = false;
                         ind++;
@@ -955,13 +961,13 @@ void Util::check_args(int argc, char *argv[])
                     if(strncmp(argv[ind], "-file=", 6) != 0)
                     {
                         std::cerr << "Unknown option " << argv[ind] << std::endl;
-                        print_usage(argv[0]);
+                        print_help_message(false);
                     }
                     else
                     {
                         if(!_UseDb)
                         {
-                            print_usage(argv[0]);
+                            print_help_message(false);
                         }
                         Tango::Util::_FileDb = true;
                         database_file_name = argv[ind];
@@ -994,19 +1000,19 @@ void Util::check_args(int argc, char *argv[])
                     if(strcmp(argv[ind], "-dlist") != 0)
                     {
                         std::cerr << "Unknown option " << argv[ind] << std::endl;
-                        print_usage(argv[0]);
+                        print_help_message(false);
                     }
                     else
                     {
                         if(_UseDb)
                         {
-                            print_usage(argv[0]);
+                            print_help_message(false);
                         }
 
                         ind++;
                         if(ind == argc)
                         {
-                            print_usage(argv[0]);
+                            print_help_message(false);
                         }
                         else
                         {
@@ -1048,7 +1054,7 @@ void Util::check_args(int argc, char *argv[])
             {
                 if(strncmp(argv[ind - 1], "-v", 2) == 0)
                 {
-                    print_usage(argv[0]);
+                    print_help_message(false);
                 }
                 ind++;
             }
@@ -1211,91 +1217,122 @@ void Util::validate_sort(const std::vector<std::string> &dev_list)
 //+-----------------------------------------------------------------------------------------------------------------
 //
 // method :
-//        Util::display_help_message()
+//        Util::print_help_message()
 //
 // description :
-//        Display Tango device server process command line option and the list of instances defined for the
-//        device server (retrieved from DB)
-//
-//-------------------------------------------------------------------------------------------------------------------
-
-void Util::display_help_message()
-{
-    //
-    // Display device server usage string
-    //
-
-    TangoSys_OMemStream o;
-
-    o << "usage :  " << ds_exec_name << " instance_name [-v[trace level]]";
-    o << " [-nodb [-dlist <device name list>]]";
-
-    //
-    // Try to get instance name from db
-    //
-
-    std::string str("dserver/");
-    str.append(ds_exec_name);
-    str.append("/*");
-
-    std::vector<std::string> db_inst;
-
-    try
-    {
-        DbDatum received = db->get_device_member(str);
-        received >> db_inst;
-    }
-    catch(Tango::DevFailed &e)
-    {
-        std::string reason(e.errors[0].reason.in());
-        if(reason == API_ReadOnlyMode)
-        {
-            o << "\n\nWarning: Control System configured with AccessControl but can't communicate with AccessControl "
-                 "server";
-        }
-        o << std::ends;
-        print_err_message(o.str(), Tango::INFO);
-    }
-
-    //
-    // Add instance name list to message
-    //
-
-    o << "\nInstance name defined in database for server " << ds_exec_name << " :";
-    for(unsigned long i = 0; i < db_inst.size(); i++)
-    {
-        o << "\n\t" << db_inst[i];
-    }
-    o << std::ends;
-
-    //
-    // Display message
-    //
-
-    print_err_message(o.str(), Tango::INFO);
-}
-
-//+------------------------------------------------------------------------------------------------------------------
-//
-// method :
-//        Util::print_usage()
-//
-// description :
-//        Print device server command line syntax
+//        Print the help message that describe the usage of the device server command line.
 //
 // arguments :
 //         in :
-//            - serv_name : The server name
+//            - extended : True to get the extended help with all options descriptions.
+//            - with_database : True to print the list of server instances at the end, this requires a connected db.
 //
 //-------------------------------------------------------------------------------------------------------------------
 
-void Util::print_usage(char *serv_name)
+void Util::print_help_message(bool extended, bool with_database)
 {
     TangoSys_OMemStream o;
 
-    o << "usage :  " << serv_name << " instance_name [-v[trace level]]";
-    o << " [-file=<file_name> | -nodb [-dlist <device name list>] ]" << std::ends;
+    if(extended)
+    {
+        o << "Usage: " << ds_unmodified_exec_name << " <INSTANCE_NAME> [OPTIONS]\n";
+        o << "\n";
+        o << "Start this Tango device server. By default it connects to a database specified\n";
+        o << "in the TANGO_HOST environment variable or the configuration files:\n";
+#ifdef _TG_WINDOWS_
+        o << "%" << WindowsEnvVariable << "%/" << WINDOWS_ENV_VAR_FILE << "\n";
+#else
+        o << "~/" << USER_ENV_VAR_FILE << " or " << TANGO_RC_FILE << "\n";
+#endif
+        o << "\n";
+        o << "Arguments:\n";
+        o << "  <INSTANCE_NAME>\n";
+        o << "      Name of this device server instance. When using a database, this must\n";
+        o << "      match a registered instance name that is not yet running.\n";
+        o << "\n";
+        o << "Options:\n";
+        o << "  -?, -h, -help\n";
+        o << "      Print only usage followed by the list of registered instance names.\n";
+        o << "  -v[LEVEL]\n";
+        o << "      Enable verbose output, with optional level number: 1 or 2 for INFO, 3 and\n";
+        o << "      more for DEBUG. Defaults to OFF.\n";
+        o << "  -nodb\n";
+        o << "      Do not connect to a database. This also requires an explicit device list\n";
+        o << "      given by -dlist option. This is incompatible with -file option. Example:\n";
+        o << "      $ /usr/local/bin/TangoTest test -nodb -dlist sys/test/1\n";
+        o << "        -ORBendPoint giop:tcp:localhost:12345\n";
+        o << "  -dlist <DEV>[,...]\n";
+        o << "      Explicit comma-separated list of devices to create when -nodb is used.\n";
+        o << "  -file=<PATH>\n";
+        o << "      Do not connect to a database and use a file database. This is not\n";
+        o << "      compatible with -nodb option.\n";
+        o << "  -ORBendPoint <ENDPOINT>\n";
+        o << "      Explicitly specify the ORB endpoint. For example 'giop:tcp:[host]:[port]'\n";
+        o << "      that determines the network interface and port which the server listens on\n";
+        o << "      and the service port. Defaults to 'giop:tcp::', listening every interface\n";
+        o << "      and OS chooses a port. See omniORB doc Chapter 7.\n";
+        o << "  -ORBendPointPublish <RULES>\n";
+        o << "      By default, the OBR publishes in its IORs the first available address for\n";
+        o << "      each endpoints the server listens on. This option can be used to selects\n";
+        o << "      which endpoints are published. Specifying a full endpoint URI forces it\n";
+        o << "      to be published, even if the server is not listening it. More on rules in\n";
+        o << "      omniORB doc Chapter 7.\n";
+    }
+    else
+    {
+        o << "Usage: " << ds_unmodified_exec_name << " <INSTANCE_NAME> [-?|-h|-help] [-v[LEVEL]]\n";
+        o << "                  [-nodb [-dlist <DEV>,...] | -file=<PATH>]\n";
+        o << "                  [-ORBendPoint <ENDPOINT>] [-ORBendPointPublish <RULES>]";
+    }
 
+    // This function should only ever be called with 'with_database' if connected to db,
+    // but we double check that here to avoid null deref.
+    if(db != nullptr && with_database)
+    {
+        std::string str("dserver/");
+        str.append(ds_exec_name);
+        str.append("/*");
+
+        std::vector<std::string> db_inst;
+
+        try
+        {
+            DbDatum received = db->get_device_member(str);
+            received >> db_inst;
+        }
+        catch(Tango::DevFailed &e)
+        {
+            std::string reason(e.errors[0].reason.in());
+            if(reason == API_ReadOnlyMode)
+            {
+                o << "\nWarning: Control System configured with AccessControl but can't communicate with AccessControl "
+                     "server";
+            }
+            o << std::ends;
+            print_err_message(o.str(), Tango::INFO);
+        }
+
+        //
+        // Add instance name list to message
+        //
+
+        o << "\nRegistered instance names in the database:";
+
+        if(db_inst.empty())
+        {
+            o << " none yet.\n";
+        }
+        else
+        {
+            o << "\n";
+            for(unsigned long i = 0; i < db_inst.size(); i++)
+            {
+                o << "  " << db_inst[i] << "\n";
+            }
+        }
+    }
+
+    o << std::ends;
     print_err_message(o.str(), Tango::INFO);
 }
 

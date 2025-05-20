@@ -1239,7 +1239,6 @@ class Util
     void init_host_name();
     void server_perform_work();
     void server_already_running();
-    void print_usage(char *);
     static void print_err_message(const char *, Tango::MessBoxType type = Tango::STOP);
 
     void print_err_message(const std::string &mess, Tango::MessBoxType type = Tango::STOP)
@@ -1248,13 +1247,14 @@ class Util
     }
 
     void check_args(int, char *[]);
-    void display_help_message();
+    void print_help_message(bool extended, bool with_database = false);
+
     DeviceImpl *find_device_name_core(const std::string &);
     void check_orb_endpoint(int, char **);
     void validate_sort(const std::vector<std::string> &);
     void check_end_point_specified(int, char **);
 
-    bool display_help;                                      // display help message flag
+    bool print_help_once_connected;                         // Print the help message once we are connected to db.
     const std::vector<DeviceClass *> *cl_list_ptr{nullptr}; // Ptr to server device class list
     std::unique_ptr<UtilExt> ext;                           // Class extension
     std::vector<DeviceClass *> cl_list;                     // Full class list ptr
@@ -1395,7 +1395,7 @@ inline void Util::check_orb_endpoint(int argc, char *argv[])
             if((pos = endpoint.rfind(':')) == std::string::npos)
             {
                 std::cerr << "Strange ORB endPoint specification" << std::endl;
-                print_usage(argv[0]);
+                print_help_message(false);
             }
             svr_port_num = endpoint.substr(++pos);
             break;
@@ -1404,7 +1404,7 @@ inline void Util::check_orb_endpoint(int argc, char *argv[])
     if(arg_nb == argc)
     {
         std::cerr << "Missing ORB endPoint specification" << std::endl;
-        print_usage(argv[0]);
+        print_help_message(false);
     }
 }
 
