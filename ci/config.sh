@@ -76,6 +76,7 @@ cmake                                                                           
   -Werror=dev                                                                      \
   -H${SOURCE_DIR}                                                                  \
   -B${BUILD_DIR}                                                                   \
+  -G Ninja                                                                         \
   -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}                                         \
   -DCMAKE_VERBOSE_MAKEFILE=ON                                                      \
   -Dcppzmq_ROOT=${INSTALL_DIR}                                                     \
