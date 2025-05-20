@@ -312,7 +312,7 @@ clang-analyzer:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "OFF"
     CMAKE_BUILD_TYPE: "Debug"
-    TANGO_MAKE_TARGET: "idl_source"
+    TANGO_BUILD_TARGET: "idl_source"
   script: # override
     - ci/config.sh
     - ci/build.sh
@@ -359,7 +359,7 @@ clang-tidy:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "ON"
     CMAKE_BUILD_TYPE: "Debug"
-    TANGO_MAKE_TARGET: "idl_source"
+    TANGO_BUILD_TARGET: "idl_source"
   script: # override
     - ci/config.sh
     - ci/build.sh
@@ -468,7 +468,7 @@ doxygen-documentation:
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
-    TANGO_MAKE_TARGET: "doc"
+    TANGO_BUILD_TARGET: "doc"
     TANGO_USE_TELEMETRY: "OFF"
   artifacts:
     when: always
