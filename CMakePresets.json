@@ -131,11 +131,8 @@
     },
     {
       "name" : "ci-debug-linux-asan-all",
-      "inherits" : ["default"],
-      "configurePreset": "ci-debug-linux-asan-all",
-      "environment" : {
-        "ASAN_OPTIONS" : "detect_stack_use_after_return=1"
-      }
+      "inherits" : ["ci-debug-linux-asan"],
+      "configurePreset": "ci-debug-linux-asan-all"
     }
   ],
   "workflowPresets": [
