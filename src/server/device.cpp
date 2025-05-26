@@ -6427,7 +6427,7 @@ void DeviceImpl::set_pipe_event_subscription_states(const PipeEventSubscriptionS
     }
 }
 
-inline DbDevice *DeviceImpl::get_db_device()
+DbDevice *DeviceImpl::get_db_device()
 {
     if(!Tango::Util::instance()->use_db())
     {
