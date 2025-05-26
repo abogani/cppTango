@@ -76,6 +76,38 @@
     "cacheVariables": {
       "TANGO_ENABLE_SANITIZER" : "ASAN"
     }
+   },
+   {
+    "name": "ci-debug-linux-ubsan",
+    "inherits": ["default-sanitizer"],
+    "binaryDir": "${sourceDir}/build/debug-ubsan",
+    "cacheVariables": {
+      "TANGO_ENABLE_SANITIZER" : "UBSAN"
+   }
+   },
+   {
+    "name": "ci-debug-linux-ubsan-all",
+    "inherits": ["default-sanitizer-all"],
+    "binaryDir": "${sourceDir}/build/debug-ubsan-all",
+    "cacheVariables": {
+      "TANGO_ENABLE_SANITIZER" : "UBSAN"
+   }
+   },
+   {
+    "name": "ci-debug-linux-tsan",
+    "inherits": ["default-sanitizer"],
+    "binaryDir": "${sourceDir}/build/debug-tsan",
+    "cacheVariables": {
+      "TANGO_ENABLE_SANITIZER" : "TSAN"
+   }
+   },
+   {
+    "name": "ci-debug-linux-tsan-all",
+    "inherits": ["default-sanitizer-all"],
+    "binaryDir": "${sourceDir}/build/debug-tsan-all",
+    "cacheVariables": {
+      "TANGO_ENABLE_SANITIZER" : "TSAN"
+   }
    }
   ],
   "buildPresets": [
@@ -102,6 +134,26 @@
     "name": "ci-debug-linux-asan-all",
     "inherits": ["default"],
     "configurePreset": "ci-debug-linux-asan-all"
+   },
+   {
+    "name": "ci-debug-linux-ubsan",
+    "inherits": ["default"],
+    "configurePreset": "ci-debug-linux-ubsan"
+   },
+   {
+    "name": "ci-debug-linux-ubsan-all",
+    "inherits": ["default"],
+    "configurePreset": "ci-debug-linux-ubsan-all"
+   },
+   {
+    "name": "ci-debug-linux-tsan",
+    "inherits": ["default"],
+    "configurePreset": "ci-debug-linux-tsan"
+   },
+   {
+    "name": "ci-debug-linux-tsan-all",
+    "inherits": ["default"],
+    "configurePreset": "ci-debug-linux-tsan-all"
    }
   ],
   "testPresets": [
@@ -133,6 +185,32 @@
       "name" : "ci-debug-linux-asan-all",
       "inherits" : ["ci-debug-linux-asan"],
       "configurePreset": "ci-debug-linux-asan-all"
+    },
+    {
+      "name" : "ci-debug-linux-ubsan",
+      "inherits" : ["default"],
+      "configurePreset": "ci-debug-linux-ubsan",
+      "environment" : {
+        "UBSAN_OPTIONS" : "print_stacktrace=1,report_error_type=1,halt_on_error=1,suppressions=${sourceDir}/tests/suppressions-ubsan.supp"
+      }
+    },
+    {
+      "name" : "ci-debug-linux-ubsan-all",
+      "inherits" : ["ci-debug-linux-ubsan"],
+      "configurePreset": "ci-debug-linux-ubsan-all"
+    },
+    {
+      "name" : "ci-debug-linux-tsan",
+      "inherits" : ["default"],
+      "configurePreset": "ci-debug-linux-tsan",
+      "environment" : {
+        "TSAN_OPTIONS" : "second_deadlock_stack=1"
+      }
+    },
+    {
+      "name" : "ci-debug-linux-tsan-all",
+      "inherits" : ["ci-debug-linux-tsan"],
+      "configurePreset": "ci-debug-linux-tsan-all"
     }
   ],
   "workflowPresets": [
@@ -201,6 +279,74 @@
         {
           "type": "test",
           "name": "ci-debug-linux-asan-all"
+        }
+      ]
+    },
+    {
+      "name": "ci-debug-linux-ubsan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug-linux-ubsan"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug-linux-ubsan"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-linux-ubsan"
+        }
+      ]
+    },
+    {
+      "name": "ci-debug-linux-ubsan-all",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug-linux-ubsan-all"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug-linux-ubsan-all"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-linux-ubsan-all"
+        }
+      ]
+    },
+    {
+      "name": "ci-debug-linux-tsan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug-linux-tsan"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug-linux-tsan"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-linux-tsan"
+        }
+      ]
+    },
+    {
+      "name": "ci-debug-linux-tsan-all",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug-linux-tsan-all"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug-linux-tsan-all"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-linux-tsan-all"
         }
       ]
     }
