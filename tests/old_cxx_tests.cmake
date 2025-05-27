@@ -62,8 +62,9 @@ add_executable(conf_devtest conf_devtest.cpp)
 target_compile_definitions(conf_devtest PRIVATE ${COMMON_TEST_DEFS})
 target_link_libraries(conf_devtest PUBLIC Tango::Tango ${CMAKE_DL_LIBS})
 target_precompile_headers(conf_devtest PRIVATE ${TANGO_SOURCE_DIR}/src/include/tango/tango.h)
-add_library(compare_test_object OBJECT compare_test.cpp compare_test.h cxx_common.h)
-target_compile_definitions(compare_test_object PRIVATE ${COMMON_TEST_DEFS} ${OMNIORB_PKG_CFLAGS_OTHER})
+add_library(common_test_lib OBJECT compare_test.cpp compare_test.h common.cpp cxx_common.h)
+target_compile_definitions(common_test_lib PRIVATE ${COMMON_TEST_DEFS})
+target_link_libraries(common_test_lib PUBLIC Tango::Tango ${CMAKE_DL_LIBS})
 
 add_subdirectory(device_server)
 add_subdirectory(cxxtest)
@@ -83,8 +84,7 @@ function(CXX_GENERATE_TEST_EXEC name)
                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                        COMMENT "Generate ${name}.cpp")
 
-    add_executable(${name} $<TARGET_OBJECTS:compare_test_object> ${name}.cpp
-        common.cpp)
+    add_executable(${name} $<TARGET_OBJECTS:common_test_lib> ${name}.cpp)
     target_include_directories(${name} PRIVATE cxxtest/include ${CMAKE_CURRENT_BINARY_DIR}/cxxtest/include)
     target_link_libraries(${name} PRIVATE Tango::Tango)
     target_compile_definitions(${name} PRIVATE ${COMMON_TEST_DEFS})
