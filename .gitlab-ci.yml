@@ -27,8 +27,7 @@ variables: &variables
   DEBIAN_12_IMAGE: "debian12:v11"
   DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v9"
   DEBIAN_11_IMAGE: "debian11:v9"
-  UBUNTU_20_IMAGE: "ubuntu-20.04:v10"
-  UBUNTU_20_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v9"
+  UBUNTU_24_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v10"
   UBUNTU_22_IMAGE: "ubuntu-22.04:v12"
   UBUNTU_24_IMAGE: "ubuntu-24.04:v11"
   LLVM_LATEST_IMAGE: "llvm-latest:v18"
@@ -143,13 +142,6 @@ gcc-latest:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     CMAKE_CXX_STANDARD: "${cxx}"
     TANGO_USE_TELEMETRY: "OFF"
-
-ubuntu-20.04:
-  <<: *job-template-with-tests
-  variables:
-    <<: *variables
-    OS_TYPE: "${UBUNTU_20_IMAGE}"
-    TANGO_SKIP_OLD_TESTS: "ON"
 
 ubuntu-22.04:
   <<: *job-template-with-tests
@@ -304,11 +296,11 @@ debian11:
     OS_TYPE: "${DEBIAN_11_IMAGE}"
     TANGO_SKIP_OLD_TESTS: "ON"
 
-ubuntu-20.04-jpeg9:
+ubuntu-24.04-jpeg9:
   <<: *job-template-with-tests
   variables:
     <<: *variables
-    OS_TYPE: "${UBUNTU_20_JPEG9_IMAGE}"
+    OS_TYPE: "${UBUNTU_24_JPEG9_IMAGE}"
     TANGO_SKIP_OLD_TESTS: "ON"
 
 clang-analyzer:
