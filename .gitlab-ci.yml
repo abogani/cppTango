@@ -23,6 +23,7 @@ variables: &variables
   BUILD_TESTING: "ON"
   TANGO_USE_TELEMETRY: "ON"
   # docker image names and versions
+  DEBIAN_13_IMAGE: "debian13:v1"
   DEBIAN_12_IMAGE: "debian12:v11"
   DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v9"
   DEBIAN_11_IMAGE: "debian11:v9"
@@ -200,6 +201,13 @@ coverage:
       - coverage.tar.gz
   # keyword/regex to extract total coverage % for this CI job (which is also called "coverage")
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
+
+debian13:
+  <<: *job-template-with-tests
+  variables:
+    <<: *variables
+    OS_TYPE: "${DEBIAN_13_IMAGE}"
+    TANGO_SKIP_OLD_TESTS: "ON"
 
 debian12-static:
   <<: *job-template-with-tests
