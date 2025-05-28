@@ -1225,7 +1225,53 @@ void ZmqEventConsumer::query_event_system(std::ostream &os)
                 first = false;
             }
         }
-        os << R"(},"event_channels":{)";
+        os << R"(},"not_connected":[)";
+        {
+            bool first = true;
+            for(const auto &obj : event_not_connected)
+            {
+                if(!first)
+                {
+                    os << ",";
+                }
+                os << "{";
+                os << R"("device":")";
+                if(obj.device->is_dbase_used())
+                {
+                    os << obj.device->dev_name();
+                }
+                else
+                {
+                    os << "tango://" << obj.device->get_dev_host() << ":" << obj.device->get_dev_port() << "/"
+                       << obj.device->dev_name() << "#dbase=no";
+                }
+                os << R"(","attribute":")" << obj.attribute << "\"";
+                os << R"(,"event_type":")" << obj.event_name << "\"";
+                os << R"(,"last_heartbeat":)";
+                if(obj.last_heartbeat == 0)
+                {
+                    os << "null";
+                }
+                else
+                {
+                    os << "\"" << std::put_time(std::gmtime(&obj.last_heartbeat), "%Y-%m-%dT%H:%M:%S") << "\"";
+                }
+                os << R"(,"tango_host":)";
+                if(obj.prefix != TangoHostNotSet)
+                {
+                    os << "\"" << obj.prefix << "\"";
+                }
+                else
+                {
+                    os << "null";
+                }
+
+                os << "}";
+
+                first = false;
+            }
+        }
+        os << R"(],"event_channels":{)";
         {
             bool first = true;
             for(const auto &[name, obj] : channel_map)

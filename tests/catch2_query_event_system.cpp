@@ -119,9 +119,16 @@ class QueryESSub : public Base
         attr_proxy->subscribe_event(Tango::EventType::CHANGE_EVENT, &callback);
     }
 
+    void stateless_subscribe_to(Tango::DevString &attr_trl)
+    {
+        attr_proxy = std::make_unique<Tango::AttributeProxy>(attr_trl);
+        attr_proxy->subscribe_event(Tango::EventType::CHANGE_EVENT, &callback, true);
+    }
+
     static void command_factory(std::vector<Tango::Command *> &cmds)
     {
         cmds.push_back(new TangoTest::AutoCommand<&QueryESSub::subscribe_to>("SubscribeTo"));
+        cmds.push_back(new TangoTest::AutoCommand<&QueryESSub::stateless_subscribe_to>("StatelessSubscribeTo"));
     }
 
     static void attribute_factory(std::vector<Tango::Attr *> &attrs)
@@ -172,11 +179,22 @@ void require_event_callback_value(const json &obj)
     REQUIRE(obj.contains("last_resubscribed"));
 }
 
+void require_event_not_connected_value(const json &obj)
+{
+    REQUIRE(obj.is_object());
+    REQUIRE(obj.contains("device"));
+    REQUIRE(obj.contains("attribute"));
+    REQUIRE(obj.contains("event_type"));
+    REQUIRE(obj.contains("tango_host"));
+    REQUIRE(obj.contains("last_heartbeat"));
+}
+
 void require_client_object(const json &obj)
 {
     REQUIRE(obj.is_object());
     REQUIRE(obj.contains("event_callbacks"));
     REQUIRE(obj.contains("event_channels"));
+    REQUIRE(obj.contains("not_connected"));
     REQUIRE(obj.contains("perf"));
 }
 
@@ -350,6 +368,56 @@ SCENARIO("QueryEventSystem reports details about client side once subscribed")
                     CHECK_THAT(key, EndsWith("attr#dbase=no.change"));
                     CHECK(val > 0);
                 }
+            }
+        }
+    }
+}
+
+SCENARIO("QueryEventSystem can report not connected events")
+{
+    int idlver = GENERATE(TangoTest::idlversion(4));
+    GIVEN("a pair of IDLv" << idlver << " devices running in separate servers")
+    {
+        TangoTest::ContextDescriptor desc;
+
+        desc.servers.push_back(TangoTest::ServerDescriptor{"query_es_sub", "QueryESSub", idlver});
+        desc.servers.push_back(TangoTest::ServerDescriptor{"query_es_pub", "QueryESPub", idlver});
+
+        TangoTest::Context ctx{desc};
+
+        WHEN("We have one device subscribe to an invalid attribute on the other")
+        {
+            Tango::DeviceData dd;
+            dd << "tango://localhost:12345/not/a/device/bad_attr#dbase=no";
+
+            auto sub = ctx.get_proxy("query_es_sub");
+            REQUIRE_NOTHROW(sub->command_inout("StatelessSubscribeTo", dd));
+
+            THEN("The subscriber admin device reports the not connected device")
+            {
+                using namespace Catch::Matchers;
+
+                auto sub_admin = ctx.get_admin_proxy("query_es_sub");
+                REQUIRE_NOTHROW(dd = sub_admin->command_inout("QueryEventSystem"));
+
+                std::string str;
+                dd >> str;
+
+                INFO("Subscriber QueryEventSystem returned: " << str);
+
+                json obj;
+                REQUIRE_NOTHROW(obj = json::parse(str));
+                const auto &[server, client] = require_server_and_client(obj);
+
+                REQUIRE(client["perf"].is_null());
+                REQUIRE_THAT(client["not_connected"], SizeIs(1));
+                const auto &not_connected = client["not_connected"][0];
+                require_event_not_connected_value(not_connected);
+                REQUIRE_THAT(not_connected["device"], EndsWith("not/a/device#dbase=no"));
+                REQUIRE(not_connected["attribute"] == "bad_attr");
+                REQUIRE(not_connected["event_type"] == "change");
+                REQUIRE(not_connected["tango_host"].is_null());
+                REQUIRE(!not_connected["last_heartbeat"].is_null());
             }
         }
     }
