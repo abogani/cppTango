@@ -622,6 +622,9 @@ macos:
   needs:
     - job: pre-commit
       artifacts: false
+    - job: windows-build
+      artifacts: false
+      optional: true
   parallel:
     matrix:
       - PLATFORM: ["osx-arm64", "osx-64"]
