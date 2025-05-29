@@ -111,6 +111,7 @@ The events being received are:
         "last_resubscribed": "2025-04-08T12:36:33"
       }
     },
+    "not_connected": [],
     "event_channels": {
       "tango://build-pytango-wheel-tango-dbds-1.tango-net:10000/dserver/myserver/1": {
         "endpoint": "tcp://172.18.0.4:36879"
@@ -203,8 +204,9 @@ monitoring is discussed in the next section.
 #### The client object -- ZmqEventConsumer data
 
 The client object has three keys:
-- `"event_callbacks",` holding the `event_callback_map`
-- `"event_channels",` holding the `event_channel_map`
+- `"event_callbacks"`, holding the `event_callback_map`
+- `"not_connected"`, holding an array of `not_conncted_objects`
+- `"event_channels"`, holding the `event_channel_map`
 - `"perf"`
 
 The keys of the `event_callback_map` are event topics and the values are
@@ -229,6 +231,15 @@ The `event_callback` objects have the following keys:
 - `"last_resubscribed"` - A string holing the last time the device server
   resubscribed to this topic, or `null` if the `ZmqEventConsumer` is still using the
   initial subscription.
+
+Each `not_connected_object` represents a event stream that the
+`ZmqEventConsumer` is attempt to re-connect to.  Each object has the following
+keys:
+- `"device"` - The name of the Tango device attempting to be connected to
+- `"attribute"` - The name of the attribute associated with an event
+- `"event_type"` - The name of the type of the event
+- `"last_heartbeat"` - The time of the last attempt to connect to the device
+- `"tango_host"` - The `TANGO_HOST` used to locate the device or `null` if `dbase=no`
 
 The keys of the `event_channel_map` are device servers supplying events to the
 `ZmqEventConsumer` and the values are `event_channel` objects.  The keys here
