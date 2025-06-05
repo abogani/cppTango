@@ -551,12 +551,6 @@ void *EventConsumerKeepAliveThread::run_undetached(TANGO_UNUSED(void *arg))
     int time_to_sleep;
     time_t now;
 
-    //
-    // first sleep 2 seconds to give the event system time to startup
-    //
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
     bool exit_th = false;
 
     while(!exit_th)
