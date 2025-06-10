@@ -7,6 +7,7 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 
 #include "utils/auto_device_class.h"
+#include "utils/capture_cerr.h"
 #include "utils/test_server.h"
 #include "utils/callback_mock.h"
 #include "utils/stringmakers.h"
