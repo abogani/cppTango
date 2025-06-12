@@ -619,7 +619,7 @@ void EventConsumer::get_cs_tango_host(Database *db)
         }
 
         //
-        // Serveral Db servers for one TANGO_HOST case
+        // Several Db servers for one TANGO_HOST case
         //
 
         std::vector<std::string>::iterator pos;
