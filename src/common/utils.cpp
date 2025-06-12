@@ -9,6 +9,7 @@
 #include <tango/client/DeviceAttribute.h>
 #include <tango/client/ApiUtil.h>
 #include <tango/client/Database.h>
+#include <tango/client/DeviceProxy.h>
 
 #include <algorithm>
 
@@ -558,6 +559,30 @@ std::vector<std::string> get_databases_from_control_system(Database *db)
     }
 
     return vs;
+}
+
+void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::vector<std::string> &prefixes)
+{
+    //
+    // Several Db servers for one TANGO_HOST case
+    //
+
+    std::vector<std::string>::iterator pos;
+
+    for(unsigned int i = 0; i < vs.size(); i++)
+    {
+        std::string lower_vs(vs[i]);
+        std::transform(lower_vs.begin(), lower_vs.end(), lower_vs.begin(), ::tolower);
+        pos = find_if(prefixes.begin(),
+                      prefixes.end(),
+                      [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
+
+        if(pos == prefixes.end())
+        {
+            std::string prefix = "tango://" + vs[i] + '/';
+            prefixes.push_back(prefix);
+        }
+    }
 }
 
 } // namespace Tango::detail

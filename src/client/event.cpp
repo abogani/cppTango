@@ -515,6 +515,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
             auto vs = detail::get_databases_from_control_system(db);
 
             get_cs_tango_host(db, vs);
+            detail::append_fqdn_host_prefixes_from_db(vs, env_var_fqdn_prefix);
         }
         catch(Tango::DevFailed &)
         {
@@ -611,27 +612,6 @@ void EventConsumer::get_cs_tango_host(Database *db, const std::vector<std::strin
             {
                 alias_map.insert({lower_vs, tg_host});
             }
-        }
-    }
-
-    //
-    // Several Db servers for one TANGO_HOST case
-    //
-
-    std::vector<std::string>::iterator pos;
-
-    for(unsigned int i = 0; i < vs.size(); i++)
-    {
-        std::string lower_vs(vs[i]);
-        std::transform(lower_vs.begin(), lower_vs.end(), lower_vs.begin(), ::tolower);
-        pos = find_if(env_var_fqdn_prefix.begin(),
-                      env_var_fqdn_prefix.end(),
-                      [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
-
-        if(pos == env_var_fqdn_prefix.end())
-        {
-            std::string prefix = "tango://" + vs[i] + '/';
-            env_var_fqdn_prefix.push_back(prefix);
         }
     }
 }

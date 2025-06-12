@@ -13,7 +13,7 @@ namespace Tango
 {
 class DeviceAttribute;
 class Database;
-}
+} // namespace Tango
 
 namespace Tango::detail
 {
@@ -68,6 +68,12 @@ void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da);
 
 /// @brief Query the database server for the list of defined databases (Command: DbGetCSDbServerList)
 std::vector<std::string> get_databases_from_control_system(Database *db);
+
+/// @brief Append all prefix of the form `tango://db_host.eu:10000` in vs to prefixes if not already present
+///
+/// @param vs       Return value from get_databases_from_control_system()
+/// @param prefixes Vector with existing prefixes
+void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::vector<std::string> &prefixes);
 
 } // namespace Tango::detail
 

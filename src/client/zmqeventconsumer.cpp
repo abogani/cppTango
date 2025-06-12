@@ -1455,6 +1455,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
     {
         auto vs = detail::get_databases_from_control_system(db);
         get_cs_tango_host(db, vs);
+        detail::append_fqdn_host_prefixes_from_db(vs, env_var_fqdn_prefix);
     }
 
     //
