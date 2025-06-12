@@ -514,7 +514,7 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
             //
             auto vs = detail::get_databases_from_control_system(db);
 
-            get_cs_tango_host(db, vs);
+            update_alias_map(db, vs);
             detail::append_fqdn_host_prefixes_from_db(vs, env_var_fqdn_prefix);
         }
         catch(Tango::DevFailed &)
@@ -575,18 +575,19 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
 //+--------------------------------------------------------------------------------------------------------------------
 //
 // method :
-//        EventConsumer::get_cs_tango_host()
+//        EventConsumer::update_alias_map()
 //
 // description :
-//        Get from a Tango control system which TANGO_HOST are available. This info comes from the Tango CS database
+//        Update the alias map for single database hosts
 //
 // argument :
 //        in :
 //            - db : Control system database pointer
+//            - vs : Returned list of database hosts from detail::get_databases_from_control_system
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumer::get_cs_tango_host(Database *db, const std::vector<std::string> &vs)
+void EventConsumer::update_alias_map(Database *db, const std::vector<std::string> &vs)
 {
     //
     // Do we have a CS with a host alias used as TANGO_HOST?

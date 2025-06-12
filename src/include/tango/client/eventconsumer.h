@@ -572,7 +572,7 @@ class EventConsumer
     void attr_to_device(const ZmqAttributeValue_4 *, DeviceAttribute *);
     void attr_to_device(const ZmqAttributeValue_5 *, DeviceAttribute *);
     void conf_to_info(AttributeConfig_2 &, AttributeInfoEx **);
-    void get_cs_tango_host(Database *db, const std::vector<std::string> &vs);
+    void update_alias_map(Database *db, const std::vector<std::string> &vs);
     std::string get_client_attribute_name(const std::string &, const std::vector<std::string> &filters);
 
     static std::map<std::string, std::string>
