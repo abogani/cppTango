@@ -148,7 +148,7 @@ class DeviceProxy : public Tango::Connection
       public:
         DeviceProxyExt() { }
 
-        bool nethost_alias;
+        bool nethost_alias{false};
         std::string orig_tango_host;
     };
 
