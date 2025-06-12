@@ -561,6 +561,34 @@ std::vector<std::string> get_databases_from_control_system(Database *db)
     return vs;
 }
 
+std::vector<std::string> gather_fqdn_prefixes_from_env(Database *db)
+{
+    std::vector<std::string> env_var_fqdn_prefix;
+    std::string prefix = "tango://" + db->get_db_host() + ':' + db->get_db_port() + '/';
+    env_var_fqdn_prefix.push_back(prefix);
+
+    if(db->is_multi_tango_host())
+    {
+        std::vector<std::string> &tango_hosts = db->get_multi_host();
+        std::vector<std::string> &tango_ports = db->get_multi_port();
+        for(unsigned int i = 1; i < tango_hosts.size(); i++)
+        {
+            std::string prefix = "tango://" + tango_hosts[i] + ':' + tango_ports[i] + '/';
+            env_var_fqdn_prefix.push_back(prefix);
+        }
+    }
+
+    for(size_t loop = 0; loop < env_var_fqdn_prefix.size(); ++loop)
+    {
+        std::transform(env_var_fqdn_prefix[loop].begin(),
+                       env_var_fqdn_prefix[loop].end(),
+                       env_var_fqdn_prefix[loop].begin(),
+                       ::tolower);
+    }
+
+    return env_var_fqdn_prefix;
+}
+
 void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::vector<std::string> &prefixes)
 {
     //

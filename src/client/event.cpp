@@ -487,27 +487,8 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
         try
         {
             Database *db = (api_ptr->get_db_vect())[api_ptr->get_db_ind()];
-            std::string prefix = "tango://" + db->get_db_host() + ':' + db->get_db_port() + '/';
-            env_var_fqdn_prefix.push_back(prefix);
 
-            if(db->is_multi_tango_host())
-            {
-                std::vector<std::string> &tango_hosts = db->get_multi_host();
-                std::vector<std::string> &tango_ports = db->get_multi_port();
-                for(unsigned int i = 1; i < tango_hosts.size(); i++)
-                {
-                    std::string prefix = "tango://" + tango_hosts[i] + ':' + tango_ports[i] + '/';
-                    env_var_fqdn_prefix.push_back(prefix);
-                }
-            }
-
-            for(size_t loop = 0; loop < env_var_fqdn_prefix.size(); ++loop)
-            {
-                std::transform(env_var_fqdn_prefix[loop].begin(),
-                               env_var_fqdn_prefix[loop].end(),
-                               env_var_fqdn_prefix[loop].begin(),
-                               ::tolower);
-            }
+            env_var_fqdn_prefix = detail::gather_fqdn_prefixes_from_env(db);
 
             //
             // Also get Db server defined in DB but not in the user TANGO_HOST env. variable
