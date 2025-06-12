@@ -12,6 +12,7 @@
 namespace Tango
 {
 class DeviceAttribute;
+class Database;
 }
 
 namespace Tango::detail
@@ -64,6 +65,9 @@ bool get_boolean_env_var(const char *env_var, bool default_value);
 void stringify_any(std::ostream &os, const CORBA::Any &any);
 
 void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da);
+
+/// @brief Query the database server for the list of defined databases (Command: DbGetCSDbServerList)
+std::vector<std::string> get_databases_from_control_system(Database *db);
 
 } // namespace Tango::detail
 

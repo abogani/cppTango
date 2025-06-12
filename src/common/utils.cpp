@@ -8,6 +8,7 @@
 #include <tango/server/seqvec.h>
 #include <tango/client/DeviceAttribute.h>
 #include <tango/client/ApiUtil.h>
+#include <tango/client/Database.h>
 
 #include <algorithm>
 
@@ -540,6 +541,23 @@ void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da)
     {
         os << DevStateName[da.d_state];
     }
+}
+
+std::vector<std::string> get_databases_from_control_system(Database *db)
+{
+    std::vector<std::string> vs;
+
+    try
+    {
+        DeviceData dd;
+        dd = db->command_inout("DbGetCSDbServerList");
+        dd >> vs;
+    }
+    catch(...)
+    {
+    }
+
+    return vs;
 }
 
 } // namespace Tango::detail

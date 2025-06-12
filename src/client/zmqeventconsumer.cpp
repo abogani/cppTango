@@ -31,6 +31,7 @@
 //====================================================================================================================
 
 #include <tango/internal/net.h>
+#include <tango/internal/utils.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/event.h>
 #include <tango/server/auto_tango_monitor.h>
@@ -1452,7 +1453,8 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
 
     if(!found && db != nullptr)
     {
-        get_cs_tango_host(db);
+        auto vs = detail::get_databases_from_control_system(db);
+        get_cs_tango_host(db, vs);
     }
 
     //

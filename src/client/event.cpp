@@ -38,6 +38,8 @@
 
 #include <tango/common/pointer_with_lock.h>
 
+#include <tango/internal/utils.h>
+
 #include <cstdio>
 
 #ifdef _TG_WINDOWS_
@@ -510,8 +512,9 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
             //
             // Also get Db server defined in DB but not in the user TANGO_HOST env. variable
             //
+            auto vs = detail::get_databases_from_control_system(db);
 
-            get_cs_tango_host(db);
+            get_cs_tango_host(db, vs);
         }
         catch(Tango::DevFailed &)
         {
@@ -582,64 +585,54 @@ EventConsumer::EventConsumer(ApiUtil *api_ptr)
 //
 //--------------------------------------------------------------------------------------------------------------------
 
-void EventConsumer::get_cs_tango_host(Database *db)
+void EventConsumer::get_cs_tango_host(Database *db, const std::vector<std::string> &vs)
 {
-    try
+    //
+    // Do we have a CS with a host alias used as TANGO_HOST?
+    // It true and if we don't know this alias, store its definition in the alias map
+    //
+
+    if(vs.size() == 1)
     {
-        DeviceData dd;
-        dd = db->command_inout("DbGetCSDbServerList");
-        std::vector<std::string> vs;
-        dd >> vs;
-
-        //
-        // Do we have a CS with a host alias used as TANGO_HOST?
-        // It true and if we don't know this alias, store its definition in the alias map
-        //
-
-        if(vs.size() == 1)
+        std::string lower_vs(vs[0]);
+        std::transform(lower_vs.begin(), lower_vs.end(), lower_vs.begin(), ::tolower);
+        std::string::size_type pos = lower_vs.find(':');
+        if(pos != std::string::npos)
         {
-            std::string lower_vs(vs[0]);
-            std::transform(lower_vs.begin(), lower_vs.end(), lower_vs.begin(), ::tolower);
-            std::string::size_type pos = lower_vs.find(':');
-            if(pos != std::string::npos)
-            {
-                lower_vs.erase(pos);
-            }
-
-            std::string tg_host(db->get_orig_tango_host());
-            std::transform(tg_host.begin(), tg_host.end(), tg_host.begin(), ::tolower);
-
-            if(!tg_host.empty() && lower_vs != tg_host)
-            {
-                if(alias_map.find(tg_host) == alias_map.end())
-                {
-                    alias_map.insert({lower_vs, tg_host});
-                }
-            }
+            lower_vs.erase(pos);
         }
 
-        //
-        // Several Db servers for one TANGO_HOST case
-        //
+        std::string tg_host(db->get_orig_tango_host());
+        std::transform(tg_host.begin(), tg_host.end(), tg_host.begin(), ::tolower);
 
-        std::vector<std::string>::iterator pos;
-
-        for(unsigned int i = 0; i < vs.size(); i++)
+        if(!tg_host.empty() && lower_vs != tg_host)
         {
-            std::transform(vs[i].begin(), vs[i].end(), vs[i].begin(), ::tolower);
-            pos = find_if(env_var_fqdn_prefix.begin(),
-                          env_var_fqdn_prefix.end(),
-                          [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
-
-            if(pos == env_var_fqdn_prefix.end())
+            if(alias_map.find(tg_host) == alias_map.end())
             {
-                std::string prefix = "tango://" + vs[i] + '/';
-                env_var_fqdn_prefix.push_back(prefix);
+                alias_map.insert({lower_vs, tg_host});
             }
         }
     }
-    catch(...)
+
+    //
+    // Several Db servers for one TANGO_HOST case
+    //
+
+    std::vector<std::string>::iterator pos;
+
+    for(unsigned int i = 0; i < vs.size(); i++)
     {
+        std::string lower_vs(vs[i]);
+        std::transform(lower_vs.begin(), lower_vs.end(), lower_vs.begin(), ::tolower);
+        pos = find_if(env_var_fqdn_prefix.begin(),
+                      env_var_fqdn_prefix.end(),
+                      [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
+
+        if(pos == env_var_fqdn_prefix.end())
+        {
+            std::string prefix = "tango://" + vs[i] + '/';
+            env_var_fqdn_prefix.push_back(prefix);
+        }
     }
 }
 
