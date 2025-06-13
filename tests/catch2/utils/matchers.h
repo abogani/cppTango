@@ -445,6 +445,42 @@ inline AttrQualityMatcher AttrQuality(Tango::AttrQuality attr_quality)
     return {CATCH_FORWARD(attr_quality)};
 }
 
+class EventDeviceStartedMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventDeviceStartedMatcher(bool device_started) :
+        m_device_started{CATCH_MOVE(device_started)}
+    {
+    }
+
+    virtual bool match(const std::optional<Tango::DevIntrChangeEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return event->dev_started == m_device_started;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has dev_started equal to \"" << std::boolalpha << m_device_started << "\"";
+        return os.str();
+    }
+
+  private:
+    bool m_device_started;
+};
+
+inline EventDeviceStartedMatcher EventDeviceStarted(bool device_started)
+{
+    return {CATCH_FORWARD(device_started)};
+}
+
 template <typename Matcher>
 class EventValueMatchesMatcher : public Catch::Matchers::MatcherGenericBase
 {
@@ -648,6 +684,88 @@ template <typename Rep, typename Period>
 inline WithinTimeAbsMatcher<Rep, Period> WithinTimeAbs(Tango::TimeVal ref, std::chrono::duration<Rep, Period> margin)
 {
     return {CATCH_FORWARD(ref, margin)};
+}
+
+template <typename Matcher>
+class EventCommandNamesMatchesMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventCommandNamesMatchesMatcher(Matcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const std::optional<Tango::DevIntrChangeEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        std::vector<std::string> cmds;
+        std::for_each(begin(event->cmd_list),
+                      end(event->cmd_list),
+                      [&cmds](const Tango::CommandInfo &ci) { cmds.emplace_back(ci.cmd_name); });
+
+        return m_matcher.match(cmds);
+    }
+
+    std::string describe() const override
+    {
+        return "contains command names that " + m_matcher.describe();
+    }
+
+  private:
+    Matcher m_matcher;
+};
+
+template <typename Matcher>
+EventCommandNamesMatchesMatcher<Matcher> EventCommandNamesMatches(Matcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
+}
+
+template <typename Matcher>
+class EventAttributeNamesMatchesMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    EventAttributeNamesMatchesMatcher(Matcher matcher) :
+        m_matcher{CATCH_MOVE(matcher)}
+    {
+    }
+
+    bool match(const std::optional<Tango::DevIntrChangeEventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        std::vector<std::string> attrs;
+        std::for_each(begin(event->att_list),
+                      end(event->att_list),
+                      [&attrs](const Tango::AttributeInfoEx &ci) { attrs.emplace_back(ci.name); });
+
+        return m_matcher.match(attrs);
+    }
+
+    std::string describe() const override
+    {
+        return "contains attribute names that " + m_matcher.describe();
+    }
+
+  private:
+    Matcher m_matcher;
+};
+
+template <typename Matcher>
+EventAttributeNamesMatchesMatcher<Matcher> EventAttributeNamesMatches(Matcher &&matcher)
+{
+    return {CATCH_FORWARD(matcher)};
 }
 
 } // namespace Matchers
