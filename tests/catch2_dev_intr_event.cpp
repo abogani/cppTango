@@ -107,6 +107,36 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                 REQUIRE_THAT(event, EventCommandNamesMatches(UnorderedRangeEquals(static_commands)));
                 REQUIRE_THAT(event, EventAttributeNamesMatches(UnorderedRangeEquals(static_attributes)));
 
+                AND_THEN("we execute a DevRestart command (without adding/removing commands first)")
+                {
+                    auto dserver = ctx.get_admin_proxy();
+
+                    Tango::DeviceData din;
+                    din << device->name();
+                    REQUIRE_NOTHROW(dserver->command_inout("DevRestart", din));
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+                    THEN("we get no event")
+                    {
+                        auto event = cb.pop_next_event();
+                        REQUIRE(event == std::nullopt);
+                    }
+                }
+
+                AND_THEN("we execute a RestartServer command (without adding/removing commands first)")
+                {
+                    auto dserver = ctx.get_admin_proxy();
+
+                    REQUIRE_NOTHROW(dserver->command_inout("RestartServer"));
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+                    THEN("we get no event")
+                    {
+                        auto event = cb.pop_next_event();
+                        REQUIRE(event == std::nullopt);
+                    }
+                }
+
                 WHEN("we add another command")
                 {
                     Tango::DevLong in = 0;
