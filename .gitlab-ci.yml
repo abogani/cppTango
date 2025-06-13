@@ -24,18 +24,18 @@ variables: &variables
   TANGO_USE_TELEMETRY: "ON"
   # docker image names and versions
   DEBIAN_13_IMAGE: "debian13:v1"
-  DEBIAN_12_IMAGE: "debian12:v11"
-  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v9"
-  DEBIAN_11_IMAGE: "debian11:v9"
-  UBUNTU_24_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v10"
-  UBUNTU_22_IMAGE: "ubuntu-22.04:v12"
-  UBUNTU_24_IMAGE: "ubuntu-24.04:v11"
-  LLVM_LATEST_IMAGE: "llvm-latest:v18"
-  GCC_LATEST_IMAGE: "gcc-latest:v11"
-  FEDORA_IMAGE: "fedora37:v9"
-  ALPINE_IMAGE: "alpine-3.15:v9"
-  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v9"
-  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v11"
+  DEBIAN_12_IMAGE: "debian12:v12"
+  DEBIAN_12_CROSS_IMAGE: "debian12-cross-32bit:v10"
+  DEBIAN_11_IMAGE: "debian11:v10"
+  UBUNTU_24_JPEG9_IMAGE: "ubuntu-20.04-jpeg9:v11"
+  UBUNTU_22_IMAGE: "ubuntu-22.04:v13"
+  UBUNTU_24_IMAGE: "ubuntu-24.04:v12"
+  LLVM_LATEST_IMAGE: "llvm-latest:v19"
+  GCC_LATEST_IMAGE: "gcc-latest:v12"
+  FEDORA_IMAGE: "fedora37:v10"
+  ALPINE_IMAGE: "alpine-3.15:v10"
+  DEBIAN_MINIMUM_VERSIONS_IMAGE: "debian-minimum-versions:v10"
+  DEBIAN_MAXIMUM_CMAKE_IMAGE: "debian-maximum-cmake:v12"
   GIT_SUBMODULE_STRATEGY: "recursive"
 
 # See: https://docs.gitlab.com/ce/ci/yaml/README.html#workflowrules-templates
@@ -312,7 +312,7 @@ clang-analyzer:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "OFF"
     CMAKE_BUILD_TYPE: "Debug"
-    TANGO_MAKE_TARGET: "idl_source"
+    TANGO_BUILD_TARGET: "idl_source"
   script: # override
     - ci/config.sh
     - ci/build.sh
@@ -359,7 +359,7 @@ clang-tidy:
     CMAKE_DISABLE_PRECOMPILE_HEADERS: "ON"
     BUILD_TESTING: "ON"
     CMAKE_BUILD_TYPE: "Debug"
-    TANGO_MAKE_TARGET: "idl_source"
+    TANGO_BUILD_TARGET: "idl_source"
   script: # override
     - ci/config.sh
     - ci/build.sh
@@ -468,7 +468,7 @@ doxygen-documentation:
     OS_TYPE: "${DEBIAN_12_IMAGE}"
     TANGO_USE_JPEG: "OFF"
     BUILD_TESTING: "OFF"
-    TANGO_MAKE_TARGET: "doc"
+    TANGO_BUILD_TARGET: "doc"
     TANGO_USE_TELEMETRY: "OFF"
   artifacts:
     when: always

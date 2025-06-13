@@ -33,8 +33,7 @@ general ideas of how the tests are, and should be, organized:
 
 - `ci/build.sh`:
 
-   - `MAKEFLAGS`, see `man make`, defaults to `-j <numProcessors>`
-   - `TANGO_MAKE_TARGET`, target to build, defaults to `all`, a list of
+   - `TANGO_BUILD_TARGET`, target to build, defaults to `all`, a list of
      available targets can be outputted via `cmake --build . --target help`
      (only available when using the makefile generator)
 
