@@ -268,7 +268,7 @@ class AutoAttr : public Tango::Attr
   public:
     using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
-    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    constexpr static bool has_write_fn = std::negation_v<std::is_same<decltype(write_fn), std::nullptr_t>>;
     using Tango::Attr::Attr;
 
     // do we care about other possible parameters to Tango::Attr()?
@@ -299,7 +299,7 @@ class AutoEnumAttr : public Tango::Attr
   public:
     using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
-    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    constexpr static bool has_write_fn = std::negation_v<std::is_same<decltype(write_fn), std::nullptr_t>>;
     using Tango::Attr::Attr;
 
     // do we care about other possible parameters to Tango::Attr()?
@@ -340,7 +340,7 @@ class AutoSpectrumAttr : public Tango::SpectrumAttr
   public:
     using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
-    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    constexpr static bool has_write_fn = std::negation_v<std::is_same<decltype(write_fn), std::nullptr_t>>;
     using Tango::SpectrumAttr::SpectrumAttr;
 
     // do we care about other possible parameters to Tango::Attr()?
@@ -371,7 +371,7 @@ class AutoEnumSpectrumAttr : public Tango::SpectrumAttr
   public:
     using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
-    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    constexpr static bool has_write_fn = std::negation_v<std::is_same<decltype(write_fn), std::nullptr_t>>;
     using Tango::SpectrumAttr::SpectrumAttr;
 
     // do we care about other possible parameters to Tango::Attr()?
@@ -412,7 +412,7 @@ class AutoImageAttr : public Tango::ImageAttr
   public:
     using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
-    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    constexpr static bool has_write_fn = std::negation_v<std::is_same<decltype(write_fn), std::nullptr_t>>;
     using Tango::ImageAttr::ImageAttr;
 
     // do we care about other possible parameters to Tango::Attr()?
@@ -443,7 +443,7 @@ class AutoEnumImageAttr : public Tango::ImageAttr
   public:
     using ReadDevice = typename detail::member_fn_traits<decltype(read_fn)>::class_type;
     using WriteDevice = typename detail::member_fn_traits<decltype(write_fn)>::class_type;
-    constexpr static bool has_write_fn = static_cast<bool>(write_fn);
+    constexpr static bool has_write_fn = std::negation_v<std::is_same<decltype(write_fn), std::nullptr_t>>;
     using Tango::ImageAttr::ImageAttr;
 
     // do we care about other possible parameters to Tango::Attr()?
