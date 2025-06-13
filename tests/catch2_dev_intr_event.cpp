@@ -267,3 +267,34 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
         }
     }
 }
+
+SCENARIO("DevIntrChangeEventData with not running DS")
+{
+    int idlver = GENERATE(TangoTest::idlversion(Tango::MIN_IDL_DEV_INTR));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"die", "DevInterEventDS", idlver};
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+        ctx.stop_server();
+
+        AND_GIVEN("a subscription to the interface change event with stateless")
+        {
+            CallbackMockType cb;
+            TangoTest::Subscription sub{device, Tango::INTERFACE_CHANGE_EVENT, &cb, true};
+
+            THEN("we already got an interface change event")
+            {
+                auto event = cb.pop_next_event();
+                REQUIRE(event != std::nullopt);
+
+                using namespace TangoTest::Matchers;
+                using namespace Catch::Matchers;
+
+                REQUIRE_THAT(event, EventType(Tango::INTERFACE_CHANGE_EVENT));
+                REQUIRE_THAT(event, EventErrorMatches(AllMatch(Reason(Tango::API_CantConnectToDevice))));
+            }
+        }
+    }
+}
