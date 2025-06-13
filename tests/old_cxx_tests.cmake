@@ -201,7 +201,6 @@ set(TESTS asyn_attr
           change_event64
           change_event_buffer
           data_ready_event_buffer
-          dev_intr_event
           event_lock
           multi_dev_event
           multi_event
@@ -288,7 +287,6 @@ tango_add_test(NAME "event::change_event"  COMMAND $<TARGET_FILE:change_event> $
 tango_add_test(NAME "event::change_event64"  COMMAND $<TARGET_FILE:change_event64> ${DEV1})
 tango_add_test(NAME "event::change_event_buffer"  COMMAND $<TARGET_FILE:change_event_buffer> ${DEV1})
 tango_add_test(NAME "event::data_ready_event_buffer"  COMMAND $<TARGET_FILE:data_ready_event_buffer> ${DEV1})
-tango_add_test(NAME "event::dev_intr_event"  COMMAND $<TARGET_FILE:dev_intr_event> ${DEV1})
 tango_add_test(NAME "event::event_lock"  COMMAND $<TARGET_FILE:event_lock> ${DEV1})
 tango_add_test(NAME "event::multi_dev_event"  COMMAND $<TARGET_FILE:multi_dev_event> ${DEV1} ${DEV2} ${DEV3})
 tango_add_test(NAME "event::multi_event"  COMMAND $<TARGET_FILE:multi_event> ${DEV1})

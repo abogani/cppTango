@@ -48,6 +48,7 @@ tango_catch2_tests_create(
     catch2_cmd_query.cpp
     catch2_connection.cpp
     catch2_data_ready_event.cpp
+    catch2_dev_intr_event.cpp
     catch2_test_dtypes.cpp
     catch2_state_status_events.cpp
     catch2_dev_state.cpp
