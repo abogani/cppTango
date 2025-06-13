@@ -526,55 +526,8 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
     {
     }
 
-    bool match(const std::optional<Tango::EventData> &event) const
-    {
-        TANGO_ASSERT(event.has_value());
-
-        if(!event->err)
-        {
-            return false;
-        }
-
-        return m_matcher.match(event->errors);
-    }
-
-    bool match(const std::optional<TangoTest::AttrReadEventCopyable> &event) const
-    {
-        TANGO_ASSERT(event.has_value());
-
-        if(!event->err)
-        {
-            return false;
-        }
-
-        return m_matcher.match(event->errors);
-    }
-
-    bool match(const std::optional<TangoTest::AttrWrittenEventCopyable> &event) const
-    {
-        TANGO_ASSERT(event.has_value());
-
-        if(!event->err)
-        {
-            return false;
-        }
-
-        return m_matcher.match(event->errors);
-    }
-
-    bool match(const std::optional<TangoTest::CmdDoneEventCopyable> &event) const
-    {
-        TANGO_ASSERT(event.has_value());
-
-        if(!event->err)
-        {
-            return false;
-        }
-
-        return m_matcher.match(event->errors);
-    }
-
-    bool match(const std::optional<Tango::DataReadyEventData> &event) const
+    template <typename T>
+    bool match(const std::optional<T> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
