@@ -252,7 +252,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -309,7 +309,7 @@ SCENARIO("Attribute alarm range triggers ALARM_EVENT")
             AND_GIVEN("an alarm event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                 require_initial_events(callback);
 
@@ -360,7 +360,7 @@ SCENARIO("Alarm events are sent on a read attribute exception")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -369,7 +369,7 @@ SCENARIO("Alarm events are sent on a read attribute exception")
             std::string att{"attr_test"};
 
             TangoTest::CallbackMock<Tango::EventData> callback;
-            REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+            TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
             require_initial_events(callback);
 
@@ -413,7 +413,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -445,7 +445,7 @@ SCENARIO("Manual quality change triggers ALARM_EVENT")
             AND_GIVEN("an alarm event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                 require_initial_events(callback);
 
@@ -477,7 +477,7 @@ SCENARIO("Alarm events can be pushed from code manually")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -497,7 +497,7 @@ SCENARIO("Alarm events can be pushed from code manually")
             AND_GIVEN("an alarm event subscription")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                 require_event(callback);
 
@@ -641,7 +641,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -655,7 +655,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
             {
                 THEN("the subscription succeeds")
                 {
-                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                    TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                     require_event(callback);
 
@@ -758,7 +758,7 @@ SCENARIO("Alarm events are pushed together with manual change events")
             {
                 THEN("the subscription succeeds")
                 {
-                    REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                    TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                     require_event(callback);
 
@@ -843,7 +843,7 @@ SCENARIO("Alarm events work with stateless=true")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -861,7 +861,7 @@ SCENARIO("Alarm events work with stateless=true")
             AND_GIVEN("a stateless alarm event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback, true));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback, true};
 
                 require_initial_events(callback);
 
@@ -959,7 +959,7 @@ SCENARIO("Pushing events for a polled attribute works")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -970,7 +970,7 @@ SCENARIO("Pushing events for a polled attribute works")
             AND_GIVEN("an alarm event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                 require_initial_events(callback);
 
@@ -1018,7 +1018,7 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "AlarmEventDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -1036,7 +1036,7 @@ SCENARIO("Alarm events subscription can be reconnected", "[slow]")
             AND_GIVEN("an alarm event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                 require_initial_events(callback);
 
@@ -1120,7 +1120,7 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
     {
         TangoTest::Context ctx{
             "alarm_event", "AlarmEventDev", idlver, "FREE/CtrlSystem->AutoAlarmOnChangeEvent: false\n"};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -1131,7 +1131,7 @@ SCENARIO("Pushing alarm events from push_change_event on polled attributes can b
             AND_GIVEN("an alarm event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::ALARM_EVENT, &callback};
 
                 require_initial_events(callback);
 
@@ -1228,7 +1228,7 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm_event", "SpectrumAlarmEvent", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -1239,12 +1239,12 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
             AND_GIVEN("an alarm event and change event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback_alarm;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::ALARM_EVENT, &callback_alarm));
+                TangoTest::Subscription subscription_alarm{device, att, Tango::ALARM_EVENT, &callback_alarm};
 
                 require_event(callback_alarm);
 
                 TangoTest::CallbackMock<Tango::EventData> callback_change;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
+                TangoTest::Subscription subscription_change{device, att, Tango::CHANGE_EVENT, &callback_change};
 
                 require_event(callback_change);
 
@@ -1279,7 +1279,7 @@ SCENARIO("Alarm events are generated for spectrum attributes on push_change_even
             AND_GIVEN("only a change event subscription to that attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback_change;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback_change));
+                TangoTest::Subscription subscription_change{device, att, Tango::CHANGE_EVENT, &callback_change};
 
                 require_event(callback_change);
 

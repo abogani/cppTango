@@ -38,7 +38,7 @@ SCENARIO("ZmqEventSupplier can bind to ephemeral ports")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"zmq_ports", "ZmqPorts", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
         AND_GIVEN("a device proxy to the admin device")
@@ -48,7 +48,7 @@ SCENARIO("ZmqEventSupplier can bind to ephemeral ports")
             WHEN("we subscribe to attribute change events")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event("attr", Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, "attr", Tango::CHANGE_EVENT, &callback};
 
                 THEN("the admin device reports being bound to ephermal ports")
                 {
@@ -96,7 +96,7 @@ SCENARIO("ZmqEventSupplier can bind to specific ports")
             "TANGO_ZMQ_HEARTBEAT_PORT=" + heartbeat_port,
         };
         TangoTest::Context ctx{"zmq_ports", "ZmqPorts", idlver, std::move(env)};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
         AND_GIVEN("a device proxy to the admin device")
@@ -106,7 +106,7 @@ SCENARIO("ZmqEventSupplier can bind to specific ports")
             WHEN("we subscribe to attribute change events")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event("attr", Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, "attr", Tango::CHANGE_EVENT, &callback};
 
                 THEN("the admin device reports being bound to the specified ports")
                 {
