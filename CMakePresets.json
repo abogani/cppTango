@@ -1,13 +1,14 @@
 {
   "$schema" : "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
-  "version": 8,
+  "version": 10,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 28,
+    "minor": 31,
     "patch": 0
   },
   "configurePresets": [
    {
+    "$comment": "All configure presets MUST inherit from the \"default\" preset directly or transitively.",
     "name": "default",
     "hidden": true,
     "description": "Default build using Ninja generator",
