@@ -12,7 +12,6 @@
     "hidden": true,
     "description": "Default build using Ninja generator",
     "generator": "Ninja",
-    "binaryDir": "${sourceDir}/build/default",
     "cacheVariables": {
       "BUILD_TESTING": "ON"
     },
