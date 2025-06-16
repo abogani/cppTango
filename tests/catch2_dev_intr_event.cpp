@@ -8,12 +8,8 @@ using CallbackMockType = TangoTest::CallbackMock<Tango::DevIntrChangeEventData>;
 class DynCommand : public Tango::Command
 {
   public:
-    explicit DynCommand(const std::string &name,
-                        Tango::CmdArgType in,
-                        Tango::CmdArgType out,
-                        const char *in_desc,
-                        const char *out_desc) :
-        Tango::Command(name, in, out, in_desc, out_desc)
+    explicit DynCommand(const std::string &name) :
+        Tango::Command(name, Tango::DEV_VOID, Tango::DEV_VOID, "", "")
     {
     }
 
@@ -57,7 +53,7 @@ class DevInterEventDS : public Base
                 ss << "_" << ctr;
             }
 
-            auto *at = new DynCommand(ss.str(), Tango::DEV_VOID, Tango::DEV_FLOAT, "", "Output value (4.0)");
+            auto *at = new DynCommand(ss.str());
             Base::add_command(at, device_level);
         }
     }
