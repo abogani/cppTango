@@ -95,6 +95,8 @@ endfunction()
 # Pass TRUE as second argument if your tests don't require the device servers
 function(CXX_GENERATE_TEST name)
 
+    set(SKIP_FIXTURES "")
+
     if(${ARGC} EQUAL 2)
         if(ARGV1)
             set(SKIP_FIXTURES "--skip-fixtures")
