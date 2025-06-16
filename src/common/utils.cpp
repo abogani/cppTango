@@ -599,8 +599,6 @@ void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::
 
     for(unsigned int i = 0; i < vs.size(); i++)
     {
-        std::string lower_vs(vs[i]);
-        std::transform(lower_vs.begin(), lower_vs.end(), lower_vs.begin(), ::tolower);
         pos = find_if(prefixes.begin(),
                       prefixes.end(),
                       [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
