@@ -16,6 +16,12 @@ repos:
   - id: destroyed-symlinks
   - id: end-of-file-fixer
   - id: mixed-line-ending
+  - id: pretty-format-json
+    args:
+      - "--autofix"
+      - "--indent=2"
+      - "--no-ensure-ascii"
+      - "--no-sort-keys"
   - id: trailing-whitespace
 - repo: https://github.com/sirosen/texthooks
   rev: 0.4.0

@@ -1,5 +1,5 @@
 {
-  "$schema" : "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+  "$schema": "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
   "version": 10,
   "cmakeMinimumRequired": {
     "major": 3,
@@ -7,115 +7,133 @@
     "patch": 0
   },
   "configurePresets": [
-   {
-    "$comment": "All configure presets MUST inherit from the \"default\" preset directly or transitively.",
-    "name": "default",
-    "hidden": true,
-    "description": "Default build using Ninja generator",
-    "generator": "Ninja",
-    "cacheVariables": {
-      "BUILD_TESTING": "ON"
-    },
-    "errors" :
     {
-      "dev": true,
-      "deprecated": true
+      "$comment": "All configure presets MUST inherit from the \"default\" preset directly or transitively.",
+      "name": "default",
+      "hidden": true,
+      "description": "Default build using Ninja generator",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "BUILD_TESTING": "ON"
+      },
+      "errors": {
+        "dev": true,
+        "deprecated": true
+      },
+      "warnings": {
+        "uninitialized": true,
+        "unusedCli": true
+      }
     },
-    "warnings" :
     {
-      "uninitialized": true,
-      "unusedCli": true
+      "name": "ci-rel-linux",
+      "inherits": [
+        "default"
+      ],
+      "binaryDir": "${sourceDir}/build/relwithdebinfo",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "RelWithDebInfo"
+        }
+      }
+    },
+    {
+      "name": "ci-debug-linux",
+      "inherits": [
+        "default"
+      ],
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    },
+    {
+      "name": "default-sanitizer",
+      "hidden": true,
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_DISABLE_PRECOMPILE_HEADERS": true,
+        "TANGO_SKIP_OLD_TESTS": true
+      }
+    },
+    {
+      "name": "default-sanitizer-all",
+      "hidden": true,
+      "inherits": [
+        "default"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_DISABLE_PRECOMPILE_HEADERS": true
+      }
+    },
+    {
+      "name": "ci-debug-linux-asan",
+      "inherits": [
+        "default-sanitizer"
+      ],
+      "binaryDir": "${sourceDir}/build/debug-asan",
+      "cacheVariables": {
+        "TANGO_ENABLE_SANITIZER": "ASAN"
+      }
+    },
+    {
+      "name": "ci-debug-linux-asan-all",
+      "inherits": [
+        "default-sanitizer-all"
+      ],
+      "binaryDir": "${sourceDir}/build/debug-asan-all",
+      "cacheVariables": {
+        "TANGO_ENABLE_SANITIZER": "ASAN"
+      }
+    },
+    {
+      "name": "ci-debug-linux-ubsan",
+      "inherits": [
+        "default-sanitizer"
+      ],
+      "binaryDir": "${sourceDir}/build/debug-ubsan",
+      "cacheVariables": {
+        "TANGO_ENABLE_SANITIZER": "UBSAN"
+      }
+    },
+    {
+      "name": "ci-debug-linux-ubsan-all",
+      "inherits": [
+        "default-sanitizer-all"
+      ],
+      "binaryDir": "${sourceDir}/build/debug-ubsan-all",
+      "cacheVariables": {
+        "TANGO_ENABLE_SANITIZER": "UBSAN"
+      }
+    },
+    {
+      "name": "ci-debug-linux-tsan",
+      "inherits": [
+        "default-sanitizer"
+      ],
+      "binaryDir": "${sourceDir}/build/debug-tsan",
+      "cacheVariables": {
+        "TANGO_ENABLE_SANITIZER": "TSAN"
+      }
+    },
+    {
+      "name": "ci-debug-linux-tsan-all",
+      "inherits": [
+        "default-sanitizer-all"
+      ],
+      "binaryDir": "${sourceDir}/build/debug-tsan-all",
+      "cacheVariables": {
+        "TANGO_ENABLE_SANITIZER": "TSAN"
+      }
     }
-   },
-   {
-    "name": "ci-rel-linux",
-    "inherits": ["default"],
-    "binaryDir": "${sourceDir}/build/relwithdebinfo",
-    "cacheVariables": {
-      "CMAKE_BUILD_TYPE": {
-        "type": "STRING",
-        "value": "RelWithDebInfo"
-     }
-    }
-   },
-   {
-    "name": "ci-debug-linux",
-    "inherits": ["default"],
-    "binaryDir": "${sourceDir}/build/debug",
-    "cacheVariables": {
-      "CMAKE_BUILD_TYPE": {
-        "type": "STRING",
-        "value": "Debug"
-     }
-    }
-   },
-   {
-    "name": "default-sanitizer",
-    "hidden": true,
-    "inherits": ["default"],
-    "cacheVariables": {
-      "CMAKE_BUILD_TYPE": "Debug",
-      "CMAKE_DISABLE_PRECOMPILE_HEADERS" : true,
-      "TANGO_SKIP_OLD_TESTS": true
-    }
-   },
-   {
-    "name": "default-sanitizer-all",
-    "hidden": true,
-    "inherits": ["default"],
-    "cacheVariables": {
-      "CMAKE_BUILD_TYPE": "Debug",
-      "CMAKE_DISABLE_PRECOMPILE_HEADERS" : true
-    }
-   },
-   {
-    "name": "ci-debug-linux-asan",
-    "inherits": ["default-sanitizer"],
-    "binaryDir": "${sourceDir}/build/debug-asan",
-    "cacheVariables": {
-      "TANGO_ENABLE_SANITIZER" : "ASAN"
-   }
-   },
-   {
-    "name": "ci-debug-linux-asan-all",
-    "inherits": ["default-sanitizer-all"],
-    "binaryDir": "${sourceDir}/build/debug-asan-all",
-    "cacheVariables": {
-      "TANGO_ENABLE_SANITIZER" : "ASAN"
-    }
-   },
-   {
-    "name": "ci-debug-linux-ubsan",
-    "inherits": ["default-sanitizer"],
-    "binaryDir": "${sourceDir}/build/debug-ubsan",
-    "cacheVariables": {
-      "TANGO_ENABLE_SANITIZER" : "UBSAN"
-   }
-   },
-   {
-    "name": "ci-debug-linux-ubsan-all",
-    "inherits": ["default-sanitizer-all"],
-    "binaryDir": "${sourceDir}/build/debug-ubsan-all",
-    "cacheVariables": {
-      "TANGO_ENABLE_SANITIZER" : "UBSAN"
-   }
-   },
-   {
-    "name": "ci-debug-linux-tsan",
-    "inherits": ["default-sanitizer"],
-    "binaryDir": "${sourceDir}/build/debug-tsan",
-    "cacheVariables": {
-      "TANGO_ENABLE_SANITIZER" : "TSAN"
-   }
-   },
-   {
-    "name": "ci-debug-linux-tsan-all",
-    "inherits": ["default-sanitizer-all"],
-    "binaryDir": "${sourceDir}/build/debug-tsan-all",
-    "cacheVariables": {
-      "TANGO_ENABLE_SANITIZER" : "TSAN"
-   }
-   }
   ],
   "buildPresets": [
     {
@@ -124,99 +142,136 @@
     },
     {
       "name": "ci-debug-linux",
-      "inherits" : ["default"],
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-debug-linux"
     },
     {
       "name": "ci-rel-linux",
-      "inherits" : ["default"],
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-rel-linux"
     },
-   {
-    "name": "ci-debug-linux-asan",
-    "inherits": ["default"],
-    "configurePreset": "ci-debug-linux-asan"
-   },
-   {
-    "name": "ci-debug-linux-asan-all",
-    "inherits": ["default"],
-    "configurePreset": "ci-debug-linux-asan-all"
-   },
-   {
-    "name": "ci-debug-linux-ubsan",
-    "inherits": ["default"],
-    "configurePreset": "ci-debug-linux-ubsan"
-   },
-   {
-    "name": "ci-debug-linux-ubsan-all",
-    "inherits": ["default"],
-    "configurePreset": "ci-debug-linux-ubsan-all"
-   },
-   {
-    "name": "ci-debug-linux-tsan",
-    "inherits": ["default"],
-    "configurePreset": "ci-debug-linux-tsan"
-   },
-   {
-    "name": "ci-debug-linux-tsan-all",
-    "inherits": ["default"],
-    "configurePreset": "ci-debug-linux-tsan-all"
-   }
+    {
+      "name": "ci-debug-linux-asan",
+      "inherits": [
+        "default"
+      ],
+      "configurePreset": "ci-debug-linux-asan"
+    },
+    {
+      "name": "ci-debug-linux-asan-all",
+      "inherits": [
+        "default"
+      ],
+      "configurePreset": "ci-debug-linux-asan-all"
+    },
+    {
+      "name": "ci-debug-linux-ubsan",
+      "inherits": [
+        "default"
+      ],
+      "configurePreset": "ci-debug-linux-ubsan"
+    },
+    {
+      "name": "ci-debug-linux-ubsan-all",
+      "inherits": [
+        "default"
+      ],
+      "configurePreset": "ci-debug-linux-ubsan-all"
+    },
+    {
+      "name": "ci-debug-linux-tsan",
+      "inherits": [
+        "default"
+      ],
+      "configurePreset": "ci-debug-linux-tsan"
+    },
+    {
+      "name": "ci-debug-linux-tsan-all",
+      "inherits": [
+        "default"
+      ],
+      "configurePreset": "ci-debug-linux-tsan-all"
+    }
   ],
   "testPresets": [
     {
       "name": "default",
       "hidden": true,
-      "output": {"outputOnFailure": true},
-      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
     },
     {
-      "name" : "ci-debug-linux",
-      "inherits" : ["default"],
+      "name": "ci-debug-linux",
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-debug-linux"
     },
     {
-      "name" : "ci-rel-linux",
-      "inherits" : ["default"],
+      "name": "ci-rel-linux",
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-rel-linux"
     },
     {
-      "name" : "ci-debug-linux-asan",
-      "inherits" : ["default"],
+      "name": "ci-debug-linux-asan",
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-debug-linux-asan",
-      "environment" : {
-        "ASAN_OPTIONS" : "detect_stack_use_after_return=1"
+      "environment": {
+        "ASAN_OPTIONS": "detect_stack_use_after_return=1"
       }
     },
     {
-      "name" : "ci-debug-linux-asan-all",
-      "inherits" : ["ci-debug-linux-asan"],
+      "name": "ci-debug-linux-asan-all",
+      "inherits": [
+        "ci-debug-linux-asan"
+      ],
       "configurePreset": "ci-debug-linux-asan-all"
     },
     {
-      "name" : "ci-debug-linux-ubsan",
-      "inherits" : ["default"],
+      "name": "ci-debug-linux-ubsan",
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-debug-linux-ubsan",
-      "environment" : {
-        "UBSAN_OPTIONS" : "print_stacktrace=1,report_error_type=1,halt_on_error=1,suppressions=${sourceDir}/tests/suppressions-ubsan.supp"
+      "environment": {
+        "UBSAN_OPTIONS": "print_stacktrace=1,report_error_type=1,halt_on_error=1,suppressions=${sourceDir}/tests/suppressions-ubsan.supp"
       }
     },
     {
-      "name" : "ci-debug-linux-ubsan-all",
-      "inherits" : ["ci-debug-linux-ubsan"],
+      "name": "ci-debug-linux-ubsan-all",
+      "inherits": [
+        "ci-debug-linux-ubsan"
+      ],
       "configurePreset": "ci-debug-linux-ubsan-all"
     },
     {
-      "name" : "ci-debug-linux-tsan",
-      "inherits" : ["default"],
+      "name": "ci-debug-linux-tsan",
+      "inherits": [
+        "default"
+      ],
       "configurePreset": "ci-debug-linux-tsan",
-      "environment" : {
-        "TSAN_OPTIONS" : "second_deadlock_stack=1"
+      "environment": {
+        "TSAN_OPTIONS": "second_deadlock_stack=1"
       }
     },
     {
-      "name" : "ci-debug-linux-tsan-all",
-      "inherits" : ["ci-debug-linux-tsan"],
+      "name": "ci-debug-linux-tsan-all",
+      "inherits": [
+        "ci-debug-linux-tsan"
+      ],
       "configurePreset": "ci-debug-linux-tsan-all"
     }
   ],
