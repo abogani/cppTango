@@ -69,7 +69,7 @@ class AttributeProxy
     std::string device_name;
     std::string alias_name;
     Tango::DeviceProxy *dev_proxy;
-    Tango::DbAttribute *db_attr;
+    Tango::DbAttribute *db_attr{nullptr};
     bool dbase_used;   // Dev. with database
     bool from_env_var; // DB from TANGO_HOST
 

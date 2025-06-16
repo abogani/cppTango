@@ -92,3 +92,22 @@ SCENARIO("AttributeProxy: Bails when unsubscribing without subscriptions")
         }
     }
 }
+
+SCENARIO("AttributeProxy: Bails when trying to subscribe to unknown attribute")
+{
+    int idlver = GENERATE(TangoTest::idlversion(3));
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"attr_proxy_dev", "AttrProxyDev", idlver};
+        auto device = ctx.get_proxy();
+
+        WHEN("we can create an AttributeProxy to it")
+        {
+            using namespace TangoTest::Matchers;
+
+            REQUIRE_THROWS_MATCHES(std::make_shared<Tango::AttributeProxy>(device.get(), "unknown"),
+                                   Tango::DevFailed,
+                                   ErrorListMatches(AnyMatch(Reason(Tango::API_UnsupportedAttribute))));
+        }
+    }
+}
