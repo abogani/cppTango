@@ -20,6 +20,11 @@
     {
       "dev": true,
       "deprecated": true
+    },
+    "warnings" :
+    {
+      "uninitialized": true,
+      "unusedCli": true
     }
    },
    {
