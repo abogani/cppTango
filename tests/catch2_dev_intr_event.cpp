@@ -110,7 +110,6 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                     Tango::DeviceData din;
                     din << device->name();
                     REQUIRE_NOTHROW(dserver->command_inout("DevRestart", din));
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
 
                     THEN("we get no event")
                     {
@@ -124,7 +123,6 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                     auto dserver = ctx.get_admin_proxy();
 
                     REQUIRE_NOTHROW(dserver->command_inout("RestartServer"));
-                    std::this_thread::sleep_for(std::chrono::seconds(5));
 
                     THEN("we get no event")
                     {
@@ -157,7 +155,6 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                         AND_WHEN("we remove the command again")
                         {
                             REQUIRE_NOTHROW(device->command_inout("IORemoveCommand"));
-                            std::this_thread::sleep_for(std::chrono::seconds(3));
 
                             THEN("we got an event with the command removed again")
                             {
@@ -223,7 +220,6 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                             Tango::DeviceData din;
                             din << device->name();
                             REQUIRE_NOTHROW(dserver->command_inout("DevRestart", din));
-                            std::this_thread::sleep_for(std::chrono::seconds(1));
 
                             THEN("we get an event")
                             {
@@ -243,7 +239,6 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                             auto dserver = ctx.get_admin_proxy();
 
                             REQUIRE_NOTHROW(dserver->command_inout("RestartServer"));
-                            std::this_thread::sleep_for(std::chrono::seconds(5));
 
                             THEN("we get an event")
                             {
