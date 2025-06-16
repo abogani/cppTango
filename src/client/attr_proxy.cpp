@@ -49,14 +49,12 @@ namespace Tango
 //-----------------------------------------------------------------------------
 
 AttributeProxy::AttributeProxy(std::string &name) :
-    dev_proxy(nullptr),
     ext(new AttributeProxyExt(name))
 {
     real_constructor(name);
 }
 
 AttributeProxy::AttributeProxy(const char *na) :
-    dev_proxy(nullptr),
     ext(new AttributeProxyExt(na))
 {
     std::string name(na);
