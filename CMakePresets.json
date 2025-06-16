@@ -46,6 +46,7 @@
    {
     "name": "default-sanitizer",
     "hidden": true,
+    "inherits": ["default"],
     "cacheVariables": {
       "CMAKE_BUILD_TYPE": "Debug",
       "CMAKE_DISABLE_PRECOMPILE_HEADERS" : true,
@@ -55,6 +56,7 @@
    {
     "name": "default-sanitizer-all",
     "hidden": true,
+    "inherits": ["default"],
     "cacheVariables": {
       "CMAKE_BUILD_TYPE": "Debug",
       "CMAKE_DISABLE_PRECOMPILE_HEADERS" : true
