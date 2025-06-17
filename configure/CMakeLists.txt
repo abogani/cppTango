@@ -48,7 +48,6 @@ message(STATUS "Target platform: ${CMAKE_SYSTEM_NAME} ${PLATFORM}-bit")
 message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID} with version ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "cppTango: version ${TANGO_GIT_REVISION}")
-message(STATUS "Environment: TANGO_HOST=$ENV{TANGO_HOST}")
 
 set(IDL_VERSION_REQUESTED 6.0.2)
 if(NOT tangoidl_FOUND)
