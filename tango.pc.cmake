@@ -9,4 +9,5 @@ Version: @LIBRARY_VERSION@
 Cflags: -I${includedir}
 Requires: libzmq omniORB4 omniCOS4 omniDynamic4
 Requires.private: @JPEG_LIB@
-Libs: -L${libdir} -ltango -lzmq -lomniORB4 -lomnithread -lCOS4 -lomniDynamic4 @JPEG_LIB_FLAG@
+Libs: -L${libdir} -ltango -lzmq -lomniORB4 -lomnithread -lCOS4 -lomniDynamic4
+Libs.private: @JPEG_LIB_FLAG@

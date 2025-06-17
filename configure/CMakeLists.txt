@@ -188,6 +188,8 @@ include(configure/check_omniidl.cmake)
 # Check for jpeg support
 if(TANGO_USE_JPEG)
     find_package(JPEG REQUIRED)
+    set(JPEG_LIB libjpeg)
+    set(JPEG_LIB_FLAG -ljpeg)
 endif()
 
 set(CPPZMQ_TRY_COMPILE_OUTPUT "" CACHE STRING "Compilation test for compatible cppzmq version")
