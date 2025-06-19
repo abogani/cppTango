@@ -58,7 +58,7 @@ SCENARIO("AttributeConfig returns correct data")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"double_attr", "AttrConfEventData", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
         const std::string reset_value = "Not specified";
 
         REQUIRE(idlver == device->get_idl_version());
@@ -83,7 +83,7 @@ SCENARIO("AttributeConfig returns correct data")
                 {
                     TangoTest::CallbackMock<Tango::AttrConfEventData> callback;
                     const std::vector<std::string> filters;
-                    REQUIRE_NOTHROW(device->subscribe_event(attr, Tango::ATTR_CONF_EVENT, &callback, filters));
+                    TangoTest::Subscription sub{device, attr, Tango::ATTR_CONF_EVENT, &callback, filters};
 
                     require_initial_events(callback);
 

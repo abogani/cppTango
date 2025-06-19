@@ -243,7 +243,7 @@ SCENARIO("Polled attributes generate change events")
     GIVEN("a device proxy to a IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"attr_polling", "AttrPollingEvents", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
         REQUIRE(idlver == device->get_idl_version());
 
         AND_GIVEN("an attribute with polling enabled")
@@ -253,7 +253,7 @@ SCENARIO("Polled attributes generate change events")
             WHEN("we subscribe to change events for the attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(attr, Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, attr, Tango::CHANGE_EVENT, &callback};
 
                 THEN("we receive some events with the initial value")
                 {

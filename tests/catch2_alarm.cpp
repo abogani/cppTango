@@ -107,7 +107,7 @@ SCENARIO("check_alarm reports alarms correctly")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"alarm", "AlarmDev", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         WHEN("we call check_alarm after setting alarming value")
         {
@@ -127,7 +127,7 @@ SCENARIO("check_alarm reports alarms correctly")
             WHEN("we subscribe the change events for the attribute")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event("attr", Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, "attr", Tango::CHANGE_EVENT, &callback};
 
                 // discard the initial events we get when we subscribe
                 using namespace Catch::Matchers;

@@ -170,7 +170,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Double", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -183,7 +183,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with absolute change"
             AND_GIVEN("a change event subscription")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::CHANGE_EVENT, &callback};
 
                 THEN("we receive some events with the initial value")
                 {
@@ -231,7 +231,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Double", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -244,7 +244,7 @@ SCENARIO("Change events for DevDouble are generated on NaN with relative change"
             AND_GIVEN("a change event subscription")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::CHANGE_EVENT, &callback};
 
                 THEN("we receive some events with the initial value")
                 {
@@ -294,7 +294,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Float", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -307,7 +307,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with absolute change")
             AND_GIVEN("a change event subscription")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::CHANGE_EVENT, &callback};
 
                 THEN("we receive some events with the initial value")
                 {
@@ -355,7 +355,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
     GIVEN("a device proxy to a simple IDLv" << idlver << " device")
     {
         TangoTest::Context ctx{"change_event_on_nan", "ChangeEventOnNanDev_Float", idlver};
-        auto device = ctx.get_proxy();
+        std::shared_ptr<Tango::DeviceProxy> device = ctx.get_proxy();
 
         REQUIRE(idlver == device->get_idl_version());
 
@@ -368,7 +368,7 @@ SCENARIO("Change events for DevFloat are generated on NaN with relative change")
             AND_GIVEN("a change event subscription")
             {
                 TangoTest::CallbackMock<Tango::EventData> callback;
-                REQUIRE_NOTHROW(device->subscribe_event(att, Tango::CHANGE_EVENT, &callback));
+                TangoTest::Subscription sub{device, att, Tango::CHANGE_EVENT, &callback};
 
                 THEN("we receive some events with the initial value")
                 {
