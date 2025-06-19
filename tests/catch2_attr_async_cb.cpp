@@ -8,7 +8,12 @@ constexpr double ATTR_INIT_VALUE_DP = 9.999;
 constexpr short ATTR_INIT_VALUE_SH = 4711;
 const static std::string TestExceptReason = "Ahhh!";
 
-using CallbackMockType = TangoTest::CallbackMock<Tango::AttrReadEvent, TangoTest::AttrReadEventCopyable>;
+using AttrReadCallbackMockType = TangoTest::CallbackMock<Tango::AttrReadEvent, TangoTest::AttrReadEventCopyable>;
+
+using AttrWrittenEventCallbackMockType =
+    TangoTest::CallbackMock<Tango::AttrWrittenEvent, TangoTest::AttrWrittenEventCopyable>;
+
+using CmdDoneEventCallbackMockType = TangoTest::CallbackMock<Tango::CmdDoneEvent, TangoTest::CmdDoneEventCopyable>;
 
 std::function<void()> get_poll_func(std::unique_ptr<Tango::DeviceProxy> &device, long timeout)
 {
@@ -64,12 +69,28 @@ class AsyncAttrDev : public Base
         }
     }
 
+    void write_attr(TANGO_UNUSED(Tango::WAttribute &att))
+    {
+        ; // nothing for now
+    }
+
+    double identity_double_cmd(double v)
+    {
+        return v;
+    }
+
     static void attribute_factory(std::vector<Tango::Attr *> &attrs)
     {
-        attrs.push_back(new TangoTest::AutoAttr<&AsyncAttrDev::read_attr>("attr_asyn", Tango::DEV_DOUBLE));
+        attrs.push_back(new TangoTest::AutoAttr<&AsyncAttrDev::read_attr, &AsyncAttrDev::write_attr>(
+            "attr_asyn", Tango::DEV_DOUBLE));
         attrs.push_back(new TangoTest::AutoAttr<&AsyncAttrDev::read_attr>("Short_attr", Tango::DEV_SHORT));
         attrs.push_back(new TangoTest::AutoAttr<&AsyncAttrDev::read_attr>("attr_asyn_except", Tango::DEV_DOUBLE));
         attrs.push_back(new TangoTest::AutoAttr<&AsyncAttrDev::read_attr>("attr_asyn_to", Tango::DEV_DOUBLE));
+    }
+
+    static void command_factory(std::vector<Tango::Command *> &cmds)
+    {
+        cmds.push_back(new TangoTest::AutoCommand<&AsyncAttrDev::identity_double_cmd>("identity_double_cmd"));
     }
 
   private:
@@ -89,7 +110,7 @@ SCENARIO("Querying device with get_asynch_replies")
 
         REQUIRE(idlver == device->get_idl_version());
 
-        CallbackMockType callback;
+        AttrReadCallbackMockType callback;
         device->read_attribute_asynch("attr_asyn", callback);
 
         auto timeout = GENERATE(0, 500, -1);
@@ -129,7 +150,7 @@ SCENARIO("Device timeout with get_asynch_replies")
         // tweaking the device timeout allows us to execute the test faster
         device->set_timeout_millis(500);
 
-        CallbackMockType callback;
+        AttrReadCallbackMockType callback;
         device->read_attribute_asynch("attr_asyn_to", callback);
 
         auto timeout = GENERATE(0, 500, -1);
@@ -164,7 +185,7 @@ SCENARIO("Device exception with get_asynch_replies")
 
         REQUIRE(idlver == device->get_idl_version());
 
-        CallbackMockType callback;
+        AttrReadCallbackMockType callback;
         device->read_attribute_asynch("attr_asyn_except", callback);
 
         auto timeout = GENERATE(0, 500, -1);
@@ -216,7 +237,7 @@ SCENARIO("multiple attributes can be read asynchronously")
         {
             std::vector<std::string> names{"attr_asyn", "short_attr"};
 
-            CallbackMockType callback;
+            AttrReadCallbackMockType callback;
             device->read_attributes_asynch(names, callback);
 
             AND_THEN("get a result back")
@@ -233,5 +254,84 @@ SCENARIO("multiple attributes can be read asynchronously")
                 REQUIRE_THAT(event, EventValueMatches(AnyMatch(AnyLikeContains(ATTR_INIT_VALUE_SH))));
             }
         }
+    }
+}
+
+SCENARIO("Error in readout callback reported")
+{
+    int idlver = GENERATE(TangoTest::idlversion(1));
+    auto errorType = GENERATE(
+        as<TangoTest::CallbackErrorType>{}, TangoTest::DevFailed, TangoTest::StdException, TangoTest::Arbitrary);
+
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"attr_asyn", "AsyncAttrDev", idlver};
+        auto device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AttrReadCallbackMockType callback;
+        callback.set_error_in_callback(errorType);
+
+        CaptureCerr cap;
+        device->read_attribute_asynch("attr_asyn", callback);
+        device->get_asynch_replies(500);
+        check_callback_cerr_output(cap.str(), errorType);
+    }
+}
+
+SCENARIO("Error in write callback reported")
+{
+    int idlver = GENERATE(TangoTest::idlversion(1));
+    auto errorType = GENERATE(
+        as<TangoTest::CallbackErrorType>{}, TangoTest::DevFailed, TangoTest::StdException, TangoTest::Arbitrary);
+
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"attr_asyn", "AsyncAttrDev", idlver};
+        auto device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        AttrWrittenEventCallbackMockType callback;
+        callback.set_error_in_callback(errorType);
+
+        Tango::DeviceAttribute send;
+
+        send.set_name("attr_asyn");
+        Tango::DevDouble lg = 22.2;
+        send << lg;
+
+        CaptureCerr cap;
+        device->write_attribute_asynch(send, callback);
+        device->get_asynch_replies(500);
+        check_callback_cerr_output(cap.str(), errorType);
+    }
+}
+
+SCENARIO("Error in cmd done callback reported")
+{
+    int idlver = GENERATE(TangoTest::idlversion(1));
+    auto errorType = GENERATE(
+        as<TangoTest::CallbackErrorType>{}, TangoTest::DevFailed, TangoTest::StdException, TangoTest::Arbitrary);
+
+    GIVEN("a device proxy to a simple IDLv" << idlver << " device")
+    {
+        TangoTest::Context ctx{"cmd_asyn", "AsyncAttrDev", idlver};
+        auto device = ctx.get_proxy();
+
+        REQUIRE(idlver == device->get_idl_version());
+
+        CmdDoneEventCallbackMockType callback;
+        callback.set_error_in_callback(errorType);
+
+        Tango::DevDouble lg = 22.2;
+        Tango::DeviceData in;
+        in << lg;
+
+        CaptureCerr cap;
+        device->command_inout_asynch("identity_double_cmd", in, callback);
+        device->get_asynch_replies(500);
+        check_callback_cerr_output(cap.str(), errorType);
     }
 }

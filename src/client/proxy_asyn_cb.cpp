@@ -40,6 +40,39 @@
 namespace Tango
 {
 
+//--------------------------------------------------------------------------------------------------------------------
+//
+// helper method to user callback and printout error, if failed
+//
+//--------------------------------------------------------------------------------------------------------------------
+template <typename Func>
+static void catch_and_report_callback_failure(const char *method_name, const std::string &dev_name, Func &&callback)
+{
+    try
+    {
+        // invoke the real callback
+        callback();
+    }
+    catch(const DevFailed &e)
+    {
+        TangoSys_OMemStream o;
+        o << method_name << " callback method of " << dev_name << " got DevFailed exception: \n\n" << e.errors[0].desc;
+        ApiUtil::instance()->print_error_message(o.str().c_str());
+    }
+    catch(const std::exception &e)
+    {
+        TangoSys_OMemStream o;
+        o << method_name << " callback method of " << dev_name << " got std::exception: \n\n" << e.what();
+        ApiUtil::instance()->print_error_message(o.str().c_str());
+    }
+    catch(...)
+    {
+        TangoSys_OMemStream o;
+        o << method_name << " callback method of " << dev_name << " got unknown exception";
+        ApiUtil::instance()->print_error_message(o.str().c_str());
+    }
+}
+
 //-----------------------------------------------------------------------------
 //
 // method :         Connection::command_inout_asyn()
@@ -393,7 +426,8 @@ void Connection::Cb_Cmd_Request(CORBA::Request_ptr req, Tango::CallBack *cb_ptr)
     CmdDoneEvent *cb_data = new CmdDoneEvent(local_dev, cmd_str, data_out, errors);
 
     std::unique_ptr<CmdDoneEvent> auto_cb_data(cb_data);
-    cb_ptr->cmd_ended(auto_cb_data.get());
+
+    catch_and_report_callback_failure("cmd_ended", dev_name(), [&]() { cb_ptr->cmd_ended(auto_cb_data.get()); });
 }
 
 //-----------------------------------------------------------------------------
@@ -647,7 +681,7 @@ void Connection::Cb_ReadAttr_Request(CORBA::Request_ptr req, Tango::CallBack *cb
 
     std::unique_ptr<AttrReadEvent> auto_cb_data(cb_data);
 
-    cb_ptr->attr_read(auto_cb_data.get());
+    catch_and_report_callback_failure("attr_read", dev_name(), [&]() { cb_ptr->attr_read(auto_cb_data.get()); });
 }
 
 //-----------------------------------------------------------------------------
@@ -903,7 +937,7 @@ void Connection::Cb_WriteAttr_Request(CORBA::Request_ptr req, Tango::CallBack *c
 
     std::unique_ptr<AttrWrittenEvent> auto_cb_data(cb_data);
 
-    cb_ptr->attr_written(auto_cb_data.get());
+    catch_and_report_callback_failure("attr_written", dev_name(), [&]() { cb_ptr->attr_written(auto_cb_data.get()); });
 }
 
 //-----------------------------------------------------------------------------

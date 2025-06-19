@@ -20,4 +20,26 @@ AttrReadEventCopyable::AttrReadEventCopyable(Tango::AttrReadEvent *event)
     err = event->err;
     errors = event->errors;
 }
+
+AttrWrittenEventCopyable::AttrWrittenEventCopyable(Tango::AttrWrittenEvent *event)
+{
+    REQUIRE(event != nullptr);
+
+    device = event->device;
+    attr_names = event->attr_names;
+    err = event->err;
+    errors = event->errors;
+}
+
+CmdDoneEventCopyable::CmdDoneEventCopyable(Tango::CmdDoneEvent *event)
+{
+    REQUIRE(event != nullptr);
+
+    device = event->device;
+    cmd_name = event->cmd_name;
+    argout = event->argout;
+    err = event->err;
+    errors = event->errors;
+}
+
 } // namespace TangoTest

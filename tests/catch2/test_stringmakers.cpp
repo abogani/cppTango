@@ -84,6 +84,29 @@ TangoTest::AttrReadEventCopyable GetDefault()
     return var;
 }
 
+template <>
+TangoTest::AttrWrittenEventCopyable GetDefault()
+{
+    std::vector<std::string> att_names;
+    Tango::NamedDevFailedList errors;
+    Tango::AttrWrittenEvent event(nullptr, att_names, errors);
+    TangoTest::AttrWrittenEventCopyable var(&event);
+
+    return var;
+}
+
+template <>
+TangoTest::CmdDoneEventCopyable GetDefault()
+{
+    std::string cmd_name;
+    Tango::DevErrorList errors;
+    Tango::DeviceData argout;
+    Tango::CmdDoneEvent event(nullptr, cmd_name, argout, errors);
+    TangoTest::CmdDoneEventCopyable var(&event);
+
+    return var;
+}
+
 } // anonymous namespace
 
 template <class Base>
@@ -225,6 +248,8 @@ using PrintableType = std::tuple<
                                  Tango::PipeEventData,
                                  Tango::TimeVal,
                                  TangoTest::AttrReadEventCopyable,
+                                 TangoTest::AttrWrittenEventCopyable,
+                                 TangoTest::CmdDoneEventCopyable,
                                  // IDL classes
                                  Tango::AttributeDim,
                                  Tango::AttributeValue_5,

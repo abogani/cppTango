@@ -478,6 +478,30 @@ class EventValueMatchesMatcher : public Catch::Matchers::MatcherGenericBase
         return m_matcher.match(event->argout);
     }
 
+    bool match(std::optional<TangoTest::AttrWrittenEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool match(std::optional<TangoTest::CmdDoneEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->argout);
+    }
+
     std::string describe() const override
     {
         return "has attr_value that " + m_matcher.describe();
@@ -515,6 +539,30 @@ class EventErrorMatchesMatcher : public Catch::Matchers::MatcherGenericBase
     }
 
     bool match(const std::optional<TangoTest::AttrReadEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
+    bool match(const std::optional<TangoTest::AttrWrittenEventCopyable> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        if(!event->err)
+        {
+            return false;
+        }
+
+        return m_matcher.match(event->errors);
+    }
+
+    bool match(const std::optional<TangoTest::CmdDoneEventCopyable> &event) const
     {
         TANGO_ASSERT(event.has_value());
 
