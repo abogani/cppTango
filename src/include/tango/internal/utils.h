@@ -104,6 +104,9 @@ std::optional<int> extract_idl_version_from_event_name(const std::string &event_
 /// @brief Insert `idl5_` after the last `.`
 std::string insert_idl_for_compat(std::string event_name);
 
+/// @brief Remove `idl5_XXXXX` after the last `.`
+std::string remove_idl_for_compat(std::string event_name);
+
 } // namespace Tango::detail
 
 namespace Tango

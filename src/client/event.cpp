@@ -1721,8 +1721,7 @@ std::string EventConsumer::get_client_attribute_name(const std::string &local_ca
         return filters[0]; // here filters[0] is expected to be user defined attribute name
     }
 
-    size_t pos = local_callback_key.rfind('.'); // remove event_type e.g. .idl5_change
-    return local_callback_key.substr(0, pos);
+    return detail::remove_idl_for_compat(local_callback_key);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------

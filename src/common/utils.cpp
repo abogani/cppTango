@@ -701,6 +701,13 @@ std::string insert_idl_for_compat(std::string event_name)
     return event_name;
 }
 
+std::string remove_idl_for_compat(std::string event_name)
+{
+    size_t pos = event_name.rfind('.'); // remove event_type e.g. .idl5_change
+    TANGO_ASSERT(pos != std::string::npos);
+    return event_name.substr(0, pos);
+}
+
 } // namespace Tango::detail
 
 namespace Tango
