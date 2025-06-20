@@ -190,3 +190,45 @@ SCENARIO("stringify_any")
         }
     }
 }
+
+SCENARIO("Event name functions")
+{
+    GIVEN("A qualified and unqualified event name")
+    {
+        const std::string qual_event_name_intr = "tango://127.0.0.1:10363/testserver/tests/1#dbase=no.intr_change";
+        const std::string unqual_event_name_intr = "intr_change";
+        const std::string qual_event_name =
+            "tango://127.0.0.1:11570/testserver/tests/1/short_attr#dbase=no.idl5_change";
+        const std::string unqual_event_name = "idl5_change";
+
+        WHEN("we can remove the idl prefix")
+        {
+            REQUIRE(Tango::detail::remove_idl_prefix(unqual_event_name_intr) == unqual_event_name_intr);
+            REQUIRE(Tango::detail::remove_idl_prefix(unqual_event_name) == "change");
+        }
+
+        WHEN("add an idl prefix")
+        {
+            REQUIRE(Tango::detail::add_idl_prefix("change") == unqual_event_name);
+        }
+
+        WHEN("extract the IDL version")
+        {
+            REQUIRE(Tango::detail::extract_idl_version_from_event_name(unqual_event_name) == 5);
+            REQUIRE(Tango::detail::extract_idl_version_from_event_name(qual_event_name) == 5);
+            REQUIRE(!Tango::detail::extract_idl_version_from_event_name(qual_event_name_intr).has_value());
+        }
+
+        WHEN("prefix the event name with idl")
+        {
+            REQUIRE(Tango::detail::insert_idl_for_compat(
+                        "tango://127.0.0.1:11570/testserver/tests/1/short_attr#dbase=no.change") == qual_event_name);
+        }
+
+        WHEN("remove the idl with the event name")
+        {
+            REQUIRE(Tango::detail::remove_idl_for_compat(qual_event_name) ==
+                    "tango://127.0.0.1:11570/testserver/tests/1/short_attr#dbase=no");
+        }
+    }
+}
