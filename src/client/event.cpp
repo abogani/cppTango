@@ -3089,36 +3089,12 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
 
         AutoTangoMonitor _mon(cb.callback_monitor);
 
-        //
-        // If a callback method was specified, call it!
-        //
+        safe_execute_callback_or_store_data(
+            callback, event_data, "EventConsumer::subscribe_event()", callback_key, ev_queue);
 
-        if(callback != nullptr)
+        if(callback != nullptr && cb.fwd_att)
         {
-            try
-            {
-                callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                std::cerr << "EventConsumer::subscribe_event() exception in callback method of " << callback_key
-                          << std::endl;
-            }
-
-            delete event_data;
-            if(cb.fwd_att)
-            {
-                delete[] av_5;
-            }
-        }
-
-        //
-        // No calback method, the event has to be inserted into the event queue
-        //
-
-        else
-        {
-            ev_queue->insert_event(event_data);
+            delete[] av_5;
         }
     }
     else if(event == ATTR_CONF_EVENT)
@@ -3148,32 +3124,8 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         auto *event_data = new FwdAttrConfEventData(device, local_domain_name, local_event_name, aie, err);
         AutoTangoMonitor _mon(cb.callback_monitor);
 
-        //
-        // If a callback method was specified, call it!
-        //
-
-        if(callback != nullptr)
-        {
-            try
-            {
-                callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                std::cerr << "EventConsumer::subscribe_event() exception in callback method of " << callback_key
-                          << std::endl;
-            }
-            delete event_data;
-        }
-
-        //
-        // No calback method, the event has to be inserted into the event queue
-        //
-
-        else
-        {
-            ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(
+            callback, event_data, "EventConsumer::subscribe_event()", callback_key, ev_queue);
     }
     else if(event == INTERFACE_CHANGE_EVENT)
     {
@@ -3206,33 +3158,8 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
 
         AutoTangoMonitor _mon(cb.callback_monitor);
 
-        //
-        // if a callback method was specified, call it!
-        //
-
-        if(callback != nullptr)
-        {
-            try
-            {
-                callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                std::cerr << "EventConsumer::subscribe_event() exception in callback method of " << callback_key
-                          << std::endl;
-            }
-
-            delete event_data;
-        }
-
-        //
-        // No calback method, the event has to be instered into the event queue
-        //
-
-        else
-        {
-            ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(
+            callback, event_data, "EventConsumer::subscribe_event()", callback_key, ev_queue);
     }
     else if(event == PIPE_EVENT)
     {
@@ -3270,33 +3197,8 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
 
         AutoTangoMonitor _mon(cb.callback_monitor);
 
-        //
-        // If a callback method was specified, call it!
-        //
-
-        if(callback != nullptr)
-        {
-            try
-            {
-                callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                std::cerr << "EventConsumer::subscribe_event() exception in callback method of " << callback_key
-                          << std::endl;
-            }
-
-            delete event_data;
-        }
-
-        //
-        // No calback method, the event has to be inserted into the event queue
-        //
-
-        else
-        {
-            ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(
+            callback, event_data, "EventConsumer::subscribe_event()", callback_key, ev_queue);
     }
 }
 
