@@ -13,6 +13,13 @@
 
 #include <algorithm>
 
+namespace
+{
+const char *const EVENT_COMPAT = "idl";
+const char *const EVENT_COMPAT_IDL5 = "idl5_";
+const int EVENT_COMPAT_IDL5_SIZE = 5; // strlen of previous string
+} // anonymous namespace
+
 namespace Tango::detail
 {
 
@@ -682,6 +689,16 @@ std::optional<int> extract_idl_version_from_event_name(const std::string &event_
     ss >> client_release;
 
     return client_release;
+}
+
+std::string insert_idl_for_compat(std::string event_name)
+{
+    std::string::size_type pos = event_name.rfind('.');
+    TANGO_ASSERT(pos != std::string::npos);
+
+    event_name.insert(pos + 1, EVENT_COMPAT_IDL5);
+
+    return event_name;
 }
 
 } // namespace Tango::detail

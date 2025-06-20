@@ -101,6 +101,9 @@ std::string remove_idl_prefix(std::string event_name);
 /// @brief Extract the IDL version `5` from a string like `idl5_change`
 std::optional<int> extract_idl_version_from_event_name(const std::string &event_name);
 
+/// @brief Insert `idl5_` after the last `.`
+std::string insert_idl_for_compat(std::string event_name);
+
 } // namespace Tango::detail
 
 namespace Tango

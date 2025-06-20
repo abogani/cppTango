@@ -1528,9 +1528,7 @@ void EventConsumer::connect_event(DeviceProxy *device,
     {
         for(int i = 0; i < ATT_CONF_REL_NB; i++)
         {
-            std::string mod_local_callback_key(received_from_admin.event_name);
-            std::string::size_type pos = mod_local_callback_key.rfind('.');
-            mod_local_callback_key.insert(pos + 1, EVENT_COMPAT_IDL5);
+            auto mod_local_callback_key = detail::insert_idl_for_compat(received_from_admin.event_name);
             iter = event_callback_map.find(mod_local_callback_key);
             if(iter != event_callback_map.end())
             {
