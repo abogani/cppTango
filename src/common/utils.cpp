@@ -652,6 +652,19 @@ std::string add_idl_prefix(std::string event_name)
     return EVENT_COMPAT_IDL5 + event_name;
 }
 
+std::string remove_idl_prefix(std::string event_name)
+{
+    auto pos = event_name.find(EVENT_COMPAT);
+    if(pos == std::string::npos)
+    {
+        return event_name;
+    }
+
+    event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
+
+    return event_name;
+}
+
 } // namespace Tango::detail
 
 namespace Tango

@@ -1195,13 +1195,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     // Don't forget case where we have notifd client (thus with a fqdn_prefix modified)
     //
 
-    std::string local_event_type = event_type;
-
-    std::string::size_type pos = local_event_type.find(EVENT_COMPAT);
-    if(pos != std::string::npos)
-    {
-        local_event_type.erase(0, EVENT_COMPAT_IDL5_SIZE);
-    }
+    std::string local_event_type = detail::remove_idl_prefix(event_type);
 
     bool intr_change = false;
     if(local_event_type == EventName[INTERFACE_CHANGE_EVENT])

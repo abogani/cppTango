@@ -39,6 +39,8 @@
 
 #include <tango/common/pointer_with_lock.h>
 
+#include <tango/internal/utils.h>
+
 #include <cstdio>
 
 #ifdef _TG_WINDOWS_
@@ -1204,11 +1206,7 @@ void EventConsumerKeepAliveThread::main_reconnect(PointerWithLock<EventConsumer>
                     domain_name = epos->second.get_client_attribute_name();
                     event_name = epos->first.substr(pos + 1);
 
-                    std::string::size_type pos = event_name.find(EVENT_COMPAT);
-                    if(pos != std::string::npos)
-                    {
-                        event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-                    }
+                    event_name = detail::remove_idl_prefix(event_name);
                 }
 
                 for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
@@ -1368,12 +1366,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
 
         std::vector<EventSubscribeStruct>::iterator esspos;
 
-        std::string ev_name(epos->second.event_name);
-        std::string::size_type pos = ev_name.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
-        {
-            ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        std::string ev_name = detail::remove_idl_prefix(epos->second.event_name);
 
         if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "archive") || (ev_name == "user_event"))
         {
@@ -1516,12 +1509,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             {
                 cb_ctr++;
                 FwdAttrConfEventData *event_data;
-                std::string ev_name(epos->second.event_name);
-                std::string::size_type pos = ev_name.find(EVENT_COMPAT);
-                if(pos != std::string::npos)
-                {
-                    ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-                }
+                std::string ev_name = detail::remove_idl_prefix(epos->second.event_name);
 
                 if(cb_ctr != cb_nb)
                 {

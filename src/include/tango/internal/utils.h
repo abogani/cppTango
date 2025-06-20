@@ -95,6 +95,9 @@ std::string build_device_trl(DeviceProxy *device, const std::vector<std::string>
 /// @brief Add the `idl5_` prefix to the event name
 std::string add_idl_prefix(std::string event_name);
 
+/// @brief Remove the `idlXX` prefix from the event name
+std::string remove_idl_prefix(std::string event_name);
+
 } // namespace Tango::detail
 
 namespace Tango

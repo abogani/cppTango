@@ -718,14 +718,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // Check event type validity
         //
 
-        std::string check_event = event;
-        std::transform(check_event.begin(), check_event.end(), check_event.begin(), ::tolower);
-
-        std::string::size_type pos_check = check_event.find(EVENT_COMPAT);
-        if(pos_check != std::string::npos)
-        {
-            check_event.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        std::string check_event = detail::remove_idl_prefix(detail::to_lower(event));
 
         size_t nb_event_type = sizeof(EventName) / sizeof(char *);
         bool found = false;
@@ -783,7 +776,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
                     std::stringstream ss;
                     ss << client_lib_str;
                     ss >> client_release;
-                    event.erase(0, EVENT_COMPAT_IDL5_SIZE);
+                    event = detail::remove_idl_prefix(event);
                 }
                 else
                 {
@@ -887,12 +880,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         //
         // Call common method (common between old and new command)
         //
-
-        std::string::size_type pos = event.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
-        {
-            event.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        event = detail::remove_idl_prefix(event);
 
         event_subscription(*dev, obj_name, action, event, ZMQ, client_release);
 
@@ -1158,7 +1146,7 @@ void DServer::event_confirm_subscription(const Tango::DevVarStringArray *argin)
             std::stringstream ss;
             ss << client_lib_str;
             ss >> client_lib;
-            event.erase(0, EVENT_COMPAT_IDL5_SIZE);
+            event = detail::remove_idl_prefix(event);
         }
         else
         {
