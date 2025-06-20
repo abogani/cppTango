@@ -665,6 +665,25 @@ std::string remove_idl_prefix(std::string event_name)
     return event_name;
 }
 
+std::optional<int> extract_idl_version_from_event_name(const std::string &event_name)
+{
+    std::string::size_type pos = event_name.find(EVENT_COMPAT);
+    if(pos == std::string::npos)
+    {
+        return {};
+    }
+
+    int client_release;
+
+    // FIXME prefer parse_as from !1450 once available
+    std::string client_lib_str = event_name.substr(pos + 3, 1);
+    std::stringstream ss;
+    ss << client_lib_str;
+    ss >> client_release;
+
+    return client_release;
+}
+
 } // namespace Tango::detail
 
 namespace Tango

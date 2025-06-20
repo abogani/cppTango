@@ -769,13 +769,10 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 
             if(client_release == 0)
             {
-                std::string::size_type pos = event.find(EVENT_COMPAT);
-                if(pos != std::string::npos)
+                auto client_release_opt = detail::extract_idl_version_from_event_name(event);
+                if(client_release_opt.has_value())
                 {
-                    std::string client_lib_str = event.substr(pos + 3, 1);
-                    std::stringstream ss;
-                    ss << client_lib_str;
-                    ss >> client_release;
+                    client_release = client_release_opt.value();
                     event = detail::remove_idl_prefix(event);
                 }
                 else
@@ -1137,15 +1134,11 @@ void DServer::event_confirm_subscription(const Tango::DevVarStringArray *argin)
 
         std::string action("subscribe");
         int client_lib = 0;
-        std::string client_lib_str;
 
-        std::string::size_type pos = event.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
+        auto client_lib_opt = detail::extract_idl_version_from_event_name(event);
+        if(client_lib_opt.has_value())
         {
-            client_lib_str = event.substr(pos + 3, 1);
-            std::stringstream ss;
-            ss << client_lib_str;
-            ss >> client_lib;
+            client_lib = client_lib_opt.value();
             event = detail::remove_idl_prefix(event);
         }
         else
