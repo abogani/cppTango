@@ -708,6 +708,15 @@ std::string remove_idl_for_compat(std::string fq_event_name)
     return fq_event_name.substr(0, pos);
 }
 
+std::string get_event_name(std::string fq_event_name)
+{
+    std::string::size_type pos = fq_event_name.rfind('.');
+    TANGO_ASSERT(pos != std::string::npos);
+
+    std::string event_name = fq_event_name.substr(pos + 1);
+    return detail::remove_idl_prefix(event_name);
+}
+
 } // namespace Tango::detail
 
 namespace Tango

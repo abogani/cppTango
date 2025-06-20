@@ -129,6 +129,9 @@ std::string insert_idl_for_compat(std::string event_name);
 /// @brief Remove `idl5_XXXXX` after the last `.` in a fully qualified event name
 std::string remove_idl_for_compat(std::string fq_event_name);
 
+/// @brief Get the event name, one of @ref EventName, from a fully qualified event name
+std::string get_event_name(std::string fq_event_name);
+
 } // namespace Tango::detail
 
 namespace Tango

@@ -230,5 +230,11 @@ SCENARIO("Event name functions")
             REQUIRE(Tango::detail::remove_idl_for_compat(qual_event_name) ==
                     "tango://127.0.0.1:11570/testserver/tests/1/short_attr#dbase=no");
         }
+
+        WHEN("we can get the event name")
+        {
+            REQUIRE(Tango::detail::get_event_name(qual_event_name) == "change");
+            REQUIRE(Tango::detail::get_event_name(qual_event_name_intr) == "intr_change");
+        }
     }
 }
