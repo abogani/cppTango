@@ -36,6 +36,7 @@
 #include <tango/server/exception_reason_consts.h>
 #include <tango/server/device.h>
 #include <tango/client/Database.h>
+#include <tango/internal/utils.h>
 
 #ifdef _TG_WINDOWS_
   #include <float.h>
@@ -505,7 +506,7 @@ bool EventSupplier::detect_and_push_change_event(DeviceImpl *device_impl,
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
-                ev_name = EVENT_COMPAT_IDL5 + ev_name;
+                ev_name = detail::add_idl_prefix(ev_name);
                 name_changed = true;
             }
             break;
@@ -911,7 +912,7 @@ bool EventSupplier::detect_and_push_archive_event(DeviceImpl *device_impl,
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
-                ev_name = EVENT_COMPAT_IDL5 + ev_name;
+                ev_name = detail::add_idl_prefix(ev_name);
                 name_changed = true;
             }
             break;
@@ -1073,7 +1074,7 @@ bool EventSupplier::detect_and_push_periodic_event(DeviceImpl *device_impl,
             case 5:
             {
                 convert_att_event_to_5(attr_value, sent_value, need_free, attr);
-                ev_name = EVENT_COMPAT_IDL5 + ev_name;
+                ev_name = detail::add_idl_prefix(ev_name);
                 name_changed = true;
             }
             break;
@@ -2524,7 +2525,7 @@ void EventSupplier::push_att_conf_events(DeviceImpl *device_impl,
     std::string ev_type = CONF_TYPE_EVENT;
     if(vers >= 5)
     {
-        ev_type = EVENT_COMPAT_IDL5 + ev_type;
+        ev_type = detail::add_idl_prefix(ev_type);
     }
 
     push_event(device_impl,

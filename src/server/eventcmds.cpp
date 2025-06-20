@@ -33,6 +33,7 @@
 #include <tango/server/utils.h>
 #include <tango/server/pipe.h>
 #include <tango/server/fwdattribute.h>
+#include <tango/internal/utils.h>
 
 namespace Tango
 {
@@ -1062,7 +1063,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         if(client_release >= 5 &&
            add_compat_info) // client_release here is the minimum of the client release and dev IDL version
         {
-            event_topic = ev->create_full_event_name(dev, EVENT_COMPAT_IDL5 + event, obj_name_lower, intr_change);
+            event_topic = ev->create_full_event_name(dev, detail::add_idl_prefix(event), obj_name_lower, intr_change);
         }
         else
         {

@@ -1509,7 +1509,7 @@ void EventConsumer::connect_event(DeviceProxy *device,
 
     if(add_compat_info && idl_version >= MIN_IDL_CONF5)
     {
-        event_name = EVENT_COMPAT_IDL5 + event_name;
+        event_name = detail::add_idl_prefix(event_name);
     }
 
     std::string local_callback_key = get_callback_key(device_name, obj_name_lower, event, event_name);

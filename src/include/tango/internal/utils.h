@@ -92,6 +92,9 @@ void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::
 /// detail::append_fqdn_host_prefixes_from_db.
 std::string build_device_trl(DeviceProxy *device, const std::vector<std::string> &prefixes);
 
+/// @brief Add the `idl5_` prefix to the event name
+std::string add_idl_prefix(std::string event_name);
+
 } // namespace Tango::detail
 
 namespace Tango

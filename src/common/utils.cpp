@@ -647,6 +647,11 @@ std::string build_device_trl(DeviceProxy *device, const std::vector<std::string>
     return local_device_name;
 }
 
+std::string add_idl_prefix(std::string event_name)
+{
+    return EVENT_COMPAT_IDL5 + event_name;
+}
+
 } // namespace Tango::detail
 
 namespace Tango

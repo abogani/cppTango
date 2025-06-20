@@ -29,6 +29,7 @@
 //
 //-==================================================================================================================
 
+#include <tango/internal/utils.h>
 #include <tango/server/rootattreg.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/device.h>
@@ -287,7 +288,7 @@ void RootAttRegistry::RootAttUserCallBack::push_event(Tango::EventData *ev)
         EventSupplier::SuppliedEventData ad;
         ::memset(&ad, 0, sizeof(ad));
 
-        std::string event_name = EVENT_COMPAT_IDL5 + ev->event;
+        std::string event_name = detail::add_idl_prefix(ev->event);
 
         if(ev->err)
         {

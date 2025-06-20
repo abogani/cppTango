@@ -31,6 +31,7 @@
 //+==================================================================================================================
 
 #include <tango/internal/net.h>
+#include <tango/internal/utils.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/pipe.h>
 #include <tango/server/device.h>
@@ -1901,7 +1902,7 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
 
         if(*ite >= 5 && event_type != ALARM_EVENT)
         {
-            ev_name = EVENT_COMPAT_IDL5 + ev_name;
+            ev_name = detail::add_idl_prefix(ev_name);
             name_changed = true;
         }
 
