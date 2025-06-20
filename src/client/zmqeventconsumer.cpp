@@ -59,6 +59,27 @@
 
 using namespace CORBA;
 
+namespace
+{
+//--------------------------------------------------------------------------------------------------------------------
+//
+// auxiliary method to repost about malformed event data
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void fill_deverror_for_malformed_event_data(const std::string &msg, Tango::DevErrorList &errors)
+{
+    std::ostringstream o;
+    o << "Received malformed data for event " << msg << std::ends;
+
+    errors.length(1);
+    errors[0].reason = Tango::string_dup(Tango::API_WrongEventData);
+    errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+    errors[0].desc = Tango::string_dup(o.str().c_str());
+    errors[0].severity = Tango::ERR;
+}
+} // namespace
+
 namespace Tango
 {
 
@@ -2518,15 +2539,7 @@ void ZmqEventConsumer::push_zmq_event(
                     }
                     catch(...)
                     {
-                        TangoSys_OMemStream o;
-                        o << "Received malformed data for event ";
-                        o << ev_name << std::ends;
-
-                        errors.length(1);
-                        errors[0].reason = Tango::string_dup(API_WrongEventData);
-                        errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                        errors[0].desc = Tango::string_dup(o.str().c_str());
-                        errors[0].severity = ERR;
+                        fill_deverror_for_malformed_event_data(ev_name, errors);
                     }
                 }
                 else
@@ -2551,15 +2564,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl > 2)
@@ -2575,15 +2580,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl == 2)
@@ -2607,15 +2604,7 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         catch(...)
                         {
-                            TangoSys_OMemStream o;
-                            o << "Received malformed data for event ";
-                            o << ev_name << std::ends;
-
-                            errors.length(1);
-                            errors[0].reason = Tango::string_dup(API_WrongEventData);
-                            errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                            errors[0].desc = Tango::string_dup(o.str().c_str());
-                            errors[0].severity = ERR;
+                            fill_deverror_for_malformed_event_data(ev_name, errors);
                         }
                         break;
 
@@ -2628,15 +2617,7 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         catch(...)
                         {
-                            TangoSys_OMemStream o;
-                            o << "Received malformed data for event ";
-                            o << ev_name << std::ends;
-
-                            errors.length(1);
-                            errors[0].reason = Tango::string_dup(API_WrongEventData);
-                            errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                            errors[0].desc = Tango::string_dup(o.str().c_str());
-                            errors[0].severity = ERR;
+                            fill_deverror_for_malformed_event_data(ev_name, errors);
                         }
                         break;
 
@@ -2675,15 +2656,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl == 4)
@@ -2720,15 +2693,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl == 3)
@@ -2744,15 +2709,8 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event (AttributeValue_3 -> Device_3Impl....) ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(
+                                    " (AttributeValue_3 -> Device_3Impl....) " + ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl < 3)
@@ -2767,15 +2725,8 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event (AttributeValue -> Device_2Impl....) ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(
+                                    " (AttributeValue -> Device_2Impl....) " + ev_name, errors);
                             }
                         }
                         break;
@@ -2804,15 +2755,7 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         catch(...)
                         {
-                            TangoSys_OMemStream o;
-                            o << "Received malformed data for event ";
-                            o << ev_name << std::ends;
-
-                            errors.length(1);
-                            errors[0].reason = Tango::string_dup(API_WrongEventData);
-                            errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                            errors[0].desc = Tango::string_dup(o.str().c_str());
-                            errors[0].severity = ERR;
+                            fill_deverror_for_malformed_event_data(ev_name, errors);
                         }
                         break;
                     }
