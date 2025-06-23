@@ -1224,63 +1224,23 @@ void EventConsumerKeepAliveThread::main_reconnect(PointerWithLock<EventConsumer>
                     {
                         auto *event_data =
                             new FwdAttrConfEventData(esspos->device, domain_name, event_name, dev_attr_conf, errors);
-                        // if a callback method was specified, call it!
-                        if(callback != nullptr)
-                        {
-                            try
-                            {
-                                callback->push_event(event_data);
-                            }
-                            catch(...)
-                            {
-                                ApiUtil *au = ApiUtil::instance();
-                                std::stringstream ss;
 
-                                ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of  "
-                                   << epos->first;
-                                au->print_error_message(ss.str().c_str());
-                            }
-
-                            delete event_data;
-                        }
-
-                        // no calback method, the event has to be instered
-                        // into the event queue
-                        else
-                        {
-                            ev_queue->insert_event(event_data);
-                        }
+                        safe_execute_callback_or_store_data(callback,
+                                                            event_data,
+                                                            "EventConsumerKeepAliveThread::run_undetached()",
+                                                            epos->first,
+                                                            ev_queue);
                     }
                     else if(event_name == DATA_READY_TYPE_EVENT)
                     {
                         DataReadyEventData *event_data =
                             new DataReadyEventData(esspos->device, nullptr, event_name, errors);
-                        // if a callback method was specified, call it!
-                        if(callback != nullptr)
-                        {
-                            try
-                            {
-                                callback->push_event(event_data);
-                            }
-                            catch(...)
-                            {
-                                ApiUtil *au = ApiUtil::instance();
-                                std::stringstream ss;
 
-                                ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                                   << epos->first;
-                                au->print_error_message(ss.str().c_str());
-                            }
-
-                            delete event_data;
-                        }
-
-                        // no calback method, the event has to be instered
-                        // into the event queue
-                        else
-                        {
-                            ev_queue->insert_event(event_data);
-                        }
+                        safe_execute_callback_or_store_data(callback,
+                                                            event_data,
+                                                            "EventConsumerKeepAliveThread::run_undetached()",
+                                                            epos->first,
+                                                            ev_queue);
                     }
                     else if(event_name == EventName[INTERFACE_CHANGE_EVENT])
                     {
@@ -1291,96 +1251,33 @@ void EventConsumerKeepAliveThread::main_reconnect(PointerWithLock<EventConsumer>
                                                                       (AttributeInfoListEx *) nullptr,
                                                                       false,
                                                                       errors);
-                        // if a callback method was specified, call it!
-                        if(callback != nullptr)
-                        {
-                            try
-                            {
-                                callback->push_event(event_data);
-                            }
-                            catch(...)
-                            {
-                                ApiUtil *au = ApiUtil::instance();
-                                std::stringstream ss;
-
-                                ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                                   << epos->first;
-                                au->print_error_message(ss.str().c_str());
-                            }
-
-                            delete event_data;
-                        }
-
-                        // no calback method, the event has to be instered
-                        // into the event queue
-                        else
-                        {
-                            ev_queue->insert_event(event_data);
-                        }
+                        safe_execute_callback_or_store_data(callback,
+                                                            event_data,
+                                                            "EventConsumerKeepAliveThread::run_undetached()",
+                                                            epos->first,
+                                                            ev_queue);
                     }
                     else if(event_name == EventName[PIPE_EVENT])
                     {
                         PipeEventData *event_data =
                             new PipeEventData(esspos->device, domain_name, event_name, dev_pipe, errors);
 
-                        // if a callback method was specified, call it!
-                        if(callback != nullptr)
-                        {
-                            try
-                            {
-                                callback->push_event(event_data);
-                            }
-                            catch(...)
-                            {
-                                ApiUtil *au = ApiUtil::instance();
-                                std::stringstream ss;
-
-                                ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                                   << epos->first;
-                                au->print_error_message(ss.str().c_str());
-                            }
-
-                            delete event_data;
-                        }
-
-                        // no calback method, the event has to be instered
-                        // into the event queue
-                        else
-                        {
-                            ev_queue->insert_event(event_data);
-                        }
+                        safe_execute_callback_or_store_data(callback,
+                                                            event_data,
+                                                            "EventConsumerKeepAliveThread::run_undetached()",
+                                                            epos->first,
+                                                            ev_queue);
                     }
                     else
                     {
                         FwdEventData *event_data =
                             new FwdEventData(esspos->device, domain_name, event_name, dev_attr, errors);
 
-                        // if a callback method was specified, call it!
-                        if(callback != nullptr)
-                        {
-                            try
-                            {
-                                callback->push_event(event_data);
-                            }
-                            catch(...)
-                            {
-                                ApiUtil *au = ApiUtil::instance();
-                                std::stringstream ss;
-
-                                ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                                   << epos->first;
-                                au->print_error_message(ss.str().c_str());
-                            }
-
-                            delete event_data;
-                        }
-
-                        // no calback method, the event has to be instered
-                        // into the event queue
-                        else
-                        {
-                            ev_queue->insert_event(event_data);
-                        }
+                        safe_execute_callback_or_store_data(callback,
+                                                            event_data,
+                                                            "EventConsumerKeepAliveThread::run_undetached()",
+                                                            epos->first,
+                                                            ev_queue);
                     }
                 }
 
@@ -1541,32 +1438,8 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 CallBack *callback = esspos->callback;
                 EventQueue *ev_queue = esspos->ev_queue;
 
-                if(callback != nullptr)
-                {
-                    try
-                    {
-                        callback->push_event(event_data);
-                    }
-                    catch(...)
-                    {
-                        ApiUtil *au = ApiUtil::instance();
-                        std::stringstream ss;
-
-                        ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                           << epos->first;
-                        au->print_error_message(ss.str().c_str());
-                    }
-
-                    // event_data->attr_value = nullptr;
-                    delete event_data;
-                }
-
-                // no calback method, the event has to be inserted
-                // into the event queue
-                else
-                {
-                    ev_queue->insert_event(event_data);
-                }
+                safe_execute_callback_or_store_data(
+                    callback, event_data, "EventConsumerKeepAliveThread::run_undetached()", epos->first, ev_queue);
             }
         }
 
@@ -1664,32 +1537,8 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 CallBack *callback = esspos->callback;
                 EventQueue *ev_queue = esspos->ev_queue;
 
-                // if a callback method was specified, call it!
-                if(callback != nullptr)
-                {
-                    try
-                    {
-                        callback->push_event(event_data);
-                    }
-                    catch(...)
-                    {
-                        ApiUtil *au = ApiUtil::instance();
-                        std::stringstream ss;
-
-                        ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                           << epos->first;
-                        au->print_error_message(ss.str().c_str());
-                    }
-
-                    delete event_data;
-                }
-
-                // no calback method, the event has to be instered
-                // into the event queue
-                else
-                {
-                    ev_queue->insert_event(event_data);
-                }
+                safe_execute_callback_or_store_data(
+                    callback, event_data, "EventConsumerKeepAliveThread::run_undetached()", epos->first, ev_queue);
             }
         }
         else if(epos->second.event_name == EventName[INTERFACE_CHANGE_EVENT])
@@ -1752,23 +1601,11 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 CallBack *callback = esspos->callback;
                 EventQueue *ev_queue = esspos->ev_queue;
 
-                // if a callback method was specified, call it!
+                safe_execute_callback_or_store_data(
+                    callback, event_data, "EventConsumerKeepAliveThread::run_undetached()", epos->first, ev_queue);
+
                 if(callback != nullptr)
                 {
-                    try
-                    {
-                        callback->push_event(event_data);
-                    }
-                    catch(...)
-                    {
-                        ApiUtil *au = ApiUtil::instance();
-                        std::stringstream ss;
-
-                        ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                           << epos->first;
-                        au->print_error_message(ss.str().c_str());
-                    }
-
                     if(cb_ctr != cb_nb)
                     {
                         delete aie_copy;
@@ -1779,14 +1616,6 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                         delete aie;
                         delete cil;
                     }
-                    delete event_data;
-                }
-
-                // no calback method, the event has to be instered
-                // into the event queue
-                else
-                {
-                    ev_queue->insert_event(event_data);
                 }
             }
         }
@@ -1839,31 +1668,8 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
                 CallBack *callback = esspos->callback;
                 EventQueue *ev_queue = esspos->ev_queue;
 
-                if(callback != nullptr)
-                {
-                    try
-                    {
-                        callback->push_event(event_data);
-                    }
-                    catch(...)
-                    {
-                        ApiUtil *au = ApiUtil::instance();
-                        std::stringstream ss;
-
-                        ss << "EventConsumerKeepAliveThread::run_undetached() exception in callback method of "
-                           << epos->first;
-                        au->print_error_message(ss.str().c_str());
-                    }
-
-                    delete event_data;
-                }
-
-                // no calback method, the event has to be inserted
-                // into the event queue
-                else
-                {
-                    ev_queue->insert_event(event_data);
-                }
+                safe_execute_callback_or_store_data(
+                    callback, event_data, "EventConsumerKeepAliveThread::run_undetached()", epos->first, ev_queue);
             }
         }
     }
@@ -1920,32 +1726,11 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
 
         // if a callback method was specified, call it!
 
-        if(vpos->callback != nullptr)
-        {
-            try
-            {
-                vpos->callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                ApiUtil *au = ApiUtil::instance();
-                std::stringstream ss;
-
-                ss << "EventConsumerKeepAliveThread::stateless_subscription_failed() exception in callback method of "
-                   << domain_name;
-                au->print_error_message(ss.str().c_str());
-            }
-
-            delete event_data;
-        }
-
-        //
-        // no callback method, the event has to be instered into the event queue
-        //
-        else
-        {
-            vpos->ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(vpos->callback,
+                                            event_data,
+                                            "EventConsumerKeepAliveThread::stateless_subscription_failed()",
+                                            domain_name,
+                                            vpos->ev_queue);
     }
 
     //
@@ -1957,72 +1742,21 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
         AttributeInfoEx *aie = nullptr;
         AttrConfEventData *event_data = new AttrConfEventData(vpos->device, domain_name, vpos->event_name, aie, err);
 
-        //
-        // If a callback method was specified, call it!
-        //
-
-        if(vpos->callback != nullptr)
-        {
-            try
-            {
-                vpos->callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                ApiUtil *au = ApiUtil::instance();
-                std::stringstream ss;
-
-                ss << "EventConsumerKeepAliveThread::stateless_subscription_failed() exception in callback method of "
-                   << domain_name;
-                au->print_error_message(ss.str().c_str());
-            }
-
-            // event_data->attr_conf = nullptr;
-            delete event_data;
-        }
-
-        //
-        // No calback method, the event has to be inserted into the event queue
-        //
-
-        else
-        {
-            vpos->ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(vpos->callback,
+                                            event_data,
+                                            "EventConsumerKeepAliveThread::stateless_subscription_failed()",
+                                            domain_name,
+                                            vpos->ev_queue);
     }
     else if(vpos->event_name == DATA_READY_TYPE_EVENT)
     {
         DataReadyEventData *event_data = new DataReadyEventData(vpos->device, nullptr, vpos->event_name, err);
 
-        //
-        // If a callback method was specified, call it!
-        //
-
-        if(vpos->callback != nullptr)
-        {
-            try
-            {
-                vpos->callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                ApiUtil *au = ApiUtil::instance();
-                std::stringstream ss;
-
-                ss << "EventConsumerKeepAliveThread::stateless_subscription_failed() exception in callback method of "
-                   << domain_name;
-                au->print_error_message(ss.str().c_str());
-            }
-            delete event_data;
-        }
-
-        //
-        // No callback method, the event has to be inserted into the event queue
-        //
-        else
-        {
-            vpos->ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(vpos->callback,
+                                            event_data,
+                                            "EventConsumerKeepAliveThread::stateless_subscription_failed()",
+                                            domain_name,
+                                            vpos->ev_queue);
     }
     else if(vpos->event_name == EventName[INTERFACE_CHANGE_EVENT])
     {
@@ -2034,70 +1768,22 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
                                                       false,
                                                       err);
 
-        //
-        // If a callback method was specified, call it!
-        //
-
-        if(vpos->callback != nullptr)
-        {
-            try
-            {
-                vpos->callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                ApiUtil *au = ApiUtil::instance();
-                std::stringstream ss;
-
-                ss << "EventConsumerKeepAliveThread::stateless_subscription_failed() exception in callback method of "
-                   << domain_name;
-                au->print_error_message(ss.str().c_str());
-            }
-            delete event_data;
-        }
-
-        //
-        // No callback method, the event has to be inserted into the event queue
-        //
-        else
-        {
-            vpos->ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(vpos->callback,
+                                            event_data,
+                                            "EventConsumerKeepAliveThread::stateless_subscription_failed()",
+                                            domain_name,
+                                            vpos->ev_queue);
     }
     else if(vpos->event_name == EventName[PIPE_EVENT])
     {
         PipeEventData *event_data =
             new PipeEventData(vpos->device, domain_name, vpos->event_name, (DevicePipe *) nullptr, err);
 
-        //
-        // If a callback method was specified, call it!
-        //
-
-        if(vpos->callback != nullptr)
-        {
-            try
-            {
-                vpos->callback->push_event(event_data);
-            }
-            catch(...)
-            {
-                ApiUtil *au = ApiUtil::instance();
-                std::stringstream ss;
-
-                ss << "EventConsumerKeepAliveThread::stateless_subscription_failed() exception in callback method of "
-                   << domain_name;
-                au->print_error_message(ss.str().c_str());
-            }
-            delete event_data;
-        }
-
-        //
-        // No callback method, the event has to be inserted into the event queue
-        //
-        else
-        {
-            vpos->ev_queue->insert_event(event_data);
-        }
+        safe_execute_callback_or_store_data(vpos->callback,
+                                            event_data,
+                                            "EventConsumerKeepAliveThread::stateless_subscription_failed()",
+                                            domain_name,
+                                            vpos->ev_queue);
     }
 }
 

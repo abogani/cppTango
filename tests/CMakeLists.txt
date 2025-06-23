@@ -51,6 +51,7 @@ tango_catch2_tests_create(
     catch2_test_dtypes.cpp
     catch2_state_status_events.cpp
     catch2_dev_state.cpp
+    catch2_error_in_event_callback.cpp
     catch2_internal_utils.cpp
     catch2_internal_stl_helpers.cpp
     catch2_misc.cpp

@@ -59,6 +59,27 @@
 
 using namespace CORBA;
 
+namespace
+{
+//--------------------------------------------------------------------------------------------------------------------
+//
+// auxiliary method to repost about malformed event data
+//
+//--------------------------------------------------------------------------------------------------------------------
+
+void fill_deverror_for_malformed_event_data(const std::string &msg, Tango::DevErrorList &errors)
+{
+    std::ostringstream o;
+    o << "Received malformed data for event " << msg << std::ends;
+
+    errors.length(1);
+    errors[0].reason = Tango::string_dup(Tango::API_WrongEventData);
+    errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
+    errors[0].desc = Tango::string_dup(o.str().c_str());
+    errors[0].severity = Tango::ERR;
+}
+} // namespace
+
 namespace Tango
 {
 
@@ -2518,15 +2539,7 @@ void ZmqEventConsumer::push_zmq_event(
                     }
                     catch(...)
                     {
-                        TangoSys_OMemStream o;
-                        o << "Received malformed data for event ";
-                        o << ev_name << std::ends;
-
-                        errors.length(1);
-                        errors[0].reason = Tango::string_dup(API_WrongEventData);
-                        errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                        errors[0].desc = Tango::string_dup(o.str().c_str());
-                        errors[0].severity = ERR;
+                        fill_deverror_for_malformed_event_data(ev_name, errors);
                     }
                 }
                 else
@@ -2551,15 +2564,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl > 2)
@@ -2575,15 +2580,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl == 2)
@@ -2607,15 +2604,7 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         catch(...)
                         {
-                            TangoSys_OMemStream o;
-                            o << "Received malformed data for event ";
-                            o << ev_name << std::ends;
-
-                            errors.length(1);
-                            errors[0].reason = Tango::string_dup(API_WrongEventData);
-                            errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                            errors[0].desc = Tango::string_dup(o.str().c_str());
-                            errors[0].severity = ERR;
+                            fill_deverror_for_malformed_event_data(ev_name, errors);
                         }
                         break;
 
@@ -2628,15 +2617,7 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         catch(...)
                         {
-                            TangoSys_OMemStream o;
-                            o << "Received malformed data for event ";
-                            o << ev_name << std::ends;
-
-                            errors.length(1);
-                            errors[0].reason = Tango::string_dup(API_WrongEventData);
-                            errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                            errors[0].desc = Tango::string_dup(o.str().c_str());
-                            errors[0].severity = ERR;
+                            fill_deverror_for_malformed_event_data(ev_name, errors);
                         }
                         break;
 
@@ -2675,15 +2656,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl == 4)
@@ -2720,15 +2693,7 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl == 3)
@@ -2744,15 +2709,8 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event (AttributeValue_3 -> Device_3Impl....) ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(
+                                    " (AttributeValue_3 -> Device_3Impl....) " + ev_name, errors);
                             }
                         }
                         else if(evt_cb.device_idl < 3)
@@ -2767,15 +2725,8 @@ void ZmqEventConsumer::push_zmq_event(
                             }
                             catch(...)
                             {
-                                TangoSys_OMemStream o;
-                                o << "Received malformed data for event (AttributeValue -> Device_2Impl....) ";
-                                o << ev_name << std::ends;
-
-                                errors.length(1);
-                                errors[0].reason = Tango::string_dup(API_WrongEventData);
-                                errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                                errors[0].desc = Tango::string_dup(o.str().c_str());
-                                errors[0].severity = ERR;
+                                fill_deverror_for_malformed_event_data(
+                                    " (AttributeValue -> Device_2Impl....) " + ev_name, errors);
                             }
                         }
                         break;
@@ -2804,15 +2755,7 @@ void ZmqEventConsumer::push_zmq_event(
                         }
                         catch(...)
                         {
-                            TangoSys_OMemStream o;
-                            o << "Received malformed data for event ";
-                            o << ev_name << std::ends;
-
-                            errors.length(1);
-                            errors[0].reason = Tango::string_dup(API_WrongEventData);
-                            errors[0].origin = Tango::string_dup(TANGO_EXCEPTION_ORIGIN);
-                            errors[0].desc = Tango::string_dup(o.str().c_str());
-                            errors[0].severity = ERR;
+                            fill_deverror_for_malformed_event_data(ev_name, errors);
                         }
                         break;
                     }
@@ -2950,70 +2893,17 @@ void ZmqEventConsumer::push_zmq_event(
                                 first_callback = false;
                             }
 
-                            //
-                            // If a callback method was specified, call it!
-                            //
+                            safe_execute_callback_or_store_data(callback,
+                                                                event_dat,
+                                                                err_missed_event,
+                                                                missed_event_data,
+                                                                "Tango::ZmqEventConsumer::push_zmq_event()",
+                                                                ipos->first,
+                                                                ev_queue);
 
-                            if(callback != nullptr)
+                            if(callback == nullptr && vers >= 4 && cb_ctr == cb_nb)
                             {
-                                try
-                                {
-                                    if(err_missed_event)
-                                    {
-                                        callback->push_event(missed_event_data);
-                                    }
-                                    callback->push_event(event_dat);
-                                }
-                                catch(const DevFailed &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.errors[0].desc;
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(const std::exception &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.what();
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(...)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "unknown exception in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-
-                                delete event_dat;
-                            }
-
-                            //
-                            // No calback method, the event has to be inserted into the event queue
-                            //
-
-                            else
-                            {
-                                if(err_missed_event)
-                                {
-                                    EventData *missed_event_data_copy = new FwdEventData;
-                                    *missed_event_data_copy = *missed_event_data;
-
-                                    ev_queue->insert_event(missed_event_data_copy);
-                                }
-                                ev_queue->insert_event(event_dat);
-                                if(vers >= 4 && cb_ctr == cb_nb)
-                                {
-                                    delete dev_attr;
-                                }
+                                delete dev_attr;
                             }
                         }
                         else if(!ev_attr_ready && !ev_dev_intr && !pipe_event)
@@ -3041,62 +2931,13 @@ void ZmqEventConsumer::push_zmq_event(
                                 }
                             }
 
-                            // if callback methods were specified, call them!
-                            if(callback != nullptr)
-                            {
-                                try
-                                {
-                                    if(err_missed_event)
-                                    {
-                                        callback->push_event(missed_conf_event_data);
-                                    }
-                                    callback->push_event(event_data_);
-                                }
-                                catch(const DevFailed &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.errors[0].desc;
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(const std::exception &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.what();
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(...)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "unknown exception in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-
-                                delete event_data_;
-                            }
-
-                            // no calback method, the event has to be instered
-                            // into the event queue
-                            else
-                            {
-                                if(err_missed_event)
-                                {
-                                    auto *missed_conf_event_data_copy = new FwdAttrConfEventData;
-                                    *missed_conf_event_data_copy = *missed_conf_event_data;
-
-                                    ev_queue->insert_event(missed_conf_event_data_copy);
-                                }
-                                ev_queue->insert_event(event_data_);
-                            }
+                            safe_execute_callback_or_store_data(callback,
+                                                                event_data_,
+                                                                err_missed_event,
+                                                                missed_conf_event_data,
+                                                                "Tango::ZmqEventConsumer::push_zmq_event()",
+                                                                ipos->first,
+                                                                ev_queue);
                         }
                         else if(!ev_attr_ready && !pipe_event)
                         {
@@ -3107,61 +2948,13 @@ void ZmqEventConsumer::push_zmq_event(
                                                                            &dev_intr_change->atts,
                                                                            dev_intr_change->dev_started,
                                                                            errors);
-                            // if a callback method was specified, call it!
-                            if(callback != nullptr)
-                            {
-                                try
-                                {
-                                    if(err_missed_event)
-                                    {
-                                        callback->push_event(missed_dev_intr_event_data);
-                                    }
-                                    callback->push_event(event_data_);
-                                }
-                                catch(const DevFailed &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.errors[0].desc;
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(const std::exception &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.what();
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(...)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "unknown exception in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                delete event_data_;
-                            }
-
-                            // no calback method, the event has to be instered
-                            // into the event queue
-                            else
-                            {
-                                if(err_missed_event)
-                                {
-                                    auto *missed_dev_intr_data_copy = new DevIntrChangeEventData;
-                                    *missed_dev_intr_data_copy = *missed_dev_intr_event_data;
-
-                                    ev_queue->insert_event(missed_dev_intr_data_copy);
-                                }
-                                ev_queue->insert_event(event_data_);
-                            }
+                            safe_execute_callback_or_store_data(callback,
+                                                                event_data_,
+                                                                err_missed_event,
+                                                                missed_dev_intr_event_data,
+                                                                "Tango::ZmqEventConsumer::push_zmq_event()",
+                                                                ipos->first,
+                                                                ev_queue);
                         }
                         else if(!ev_attr_ready)
                         {
@@ -3180,121 +2973,26 @@ void ZmqEventConsumer::push_zmq_event(
                                     new PipeEventData(esspos->device, full_att_name, event_name, dev_pipe, errors);
                             }
 
-                            // if a callback method was specified, call it!
-                            if(callback != nullptr)
-                            {
-                                try
-                                {
-                                    if(err_missed_event)
-                                    {
-                                        callback->push_event(missed_dev_pipe_data);
-                                    }
-                                    callback->push_event(event_data_);
-                                }
-                                catch(const DevFailed &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.errors[0].desc;
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(const std::exception &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.what();
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(...)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "unknown exception in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                delete event_data_;
-                            }
-
-                            // no calback method, the event has to be instered
-                            // into the event queue
-                            else
-                            {
-                                if(err_missed_event)
-                                {
-                                    PipeEventData *missed_dev_pipe_data_copy = new PipeEventData;
-                                    *missed_dev_pipe_data_copy = *missed_dev_pipe_data;
-
-                                    ev_queue->insert_event(missed_dev_pipe_data_copy);
-                                }
-                                ev_queue->insert_event(event_data_);
-                            }
+                            safe_execute_callback_or_store_data(callback,
+                                                                event_data_,
+                                                                err_missed_event,
+                                                                missed_dev_pipe_data,
+                                                                "Tango::ZmqEventConsumer::push_zmq_event()",
+                                                                ipos->first,
+                                                                ev_queue);
                         }
                         else
                         {
                             DataReadyEventData *event_data_ =
                                 new DataReadyEventData(esspos->device, att_ready, event_name, errors);
-                            // if a callback method was specified, call it!
-                            if(callback != nullptr)
-                            {
-                                try
-                                {
-                                    if(err_missed_event)
-                                    {
-                                        callback->push_event(missed_ready_event_data);
-                                    }
-                                    callback->push_event(event_data_);
-                                }
-                                catch(const DevFailed &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.errors[0].desc;
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(const std::exception &e)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "DevFailed exception (";
-                                    o << e.what();
-                                    o << ") in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                catch(...)
-                                {
-                                    TangoSys_OMemStream o;
-                                    o << "Tango::ZmqEventConsumer::push_zmq_event() ";
-                                    o << "unknown exception in callback method of: ";
-                                    o << ipos->first;
-                                    print_error_message(o.str().c_str());
-                                }
-                                delete event_data_;
-                            }
 
-                            // no calback method, the event has to be instered
-                            // into the event queue
-                            else
-                            {
-                                if(err_missed_event)
-                                {
-                                    DataReadyEventData *missed_ready_event_data_copy = new DataReadyEventData;
-                                    *missed_ready_event_data_copy = *missed_ready_event_data;
-
-                                    ev_queue->insert_event(missed_ready_event_data_copy);
-                                }
-                                ev_queue->insert_event(event_data_);
-                            }
+                            safe_execute_callback_or_store_data(callback,
+                                                                event_data_,
+                                                                err_missed_event,
+                                                                missed_ready_event_data,
+                                                                "Tango::ZmqEventConsumer::push_zmq_event()",
+                                                                ipos->first,
+                                                                ev_queue);
                         }
                     }
 

@@ -37,6 +37,7 @@
 #include <tango/server/except.h>
 #include <tango/common/tango_const.h>
 #include <tango/client/devapi.h>
+#include <tango/client/ApiUtil.h>
 
 #include <zmq.hpp>
 
@@ -640,6 +641,90 @@ class EventQueue
 
     omni_mutex modification_mutex;
 };
+
+//--------------------------------------------------------------------------------------------------------------------
+//
+// tries to execute user callback if specified and printout error, if failed, otherwise stores data in the event queue
+//
+//--------------------------------------------------------------------------------------------------------------------
+template <typename T>
+void safe_execute_callback_or_store_data(Tango::CallBack *callback,
+                                         T *event_data,
+                                         bool err_missed_event,
+                                         T *missed_data,
+                                         const std::string &method_name,
+                                         const std::string &event_name,
+                                         Tango::EventQueue *ev_queue)
+{
+    // if callback methods were specified, call them!
+    if(callback != nullptr)
+    {
+        try
+        {
+            if(err_missed_event)
+            {
+                callback->push_event(missed_data);
+            }
+            callback->push_event(event_data);
+        }
+        catch(const Tango::DevFailed &e)
+        {
+            Tango::ApiUtil *au = Tango::ApiUtil::instance();
+            std::stringstream ss;
+            ss << method_name << " got DevFailed exception: \n\n";
+            ss << e.errors[0].desc;
+            ss << "\nin callback method of: ";
+            ss << event_name;
+            au->print_error_message(ss.str().c_str());
+        }
+        catch(const std::exception &e)
+        {
+            Tango::ApiUtil *au = Tango::ApiUtil::instance();
+            std::stringstream ss;
+            ss << method_name << " got std::exception: \n\n";
+            ss << e.what();
+            ss << "\nin callback method of: ";
+            ss << event_name;
+            au->print_error_message(ss.str().c_str());
+        }
+        catch(...)
+        {
+            Tango::ApiUtil *au = Tango::ApiUtil::instance();
+            std::stringstream ss;
+            ss << method_name << " got unknown exception\n\n";
+            ss << "in callback method of: ";
+            ss << event_name;
+            au->print_error_message(ss.str().c_str());
+        }
+        delete event_data;
+    }
+
+    // no callback method, the event has to be inserted
+    // into the event queue
+    else
+    {
+        if(err_missed_event)
+        {
+            auto *missed_data_copy = new T;
+            *missed_data_copy = *missed_data;
+
+            ev_queue->insert_event(missed_data_copy);
+        }
+        ev_queue->insert_event(event_data);
+    }
+}
+
+// overload for calls without missed event
+template <typename T>
+void safe_execute_callback_or_store_data(CallBack *callback,
+                                         T *event_data,
+                                         const std::string &method_name,
+                                         const std::string &event_name,
+                                         EventQueue *ev_queue)
+{
+    safe_execute_callback_or_store_data(
+        callback, event_data, false, static_cast<T *>(nullptr), method_name, event_name, ev_queue);
+}
 
 } // namespace Tango
 

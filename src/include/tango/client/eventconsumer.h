@@ -811,6 +811,7 @@ class ZmqEventConsumer : public EventConsumer, public omni_thread
     bool process_ctrl(zmq::message_t &, zmq::pollitem_t *, int &);
     void process_heartbeat(zmq::message_t &, zmq::message_t &, zmq::message_t &);
     void process_event(zmq::message_t &, zmq::message_t &, zmq::message_t &, zmq::message_t &);
+
     void multi_tango_host(zmq::socket_t *, SocketCmd, const std::string &);
 
     void print_error_message(const char *mess)
