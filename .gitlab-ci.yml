@@ -405,6 +405,7 @@ cmake-with-locations-and-min-versions-ROOT:
     - >
       cmake
       -Werror=dev
+      --warn-uninitialized
       -B build
       -DCMAKE_BUILD_TYPE=RelWithDebInfo
       -DCatch2_ROOT=${INSTALL_PREFIX}/catch
@@ -437,6 +438,7 @@ cmake-with-locations-and-min-versions-env:
     - >
       cmake
       -Werror=dev
+      --warn-uninitialized
       -B build
       -DCMAKE_BUILD_TYPE=RelWithDebInfo
       -DTANGO_USE_JPEG=ON
