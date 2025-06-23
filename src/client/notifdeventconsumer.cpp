@@ -188,9 +188,6 @@ void NotifdEventConsumer::cleanup_EventChannel_map()
                               << evt_ch.full_adm_name << std::endl;
                 }
 
-                // Release the connection to the device server administration device
-
-                delete evt_ch.adm_device_proxy;
                 evt_ch.adm_device_proxy = nullptr;
             }
         }
@@ -609,7 +606,7 @@ void NotifdEventConsumer::connect_event_channel(const std::string &channel_name,
         new_event_channel_struct.heartbeat_skipped = false;
         new_event_channel_struct.adm_device_proxy = nullptr;
         // create a channel monitor
-        new_event_channel_struct.channel_monitor = new TangoMonitor(channel_name.c_str());
+        new_event_channel_struct.channel_monitor = std::make_shared<TangoMonitor>(channel_name.c_str());
         // set the timeout for the channel monitor to 1000ms not to block the event consumer for to long.
         new_event_channel_struct.channel_monitor->timeout(1000);
         set_channel_type(new_event_channel_struct);

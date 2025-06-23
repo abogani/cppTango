@@ -31,6 +31,7 @@
 //====================================================================================================================
 
 #include <tango/internal/net.h>
+#include <tango/internal/utils.h>
 #include <tango/client/eventconsumer.h>
 #include <tango/client/event.h>
 #include <tango/server/auto_tango_monitor.h>
@@ -1337,10 +1338,8 @@ void ZmqEventConsumer::cleanup_EventChannel_map()
             // Release the connection to the device server administration device
             //
 
-            delete evt_ch.adm_device_proxy;
             evt_ch.adm_device_proxy = nullptr;
         }
-        delete evt_ch.channel_monitor;
         evt_ch.channel_monitor = nullptr;
     }
 
@@ -1452,7 +1451,9 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
 
     if(!found && db != nullptr)
     {
-        get_cs_tango_host(db);
+        auto vs = detail::get_databases_from_control_system(db);
+        update_alias_map(db, vs);
+        detail::append_fqdn_host_prefixes_from_db(vs, env_var_fqdn_prefix);
     }
 
     //
@@ -1659,7 +1660,7 @@ void ZmqEventConsumer::connect_event_channel(const std::string &channel_name,
         new_event_channel_struct.heartbeat_skipped = false;
         new_event_channel_struct.adm_device_proxy = nullptr;
         // create a channel monitor
-        new_event_channel_struct.channel_monitor = new TangoMonitor(event_channel_name.c_str());
+        new_event_channel_struct.channel_monitor = std::make_shared<TangoMonitor>(event_channel_name.c_str());
         // set the timeout for the channel monitor to 1000ms not to block the event consumer for to long.
         new_event_channel_struct.channel_monitor->timeout(1000);
 

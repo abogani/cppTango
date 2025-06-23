@@ -109,11 +109,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_channel(const EvChanIte &ipos,
                     event_consumer->connect_event_channel(
                         adm_name, epos->second.get_device_proxy().get_device_db(), true, dummy);
 
-                    if(ipos->second.adm_device_proxy != nullptr)
-                    {
-                        delete ipos->second.adm_device_proxy;
-                    }
-                    ipos->second.adm_device_proxy = new DeviceProxy(ipos->second.full_adm_name);
+                    ipos->second.adm_device_proxy = std::make_shared<DeviceProxy>(ipos->second.full_adm_name);
                     TANGO_LOG_DEBUG << "Reconnected to event channel" << std::endl;
                 }
                 catch(...)
@@ -188,14 +184,7 @@ bool EventConsumerKeepAliveThread::reconnect_to_zmq_channel(const EvChanIte &ipo
                         // or we will be unable to create admin DeviceProxy.
                     }
 
-                    // only delete the existing admin device if we could create a new one
-                    auto *new_adm_proxy{new DeviceProxy(new_adm_name)};
-
-                    auto *old_adm_proxy{ipos->second.adm_device_proxy};
-
-                    ipos->second.adm_device_proxy = new_adm_proxy;
-
-                    delete old_adm_proxy;
+                    ipos->second.adm_device_proxy = std::make_shared<DeviceProxy>(new_adm_name);
 
                     DeviceData subscriber_in, subscriber_out;
                     std::vector<std::string> subscriber_info;

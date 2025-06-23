@@ -8,6 +8,8 @@
 #include <tango/server/seqvec.h>
 #include <tango/client/DeviceAttribute.h>
 #include <tango/client/ApiUtil.h>
+#include <tango/client/Database.h>
+#include <tango/client/DeviceProxy.h>
 
 #include <algorithm>
 
@@ -540,6 +542,109 @@ void stringify_attribute_data(std::ostream &os, const DeviceAttribute &da)
     {
         os << DevStateName[da.d_state];
     }
+}
+
+std::vector<std::string> get_databases_from_control_system(Database *db)
+{
+    std::vector<std::string> vs;
+
+    try
+    {
+        DeviceData dd;
+        dd = db->command_inout("DbGetCSDbServerList");
+        dd >> vs;
+    }
+    catch(...)
+    {
+    }
+
+    return vs;
+}
+
+std::vector<std::string> gather_fqdn_prefixes_from_env(Database *db)
+{
+    std::vector<std::string> env_var_fqdn_prefix;
+    std::string prefix = "tango://" + db->get_db_host() + ':' + db->get_db_port() + '/';
+    env_var_fqdn_prefix.push_back(prefix);
+
+    if(db->is_multi_tango_host())
+    {
+        std::vector<std::string> &tango_hosts = db->get_multi_host();
+        std::vector<std::string> &tango_ports = db->get_multi_port();
+        for(unsigned int i = 1; i < tango_hosts.size(); i++)
+        {
+            std::string prefix = "tango://" + tango_hosts[i] + ':' + tango_ports[i] + '/';
+            env_var_fqdn_prefix.push_back(prefix);
+        }
+    }
+
+    for(size_t loop = 0; loop < env_var_fqdn_prefix.size(); ++loop)
+    {
+        std::transform(env_var_fqdn_prefix[loop].begin(),
+                       env_var_fqdn_prefix[loop].end(),
+                       env_var_fqdn_prefix[loop].begin(),
+                       ::tolower);
+    }
+
+    return env_var_fqdn_prefix;
+}
+
+void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::vector<std::string> &prefixes)
+{
+    //
+    // Several Db servers for one TANGO_HOST case
+    //
+
+    std::vector<std::string>::iterator pos;
+
+    for(unsigned int i = 0; i < vs.size(); i++)
+    {
+        pos = find_if(prefixes.begin(),
+                      prefixes.end(),
+                      [&](std::string str) -> bool { return str.find(vs[i]) != std::string::npos; });
+
+        if(pos == prefixes.end())
+        {
+            std::string prefix = "tango://" + vs[i] + '/';
+            prefixes.push_back(prefix);
+        }
+    }
+}
+
+std::string build_device_trl(DeviceProxy *device, const std::vector<std::string> &prefixes)
+{
+    std::string local_device_name = device->dev_name();
+
+    if(!device->get_from_env_var())
+    {
+        std::string prot("tango://");
+        if(!device->is_dbase_used())
+        {
+            std::string &ho = device->get_dev_host();
+            if(ho.find('.') == std::string::npos)
+            {
+                Connection::get_fqdn(ho);
+            }
+            prot = prot + ho + ':' + device->get_dev_port() + '/';
+        }
+        else
+        {
+            prot = prot + device->get_db_host() + ':' + device->get_db_port() + '/';
+        }
+        local_device_name.insert(0, prot);
+        if(!device->is_dbase_used())
+        {
+            local_device_name = local_device_name + MODIFIER_DBASE_NO;
+        }
+    }
+    else
+    {
+        local_device_name.insert(0, prefixes[0]);
+    }
+
+    std::transform(local_device_name.begin(), local_device_name.end(), local_device_name.begin(), ::tolower);
+
+    return local_device_name;
 }
 
 } // namespace Tango::detail

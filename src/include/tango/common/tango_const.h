@@ -252,6 +252,8 @@ const int MIN_IDL_CONF5 = 5;
 const int MIN_IDL_DEV_INTR = 5;
 const int ALL_EVENTS = 0;
 
+const int MIN_IDL_ZMQ_EVENT = 4;
+
 //
 // For event compatibility
 //
@@ -260,7 +262,7 @@ const int ATT_CONF_REL_NB = 1; // Number of att. conf release on top of original
 
 const char *const EVENT_COMPAT = "idl";
 const char *const EVENT_COMPAT_IDL5 = "idl5_";
-const int EVENT_COMPAT_IDL5_SIZE = 5; // strlen of previsou string
+const int EVENT_COMPAT_IDL5_SIZE = 5; // strlen of previous string
 
 //
 // For device interface change event

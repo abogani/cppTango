@@ -33,6 +33,7 @@
 #define _AUTO_TANGO_MONITOR_H
 
 #include <tango/common/omnithread_wrapper.h>
+#include <memory>
 
 namespace Tango
 {
@@ -59,6 +60,7 @@ class AutoTangoMonitor
     AutoTangoMonitor(Tango::DeviceClass *dev_cl);
 
     AutoTangoMonitor(Tango::TangoMonitor *m);
+    AutoTangoMonitor(const std::shared_ptr<Tango::TangoMonitor> &m);
 
     ~AutoTangoMonitor();
 

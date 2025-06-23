@@ -41,6 +41,7 @@
 #include <COS/CosNotification.hh>
 #include <COS/CosNotifyChannelAdmin.hh>
 #include <COS/CosNotifyComm.hh>
+#include <memory>
 
 #include <tango/server/readers_writers_lock.h>
 #include <tango/common/pointer_with_lock.h>
@@ -451,12 +452,12 @@ typedef struct event_callback : public EventCallBackBase, public EventCallBackZm
 
 typedef struct event_channel_base
 {
-    DeviceProxy *adm_device_proxy;
+    std::shared_ptr<DeviceProxy> adm_device_proxy;
     std::string full_adm_name;
     time_t last_subscribed;
     time_t last_heartbeat;
     bool heartbeat_skipped;
-    TangoMonitor *channel_monitor;
+    std::shared_ptr<TangoMonitor> channel_monitor;
     ChannelType channel_type;
 } EventChannelBase;
 
@@ -496,14 +497,14 @@ class EventConsumer
 
     virtual ~EventConsumer() { }
 
-    int connect_event(DeviceProxy *,
-                      const std::string &,
-                      EventType,
-                      CallBack *,
-                      EventQueue *,
-                      const std::vector<std::string> &,
-                      std::string &,
-                      int event_id = 0);
+    void connect_event(DeviceProxy *,
+                       const std::string &,
+                       EventType,
+                       CallBack *,
+                       EventQueue *,
+                       const std::vector<std::string> &,
+                       std::string &,
+                       int event_id);
     void connect(DeviceProxy *, const std::string &, DeviceData &, const std::string &, bool &);
 
     void shutdown();
@@ -572,7 +573,7 @@ class EventConsumer
     void attr_to_device(const ZmqAttributeValue_4 *, DeviceAttribute *);
     void attr_to_device(const ZmqAttributeValue_5 *, DeviceAttribute *);
     void conf_to_info(AttributeConfig_2 &, AttributeInfoEx **);
-    void get_cs_tango_host(Database *);
+    void update_alias_map(Database *db, const std::vector<std::string> &vs);
     std::string get_client_attribute_name(const std::string &, const std::vector<std::string> &filters);
 
     static std::map<std::string, std::string>
@@ -592,7 +593,7 @@ class EventConsumer
     std::string obj_name_lower;
     int thread_id;
 
-    int add_new_callback(DeviceProxy *, EvCbIte &, CallBack *, EventQueue *, int);
+    void add_new_callback(DeviceProxy *, EvCbIte &, CallBack *, EventQueue *, int);
     void get_fire_sync_event(DeviceProxy *,
                              CallBack *,
                              EventQueue *,
@@ -628,6 +629,17 @@ class EventConsumer
                                                              const std::string &local_callback_key,
                                                              const std::string &adm_name,
                                                              bool device_from_env_var) = 0;
+    void get_subscription_info(const std::shared_ptr<Tango::DeviceProxy> &adm_dev,
+                               Tango::DeviceProxy *device,
+                               std::string obj_name_lower,
+                               std::string event_name,
+                               Tango::DeviceData &dd,
+                               bool &zmq_used);
+    std::string get_callback_key(const std::string &device_name,
+                                 const std::string &obj_name_lower,
+                                 EventType event_type,
+                                 const std::string &event_name);
+    int get_new_event_id();
 };
 
 /********************************************************************************
