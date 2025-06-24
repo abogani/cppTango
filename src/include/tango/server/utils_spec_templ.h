@@ -112,9 +112,9 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
     //
 
     size_t i;
-    Tango::DevFailed *save_except;
+    Tango::DevFailed *save_except = nullptr;
     bool cmd_failed;
-    CORBA::Any *any_ptr;
+    CORBA::Any *any_ptr = nullptr;
 
     for(i = 0; i < nb_elt; i++)
     {
@@ -253,9 +253,9 @@ inline void Util::fill_cmd_polling_buffer(DeviceImpl *dev, std::string &cmd_name
     //
 
     size_t i;
-    Tango::DevFailed *save_except;
+    Tango::DevFailed *save_except = nullptr;
     bool cmd_failed;
-    CORBA::Any *any_ptr;
+    CORBA::Any *any_ptr = nullptr;
 
     for(i = 0; i < nb_elt; i++)
     {
