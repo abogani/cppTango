@@ -3705,6 +3705,8 @@ DataReadyEventData::DataReadyEventData(DeviceProxy *dev,
     }
 
     err = errors.length() != 0;
+
+    set_time();
 }
 
 //+----------------------------------------------------------------------
@@ -3850,6 +3852,8 @@ DevIntrChangeEventData::DevIntrChangeEventData(DeviceProxy *dev,
 
         a_list_var._retn();
     }
+
+    set_time();
 }
 
 DevIntrChangeEventData::DevIntrChangeEventData(DeviceProxy *dev,
@@ -3873,6 +3877,8 @@ DevIntrChangeEventData::DevIntrChangeEventData(DeviceProxy *dev,
         cmd_list = *c_list;
         att_list = *a_list;
     }
+
+    set_time();
 }
 
 //+----------------------------------------------------------------------

@@ -97,6 +97,7 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
 
                 using namespace TangoTest::Matchers;
                 using namespace Catch::Matchers;
+                using namespace std::literals::chrono_literals;
 
                 REQUIRE_THAT(event, EventDeviceStarted(true));
                 REQUIRE_THAT(event, EventType(Tango::INTERFACE_CHANGE_EVENT));
@@ -137,6 +138,10 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                     Tango::DeviceData d_in;
                     d_in << in;
                     REQUIRE_NOTHROW(device->command_inout("IOAddCommand", d_in));
+                    auto now = Tango::make_TimeVal(std::chrono::system_clock::now());
+
+                    // we only want to check if the date is set, so we use a large margin
+                    auto margin = 3s;
 
                     THEN("we got an event with the new command")
                     {
@@ -151,6 +156,7 @@ SCENARIO("DevIntrChangeEventData with dynamic commands")
                         REQUIRE_THAT(event, EventCommandNamesMatches(SizeIs(static_commands.size() + 1)));
                         REQUIRE_THAT(event, EventCommandNamesMatches(AnyMatch(Equals(cmd_basename))));
                         REQUIRE_THAT(event, EventAttributeNamesMatches(UnorderedRangeEquals(static_attributes)));
+                        REQUIRE_THAT(event->get_date(), WithinTimeAbsMatcher(now, margin));
 
                         AND_WHEN("we remove the command again")
                         {
