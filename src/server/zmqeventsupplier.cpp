@@ -31,6 +31,7 @@
 //+==================================================================================================================
 
 #include <tango/internal/net.h>
+#include <tango/internal/utils.h>
 #include <tango/server/eventsupplier.h>
 #include <tango/server/pipe.h>
 #include <tango/server/device.h>
@@ -1194,13 +1195,7 @@ void ZmqEventSupplier::push_event(DeviceImpl *device_impl,
     // Don't forget case where we have notifd client (thus with a fqdn_prefix modified)
     //
 
-    std::string local_event_type = event_type;
-
-    std::string::size_type pos = local_event_type.find(EVENT_COMPAT);
-    if(pos != std::string::npos)
-    {
-        local_event_type.erase(0, EVENT_COMPAT_IDL5_SIZE);
-    }
+    std::string local_event_type = detail::remove_idl_prefix(event_type);
 
     bool intr_change = false;
     if(local_event_type == EventName[INTERFACE_CHANGE_EVENT])
@@ -1901,7 +1896,7 @@ void ZmqEventSupplier::push_event_loop(DeviceImpl *device_impl,
 
         if(*ite >= 5 && event_type != ALARM_EVENT)
         {
-            ev_name = EVENT_COMPAT_IDL5 + ev_name;
+            ev_name = detail::add_idl_prefix(ev_name);
             name_changed = true;
         }
 

@@ -2302,15 +2302,7 @@ void ZmqEventConsumer::push_zmq_event(
             //
             // Get which type of event data has been received (from the event type)
             //
-
-            std::string::size_type pos = ev_name.rfind('.');
-
-            std::string event_name = ev_name.substr(pos + 1);
-            std::string::size_type pos1 = event_name.find(EVENT_COMPAT);
-            if(pos1 != std::string::npos)
-            {
-                event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-            }
+            auto event_name = detail::get_event_name(ev_name);
 
             //
             // If the client TANGO_HOST is one alias, replace in the event name the host name by the alias

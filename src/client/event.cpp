@@ -1509,7 +1509,7 @@ void EventConsumer::connect_event(DeviceProxy *device,
 
     if(add_compat_info && idl_version >= MIN_IDL_CONF5)
     {
-        event_name = EVENT_COMPAT_IDL5 + event_name;
+        event_name = detail::add_idl_prefix(event_name);
     }
 
     std::string local_callback_key = get_callback_key(device_name, obj_name_lower, event, event_name);
@@ -1528,9 +1528,7 @@ void EventConsumer::connect_event(DeviceProxy *device,
     {
         for(int i = 0; i < ATT_CONF_REL_NB; i++)
         {
-            std::string mod_local_callback_key(received_from_admin.event_name);
-            std::string::size_type pos = mod_local_callback_key.rfind('.');
-            mod_local_callback_key.insert(pos + 1, EVENT_COMPAT_IDL5);
+            auto mod_local_callback_key = detail::insert_idl_for_compat(received_from_admin.event_name);
             iter = event_callback_map.find(mod_local_callback_key);
             if(iter != event_callback_map.end())
             {
@@ -1723,8 +1721,7 @@ std::string EventConsumer::get_client_attribute_name(const std::string &local_ca
         return filters[0]; // here filters[0] is expected to be user defined attribute name
     }
 
-    size_t pos = local_callback_key.rfind('.'); // remove event_type e.g. .idl5_change
-    return local_callback_key.substr(0, pos);
+    return detail::remove_idl_for_compat(local_callback_key);
 }
 
 //+-------------------------------------------------------------------------------------------------------------------
@@ -3067,13 +3064,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         {
             err = e.errors;
         }
-
-        std::string local_event_name = event_name;
-        pos = local_event_name.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
-        {
-            local_event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        std::string local_event_name = detail::remove_idl_prefix(event_name);
         std::string local_domain_name = cb.get_client_attribute_name();
 
         if(cb.fwd_att)
@@ -3104,12 +3095,7 @@ void EventConsumer::get_fire_sync_event(DeviceProxy *device,
         std::string local_domain_name = cb.get_client_attribute_name();
         AttributeInfoEx *aie = nullptr;
 
-        std::string local_event_name = event_name;
-        std::string::size_type pos = local_event_name.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
-        {
-            local_event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        std::string local_event_name = detail::remove_idl_prefix(event_name);
 
         try
         {

@@ -33,6 +33,7 @@
 #include <tango/server/utils.h>
 #include <tango/server/pipe.h>
 #include <tango/server/fwdattribute.h>
+#include <tango/internal/utils.h>
 
 namespace Tango
 {
@@ -717,14 +718,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         // Check event type validity
         //
 
-        std::string check_event = event;
-        std::transform(check_event.begin(), check_event.end(), check_event.begin(), ::tolower);
-
-        std::string::size_type pos_check = check_event.find(EVENT_COMPAT);
-        if(pos_check != std::string::npos)
-        {
-            check_event.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        std::string check_event = detail::remove_idl_prefix(detail::to_lower(event));
 
         size_t nb_event_type = sizeof(EventName) / sizeof(char *);
         bool found = false;
@@ -775,14 +769,11 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
 
             if(client_release == 0)
             {
-                std::string::size_type pos = event.find(EVENT_COMPAT);
-                if(pos != std::string::npos)
+                auto client_release_opt = detail::extract_idl_version_from_event_name(event);
+                if(client_release_opt.has_value())
                 {
-                    std::string client_lib_str = event.substr(pos + 3, 1);
-                    std::stringstream ss;
-                    ss << client_lib_str;
-                    ss >> client_release;
-                    event.erase(0, EVENT_COMPAT_IDL5_SIZE);
+                    client_release = client_release_opt.value();
+                    event = detail::remove_idl_prefix(event);
                 }
                 else
                 {
@@ -886,12 +877,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         //
         // Call common method (common between old and new command)
         //
-
-        std::string::size_type pos = event.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
-        {
-            event.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        event = detail::remove_idl_prefix(event);
 
         event_subscription(*dev, obj_name, action, event, ZMQ, client_release);
 
@@ -1062,7 +1048,7 @@ DevVarLongStringArray *DServer::zmq_event_subscription_change(const Tango::DevVa
         if(client_release >= 5 &&
            add_compat_info) // client_release here is the minimum of the client release and dev IDL version
         {
-            event_topic = ev->create_full_event_name(dev, EVENT_COMPAT_IDL5 + event, obj_name_lower, intr_change);
+            event_topic = ev->create_full_event_name(dev, detail::add_idl_prefix(event), obj_name_lower, intr_change);
         }
         else
         {
@@ -1148,16 +1134,12 @@ void DServer::event_confirm_subscription(const Tango::DevVarStringArray *argin)
 
         std::string action("subscribe");
         int client_lib = 0;
-        std::string client_lib_str;
 
-        std::string::size_type pos = event.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
+        auto client_lib_opt = detail::extract_idl_version_from_event_name(event);
+        if(client_lib_opt.has_value())
         {
-            client_lib_str = event.substr(pos + 3, 1);
-            std::stringstream ss;
-            ss << client_lib_str;
-            ss >> client_lib;
-            event.erase(0, EVENT_COMPAT_IDL5_SIZE);
+            client_lib = client_lib_opt.value();
+            event = detail::remove_idl_prefix(event);
         }
         else
         {

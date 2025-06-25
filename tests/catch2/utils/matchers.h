@@ -9,6 +9,7 @@
 #include <tango/common/utils/type_info.h>
 #include <tango/internal/stl_corba_helpers.h>
 #include <tango/internal/type_traits.h>
+#include <tango/internal/utils.h>
 
 #include <type_traits>
 
@@ -772,6 +773,51 @@ template <typename Matcher>
 EventAttributeNamesMatchesMatcher<Matcher> EventAttributeNamesMatches(Matcher &&matcher)
 {
     return {CATCH_FORWARD(matcher)};
+}
+
+class AttrNameContainsMatcher : public Catch::Matchers::MatcherGenericBase
+{
+  public:
+    AttrNameContainsMatcher(std::string attr_name) :
+        m_attr_name{CATCH_MOVE(attr_name)}
+    {
+    }
+
+    bool match(const Tango::DeviceAttribute &attr) const
+    {
+        auto ref = const_cast<Tango::DeviceAttribute &>(attr).get_name();
+
+        return match(ref);
+    }
+
+    bool match(const std::optional<Tango::EventData> &event) const
+    {
+        TANGO_ASSERT(event.has_value());
+
+        return match(event->attr_name);
+    }
+
+    bool match(std::string attr_name) const
+    {
+        // workaround #1439 as the case of the attribute name differs
+        attr_name = Tango::detail::to_lower(attr_name);
+        return attr_name.find(Tango::detail::to_lower(m_attr_name)) != std::string::npos;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream os;
+        os << "has attribute name that contains \"" << m_attr_name << "\" (ignoring case)";
+        return os.str();
+    }
+
+  private:
+    std::string m_attr_name;
+};
+
+inline AttrNameContainsMatcher AttrNameContains(const std::string &attr_name)
+{
+    return {CATCH_FORWARD(attr_name)};
 }
 
 } // namespace Matchers

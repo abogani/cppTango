@@ -13,6 +13,13 @@
 
 #include <algorithm>
 
+namespace
+{
+const char *const EVENT_COMPAT = "idl";
+const char *const EVENT_COMPAT_IDL5 = "idl5_";
+const int EVENT_COMPAT_IDL5_SIZE = 5; // strlen of previous string
+} // anonymous namespace
+
 namespace Tango::detail
 {
 
@@ -645,6 +652,69 @@ std::string build_device_trl(DeviceProxy *device, const std::vector<std::string>
     std::transform(local_device_name.begin(), local_device_name.end(), local_device_name.begin(), ::tolower);
 
     return local_device_name;
+}
+
+std::string add_idl_prefix(std::string event_name)
+{
+    return EVENT_COMPAT_IDL5 + event_name;
+}
+
+std::string remove_idl_prefix(std::string event_name)
+{
+    auto pos = event_name.find(EVENT_COMPAT);
+    if(pos == std::string::npos)
+    {
+        return event_name;
+    }
+
+    event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
+
+    return event_name;
+}
+
+std::optional<int> extract_idl_version_from_event_name(const std::string &event_name)
+{
+    std::string::size_type pos = event_name.find(EVENT_COMPAT);
+    if(pos == std::string::npos)
+    {
+        return {};
+    }
+
+    int client_release;
+
+    // FIXME prefer parse_as from !1450 once available
+    std::string client_lib_str = event_name.substr(pos + 3, 1);
+    std::stringstream ss;
+    ss << client_lib_str;
+    ss >> client_release;
+
+    return client_release;
+}
+
+std::string insert_idl_for_compat(std::string event_name)
+{
+    std::string::size_type pos = event_name.rfind('.');
+    TANGO_ASSERT(pos != std::string::npos);
+
+    event_name.insert(pos + 1, EVENT_COMPAT_IDL5);
+
+    return event_name;
+}
+
+std::string remove_idl_for_compat(std::string fq_event_name)
+{
+    size_t pos = fq_event_name.rfind('.');
+    TANGO_ASSERT(pos != std::string::npos);
+    return fq_event_name.substr(0, pos);
+}
+
+std::string get_event_name(std::string fq_event_name)
+{
+    std::string::size_type pos = fq_event_name.rfind('.');
+    TANGO_ASSERT(pos != std::string::npos);
+
+    std::string event_name = fq_event_name.substr(pos + 1);
+    return detail::remove_idl_prefix(event_name);
 }
 
 } // namespace Tango::detail

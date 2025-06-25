@@ -39,6 +39,8 @@
 
 #include <tango/common/pointer_with_lock.h>
 
+#include <tango/internal/utils.h>
+
 #include <cstdio>
 
 #ifdef _TG_WINDOWS_
@@ -1204,11 +1206,7 @@ void EventConsumerKeepAliveThread::main_reconnect(PointerWithLock<EventConsumer>
                     domain_name = epos->second.get_client_attribute_name();
                     event_name = epos->first.substr(pos + 1);
 
-                    std::string::size_type pos = event_name.find(EVENT_COMPAT);
-                    if(pos != std::string::npos)
-                    {
-                        event_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-                    }
+                    event_name = detail::remove_idl_prefix(event_name);
                 }
 
                 for(esspos = epos->second.callback_list.begin(); esspos != epos->second.callback_list.end(); ++esspos)
@@ -1368,12 +1366,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
 
         std::vector<EventSubscribeStruct>::iterator esspos;
 
-        std::string ev_name(epos->second.event_name);
-        std::string::size_type pos = ev_name.find(EVENT_COMPAT);
-        if(pos != std::string::npos)
-        {
-            ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-        }
+        std::string ev_name = detail::remove_idl_prefix(epos->second.event_name);
 
         if((ev_name == "change") || (ev_name == "alarm") || (ev_name == "archive") || (ev_name == "user_event"))
         {
@@ -1516,12 +1509,7 @@ void EventConsumerKeepAliveThread::re_subscribe_after_reconnect(
             {
                 cb_ctr++;
                 FwdAttrConfEventData *event_data;
-                std::string ev_name(epos->second.event_name);
-                std::string::size_type pos = ev_name.find(EVENT_COMPAT);
-                if(pos != std::string::npos)
-                {
-                    ev_name.erase(0, EVENT_COMPAT_IDL5_SIZE);
-                }
+                std::string ev_name = detail::remove_idl_prefix(epos->second.event_name);
 
                 if(cb_ctr != cb_nb)
                 {
@@ -1705,10 +1693,12 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     // Push an event with the error message!
     //
 
+    auto event_name = detail::remove_idl_prefix(vpos->event_name);
+
     DevErrorList err;
     err.length(0);
     std::string domain_name = vpos->prefix + vpos->device->dev_name();
-    if(vpos->event_name != EventName[INTERFACE_CHANGE_EVENT])
+    if(event_name != EventName[INTERFACE_CHANGE_EVENT])
     {
         domain_name = domain_name + "/" + vpos->attribute;
     }
@@ -1718,11 +1708,11 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     // For attribute data event
     //
 
-    if((vpos->event_name == "change") || (vpos->event_name == "alarm") || (vpos->event_name == "archive") ||
-       (vpos->event_name == "periodic") || (vpos->event_name == "user_event"))
+    if((event_name == "change") || (event_name == "alarm") || (event_name == "archive") || (event_name == "periodic") ||
+       (event_name == "user_event"))
     {
         DeviceAttribute *da = nullptr;
-        FwdEventData *event_data = new FwdEventData(vpos->device, domain_name, vpos->event_name, da, err);
+        FwdEventData *event_data = new FwdEventData(vpos->device, domain_name, event_name, da, err);
 
         // if a callback method was specified, call it!
 
@@ -1737,10 +1727,10 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
     // For attribute configuration event
     //
 
-    else if(vpos->event_name == CONF_TYPE_EVENT)
+    else if(event_name == CONF_TYPE_EVENT)
     {
         AttributeInfoEx *aie = nullptr;
-        AttrConfEventData *event_data = new AttrConfEventData(vpos->device, domain_name, vpos->event_name, aie, err);
+        AttrConfEventData *event_data = new AttrConfEventData(vpos->device, domain_name, event_name, aie, err);
 
         safe_execute_callback_or_store_data(vpos->callback,
                                             event_data,
@@ -1748,9 +1738,9 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
                                             domain_name,
                                             vpos->ev_queue);
     }
-    else if(vpos->event_name == DATA_READY_TYPE_EVENT)
+    else if(event_name == DATA_READY_TYPE_EVENT)
     {
-        DataReadyEventData *event_data = new DataReadyEventData(vpos->device, nullptr, vpos->event_name, err);
+        DataReadyEventData *event_data = new DataReadyEventData(vpos->device, nullptr, event_name, err);
 
         safe_execute_callback_or_store_data(vpos->callback,
                                             event_data,
@@ -1758,10 +1748,10 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
                                             domain_name,
                                             vpos->ev_queue);
     }
-    else if(vpos->event_name == EventName[INTERFACE_CHANGE_EVENT])
+    else if(event_name == EventName[INTERFACE_CHANGE_EVENT])
     {
         auto *event_data = new DevIntrChangeEventData(vpos->device,
-                                                      vpos->event_name,
+                                                      event_name,
                                                       domain_name,
                                                       (CommandInfoList *) nullptr,
                                                       (AttributeInfoListEx *) nullptr,
@@ -1774,10 +1764,10 @@ void EventConsumerKeepAliveThread::stateless_subscription_failed(const std::vect
                                             domain_name,
                                             vpos->ev_queue);
     }
-    else if(vpos->event_name == EventName[PIPE_EVENT])
+    else if(event_name == EventName[PIPE_EVENT])
     {
         PipeEventData *event_data =
-            new PipeEventData(vpos->device, domain_name, vpos->event_name, (DevicePipe *) nullptr, err);
+            new PipeEventData(vpos->device, domain_name, event_name, (DevicePipe *) nullptr, err);
 
         safe_execute_callback_or_store_data(vpos->callback,
                                             event_data,

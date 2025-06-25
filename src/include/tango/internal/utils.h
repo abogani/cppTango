@@ -92,6 +92,46 @@ void append_fqdn_host_prefixes_from_db(const std::vector<std::string> &vs, std::
 /// detail::append_fqdn_host_prefixes_from_db.
 std::string build_device_trl(DeviceProxy *device, const std::vector<std::string> &prefixes);
 
+/// Fully qualified event names look like
+///
+/// `tango://127.0.0.1:11570/testserver/tests/1/short_attr#dbase=no.idl5_change`
+///
+/// for events working on attributes or
+///
+/// `tango://127.0.0.1:10363/testserver/tests/1#dbase=no.intr_change`
+///
+/// for the interface change event.
+///
+/// with the following parts:
+///
+/// - `tango://`: Protocol
+/// - `127.0.0.1:11570`: Tango host or device server address
+/// - `testserver/tests/1`: Device server name
+/// - `short_attr`: Attribute name (optional, lower cased)
+/// - `#dbase=no`: no database suffix (optional)
+/// - `idl5_`: idl prefix for event name (optional)
+/// - `change`: Event name
+///
+/// @{
+
+/// @brief Add the `idl5_` prefix to the event name
+std::string add_idl_prefix(std::string event_name);
+
+/// @brief Remove the `idlXX` prefix from the event name
+std::string remove_idl_prefix(std::string event_name);
+
+/// @brief Extract the IDL version `5` from a string like `idl5_change` or a fully qualified event name
+std::optional<int> extract_idl_version_from_event_name(const std::string &event_name);
+
+/// @brief Insert `idl5_` after the last `.` in a string like `change` or a fully qualified event name
+std::string insert_idl_for_compat(std::string event_name);
+
+/// @brief Remove `idl5_XXXXX` after the last `.` in a fully qualified event name
+std::string remove_idl_for_compat(std::string fq_event_name);
+
+/// @brief Get the event name, one of @ref EventName, from a fully qualified event name
+std::string get_event_name(std::string fq_event_name);
+
 } // namespace Tango::detail
 
 namespace Tango
