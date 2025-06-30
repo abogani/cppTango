@@ -27,16 +27,13 @@ For more information please visit [www.tango-controls.org](https://www.tango-con
 # Important branches
 
 - main: Tango development version
-- 9.3-backports: Tango 9.3 stable version
-- tango-v10: Future Tango version without CORBA (not yet functional)
+- 9.3-backports: Tango 9.3 LTS version
 
 # Documentation
 
 On readthedocs: [tango-controls.readthedocs.io](https://tango-controls.readthedocs.io)
 
 API reference: [tango-controls.gitlab.io/cppTango](https://tango-controls.gitlab.io/cppTango)
-
-Old Manuals: [tango-controls.org/documentation/kernel](http://www.tango-controls.org/documentation/kernel/)
 
 # How to build and install
 
