@@ -3,7 +3,8 @@
 [![AppVeyor (9.3-backports)](https://img.shields.io/appveyor/build/bourtemb/cpptango-nh0mp/9.3-backports?label=9.3-backports%20%28Windows%29)](https://ci.appveyor.com/project/bourtemb/cpptango-nh0mp/branch/9.3-backports)
 [![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/tango-controls/cppTango?sort=date)](https://gitlab.com/tango-controls/cppTango/-/releases)
 [![Conda](https://img.shields.io/conda/v/conda-forge/cppTango)](https://anaconda.org/conda-forge/cpptango)
-[![Gitlab code coverage](https://img.shields.io/gitlab/coverage/tango-controls/cppTango/main)](https://gitlab.com/tango-controls/cppTango/-/pipelines?page=1&scope=branches&ref=main)
+![Coverage](https://gitlab.com/tango-controls/cppTango/badges/main/coverage.svg?job=coverage)
+
 [![CLion](https://img.shields.io/badge/-Developed%20using%20CLion-blue.svg?style=flat-square&logo=clion)](https://www.jetbrains.com/clion)
 [![Neovim](https://img.shields.io/badge/-Developed%20using%20Neovim.svg?style=flat-square&logo=neovim)](https://neovim.io)
 [![License](https://img.shields.io/badge/license-LGPL--3.0-orange.svg)](https://gitlab.com/tango-controls/cppTango/-/blob/main/LICENSE)
