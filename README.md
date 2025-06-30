@@ -8,7 +8,7 @@
 [![Neovim](https://img.shields.io/badge/-Developed%20using%20Neovim.svg?style=flat-square&logo=neovim)](https://neovim.io)
 [![License](https://img.shields.io/badge/license-LGPL--3.0-orange.svg)](https://gitlab.com/tango-controls/cppTango/-/blob/main/LICENSE)
 
-[![logo](http://www.tango-controls.org/static/tango/img/logo_tangocontrols.png)](http://www.tango-controls.org)
+[![logo](https://www.tango-controls.org/static/tango/img/logo_tangocontrols.png)](https://www.tango-controls.org)
 
 # Distributed Control System - C++ library
 
@@ -21,7 +21,7 @@ The object model in TANGO supports methods, attributes and properties. TANGO
 provides an API which hides all the details of network access and provides
 object browsing, discovery, and security features.
 
-For more information please visit [www.tango-controls.org](http://www.tango-controls.org).
+For more information please visit [www.tango-controls.org](https://www.tango-controls.org).
 
 # Important branches
 
@@ -31,7 +31,7 @@ For more information please visit [www.tango-controls.org](http://www.tango-cont
 
 # Documentation
 
-On readthedocs: [tango-controls.readthedocs.io](http://tango-controls.readthedocs.io)
+On readthedocs: [tango-controls.readthedocs.io](https://tango-controls.readthedocs.io)
 
 API reference: [tango-controls.gitlab.io/cppTango](https://tango-controls.gitlab.io/cppTango)
 
